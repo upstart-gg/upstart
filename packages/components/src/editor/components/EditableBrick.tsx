@@ -55,26 +55,11 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const { setSelectedBrick } = useDraftHelpers();
     const { setPanel } = useEditorHelpers();
 
-    /*
-
-    css`
-      @keyframes spring {
-        0% { transform: scale(1.05); }
-        25% { transform: scale(0.95); }
-        50% { transform: scale(1.02); }
-        75% { transform: scale(0.98); }
-        100% { transform: scale(1); }
-      }
-        transform transition-transform duration-600 ease-spring scale-105 animate-spring
-    `,
-
-    // Animation
-    "t",
-    */
-
     const onBrickWrapperClick = (e: MouseEvent<HTMLElement>) => {
       const target = e.currentTarget as HTMLElement;
       if (hasMouseMoved.current || target.matches(".react-resizable-handle") || !target.matches(".brick")) {
+        // if (target.matches(".react-resizable-handle") || !target.matches(".brick")) {
+        console.warn("click ignored", target);
         return;
       }
       setSelectedBrick(brick);
@@ -103,7 +88,8 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
             hasMouseMoved.current = false;
           }, 100);
         }}
-        onMouseMove={() => {
+        onMouseMove={(e) => {
+          console.log("mouevove", e.movementY);
           hasMouseMoved.current = true;
         }}
       >

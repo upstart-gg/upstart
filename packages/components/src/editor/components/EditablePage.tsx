@@ -232,6 +232,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         !target.closest('[role="toolbar"]') &&
         !target.closest('[role="navigation"]') &&
         !target.matches('[role="menuitem"]') &&
+        !target.matches(".drop-indicator") &&
         !target.closest("#text-editor-menubar") &&
         !target.matches("html") &&
         !target.matches("body") &&
