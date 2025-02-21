@@ -8,9 +8,9 @@ import {
   border,
   background,
   getTextShadowSchema,
-  align,
-  alignProps,
-  basicAlignProps,
+  alignFlex,
+  alignFlexProps,
+  alignBasicProps,
 } from "../props/style-props";
 
 const heroProps = Type.Object(
@@ -76,7 +76,7 @@ export const manifest = defineBrickManifest({
   `,
   props: Type.Composite([
     heroProps,
-    basicAlignProps,
+    alignBasicProps,
     contentAwareHeroProps,
     commonProps,
     Type.Object({ layout, border, background }),

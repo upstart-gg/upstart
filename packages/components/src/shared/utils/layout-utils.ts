@@ -129,7 +129,7 @@ export function canDropOnLayout(
 /**
  * Returns the brick at the given position
  */
-function getBrickAtPosition(
+export function getBrickAtPosition(
   x: number,
   y: number,
   bricks: Brick[],
@@ -139,6 +139,46 @@ function getBrickAtPosition(
     const pos = brick.position[currentBp];
     return x >= pos.x && x < pos.x + pos.w && y >= pos.y && y < pos.y + pos.h;
   });
+}
+
+export function getBricksOverlap(
+  draggingBrick: Brick,
+  draggingNewPos: { x: number; y: number },
+  dropOverBrick: Brick,
+  bp: ResponsiveMode = "desktop",
+) {
+  // Extract and convert coordinates to numbers
+  const drag = draggingBrick.position[bp];
+  const drop = dropOverBrick.position[bp];
+
+  const dragX = Number(draggingNewPos.x);
+  const dragY = Number(draggingNewPos.y);
+  const dragW = Number(drag.w);
+  const dragH = Number(drag.h);
+
+  const dropX = Number(drop.x);
+  const dropY = Number(drop.y);
+  const dropW = Number(drop.w);
+  const dropH = Number(drop.h);
+
+  // Guard against a drop brick with zero area
+  if (dropW === 0 || dropH === 0) return 0;
+
+  // Calculate right and bottom edges
+  const dragRight = dragX + dragW;
+  const dragBottom = dragY + dragH;
+  const dropRight = dropX + dropW;
+  const dropBottom = dropY + dropH;
+
+  // Calculate the overlap dimensions
+  const xOverlap = Math.max(0, Math.min(dragRight, dropRight) - Math.max(dragX, dropX));
+  const yOverlap = Math.max(0, Math.min(dragBottom, dropBottom) - Math.max(dragY, dropY));
+
+  // Calculate areas
+  const overlapArea = xOverlap * yOverlap;
+  const dropOverArea = dropW * dropH;
+
+  return overlapArea / dropOverArea;
 }
 
 type CollisionSide = "left" | "right" | "top" | "bottom";

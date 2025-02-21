@@ -25,6 +25,12 @@ interface DragCallbacks {
     gridPosition: { x: number; y: number },
     event: Interact.InteractEvent,
   ) => void;
+  onDragStart?: (
+    brick: Brick,
+    position: { x: number; y: number },
+    gridPosition: { x: number; y: number },
+    event: Interact.InteractEvent,
+  ) => void;
 }
 
 interface DropCallbacks {
@@ -292,6 +298,29 @@ export const useEditablePage = (
           }),
         ],
         listeners: {
+          start: (event: Interact.InteractEvent) => {
+            console.debug("start", event);
+
+            if (!dragCallbacks.onDragStart) {
+              return;
+            }
+
+            const target = event.target as HTMLElement;
+            const brick = getBrick(target.id);
+
+            if (brick) {
+              const {
+                position: {
+                  desktop: { w, h },
+                },
+              } = brick;
+
+              const gridPosition = getGridPosition(target, gridConfig);
+              // we fire the callback for the main element only
+              dragCallbacks.onDragStart?.(brick, getPosition(target, event), gridPosition, event);
+            }
+          },
+
           move: (event: Interact.InteractEvent) => {
             const target = event.target as HTMLElement;
             target.classList.add("moving");
@@ -308,7 +337,7 @@ export const useEditablePage = (
 
             const brick = getBrick(target.id);
 
-            if (brick?.type) {
+            if (brick) {
               const {
                 position: {
                   desktop: { w, h },

@@ -1,6 +1,6 @@
 import type { FieldProps } from "./types";
 import { Text, Select, Slider } from "@upstart.gg/style-system/system";
-import type { LayoutSettings, AlignSettings } from "@upstart.gg/sdk/shared/bricks/props/style-props";
+import type { LayoutSettings, AlignFlexSettings } from "@upstart.gg/sdk/shared/bricks/props/style-props";
 import { fieldLabel } from "../form-class";
 import { SegmentedControl } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
@@ -14,7 +14,7 @@ import {
 } from "react-icons/pi";
 import { LuAlignHorizontalSpaceBetween } from "react-icons/lu";
 
-export const AlignField: React.FC<FieldProps<AlignSettings>> = (props) => {
+export const AlignFlexField: React.FC<FieldProps<AlignFlexSettings>> = (props) => {
   const {
     currentValue = {
       horizontal: "start",
@@ -27,7 +27,7 @@ export const AlignField: React.FC<FieldProps<AlignSettings>> = (props) => {
     placeholder,
     schema,
   } = props;
-  const onSettingsChange = (newVal: Partial<AlignSettings>) => {
+  const onSettingsChange = (newVal: Partial<AlignFlexSettings>) => {
     const newProps = { ...currentValue, ...newVal };
     onChange(newProps);
   };
@@ -45,7 +45,9 @@ export const AlignField: React.FC<FieldProps<AlignSettings>> = (props) => {
           <Select.Root
             defaultValue={currentValue.horizontal}
             size="2"
-            onValueChange={(value) => onSettingsChange({ horizontal: value as AlignSettings["horizontal"] })}
+            onValueChange={(value) =>
+              onSettingsChange({ horizontal: value as AlignFlexSettings["horizontal"] })
+            }
           >
             <Select.Trigger radius="large" variant="ghost" />
             <Select.Content position="popper">
@@ -66,7 +68,7 @@ export const AlignField: React.FC<FieldProps<AlignSettings>> = (props) => {
           <Select.Root
             defaultValue={currentValue.vertical}
             size="2"
-            onValueChange={(value) => onSettingsChange({ vertical: value as AlignSettings["vertical"] })}
+            onValueChange={(value) => onSettingsChange({ vertical: value as AlignFlexSettings["vertical"] })}
           >
             <Select.Trigger radius="large" variant="ghost" />
             <Select.Content position="popper">

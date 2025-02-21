@@ -18,7 +18,13 @@ import { useEditablePage } from "~/editor/hooks/use-draggable";
 import { debounce } from "lodash-es";
 import { defaults } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
-import { canDropOnLayout, detectCollisions, getDropOverGhostPosition } from "~/shared/utils/layout-utils";
+import {
+  canDropOnLayout,
+  detectCollisions,
+  getBrickAtPosition,
+  getBricksOverlap,
+  getDropOverGhostPosition,
+} from "~/shared/utils/layout-utils";
 import { useFontWatcher } from "../hooks/use-font-watcher";
 
 const ghostValid = tx("bg-upstart-100");
@@ -96,9 +102,8 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         updateDragOverGhostStyle(dropOverPos);
         // editorHelpers.setCollidingBrick(dropOverPos.collision);
       },
-      onDragEnd: (brick, pos, gridPos) => {
-        console.debug("onDragEnd (%s)", previewMode, gridPos);
 
+      onDragEnd: (brick, pos, gridPos) => {
         updateDragOverGhostStyle(false);
 
         const collisions = detectCollisions({
@@ -108,18 +113,34 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           dropPosition: gridPos,
         });
 
-        if (collisions.length) {
+        // Commented to allow dropping on top of other bricks
+        // but we have to figure out how to handle this
+
+        // if (collisions.length) {
+        //   console.warn("Collisions detected, cancelling drop");
+        //   // reset the selected group
+        //   editorHelpers.setSelectedGroup();
+        //   return;
+        // }
+
+        const dropOverBrick = getBrickAtPosition(gridPos.x, gridPos.y, draft.bricks, previewMode);
+        const overlap = dropOverBrick ? getBricksOverlap(brick, gridPos, dropOverBrick) : null;
+        console.debug("onDragEnd (%s)", brick.id, { brick, dropOverBrick, overlap });
+
+        if (dropOverBrick?.isContainer && overlap !== null && overlap >= 0.2) {
+          console.debug("Moving %s to parent %s", brick.id, dropOverBrick.id);
+          draftHelpers.moveBrickToParent(brick.id, dropOverBrick.id);
+        } else if (collisions.length) {
           console.warn("Collisions detected, cancelling drop");
-          // reset the selected group
-          editorHelpers.setSelectedGroup();
-          return;
+        } else {
+          console.debug("Updating position of %s", brick.id);
+          draft.updateBrickPosition(brick.id, previewMode, {
+            ...draft.getBrick(brick.id)!.position[previewMode],
+            x: gridPos.x,
+            y: gridPos.y,
+          });
         }
 
-        draft.updateBrickPosition(brick.id, previewMode, {
-          ...draft.getBrick(brick.id)!.position[previewMode],
-          x: gridPos.x,
-          y: gridPos.y,
-        });
         // reset the selected group
         editorHelpers.setSelectedGroup();
       },
@@ -301,7 +322,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     if (selectedBrick) {
       // console
       console.log("Moving %s to left", selectedBrick.id);
-      draftHelpers.moveBrick(selectedBrick.id, "left");
+      draftHelpers.moveBrickWithin(selectedBrick.id, "left");
     }
   });
   /**
@@ -313,7 +334,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     if (selectedBrick) {
       // console
       console.log("Moving %s to right", selectedBrick.id);
-      draftHelpers.moveBrick(selectedBrick.id, "right");
+      draftHelpers.moveBrickWithin(selectedBrick.id, "right");
     }
   });
 

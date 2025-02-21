@@ -21,17 +21,19 @@ import type {
   EffectsSettings,
   FlexSettings,
   TextSettings,
-  AlignSettings,
+  AlignFlexSettings,
+  AlignBasicSettings,
 } from "@upstart.gg/sdk/shared/bricks/props/style-props";
 import { EffectsField } from "./fields/effects";
 import type { ImageProps, RichText } from "@upstart.gg/sdk/shared/bricks/props/common";
 import type { Attributes, JSONSchemaType } from "@upstart.gg/sdk/shared/attributes";
 import { PagePaddingField } from "./fields/padding";
-import { AlignField } from "./fields/align";
+import { AlignFlexField } from "./fields/align-flex";
 import { TextField } from "./fields/text";
 import BackgroundField from "./fields/background";
 import { FlexField } from "./fields/flex";
 import { Text } from "@upstart.gg/style-system/system";
+import { AlignBasicField } from "./fields/align-basic";
 
 type FormComponent = { group: string; groupTitle: string; component: ReactNode };
 type FormComponents = (FormComponent | { group: string; groupTitle: string; components: FormComponent[] })[];
@@ -153,15 +155,30 @@ export function getFormComponents({
           };
         }
 
-        case "align": {
-          const currentValue = (get(formData, id) ?? commonProps.schema.default) as AlignSettings;
+        case "align-flex": {
+          const currentValue = (get(formData, id) ?? commonProps.schema.default) as AlignFlexSettings;
           return {
             group,
             groupTitle,
             component: (
-              <AlignField
+              <AlignFlexField
                 currentValue={currentValue}
-                onChange={(value: AlignSettings | null) => onChange({ [id]: value }, id)}
+                onChange={(value: AlignFlexSettings | null) => onChange({ [id]: value }, id)}
+                {...commonProps}
+              />
+            ),
+          };
+        }
+
+        case "align-basic": {
+          const currentValue = (get(formData, id) ?? commonProps.schema.default) as AlignBasicSettings;
+          return {
+            group,
+            groupTitle,
+            component: (
+              <AlignBasicField
+                currentValue={currentValue}
+                onChange={(value: AlignBasicSettings | null) => onChange({ [id]: value }, id)}
                 {...commonProps}
               />
             ),

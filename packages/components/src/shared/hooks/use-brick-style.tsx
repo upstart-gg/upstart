@@ -3,7 +3,7 @@ import type {
   commonStyleProps,
   textStyleProps,
   flexProps,
-  alignProps,
+  alignFlexProps,
 } from "@upstart.gg/sdk/bricks/props/style-props";
 import type { commonProps } from "@upstart.gg/sdk/bricks/props/common";
 import type { Static } from "@sinclair/typebox";
@@ -14,7 +14,7 @@ import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 type AllStyleProps = Partial<Static<typeof commonStyleProps>> &
   Partial<Static<typeof textStyleProps>> &
   Partial<Static<typeof commonProps>> &
-  Partial<Static<typeof alignProps>> &
+  Partial<Static<typeof alignFlexProps>> &
   Partial<Static<typeof flexProps>>;
 
 /**

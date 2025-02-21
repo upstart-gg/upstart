@@ -196,6 +196,23 @@ function ElementInspector({ brick }: { brick: Brick }) {
 
   const manifest = useMemo(() => manifests[brick.type], [brick.type]);
 
+  const elements = useMemo(
+    () =>
+      brickInfo
+        ? getFormComponents({
+            brickId: brick.id,
+            formSchema: manifest.properties.props as unknown as JSONSchemaType<unknown>,
+            formData: brickInfo.props,
+            mobileFormData: previewMode === "mobile" ? brickInfo.mobileProps : undefined,
+            filter: (prop) => {
+              return previewMode !== "mobile" || prop["ui:responsive"];
+            },
+            onChange,
+          })
+        : null,
+    [manifest, onChange, brick.id, brickInfo, previewMode],
+  );
+
   if (!brickInfo) {
     console.log("No brick info found for brick: %s", brick.id);
     return null;
@@ -206,20 +223,9 @@ function ElementInspector({ brick }: { brick: Brick }) {
     return null;
   }
 
-  const elements = useMemo(
-    () =>
-      getFormComponents({
-        brickId: brick.id,
-        formSchema: manifest.properties.props as unknown as JSONSchemaType<unknown>,
-        formData: brickInfo.props,
-        mobileFormData: previewMode === "mobile" ? brickInfo.mobileProps : undefined,
-        filter: (prop) => {
-          return previewMode !== "mobile" || prop["ui:responsive"];
-        },
-        onChange,
-      }),
-    [manifest, onChange, brick.id, brickInfo, previewMode],
-  );
+  if (!elements) {
+    return null;
+  }
 
   return (
     <form className={tx("px-3 flex flex-col gap-3")}>

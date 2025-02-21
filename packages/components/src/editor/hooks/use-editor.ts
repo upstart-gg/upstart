@@ -244,7 +244,8 @@ export interface DraftState extends DraftStateProps {
   getParentBrick: (id: string) => Brick | undefined;
   deleteBrick: (id: string) => void;
   duplicateBrick: (id: string) => void;
-  moveBrick: (id: string, to: "left" | "right") => void;
+  moveBrickWithin: (id: string, to: "left" | "right") => void;
+  moveBrickToParent: (id: string, parentId: string) => void;
   addBrick: (brick: Brick, parentContainer?: Brick) => void;
   updateBrick: (id: string, brick: Partial<Brick>) => void;
   updateBrickProps: (id: string, props: Record<string, unknown>, isMobileProps?: boolean) => void;
@@ -263,6 +264,8 @@ export interface DraftState extends DraftStateProps {
   adjustMobileLayout(): void;
   setSelectedBrick: (brick?: Brick) => void;
   deselectBrick: (brickId?: Brick["id"]) => void;
+  getPositionWithinParent: (brickId: Brick["id"]) => number | null;
+  canMoveToWithinParent: (brickId: Brick["id"], to: "left" | "right") => boolean;
 }
 
 /**
@@ -363,15 +366,57 @@ export const createDraftStore = (
 
             duplicateBrick: (id) =>
               set((state) => {
-                const brick = state.bricks.find((item) => item.id === id);
-                if (brick) {
+                const brick = state.getBrick(id);
+                if (!brick) {
+                  console.error("Cannot duplicate brick %s, it does not exist", id);
+                  return;
+                }
+
+                // if the container has a parent brick, we need to duplicate the brick within the parent brick children
+                if (brick.parentId) {
+                  const parent = state.bricks.find((item) => item.id === brick.parentId);
+                  if (!parent || !("children" in parent.props)) {
+                    console.error(
+                      "Cannot duplicate brick %s, parent brick %s not found or not a container",
+                      id,
+                      brick.parentId,
+                    );
+                    return;
+                  }
+                  const children = parent.props.children as Brick[];
+                  const index = children.findIndex((b) => b.id === id);
+                  if (index === -1) {
+                    console.error("Cannot duplicate brick %s, it is not a child of its parent", id);
+                    return;
+                  }
                   const newBrick = {
                     ...brick,
                     id: `brick-${generateId()}`,
-                    position: getDuplicatedBrickPosition(brick),
                   };
-                  state.bricks.push(newBrick);
+                  children.splice(index + 1, 0, newBrick);
+                  return;
                 }
+
+                // simple top-level brick duplication
+                const newBrick = {
+                  ...brick,
+                  id: `brick-${generateId()}`,
+                  position: getDuplicatedBrickPosition(brick),
+                  ...("children" in brick.props
+                    ? {
+                        props: {
+                          ...brick.props,
+                          children: brick.props.children.map((child: Brick) => {
+                            return {
+                              ...child,
+                              id: `brick-${generateId()}`,
+                            };
+                          }),
+                        },
+                      }
+                    : { props: brick.props }),
+                };
+                state.bricks.push(newBrick);
               }),
 
             updateBrick: (id, brick) =>
@@ -398,7 +443,7 @@ export const createDraftStore = (
              * Move abrick inside its container.
              * If the brick does not belong to a container, does nothing
              */
-            moveBrick: (id, to) =>
+            moveBrickWithin: (id, to) =>
               set((state) => {
                 const brick = getBrick(id, state.bricks);
                 if (!brick?.parentId) {
@@ -441,6 +486,33 @@ export const createDraftStore = (
                 }
               }),
 
+            moveBrickToParent: (id, parentId) =>
+              set((state) => {
+                const brick = getBrick(id, state.bricks);
+                if (!brick) {
+                  console.error("Cannot move brick %s, it does not exist", id);
+                  return;
+                }
+                const parent = getBrick(parentId, state.bricks);
+                if (!parent) {
+                  console.error("Cannot move brick %s, parent brick %s not found", id, parentId);
+                  return;
+                }
+                if (!("children" in parent.props)) {
+                  console.error("Cannot move brick %s, parent brick %s is not a container", id, parentId);
+                  return;
+                }
+
+                // remove brick from its current parent
+                const parentIndex = state.bricks.findIndex((b) => b.id === brick.parentId);
+
+                const children = parent.props.children as Brick[];
+                children.push({ ...brick, parentId });
+
+                delete state.bricks[parentIndex];
+                state.bricks = state.bricks.filter((b) => b.id !== id);
+              }),
+
             getBrick: (id) => {
               return getBrick(id, _get().bricks);
             },
@@ -450,6 +522,29 @@ export const createDraftStore = (
               if (brick?.parentId) {
                 return getBrick(brick.parentId, _get().bricks);
               }
+            },
+
+            getPositionWithinParent: (brickId) => {
+              const brick = getBrick(brickId, _get().bricks);
+              if (brick?.parentId) {
+                const parent = getBrick(brick.parentId, _get().bricks);
+                if (parent && "children" in parent.props) {
+                  return parent.props.children.findIndex((b: Brick) => b.id === brickId);
+                }
+              }
+              return null;
+            },
+
+            canMoveToWithinParent: (brickId, to) => {
+              const brick = getBrick(brickId, _get().bricks);
+              if (brick?.parentId) {
+                const parent = getBrick(brick.parentId, _get().bricks);
+                if (parent && "children" in parent.props) {
+                  const index = parent.props.children.findIndex((b: Brick) => b.id === brickId);
+                  return to === "left" ? index > 0 : index < parent.props.children.length - 1;
+                }
+              }
+              return false;
             },
 
             setPreviewTheme: (theme) =>
@@ -734,7 +829,10 @@ export const useDraftHelpers = () => {
     deleteBrick: state.deleteBrick,
     getParentBrick: state.getParentBrick,
     updateBrickProps: state.updateBrickProps,
-    moveBrick: state.moveBrick,
+    moveBrickWithin: state.moveBrickWithin,
+    getPositionWithinParent: state.getPositionWithinParent,
+    canMoveToWithinParent: state.canMoveToWithinParent,
+    moveBrickToParent: state.moveBrickToParent,
   }));
 };
 

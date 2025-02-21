@@ -10,8 +10,8 @@ import {
   padding,
   flex,
   flexProps,
-  align,
-  alignProps,
+  alignFlex,
+  alignFlexProps,
 } from "../props/style-props";
 
 export const manifest = defineBrickManifest({
@@ -48,7 +48,7 @@ export const manifest = defineBrickManifest({
     <line x1="12" y1="3" x2="12" y2="21"></line>
 </svg>
   `,
-  props: Type.Composite([flexProps, alignProps, commonProps, commonStyleProps]),
+  props: Type.Composite([flexProps, alignFlexProps, commonProps, commonStyleProps]),
 });
 
 export type Manifest = Static<typeof manifest>;

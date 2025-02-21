@@ -126,7 +126,7 @@ export default function Toolbar({ showIntro }: ToolbarProps) {
           <LuPanelRight className="h-7 w-auto" />
         )}
         <span className={tx(tooltipCls)}>
-          {panelPosition === "left" ? "Move toolbar to right" : "Move toolbar to right"}
+          {panelPosition === "left" ? "Move toolbar to right" : "Move toolbar to left"}
         </span>
       </button>
     </nav>

@@ -404,7 +404,7 @@ export const flex = Type.Object(
 
 export type FlexSettings = Static<typeof flex>;
 
-export const align = Type.Object(
+export const alignFlex = Type.Object(
   {
     horizontal: Type.Union(
       [
@@ -440,7 +440,7 @@ export const align = Type.Object(
   },
   {
     "ui:responsive": true,
-    "ui:field": "align",
+    "ui:field": "align-flex",
     default: {
       horizontal: "start",
       vertical: "stretch",
@@ -449,7 +449,7 @@ export const align = Type.Object(
   },
 );
 
-export const basicAlign = Type.Object(
+export const alignBasic = Type.Object(
   {
     horizontal: Type.Union(
       [
@@ -480,7 +480,7 @@ export const basicAlign = Type.Object(
   },
   {
     "ui:responsive": true,
-    "ui:field": "align",
+    "ui:field": "align-basic",
     default: {
       horizontal: "start",
       vertical: "start",
@@ -489,14 +489,15 @@ export const basicAlign = Type.Object(
   },
 );
 
-export const basicAlignProps = Type.Object({
-  align: basicAlign,
+export const alignBasicProps = Type.Object({
+  align: alignBasic,
 });
 
-export type AlignSettings = Static<typeof align>;
+export type AlignFlexSettings = Static<typeof alignFlex>;
+export type AlignBasicSettings = Static<typeof alignBasic>;
 
-export const alignProps = Type.Object({
-  align,
+export const alignFlexProps = Type.Object({
+  align: alignFlex,
 });
 
 export const flexProps = Type.Object({
