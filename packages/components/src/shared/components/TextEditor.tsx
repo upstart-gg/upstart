@@ -117,8 +117,8 @@ const TextEditor = ({
 }: TextEditorProps) => {
   const mainEditor = useEditor();
   const datasources = useDatasourcesSchemas();
-  const [editable, setEditable] = useState(enabled);
 
+  const [editable, setEditable] = useState(/*enabled*/ false);
   // @ts-ignore
   const fields = getJSONSchemaFieldsList({ schemas: datasources });
 
@@ -170,6 +170,7 @@ const TextEditor = ({
       content: initialContent,
       onUpdate,
       immediatelyRender: true,
+
       // autofocus: false,
       editable,
       editorProps: {
@@ -220,11 +221,11 @@ const TextEditor = ({
       })}
     >
       <EditorContent
-        onDoubleClick={(e) => {
-          e.preventDefault();
-          console.log("dblclick");
+        onDoubleClick={function (e) {
+          // e.preventDefault();
           setEditable(true);
           setTimeout(() => {
+            console.log("FOCUSING", editor.view);
             editor?.view.focus();
           }, 200);
         }}
