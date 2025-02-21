@@ -89,7 +89,6 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           }, 100);
         }}
         onMouseMove={(e) => {
-          console.log("mouevove", e.movementY);
           hasMouseMoved.current = true;
         }}
       >

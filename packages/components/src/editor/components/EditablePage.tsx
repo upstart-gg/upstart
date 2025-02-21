@@ -301,6 +301,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     if (selectedBrick) {
       // console
       console.log("Moving %s to left", selectedBrick.id);
+      draftHelpers.moveBrick(selectedBrick.id, "left");
     }
   });
   /**
@@ -312,6 +313,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     if (selectedBrick) {
       // console
       console.log("Moving %s to right", selectedBrick.id);
+      draftHelpers.moveBrick(selectedBrick.id, "right");
     }
   });
 

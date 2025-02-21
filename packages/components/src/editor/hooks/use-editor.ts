@@ -414,6 +414,31 @@ export const createDraftStore = (
                   );
                   return;
                 }
+                const parentBrickIndex = state.bricks.findIndex((b) => b.id === parentBrick.id);
+                if ("children" in parentBrick.props) {
+                  const children = parentBrick.props.children as Brick[];
+                  const index = children.findIndex((b) => b.id === id);
+                  if (index === -1) {
+                    console.error("Cannot move brick %s, it is not a child of its parent", id);
+                    return;
+                  }
+                  const newIndex = to === "left" ? index - 1 : index + 1;
+                  if (newIndex < 0 || newIndex >= children.length) {
+                    console.error("Cannot move brick %s, it would be out of bounds", id);
+                    return;
+                  }
+                  // clone children array
+                  const newChildren = [...children];
+                  // splice the array
+                  newChildren.splice(index, 1);
+                  newChildren.splice(newIndex, 0, brick);
+                  // recreate parent brick with new children
+                  const newParentBrick = {
+                    ...parentBrick,
+                    props: { ...parentBrick.props, children: newChildren },
+                  };
+                  state.bricks[parentBrickIndex] = newParentBrick;
+                }
               }),
 
             getBrick: (id) => {
@@ -709,6 +734,7 @@ export const useDraftHelpers = () => {
     deleteBrick: state.deleteBrick,
     getParentBrick: state.getParentBrick,
     updateBrickProps: state.updateBrickProps,
+    moveBrick: state.moveBrick,
   }));
 };
 
