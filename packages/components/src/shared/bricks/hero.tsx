@@ -12,7 +12,7 @@ const Hero = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
 
   let { content = "my hero" } = props;
 
-  if (!content.startsWith("<h")) {
+  if (!content.trim().startsWith("<h")) {
     content = `<h1>${content}</h1>`;
   }
 
