@@ -19,6 +19,7 @@ import { debounce } from "lodash-es";
 import { defaults } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
 import {
+  shouldAdjustBrickHeightBecauseOverflow,
   canDropOnLayout,
   detectCollisions,
   getBrickAtPosition,
@@ -193,11 +194,13 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         console.debug("onResizeEnd (%s)", previewMode, brickId, gridPos);
 
         updateDragOverGhostStyle(false);
+        const adjustedHeight = shouldAdjustBrickHeightBecauseOverflow(brickId);
 
         draft.updateBrickPosition(brickId, previewMode, {
           ...draft.getBrick(brickId)!.position[previewMode],
           w: gridPos.w,
-          h: gridPos.h,
+          // Give the priority to the adjusted height if it is bigger than the current height
+          h: adjustedHeight && adjustedHeight > gridPos.h ? adjustedHeight : gridPos.h,
           // when resizing through the mobile view, set the manual height
           // so that the system knows that the height is not automatic
           ...(previewMode === "mobile" ? { manualHeight: gridPos.h } : {}),

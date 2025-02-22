@@ -262,7 +262,11 @@ export const useEditablePage = (
       interactable.current.draggable({
         // hold: 30,
         inertia: true,
-        autoScroll: true,
+        autoScroll: {
+          container: container,
+          margin: 40,
+          speed: 800,
+        },
         modifiers: [
           interact.modifiers.snap({
             targets: [
@@ -398,7 +402,12 @@ export const useEditablePage = (
             const size = getSize(event);
             const gridSize = getGridSize(target, gridConfig);
             resizeCallbacks.onResizeEnd?.(target.id, size, gridSize, event);
-            event.target.style.width = "auto";
+
+            Object.assign(event.target.style, {
+              width: `auto`,
+              height: `auto`,
+            });
+            // event.target.style.width = "auto";
             // event.target.style.height = "auto";
           },
         },

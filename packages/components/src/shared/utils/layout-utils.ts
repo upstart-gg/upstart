@@ -1,4 +1,4 @@
-import { LAYOUT_COLS } from "@upstart.gg/sdk/layout-constants";
+import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/layout-constants";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import type { ResponsiveMode } from "@upstart.gg/sdk/shared/responsive";
 import type { BrickConstraints } from "@upstart.gg/sdk/shared/brick-manifest";
@@ -15,14 +15,24 @@ const defaultsPreferred = {
 };
 
 function isOverflowing(element: HTMLElement) {
-  return element.scrollHeight > element.clientHeight;
+  const tolerance = LAYOUT_ROW_HEIGHT / 2;
+  const overflowing = element.scrollHeight - tolerance > element.clientHeight;
+  return overflowing;
 }
 
-export function adjustBrickOverflow(brickId: string) {
+function getIdealHeight(element: HTMLElement) {
+  return Math.ceil(element.scrollHeight / LAYOUT_ROW_HEIGHT);
+}
+
+/**
+ * Returns the new height of the brick based on its content or false if it should not be adjusted
+ */
+export function shouldAdjustBrickHeightBecauseOverflow(brickId: string) {
   const element = document.getElementById(brickId);
   if (element && isOverflowing(element)) {
-    element.classList.add("overflow-y-auto");
+    return getIdealHeight(element);
   }
+  return false;
 }
 
 /**
