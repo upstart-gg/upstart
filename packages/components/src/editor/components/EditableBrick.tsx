@@ -62,9 +62,9 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
         <div
           id={brick.id}
-          // data-x="0"
-          // data-y="0"
-          // data-position={JSON.stringify(brick.position[previewMode])}
+          data-x="0"
+          data-y="0"
+          data-brick-type={brick.type}
           style={style}
           className={tx(wrapperClass, `![animation-delay:${0.5 * (index + 1)}s]`)}
           ref={ref}
@@ -277,13 +277,14 @@ function BrickContextMenu({ brick, isContainerChild, children }: BrickContextMen
   const draft = useDraft();
   const draftHelpers = useDraftHelpers();
   const editorHelpers = useEditorHelpers();
+  const debugMode = useDebugMode();
   const canMoveLeft = isContainerChild ? draftHelpers.canMoveToWithinParent(brick.id, "left") : null;
   const canMoveRight = isContainerChild ? draftHelpers.canMoveToWithinParent(brick.id, "right") : null;
   const parentContainer = draft.getParentBrick(brick.id);
 
   return (
     <ContextMenu.Root onOpenChange={setOpen}>
-      <ContextMenu.Trigger>{children}</ContextMenu.Trigger>
+      <ContextMenu.Trigger disabled={debugMode}>{children}</ContextMenu.Trigger>
       <Portal>
         {/* The "nodrag" class is here to prevent the grid manager
             from handling click event coming from the menu items.

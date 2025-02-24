@@ -178,8 +178,8 @@ const getPosition = (target: HTMLElement, event: Interact.InteractEvent) => {
 // Update element transform
 const updateElementTransform = (target: HTMLElement, x: number, y: number) => {
   target.style.transform = `translate(${x}px, ${y}px)`;
-  target.dataset.x = String(x);
-  target.dataset.y = String(y);
+  target.dataset.x = x.toString();
+  target.dataset.y = y.toString();
 };
 
 function getDropPosition(event: Interact.DropEvent, gridConfig: GridConfig) {
@@ -246,6 +246,11 @@ export const useEditablePage = (
   const dropzone = useRef<Interact.Interactable | null>(null);
   const { getBrickRef } = useBricksRefs();
 
+  // Refs for tracking drag state
+  const draggedBrick = useRef<string | null>(null);
+  const dragStartPosition = useRef<{ x: number; y: number } | null>(null);
+  const currentSwapTarget = useRef<HTMLElement | null>(null);
+
   useEffect(() => {
     interactable.current = interact(bricksSelectorOrRef, {
       styleCursor: false,
@@ -303,13 +308,19 @@ export const useEditablePage = (
         ],
         listeners: {
           start: (event: Interact.InteractEvent) => {
-            console.debug("start", event);
-
-            if (!dragCallbacks.onDragStart) {
-              return;
-            }
-
+            console.debug("useEditablePage:listeners:start()", event);
             const target = event.target as HTMLElement;
+            target.style.zIndex = "1000";
+
+            draggedBrick.current = target.id;
+
+            const rect = target.getBoundingClientRect();
+
+            dragStartPosition.current = {
+              x: rect.left,
+              y: rect.top,
+            };
+
             const brick = getBrick(target.id);
 
             if (brick) {
@@ -327,6 +338,7 @@ export const useEditablePage = (
 
           move: (event: Interact.InteractEvent) => {
             const target = event.target as HTMLElement;
+
             target.classList.add("moving");
             const elements = selectedGroup ? selectedGroup.map(getBrickRef) : [target];
             elements.forEach((element) => {
@@ -347,6 +359,45 @@ export const useEditablePage = (
                   desktop: { w, h },
                 },
               } = brick;
+
+              // Find center point of dragged element
+              const rect = target.getBoundingClientRect();
+              const centerX = rect.left + rect.width / 2;
+              const centerY = rect.top + rect.height / 2;
+
+              const elementsAtPoint = document.elementsFromPoint(event.clientX, event.clientY);
+              const targetBrick = elementsAtPoint.find((el) => {
+                return (
+                  (el as HTMLElement).dataset.brickType &&
+                  (!(el as HTMLElement).closest('[data-brick-type="container"]') ||
+                    (el as HTMLElement).dataset.brickType === "container") &&
+                  el.id !== brick.id
+                );
+              }) as HTMLElement | undefined;
+
+              if (targetBrick && currentSwapTarget.current !== targetBrick && dragStartPosition.current) {
+                console.log("swapping with", targetBrick);
+
+                // Reset previous swap if exists
+                // Reset previous swap target if exists
+                if (currentSwapTarget.current) {
+                  currentSwapTarget.current.style.transform = "none";
+                  currentSwapTarget.current.style.transition = "transform 0.2s";
+                }
+
+                // Calculate the offset between the two elements
+                const rect2 = targetBrick.getBoundingClientRect();
+                const dx = dragStartPosition.current.x - rect2.left;
+                const dy = dragStartPosition.current.y - rect2.top;
+
+                // Move the target brick to the dragged brick's position
+                targetBrick.style.transition = "transform 0.2s";
+                targetBrick.style.transform = `translate(${dx}px, ${dy}px)`;
+
+                console.log("transforming target", `translate(${dx}px, ${dy}px)`, targetBrick);
+
+                currentSwapTarget.current = targetBrick;
+              }
 
               const gridPosition = getGridPosition(target, gridConfig);
               // we fire the callback for the main element only
