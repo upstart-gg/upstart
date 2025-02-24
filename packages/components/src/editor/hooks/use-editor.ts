@@ -21,6 +21,7 @@ export interface EditorStateProps {
    * It is used when the user is not logged in yet or does not have an account yet
    */
   mode: "local" | "remote";
+  debugMode?: boolean;
   // pageConfig: GenericPageConfig;
   previewMode: ResponsiveMode;
   textEditMode?: "default" | "large";
@@ -76,6 +77,7 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
     onShowLogin: () => {
       console.warn("onShowLogin is not implemented");
     },
+    debugMode: false,
   };
 
   return createStore<EditorState>()(
@@ -194,6 +196,7 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                       "seenTours",
                       "disableTours",
                       "logoLink",
+                      "debugMode",
                     ].includes(key),
                 ),
               ),
@@ -266,6 +269,7 @@ export interface DraftState extends DraftStateProps {
   deselectBrick: (brickId?: Brick["id"]) => void;
   getPositionWithinParent: (brickId: Brick["id"]) => number | null;
   canMoveToWithinParent: (brickId: Brick["id"], to: "left" | "right") => boolean;
+  getBrickIndex: (id: string) => number;
 }
 
 /**
@@ -328,6 +332,10 @@ export const createDraftStore = (
               set((state) => {
                 state.bricks = bricks;
               }),
+
+            getBrickIndex: (id) => {
+              return _get().bricks.findIndex((b) => b.id === id);
+            },
 
             setSelectedBrick: (brick) =>
               set((state) => {
@@ -737,6 +745,11 @@ export const useColorAdjustment = () => {
   return useStore(ctx, (state) => state.colorAdjustment);
 };
 
+export const useDebugMode = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => !!state.debugMode);
+};
+
 export const usePanel = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => ({ panel: state.panel, panelPosition: state.panelPosition }));
@@ -833,6 +846,7 @@ export const useDraftHelpers = () => {
     getPositionWithinParent: state.getPositionWithinParent,
     canMoveToWithinParent: state.canMoveToWithinParent,
     moveBrickToParent: state.moveBrickToParent,
+    getBrickIndex: state.getBrickIndex,
   }));
 };
 

@@ -7,6 +7,7 @@ import {
   useBricks,
   useDraft,
   useDraftHelpers,
+  useDraftStoreContext,
   useEditorHelpers,
   usePreviewMode,
   useSelectedBrick,
@@ -25,6 +26,7 @@ import {
   getBrickAtPosition,
   getBricksOverlap,
   getDropOverGhostPosition,
+  getNeededBricksAdjustments,
 } from "~/shared/utils/layout-utils";
 import { useFontWatcher } from "../hooks/use-font-watcher";
 
@@ -40,6 +42,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const editorHelpers = useEditorHelpers();
   const draftHelpers = useDraftHelpers();
   const selectedBrick = useSelectedBrick();
+  const draftStore = useDraftStoreContext();
   const draft = useDraft();
   const pageRef = useRef<HTMLDivElement>(null);
   const attributes = useAttributes();
@@ -101,6 +104,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         });
         // console.log("%o", dropOverPos);
         updateDragOverGhostStyle(dropOverPos);
+
         // editorHelpers.setCollidingBrick(dropOverPos.collision);
       },
 
@@ -125,22 +129,29 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         // }
 
         const dropOverBrick = getBrickAtPosition(gridPos.x, gridPos.y, draft.bricks, previewMode);
-        const overlap = dropOverBrick ? getBricksOverlap(brick, gridPos, dropOverBrick) : null;
+        const isSameBrick = dropOverBrick?.id === brick.id;
+        const overlap =
+          !isSameBrick && dropOverBrick ? getBricksOverlap(brick, gridPos, dropOverBrick) : null;
         console.debug("onDragEnd (%s)", brick.id, { brick, dropOverBrick, overlap });
 
         if (dropOverBrick?.isContainer && overlap !== null && overlap >= 0.2) {
           console.debug("Moving %s to parent %s", brick.id, dropOverBrick.id);
           draftHelpers.moveBrickToParent(brick.id, dropOverBrick.id);
-        } else if (collisions.length) {
-          console.warn("Collisions detected, cancelling drop");
+          // } else if (collisions.length) {
+          //   console.warn("Collisions detected, cancelling drop");
         } else {
           console.debug("Updating position of %s", brick.id);
+          console.log("bricks before", draft.bricks);
           draft.updateBrickPosition(brick.id, previewMode, {
             ...draft.getBrick(brick.id)!.position[previewMode],
             x: gridPos.x,
             y: gridPos.y,
           });
+          console.log("bricks after", draftStore.getState().bricks);
         }
+
+        // Reorganize all bricks so there is no overlap
+        const draftState = draftStore.getState();
 
         // reset the selected group
         editorHelpers.setSelectedGroup();
@@ -148,6 +159,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     },
     dropCallbacks: {
       onDropMove(event, gridPosition, brick) {
+        console.log("drop move", gridPosition, brick);
         const canDrop = canDropOnLayout(draft.bricks, previewMode, gridPosition, brick.constraints, false);
         updateDragOverGhostStyle(canDrop);
       },
@@ -194,8 +206,10 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         console.debug("onResizeEnd (%s)", previewMode, brickId, gridPos);
 
         updateDragOverGhostStyle(false);
-        const adjustedHeight = shouldAdjustBrickHeightBecauseOverflow(brickId);
 
+        // Check if the brick should adjust its height because of overflow
+        const adjustedHeight = shouldAdjustBrickHeightBecauseOverflow(brickId);
+        // Update the brick position (and height if needed)
         draft.updateBrickPosition(brickId, previewMode, {
           ...draft.getBrick(brickId)!.position[previewMode],
           w: gridPos.w,
@@ -205,6 +219,10 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           // so that the system knows that the height is not automatic
           ...(previewMode === "mobile" ? { manualHeight: gridPos.h } : {}),
         });
+
+        // Reorganize all bricks so there is no overlap
+        // const adjustments = getNeededBricksAdjustments(draft.bricks);
+        // console.log("needed adjustments", adjustments);
 
         // try to automatically adjust the mobile layout when resizing from desktop
         if (previewMode === "desktop") {
@@ -263,7 +281,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         !target.matches(".brick") &&
         !target.closest(".brick")
       ) {
-        console.debug("click out, hidding", event.target);
+        console.debug("click out, hidding", event, event.target);
         draftHelpers.deselectBrick();
         // also deselect the library panel
         editorHelpers.hidePanel("library");
@@ -271,9 +289,9 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         editorHelpers.setTextEditMode("default");
       }
     };
-    document.addEventListener("click", listener, false);
+    document.addEventListener("click", listener, true);
     return () => {
-      document.removeEventListener("click", listener, false);
+      document.removeEventListener("click", listener, true);
     };
   }, []);
 

@@ -1,38 +1,24 @@
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import {
   forwardRef,
-  memo,
   type PropsWithChildren,
   useRef,
   useState,
   type ComponentProps,
   type MouseEvent,
-  type ReactNode,
 } from "react";
 import { tx } from "@upstart.gg/style-system/twind";
 import {
+  useDebugMode,
   useDraft,
   useDraftHelpers,
   useEditorHelpers,
-  usePreviewMode,
   useSelectedBrick,
 } from "../hooks/use-editor";
 import { DropdownMenu, ContextMenu, IconButton, Portal } from "@upstart.gg/style-system/system";
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import BaseBrick from "~/shared/components/BaseBrick";
 import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
-
-// const MemoBrickComponent = memo(BaseBrick, (prevProps, nextProps) => {
-//   const compared = isEqualWith(prevProps, nextProps, (objValue, othValue, key, _, __) => {
-//     if (key === "content") {
-//       // If the key is in our ignore list, consider it equal
-//       return true;
-//     }
-//     // Otherwise, use the default comparison
-//     return undefined;
-//   });
-//   return compared;
-// });
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -44,6 +30,7 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
   ({ brick, style, children, isContainerChild, index }, ref) => {
     const hasMouseMoved = useRef(false);
     const selectedBrick = useSelectedBrick();
+    const debugMode = useDebugMode();
     const wrapperClass = useBrickWrapperStyle({
       props: brick.props,
       mobileProps: brick.mobileProps,
@@ -95,6 +82,7 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           }}
         >
           <BaseBrick brick={brick} id={brick.id} editable />
+          {debugMode && <BrickDebugLabel brick={brick} />}
           {/* {brick.isContainer && <ContainerLabel brick={brick} />} */}
           {/* {brick.isContainer ? (
           <ContainerLabel brick={brick} />
@@ -107,6 +95,17 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     );
   },
 );
+
+function BrickDebugLabel({ brick }: { brick: Brick }) {
+  if (brick.isContainer) {
+    return null;
+  }
+  return (
+    <div className="absolute bottom-0 right-0 bg-white/50 text-black text-[10px] font-mono py-0.5 px-1.5 rounded">
+      {brick.id}
+    </div>
+  );
+}
 
 function ContainerLabel({ brick }: { brick: Brick }) {
   const draftHelpers = useDraftHelpers();

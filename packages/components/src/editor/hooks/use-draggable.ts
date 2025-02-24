@@ -503,9 +503,11 @@ export const useEditablePage = (
           },
         })
         .on("dropactivate", function (event: Interact.DropEvent) {
+          console.debug("dropactivate", event);
           dropCallbacks.onDropActivate?.(event);
         })
         .on("dropdeactivate", function (event: Interact.DropEvent) {
+          console.debug("dropdeactivate", event);
           dropCallbacks.onDropDeactivate?.(event);
         })
         .on("dropmove", function (event: Interact.DropEvent) {

@@ -57,12 +57,14 @@ export function EditorWrapper({
   onShowLogin,
   onReady = () => {},
 }: PropsWithChildren<EditorWrapperProps>) {
+  const debugMode = new URLSearchParams(window.location.search).has("debug");
   const editorStore = useRef(
     createEditorStore({
       mode,
       seenTours,
       onShowLogin,
       disableTours,
+      debugMode,
       panel: (new URL(self.location.href).searchParams.get("panel") as EditorState["panel"]) ?? undefined,
     }),
   ).current;

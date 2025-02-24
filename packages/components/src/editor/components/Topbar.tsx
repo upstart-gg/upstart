@@ -162,9 +162,7 @@ export default function TopBar({ showIntro }: TopBarProps) {
 
         <button
           disabled={!canUndo}
-          onClick={() => {
-            undo();
-          }}
+          onClick={() => undo()}
           type="button"
           className={tx(btnClass, commonCls, squareBtn, "ml-auto")}
         >
@@ -225,6 +223,15 @@ export default function TopBar({ showIntro }: TopBarProps) {
         )}
 
         <div className={tx("flex-1", "border-x border-l-upstart-400 border-r-upstart-700", baseCls)} />
+
+        <button
+          type="button"
+          className={tx(btnClass, commonCls, "text-base px-8")}
+          onClick={switchPreviewMode}
+        >
+          Preview
+          <span className={tx(tooltipCls)}>Preview</span>
+        </button>
 
         {editorMode === "remote" && (
           <div className={tx(btnClass, baseCls, "border-x border-l-upstart-400 border-r-upstart-700 px-8")}>

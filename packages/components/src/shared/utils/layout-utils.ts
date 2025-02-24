@@ -25,7 +25,8 @@ function getIdealHeight(element: HTMLElement) {
 }
 
 /**
- * Returns the new height of the brick based on its content or false if it should not be adjusted
+ * Returns the new height (in rows unit) of the brick based on if it's overflowing
+ * or false if it should not be adjusted
  */
 export function shouldAdjustBrickHeightBecauseOverflow(brickId: string) {
   const element = document.getElementById(brickId);
@@ -33,6 +34,38 @@ export function shouldAdjustBrickHeightBecauseOverflow(brickId: string) {
     return getIdealHeight(element);
   }
   return false;
+}
+
+/**
+ * This will adjust the height of all bricks that are overflowing
+ * and also adjuts the position (brick.position.desktop.y) so that the bricks does not overlap
+ */
+export function getNeededBricksAdjustments(bricks: Brick[]) {
+  let minRow = 0;
+  const adjustedBricks: { id: string; h?: number; y?: number }[] = [];
+  bricks.forEach((brick) => {
+    const newBrick = Object.assign({}, { ...brick });
+    // Need height adjustment?
+    const newHeight = shouldAdjustBrickHeightBecauseOverflow(brick.id);
+    if (newHeight) {
+      console.debug("Brick %s (%s) needs height adjustment to %d", brick.id, brick.type, newHeight);
+      adjustedBricks.push({ id: brick.id, h: newHeight });
+    }
+    // need to adjust the position?
+    if (newBrick.position.desktop.y < minRow && detectCollisions({ brick, bricks }).length > 0) {
+      console.debug(
+        "Brick %s (%s) needs position adjustment to %d (%d < %d)",
+        brick.id,
+        brick.type,
+        minRow,
+        newBrick.position.desktop.y,
+        minRow,
+      );
+      adjustedBricks.push({ id: brick.id, y: minRow });
+    }
+    minRow = Math.max(newBrick.position.desktop.y + newBrick.position.desktop.h, minRow);
+  });
+  return adjustedBricks;
 }
 
 /**
@@ -206,7 +239,7 @@ type GetDropOverGhostPositionParams = {
   /**
    * The current breakpoint ("mobile" | "desktop")
    */
-  currentBp: ResponsiveMode;
+  currentBp?: ResponsiveMode;
   /**
    * The drop position (column-based)
    */
@@ -285,10 +318,19 @@ function canTakeFullSpace(
   });
 }
 
-export function detectCollisions({ brick, bricks, currentBp, dropPosition }: GetDropOverGhostPositionParams) {
+type DetectCollisionsParams = Omit<GetDropOverGhostPositionParams, "dropPosition"> & {
+  dropPosition?: { x: number; y: number };
+};
+
+export function detectCollisions({
+  brick,
+  bricks,
+  currentBp = "desktop",
+  dropPosition,
+}: DetectCollisionsParams) {
   const draggedRect = {
-    x: dropPosition.x,
-    y: dropPosition.y,
+    x: dropPosition?.x ?? brick.position[currentBp].x,
+    y: dropPosition?.y ?? brick.position[currentBp].y,
     w: brick.position[currentBp].w,
     h: brick.position[currentBp].h,
   };
@@ -315,7 +357,7 @@ export function detectCollisions({ brick, bricks, currentBp, dropPosition }: Get
 export function getDropOverGhostPosition({
   brick,
   bricks,
-  currentBp,
+  currentBp = "desktop",
   dropPosition,
 }: GetDropOverGhostPositionParams) {
   const draggedRect = {
