@@ -108,7 +108,8 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         // editorHelpers.setCollidingBrick(dropOverPos.collision);
       },
 
-      onDragEnd: (brick, pos, gridPos) => {
+      onDragEnd: (brick, pos, gridPos, updatedPositions) => {
+        console.log({ updatedPositions });
         updateDragOverGhostStyle(false);
 
         const collisions = detectCollisions({
@@ -134,20 +135,28 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           !isSameBrick && dropOverBrick ? getBricksOverlap(brick, gridPos, dropOverBrick) : null;
         console.debug("onDragEnd (%s)", brick.id, { brick, dropOverBrick, overlap });
 
-        if (dropOverBrick?.isContainer && overlap !== null && overlap >= 0.2) {
-          console.debug("Moving %s to parent %s", brick.id, dropOverBrick.id);
-          draftHelpers.moveBrickToParent(brick.id, dropOverBrick.id);
-          // } else if (collisions.length) {
-          //   console.warn("Collisions detected, cancelling drop");
-        } else {
-          console.debug("Updating position of %s", brick.id);
-          console.log("bricks before", draft.bricks);
-          draft.updateBrickPosition(brick.id, previewMode, {
-            ...draft.getBrick(brick.id)!.position[previewMode],
-            x: gridPos.x,
-            y: gridPos.y,
-          });
-          console.log("bricks after", draftStore.getState().bricks);
+        // if (dropOverBrick?.isContainer && overlap !== null && overlap >= 0.2) {
+        //   console.debug("Moving %s to parent %s", brick.id, dropOverBrick.id);
+        //   draftHelpers.moveBrickToParent(brick.id, dropOverBrick.id);
+        // } else {
+        //   console.debug("Updating position of %s", brick.id);
+        //   console.log("bricks before", draft.bricks);
+        //   draft.updateBrickPosition(brick.id, previewMode, {
+        //     ...draft.getBrick(brick.id)!.position[previewMode],
+        //     x: gridPos.x,
+        //     y: gridPos.y,
+        //   });
+        //   console.log("bricks after", draftStore.getState().bricks);
+        // }
+
+        if (updatedPositions) {
+          for (const [brickId, position] of Object.entries(updatedPositions)) {
+            draft.updateBrickPosition(brickId, previewMode, {
+              ...draft.getBrick(brickId)!.position[previewMode],
+              x: position.x,
+              y: position.y,
+            });
+          }
         }
 
         // Reorganize all bricks so there is no overlap
@@ -382,7 +391,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           ))}
         <div
           ref={dragOverRef}
-          className={tx("drop-indicator bg-upstart-50 rounded transition-all opacity-0 hidden")}
+          className={tx("drop-indicator bg-upstart-50 rounded transition-all duration-200 opacity-0 hidden")}
         />
       </div>
       <Selecto

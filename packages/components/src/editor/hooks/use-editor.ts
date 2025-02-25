@@ -440,7 +440,7 @@ export const createDraftStore = (
                 const brick = getBrick(id, state.bricks);
                 if (brick) {
                   if (isMobileProps) {
-                    brick.mobileProps = { ...brick.mobileProps, ...props, lastTouched: Date.now() };
+                    brick.mobileOverride = { ...brick.mobileOverride, ...props, lastTouched: Date.now() };
                   } else {
                     brick.props = { ...brick.props, ...props, lastTouched: Date.now() };
                   }
@@ -674,12 +674,12 @@ export const createDraftStore = (
                 ([key]) => !["previewTheme", "attributes", "lastSaved", "selectedBrick"].includes(key),
               ),
             ) as DraftState,
-          handleSet: (handleSet) =>
-            debounce<typeof handleSet>((state) => {
-              if (state) {
-                handleSet(state);
-              }
-            }, 200),
+          // handleSet: (handleSet) =>
+          //   debounce<typeof handleSet>((state) => {
+          //     if (state) {
+          //       handleSet(state);
+          //     }
+          //   }, 200),
         },
       ),
     ),

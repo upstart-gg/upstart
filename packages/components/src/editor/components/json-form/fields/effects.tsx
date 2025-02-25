@@ -45,6 +45,29 @@ export const EffectsField: React.FC<FieldProps<EffectsSettings>> = (props) => {
             </Select.Content>
           </Select.Root>
         </div>
+        {/* text-shadow */}
+        <div className="flex flex-col gap-1 flex-1">
+          <label className={fieldLabel}>Text Shadow</label>
+          <Select.Root
+            defaultValue={currentValue.textShadow}
+            size="2"
+            onValueChange={(value) =>
+              onChange({ ...currentValue, textShadow: value as EffectsSettings["textShadow"] })
+            }
+          >
+            <Select.Trigger radius="large" variant="ghost" />
+            <Select.Content position="popper">
+              <Select.Group>
+                {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
+                {schema.properties.textShadow.anyOf.map((item: any) => (
+                  <Select.Item key={item.const} value={item.const}>
+                    {item.title}
+                  </Select.Item>
+                ))}
+              </Select.Group>
+            </Select.Content>
+          </Select.Root>
+        </div>
         {/* border style */}
         <div className="flex flex-col gap-1 flex-1 place-items-start">
           <label className={fieldLabel}>

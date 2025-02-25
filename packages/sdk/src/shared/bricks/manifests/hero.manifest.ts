@@ -8,9 +8,8 @@ import {
   border,
   background,
   getTextShadowSchema,
-  alignFlex,
-  alignFlexProps,
   alignBasicProps,
+  effects,
 } from "../props/style-props";
 
 const heroProps = Type.Object(
@@ -30,18 +29,14 @@ const heroProps = Type.Object(
         "ui:group:title": "Display",
         "ui:group:order": 0,
         "ui:display": "button-group",
+        "ui:responsive": true,
       },
     ),
-    textShadow: getTextShadowSchema({
-      "ui:group": "hero",
-      "ui:group:title": "Display",
-    }),
   },
   {
     title: "Display",
     default: {
       heroSize: "hero-size-lg",
-      textShadow: "text-shadow-md",
     },
   },
 );
@@ -79,7 +74,7 @@ export const manifest = defineBrickManifest({
     alignBasicProps,
     contentAwareHeroProps,
     commonProps,
-    Type.Object({ layout, border, background }),
+    Type.Object({ layout, border, background, effects }),
   ]),
 });
 

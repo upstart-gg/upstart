@@ -15,9 +15,10 @@ import { getFormComponents, FormRenderer } from "./json-form/form";
 import { IoCloseOutline } from "react-icons/io5";
 import type { JSONSchemaType } from "@upstart.gg/sdk/shared/attributes";
 import { useLocalStorage } from "usehooks-ts";
+import merge from "lodash-es/merge";
 import { BsStars } from "react-icons/bs";
 import PresetsView from "./PresetsView";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 export default function Inspector() {
   const brick = useSelectedBrick();
@@ -177,41 +178,37 @@ export default function Inspector() {
 }
 
 function ElementInspector({ brick }: { brick: Brick }) {
-  const draft = useDraft();
+  const { updateBrickProps } = useDraftHelpers();
   const getBrick = useGetBrick();
   const brickInfo = getBrick(brick.id);
   const previewMode = usePreviewMode();
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: draft.updateBrickProps is a stable function
+  useEffect(() => {
+    console.log("prveiw mode changed", previewMode);
+  }, [previewMode]);
+
   const onChange = useCallback(
     (data: Record<string, unknown>, propertyChanged: string) => {
       if (!propertyChanged) {
         // ignore changes unrelated to the brick
         return;
       }
-      draft.updateBrickProps(brick.id, data, previewMode === "mobile");
+      updateBrickProps(brick.id, data, previewMode === "mobile");
     },
-    [brick.id],
+    [brick.id, previewMode, updateBrickProps],
   );
 
   const manifest = useMemo(() => manifests[brick.type], [brick.type]);
-
-  const elements = useMemo(
-    () =>
-      brickInfo
-        ? getFormComponents({
-            brickId: brick.id,
-            formSchema: manifest.properties.props as unknown as JSONSchemaType<unknown>,
-            formData: brickInfo.props,
-            mobileFormData: previewMode === "mobile" ? brickInfo.mobileProps : undefined,
-            filter: (prop) => {
-              return previewMode !== "mobile" || prop["ui:responsive"];
-            },
-            onChange,
-          })
-        : null,
-    [manifest, onChange, brick.id, brickInfo, previewMode],
-  );
+  const formData = useMemo(() => {
+    if (previewMode === "mobile") {
+      console.log("formData mobile", brickInfo?.mobileOverride);
+    } else {
+      console.log("formData desktop", brickInfo?.props);
+    }
+    return previewMode === "mobile"
+      ? merge({}, brickInfo?.props, brickInfo?.mobileOverride)
+      : brickInfo?.props ?? {};
+  }, [brickInfo, previewMode]);
 
   if (!brickInfo) {
     console.log("No brick info found for brick: %s", brick.id);
@@ -223,13 +220,25 @@ function ElementInspector({ brick }: { brick: Brick }) {
     return null;
   }
 
-  if (!elements) {
-    return null;
-  }
+  // if (!elements) {
+  //   return null;
+  // }
 
   return (
     <form className={tx("px-3 flex flex-col gap-3")}>
-      <FormRenderer components={elements} brickId={brick.id} />
+      <FormRenderer
+        components={getFormComponents({
+          brickId: brick.id,
+          formSchema: manifest.properties.props as unknown as JSONSchemaType<unknown>,
+          formData,
+          filter: (prop) => {
+            return previewMode !== "mobile" || prop["ui:responsive"];
+          },
+          onChange,
+        })}
+        previewMode={previewMode}
+        brickId={brick.id}
+      />
     </form>
   );
 }

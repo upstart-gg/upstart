@@ -29,7 +29,12 @@ const BaseBrick = ({
 
   return (
     <Suspense>
-      <BrickModule {...brick.props} {...otherProps} editable={editable} />
+      <BrickModule
+        {...brick.props}
+        {...otherProps}
+        mobileOverride={brick.mobileOverride}
+        editable={editable}
+      />
     </Suspense>
   );
 };

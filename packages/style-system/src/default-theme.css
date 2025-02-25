@@ -14,11 +14,6 @@
     --l-threshold: 0.7;
     --l: clamp(0, (var(--l-threshold) / l - 1) * infinity, 1);
 
-    --font-size-hero-1: clamp(2rem, 9vw, 3.5rem);
-    --font-size-hero-2: clamp(3rem, 9vw, 5rem);
-    --font-size-hero-3: clamp(4rem, 9vw, 7rem);
-    --font-size-hero-4: clamp(5rem, 9vw, 9rem);
-    --font-size-hero-5: clamp(6rem, 9vw, 11rem);
   }
 
   :root {

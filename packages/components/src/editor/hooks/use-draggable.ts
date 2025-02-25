@@ -9,9 +9,6 @@ import type { BrickConstraints } from "@upstart.gg/sdk/shared/brick-manifest";
 import { defaults } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
-// import type { Interaction } from '@interactjs/core';
-// import type { ActionMap } from '@interactjs/core/types';
-
 interface DragCallbacks {
   onDragMove?: (
     brick: Brick,
@@ -23,6 +20,7 @@ interface DragCallbacks {
     brick: Brick,
     position: { x: number; y: number },
     gridPosition: { x: number; y: number },
+    updatedPositions: Record<string, { x: number; y: number }> | undefined, // Added parameter
     event: Interact.InteractEvent,
   ) => void;
   onDragStart?: (
@@ -250,6 +248,8 @@ export const useEditablePage = (
   const draggedBrick = useRef<string | null>(null);
   const dragStartPosition = useRef<{ x: number; y: number } | null>(null);
   const currentSwapTarget = useRef<HTMLElement | null>(null);
+  // final bricks position after move
+  const swappedBricks = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     interactable.current = interact(bricksSelectorOrRef, {
@@ -313,6 +313,7 @@ export const useEditablePage = (
             target.style.zIndex = "1000";
 
             draggedBrick.current = target.id;
+            swappedBricks.current = new Set();
 
             const rect = target.getBoundingClientRect();
 
@@ -353,74 +354,169 @@ export const useEditablePage = (
 
             const brick = getBrick(target.id);
 
-            if (brick) {
-              const {
-                position: {
-                  desktop: { w, h },
-                },
-              } = brick;
+            if (brick && dragStartPosition.current) {
+              const currentRect = target.getBoundingClientRect();
 
-              // Find center point of dragged element
-              const rect = target.getBoundingClientRect();
-              const centerX = rect.left + rect.width / 2;
-              const centerY = rect.top + rect.height / 2;
+              // Calculate distance from original position
+              const dx = Math.abs(currentRect.left - dragStartPosition.current.x);
+              const dy = Math.abs(currentRect.top - dragStartPosition.current.y);
 
-              const elementsAtPoint = document.elementsFromPoint(event.clientX, event.clientY);
-              const targetBrick = elementsAtPoint.find((el) => {
-                return (
-                  (el as HTMLElement).dataset.brickType &&
-                  (!(el as HTMLElement).closest('[data-brick-type="container"]') ||
-                    (el as HTMLElement).dataset.brickType === "container") &&
-                  el.id !== brick.id
-                );
-              }) as HTMLElement | undefined;
+              // Convert to a 0-1 value where 1 means we're at the original position
+              // and 0 means we're far away (using brick dimensions as reference)
+              const overlapWithOriginal = Math.max(
+                0,
+                1 - Math.max(dx / currentRect.width, dy / currentRect.height),
+              );
 
-              if (targetBrick && currentSwapTarget.current !== targetBrick && dragStartPosition.current) {
-                console.log("swapping with", targetBrick);
-
-                // Reset previous swap if exists
-                // Reset previous swap target if exists
+              if (overlapWithOriginal > 0.5) {
                 if (currentSwapTarget.current) {
-                  currentSwapTarget.current.style.transform = "none";
-                  currentSwapTarget.current.style.transition = "transform 0.2s";
+                  Object.assign(currentSwapTarget.current.style, {
+                    transform: "none",
+                    transition: "transform 0.2s",
+                  });
+                  currentSwapTarget.current = null;
                 }
+              } else {
+                // Get all bricks on the page
+                const allBricks = Array.from(document.querySelectorAll("[data-brick-type]")).filter(
+                  (el): el is HTMLElement =>
+                    el instanceof HTMLElement &&
+                    el.id !== brick.id &&
+                    (!el.closest('[data-brick-type="container"]') || el.dataset.brickType === "container"),
+                );
 
-                // Calculate the offset between the two elements
-                const rect2 = targetBrick.getBoundingClientRect();
-                const dx = dragStartPosition.current.x - rect2.left;
-                const dy = dragStartPosition.current.y - rect2.top;
+                let bestTarget: HTMLElement | undefined = undefined;
+                let maxOverlap = 0;
 
-                // Move the target brick to the dragged brick's position
-                targetBrick.style.transition = "transform 0.2s";
-                targetBrick.style.transform = `translate(${dx}px, ${dy}px)`;
+                // Check each brick for overlap with the dragged brick
+                allBricks.forEach((targetBrick) => {
+                  const targetRect = targetBrick.getBoundingClientRect();
 
-                console.log("transforming target", `translate(${dx}px, ${dy}px)`, targetBrick);
+                  // Calculate overlap area with target brick
+                  const overlapX = Math.max(
+                    0,
+                    Math.min(currentRect.right, targetRect.right) -
+                      Math.max(currentRect.left, targetRect.left),
+                  );
+                  const overlapY = Math.max(
+                    0,
+                    Math.min(currentRect.bottom, targetRect.bottom) -
+                      Math.max(currentRect.top, targetRect.top),
+                  );
 
-                currentSwapTarget.current = targetBrick;
+                  // Calculate overlap as percentage of the smaller brick's area
+                  const targetArea = targetRect.width * targetRect.height;
+                  const currentArea = currentRect.width * currentRect.height;
+                  const minArea = Math.min(targetArea, currentArea);
+                  const overlapArea = (overlapX * overlapY) / minArea;
+
+                  if (overlapArea > maxOverlap) {
+                    maxOverlap = overlapArea;
+                    bestTarget = targetBrick;
+                  }
+                });
+
+                // Only swap if overlap is more than threshold (10%)
+                if (
+                  typeof bestTarget === "object" &&
+                  maxOverlap > 0.1 &&
+                  currentSwapTarget.current !== bestTarget
+                ) {
+                  // Reset previous swap if exists
+                  if (currentSwapTarget.current) {
+                    Object.assign(currentSwapTarget.current.style, {
+                      transform: "none",
+                      transition: "transform 0.2s",
+                    });
+
+                    // Remove the previous target from our tracking set if we're swapping with a different brick
+                    if (currentSwapTarget.current !== bestTarget) {
+                      swappedBricks.current.delete(currentSwapTarget.current.id);
+                    }
+                  }
+
+                  // Add both the dragged brick and the target to our tracking set
+                  swappedBricks.current.add(target.id);
+                  swappedBricks.current.add((bestTarget as HTMLElement).id);
+
+                  const rect2 = (bestTarget as HTMLElement).getBoundingClientRect();
+                  const dx = dragStartPosition.current.x - rect2.left;
+                  const dy = dragStartPosition.current.y - rect2.top;
+
+                  Object.assign((bestTarget as HTMLElement).style, {
+                    transform: `translate(${dx}px, ${dy}px)`,
+                    transition: "transform 0.2s",
+                  });
+
+                  currentSwapTarget.current = bestTarget;
+
+                  // Add the new target to our tracking set
+                  swappedBricks.current.add((bestTarget as HTMLElement).id);
+                }
               }
 
               const gridPosition = getGridPosition(target, gridConfig);
-              // we fire the callback for the main element only
               dragCallbacks.onDragMove?.(brick, getPosition(target, event), gridPosition, event);
-            } else {
-              console.log("cannot determine type of brick event.target", event.target);
             }
           },
           end: (event: Interact.InteractEvent) => {
             const target = event.target as HTMLElement;
             target.classList.remove("moving");
+
+            // Only proceed with collecting positions if we actually had a swap
+            // (meaning we have at least 2 bricks in our set)
+            const updatedPositions: Record<string, { x: number; y: number }> = {};
+
+            if (swappedBricks.current.size >= 2) {
+              console.log("swap happened");
+              // Process all swapped bricks
+              swappedBricks.current.forEach((brickId) => {
+                const element = getBrickRef(brickId);
+                if (!element) return;
+
+                const brick = getBrick(brickId);
+                if (!brick) return;
+
+                // Get the final grid position
+                const gridPosition = getGridPosition(element, gridConfig);
+                updatedPositions[brickId] = gridPosition;
+
+                // Reset transform
+                element.style.transform = "none";
+                element.style.transition = "none";
+                element.dataset.x = "0";
+                element.dataset.y = "0";
+              });
+            } else {
+              // No actual swap happened, just get the position of the dragged brick
+              console.log("No swap happened");
+              updatedPositions[target.id] = getGridPosition(target, gridConfig);
+            }
+
             const elements = selectedGroup ? selectedGroup.map(getBrickRef) : [target];
             elements.forEach((element) => {
               if (!element) return;
+              console.log("reset element", element.id);
               const brick = getBrick(element.id);
               if (!brick) return;
               const position = getPosition(element, event);
               const gridPosition = getGridPosition(element, gridConfig);
-              element.style.transform = "";
+              element.style.transform = "none";
+              element.style.transition = "none";
               element.dataset.x = "0";
               element.dataset.y = "0";
-              dragCallbacks.onDragEnd?.(brick, position, gridPosition, event);
+              dragCallbacks.onDragEnd?.(brick, position, gridPosition, updatedPositions, event);
             });
+
+            // Reset swap state
+            if (currentSwapTarget.current) {
+              currentSwapTarget.current.style.transition = "none";
+              currentSwapTarget.current.style.transform = "none";
+            }
+            draggedBrick.current = null;
+            dragStartPosition.current = null;
+            currentSwapTarget.current = null;
+            swappedBricks.current.clear();
           },
         },
         ...dragOptions,

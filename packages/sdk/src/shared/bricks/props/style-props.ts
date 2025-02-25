@@ -166,30 +166,6 @@ export const layout = Type.Object(
       Type.Union([Type.Literal("fixed", { title: "Fixed" }), Type.Literal("auto", { title: "Auto" })]),
     ),
     padding: Type.Optional(padding),
-    // verticalAlign: Type.Optional(
-    //   Type.Union(
-    //     [
-    //       Type.Literal("start", { title: "Top" }),
-    //       Type.Literal("center", { title: "Middle" }),
-    //       Type.Literal("end", { title: "Bottom" }),
-    //     ],
-    //     {
-    //       title: "Vertical align",
-    //     },
-    //   ),
-    // ),
-    // horizontalAlign: Type.Optional(
-    //   Type.Union(
-    //     [
-    //       Type.Literal("start", { title: "Top" }),
-    //       Type.Literal("center", { title: "Middle" }),
-    //       Type.Literal("end", { title: "Bottom" }),
-    //     ],
-    //     {
-    //       title: "Horizontal align",
-    //     },
-    //   ),
-    // ),
   },
   {
     title: "Layout",
@@ -334,6 +310,12 @@ export const effects = Type.Optional(
     {
       shadow,
       opacity,
+      textShadow: Type.Optional(
+        getTextShadowSchema({
+          "ui:group": "effects",
+          "ui:group:title": "Effects",
+        }),
+      ),
     },
     {
       title: "Effects",
@@ -342,6 +324,7 @@ export const effects = Type.Optional(
       "ui:group:title": "Effects",
       default: {
         shadow: "shadow-none",
+        textShadow: "shadow-none",
         opacity: 1,
       },
     },
@@ -375,17 +358,48 @@ export const flex = Type.Object(
     gap: Type.Union(
       [
         Type.Literal("gap-0", { title: "None" }),
-        Type.Literal("gap-1", { title: "Small" }),
-        Type.Literal("gap-2", { title: "Medium" }),
-        Type.Literal("gap-4", { title: "Large" }),
-        Type.Literal("gap-8", { title: "Extra large" }),
-        Type.Literal("gap-16", { title: "Extra large (2x)" }),
+        Type.Literal("gap-1", { title: "S" }),
+        Type.Literal("gap-2", { title: "M" }),
+        Type.Literal("gap-4", { title: "L" }),
+        Type.Literal("gap-8", { title: "XL" }),
+        Type.Literal("gap-16", { title: "XXL" }),
       ],
       {
         title: "Gap",
         description: "Space between items",
         "ui:field": "enum",
         "ui:group": "layout",
+      },
+    ),
+    justifyContent: Type.Union(
+      [
+        Type.Literal("justify-start", { title: "Start" }),
+        Type.Literal("justify-center", { title: "Center" }),
+        Type.Literal("justify-end", { title: "End" }),
+        Type.Literal("justify-between", { title: "Space between" }),
+        Type.Literal("justify-around", { title: "Space around" }),
+        Type.Literal("justify-evenly", { title: "Evenly distributed" }),
+        Type.Literal("justify-stretch", { title: "Stretch" }),
+      ],
+      {
+        title: "Justify",
+        "ui:group": "align",
+        "ui:group:title": "Alignment",
+        default: "justify-stretch",
+      },
+    ),
+    alignItems: Type.Union(
+      [
+        Type.Literal("items-start", { title: "Start" }),
+        Type.Literal("items-center", { title: "Center" }),
+        Type.Literal("items-end", { title: "End" }),
+        Type.Literal("items-stretch", { title: "Stretch" }),
+      ],
+      {
+        title: "Alignment",
+        "ui:group": "align",
+        "ui:group:title": "Alignment",
+        default: "items-stretch",
       },
     ),
   },
@@ -397,57 +411,14 @@ export const flex = Type.Object(
       direction: "flex-row",
       gap: "gap-1",
       wrap: "flex-wrap",
+      justifyContent: "justify-stretch",
+      alignItems: "items-stretch",
     },
     ...groupLayout,
   },
 );
 
 export type FlexSettings = Static<typeof flex>;
-
-export const alignFlex = Type.Object(
-  {
-    horizontal: Type.Union(
-      [
-        Type.Literal("start", { title: "Left" }),
-        Type.Literal("center", { title: "Center" }),
-        Type.Literal("end", { title: "Right" }),
-        Type.Literal("between", { title: "Space between" }),
-        Type.Literal("around", { title: "Space around" }),
-        Type.Literal("evenly", { title: "Evenly distributed" }),
-      ],
-      {
-        title: "Horizontal",
-        "ui:group": "align",
-        "ui:group:title": "Alignment",
-        default: "start",
-      },
-    ),
-    vertical: Type.Union(
-      [
-        Type.Literal("start", { title: "Top" }),
-        Type.Literal("center", { title: "Center" }),
-        Type.Literal("end", { title: "Bottom" }),
-        Type.Literal("baseline", { title: "Baseline" }),
-        Type.Literal("stretch", { title: "Stretch" }),
-      ],
-      {
-        title: "Vertical",
-        "ui:group": "align",
-        "ui:group:title": "Alignment",
-        default: "stretch",
-      },
-    ),
-  },
-  {
-    "ui:responsive": true,
-    "ui:field": "align-flex",
-    default: {
-      horizontal: "start",
-      vertical: "stretch",
-    },
-    ...groupAlign,
-  },
-);
 
 export const alignBasic = Type.Object(
   {
@@ -493,12 +464,7 @@ export const alignBasicProps = Type.Object({
   align: alignBasic,
 });
 
-export type AlignFlexSettings = Static<typeof alignFlex>;
 export type AlignBasicSettings = Static<typeof alignBasic>;
-
-export const alignFlexProps = Type.Object({
-  align: alignFlex,
-});
 
 export const flexProps = Type.Object({
   flex,

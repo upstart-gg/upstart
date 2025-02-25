@@ -11,9 +11,9 @@ type BrickWrapperProps = ComponentProps<"div"> & {
 
 const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(({ brick, className }, ref) => {
   const wrapperClass = useBrickWrapperStyle({
-    props: brick.props,
+    brickProps: brick.props,
     position: brick.position,
-    mobileProps: brick.mobileProps,
+    mobileOverride: brick.mobileOverride,
     editable: false,
     className,
   });
@@ -24,5 +24,5 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(({ brick, cla
   );
 });
 
-const BrickWrapperMemo = memo(BrickWrapper);
-export default BrickWrapperMemo;
+// const BrickWrapperMemo = memo(BrickWrapper);
+export default BrickWrapper;

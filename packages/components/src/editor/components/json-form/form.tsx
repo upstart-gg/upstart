@@ -21,14 +21,12 @@ import type {
   EffectsSettings,
   FlexSettings,
   TextSettings,
-  AlignFlexSettings,
   AlignBasicSettings,
 } from "@upstart.gg/sdk/shared/bricks/props/style-props";
 import { EffectsField } from "./fields/effects";
 import type { ImageProps, RichText } from "@upstart.gg/sdk/shared/bricks/props/common";
 import type { Attributes, JSONSchemaType } from "@upstart.gg/sdk/shared/attributes";
 import { PagePaddingField } from "./fields/padding";
-import { AlignFlexField } from "./fields/align-flex";
 import { TextField } from "./fields/text";
 import BackgroundField from "./fields/background";
 import { FlexField } from "./fields/flex";
@@ -41,7 +39,6 @@ type FormComponents = (FormComponent | { group: string; groupTitle: string; comp
 type GetFormComponentsProps = {
   formSchema: JSONSchemaType<unknown>;
   formData: Record<string, unknown>;
-  mobileFormData?: Record<string, unknown>;
   onChange: (data: Record<string, unknown>, id: string) => void;
   onSubmit?: (data: Record<string, unknown>) => void;
   submitButtonLabel?: string;
@@ -51,12 +48,6 @@ type GetFormComponentsProps = {
 };
 /**
  * Render a JSON schema form
- * @param schema the schema
- * @param formData data to prefill the form
- * @param mobileFormData mobile specific data to prefill the form
- * @param onChange callback when the form changes
- * @param submitButtonLabel label for the submit button. If omitted, no submit button will be rendered
- * @param prefix prefix for deep fields
  */
 export function getFormComponents({
   formSchema,
@@ -149,21 +140,6 @@ export function getFormComponents({
               <LayoutField
                 currentValue={currentValue}
                 onChange={(value: LayoutSettings | null) => onChange({ [id]: value }, id)}
-                {...commonProps}
-              />
-            ),
-          };
-        }
-
-        case "align-flex": {
-          const currentValue = (get(formData, id) ?? commonProps.schema.default) as AlignFlexSettings;
-          return {
-            group,
-            groupTitle,
-            component: (
-              <AlignFlexField
-                currentValue={currentValue}
-                onChange={(value: AlignFlexSettings | null) => onChange({ [id]: value }, id)}
                 {...commonProps}
               />
             ),
@@ -415,11 +391,15 @@ export function getFormComponents({
   return elements as FormComponents;
 }
 
-export function FormRenderer({ components, brickId }: { components: FormComponents; brickId: string }) {
+export function FormRenderer({
+  components,
+  brickId,
+  previewMode,
+}: { components: FormComponents; brickId: string; previewMode?: string }) {
   let currentGroup: string | null = null;
   return components.map((element, index) => {
     const node = (
-      <Fragment key={`${brickId}_${index}`}>
+      <Fragment key={`${previewMode}_${brickId}_${index}`}>
         {currentGroup !== element.group && element.groupTitle && (
           <h3
             className={tx(

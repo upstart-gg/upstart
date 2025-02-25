@@ -21,14 +21,14 @@ const Hero = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
       ref={ref}
       {...props}
       content={content}
-      className={tx(props.className, "hero", props.heroSize, props.textShadow)}
+      className={tx(props.className, "hero", props.heroSize)}
     />
   ) : (
     <NonEditableText
       ref={ref}
       {...props}
       content={content}
-      className={tx(props.className, "hero", props.heroSize, props.textShadow)}
+      className={tx(props.className, "hero", props.heroSize)}
     />
   );
 });

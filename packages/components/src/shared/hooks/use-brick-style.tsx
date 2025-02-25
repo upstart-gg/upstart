@@ -1,10 +1,5 @@
 import { tx, apply, css } from "@upstart.gg/style-system/twind";
-import type {
-  commonStyleProps,
-  textStyleProps,
-  flexProps,
-  alignFlexProps,
-} from "@upstart.gg/sdk/bricks/props/style-props";
+import type { commonStyleProps, textStyleProps, flexProps } from "@upstart.gg/sdk/bricks/props/style-props";
 import type { commonProps } from "@upstart.gg/sdk/bricks/props/common";
 import type { Static } from "@sinclair/typebox";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
@@ -14,33 +9,11 @@ import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 type AllStyleProps = Partial<Static<typeof commonStyleProps>> &
   Partial<Static<typeof textStyleProps>> &
   Partial<Static<typeof commonProps>> &
-  Partial<Static<typeof alignFlexProps>> &
   Partial<Static<typeof flexProps>>;
 
-/**
- * The classNames for the brick
- * @param manifest `
- */
-export function useBrickStyle(props: AllStyleProps) {
-  // This is the inner brick style. As the wrapper uses "display: flex",
-  // we use flex-1 to make the inner brick fill the space.
-  return tx("flex-1", [
-    props.className && apply(props.className),
-    props.layout?.padding,
-    props.color ? `text-${props.color}` : null,
-    props.fontSize,
-    props.fontWeight,
-    props.textAlign,
-    props.flex?.direction,
-    props.flex?.wrap,
-    props.flex?.gap ? `${props.flex.gap}` : null,
-    getAlignmentStyle(props),
-  ]);
-}
-
-type UseBrickWrapperStyleProps = {
-  props: AllStyleProps;
-  mobileProps?: AllStyleProps;
+type UseBrickStyleWrapperProps = {
+  brickProps: AllStyleProps;
+  mobileOverride: Partial<AllStyleProps>;
   position: Brick["position"];
   editable: boolean;
   className?: string;
@@ -48,34 +21,65 @@ type UseBrickWrapperStyleProps = {
   selected?: boolean;
 };
 
+type UseBrickStyleProps = AllStyleProps & {
+  mobileOverride: AllStyleProps;
+};
+
+/**
+ * The classNames for the brick
+ * @param manifest `
+ */
+export function useBrickStyle({ mobileOverride, ...props }: UseBrickStyleProps) {
+  // This is the inner brick style. As the wrapper uses "display: flex",
+  // we use flex-1 to make the inner brick fill the space.
+  return tx(apply("flex-1"), [
+    props.className && apply(props.className),
+    props.layout?.padding,
+    props.color ? `text-${props.color}` : null,
+    props.fontSize,
+    props.fontWeight,
+    props.textAlign,
+    // props.flex?.direction,
+    // props.flex?.wrap,
+    // props.flex?.gap ? `${props.flex.gap}` : null,
+    getFlexStyles(props, mobileOverride),
+  ]);
+}
+
 export function useBrickWrapperStyle({
-  props,
+  brickProps,
+  mobileOverride,
   position,
   editable,
   className,
   isContainerChild,
   selected,
-}: UseBrickWrapperStyleProps) {
+}: UseBrickStyleWrapperProps) {
   return tx(
     apply(className),
     // no transition otherwise it will slow down the drag
     "brick group/brick flex relative",
 
-    isContainerChild && "container-child",
+    // container children expand to fill the space
+    isContainerChild && "container-child flex-1",
     editable && selected && "!outline !outline-dashed !outline-orange-200",
     editable &&
       !selected &&
       isContainerChild &&
       "hover:outline !hover:outline-dashed !hover:outline-upstart-400/30",
 
+    // Selected group
+    editable &&
+      css({
+        "&.selected-group": {
+          outline: "2px dotted var(--violet-8) !important",
+        },
+      }),
     // "overflow-hidden",
 
     {
       "select-none hover:z-[9999]": editable,
     },
-
-    // container children expand to fill the space
-    isContainerChild && "flex-1",
 
     // Position of the wrapper
     //
@@ -99,35 +103,28 @@ export function useBrickWrapperStyle({
         ${position.mobile.manualHeight ? `h-[${position.mobile.manualHeight * LAYOUT_ROW_HEIGHT}px]` : ""}
       )`,
 
-    editable &&
-      css({
-        "&.selected-group": {
-          outline: "2px dotted var(--violet-8) !important",
-        },
-      }),
-
     // Border
-    propToStyle(props.border?.color, "borderColor"),
-    props.border?.radius,
-    props.border?.style,
-    props.border?.width,
+    propToStyle(brickProps.border?.color, "borderColor"),
+    brickProps.border?.radius,
+    brickProps.border?.style,
+    brickProps.border?.width,
 
     // Background
-    propToStyle(props.background?.color, "background-color"),
-    props.background?.image &&
+    propToStyle(brickProps.background?.color, "background-color"),
+    brickProps.background?.image &&
       css({
-        backgroundImage: `url(${props.background.image})`,
-        backgroundSize: props.background.size ?? "auto",
-        backgroundRepeat: props.background.repeat ?? "no-repeat",
+        backgroundImage: `url(${brickProps.background.image})`,
+        backgroundSize: brickProps.background.size ?? "auto",
+        backgroundRepeat: brickProps.background.repeat ?? "no-repeat",
       }),
 
     // Opacity
-    propToStyle(props.effects?.opacity, "opacity"),
+    propToStyle(brickProps.effects?.opacity, "opacity"),
 
     // shadow
-    props.effects?.shadow,
+    brickProps.effects?.shadow,
 
-    getAlignmentStyle(props),
+    getFlexStyles(brickProps, mobileOverride),
     // z-index
     // (brick.props.z as string) && `z-[${brick.props.z}]`,
   );
@@ -137,12 +134,28 @@ export function useBrickWrapperStyle({
  * Flexbox handles alignment using a main axis and a cross axis.
  * We want to map the alignment to the flexbox properties.
  */
-function getAlignmentStyle(props: AllStyleProps) {
-  if (!props.align) {
-    return;
+function getFlexStyles(props: AllStyleProps, mobileOverride: Partial<AllStyleProps>) {
+  if (mobileOverride?.flex) {
+    return `@desktop:(
+      ${props.flex?.direction ?? ""}
+      ${props.flex?.justifyContent ?? ""}
+      ${props.flex?.alignItems ?? ""}
+      ${props.flex?.wrap ?? ""}
+      ${props.flex?.gap ?? ""}
+    )
+    @mobile:(
+      ${mobileOverride.flex?.direction ?? props.flex?.direction ?? ""}
+      ${mobileOverride.flex.justifyContent ?? props.flex?.justifyContent ?? ""}
+      ${mobileOverride.flex.alignItems ?? props.flex?.alignItems ?? ""}
+      ${mobileOverride.flex?.wrap ?? props.flex?.wrap ?? ""}
+      ${mobileOverride.flex?.gap ?? props.flex?.gap ?? ""}
+    )`;
   }
-  if (props.flex?.direction === "flex-col") {
-    return `justify-${props.align.vertical} items-${props.align.horizontal}`;
-  }
-  return `justify-${props.align.horizontal} items-${props.align.vertical}`;
+  return [
+    props.flex?.direction,
+    props.flex?.justifyContent,
+    props.flex?.alignItems,
+    props.flex?.wrap,
+    props.flex?.gap,
+  ];
 }

@@ -1,10 +1,6 @@
 import type { FieldProps } from "./types";
 import { Text, Select, Slider } from "@upstart.gg/style-system/system";
-import type {
-  LayoutSettings,
-  AlignFlexSettings,
-  AlignBasicSettings,
-} from "@upstart.gg/sdk/shared/bricks/props/style-props";
+import type { LayoutSettings, AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/style-props";
 import { fieldLabel } from "../form-class";
 import { SegmentedControl } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
@@ -16,7 +12,6 @@ import {
   PiAlignRight,
   PiAlignCenterHorizontal,
 } from "react-icons/pi";
-import { LuAlignHorizontalSpaceBetween } from "react-icons/lu";
 
 export const AlignBasicField: React.FC<FieldProps<AlignBasicSettings>> = (props) => {
   const {

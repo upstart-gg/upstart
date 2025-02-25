@@ -8,6 +8,7 @@ import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 
 const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
   props = { ...Value.Create(manifest).props, ...props };
+
   const className = useBrickStyle(props);
 
   return (

@@ -12,7 +12,9 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
       direction: "flex-row",
       wrap: "flex-nowrap",
       gap: "gap-1",
-    } satisfies FlexSettings,
+      alignItems: "items-stretch",
+      justifyContent: "justify-stretch",
+    } satisfies Partial<FlexSettings>,
     onChange,
     description,
     schema,
@@ -29,7 +31,7 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
       )}
       <div className="flex items-start flex-wrap gap-x-4 gap-y-1">
         {/* Direction */}
-        <div className="flex flex-col gap-1 flex-1">
+        <div className="flex flex-col gap-1 basis-1/2">
           <label className={fieldLabel}>Direction</label>
           <SegmentedControl.Root
             onValueChange={(value) => onSettingsChange({ direction: value as FlexSettings["direction"] })}
@@ -59,7 +61,7 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
             size="2"
             onValueChange={(value) => onSettingsChange({ gap: value as FlexSettings["gap"] })}
           >
-            <Select.Trigger radius="large" variant="ghost" className="!mt-[1px]" />
+            <Select.Trigger radius="large" variant="ghost" className="!mt-px" />
             <Select.Content position="popper">
               <Select.Group>
                 {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
@@ -73,22 +75,37 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
           </Select.Root>
         </div>
 
+        {/* Wrap */}
+        <div className="flex flex-col gap-1 flex-1 basis-1/4">
+          <div className="flex justify-between items-center">
+            <label className={fieldLabel}>Wrap</label>
+            <HelpIcon help="Whether the children bricks should wrap to the next line when they reach the end of the container." />
+          </div>
+          <Switch
+            className="!mt-1"
+            onCheckedChange={(value) => onSettingsChange({ wrap: value ? "flex-wrap" : "flex-nowrap" })}
+            size="2"
+            variant="soft"
+            defaultChecked={currentValue.wrap === "flex-wrap"}
+          />
+        </div>
+
         {/* break */}
-        {/* <div className="basis-full w-0 h-2" /> */}
-        {/*
-        <div className="flex flex-col gap-1 basis-1/3">
-          <label className={fieldLabel}>Horizontal align</label>
+        <div className="basis-full w-0 h-2" />
+
+        <div className="flex flex-col gap-1 flex-1">
+          <label className={fieldLabel}>Justify</label>
           <Select.Root
-            defaultValue={currentValue.horizontalAlign}
+            defaultValue={currentValue.justifyContent}
             size="2"
             onValueChange={(value) =>
-              onSettingsChange({ horizontalAlign: value as FlexSettings["horizontalAlign"] })
+              onSettingsChange({ justifyContent: value as FlexSettings["justifyContent"] })
             }
           >
             <Select.Trigger radius="large" variant="ghost" />
             <Select.Content position="popper">
               <Select.Group>
-                {schema.properties.horizontalAlign.anyOf.map((item: any) => (
+                {schema.properties.justifyContent.anyOf.map((item: any) => (
                   <Select.Item key={item.const} value={item.const}>
                     {item.title}
                   </Select.Item>
@@ -98,23 +115,21 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
           </Select.Root>
         </div>
 
-        <div className="flex flex-col gap-1 basis-1/3">
+        <div className="flex flex-col gap-1 flex-1">
           <div className="flex justify-between items-center">
-            <label className={fieldLabel}>Vertical Align</label>
+            <label className={fieldLabel}>Align items</label>
             <HelpIcon help="Choose how the children should be aligned within the container, on the cross axis." />
           </div>
 
           <Select.Root
-            defaultValue={currentValue.verticalAlign}
+            defaultValue={currentValue.alignItems}
             size="2"
-            onValueChange={(value) =>
-              onSettingsChange({ verticalAlign: value as FlexSettings["verticalAlign"] })
-            }
+            onValueChange={(value) => onSettingsChange({ alignItems: value as FlexSettings["alignItems"] })}
           >
             <Select.Trigger radius="large" variant="ghost" />
             <Select.Content position="popper">
               <Select.Group>
-                {schema.properties.verticalAlign.anyOf.map((item: any) => (
+                {schema.properties.alignItems.anyOf.map((item: any) => (
                   <Select.Item key={item.const} value={item.const}>
                     {item.title}
                   </Select.Item>
@@ -122,20 +137,6 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
               </Select.Group>
             </Select.Content>
           </Select.Root>
-        </div> */}
-
-        {/* Wrap */}
-        <div className="flex flex-col gap-1 flex-1">
-          <div className="flex justify-between items-center">
-            <label className={fieldLabel}>Wrap</label>
-            <HelpIcon help="Whether the children bricks should wrap to the next line when they reach the end of the container." />
-          </div>
-          <Switch
-            onCheckedChange={(value) => onSettingsChange({ wrap: value ? "flex-wrap" : "flex-nowrap" })}
-            size="2"
-            variant="soft"
-            defaultChecked={currentValue.wrap === "flex-wrap"}
-          />
         </div>
       </div>
     </div>
