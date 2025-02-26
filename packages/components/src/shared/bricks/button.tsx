@@ -6,8 +6,6 @@ import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/button
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 
 const Button = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
-  props = { ...Value.Create(manifest).props, ...props };
-
   // if (!content.startsWith("<h")) {
   //   content = `<h1>${content}</h1>`;
   // }

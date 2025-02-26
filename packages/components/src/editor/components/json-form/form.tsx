@@ -24,7 +24,7 @@ import type {
   AlignBasicSettings,
 } from "@upstart.gg/sdk/shared/bricks/props/style-props";
 import { EffectsField } from "./fields/effects";
-import type { ImageProps, RichText } from "@upstart.gg/sdk/shared/bricks/props/common";
+import type { DatasourceSettings, ImageProps, RichText } from "@upstart.gg/sdk/shared/bricks/props/common";
 import type { Attributes, JSONSchemaType } from "@upstart.gg/sdk/shared/attributes";
 import { PagePaddingField } from "./fields/padding";
 import { TextField } from "./fields/text";
@@ -32,6 +32,7 @@ import BackgroundField from "./fields/background";
 import { FlexField } from "./fields/flex";
 import { Text } from "@upstart.gg/style-system/system";
 import { AlignBasicField } from "./fields/align-basic";
+import DatasourceField from "./fields/datasource";
 
 type FormComponent = { group: string; groupTitle: string; component: ReactNode };
 type FormComponents = (FormComponent | { group: string; groupTitle: string; components: FormComponent[] })[];
@@ -170,6 +171,21 @@ export function getFormComponents({
               <TextField
                 currentValue={currentValue}
                 onChange={(value: TextSettings | null) => onChange({ [id]: value }, id)}
+                {...commonProps}
+              />
+            ),
+          };
+        }
+
+        case "datasource": {
+          const currentValue = (get(formData, id) ?? commonProps.schema.default) as DatasourceSettings;
+          return {
+            group,
+            groupTitle,
+            component: (
+              <DatasourceField
+                currentValue={currentValue}
+                onChange={(value: DatasourceSettings | null) => onChange({ [id]: value }, id)}
                 {...commonProps}
               />
             ),

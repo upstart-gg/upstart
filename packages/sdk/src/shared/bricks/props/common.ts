@@ -1,4 +1,4 @@
-import { Type, type Static } from "@sinclair/typebox";
+import { Type, type Static, type TSchema } from "@sinclair/typebox";
 
 export const stylePreset = Type.Object(
   {
@@ -178,27 +178,61 @@ export const imageSettings = Type.Object(imageProps.properties, {
 
 export type ImageSettings = Static<typeof imageSettings>;
 
-export const contentAwareProps = Type.Object(
-  {
-    content: richText,
-  },
-  // {
-  //   default: {
-  //     content: {
-  //       text: "some text here",
-  //     },
-  //   },
-  // },
-);
+export const contentAwareProps = Type.Object({
+  content: richText,
+});
 
 export const contentAwareHeroProps = Type.Object({
   content: richTextHero,
 });
 
-export const container = Type.Object({
-  container: Type.Boolean({
-    description:
-      "True if the component is a container for other components. It is automatically set by the editor, so no need to specify it manually.",
-    default: true,
-  }),
-});
+const datasource = Type.Object(
+  {
+    id: Type.String({
+      title: "Data Source ID",
+      description: "The ID of the data source to fetch data from",
+    }),
+    mapping: Type.Object(
+      {},
+      { additionalProperties: true, description: "Mapping of data source fields to brick props" },
+    ),
+  },
+  {
+    title: "Data source",
+    description: "The data source to fetch data from",
+    "ui:field": "datasource",
+    additionalProperties: true,
+  },
+);
+
+export function getDatasourcesProp<T extends TSchema>(schema: T) {
+  return Type.Object({
+    datasources: Type.Object(
+      {
+        id: Type.String({
+          title: "Data Source ID",
+          description: "The ID of the data source to fetch data from",
+        }),
+        mapping: Type.Object(
+          {},
+          { additionalProperties: true, description: "Mapping of data source fields to brick props" },
+        ),
+        schema,
+      },
+      {
+        title: "Data source",
+        description: "The data source to fetch data from",
+        "ui:field": "datasource",
+        additionalProperties: true,
+      },
+    ),
+  });
+}
+
+export type DatasourceSettings = Static<ReturnType<typeof getDatasourcesProp<TSchema>>>["datasources"];
+
+// export const datasourceProps = Type.Object({
+//   datasource,
+// });
+
+// export type DatasourceProps = Static<typeof datasourceProps>;

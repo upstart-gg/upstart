@@ -1,6 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { commonProps, container } from "../props/common";
+import { commonProps } from "../props/common";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { LAYOUT_COLS } from "~/shared/layout-constants";
 import { commonStyleProps } from "../props/style-props";
@@ -10,6 +10,7 @@ export const manifest = defineBrickManifest({
   kind: "widget",
   title: "Carousel",
   description: "A carousel element",
+  isContainer: true,
   preferredWidth: {
     mobile: LAYOUT_COLS.mobile / 2,
     desktop: LAYOUT_COLS.desktop / 4,
@@ -39,7 +40,7 @@ export const manifest = defineBrickManifest({
     <circle cx="15" cy="17" r="0.5" fill="currentColor"></circle>
 </svg>
   `,
-  props: Type.Composite([commonProps, container, commonStyleProps]),
+  props: Type.Composite([commonProps, commonStyleProps]),
 });
 
 export type Manifest = Static<typeof manifest>;

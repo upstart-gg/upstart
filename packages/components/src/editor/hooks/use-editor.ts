@@ -609,10 +609,8 @@ export const createDraftStore = (
             addBrick: (brick, parentContainer) =>
               set((state) => {
                 if (!parentContainer) {
-                  console.log("Adding brick", brick);
                   state.bricks.push(brick);
                 } else {
-                  console.log("Adding brick %o to container %o", brick, parentContainer);
                   const parentBrick = state.bricks.find((b) => b.id === parentContainer.id);
                   // @ts-ignore
                   parentBrick?.props.children?.push({ ...brick, parentId: parentContainer.id });

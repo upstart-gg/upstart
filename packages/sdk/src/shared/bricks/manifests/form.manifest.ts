@@ -1,6 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { commonProps, container, contentAwareProps } from "../props/common";
+import { commonProps, contentAwareProps } from "../props/common";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { LAYOUT_COLS } from "~/shared/layout-constants";
 
@@ -9,6 +9,7 @@ export const manifest = defineBrickManifest({
   kind: "widget",
   title: "Form",
   description: "A form element",
+  isContainer: true,
   preferredWidth: {
     mobile: LAYOUT_COLS.mobile / 2,
     desktop: LAYOUT_COLS.desktop / 4,
@@ -39,7 +40,7 @@ export const manifest = defineBrickManifest({
     ></rect>
 </svg>
   `,
-  props: Type.Composite([contentAwareProps, commonProps, container]),
+  props: Type.Composite([contentAwareProps, commonProps]),
 });
 
 export type Manifest = Static<typeof manifest>;

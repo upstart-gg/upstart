@@ -3,6 +3,8 @@ import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import type { ResponsiveMode } from "@upstart.gg/sdk/shared/responsive";
 import type { BrickConstraints } from "@upstart.gg/sdk/shared/brick-manifest";
 
+const OVERFLOWING_TOLREANCE = LAYOUT_ROW_HEIGHT;
+
 const defaultsPreferred = {
   mobile: {
     width: LAYOUT_COLS.mobile / 2,
@@ -15,8 +17,7 @@ const defaultsPreferred = {
 };
 
 function isOverflowing(element: HTMLElement) {
-  const tolerance = LAYOUT_ROW_HEIGHT / 2;
-  const overflowing = element.scrollHeight - tolerance > element.clientHeight;
+  const overflowing = element.scrollHeight - OVERFLOWING_TOLREANCE > element.clientHeight;
   return overflowing;
 }
 
@@ -30,42 +31,95 @@ function getIdealHeight(element: HTMLElement) {
  */
 export function shouldAdjustBrickHeightBecauseOverflow(brickId: string) {
   const element = document.getElementById(brickId);
-  if (element && isOverflowing(element)) {
+  if (!element) {
+    console.warn("shouldAdjustBrickHeightBecauseOverflow: Element not found!");
+    return false;
+  }
+  if (isOverflowing(element)) {
+    console.debug(
+      "Brick %s is overflowing. Scrollheight = %d, clientHeight = %d, tolerance = %d",
+      brickId,
+      element.scrollHeight,
+      element.clientHeight,
+      OVERFLOWING_TOLREANCE,
+    );
     return getIdealHeight(element);
   }
+
   return false;
 }
+/**
+ * Represents position adjustments needed for a brick
+ */
+type BrickAdjustment = {
+  id: string;
+  h?: number;
+  y?: number;
+  fromH?: number;
+  fromY?: number;
+};
 
 /**
  * This will adjust the height of all bricks that are overflowing
- * and also adjuts the position (brick.position.desktop.y) so that the bricks does not overlap
+ * and also adjust the position (brick.position.desktop.y) so that the bricks do not overlap.
+ *
+ * @param bricks - Array of bricks to check for adjustments
+ * @returns An object with brick IDs as keys and their needed adjustments as values
  */
-export function getNeededBricksAdjustments(bricks: Brick[]) {
+export function getNeededBricksAdjustments(bricks: Brick[]): Record<string, BrickAdjustment> {
   let minRow = 0;
-  const adjustedBricks: { id: string; h?: number; y?: number }[] = [];
+  // Use an object to collect adjustments by brick ID
+  const adjustmentsByBrickId: Record<string, BrickAdjustment> = {};
+
   bricks.forEach((brick) => {
-    const newBrick = Object.assign({}, { ...brick });
-    // Need height adjustment?
+    let needsAdjustment = false;
+
+    // Initialize adjustment object if needed
+    if (!adjustmentsByBrickId[brick.id]) {
+      adjustmentsByBrickId[brick.id] = { id: brick.id };
+    }
+
+    // Check for height adjustment
     const newHeight = shouldAdjustBrickHeightBecauseOverflow(brick.id);
     if (newHeight) {
-      console.debug("Brick %s (%s) needs height adjustment to %d", brick.id, brick.type, newHeight);
-      adjustedBricks.push({ id: brick.id, h: newHeight });
-    }
-    // need to adjust the position?
-    if (newBrick.position.desktop.y < minRow && detectCollisions({ brick, bricks }).length > 0) {
       console.debug(
-        "Brick %s (%s) needs position adjustment to %d (%d < %d)",
+        "Brick %s (%s) needs height adjustment from %d to %d",
         brick.id,
         brick.type,
+        brick.position.desktop.h,
+        newHeight,
+      );
+      adjustmentsByBrickId[brick.id].h = newHeight;
+      adjustmentsByBrickId[brick.id].fromH = brick.position.desktop.h;
+      needsAdjustment = true;
+    }
+
+    // Check for position adjustment
+    if (brick.position.desktop.y < minRow && detectCollisions({ brick, bricks }).length > 0) {
+      console.debug(
+        "Brick %s (%s) needs position adjustment from %d to %d (%d < %d)",
+        brick.id,
+        brick.type,
+        brick.position.desktop.y,
         minRow,
-        newBrick.position.desktop.y,
+        brick.position.desktop.y,
         minRow,
       );
-      adjustedBricks.push({ id: brick.id, y: minRow });
+      adjustmentsByBrickId[brick.id].y = minRow;
+      adjustmentsByBrickId[brick.id].fromY = brick.position.desktop.y;
+      needsAdjustment = true;
     }
-    minRow = Math.max(newBrick.position.desktop.y + newBrick.position.desktop.h, minRow);
+
+    // Update minimum row for next brick
+    minRow = Math.max(brick.position.desktop.y + brick.position.desktop.h, minRow);
+
+    // Remove this brick if no adjustments are needed
+    if (!needsAdjustment) {
+      delete adjustmentsByBrickId[brick.id];
+    }
   });
-  return adjustedBricks;
+
+  return adjustmentsByBrickId;
 }
 
 /**

@@ -104,12 +104,10 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         });
         // console.log("%o", dropOverPos);
         updateDragOverGhostStyle(dropOverPos);
-
         // editorHelpers.setCollidingBrick(dropOverPos.collision);
       },
 
       onDragEnd: (brick, pos, gridPos, updatedPositions) => {
-        console.log({ updatedPositions });
         updateDragOverGhostStyle(false);
 
         const collisions = detectCollisions({
@@ -151,6 +149,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
 
         if (updatedPositions) {
           for (const [brickId, position] of Object.entries(updatedPositions)) {
+            console.log("Updating position of %s to x = %s, y = %s", brickId, position.x, position.y);
             draft.updateBrickPosition(brickId, previewMode, {
               ...draft.getBrick(brickId)!.position[previewMode],
               x: position.x,
@@ -159,8 +158,18 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           }
         }
 
+        // Commented for now
         // Reorganize all bricks so there is no overlap
-        const draftState = draftStore.getState();
+        // const adjustments = getNeededBricksAdjustments(draftStore.getState().bricks);
+        // console.log("needed adjustments", adjustments);
+        // for (const [brickId, adjust] of Object.entries(adjustments)) {
+        //   const adjustProps = {
+        //     ...("y" in adjust ? { y: adjust.y } : {}),
+        //     ...("h" in adjust ? { h: adjust.h } : {}),
+        //   };
+        //   console.log("Adjusting brick %s: %o", brickId, adjustProps);
+        //   draft.updateBrickPosition(brickId, previewMode, adjustProps);
+        // }
 
         // reset the selected group
         editorHelpers.setSelectedGroup();
@@ -168,7 +177,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     },
     dropCallbacks: {
       onDropMove(event, gridPosition, brick) {
-        console.log("drop move", gridPosition, brick);
         const canDrop = canDropOnLayout(draft.bricks, previewMode, gridPosition, brick.constraints, false);
         updateDragOverGhostStyle(canDrop);
       },
@@ -183,7 +191,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         const position = canDropOnLayout(draft.bricks, previewMode, gridPosition, brick.constraints);
 
         if (position) {
-          console.log("dropped at", position);
+          console.debug("New brick dropped at", position);
           const bricksDefaults = defaults[brick.type];
           const newBrick: Brick = {
             id: `brick-${generateId()}`,
@@ -199,8 +207,22 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           // add the new brick to the store
           draft.addBrick(newBrick, position.parent);
 
-          // rewrite the mobile layout based on the desktop layout
-          draft.adjustMobileLayout();
+          setTimeout(() => {
+            console.log("Checking for overflow");
+            // Check if the brick should adjust its height because of overflow
+            const adjustedHeight = shouldAdjustBrickHeightBecauseOverflow(newBrick.id);
+
+            console.log("-> adjusted height", adjustedHeight);
+
+            if (adjustedHeight) {
+              draft.updateBrickPosition(newBrick.id, previewMode, {
+                h: adjustedHeight,
+              });
+            }
+
+            // rewrite the mobile layout based on the desktop layout
+            draft.adjustMobileLayout();
+          }, 200);
 
           // auto select the new brick
           draftHelpers.setSelectedBrick(newBrick);

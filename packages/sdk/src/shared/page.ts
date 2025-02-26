@@ -161,7 +161,7 @@ export function getNewSiteConfig(
   useFixedIds = false,
 ) {
   const id = useFixedIds ? "00000000-0000-0000-0000-000000000001" : crypto.randomUUID();
-  const hostname = `${nanoid()}.upstart.gg`;
+  const hostname = `${nanoid()}.upstart.do`;
   const pages = templateConfig.pages.map((p, index) =>
     getNewPageConfig(
       templateConfig,

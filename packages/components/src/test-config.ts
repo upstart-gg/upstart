@@ -103,7 +103,7 @@ const homePageBricks = defineBricks([
         desktop: {
           x: 0,
           forceY: 18,
-          w: "full",
+          w: "half",
           h: 16,
         },
       },

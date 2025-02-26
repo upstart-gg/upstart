@@ -1,4 +1,4 @@
-import { Type, type Static, type TObject, type TProperties } from "@sinclair/typebox";
+import { Type, type Static, type TObject, type TProperties, type TArray } from "@sinclair/typebox";
 import { LAYOUT_COLS } from "./layout-constants";
 
 export function defineBrickManifest<
@@ -19,7 +19,7 @@ export function defineBrickManifest<
   maxWidth,
   icon,
   props,
-  datasource,
+  datasources,
   datarecord,
   isContainer,
   hideInLibrary,
@@ -50,7 +50,7 @@ export function defineBrickManifest<
     desktop: number;
   };
   props: TObject<BProps>;
-  datasource?: TObject;
+  datasources?: TObject;
   datarecord?: TObject;
   hideInLibrary?: boolean;
   isContainer?: boolean;
@@ -98,7 +98,7 @@ export function defineBrickManifest<
       },
       { default: minHeight ?? { mobile: 1, desktop: 1 } },
     ),
-    ...(datasource && { datasource }),
+    ...(datasources && { datasources }),
     ...(datarecord && { datarecord }),
     props,
   });

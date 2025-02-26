@@ -17,6 +17,7 @@ import "@upstart.gg/style-system/radix.css";
 import "@upstart.gg/style-system/default-theme.css";
 import "@upstart.gg/style-system/tiptap-text-editor.css";
 import "@upstart.gg/style-system/react-resizable.css";
+import { DatasourceProvider } from "~/shared/hooks/use-datasource";
 
 export type EditorWrapperProps = {
   mode?: "local" | "remote";
@@ -93,18 +94,20 @@ export function EditorWrapper({
   useEffect(onReady, []);
 
   return (
-    <UploaderProvider onImageUpload={onImageUpload}>
-      <EditorStoreContext.Provider value={editorStore} key="EditorStoreContext">
-        <DraftStoreContext.Provider value={draftStore} key="DraftStoreContext">
-          <Theme
-            accentColor="violet"
-            className={tx("w-[100dvw] overflow-hidden")}
-            appearance={isDarkMode ? "dark" : "light"}
-          >
-            {children}
-          </Theme>
-        </DraftStoreContext.Provider>
-      </EditorStoreContext.Provider>
-    </UploaderProvider>
+    <DatasourceProvider>
+      <UploaderProvider onImageUpload={onImageUpload}>
+        <EditorStoreContext.Provider value={editorStore} key="EditorStoreContext">
+          <DraftStoreContext.Provider value={draftStore} key="DraftStoreContext">
+            <Theme
+              accentColor="violet"
+              className={tx("w-[100dvw] overflow-hidden")}
+              appearance={isDarkMode ? "dark" : "light"}
+            >
+              {children}
+            </Theme>
+          </DraftStoreContext.Provider>
+        </EditorStoreContext.Provider>
+      </UploaderProvider>
+    </DatasourceProvider>
   );
 }

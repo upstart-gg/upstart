@@ -13,6 +13,7 @@ import {
   useDraft,
   useDraftHelpers,
   useEditorHelpers,
+  usePreviewMode,
   useSelectedBrick,
 } from "../hooks/use-editor";
 import { ContextMenu, Portal } from "@upstart.gg/style-system/system";
@@ -29,6 +30,7 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
   ({ brick, style, children, isContainerChild, index }, ref) => {
     const hasMouseMoved = useRef(false);
     const selectedBrick = useSelectedBrick();
+    const previewMode = usePreviewMode();
     const { getParentBrick } = useDraftHelpers();
     const debugMode = useDebugMode();
     const wrapperClass = useBrickWrapperStyle({
@@ -70,8 +72,10 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
         <div
           id={brick.id}
-          data-x="0"
-          data-y="0"
+          data-x={brick.position[previewMode].x}
+          data-y={brick.position[previewMode].y}
+          data-w={brick.position[previewMode].w}
+          data-h={brick.position[previewMode].h}
           data-brick-type={brick.type}
           style={style}
           className={tx(wrapperClass, `![animation-delay:${0.5 * (index + 1)}s]`)}
@@ -106,7 +110,11 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
 
 function BrickDebugLabel({ brick, isContainerChild }: { brick: Brick; isContainerChild?: boolean }) {
   if (brick.isContainer) {
-    return null;
+    return (
+      <div className="absolute top-full left-1/2 -translate-x-1/2 bg-orange-300/40 text-black text-[10px] font-mono py-0.5 px-1.5 rounded hover:bg-white/90">
+        {brick.id}
+      </div>
+    );
   }
   return (
     <div className="absolute bottom-0 right-0 bg-white/40 text-black text-[10px] font-mono py-0.5 px-1.5 rounded hover:bg-white/90">

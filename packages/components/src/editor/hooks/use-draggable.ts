@@ -468,7 +468,6 @@ export const useEditablePage = (
             const updatedPositions: Record<string, { x: number; y: number }> = {};
 
             if (swappedBricks.current.size >= 2) {
-              console.log("swap happened");
               // Process all swapped bricks
               swappedBricks.current.forEach((brickId) => {
                 const element = getBrickRef(brickId);
@@ -489,7 +488,6 @@ export const useEditablePage = (
               });
             } else {
               // No actual swap happened, just get the position of the dragged brick
-              console.log("No swap happened");
               updatedPositions[target.id] = getGridPosition(target, gridConfig);
             }
 
