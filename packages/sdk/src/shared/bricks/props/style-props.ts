@@ -224,7 +224,6 @@ export const background = Type.Object(
     ),
     image: Type.Optional(
       Type.String({
-        default: "https://placehold.co/400x200",
         title: "Image",
       }),
     ),
@@ -324,7 +323,7 @@ export const effects = Type.Optional(
       "ui:group:title": "Effects",
       default: {
         shadow: "shadow-none",
-        textShadow: "shadow-none",
+        textShadow: "text-shadow-none",
         opacity: 1,
       },
     },
@@ -424,9 +423,9 @@ export const alignBasic = Type.Object(
   {
     horizontal: Type.Union(
       [
-        Type.Literal("start", { title: "Left" }),
-        Type.Literal("center", { title: "Center" }),
-        Type.Literal("end", { title: "Right" }),
+        Type.Literal("justify-start", { title: "Left" }),
+        Type.Literal("justify-center", { title: "Center" }),
+        Type.Literal("justify-end", { title: "Right" }),
       ],
       {
         title: "Horizontal",
@@ -437,9 +436,9 @@ export const alignBasic = Type.Object(
     ),
     vertical: Type.Union(
       [
-        Type.Literal("start", { title: "Top" }),
-        Type.Literal("center", { title: "Center" }),
-        Type.Literal("end", { title: "Bottom" }),
+        Type.Literal("items-start", { title: "Top" }),
+        Type.Literal("items-center", { title: "Center" }),
+        Type.Literal("items-end", { title: "Bottom" }),
       ],
       {
         title: "Vertical",
@@ -453,16 +452,26 @@ export const alignBasic = Type.Object(
     "ui:responsive": true,
     "ui:field": "align-basic",
     default: {
-      horizontal: "start",
-      vertical: "start",
+      horizontal: "justify-start",
+      vertical: "items-center",
     },
     ...groupAlign,
   },
 );
 
-export const alignBasicProps = Type.Object({
-  align: alignBasic,
-});
+export const alignBasicProps = Type.Object(
+  {
+    align: alignBasic,
+  },
+  {
+    default: {
+      align: {
+        horizontal: "justify-start",
+        vertical: "items-center",
+      },
+    },
+  },
+);
 
 export type AlignBasicSettings = Static<typeof alignBasic>;
 

@@ -68,8 +68,10 @@ export const EffectsField: React.FC<FieldProps<EffectsSettings>> = (props) => {
             </Select.Content>
           </Select.Root>
         </div>
+        {/* break */}
+        <div className="basis-full w-0" />
         {/* border style */}
-        <div className="flex flex-col gap-1 flex-1 place-items-start">
+        <div className="flex flex-col gap-1 basis-1/2 place-items-start">
           <label className={fieldLabel}>
             Opacity{" "}
             <span className="text-gray-500 dark:text-gray-50 font-normal text-xs">

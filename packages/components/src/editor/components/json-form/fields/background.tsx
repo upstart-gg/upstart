@@ -9,6 +9,7 @@ import { useUploader } from "../../UploaderContext";
 import { IoCloseOutline } from "react-icons/io5";
 import { HelpIcon } from "../HelpIcon";
 import { IoSearch } from "react-icons/io5";
+import { fieldLabel } from "../form-class";
 
 const BackgroundField: React.FC<FieldProps<BackgroundSettings>> = (props) => {
   const { schema, formData, onChange, required, title, description, currentValue } = props;
@@ -21,9 +22,7 @@ const BackgroundField: React.FC<FieldProps<BackgroundSettings>> = (props) => {
     <>
       <div className="background-field flex items-center justify-between flex-wrap gap-1">
         <div className="flex items-center justify-between">
-          <Text as="label" size="2" weight="medium">
-            Color / image
-          </Text>
+          <label className={fieldLabel}>{title ?? "Color / image"}</label>
         </div>
         <div className="flex gap-1.5">
           <ColorField
@@ -73,67 +72,11 @@ const BackgroundField: React.FC<FieldProps<BackgroundSettings>> = (props) => {
           )}
         </div>
       </div>
-      {/* <div className="file-field flex items-center justify-between flex-wrap gap-1">
-        <div className="flex items-center justify-between">
-          <Text as="label" size="2" weight="medium">
-            Color / image
-          </Text>
-        </div>
-        <div className="flex gap-1.5">
-          <ColorField
-            {...props}
-            currentValue={currentValue.color}
-            title={undefined}
-            onChange={(color) => {
-              console.log("color", color);
-              onChange({ ...currentValue, color: color as string });
-            }}
-          />
-          <input
-            id={id}
-            type="file"
-            className="overflow-hidden w-[0.1px] h-[0.1px] opacity-0 absolute -z-10"
-            accept={
-              schema["ui:accept"] ?? "image/png, image/jpeg, image/jpg, image/svg+xml, image/webp, image/gif"
-            }
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (!file) return;
-              onImageUpload(file);
-              const src = file.name;
-              const tempUrl = URL.createObjectURL(file);
-              console.log("file", file);
-              if (tempUrl) {
-                onChange({ ...currentValue, image: tempUrl as string });
-              }
-            }}
-            required={required}
-          />
-          <Button variant="soft" size="1" radius="full" type="button">
-            <label
-              className="!leading-[inherit] !mb-0 !font-medium !text-inherit cursor-[inherit]"
-              htmlFor={id}
-            >
-              {currentValue.image ? "Upload new" : "Upload image"}
-            </label>
-          </Button>
-
-          {schema["ui:show-img-search"] && (
-            <Button variant="soft" size="1" radius="full" type="button" onClick={() => setShowSearch(true)}>
-              <label className="!leading-[inherit] !mb-0 !font-medium !text-inherit cursor-[inherit]">
-                <IoSearch className="text-upstart-700 w-4 h-4" />
-              </label>
-            </Button>
-          )}
-        </div>
-      </div> */}
       {currentValue.image && (
         <>
           <div className="flex justify-between items-center">
             <div className="flex flex-col flex-1 gap-1">
-              <Text as="label" size="2" weight="medium">
-                Size
-              </Text>
+              <label className={fieldLabel}>Size</label>
               <div className="flex items-center gap-4">
                 <Select.Root
                   defaultValue={currentValue.size ?? "auto"}
@@ -163,10 +106,8 @@ const BackgroundField: React.FC<FieldProps<BackgroundSettings>> = (props) => {
                 />
               </div>
             </div>
-            <div className="flex flex-col flex-1 gap-1">
-              <Text as="label" size="2" weight="medium">
-                Repeat
-              </Text>
+            <div className="flex flex-col flex-1 gap-0.5">
+              <label className={fieldLabel}>Repeat</label>
               <div className="flex items-center gap-4">
                 <Select.Root
                   defaultValue={currentValue.repeat ?? "no-repeat"}

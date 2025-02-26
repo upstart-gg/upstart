@@ -6,7 +6,6 @@ import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/image.
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 
 const Image = forwardRef<HTMLImageElement, BrickProps<Manifest>>((props, ref) => {
-  props = { ...Value.Create(manifest).props, ...props };
   const className = useBrickStyle(props);
   const { src, alt } = props;
 

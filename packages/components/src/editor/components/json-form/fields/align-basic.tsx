@@ -16,8 +16,8 @@ import {
 export const AlignBasicField: React.FC<FieldProps<AlignBasicSettings>> = (props) => {
   const {
     currentValue = {
-      horizontal: "start",
-      vertical: "start",
+      horizontal: "justify-start",
+      vertical: "items-center",
     },
     onChange,
     required,
@@ -34,22 +34,16 @@ export const AlignBasicField: React.FC<FieldProps<AlignBasicSettings>> = (props)
 
   return (
     <div className="layout-field">
-      {description && (
-        <Text as="p" color="gray" size="1">
-          {description}
-        </Text>
-      )}
       <div className="flex items-start flex-wrap gap-x-4 gap-y-1">
         <div className="flex flex-col gap-1 flex-1">
           <label className={fieldLabel}>Horizontal</label>
-
           <SegmentedControl.Root
             onValueChange={(value) =>
               onSettingsChange({ horizontal: value as AlignBasicSettings["horizontal"] })
             }
             defaultValue={currentValue.horizontal}
             size="1"
-            className="w-full !max-w-full mt-1"
+            className="w-full !max-w-full mt-0.5"
             radius="large"
           >
             {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
@@ -59,9 +53,9 @@ export const AlignBasicField: React.FC<FieldProps<AlignBasicSettings>> = (props)
                 value={option.const}
                 className={tx("[&_.rt-SegmentedControlItemLabel]:px-1")}
               >
-                {option.const === "start" && <PiAlignLeft className="w-4 h-4" />}
-                {option.const === "center" && <PiAlignCenterHorizontal className="w-4 h-4" />}
-                {option.const === "end" && <PiAlignRight className="w-4 h-4" />}
+                {option.const === "justify-start" && <PiAlignLeft className="w-4 h-4" />}
+                {option.const === "justify-center" && <PiAlignCenterHorizontal className="w-4 h-4" />}
+                {option.const === "justify-end" && <PiAlignRight className="w-4 h-4" />}
               </SegmentedControl.Item>
             ))}
           </SegmentedControl.Root>
@@ -73,7 +67,7 @@ export const AlignBasicField: React.FC<FieldProps<AlignBasicSettings>> = (props)
             onValueChange={(value) => onSettingsChange({ vertical: value as AlignBasicSettings["vertical"] })}
             defaultValue={currentValue.vertical}
             size="1"
-            className="w-full !max-w-full mt-1"
+            className="w-full !max-w-full mt-0.5"
             radius="large"
           >
             {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
@@ -83,9 +77,9 @@ export const AlignBasicField: React.FC<FieldProps<AlignBasicSettings>> = (props)
                 value={option.const}
                 className={tx("[&_.rt-SegmentedControlItemLabel]:px-1")}
               >
-                {option.const === "start" && <PiAlignTop className="w-4 h-4" />}
-                {option.const === "center" && <PiAlignCenterVertical className="w-4 h-4" />}
-                {option.const === "end" && <PiAlignBottom className="w-4 h-4" />}
+                {option.const === "items-start" && <PiAlignTop className="w-4 h-4" />}
+                {option.const === "items-center" && <PiAlignCenterVertical className="w-4 h-4" />}
+                {option.const === "items-end" && <PiAlignBottom className="w-4 h-4" />}
               </SegmentedControl.Item>
             ))}
           </SegmentedControl.Root>

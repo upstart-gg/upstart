@@ -13,6 +13,21 @@ type UsePageStyleProps = {
   showIntro?: boolean;
 };
 
+export function useBodyStyle({ attributes }: { attributes: Attributes }) {
+  return tx(
+    isStandardColor(attributes.$bodyBackground.color) &&
+      css({ backgroundColor: attributes.$bodyBackground.color as string }),
+    !isStandardColor(attributes.$bodyBackground.color) && (attributes.$bodyBackground.color as string),
+    typeof attributes.$bodyBackground.image === "string" &&
+      css({
+        backgroundImage: `url(${attributes.$bodyBackground.image})`,
+        backgroundRepeat: "no-repeat",
+        backgroundSize: attributes.$bodyBackground.size ?? "cover",
+        backgroundPosition: "center top",
+      }),
+  );
+}
+
 export function usePageStyle({
   attributes,
   editable,
@@ -22,17 +37,17 @@ export function usePageStyle({
 }: UsePageStyleProps) {
   return tx(
     "grid group/page mx-auto page-container relative overflow-y-hidden",
-    isStandardColor(attributes.$background.color) &&
-      css({ backgroundColor: attributes.$background.color as string }),
+    isStandardColor(attributes.$pageBackground.color) &&
+      css({ backgroundColor: attributes.$pageBackground.color as string }),
+    !isStandardColor(attributes.$pageBackground.color) && (attributes.$pageBackground.color as string),
     isStandardColor(attributes.$textColor) && css({ color: attributes.$textColor as string }),
-    !isStandardColor(attributes.$background.color) && (attributes.$background.color as string),
     !isStandardColor(attributes.$textColor) && (attributes.$textColor as string),
-    typeof attributes.$background.image === "string" &&
+    typeof attributes.$pageBackground.image === "string" &&
       css({
-        backgroundImage: `url(${attributes.$background.image})`,
+        backgroundImage: `url(${attributes.$pageBackground.image})`,
         //todo: make it dynamic, by using attributes
         backgroundRepeat: "no-repeat",
-        backgroundSize: attributes.$background.size ?? "cover",
+        backgroundSize: attributes.$pageBackground.size ?? "cover",
         backgroundPosition: "center top",
       }),
     // mobile grid
@@ -63,9 +78,6 @@ export function usePageStyle({
 
     // Animate all bricks when the page is loading
     editable && showIntro && "[&>.brick]:(opacity-0 animate-elastic-pop)",
-    /*
-
-        */
 
     // this is the grid overlay shown when dragging
     editable &&

@@ -11,14 +11,8 @@ import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
  * Text brick
  */
 const Text = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
-  const newProps = { ...Value.Create(manifest).props, ...props };
-
   //return <NonEditableText ref={ref} {...newProps} />;
-  return newProps.editable ? (
-    <EditableText ref={ref} {...newProps} />
-  ) : (
-    <NonEditableText ref={ref} {...newProps} />
-  );
+  return props.editable ? <EditableText ref={ref} {...props} /> : <NonEditableText ref={ref} {...props} />;
 });
 
 const NonEditableText = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {

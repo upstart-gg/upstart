@@ -6,8 +6,6 @@ import TextBrick from "./text";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 
 const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
-  props = { ...Value.Create(manifest).props, ...props };
-
   return (
     <div className={tx("card flex flex-col")} ref={ref}>
       {props.cardTitle?.content && (

@@ -58,16 +58,6 @@ export default function Inspector() {
         <Tabs.Trigger value="style" className="!flex-1">
           {previewMode === "mobile" ? "Mobile styles" : "Styles"}
         </Tabs.Trigger>
-        {/* {manifest.properties.datasource && (
-          <Tabs.Trigger value="datasource" className="!flex-1">
-            Data source
-          </Tabs.Trigger>
-        )}
-        {manifest.properties.datarecord && (
-          <Tabs.Trigger value="datarecord" className="!flex-1">
-            Data record
-          </Tabs.Trigger>
-        )} */}
         {previewMode === "desktop" && brick.type === "text" && (
           <Tabs.Trigger value="ai" className="!flex-1">
             AI <BsStars className={tx("ml-1 w-4 h-4 text-upstart-600")} />
@@ -183,10 +173,6 @@ function ElementInspector({ brick }: { brick: Brick }) {
   const brickInfo = getBrick(brick.id);
   const previewMode = usePreviewMode();
 
-  useEffect(() => {
-    console.log("prveiw mode changed", previewMode);
-  }, [previewMode]);
-
   const onChange = useCallback(
     (data: Record<string, unknown>, propertyChanged: string) => {
       if (!propertyChanged) {
@@ -200,11 +186,6 @@ function ElementInspector({ brick }: { brick: Brick }) {
 
   const manifest = useMemo(() => manifests[brick.type], [brick.type]);
   const formData = useMemo(() => {
-    if (previewMode === "mobile") {
-      console.log("formData mobile", brickInfo?.mobileOverride);
-    } else {
-      console.log("formData desktop", brickInfo?.props);
-    }
     return previewMode === "mobile"
       ? merge({}, brickInfo?.props, brickInfo?.mobileOverride)
       : brickInfo?.props ?? {};
@@ -219,11 +200,6 @@ function ElementInspector({ brick }: { brick: Brick }) {
     console.warn(`No manifest found for brick: ${JSON.stringify(brick)}`);
     return null;
   }
-
-  // if (!elements) {
-  //   return null;
-  // }
-
   return (
     <form className={tx("px-3 flex flex-col gap-3")}>
       <FormRenderer

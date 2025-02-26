@@ -325,7 +325,7 @@ export default defineConfig({
   attributes: siteAttributes,
   attr: {
     $textColor: "#fff",
-    $background: {
+    $pageBackground: {
       color: "#0B1016",
       image: "/earth-big.jpg",
     },

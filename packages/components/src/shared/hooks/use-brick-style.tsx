@@ -1,14 +1,22 @@
 import { tx, apply, css } from "@upstart.gg/style-system/twind";
-import type { commonStyleProps, textStyleProps, flexProps } from "@upstart.gg/sdk/bricks/props/style-props";
+import type {
+  commonStyleProps,
+  textStyleProps,
+  flexProps,
+  alignBasicProps,
+} from "@upstart.gg/sdk/bricks/props/style-props";
 import type { commonProps } from "@upstart.gg/sdk/bricks/props/common";
 import type { Static } from "@sinclair/typebox";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
 import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
+import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
+import { Value } from "@sinclair/typebox/value";
 
 type AllStyleProps = Partial<Static<typeof commonStyleProps>> &
   Partial<Static<typeof textStyleProps>> &
   Partial<Static<typeof commonProps>> &
+  Partial<Static<typeof alignBasicProps>> &
   Partial<Static<typeof flexProps>>;
 
 type UseBrickStyleWrapperProps = {
@@ -36,16 +44,14 @@ export function useBrickStyle({ mobileOverride, ...props }: UseBrickStyleProps) 
     props.fontSize,
     props.fontWeight,
     props.textAlign,
-    // props.flex?.direction,
-    // props.flex?.wrap,
-    // props.flex?.gap ? `${props.flex.gap}` : null,
     getFlexStyles(props, mobileOverride),
   ]);
 }
 
 export function useBrickWrapperStyle({ brick, editable, className, selected }: UseBrickStyleWrapperProps) {
-  const { props, mobileOverride, position } = brick;
+  const { mobileOverride, position } = brick;
   const isContainerChild = brick.parentId !== undefined;
+  const props = { ...Value.Create(manifests[brick.type]).props, ...brick.props };
 
   return tx(
     apply(className),
@@ -55,7 +61,7 @@ export function useBrickWrapperStyle({ brick, editable, className, selected }: U
     // container children expand to fill the space
     isContainerChild && "container-child flex-1",
 
-    getEditorStyles(editable, isContainerChild, selected),
+    getEditorStyles(editable === true, isContainerChild, selected),
 
     // Position of the wrapper
     //
@@ -87,6 +93,9 @@ export function useBrickWrapperStyle({ brick, editable, className, selected }: U
     getEffectsStyles(brick),
     // Flex
     getFlexStyles(props, mobileOverride),
+
+    // Basic alignment
+    getBasicAlignmentStyles(props),
     // z-index
     // (brick.props.z as string) && `z-[${brick.props.z}]`,
   );
@@ -98,7 +107,7 @@ function getEditorStyles(editable: boolean, isContainerChild: boolean, selected?
   }
   return [
     "select-none hover:z-[9999]",
-    selected && "!outline !outline-dashed !outline-orange-200",
+    selected && "!outline-2 !outline-dashed !outline-orange-200",
     !selected && "hover:outline !hover:outline-dashed !hover:outline-upstart-400/30",
     !selected && isContainerChild && "hover:outline !hover:outline-dashed !hover:outline-upstart-400/30",
     css({
@@ -137,6 +146,12 @@ function getBorderStyles({ props }: Brick) {
       props.border?.style,
       props.border?.width,
     ];
+  }
+}
+
+function getBasicAlignmentStyles(props: AllStyleProps) {
+  if ("align" in props) {
+    return [props.align?.vertical, props.align?.horizontal];
   }
 }
 

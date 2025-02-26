@@ -50,10 +50,8 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
 
       let selectedBrick = brick;
 
-      // check if modifier key is pressed
-      const hasModifierKey = e.ctrlKey || e.metaKey;
-      // If has modifier key pressed, then we try to select the upper container
-      if (hasModifierKey) {
+      // If has shift key pressed, then we try to select the upper container
+      if (e.shiftKey) {
         const parentBrick = getParentBrick(brick.id);
         if (parentBrick) {
           selectedBrick = parentBrick;
@@ -91,7 +89,7 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
             hasMouseMoved.current = true;
           }}
         >
-          <BaseBrick brick={brick} id={brick.id} editable />
+          <BaseBrick brick={brick} editable />
           {debugMode && <BrickDebugLabel brick={brick} isContainerChild={isContainerChild} />}
           {/* {brick.isContainer && <ContainerLabel brick={brick} />} */}
           {/* {brick.isContainer ? (

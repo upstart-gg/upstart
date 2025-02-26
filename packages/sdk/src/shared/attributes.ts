@@ -293,6 +293,7 @@ const defaultAttributes = {
       },
       "ui:field": "padding",
       "ui:group": "layout",
+      "ui:group:order": 3,
       "ui:group:title": "Layout",
     },
   ),
@@ -311,29 +312,41 @@ const defaultAttributes = {
     description: "The maximum width of the page. Desktop only.",
     displayAs: "select",
     "ui:group": "layout",
+    "ui:group:order": 3,
     "ui:group:title": "Layout",
   }),
 
-  $background: Type.Composite(
+  $bodyBackground: Type.Composite([background], {
+    default: {
+      color: "#ffffff",
+    },
+    title: "Body Background",
+    "ui:field": "background",
+    "ui:show-img-search": true,
+    "ui:group": "layout",
+    "ui:group:title": "Page Layout",
+    "ui:group:order": 3,
+  }),
+
+  $pageBackground: Type.Composite(
     [
       background,
       Type.Object(
         {},
         {
-          title: "Background",
+          title: "Page Background",
         },
       ),
     ],
     {
       default: {
         color: "#ffffff",
-        image: "https://placehold.co/400x200",
       },
-      title: "Background",
+      title: "Page Background",
       "ui:field": "background",
       "ui:show-img-search": true,
       "ui:group": "background",
-      "ui:group:title": "Background",
+      "ui:group:title": "Page Background",
       "ui:group:order": 4,
     },
   ),
