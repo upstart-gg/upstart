@@ -12,12 +12,9 @@ type AllStyleProps = Partial<Static<typeof commonStyleProps>> &
   Partial<Static<typeof flexProps>>;
 
 type UseBrickStyleWrapperProps = {
-  brickProps: AllStyleProps;
-  mobileOverride: Partial<AllStyleProps>;
-  position: Brick["position"];
-  editable: boolean;
+  brick: Brick;
+  editable?: boolean;
   className?: string;
-  isContainerChild?: boolean;
   selected?: boolean;
 };
 
@@ -46,15 +43,10 @@ export function useBrickStyle({ mobileOverride, ...props }: UseBrickStyleProps) 
   ]);
 }
 
-export function useBrickWrapperStyle({
-  brickProps,
-  mobileOverride,
-  position,
-  editable,
-  className,
-  isContainerChild,
-  selected,
-}: UseBrickStyleWrapperProps) {
+export function useBrickWrapperStyle({ brick, editable, className, selected }: UseBrickStyleWrapperProps) {
+  const { props, mobileOverride, position } = brick;
+  const isContainerChild = brick.parentId !== undefined;
+
   return tx(
     apply(className),
     // no transition otherwise it will slow down the drag
@@ -62,24 +54,8 @@ export function useBrickWrapperStyle({
 
     // container children expand to fill the space
     isContainerChild && "container-child flex-1",
-    editable && selected && "!outline !outline-dashed !outline-orange-200",
-    editable &&
-      !selected &&
-      isContainerChild &&
-      "hover:outline !hover:outline-dashed !hover:outline-upstart-400/30",
 
-    // Selected group
-    editable &&
-      css({
-        "&.selected-group": {
-          outline: "2px dotted var(--violet-8) !important",
-        },
-      }),
-    // "overflow-hidden",
-
-    {
-      "select-none hover:z-[9999]": editable,
-    },
+    getEditorStyles(editable, isContainerChild, selected),
 
     // Position of the wrapper
     //
@@ -104,38 +80,72 @@ export function useBrickWrapperStyle({
       )`,
 
     // Border
-    propToStyle(brickProps.border?.color, "borderColor"),
-    brickProps.border?.radius,
-    brickProps.border?.style,
-    brickProps.border?.width,
-
+    getBorderStyles(brick),
     // Background
-    propToStyle(brickProps.background?.color, "background-color"),
-    brickProps.background?.image &&
-      css({
-        backgroundImage: `url(${brickProps.background.image})`,
-        backgroundSize: brickProps.background.size ?? "auto",
-        backgroundRepeat: brickProps.background.repeat ?? "no-repeat",
-      }),
-
-    // Opacity
-    propToStyle(brickProps.effects?.opacity, "opacity"),
-
-    // shadow
-    brickProps.effects?.shadow,
-
-    getFlexStyles(brickProps, mobileOverride),
+    getBackgroundStyles(brick),
+    // Effects
+    getEffectsStyles(brick),
+    // Flex
+    getFlexStyles(props, mobileOverride),
     // z-index
     // (brick.props.z as string) && `z-[${brick.props.z}]`,
   );
+}
+
+function getEditorStyles(editable: boolean, isContainerChild: boolean, selected?: boolean) {
+  if (!editable) {
+    return null;
+  }
+  return [
+    "select-none hover:z-[9999]",
+    selected && "!outline !outline-dashed !outline-orange-200",
+    !selected && "hover:outline !hover:outline-dashed !hover:outline-upstart-400/30",
+    !selected && isContainerChild && "hover:outline !hover:outline-dashed !hover:outline-upstart-400/30",
+    css({
+      "&.selected-group": {
+        outline: "2px dotted var(--violet-8) !important",
+      },
+    }),
+  ];
+}
+
+function getBackgroundStyles({ props }: Brick) {
+  if ("background" in props) {
+    return [
+      propToStyle(props.background?.color, "backgroundColor"),
+      props.background?.image &&
+        css({
+          backgroundImage: `url(${props.background.image})`,
+          backgroundSize: props.background.size ?? "auto",
+          backgroundRepeat: props.background.repeat ?? "no-repeat",
+        }),
+    ];
+  }
+}
+
+function getEffectsStyles({ props }: Brick) {
+  if ("effects" in props) {
+    return [propToStyle(props.effects?.opacity, "opacity"), props.effects?.shadow];
+  }
+}
+
+function getBorderStyles({ props }: Brick) {
+  if ("border" in props) {
+    return [
+      propToStyle(props.border?.color, "borderColor"),
+      props.border?.radius,
+      props.border?.style,
+      props.border?.width,
+    ];
+  }
 }
 
 /**
  * Flexbox handles alignment using a main axis and a cross axis.
  * We want to map the alignment to the flexbox properties.
  */
-function getFlexStyles(props: AllStyleProps, mobileOverride: Partial<AllStyleProps>) {
-  if (mobileOverride?.flex) {
+function getFlexStyles(props: AllStyleProps, mobileOverride: Brick["mobileOverride"]) {
+  if (mobileOverride && "flex" in mobileOverride) {
     return `@desktop:(
       ${props.flex?.direction ?? ""}
       ${props.flex?.justifyContent ?? ""}

@@ -11,10 +11,7 @@ type BrickWrapperProps = ComponentProps<"div"> & {
 
 const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(({ brick, className }, ref) => {
   const wrapperClass = useBrickWrapperStyle({
-    brickProps: brick.props,
-    position: brick.position,
-    mobileOverride: brick.mobileOverride,
-    editable: false,
+    brick,
     className,
   });
   return (

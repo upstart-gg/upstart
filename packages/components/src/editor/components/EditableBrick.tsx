@@ -32,13 +32,8 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const { getParentBrick } = useDraftHelpers();
     const debugMode = useDebugMode();
     const wrapperClass = useBrickWrapperStyle({
-      // @ts-ignore
-      brickProps: brick.props,
-      // @ts-ignore
-      mobileOverride: brick.mobileOverride,
-      position: brick.position,
+      brick,
       editable: true,
-      isContainerChild,
       selected: selectedBrick?.id === brick.id,
     });
 
