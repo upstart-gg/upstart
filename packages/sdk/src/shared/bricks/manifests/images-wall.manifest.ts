@@ -49,6 +49,7 @@ export const manifest = defineBrickManifest({
         {
           "ui:field": "enum",
           "ui:group": "images-wall-layout",
+          "ui:group:order": 0,
           "ui:group:title": "Images layout",
           default: "grid",
         },

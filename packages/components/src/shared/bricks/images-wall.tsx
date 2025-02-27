@@ -35,7 +35,7 @@ const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
         <div className="absolute top-0 left-0 right-0 bottom-0 bg-white/30 rounded-lg flex items-center justify-center">
           <div className="text-white text-center rounded-md bg-black/30 p-4">
             <div className="text-2xl font-bold">Images Wall</div>
-            <div className="text-base">Drag and drop images here to add them to the wall</div>
+            <div className="text-base">Drag and drop images here or edit content in the panel</div>
           </div>
         </div>
       )}
