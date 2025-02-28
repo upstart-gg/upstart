@@ -31,6 +31,8 @@ export function defineBrickManifest<
   datarecord,
   isContainer,
   hideInLibrary,
+  deletable = true,
+  movable = true,
   defaultInspectorTab,
 }: {
   type: BType;
@@ -63,6 +65,8 @@ export function defineBrickManifest<
   datarecord?: TObject<DRProps>;
   hideInLibrary?: boolean;
   defaultInspectorTab?: "preset" | "style" | "content";
+  deletable?: boolean;
+  movable?: boolean;
   isContainer?: boolean;
 }) {
   return Type.Object({
@@ -73,6 +77,8 @@ export function defineBrickManifest<
     defaultInspectorTab: Type.Literal(defaultInspectorTab ?? "preset"),
     icon: Type.Literal(icon),
     hideInLibrary: Type.Boolean({ default: hideInLibrary ?? false }),
+    deletable: Type.Boolean({ default: deletable }),
+    movable: Type.Boolean({ default: movable }),
     isContainer: Type.Boolean({ default: isContainer ?? false }),
     preferredWidth: Type.Object(
       {
