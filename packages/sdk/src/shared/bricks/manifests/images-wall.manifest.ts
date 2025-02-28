@@ -1,26 +1,40 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { commonProps, contentAwareProps, getDatasourcesProp } from "../props/common";
+import { commonProps, contentAwareProps, datasourceRefProps } from "../props/common";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { LAYOUT_COLS } from "~/shared/layout-constants";
-import { get } from "node:http";
 import { commonStyleProps } from "../props/style-props";
 import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
+
+export const datasource = Type.Array(
+  Type.Object({
+    src: Type.String({ format: "uri", title: "Image URL" }),
+    alt: Type.String({ default: "", title: "Alt text" }),
+  }),
+  {
+    default: [
+      {
+        src: canvasDataURI,
+        alt: "my image",
+      },
+      { src: canvasDataURI, alt: "my image" },
+      { src: canvasDataURI, alt: "my image" },
+      { src: canvasDataURI, alt: "my image" },
+      { src: canvasDataURI, alt: "my image" },
+      { src: canvasDataURI, alt: "my image" },
+    ],
+  },
+);
+
+export type Datasource = typeof datasource;
 
 export const manifest = defineBrickManifest({
   type: "images-wall",
   kind: "widget",
   title: "Images wall",
   description: "An image collection",
+  defaultInspectorTab: "content",
   isContainer: true,
-  preferredWidth: {
-    mobile: LAYOUT_COLS.mobile / 2,
-    desktop: LAYOUT_COLS.desktop / 4,
-  },
-  preferredHeight: {
-    mobile: 10,
-    desktop: 10,
-  },
   minWidth: {
     mobile: 10,
     desktop: 10,
@@ -35,8 +49,7 @@ export const manifest = defineBrickManifest({
     <rect x="13" y="5" width="6" height="7" rx="1"></rect>
     <rect x="5" y="12" width="6" height="7" rx="1"></rect>
     <rect x="13" y="14" width="6" height="5" rx="1"></rect>
-</svg>
-  `,
+</svg>`,
   props: Type.Composite([
     contentAwareProps,
     commonProps,
@@ -56,7 +69,6 @@ export const manifest = defineBrickManifest({
       ),
       imagesWallColumns: Type.Number({
         title: "Columns",
-        description: "Number of columns",
         "ui:group": "images-wall-layout",
         "ui:field": "slider",
         default: 3,
@@ -82,43 +94,38 @@ export const manifest = defineBrickManifest({
       ),
     }),
     commonStyleProps,
-    getDatasourcesProp(
-      Type.Object(
-        {
-          images: Type.Array(
-            Type.Object({
-              src: Type.String({ format: "uri" }),
-              alt: Type.String({ default: "" }),
-            }),
-          ),
-        },
-        {
-          default: {
-            images: [
-              {
-                src: canvasDataURI,
-                alt: "my image",
-              },
-              { src: canvasDataURI, alt: "my image" },
-              { src: canvasDataURI, alt: "my image" },
-              { src: canvasDataURI, alt: "my image" },
-              { src: canvasDataURI, alt: "my image" },
-              { src: canvasDataURI, alt: "my image" },
-            ],
-          },
-        },
-      ),
-    ),
+    datasourceRefProps,
+    // getDatasourcesProp(
+    //   Type.Object(
+    //     {
+    //       images: Type.Array(
+    //         Type.Object({
+    //           src: Type.String({ format: "uri" }),
+    //           alt: Type.String({ default: "" }),
+    //         }),
+    //       ),
+    //     },
+    //     {
+    //       default: {
+    //         images: [
+    //           {
+    //             src: canvasDataURI,
+    //             alt: "my image",
+    //           },
+    //           { src: canvasDataURI, alt: "my image" },
+    //           { src: canvasDataURI, alt: "my image" },
+    //           { src: canvasDataURI, alt: "my image" },
+    //           { src: canvasDataURI, alt: "my image" },
+    //           { src: canvasDataURI, alt: "my image" },
+    //         ],
+    //       },
+    //     },
+    //   ),
+    // ),
   ]),
-  datasources: Type.Object({
-    images: Type.Array(
-      Type.Object({
-        src: Type.String({ format: "uri" }),
-        alt: Type.String({ default: "" }),
-      }),
-    ),
-  }),
+  datasource,
 });
 
 export type Manifest = Static<typeof manifest>;
+
 export const defaults = Value.Create(manifest);

@@ -7,22 +7,31 @@ export function defineBrickManifest<
   BIcon extends string,
   BDesc extends string,
   BProps extends TProperties,
+  DSSchema extends TObject | TArray<TObject>,
+  DRProps extends TProperties,
 >({
   type,
   kind,
   title,
   description,
-  preferredWidth,
-  preferredHeight,
+  preferredWidth = {
+    mobile: LAYOUT_COLS.mobile / 2,
+    desktop: LAYOUT_COLS.desktop / 4,
+  },
+  preferredHeight = {
+    mobile: 10,
+    desktop: 10,
+  },
   minWidth,
   minHeight,
   maxWidth,
   icon,
   props,
-  datasources,
+  datasource,
   datarecord,
   isContainer,
   hideInLibrary,
+  defaultInspectorTab,
 }: {
   type: BType;
   kind: string;
@@ -50,9 +59,10 @@ export function defineBrickManifest<
     desktop: number;
   };
   props: TObject<BProps>;
-  datasources?: TObject;
-  datarecord?: TObject;
+  datasource?: DSSchema;
+  datarecord?: TObject<DRProps>;
   hideInLibrary?: boolean;
+  defaultInspectorTab?: "preset" | "style" | "content";
   isContainer?: boolean;
 }) {
   return Type.Object({
@@ -60,6 +70,7 @@ export function defineBrickManifest<
     kind: Type.Literal(kind),
     title: Type.Literal(title),
     description: Type.Literal(description),
+    defaultInspectorTab: Type.Literal(defaultInspectorTab ?? "preset"),
     icon: Type.Literal(icon),
     hideInLibrary: Type.Boolean({ default: hideInLibrary ?? false }),
     isContainer: Type.Boolean({ default: isContainer ?? false }),
@@ -98,8 +109,8 @@ export function defineBrickManifest<
       },
       { default: minHeight ?? { mobile: 1, desktop: 1 } },
     ),
-    ...(datasources && { datasources }),
-    ...(datarecord && { datarecord }),
+    ...(datasource ? { datasource } : {}),
+    ...(datarecord ? { datarecord } : {}),
     props,
   });
 }

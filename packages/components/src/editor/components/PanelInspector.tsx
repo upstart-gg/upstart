@@ -19,16 +19,17 @@ import merge from "lodash-es/merge";
 import { BsStars } from "react-icons/bs";
 import PresetsView from "./PresetsView";
 import { useCallback, useEffect, useMemo } from "react";
+import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
+import invariant from "@upstart.gg/sdk/shared/utils/invariant";
+
+type TabType = "preset" | "style" | "content";
 
 export default function Inspector() {
   const brick = useSelectedBrick();
   const { deselectBrick, getParentBrick, updateBrickProps, setSelectedBrick } = useDraftHelpers();
   const { hidePanel } = useEditorHelpers();
   const previewMode = usePreviewMode();
-  const [selectedTab, setSelectedTab] = useLocalStorage(
-    "inspector_tab",
-    previewMode === "desktop" ? "preset" : "style",
-  );
+  const [tabsMapping, setTabsMapping] = useLocalStorage<Record<string, TabType>>("inspector_tabs_map", {});
 
   if (!brick) {
     return null;
@@ -44,23 +45,36 @@ export default function Inspector() {
     return null;
   }
 
+  const selectedTab =
+    tabsMapping[brick.id] ??
+    manifest.properties.defaultInspectorTab.const ??
+    (previewMode === "desktop" ? "preset" : "style");
+
+  useEffect(() => {
+    if (!manifest.properties.datasource && selectedTab === "content") {
+      setTabsMapping((prev) => ({ ...prev, [brick.id]: "style" }));
+    }
+  }, [setTabsMapping, brick.id, selectedTab, manifest.properties.datasource]);
+
   return (
     <Tabs.Root
-      defaultValue={previewMode === "desktop" ? selectedTab : "style"}
-      onValueChange={setSelectedTab}
+      value={selectedTab}
+      onValueChange={(val) => {
+        setTabsMapping((prev) => ({ ...prev, [brick.id]: val as TabType }));
+      }}
     >
       <Tabs.List className="sticky top-0 z-50">
         {previewMode === "desktop" && (
           <Tabs.Trigger value="preset" className="!flex-1">
-            Preset
+            Style Preset
           </Tabs.Trigger>
         )}
         <Tabs.Trigger value="style" className="!flex-1">
           {previewMode === "mobile" ? "Mobile styles" : "Styles"}
         </Tabs.Trigger>
-        {previewMode === "desktop" && brick.type === "text" && (
-          <Tabs.Trigger value="ai" className="!flex-1">
-            AI <BsStars className={tx("ml-1 w-4 h-4 text-upstart-600")} />
+        {manifest.properties.datasource && (
+          <Tabs.Trigger value="content" className="!flex-1">
+            Content
           </Tabs.Trigger>
         )}
         <IconButton
@@ -161,17 +175,20 @@ export default function Inspector() {
             </Callout.Text>
           </Callout.Root>
         )}
-        <ElementInspector brick={brick} />
+        <ElementInspector brick={brick} manifest={manifest} />
+      </ScrollablePanelTab>
+      <ScrollablePanelTab tab="content">
+        <ContentTab brick={brick} manifest={manifest} />
       </ScrollablePanelTab>
     </Tabs.Root>
   );
 }
 
-function ElementInspector({ brick }: { brick: Brick }) {
+function ElementInspector({ brick, manifest }: { brick: Brick; manifest: BrickManifest }) {
   const { updateBrickProps } = useDraftHelpers();
-  const getBrick = useGetBrick();
-  const brickInfo = getBrick(brick.id);
   const previewMode = usePreviewMode();
+  const getBrickInfo = useGetBrick();
+  const brickInfo = getBrickInfo(brick.id);
 
   const onChange = useCallback(
     (data: Record<string, unknown>, propertyChanged: string) => {
@@ -184,22 +201,15 @@ function ElementInspector({ brick }: { brick: Brick }) {
     [brick.id, previewMode, updateBrickProps],
   );
 
-  const manifest = useMemo(() => manifests[brick.type], [brick.type]);
+  invariant(brickInfo, "Brick info props is missing in Element inspector");
+
+  // const manifest = useMemo(() => manifests[brick.type], [brick.type]);
   const formData = useMemo(() => {
     return previewMode === "mobile"
-      ? merge({}, brickInfo?.props, brickInfo?.mobileOverride)
-      : brickInfo?.props ?? {};
+      ? merge({}, brickInfo.props, brickInfo.mobileOverride)
+      : brickInfo.props ?? {};
   }, [brickInfo, previewMode]);
 
-  if (!brickInfo) {
-    console.log("No brick info found for brick: %s", brick.id);
-    return null;
-  }
-
-  if (!manifest) {
-    console.warn(`No manifest found for brick: ${JSON.stringify(brick)}`);
-    return null;
-  }
   return (
     <form className={tx("px-3 flex flex-col gap-3")}>
       <FormRenderer
@@ -208,7 +218,49 @@ function ElementInspector({ brick }: { brick: Brick }) {
           formSchema: manifest.properties.props as unknown as JSONSchemaType<unknown>,
           formData,
           filter: (prop) => {
-            return previewMode !== "mobile" || prop["ui:responsive"];
+            return (
+              (previewMode !== "mobile" || prop["ui:responsive"]) && prop["ui:field"] !== "datasource-ref"
+            );
+          },
+          onChange,
+        })}
+        previewMode={previewMode}
+        brickId={brick.id}
+      />
+    </form>
+  );
+}
+
+function ContentTab({ brick, manifest }: { brick: Brick; manifest: BrickManifest }) {
+  const { updateBrickProps } = useDraftHelpers();
+  const previewMode = usePreviewMode();
+  const getBrickInfo = useGetBrick();
+  const brickInfo = getBrickInfo(brick.id);
+
+  const onChange = useCallback(
+    (data: Record<string, unknown>, propertyChanged: string) => {
+      if (!propertyChanged) {
+        // ignore changes unrelated to the brick
+        return;
+      }
+      updateBrickProps(brick.id, data, previewMode === "mobile");
+    },
+    [brick.id, previewMode, updateBrickProps],
+  );
+
+  invariant(brickInfo, "Brick info props is missing in ContentTab");
+
+  console.log("content tab", brick);
+
+  return (
+    <form className={tx("px-3 flex flex-col gap-3")}>
+      <FormRenderer
+        components={getFormComponents({
+          brickId: brick.id,
+          formSchema: manifest.properties.props as unknown as JSONSchemaType<unknown>,
+          formData: brickInfo.props,
+          filter: (prop) => {
+            return prop["ui:field"] === "datasource-ref";
           },
           onChange,
         })}

@@ -205,34 +205,83 @@ const datasource = Type.Object(
   },
 );
 
-export function getDatasourcesProp<T extends TSchema>(schema: T) {
-  return Type.Object({
-    datasources: Type.Object(
-      {
-        id: Type.String({
-          title: "Data Source ID",
-          description: "The ID of the data source to fetch data from",
+// export function getDatasourcesProp<T extends TSchema>(schema: T) {
+//   return Type.Object({
+//     datasources: Type.Object(
+//       {
+//         id: Type.String({
+//           title: "Data Source ID",
+//           description: "The ID of the data source to fetch data from",
+//         }),
+//         mapping: Type.Object(
+//           {},
+//           { additionalProperties: true, description: "Mapping of data source fields to brick props" },
+//         ),
+//         schema,
+//       },
+//       {
+//         title: "Data source",
+//         description: "The data source to fetch data from",
+//         "ui:field": "datasource",
+//         additionalProperties: true,
+//       },
+//     ),
+//   });
+// }
+
+// export type DatasourceSettings = Static<ReturnType<typeof getDatasourcesProp<TSchema>>>["datasources"];
+
+export const datasourceRef = Type.Object(
+  {
+    id: Type.String({
+      title: "Data Source ID",
+    }),
+    useExistingDatasource: Type.Boolean({
+      title: "Use Existing data source",
+      default: false,
+    }),
+    mapping: Type.Record(Type.String(), Type.String(), {
+      description: "Mapping of data source fields to brick props",
+    }),
+    filters: Type.Optional(
+      Type.Record(
+        Type.String(),
+        Type.Object({
+          op: Type.Union([
+            Type.Literal("eq"),
+            Type.Literal("ne"),
+            Type.Literal("lt"),
+            Type.Literal("lte"),
+            Type.Literal("gt"),
+            Type.Literal("gte"),
+            Type.Literal("in"),
+            Type.Literal("nin"),
+            Type.Literal("contains"),
+            Type.Literal("startsWith"),
+            Type.Literal("endsWith"),
+          ]),
+          value: Type.String(),
         }),
-        mapping: Type.Object(
-          {},
-          { additionalProperties: true, description: "Mapping of data source fields to brick props" },
-        ),
-        schema,
-      },
-      {
-        title: "Data source",
-        description: "The data source to fetch data from",
-        "ui:field": "datasource",
-        additionalProperties: true,
-      },
+        { description: "Filter data source records" },
+      ),
     ),
-  });
-}
+    sort: Type.Optional(
+      Type.Record(Type.String(), Type.String(), { description: "Sort data source records" }),
+    ),
+    limit: Type.Optional(Type.Number({ description: "Limit the number of records to fetch" })),
+    offset: Type.Optional(Type.Number({ description: "Offset the records to fetch" })),
+  },
+  {
+    title: "Database",
+    description: "Reference to a data source",
+    "ui:field": "datasource-ref",
+    "ui:group": "content",
+    "ui:group:title": "Database",
+  },
+);
 
-export type DatasourceSettings = Static<ReturnType<typeof getDatasourcesProp<TSchema>>>["datasources"];
+export type DatasourceRef = Static<typeof datasourceRef>;
 
-// export const datasourceProps = Type.Object({
-//   datasource,
-// });
-
-// export type DatasourceProps = Static<typeof datasourceProps>;
+export const datasourceRefProps = Type.Object({
+  datasourceRef,
+});

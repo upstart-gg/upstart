@@ -24,7 +24,7 @@ import type {
   AlignBasicSettings,
 } from "@upstart.gg/sdk/shared/bricks/props/style-props";
 import { EffectsField } from "./fields/effects";
-import type { DatasourceSettings, ImageProps, RichText } from "@upstart.gg/sdk/shared/bricks/props/common";
+import type { DatasourceRef, ImageProps, RichText } from "@upstart.gg/sdk/shared/bricks/props/common";
 import type { Attributes, JSONSchemaType } from "@upstart.gg/sdk/shared/attributes";
 import { PagePaddingField } from "./fields/padding";
 import { TextField } from "./fields/text";
@@ -32,7 +32,8 @@ import BackgroundField from "./fields/background";
 import { FlexField } from "./fields/flex";
 import { Text } from "@upstart.gg/style-system/system";
 import { AlignBasicField } from "./fields/align-basic";
-import DatasourceField from "./fields/datasource";
+import DatasourceField from "./fields/datasource-ref";
+import DatasourceRefField from "./fields/datasource-ref";
 
 type FormComponent = { group: string; groupTitle: string; component: ReactNode };
 type FormComponents = (FormComponent | { group: string; groupTitle: string; components: FormComponent[] })[];
@@ -71,7 +72,7 @@ export function getFormComponents({
       const groupTitle = (field["ui:group:title"] ?? "Other") as string;
 
       const commonProps = {
-        brickId: id,
+        brickId,
         schema: fieldSchema as TSchema,
         formSchema,
         formData,
@@ -177,15 +178,15 @@ export function getFormComponents({
           };
         }
 
-        case "datasource": {
-          const currentValue = (get(formData, id) ?? commonProps.schema.default) as DatasourceSettings;
+        case "datasource-ref": {
+          const currentValue = (get(formData, id) ?? commonProps.schema.default) as DatasourceRef;
           return {
             group,
             groupTitle,
             component: (
-              <DatasourceField
+              <DatasourceRefField
                 currentValue={currentValue}
-                onChange={(value: DatasourceSettings | null) => onChange({ [id]: value }, id)}
+                onChange={(value: DatasourceRef | null) => onChange({ [id]: value }, id)}
                 {...commonProps}
               />
             ),

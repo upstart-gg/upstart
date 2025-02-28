@@ -1,7 +1,10 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import type { DatasourceSettings } from "@upstart.gg/sdk/shared/bricks/props/common";
+import type { Static, TArray, TObject } from "@sinclair/typebox";
+import type { DatasourceRef } from "@upstart.gg/sdk/shared/bricks/props/common";
+import { Value } from "@sinclair/typebox/value";
 
-type DatasourceMap = Map<string, DatasourceSettings>;
+type DatasourceSchema = TObject | TArray<TObject>;
+type DatasourceMap = Map<string, unknown>;
 
 const DatasourceContext = createContext<DatasourceMap | undefined>(undefined);
 
@@ -18,20 +21,20 @@ function useDatasourceContext() {
   return context;
 }
 
-export function useDatasource<P extends DatasourceSettings>(props: P) {
+export function useDatasource<D extends DatasourceRef, S extends DatasourceSchema>(dsRef: D, schema: S) {
   const datasources = useDatasourceContext();
 
-  console.log("useDatasource props", props);
+  console.log("useDatasource dsRef: %o", dsRef);
 
-  const data = props.id ? datasources.get(props.id) : null;
+  const data = dsRef.id ? datasources.get(dsRef.id) : null;
 
   return {
-    id: props.id,
-    data: data ?? props.schema,
+    id: dsRef.id,
+    data: data ?? Value.Create(schema),
     isSample: !data,
   } as {
     id: string;
-    data: P["schema"];
+    data: Static<S>;
     isSample: boolean;
   };
 }
