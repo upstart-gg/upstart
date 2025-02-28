@@ -43,6 +43,18 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
       }),
     },
     {
+      id: "4",
+      label: "Creations de Noël 2024",
+      schema: Type.Array(
+        Type.Object({
+          date: Type.String({ title: "Date", format: "date" }),
+          count: Type.Number({
+            title: "Product count",
+          }),
+        }),
+      ),
+    },
+    {
       id: "3",
       label: "Assets divers",
       schema: Type.Object({
@@ -52,17 +64,6 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
           title: "Product count",
         }),
       }),
-    },
-    {
-      id: "4",
-      label: "Creations de Noël 2024",
-      schema: Type.Array(
-        Type.Object({
-          date: Type.String({ title: "Date" }),
-          title: Type.String({ title: "Title" }),
-          description: Type.String({ title: "Description" }),
-        }),
-      ),
     },
   ];
 
@@ -82,33 +83,32 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
 
   // check schema "required" fields
 
-  const compatibleDatasources = allDatasources.map((datasource) => {
-    //
-    const datasourceFields =
-      datasource.schema.type === "array" ? datasource.schema.items?.properties : datasource.schema.properties;
+  const compatibleDatasources = allDatasources
+    .map((datasource) => {
+      //
+      const datasourceFields =
+        datasource.schema.type === "array"
+          ? datasource.schema.items?.properties
+          : datasource.schema.properties;
 
-    const datasourceRequiredFields =
-      (datasource.schema.type === "array" ? datasource.schema.items?.required : datasource.schema.required) ??
-      [];
+      const datasourceRequiredFields =
+        (datasource.schema.type === "array"
+          ? datasource.schema.items?.required
+          : datasource.schema.required) ?? [];
 
-    // mark the datasources eligeable or not depending on their schema follwing these rules:
-    // - All required fields type should match with at least one field in the schema
-    // - AT least on field type should match with at least one field in the schema
-    const compatible = schemaRequiredFields.every((field) => {
-      return datasourceRequiredFields.some((dsField) => {
-        console.log("comparing", { field, dsField, datasourceFields, schemaFields });
-        return (
+      // mark the datasources eligeable or not depending on their schema follwing these rules:
+      // - All required fields type should match with at least one field in the schema
+      // - AT least on field type should match with at least one field in the schema
+      const compatible = schemaRequiredFields.every((field) => {
+        return datasourceRequiredFields.some((dsField) => {
           // @ts-ignore
-          areFieldsCompatible(datasourceFields[dsField], schemaFields[field])
-          // datasourceFields[dsField]?.type === schemaFields[field].type &&
-          // @ts-ignore
-          // datasourceFields[dsField]?.format === schemaFields[field].format
-        );
+          return areFieldsCompatible(datasourceFields[dsField], schemaFields[field]);
+        });
       });
-    });
-    // augment the datasource object with the compatible flag
-    return { ...datasource, compatible };
-  });
+      // augment the datasource object with the compatible flag
+      return { ...datasource, compatible };
+    })
+    .sort((a, b) => (a.compatible === b.compatible ? 0 : a.compatible ? -1 : 1));
 
   const externalDatasource = allDatasources.find((ds) => ds.id === currentValue.id);
   const externalFields = externalDatasource
@@ -119,9 +119,8 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
 
   return (
     <div className="field field-datasource">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
         <div className="flex flex-col flex-1 gap-1">
-          <label className={fieldLabel}>Database</label>
           <SegmentedControl.Root
             onValueChange={(val) => {
               onChange({ ...currentValue, useExistingDatasource: val === "existing" });
@@ -132,8 +131,8 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
             radius="large"
           >
             {[
-              { value: "new", title: "Own database" },
-              { value: "existing", title: "Link existing database" },
+              { value: "new", title: "Custom database" },
+              { value: "existing", title: "Existing database" },
             ].map((option) => (
               <SegmentedControl.Item
                 key={option.value}
@@ -146,74 +145,116 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
           </SegmentedControl.Root>
         </div>
 
+        {!currentValue.useExistingDatasource && (
+          <div className="flex flex-col gap-3">
+            <h3
+              className={tx(
+                "text-sm font-semibold !dark:bg-dark-600 bg-upstart-100 px-2 py-1 sticky top-0 z-[999] -mx-3",
+              )}
+            >
+              Content
+            </h3>
+            <fieldset className="flex flex-col gap-2">
+              <label className={fieldLabel}>New entry</label>
+              <div className="flex flex-col gap-2">
+                {Object.entries(schemaFields).map(([fieldName, field]) => {
+                  return (
+                    <div className="flex gap-0.5 justify-between items-center flex-wrap" key={fieldName}>
+                      <label className={tx("text-[85%] flex-1 flex-grow")}>{field.title ?? fieldName}</label>
+                      <input
+                        type="text"
+                        // value={currentValue.data[fieldName] ?? ""}
+                        onChange={(e) => {
+                          // onChange({
+                          //   ...currentValue,
+                          //   data: { ...currentValue.data, [fieldName]: e.target.value },
+                          // });
+                        }}
+                        className="flex-1 p-1 border border-gray-300 rounded-md"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </fieldset>
+          </div>
+        )}
+
         {/* If using an existing database, we need to allow the user to select a datasource and possibly fields mapping */}
         {currentValue.useExistingDatasource && (
-          <>
-            <div className="flex flex-col gap-8">
-              <div className="flex flex-col gap-3 flex-1 mx-px">
-                <div className="flex justify-center items-center">
-                  <MdKeyboardArrowDown />
-                </div>
-                <Select.Root
-                  value={currentValue.id}
-                  size="2"
-                  onValueChange={(value) => onChange({ ...currentValue, id: value })}
-                >
-                  <Select.Trigger radius="large" variant="soft" placeholder="Select a database" />
-                  <Select.Content position="popper">
-                    <Select.Group>
-                      {compatibleDatasources.map((item) => (
-                        <Select.Item key={item.id} value={item.id} disabled={!item.compatible}>
-                          {item.label} {item.compatible ? "" : "(Not compatible)"}
-                        </Select.Item>
-                      ))}
-                    </Select.Group>
-                  </Select.Content>
-                </Select.Root>
-              </div>
-              {Object.keys(externalFields).length > 0 && (
-                <>
-                  <div className="flex flex-col flex-1 gap-1.5">
-                    <label className={fieldLabel}>Fields mapping</label>
-                    <FieldsMapper
-                      externalFields={externalFields}
-                      schemaFields={schemaFields}
-                      onChange={onMappingChange}
-                      currentMapping={currentValue.mapping}
-                    />
-                  </div>
-                  <div className="flex flex-col flex-1 gap-1.5">
-                    <label className={fieldLabel}>Limit results</label>
-                    <SegmentedControl.Root
-                      onValueChange={(val) => {
-                        onChange({ ...currentValue, limit: parseInt(val) });
-                      }}
-                      value={(currentValue.limit ?? 10).toString()}
-                      size="1"
-                      className="w-full !max-w-full"
-                      radius="large"
-                    >
-                      {[
-                        { value: "5", title: "5" },
-                        { value: "10", title: "10" },
-                        { value: "20", title: "20" },
-                        { value: "30", title: "30" },
-                        { value: "40", title: "40" },
-                      ].map((option) => (
-                        <SegmentedControl.Item
-                          key={option.value}
-                          value={option.value}
-                          className={tx("[&_.rt-SegmentedControlItemLabel]:px-1")}
-                        >
-                          {option.title}
-                        </SegmentedControl.Item>
-                      ))}
-                    </SegmentedControl.Root>
-                  </div>
-                </>
-              )}
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-3 flex-1 mx-px">
+              <Select.Root
+                value={currentValue.id}
+                size="1"
+                onValueChange={(value) => onChange({ ...currentValue, id: value })}
+              >
+                <Select.Trigger radius="large" variant="surface" placeholder="Select a database" />
+                <Select.Content position="popper">
+                  <Select.Group>
+                    {compatibleDatasources.map((item) => (
+                      <Select.Item key={item.id} value={item.id} disabled={!item.compatible}>
+                        {item.label} {item.compatible ? "" : "(incompatible)"}
+                      </Select.Item>
+                    ))}
+                  </Select.Group>
+                </Select.Content>
+              </Select.Root>
             </div>
-          </>
+            {Object.keys(externalFields).length > 0 && (
+              <>
+                <div className="flex flex-col flex-1 gap-2">
+                  <h3
+                    className={tx(
+                      "text-sm font-semibold !dark:bg-dark-600 bg-upstart-100 px-2 py-1 sticky top-0 z-[999] -mx-3",
+                    )}
+                  >
+                    Fields mapping
+                  </h3>
+                  <FieldsMapper
+                    externalFields={externalFields}
+                    schemaFields={schemaFields}
+                    onChange={onMappingChange}
+                    currentMapping={currentValue.mapping}
+                  />
+                </div>
+                <div className="flex flex-col flex-1 gap-2">
+                  <h3
+                    className={tx(
+                      "text-sm font-semibold !dark:bg-dark-600 bg-upstart-100 px-2 py-1 sticky top-0 z-[999] -mx-3",
+                    )}
+                  >
+                    Limit results
+                  </h3>
+                  <SegmentedControl.Root
+                    onValueChange={(val) => {
+                      onChange({ ...currentValue, limit: parseInt(val) });
+                    }}
+                    value={(currentValue.limit ?? 10).toString()}
+                    size="1"
+                    className="w-full !max-w-full !mt-1"
+                    radius="large"
+                  >
+                    {[
+                      { value: "5", title: "5" },
+                      { value: "10", title: "10" },
+                      { value: "20", title: "20" },
+                      { value: "30", title: "30" },
+                      { value: "40", title: "40" },
+                    ].map((option) => (
+                      <SegmentedControl.Item
+                        key={option.value}
+                        value={option.value}
+                        className={tx("[&_.rt-SegmentedControlItemLabel]:px-1")}
+                      >
+                        {option.title}
+                      </SegmentedControl.Item>
+                    ))}
+                  </SegmentedControl.Root>
+                </div>
+              </>
+            )}
+          </div>
         )}
       </div>
     </div>
