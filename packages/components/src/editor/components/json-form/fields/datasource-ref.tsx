@@ -74,7 +74,6 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
 
   // We need to get the fields from the datasource schema. This will be used to map fields from the datasource to the schema
   // The datasource schema could be an object or an array of objects
-
   const schemaFields =
     datasourceSchema.type === "array" ? datasourceSchema.items?.properties : datasourceSchema.properties;
 
