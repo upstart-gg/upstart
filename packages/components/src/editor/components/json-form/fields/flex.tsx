@@ -1,6 +1,6 @@
 import type { FieldProps } from "./types";
 import { Text, Select } from "@upstart.gg/style-system/system";
-import type { FlexSettings } from "@upstart.gg/sdk/shared/bricks/props/style-props";
+import type { FlexSettings } from "@upstart.gg/sdk/shared/bricks/props/all";
 import { fieldLabel } from "../form-class";
 import { SegmentedControl, Switch } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
@@ -105,6 +105,7 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
             <Select.Trigger radius="large" variant="ghost" />
             <Select.Content position="popper">
               <Select.Group>
+                {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
                 {schema.properties.justifyContent.anyOf.map((item: any) => (
                   <Select.Item key={item.const} value={item.const}>
                     {item.title}
@@ -129,6 +130,7 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
             <Select.Trigger radius="large" variant="ghost" />
             <Select.Content position="popper">
               <Select.Group>
+                {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
                 {schema.properties.alignItems.anyOf.map((item: any) => (
                   <Select.Item key={item.const} value={item.const}>
                     {item.title}

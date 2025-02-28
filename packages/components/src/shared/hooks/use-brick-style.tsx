@@ -4,8 +4,8 @@ import type {
   textStyleProps,
   flexProps,
   alignBasicProps,
-} from "@upstart.gg/sdk/bricks/props/style-props";
-import type { commonProps } from "@upstart.gg/sdk/bricks/props/common";
+} from "@upstart.gg/sdk/bricks/props/all";
+import type { commonProps } from "@upstart.gg/sdk/shared/bricks/props/_common";
 import type { Static } from "@sinclair/typebox";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";

@@ -11,7 +11,7 @@ import type { ElementColor } from "./themes/color-system";
 import type { JSONSchemaType } from "ajv";
 import { ajv } from "./ajv";
 import { typeboxSchemaToJSONSchema } from "./utils/schema";
-import { background } from "./bricks/props/style-props";
+import { background } from "./bricks/props/all";
 
 type EnumOption = {
   title?: string;

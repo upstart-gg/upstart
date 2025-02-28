@@ -1,6 +1,6 @@
 import type { FieldProps } from "./types";
 import { Text, Select, Slider } from "@upstart.gg/style-system/system";
-import type { EffectsSettings } from "@upstart.gg/sdk/shared/bricks/props/style-props";
+import type { EffectsSettings } from "@upstart.gg/sdk/shared/bricks/props/all";
 import { fieldLabel } from "../form-class";
 import { useState } from "react";
 

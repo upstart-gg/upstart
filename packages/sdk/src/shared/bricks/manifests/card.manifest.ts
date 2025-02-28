@@ -1,9 +1,9 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { commonProps, contentAwareProps, richText } from "../props/common";
+import { commonProps, commonStyleProps } from "../props/_common";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { LAYOUT_COLS } from "~/shared/layout-constants";
-import { backgroundColor, color, commonStyleProps, padding } from "../props/style-props";
+import { backgroundColor, padding } from "../props/all";
 
 export const manifest = defineBrickManifest({
   type: "card",
@@ -104,14 +104,6 @@ export const manifest = defineBrickManifest({
           },
         },
       ),
-      // footer: Type.Optional(
-      //   Type.Composite([contentAwareProps, commonProps], {
-      //     title: "Footer",
-      //     "ui:group:title": "Footer",
-      //     "ui:group": "card-footer",
-      //     "ui:group:order": 0,
-      //   }),
-      // ),
     }),
   ]),
 });

@@ -22,9 +22,11 @@ import type {
   FlexSettings,
   TextSettings,
   AlignBasicSettings,
-} from "@upstart.gg/sdk/shared/bricks/props/style-props";
+  DatasourceRef,
+  ImageProps,
+  TextContent,
+} from "@upstart.gg/sdk/shared/bricks/props/all";
 import { EffectsField } from "./fields/effects";
-import type { DatasourceRef, ImageProps, RichText } from "@upstart.gg/sdk/shared/bricks/props/common";
 import type { Attributes, JSONSchemaType } from "@upstart.gg/sdk/shared/attributes";
 import { PagePaddingField } from "./fields/padding";
 import { TextField } from "./fields/text";
@@ -268,7 +270,7 @@ export function getFormComponents({
           };
         }
         case "rich-text": {
-          const currentValue = (get(formData, id) ?? commonProps.schema.default) as RichText;
+          const currentValue = (get(formData, id) ?? commonProps.schema.default) as TextContent;
           return {
             group,
             groupTitle,

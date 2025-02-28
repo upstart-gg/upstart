@@ -1,10 +1,8 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { commonProps, contentAwareProps } from "../props/common";
+import { commonProps, commonStyleProps, textContentProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { LAYOUT_COLS } from "~/shared/layout-constants";
-import { commonStyleProps } from "../props/style-props";
-import type { FC } from "react";
 
 // get filename from esm import.meta
 export const manifest = defineBrickManifest({

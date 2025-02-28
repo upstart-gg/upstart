@@ -1,45 +1,36 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { commonProps, contentAwareHeroProps, contentAwareProps } from "../props/common";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { LAYOUT_COLS } from "~/shared/layout-constants";
-import {
-  layout,
-  border,
-  background,
-  getTextShadowSchema,
-  alignBasicProps,
-  effects,
-} from "../props/style-props";
+import { border, effects, layout, background, alignBasic, commonProps } from "../props/all";
 
-const heroProps = Type.Object(
+const heroSize = Type.Union(
+  [
+    Type.Literal("hero-size-md", { title: "M" }),
+    Type.Literal("hero-size-lg", { title: "L" }),
+    Type.Literal("hero-size-xl", { title: "XL" }),
+    Type.Literal("hero-size-2xl", { title: "2XL" }),
+    Type.Literal("hero-size-3xl", { title: "3XL" }),
+  ],
   {
-    heroSize: Type.Union(
-      [
-        Type.Literal("hero-size-md", { title: "M" }),
-        Type.Literal("hero-size-lg", { title: "L" }),
-        Type.Literal("hero-size-xl", { title: "XL" }),
-        Type.Literal("hero-size-2xl", { title: "2XL" }),
-        Type.Literal("hero-size-3xl", { title: "3XL" }),
-      ],
-      {
-        title: "Text size",
-        default: "hero-size-lg",
-        "ui:group": "hero",
-        "ui:group:title": "Display",
-        "ui:group:order": 0,
-        "ui:display": "button-group",
-        "ui:responsive": true,
-      },
-    ),
-  },
-  {
-    title: "Display",
-    default: {
-      heroSize: "hero-size-lg",
-    },
+    title: "Text size",
+    default: "hero-size-lg",
+    "ui:group": "hero",
+    "ui:group:title": "Display",
+    "ui:group:order": 0,
+    "ui:display": "button-group",
+    "ui:responsive": true,
   },
 );
+
+export const content = Type.String({
+  default: "<h1>some text here</h1>",
+  "ui:field": "hidden",
+  "ui:paragraph-mode": "hero",
+  "ui:group": "content",
+  "ui:group:title": "Content",
+  "ui:group:order": 3,
+});
 
 export const manifest = defineBrickManifest({
   type: "hero",
@@ -70,11 +61,8 @@ export const manifest = defineBrickManifest({
 </svg>
   `,
   props: Type.Composite([
-    heroProps,
-    alignBasicProps,
-    contentAwareHeroProps,
     commonProps,
-    Type.Object({ layout, border, background, effects }),
+    Type.Object({ layout, border, background, effects, heroSize, alignBasic, content }),
   ]),
 });
 

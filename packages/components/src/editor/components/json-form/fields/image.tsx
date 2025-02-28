@@ -3,7 +3,7 @@ import { nanoid } from "nanoid";
 import { Button, Text, Tooltip, IconButton } from "@upstart.gg/style-system/system";
 import { useMemo, useState } from "react";
 import ModalSearchImage from "~/editor/components/ModalSearchImage";
-import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/common";
+import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/all";
 import { IoIosHelpCircleOutline } from "react-icons/io";
 
 const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {

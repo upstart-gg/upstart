@@ -11,14 +11,14 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
       {props.cardTitle?.content && (
         <TextBrick
           {...props}
-          content={props.cardTitle.content}
+          textContent={props.cardTitle.content}
           className={tx(props.className, "card-title flex-1")}
         />
       )}
       {props.cardBody?.content && (
         <TextBrick
           {...props}
-          content={props.cardBody.content}
+          textContent={props.cardBody.content}
           className={tx(props.className, "card-body flex-1")}
         />
       )}

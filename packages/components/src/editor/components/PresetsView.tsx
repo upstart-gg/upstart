@@ -1,5 +1,9 @@
-import { stylePreset, type StylePreset } from "@upstart.gg/sdk/shared/bricks/props/common";
-import { getPresetStyles, type StyleProperties } from "@upstart.gg/sdk/shared/bricks/props/style-presets";
+import {
+  getPresetStyles,
+  type StylePreset,
+  type StyleProperties,
+  stylePreset,
+} from "@upstart.gg/sdk/shared/bricks/props/all";
 import { tx } from "@upstart.gg/style-system/twind";
 import { fieldLabel } from "./json-form/form-class";
 import { Button, Text, Select, Tooltip, IconButton, SegmentedControl } from "@upstart.gg/style-system/system";

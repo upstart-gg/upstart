@@ -1,9 +1,7 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { commonProps, contentAwareProps, datasourceRefProps } from "../props/common";
+import { commonProps, commonStyleProps, datasourceRefProps, textContentProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { LAYOUT_COLS } from "~/shared/layout-constants";
-import { commonStyleProps } from "../props/style-props";
 import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
 
 export const datasource = Type.Array(
@@ -51,7 +49,7 @@ export const manifest = defineBrickManifest({
     <rect x="13" y="14" width="6" height="5" rx="1"></rect>
 </svg>`,
   props: Type.Composite([
-    contentAwareProps,
+    textContentProps,
     commonProps,
     Type.Object({
       imagesWallLayout: Type.Union(

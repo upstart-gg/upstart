@@ -219,7 +219,9 @@ function ElementInspector({ brick, manifest }: { brick: Brick; manifest: BrickMa
           formData,
           filter: (prop) => {
             return (
-              (previewMode !== "mobile" || prop["ui:responsive"]) && prop["ui:field"] !== "datasource-ref"
+              (previewMode !== "mobile" || prop["ui:responsive"]) &&
+              prop["ui:field"] !== "datasource-ref" &&
+              prop["ui:inspector-tab"] === "style"
             );
           },
           onChange,

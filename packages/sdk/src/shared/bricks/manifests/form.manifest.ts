@@ -1,6 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { commonProps, contentAwareProps } from "../props/common";
+import { commonProps, textContentProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { LAYOUT_COLS } from "~/shared/layout-constants";
 
@@ -40,7 +40,7 @@ export const manifest = defineBrickManifest({
     ></rect>
 </svg>
   `,
-  props: Type.Composite([contentAwareProps, commonProps]),
+  props: Type.Composite([textContentProps, commonProps]),
 });
 
 export type Manifest = Static<typeof manifest>;

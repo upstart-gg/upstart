@@ -1,9 +1,8 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { commonProps } from "../props/common";
+import { commonProps, commonStyleProps, flexProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { LAYOUT_COLS } from "~/shared/layout-constants";
-import { backgroundColor, color, commonStyleProps, padding, flex, flexProps } from "../props/style-props";
 
 export const manifest = defineBrickManifest({
   type: "container",

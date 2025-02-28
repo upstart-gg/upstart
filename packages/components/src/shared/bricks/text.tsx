@@ -1,4 +1,3 @@
-import { Value } from "@sinclair/typebox/value";
 import { forwardRef } from "react";
 import { memoizeWithout } from "../utils/memoize-without";
 import { useEditableText } from "~/shared/hooks/use-editable-text";
@@ -22,7 +21,7 @@ const NonEditableText = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props,
       ref={ref}
       className={tx(className)}
       // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-      dangerouslySetInnerHTML={{ __html: props.content }}
+      dangerouslySetInnerHTML={{ __html: props.textContent }}
     />
   );
 });
@@ -31,7 +30,7 @@ const EditableText = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, re
   const className = useBrickStyle(props);
   const content = useEditableText({
     brickId: props.id,
-    initialContent: props.content,
+    initialContent: props.textContent,
     inline: true,
     enabled: true,
   });
@@ -43,4 +42,4 @@ const EditableText = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, re
 });
 
 // Memoize the component to avoid re-rendering when the text content changes
-export default memoizeWithout(Text, "content");
+export default memoizeWithout(Text, "textContent");

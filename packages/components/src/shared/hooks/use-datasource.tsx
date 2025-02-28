@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import type { Static, TArray, TObject } from "@sinclair/typebox";
-import type { DatasourceRef } from "@upstart.gg/sdk/shared/bricks/props/common";
+import type { DatasourceRef } from "@upstart.gg/sdk/shared/bricks/props/all";
 import { Value } from "@sinclair/typebox/value";
 
 type DatasourceSchema = TObject | TArray<TObject>;

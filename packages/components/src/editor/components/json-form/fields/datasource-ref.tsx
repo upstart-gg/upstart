@@ -2,7 +2,7 @@ import type { FieldProps } from "./types";
 import { Text } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import { SegmentedControl, Select } from "@upstart.gg/style-system/system";
-import type { DatasourceRef } from "@upstart.gg/sdk/shared/bricks/props/common";
+import type { DatasourceRef } from "@upstart.gg/sdk/shared/bricks/props/all";
 import { fieldLabel } from "../form-class";
 import { type TProperties, type TSchema, Type } from "@sinclair/typebox";
 import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";

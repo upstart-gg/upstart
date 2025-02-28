@@ -3,7 +3,7 @@ import { nanoid } from "nanoid";
 import { Button, Text, Select, Tooltip, IconButton } from "@upstart.gg/style-system/system";
 import { useMemo, useState } from "react";
 import ModalSearchImage from "~/editor/components/ModalSearchImage";
-import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/style-props";
+import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/all";
 import ColorField from "./color";
 import { useUploader } from "../../UploaderContext";
 import { IoCloseOutline } from "react-icons/io5";

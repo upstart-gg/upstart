@@ -1,5 +1,7 @@
-import type { StylePreset } from "./common";
-import type { EffectsSettings, BackgroundSettings, BorderSettings } from "./style-props";
+import { Type, type Static } from "@sinclair/typebox";
+import type { BorderSettings } from "./border";
+import type { EffectsSettings } from "./effects";
+import type { BackgroundSettings } from "./background";
 
 export type StyleProperties = {
   text?: string;
@@ -7,6 +9,108 @@ export type StyleProperties = {
   border?: Partial<BorderSettings>;
   effects?: EffectsSettings;
 };
+
+export const stylePreset = Type.Object(
+  {
+    style: Type.Union([
+      Type.Literal("ghost", {
+        title: "Ghost",
+        description: "Minimal style with transparent background and no border",
+      }),
+      Type.Literal("plain", {
+        title: "Plain",
+        description: "Simple style with solid dark background and basic border",
+      }),
+      Type.Literal("plain2", {
+        title: "Plain 2",
+        description: "Simple style with solid dark background and basic border",
+      }),
+      Type.Literal("plain3", {
+        title: "Plain 3",
+        description: "Simple style with solid dark background and basic border",
+      }),
+      Type.Literal("modern", {
+        title: "Modern",
+        description: "Bold borders with generous spacing and sharp corners",
+      }),
+      Type.Literal("modern2", {
+        title: "Modern 2",
+        description: "Bold borders with generous spacing and sharp corners",
+      }),
+      Type.Literal("soft", {
+        title: "Soft",
+        description: "Gentle curves and muted colors for a comfortable feel",
+      }),
+      Type.Literal("glass", {
+        title: "Glass",
+        description: "Translucent backdrop with blur effect for depth",
+      }),
+      Type.Literal("elevated", {
+        title: "Elevated",
+        description: "Floating appearance with shadow depth and no borders",
+      }),
+      Type.Literal("outlined", {
+        title: "Outlined",
+        description: "Simple outline with hover effect and no background",
+      }),
+      Type.Literal("paper", {
+        title: "Paper",
+        description: "Subtle texture and slight rotation for a paper-like appearance",
+      }),
+      Type.Literal("gradient", {
+        title: "Gradient",
+        description: "Smooth color gradients background with soft edges",
+      }),
+      Type.Literal("gradient2", {
+        title: "Gradient 2",
+        description: "Smooth color gradients background with soft edges",
+      }),
+      Type.Literal("gradient3", {
+        title: "Gradient 3",
+        description: "Smooth color gradients background with soft edges",
+      }),
+      Type.Literal("gradient4", {
+        title: "Gradient 4",
+        description: "Smooth color gradients background with soft edges",
+      }),
+      Type.Literal("gradient5", {
+        title: "Gradient 5",
+        description: "Smooth color gradients background with soft edges",
+      }),
+      Type.Literal("gradient6", {
+        title: "Gradient 6",
+        description: "Smooth color gradients background with soft edges",
+      }),
+      Type.Literal("callout", {
+        title: "Callout",
+        description: "Prominent style for important information or CTAs",
+      }),
+    ]),
+    variant: Type.Union([
+      Type.Literal("primary", {
+        title: "Primary",
+        description: "Uses the theme primary color as the main color",
+      }),
+      Type.Literal("secondary", {
+        title: "Secondary",
+        description: "Uses the theme secondary color as the main color",
+      }),
+      Type.Literal("accent", {
+        title: "Accent",
+        description: "Uses the theme accent color as the main color",
+      }),
+      Type.Literal("neutral", {
+        title: "Neutral",
+        description: "Uses the theme neutral color as the main color",
+      }),
+    ]),
+  },
+  {
+    "ui:field": "hidden",
+  },
+);
+
+export type StylePreset = Static<typeof stylePreset>;
 
 export function getPresetStyles({ style, variant }: StylePreset): StyleProperties {
   // Variant-specific color mappings
