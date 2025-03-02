@@ -4,6 +4,10 @@ import { commonProps, commonStyleProps, containerLayoutProps, datasourceRefProps
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { LAYOUT_COLS } from "~/shared/layout-constants";
 
+// Generic container can hold any type of array data source
+export const datasource = Type.Array(Type.Object({}, { additionalProperties: true }));
+export type Datasource = typeof datasource;
+
 export const manifest = defineBrickManifest({
   type: "container",
   kind: "brick",
@@ -39,6 +43,7 @@ export const manifest = defineBrickManifest({
 </svg>
   `,
   props: Type.Composite([containerLayoutProps, commonProps, datasourceRefProps, commonStyleProps]),
+  datasource,
 });
 
 export type Manifest = Static<typeof manifest>;

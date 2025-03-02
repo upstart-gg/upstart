@@ -30,11 +30,11 @@ export function useDatasource<
   const data = dsRef.id ? datasources.get(dsRef.id) : null;
 
   return {
-    id: dsRef.id,
+    datasourceId: dsRef.id,
     data: data ?? Value.Create(schema),
     isSample: !data,
   } as {
-    id: string;
+    datasourceId: string;
     data: Static<S>;
     isSample: boolean;
   };
