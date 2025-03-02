@@ -4,7 +4,6 @@ import { commonProps, commonStyleProps, textContentProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { LAYOUT_COLS } from "~/shared/layout-constants";
 
-// get filename from esm import.meta
 export const manifest = defineBrickManifest({
   type: "button",
   title: "Button",
@@ -17,14 +16,6 @@ export const manifest = defineBrickManifest({
   preferredHeight: {
     mobile: 6,
     desktop: 6,
-  },
-  minWidth: {
-    mobile: 3,
-    desktop: 3,
-  },
-  minHeight: {
-    mobile: 3,
-    desktop: 3,
   },
   icon: `
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">

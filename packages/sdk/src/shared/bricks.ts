@@ -293,9 +293,9 @@ export function defineBricks<B extends DefinedBrick[]>(bricks: B): Brick[] {
       ...brick,
       props: {
         ...brick.props,
-        ...("children" in brick.props
+        ...("childrenBricks" in brick.props
           ? {
-              children: (brick.props.children as DefinedBrick[]).map((childBrick) => ({
+              childrenBricks: (brick.props.childrenBricks as DefinedBrick[]).map((childBrick) => ({
                 id: `brick-${generateId()}`,
                 ...defaults[childBrick.type],
                 ...childBrick,

@@ -8,8 +8,6 @@ export const flex = Type.Object(
       {
         title: "Direction",
         description: "The direction of the container",
-        "ui:field": "enum",
-        "ui:display": "button-group",
         ...groupLayout,
       },
     ),
@@ -18,8 +16,6 @@ export const flex = Type.Object(
       {
         title: "Wrap",
         description: "Wrap items",
-        "ui:field": "enum",
-        "ui:display": "button-group",
         ...groupLayout,
       },
     ),
@@ -35,7 +31,6 @@ export const flex = Type.Object(
       {
         title: "Gap",
         description: "Space between items",
-        "ui:field": "enum",
         ...groupLayout,
       },
     ),
@@ -86,9 +81,59 @@ export const flex = Type.Object(
 
 export type FlexSettings = Static<typeof flex>;
 
-export const flexProps = Type.Object({
-  flex,
-  children: Type.Array(Type.Any(), {
-    "ui:field": "hidden",
+export const grid = Type.Object(
+  {
+    gap: Type.Union(
+      [
+        Type.Literal("gap-0", { title: "None" }),
+        Type.Literal("gap-1", { title: "S" }),
+        Type.Literal("gap-2", { title: "M" }),
+        Type.Literal("gap-4", { title: "L" }),
+        Type.Literal("gap-8", { title: "XL" }),
+        Type.Literal("gap-16", { title: "XXL" }),
+      ],
+      {
+        title: "Gap",
+        description: "Space between items",
+        "ui:field": "enum",
+        ...groupLayout,
+      },
+    ),
+    columns: Type.Number({
+      title: "Columns",
+      description: "Number of columns",
+      "ui:group": "grid",
+      "ui:field": "slider",
+      default: 2,
+      minimum: 1,
+      maximum: 12,
+    }),
+  },
+  {
+    title: "Layout",
+    "ui:field": "grid",
+    "ui:responsive": true,
+    default: {
+      gap: "gap-1",
+      columns: 2,
+    },
+    ...groupLayout,
+  },
+);
+
+export type GridSettings = Static<typeof grid>;
+
+export const containerLayoutProps = Type.Object({
+  layoutType: Type.Union([Type.Literal("flex", { title: "Flex" }), Type.Literal("grid", { title: "Grid" })], {
+    title: "Layout type",
+    description:
+      "Type of the container. Flex layout arranges items in a one-dimensional line. Grid layout arranges items in a two-dimensional grid.",
+    default: "flex",
+    "ui:field": "enum",
+    "ui:order": 0,
+    "ui:responsive": true,
+    ...groupLayout,
   }),
+  flex,
+  grid,
 });

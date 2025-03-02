@@ -17,8 +17,13 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
     } satisfies Partial<FlexSettings>,
     onChange,
     description,
+    formData,
     schema,
   } = props;
+
+  if (formData.layoutType !== "flex") {
+    return null;
+  }
 
   const onSettingsChange = (newVal: Partial<FlexSettings>) => onChange({ ...currentValue, ...newVal });
 
@@ -31,7 +36,7 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
       )}
       <div className="flex items-start flex-wrap gap-x-4 gap-y-1">
         {/* Direction */}
-        <div className="flex flex-col gap-1 basis-1/2">
+        <div className="flex flex-col gap-1 basis-2/5">
           <label className={fieldLabel}>Direction</label>
           <SegmentedControl.Root
             onValueChange={(value) => onSettingsChange({ direction: value as FlexSettings["direction"] })}
@@ -55,7 +60,10 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
 
         {/* Gap */}
         <div className="flex flex-col gap-1 flex-1">
-          <label className={fieldLabel}>Gap</label>
+          <div className="flex gap-1 items-center">
+            <label className={fieldLabel}>Gap</label>
+            <HelpIcon help="Gap between elements" />
+          </div>
           <Select.Root
             defaultValue={currentValue.gap}
             size="2"
@@ -77,7 +85,7 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
 
         {/* Wrap */}
         <div className="flex flex-col gap-1 flex-1 basis-1/4">
-          <div className="flex justify-between items-center">
+          <div className="flex gap-1 items-center">
             <label className={fieldLabel}>Wrap</label>
             <HelpIcon help="Whether the children bricks should wrap to the next line when they reach the end of the container." />
           </div>
@@ -94,7 +102,10 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
         <div className="basis-full w-0 h-2" />
 
         <div className="flex flex-col gap-1 flex-1">
-          <label className={fieldLabel}>Justify</label>
+          <div className="flex gap-1 items-center">
+            <label className={fieldLabel}>Justify</label>
+            <HelpIcon help="How the children elements are justified (following the chosen direction)" />
+          </div>
           <Select.Root
             defaultValue={currentValue.justifyContent}
             size="2"
@@ -117,9 +128,9 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
         </div>
 
         <div className="flex flex-col gap-1 flex-1">
-          <div className="flex justify-between items-center">
+          <div className="flex gap-1 items-center">
             <label className={fieldLabel}>Align items</label>
-            <HelpIcon help="Choose how the children should be aligned within the container, on the cross axis." />
+            <HelpIcon help="How the children elements should be aligned (opposite to the chosen direction)" />
           </div>
 
           <Select.Root

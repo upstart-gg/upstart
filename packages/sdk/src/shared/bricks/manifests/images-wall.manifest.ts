@@ -93,33 +93,6 @@ export const manifest = defineBrickManifest({
     }),
     commonStyleProps,
     datasourceRefProps,
-    // getDatasourcesProp(
-    //   Type.Object(
-    //     {
-    //       images: Type.Array(
-    //         Type.Object({
-    //           src: Type.String({ format: "uri" }),
-    //           alt: Type.String({ default: "" }),
-    //         }),
-    //       ),
-    //     },
-    //     {
-    //       default: {
-    //         images: [
-    //           {
-    //             src: canvasDataURI,
-    //             alt: "my image",
-    //           },
-    //           { src: canvasDataURI, alt: "my image" },
-    //           { src: canvasDataURI, alt: "my image" },
-    //           { src: canvasDataURI, alt: "my image" },
-    //           { src: canvasDataURI, alt: "my image" },
-    //           { src: canvasDataURI, alt: "my image" },
-    //         ],
-    //       },
-    //     },
-    //   ),
-    // ),
   ]),
   datasource,
 });

@@ -219,9 +219,7 @@ function ElementInspector({ brick, manifest }: { brick: Brick; manifest: BrickMa
           formData,
           filter: (prop) => {
             return (
-              (previewMode !== "mobile" || prop["ui:responsive"]) &&
-              prop["ui:field"] !== "datasource-ref" &&
-              prop["ui:inspector-tab"] === "style"
+              (previewMode !== "mobile" || prop["ui:responsive"]) && prop["ui:inspector-tab"] === "style"
             );
           },
           onChange,
@@ -262,7 +260,10 @@ function ContentTab({ brick, manifest }: { brick: Brick; manifest: BrickManifest
           formSchema: manifest.properties.props as unknown as JSONSchemaType<unknown>,
           formData: brickInfo.props,
           filter: (prop) => {
-            return prop["ui:field"] === "datasource-ref";
+            return (
+              prop["ui:inspector-tab"] === "content"
+              // &&               (brickInfo.props?.isDynamic || prop["ui:field"] === "dynamic-content-switch")
+            );
           },
           onChange,
         })}

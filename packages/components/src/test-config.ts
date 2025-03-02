@@ -1,4 +1,3 @@
-// @ts-check
 import { Type } from "@sinclair/typebox";
 import { defineDataSources } from "@upstart.gg/sdk/datasources";
 import { defineAttributes, attr } from "@upstart.gg/sdk/attributes";
@@ -65,10 +64,11 @@ const homePageBricks = defineBricks([
     {
       type: "container",
       props: {
-        children: [
-          { type: "text", props: { content: "Hello World #1" } },
-          { type: "text", props: { content: "Hello World #2" } },
-          { type: "text", props: { content: "Hello World #3" } },
+        layoutType: "flex",
+        childrenBricks: [
+          { type: "text", props: { textContent: "Hello World #1" } },
+          { type: "text", props: { textContent: "Hello World #2" } },
+          { type: "text", props: { textContent: "Hello World #3" } },
         ],
       },
       position: {

@@ -2,7 +2,7 @@ import { tx, apply, css } from "@upstart.gg/style-system/twind";
 import type {
   commonStyleProps,
   textStyleProps,
-  flexProps,
+  containerLayoutProps,
   alignBasicProps,
 } from "@upstart.gg/sdk/bricks/props/all";
 import type { commonProps } from "@upstart.gg/sdk/shared/bricks/props/_common";
@@ -17,7 +17,7 @@ type AllStyleProps = Partial<Static<typeof commonStyleProps>> &
   Partial<Static<typeof textStyleProps>> &
   Partial<Static<typeof commonProps>> &
   Partial<Static<typeof alignBasicProps>> &
-  Partial<Static<typeof flexProps>>;
+  Partial<Static<typeof containerLayoutProps>>;
 
 type UseBrickStyleWrapperProps = {
   brick: Brick;

@@ -12,7 +12,7 @@ import { Fragment, type ReactNode } from "react";
 import { sortJsonSchemaProperties } from "~/shared/utils/sort-json-schema-props";
 import type { FieldProps } from "./fields/types";
 import { SegmentedControl } from "@upstart.gg/style-system/system";
-import { tx } from "@upstart.gg/style-system/twind";
+import { tx, css } from "@upstart.gg/style-system/twind";
 import get from "lodash-es/get";
 import type {
   BackgroundSettings,
@@ -20,6 +20,7 @@ import type {
   LayoutSettings,
   EffectsSettings,
   FlexSettings,
+  GridSettings,
   TextSettings,
   AlignBasicSettings,
   DatasourceRef,
@@ -36,6 +37,7 @@ import { Text } from "@upstart.gg/style-system/system";
 import { AlignBasicField } from "./fields/align-basic";
 import DatasourceField from "./fields/datasource-ref";
 import DatasourceRefField from "./fields/datasource-ref";
+import { GridField } from "./fields/grid";
 
 type FormComponent = { group: string; groupTitle: string; component: ReactNode };
 type FormComponents = (FormComponent | { group: string; groupTitle: string; components: FormComponent[] })[];
@@ -210,6 +212,21 @@ export function getFormComponents({
           };
         }
 
+        case "grid": {
+          const currentValue = (get(formData, id) ?? commonProps.schema.default) as GridSettings;
+          return {
+            group,
+            groupTitle,
+            component: (
+              <GridField
+                currentValue={currentValue}
+                onChange={(value: GridSettings | null) => onChange({ [id]: value }, id)}
+                {...commonProps}
+              />
+            ),
+          };
+        }
+
         case "padding": {
           const currentValue = (get(formData, id) ??
             commonProps.schema.default) as Attributes["$pagePadding"];
@@ -313,6 +330,7 @@ export function getFormComponents({
           };
         }
         case "boolean":
+        case "dynamic-content-switch": // alias to "switch", but has a custom type to easily handle filtering in the inspector
         case "switch": {
           const currentValue = (get(formData, id) ?? commonProps.schema.default) as boolean;
           return {
@@ -416,6 +434,7 @@ export function FormRenderer({
   previewMode,
 }: { components: FormComponents; brickId: string; previewMode?: string }) {
   let currentGroup: string | null = null;
+
   return components.map((element, index) => {
     const node = (
       <Fragment key={`${previewMode}_${brickId}_${index}`}>
@@ -428,7 +447,10 @@ export function FormRenderer({
             {element.groupTitle}
           </h3>
         )}
-        <div className="form-group flex flex-col gap-3">
+        <div
+          className={tx("form-group flex flex-col gap-3", css`&:not(:has(div)) { display: none; }`)}
+          data-group={element.group}
+        >
           {"component" in element
             ? element.component
             : element.components.map((c, i) => (

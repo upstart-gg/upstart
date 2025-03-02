@@ -10,11 +10,17 @@ import { tx, css } from "@upstart.gg/style-system/twind";
 import { useDatasource } from "../hooks/use-datasource";
 import { useBrickStyle } from "../hooks/use-brick-style";
 
+/**
+ * Containers can operate in two modes: Static and Dynamic.
+ * `props.childrenBricks` are present only when the container is in Static mode. Its children are the bricks that are inside the container.
+ * Otherwise, the children data are fetched from the datasource and rendered accordingly.
+ */
 const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
   const { id, data, isSample } = useDatasource<Manifest["props"]["datasourceRef"], typeof datasource>(
     props.datasourceRef,
     datasource,
   );
+  const children = props.childrenBricks;
   const className = useBrickStyle(props);
   const gapInt = parseInt(props.imagesWallGap.replace("gap-", "")) / 4;
   return (
@@ -38,7 +44,7 @@ const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
         props.imagesWallGap,
       )}
     >
-      {isSample && (
+      {props.editable && isSample && (
         <div className="absolute top-0 left-0 right-0 bottom-0 bg-white/30 rounded-lg flex items-center justify-center">
           <div className="text-white text-center rounded-md bg-black/30 p-4">
             <div className="text-2xl font-bold">Images Wall</div>

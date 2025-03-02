@@ -1,6 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { commonProps, commonStyleProps, flexProps } from "../props/all";
+import { commonProps, commonStyleProps, containerLayoutProps, datasourceRefProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { LAYOUT_COLS } from "~/shared/layout-constants";
 
@@ -38,7 +38,7 @@ export const manifest = defineBrickManifest({
     <line x1="12" y1="3" x2="12" y2="21"></line>
 </svg>
   `,
-  props: Type.Composite([flexProps, commonProps, commonStyleProps]),
+  props: Type.Composite([containerLayoutProps, commonProps, datasourceRefProps, commonStyleProps]),
 });
 
 export type Manifest = Static<typeof manifest>;

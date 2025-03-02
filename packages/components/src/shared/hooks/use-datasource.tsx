@@ -21,10 +21,11 @@ function useDatasourceContext() {
   return context;
 }
 
-export function useDatasource<D extends DatasourceRef, S extends DatasourceSchema>(dsRef: D, schema: S) {
+export function useDatasource<
+  D extends DatasourceRef = DatasourceRef,
+  S extends DatasourceSchema = DatasourceSchema,
+>(dsRef: D, schema: S) {
   const datasources = useDatasourceContext();
-
-  console.log("useDatasource dsRef: %o", dsRef);
 
   const data = dsRef.id ? datasources.get(dsRef.id) : null;
 

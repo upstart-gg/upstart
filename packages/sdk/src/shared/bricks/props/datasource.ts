@@ -46,6 +46,7 @@ export const datasourceRef = Type.Object(
     "ui:field": "datasource-ref",
     "ui:group": "content",
     "ui:group:title": "Database",
+    "ui:inspector-tab": "content",
   },
 );
 

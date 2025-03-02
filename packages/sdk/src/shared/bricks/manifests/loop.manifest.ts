@@ -38,14 +38,8 @@ export const manifest = defineBrickManifest({
   props: Type.Composite([
     commonProps,
     Type.Object({
-      layoutType: Type.Union([
-        Type.Literal("vertical", { title: "Vertical" }),
-        Type.Literal("horizontal", { title: "Horizontal" }),
-        Type.Literal("grid", { title: "Grid" }),
-      ]),
       gap: Type.Optional(Type.Number({ default: 0 })),
       columns: Type.Optional(Type.Number({ default: 2 })),
-      children: Type.Array(Type.Any()),
       data: Type.Union([
         Type.Array(Type.Any()),
         Type.Object({

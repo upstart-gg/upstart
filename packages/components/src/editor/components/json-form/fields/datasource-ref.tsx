@@ -11,10 +11,57 @@ import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { useEffect, useState } from "react";
 
+const allDatasources = [
+  {
+    id: "1",
+    label: "Marketing assets",
+    schema: Type.Object({
+      name: Type.String({ title: "Name" }),
+      source: Type.String({ title: "Source (url)", format: "uri" }),
+    }),
+  },
+  {
+    id: "2",
+    label: "Vacation pictures",
+    schema: Type.Object({
+      location: Type.String({ title: "Location" }),
+      url: Type.String({ title: "Photo URL", format: "uri" }),
+      peopleCount: Type.Number({ title: "Number of people" }),
+    }),
+  },
+  {
+    id: "4",
+    label: "Creations de Noël 2024",
+    schema: Type.Array(
+      Type.Object({
+        date: Type.String({ title: "Date", format: "date" }),
+        count: Type.Number({
+          title: "Product count",
+        }),
+      }),
+    ),
+  },
+  {
+    id: "3",
+    label: "Assets divers",
+    schema: Type.Object({
+      name: Type.String({ title: "Name" }),
+      src: Type.String({ title: "Source (url)", format: "uri" }),
+      count: Type.Number({
+        title: "Product count",
+      }),
+    }),
+  },
+];
+
 const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
   const { onChange, title, currentValue, brickId } = props;
   const getBrickInfo = useGetBrick();
   const brickInfo = getBrickInfo(brickId);
+
+  if (!brickInfo?.props.isDynamic) {
+    return null;
+  }
 
   invariant(brickInfo, `Could not find brick info for ${brickId} in DatasourceRefField`);
 
@@ -23,50 +70,6 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
   };
 
   console.log("datasource props", props);
-
-  const allDatasources = [
-    {
-      id: "1",
-      label: "Marketing assets",
-      schema: Type.Object({
-        name: Type.String({ title: "Name" }),
-        source: Type.String({ title: "Source (url)", format: "uri" }),
-      }),
-    },
-    {
-      id: "2",
-      label: "Vacation pictures",
-      schema: Type.Object({
-        location: Type.String({ title: "Location" }),
-        url: Type.String({ title: "Photo URL", format: "uri" }),
-        peopleCount: Type.Number({ title: "Number of people" }),
-      }),
-    },
-    {
-      id: "4",
-      label: "Creations de Noël 2024",
-      schema: Type.Array(
-        Type.Object({
-          date: Type.String({ title: "Date", format: "date" }),
-          count: Type.Number({
-            title: "Product count",
-          }),
-        }),
-      ),
-    },
-    {
-      id: "3",
-      label: "Assets divers",
-      schema: Type.Object({
-        name: Type.String({ title: "Name" }),
-        src: Type.String({ title: "Source (url)", format: "uri" }),
-        count: Type.Number({
-          title: "Product count",
-        }),
-      }),
-    },
-  ];
-
   const brickManifest = manifests[brickInfo.type];
   const datasourceSchema = brickManifest.properties.datasource;
 
@@ -119,6 +122,13 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
   return (
     <div className="field field-datasource">
       <div className="flex flex-col gap-3">
+        <h3
+          className={tx(
+            "text-sm font-semibold !dark:bg-dark-600 bg-upstart-100 px-2 py-1 sticky top-0 z-[999] -mx-3",
+          )}
+        >
+          Database
+        </h3>
         <div className="flex flex-col flex-1 gap-1">
           <SegmentedControl.Root
             onValueChange={(val) => {
@@ -202,7 +212,7 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
             </div>
             {Object.keys(externalFields).length > 0 && (
               <>
-                <div className="flex flex-col flex-1 gap-2">
+                <div className="flex flex-col flex-1 gap-3">
                   <h3
                     className={tx(
                       "text-sm font-semibold !dark:bg-dark-600 bg-upstart-100 px-2 py-1 sticky top-0 z-[999] -mx-3",
@@ -210,9 +220,14 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
                   >
                     Fields mapping
                   </h3>
+                  <Text as="p" color="gray" size="1">
+                    Map fields from the database to the brick properties. Properties marked in bold are
+                    required.
+                  </Text>
                   <FieldsMapper
                     externalFields={externalFields}
                     schemaFields={schemaFields}
+                    schemaRequiredFields={schemaRequiredFields}
                     onChange={onMappingChange}
                     currentMapping={currentValue.mapping}
                   />
@@ -271,26 +286,35 @@ function FieldsMapper({
   currentMapping,
   externalFields,
   schemaFields,
+  schemaRequiredFields,
   onChange,
 }: {
   currentMapping: Record<string, string>;
   externalFields: TProperties;
   schemaFields: TProperties;
+  schemaRequiredFields: string[];
   onChange: (value: Record<string, string>) => void;
 }) {
   return (
     <div className="flex flex-col gap-1.5">
       {Object.entries(schemaFields).map(([fieldName, field]) => {
         return (
-          <div className="flex gap-0.5 justify-between items-center flex-wrap" key={fieldName}>
-            <label className={tx("text-[85%] flex-1 flex-grow")}>{field.title ?? fieldName}</label>
+          <div className="flex justify-between items-center flex-wrap" key={fieldName}>
+            <label
+              className={tx(
+                "text-[85%] flex-1 flex-grow",
+                schemaRequiredFields.includes(fieldName) && "font-semibold",
+              )}
+            >
+              {field.title ?? fieldName}
+            </label>
             <Select.Root
               value={currentMapping[fieldName]}
               size="1"
               onValueChange={(value) => onChange({ ...currentMapping, [fieldName]: value })}
             >
               <Select.Trigger
-                radius="large"
+                radius="medium"
                 variant="ghost"
                 placeholder="Select a field"
                 className="!flex-1"
@@ -304,7 +328,7 @@ function FieldsMapper({
                       disabled={!areFieldsCompatible(field, extField)}
                     >
                       {extField.title ?? extFieldName}{" "}
-                      {extField.title ? <span className="font-mono text-[90%]">({extFieldName})</span> : ""}
+                      {extField.title ? <span className="font-mono text-[95%]">({extFieldName})</span> : ""}
                     </Select.Item>
                   ))}
                 </Select.Group>
