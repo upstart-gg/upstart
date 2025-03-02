@@ -39,6 +39,7 @@ export const commonProps = Type.Object({
   }),
   childrenBricks: Type.Array(Type.Any(), {
     "ui:field": "hidden",
+    description: "List of child bricks",
     default: [],
   }),
 });
