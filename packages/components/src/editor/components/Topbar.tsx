@@ -22,6 +22,7 @@ import { RiArrowDownSLine } from "react-icons/ri";
 import { DropdownMenu, TextField, Popover } from "@upstart.gg/style-system/system";
 import { post } from "~/editor/utils/api/base-api";
 import { IoIosSave } from "react-icons/io";
+import { LuExternalLink } from "react-icons/lu";
 import { formatDistance } from "date-fns";
 
 type TopBarProps = {
@@ -226,11 +227,14 @@ export default function TopBar({ showIntro }: TopBarProps) {
 
         <button
           type="button"
-          className={tx(btnClass, commonCls, "text-base px-8")}
-          onClick={switchPreviewMode}
+          className={tx(btnClass, commonCls, "text-base px-5")}
+          onClick={() => {
+            window.open(`/sites/${draft.siteId}/pages/${draft.id}/preview`, "upstart_preview");
+          }}
         >
           Preview
-          <span className={tx(tooltipCls)}>Preview</span>
+          <LuExternalLink className="h-4 w-auto ml-1" />
+          <span className={tx(tooltipCls)}>Open page preview</span>
         </button>
 
         {editorMode === "remote" && (
@@ -256,7 +260,7 @@ export default function TopBar({ showIntro }: TopBarProps) {
           >
             <button type="button" className={tx(btnClass, rocketBtn, btnWithArrow, "px-4")}>
               <RxRocket className={tx("h-6 w-auto")} />
-              <span className={tx("font-bold italic px-2", css({ fontSize: "1.2rem" }))}>Publish</span>
+              <span className={tx("font-bold italic px-2", css({ fontSize: "1rem" }))}>Publish</span>
               <RiArrowDownSLine className={arrowClass} />
             </button>
           </TopbarMenu>
@@ -270,7 +274,7 @@ export default function TopBar({ showIntro }: TopBarProps) {
             }}
           >
             <IoIosSave className={tx("h-5 w-auto")} />
-            <span className={tx("font-bold px-2", css({ fontSize: "1.2rem" }))}>Save your site</span>
+            <span className={tx("font-semibold px-2", css({ fontSize: "1.1rem" }))}>Save your site</span>
           </button>
         )}
       </nav>

@@ -102,7 +102,7 @@ export default function Toolbar({ showIntro }: ToolbarProps) {
         <PiPalette className="h-7 w-auto" />
         <span className={tx(tooltipCls)}>Color theme</span>
       </button>
-      <button
+      {/* <button
         type="button"
         className={tx(btnClass, commonCls, panel === "data" && "active")}
         onClick={(e) => {
@@ -111,7 +111,7 @@ export default function Toolbar({ showIntro }: ToolbarProps) {
       >
         <VscDatabase className="h-7 w-auto" />
         <span className={tx(tooltipCls)}>Data</span>
-      </button>
+      </button> */}
       <div className={tx("flex-1", "border-t-gray-200 dark:border-t-dark-500")} />
       <button
         type="button"
