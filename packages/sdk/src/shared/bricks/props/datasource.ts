@@ -35,7 +35,14 @@ export const datasourceRef = Type.Object(
       ),
     ),
     sort: Type.Optional(
-      Type.Record(Type.String(), Type.String(), { description: "Sort data source records" }),
+      Type.Record(
+        Type.String(),
+        Type.Union([
+          Type.Literal("asc", { title: "Ascending" }),
+          Type.Literal("desc", { title: "Descending" }),
+        ]),
+        { description: "Sort data source records" },
+      ),
     ),
     limit: Type.Optional(Type.Number({ description: "Limit the number of records to fetch" })),
     offset: Type.Optional(Type.Number({ description: "Offset the records to fetch" })),

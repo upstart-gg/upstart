@@ -51,15 +51,16 @@ export default function Inspector() {
     (previewMode === "desktop" ? "preset" : "style");
 
   useEffect(() => {
-    if (!manifest.properties.datasource && selectedTab === "content") {
+    if (!manifest.properties.isContainer && selectedTab === "content") {
       setTabsMapping((prev) => ({ ...prev, [brick.id]: "style" }));
     }
-  }, [setTabsMapping, brick.id, selectedTab, manifest.properties.datasource]);
+  }, [setTabsMapping, brick.id, selectedTab, manifest.properties.isContainer]);
 
   return (
     <Tabs.Root
       value={selectedTab}
       onValueChange={(val) => {
+        console.log("changing tab to %s", val);
         setTabsMapping((prev) => ({ ...prev, [brick.id]: val as TabType }));
       }}
     >
@@ -72,7 +73,7 @@ export default function Inspector() {
         <Tabs.Trigger value="style" className="!flex-1">
           {previewMode === "mobile" ? "Mobile styles" : "Styles"}
         </Tabs.Trigger>
-        {manifest.properties.datasource && (
+        {manifest.properties.isContainer && (
           <Tabs.Trigger value="content" className="!flex-1">
             Content
           </Tabs.Trigger>

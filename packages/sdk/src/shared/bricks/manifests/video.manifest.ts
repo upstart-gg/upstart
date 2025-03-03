@@ -9,6 +9,7 @@ export const manifest = defineBrickManifest({
   kind: "brick",
   title: "Video",
   description: "Youtube video",
+  repeatable: true,
   preferredWidth: {
     mobile: LAYOUT_COLS.mobile / 2,
     desktop: LAYOUT_COLS.desktop / 4,

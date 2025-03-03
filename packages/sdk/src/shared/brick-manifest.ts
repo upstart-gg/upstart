@@ -33,6 +33,7 @@ export function defineBrickManifest<
   hideInLibrary,
   deletable = true,
   movable = true,
+  repeatable = false,
   defaultInspectorTab,
 }: {
   type: BType;
@@ -67,6 +68,7 @@ export function defineBrickManifest<
   defaultInspectorTab?: "preset" | "style" | "content";
   deletable?: boolean;
   movable?: boolean;
+  repeatable?: boolean;
   isContainer?: boolean;
 }) {
   return Type.Object({
@@ -79,6 +81,7 @@ export function defineBrickManifest<
     hideInLibrary: Type.Boolean({ default: hideInLibrary ?? false }),
     deletable: Type.Boolean({ default: deletable }),
     movable: Type.Boolean({ default: movable }),
+    repeatable: Type.Boolean({ default: repeatable }),
     isContainer: Type.Boolean({ default: isContainer ?? false }),
     preferredWidth: Type.Object(
       {

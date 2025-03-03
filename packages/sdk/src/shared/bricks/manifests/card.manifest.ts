@@ -26,6 +26,7 @@ export const manifest = defineBrickManifest({
     mobile: 3,
     desktop: 3,
   },
+  repeatable: true,
   // svg icon for the "card" brick
   icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
     <!-- Card container -->

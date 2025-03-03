@@ -8,6 +8,7 @@ export const manifest = defineBrickManifest({
   type: "button",
   title: "Button",
   kind: "brick",
+  repeatable: true,
   description: "A button with text and optional icon",
   preferredWidth: {
     mobile: LAYOUT_COLS.mobile / 2,

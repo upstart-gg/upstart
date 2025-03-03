@@ -9,6 +9,7 @@ export const manifest = defineBrickManifest({
   title: "Icon",
   kind: "brick",
   description: "An icon with optional text",
+  repeatable: true,
   preferredWidth: {
     mobile: LAYOUT_COLS.mobile / 2,
     desktop: LAYOUT_COLS.desktop / 4,

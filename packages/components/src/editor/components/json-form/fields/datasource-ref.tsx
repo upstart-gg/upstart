@@ -4,12 +4,13 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { SegmentedControl, Select } from "@upstart.gg/style-system/system";
 import type { DatasourceRef } from "@upstart.gg/sdk/shared/bricks/props/all";
 import { fieldLabel } from "../form-class";
-import { type TProperties, type TSchema, Type } from "@sinclair/typebox";
+import { TObject, type TProperties, type TSchema, Type } from "@sinclair/typebox";
 import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
-import { useGetBrick } from "~/editor/hooks/use-editor";
+import { useDraftHelpers, useGetBrick } from "~/editor/hooks/use-editor";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { useEffect, useState } from "react";
+import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 
 const allDatasources = [
   {
@@ -54,9 +55,40 @@ const allDatasources = [
   },
 ];
 
+/**
+ * Get an existing brick schema and return a schema that can be used as a child schema, e.g., a schema
+ * without hidden fields and style props.
+ */
+function schemaToChildSchema(schema: BrickManifest) {
+  console.log("schema.properties.props", schema.properties.props);
+  const filteredProperties = Object.entries(schema.properties.props.properties)
+    .filter(([key, value]) => {
+      console.log("filtering", key, value);
+      return value["ui:field"] !== "hidden";
+    })
+    .reduce((acc, [key, value]) => {
+      acc[key] = value;
+      return acc;
+    }, {} as TSchema);
+  return {
+    ...schema.properties.props,
+    properties: filteredProperties,
+  };
+}
+
 const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
-  const { onChange, title, currentValue, brickId } = props;
+  const {
+    onChange,
+    title,
+    currentValue = {
+      id: "",
+      useExistingDatasource: false,
+      mapping: {},
+    } satisfies DatasourceRef,
+    brickId,
+  } = props;
   const getBrickInfo = useGetBrick();
+  const draftHelpers = useDraftHelpers();
   const brickInfo = getBrickInfo(brickId);
 
   if (!brickInfo?.props.isDynamic) {
@@ -65,23 +97,33 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
 
   invariant(brickInfo, `Could not find brick info for ${brickId} in DatasourceRefField`);
 
+  if ("childrenType" in brickInfo.props) {
+    console.log("container childrenType", brickInfo.props.childrenType);
+  }
+
   const onMappingChange = (value: Record<string, string>) => {
     onChange({ ...currentValue, mapping: value });
   };
 
-  console.log("datasource props", props);
   const brickManifest = manifests[brickInfo.type];
-  const datasourceSchema = brickManifest.properties.datasource;
 
-  invariant(datasourceSchema, "Datasource schema is required for DatasourceRefField");
+  const datasourceSchema: TSchema | null =
+    brickManifest.properties.datasource ??
+    ("childrenType" in brickInfo.props ? schemaToChildSchema(manifests[brickInfo.props.childrenType]) : null);
+
+  console.log("brickInfo props", { brickInfo, datasourceSchema });
 
   // We need to get the fields from the datasource schema. This will be used to map fields from the datasource to the schema
   // The datasource schema could be an object or an array of objects
-  const schemaFields =
-    datasourceSchema.type === "array" ? datasourceSchema.items?.properties : datasourceSchema.properties;
+  const schemaFields: TProperties = datasourceSchema
+    ? datasourceSchema.type === "array"
+      ? datasourceSchema.items?.properties
+      : datasourceSchema.properties
+    : {};
 
-  const schemaRequiredFields =
-    (datasourceSchema.type === "array" ? datasourceSchema.items?.required : datasourceSchema.required) ?? [];
+  const schemaRequiredFields: string[] = datasourceSchema
+    ? (datasourceSchema.type === "array" ? datasourceSchema.items?.required : datasourceSchema.required) ?? []
+    : [];
 
   // check schema "required" fields
 
@@ -104,7 +146,7 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
       const compatible = schemaRequiredFields.every((field) => {
         return datasourceRequiredFields.some((dsField) => {
           // @ts-ignore
-          return areFieldsCompatible(datasourceFields[dsField], schemaFields[field]);
+          return schemaFields[field] && areFieldsCompatible(datasourceFields[dsField], schemaFields[field]);
         });
       });
       // augment the datasource object with the compatible flag
@@ -122,6 +164,44 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
   return (
     <div className="field field-datasource">
       <div className="flex flex-col gap-3">
+        {/* Child type */}
+        {brickInfo.isContainer && (
+          <div className="flex flex-col gap-3">
+            <h3
+              className={tx(
+                "text-sm font-semibold !dark:bg-dark-600 bg-upstart-100 px-2 py-1 sticky top-0 z-[999] -mx-3",
+              )}
+            >
+              Children bricks type
+            </h3>
+            <Text as="p" color="gray" size="1">
+              The type of children bricks that this container will contain. You can either select it here or
+              drag a brick from the library onto the container.
+            </Text>
+            <Select.Root
+              size="1"
+              onValueChange={(value) => {
+                draftHelpers.updateBrickProps(brickId, { childrenType: value });
+              }}
+            >
+              <Select.Trigger radius="large" variant="surface" placeholder="Select a child type" />
+              <Select.Content position="popper">
+                <Select.Group>
+                  {Object.entries(manifests)
+                    .filter(([bType, bManifest]) => {
+                      return !!bManifest.properties.repeatable.default;
+                    })
+                    .map(([brickType, brickManifest]) => (
+                      <Select.Item key={brickType} value={brickType}>
+                        {brickManifest.properties.title.const}
+                      </Select.Item>
+                    ))}
+                </Select.Group>
+              </Select.Content>
+            </Select.Root>
+          </div>
+        )}
+
         <h3
           className={tx(
             "text-sm font-semibold !dark:bg-dark-600 bg-upstart-100 px-2 py-1 sticky top-0 z-[999] -mx-3",
@@ -153,41 +233,6 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
             ))}
           </SegmentedControl.Root>
         </div>
-
-        {!currentValue.useExistingDatasource && (
-          <div className="flex flex-col gap-3">
-            <h3
-              className={tx(
-                "text-sm font-semibold !dark:bg-dark-600 bg-upstart-100 px-2 py-1 sticky top-0 z-[999] -mx-3",
-              )}
-            >
-              Content
-            </h3>
-            <fieldset className="flex flex-col gap-2">
-              <label className={fieldLabel}>New entry</label>
-              <div className="flex flex-col gap-2">
-                {Object.entries(schemaFields).map(([fieldName, field]) => {
-                  return (
-                    <div className="flex gap-0.5 justify-between items-center flex-wrap" key={fieldName}>
-                      <label className={tx("text-[85%] flex-1 flex-grow")}>{field.title ?? fieldName}</label>
-                      <input
-                        type="text"
-                        // value={currentValue.data[fieldName] ?? ""}
-                        onChange={(e) => {
-                          // onChange({
-                          //   ...currentValue,
-                          //   data: { ...currentValue.data, [fieldName]: e.target.value },
-                          // });
-                        }}
-                        className="flex-1 p-1 border border-gray-300 rounded-md"
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            </fieldset>
-          </div>
-        )}
 
         {/* If using an existing database, we need to allow the user to select a datasource and possibly fields mapping */}
         {currentValue.useExistingDatasource && (
@@ -268,6 +313,41 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
                 </div>
               </>
             )}
+          </div>
+        )}
+
+        {!currentValue.useExistingDatasource && (
+          <div className="flex flex-col gap-3">
+            <h3
+              className={tx(
+                "text-sm font-semibold !dark:bg-dark-600 bg-upstart-100 px-2 py-1 sticky top-0 z-[999] -mx-3",
+              )}
+            >
+              Content
+            </h3>
+            <fieldset className="flex flex-col gap-2 border-gray-200 border rounded-md p-2">
+              <label className={fieldLabel}>New entry</label>
+              <div className="flex flex-col gap-1">
+                {Object.entries(schemaFields).map(([fieldName, field]) => {
+                  return (
+                    <div className="flex gap-0.5 justify-between items-center flex-wrap" key={fieldName}>
+                      <label className={tx("text-[85%] flex-1 flex-grow")}>{field.title ?? fieldName}</label>
+                      <input
+                        type="text"
+                        // value={currentValue.data[fieldName] ?? ""}
+                        onChange={(e) => {
+                          // onChange({
+                          //   ...currentValue,
+                          //   data: { ...currentValue.data, [fieldName]: e.target.value },
+                          // });
+                        }}
+                        className="flex-1 p-1 border border-gray-300 rounded-md"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </fieldset>
           </div>
         )}
       </div>

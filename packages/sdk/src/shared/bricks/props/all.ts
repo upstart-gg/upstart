@@ -5,7 +5,7 @@ export * from "./background";
 export * from "./border";
 export * from "./datasource";
 export * from "./effects";
-export * from "./container-layout";
+export * from "./container";
 export * from "./image";
 export * from "./layout";
 export * from "./text";

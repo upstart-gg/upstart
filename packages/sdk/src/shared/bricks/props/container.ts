@@ -137,3 +137,18 @@ export const containerLayoutProps = Type.Object({
   flex,
   grid,
 });
+
+export const containerChildrenProps = Type.Object({
+  childrenType: Type.Optional(
+    Type.String({
+      title: "Dynamic child brick type",
+      description: "Type of the child bricks that will be created when container is dynamic.",
+      "ui:field": "brick-type",
+    }),
+  ),
+  childrenBricks: Type.Array(Type.Any(), {
+    "ui:field": "hidden",
+    description: "List of nested bricks",
+    default: [],
+  }),
+});

@@ -23,19 +23,19 @@ function useDatasourceContext() {
 
 export function useDatasource<
   D extends DatasourceRef = DatasourceRef,
-  S extends DatasourceSchema = DatasourceSchema,
->(dsRef: D, schema: S) {
+  S extends DatasourceSchema | null = null,
+>(dsRef: D, schema: S = null as S) {
   const datasources = useDatasourceContext();
 
   const data = dsRef.id ? datasources.get(dsRef.id) : null;
 
   return {
     datasourceId: dsRef.id,
-    data: data ?? Value.Create(schema),
+    data: data ?? (schema !== null ? Value.Create(schema) : []),
     isSample: !data,
   } as {
     datasourceId: string;
-    data: Static<S>;
+    data: S extends DatasourceSchema ? Static<S> : Record<string, unknown>[];
     isSample: boolean;
   };
 }

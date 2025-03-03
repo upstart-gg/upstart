@@ -612,7 +612,9 @@ export const createDraftStore = (
                   state.bricks.push(brick);
                 } else {
                   const parentBrick = state.bricks.find((b) => b.id === parentContainer.id);
-                  parentBrick?.props.childrenBricks?.push({ ...brick, parentId: parentContainer.id });
+                  invariant(parentBrick, "Parent brick not found");
+                  invariant("childrenBricks" in parentBrick.props, "Parent brick must be a container");
+                  parentBrick.props.childrenBricks?.push({ ...brick, parentId: parentContainer.id });
                 }
               }),
 

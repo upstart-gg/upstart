@@ -9,6 +9,7 @@ export const manifest = defineBrickManifest({
   kind: "brick",
   title: "Text",
   description: "Text with formatting options",
+  repeatable: true,
   preferredWidth: {
     mobile: LAYOUT_COLS.mobile / 2,
     desktop: LAYOUT_COLS.desktop / 4,

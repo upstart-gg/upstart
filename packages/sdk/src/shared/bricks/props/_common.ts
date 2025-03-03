@@ -11,24 +11,30 @@ export const commonProps = Type.Object({
     title: "Brick ID",
     "ui:field": "hidden",
   }),
-  className: Type.String({
-    default: "",
-    "ui:field": "hidden",
-  }),
-  lastTouched: Type.Number({
-    default: 0,
-    "ui:field": "hidden",
-  }),
-  editable: Type.Boolean({
-    description: "Allow editing. It is automatically set by the editor, so no need to specify it manually.",
-    default: false,
-    "ui:field": "hidden",
-  }),
+  className: Type.Optional(
+    Type.String({
+      default: "",
+      "ui:field": "hidden",
+    }),
+  ),
+  lastTouched: Type.Optional(
+    Type.Number({
+      default: 0,
+      "ui:field": "hidden",
+    }),
+  ),
+  editable: Type.Optional(
+    Type.Boolean({
+      description: "Allow editing. It is automatically set by the editor, so no need to specify it manually.",
+      default: false,
+      "ui:field": "hidden",
+    }),
+  ),
   stylePreset,
   isDynamic: Type.Boolean({
     title: "Use dynamic content",
     description:
-      "Content of this brick can be managed in two ways: Static or Dynamic. Static content is set in the editor. Dynamic content is fetched from a database and can be managed through our CMS.",
+      "Content can be managed in two ways: Static or Dynamic. Static content is set in the editor. Dynamic content is fetched from a database and can be managed through our CMS.",
     default: false,
     "ui:field": "dynamic-content-switch",
     "ui:inspector-tab": "content",
@@ -36,11 +42,6 @@ export const commonProps = Type.Object({
     "ui:group:order": 0,
     "ui:group": "content",
     "ui:group:title": "Dynamic / Static Mode",
-  }),
-  childrenBricks: Type.Array(Type.Any(), {
-    "ui:field": "hidden",
-    description: "List of child bricks",
-    default: [],
   }),
 });
 

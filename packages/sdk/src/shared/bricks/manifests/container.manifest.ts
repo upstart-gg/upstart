@@ -1,13 +1,16 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { commonProps, commonStyleProps, containerLayoutProps, datasourceRefProps } from "../props/all";
+import {
+  commonProps,
+  commonStyleProps,
+  containerChildrenProps,
+  containerLayoutProps,
+  datasourceRefProps,
+} from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { LAYOUT_COLS } from "~/shared/layout-constants";
 
 // Generic container can hold any type of array data source
-export const datasource = Type.Array(Type.Object({}, { additionalProperties: true }));
-export type Datasource = typeof datasource;
-
 export const manifest = defineBrickManifest({
   type: "container",
   kind: "brick",
@@ -42,8 +45,13 @@ export const manifest = defineBrickManifest({
     <line x1="12" y1="3" x2="12" y2="21"></line>
 </svg>
   `,
-  props: Type.Composite([containerLayoutProps, commonProps, datasourceRefProps, commonStyleProps]),
-  datasource,
+  props: Type.Composite([
+    containerLayoutProps,
+    containerChildrenProps,
+    commonProps,
+    datasourceRefProps,
+    commonStyleProps,
+  ]),
 });
 
 export type Manifest = Static<typeof manifest>;
