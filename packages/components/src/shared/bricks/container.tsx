@@ -37,7 +37,7 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) 
   }
 
   return (
-    <div className={tx(apply("flex"), className)} ref={ref}>
+    <div className={tx(apply("flex relative"), className)} ref={ref}>
       {props.childrenBricks?.length > 0 ? (
         props.childrenBricks.map((brick, index) => {
           return props.editable ? (
@@ -52,8 +52,11 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) 
         </>
       ) : (
         <>
-          <div className="border border-dotted p-2 flex-1">Drag a brick here</div>
-          <div className="border border-dotted p-2 flex-1">and another there</div>
+          <div className="absolute inset-2 rounded-lg bg-black/30 text-white flex justify-center items-center font-bold">
+            This a a container
+            <br />
+            Drag bricks here
+          </div>
         </>
       )}
     </div>
