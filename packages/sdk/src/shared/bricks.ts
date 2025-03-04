@@ -17,7 +17,6 @@ import { manifest as mapManifest } from "./bricks/manifests/map.manifest";
 import { manifest as socialLinksManifest } from "./bricks/manifests/social-links.manifest";
 import { manifest as textManifest } from "./bricks/manifests/text.manifest";
 import { manifest as videoManifest } from "./bricks/manifests/video.manifest";
-import { manifest as loopManifest } from "./bricks/manifests/loop.manifest";
 import { manifest as containerManifest } from "./bricks/manifests/container.manifest";
 import { manifest as genericComponentManifest } from "./bricks/manifests/generic-component.manifest";
 import { defaults } from "./bricks/manifests/all-manifests";
@@ -184,19 +183,9 @@ export const brickSchema = Type.Composite([
       mobileOverride: Type.Optional(Type.Partial(videoManifest.properties.props)),
     }),
     Type.Object({
-      type: Type.Literal("html-element"),
-      props: Type.Record(Type.String(), Type.Any()),
-      mobileOverride: Type.Optional(Type.Record(Type.String(), Type.Any())),
-    }),
-    Type.Object({
       type: Type.Literal("generic-component"),
       props: genericComponentManifest.properties.props,
       mobileOverride: Type.Optional(Type.Partial(genericComponentManifest.properties.props)),
-    }),
-    Type.Object({
-      type: Type.Literal("loop"),
-      props: loopManifest.properties.props,
-      mobileOverride: Type.Optional(Type.Partial(loopManifest.properties.props)),
     }),
     Type.Object({
       type: Type.Literal("container"),
@@ -227,7 +216,19 @@ export const brickSchema = Type.Composite([
 
 export type Brick = Static<typeof brickSchema>;
 export type BricksLayout = Brick[];
-export type Section = { id: string; label?: string; bricks: BricksLayout };
+
+const sectionSchema = Type.Object({
+  id: Type.String(),
+  kind: Type.Literal("section"),
+  label: Type.Optional(Type.String()),
+  bricks: Type.Array(brickSchema),
+  styleProps: Type.Object({
+    justifyContent: Type.Optional(Type.String()),
+    alignItems: Type.Optional(Type.String()),
+  }),
+});
+
+export type Section = Static<typeof sectionSchema>;
 export type ResponsivePosition = Brick["position"];
 
 const definedBrickSchema = Type.Composite([
