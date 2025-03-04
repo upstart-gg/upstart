@@ -87,7 +87,7 @@ export function usePageStyle({
         &::before {
           content: "";
           position: absolute;
-          opacity: 0.3;
+          opacity: 0.7;
           top: ${previewMode === "desktop" ? parseInt(attributes.$pagePadding.vertical as string) : 10}px;
           left: ${previewMode === "desktop" ? parseInt(attributes.$pagePadding.horizontal as string) : 10}px;
           right: ${previewMode === "desktop" ? parseInt(attributes.$pagePadding.horizontal as string) : 10}px;
@@ -98,25 +98,26 @@ export function usePageStyle({
             100% ${LAYOUT_ROW_HEIGHT}px;
           background-image:
             repeating-linear-gradient(to right,
-              rgba(81, 101, 255, 0.3) 0px,
-              rgba(81, 101, 255, 0.3) 1px,
+              rgba(81, 101, 255, 0.4) 0px,
+              rgba(81, 101, 255, 0.4) 1px,
               transparent 1px,
               transparent 200px
             ),
             repeating-linear-gradient(to bottom,
-              rgba(81, 101, 255, 0.3) 0px,
-              rgba(81, 101, 255, 0.3) 1px,
+              rgba(81, 101, 255, 0.4) 0px,
+              rgba(81, 101, 255, 0.4) 1px,
               transparent 1px,
               transparent 80px
             );
         }
-        &>div {
-          outline: 2px dotted #d3daf2 !important;
+        &>div:not(.moving) {
+          outline: 2px dotted #d3daf250 !important;
         }
       }
     `,
   );
 }
+//
 
 function getTypographyStyles(typography: Theme["typography"]) {
   function formatFontFamily(font: typeof typography.body) {
