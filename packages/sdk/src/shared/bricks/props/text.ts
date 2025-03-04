@@ -34,7 +34,7 @@ const color = Type.String({
   "ui:inspector-tab": "style",
 });
 
-export const textStyleProps = Type.Object(
+export const text = Type.Object(
   {
     size: Type.Optional(fontSize),
     color: Type.Optional(color),
@@ -54,7 +54,7 @@ export const textStyleProps = Type.Object(
   },
 );
 
-export type TextStyleProps = Static<typeof textStyleProps>;
+export type TextStyleProps = Static<typeof text>;
 
 const textAlign = Type.Optional(
   Type.Union(

@@ -21,6 +21,10 @@ export const padding = Type.Optional(
   ),
 );
 
+export const height = Type.Optional(
+  Type.Union([Type.Literal("fixed", { title: "Fixed" }), Type.Literal("auto", { title: "Auto" })]),
+);
+
 export const layout = Type.Object(
   {
     height: Type.Optional(

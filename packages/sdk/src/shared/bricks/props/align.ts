@@ -1,7 +1,7 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { groupAlign } from "./_groups";
 
-export const alignBasic = Type.Object(
+export const align = Type.Object(
   {
     horizontal: Type.Union(
       [
@@ -41,10 +41,10 @@ export const alignBasic = Type.Object(
   },
 );
 
-export type AlignBasicSettings = Static<typeof alignBasic>;
+export type AlignBasicSettings = Static<typeof align>;
 
 export const alignBasicProps = Type.Object({
-  align: alignBasic,
+  align,
 });
 
 export type AlignBasicProps = Static<typeof alignBasicProps>;
