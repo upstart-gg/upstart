@@ -227,6 +227,7 @@ export const brickSchema = Type.Composite([
 
 export type Brick = Static<typeof brickSchema>;
 export type BricksLayout = Brick[];
+export type Section = { id: string; label?: string; bricks: BricksLayout };
 export type ResponsivePosition = Brick["position"];
 
 const definedBrickSchema = Type.Composite([

@@ -15,7 +15,7 @@ const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
     Manifest["props"]["datasourceRef"],
     typeof datasource
   >(props.datasourceRef, datasource);
-  const children = props.childrenBricks;
+  // const children = props.childrenBricks;
   const className = useBrickStyle(props);
   const gapInt = parseInt(props.imagesWallGap.replace("gap-", "")) / 4;
   return (

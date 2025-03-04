@@ -1,10 +1,11 @@
 import { Type, type Static } from "@sinclair/typebox";
 import type { BorderSettings } from "./border";
 import type { EffectsSettings } from "./effects";
+import type { TextStyleProps } from "./text";
 import type { BackgroundSettings } from "./background";
 
 export type StyleProperties = {
-  text?: string;
+  text?: TextStyleProps;
   background: BackgroundSettings;
   border?: Partial<BorderSettings>;
   effects?: EffectsSettings;
@@ -164,7 +165,9 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
       border: {
         width: "border-0",
       },
-      text: `text-${variant}-900`,
+      text: {
+        color: `text-${variant}-900`,
+      },
     },
     plain: {
       background: {
@@ -179,7 +182,9 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
       effects: {
         shadow: "shadow-sm",
       },
-      text: variant === "neutral" ? "text-neutral-800" : `text-${variant}-50`,
+      text: {
+        color: variant === "neutral" ? "text-neutral-800" : `text-${variant}-50`,
+      },
     },
     plain2: {
       background: {
@@ -194,7 +199,9 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
       effects: {
         shadow: "shadow-sm",
       },
-      text: variant === "neutral" ? "text-neutral-800" : `text-${variant}-900`,
+      text: {
+        color: variant === "neutral" ? "text-neutral-800" : `text-${variant}-900`,
+      },
     },
     plain3: {
       background: {
@@ -209,7 +216,9 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
       effects: {
         shadow: "shadow-sm",
       },
-      text: variant === "neutral" ? "text-neutral-800" : `text-${variant}-900`,
+      text: {
+        color: variant === "neutral" ? "text-neutral-800" : `text-${variant}-900`,
+      },
     },
     callout: {
       background: {
@@ -221,7 +230,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         width: "border",
         radius: "rounded-lg",
       },
-      text: `text-${variant}-900`,
+      text: { color: `text-${variant}-900` },
     },
     elevated: {
       background: {
@@ -230,7 +239,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
       effects: {
         shadow: "shadow-lg",
       },
-      text: `text-${variant}-900`,
+      text: { color: `text-${variant}-900` },
     },
     glass: {
       background: {
@@ -245,7 +254,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
       effects: {
         shadow: "shadow-sm",
       },
-      text: `text-${variant}-900`,
+      text: { color: `text-${variant}-900` },
     },
     modern: {
       background: {
@@ -257,7 +266,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         width: "border",
         radius: "rounded-lg",
       },
-      text: `text-${variant}-900`,
+      text: { color: `text-${variant}-900` },
     },
     modern2: {
       background: {
@@ -269,7 +278,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         width: "border",
         radius: "rounded-lg",
       },
-      text: `text-${variant}-900`,
+      text: { color: `text-${variant}-900` },
     },
     soft: {
       background: {
@@ -281,7 +290,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         width: "border",
         radius: "rounded-lg",
       },
-      text: `text-${variant}-800`,
+      text: { color: `text-${variant}-800` },
     },
     gradient: {
       background: {
@@ -293,7 +302,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         width: "border",
         radius: "rounded-md",
       },
-      text: "text-neutral-900",
+      text: { color: "text-neutral-900" },
     },
     gradient2: {
       background: {
@@ -305,7 +314,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         width: "border",
         radius: "rounded-md",
       },
-      text: "text-neutral-900",
+      text: { color: "text-neutral-900" },
     },
     gradient3: {
       background: {
@@ -317,7 +326,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         width: "border",
         radius: "rounded-md",
       },
-      text: "text-neutral-900",
+      text: { color: "text-neutral-900" },
     },
     gradient4: {
       background: {
@@ -329,7 +338,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         width: "border",
         radius: "rounded-md",
       },
-      text: "text-neutral-900",
+      text: { color: "text-neutral-900" },
     },
     gradient5: {
       background: {
@@ -341,7 +350,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         width: "border",
         radius: "rounded-md",
       },
-      text: "text-neutral-900",
+      text: { color: "text-neutral-900" },
     },
     gradient6: {
       background: {
@@ -353,13 +362,13 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         width: "border",
         radius: "rounded-md",
       },
-      text: "text-neutral-900",
+      text: { color: "text-neutral-900" },
     },
     paper: {
       background: {
         color: `bg-${variant}-50`,
       },
-      text: `text-${variant}-800`,
+      text: { color: `text-${variant}-800` },
       effects: {
         shadow: "shadow-md",
       },
@@ -374,7 +383,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         width: "border-2",
         radius: "rounded-none",
       },
-      text: `text-${variant}-800`,
+      text: { color: `text-${variant}-800` },
     },
   };
 

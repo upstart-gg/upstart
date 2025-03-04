@@ -59,7 +59,6 @@ export const background = Type.Object(
 export type BackgroundSettings = Static<typeof background>;
 
 export const backgroundColor = Type.String({
-  $id: "backgroundColor",
   default: "transparent",
   title: "Background color",
   "ui:field": "color",

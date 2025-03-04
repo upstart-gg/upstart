@@ -25,18 +25,19 @@ const fontSize = Type.Union(
   },
 );
 
-export const text = Type.Object(
+const color = Type.String({
+  default: "transparent",
+  title: "Text color",
+  "ui:field": "color",
+  "ui:color-type": "text",
+  "ui:group": "text",
+  "ui:inspector-tab": "style",
+});
+
+export const textStyleProps = Type.Object(
   {
-    size: fontSize,
-    color: Type.Optional(
-      Type.String({
-        default: "transparent",
-        title: "Default Color",
-        "ui:field": "color",
-        "ui:color-type": "text",
-        "ui:inspector-tab": "style",
-      }),
-    ),
+    size: Type.Optional(fontSize),
+    color: Type.Optional(color),
   },
   {
     title: "Text style",
@@ -53,7 +54,7 @@ export const text = Type.Object(
   },
 );
 
-export type TextSettings = Static<typeof text>;
+export type TextStyleProps = Static<typeof textStyleProps>;
 
 const textAlign = Type.Optional(
   Type.Union(
@@ -94,22 +95,6 @@ const fontWeight = Type.Union(
     "ui:inspector-tab": "style",
   },
 );
-
-export const color = Type.String({
-  default: "transparent",
-  title: "Text color",
-  "ui:field": "color",
-  "ui:color-type": "text",
-  "ui:group": "text",
-  "ui:inspector-tab": "style",
-});
-
-export const textStyleProps = Type.Object({
-  color,
-  textAlign,
-  fontSize,
-  fontWeight,
-});
 
 export const textContent = Type.String({
   default: "some text here",

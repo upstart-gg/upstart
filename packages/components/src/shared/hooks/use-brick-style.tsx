@@ -41,9 +41,9 @@ export function useBrickStyle({ mobileOverride, ...props }: UseBrickStyleProps) 
     props.className && apply(props.className),
     props.layout?.padding,
     props.color ? `text-${props.color}` : null,
-    props.fontSize,
-    props.fontWeight,
-    props.textAlign,
+    props.text?.size,
+    props.text?.color,
+    // props.textAlign,
     getFlexStyles(props, mobileOverride),
   ]);
 }
@@ -106,10 +106,10 @@ function getEditorStyles(editable: boolean, isContainerChild: boolean, selected?
     return null;
   }
   return [
-    "select-none hover:z-[9999]",
-    selected && "!outline-2 !outline-dashed !outline-orange-200",
-    !selected && "hover:outline !hover:outline-dashed !hover:outline-upstart-400/30",
-    !selected && isContainerChild && "hover:outline !hover:outline-dashed !hover:outline-upstart-400/30",
+    "select-none hover:z-[9999] transition-[opcacity,colors] duration-200",
+    selected && "outline outline-4 outline-orange-200",
+    !selected && !isContainerChild && "hover:(outline outline-4 outline-upstart-500)",
+    !selected && isContainerChild && "hover:(outline outline-4 outline-upstart-500/40)",
     css({
       "&.selected-group": {
         outline: "2px dotted var(--violet-8) !important",

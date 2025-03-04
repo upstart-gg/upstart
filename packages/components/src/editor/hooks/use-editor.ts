@@ -6,7 +6,7 @@ import { createContext, useContext, useEffect } from "react";
 import { temporal } from "zundo";
 import type { ResponsiveMode } from "@upstart.gg/sdk/shared/responsive";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
-import type { Brick, BrickPosition } from "@upstart.gg/sdk/shared/bricks";
+import type { Brick, BrickPosition, Section } from "@upstart.gg/sdk/shared/bricks";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 import { generateId } from "@upstart.gg/sdk/shared/bricks";
@@ -215,6 +215,7 @@ export interface DraftStateProps {
   id: string;
   path: string;
   label: string;
+  elements: Section[];
   bricks: Brick[];
   selectedBrick?: Brick;
   data: Record<string, unknown>;
@@ -311,6 +312,7 @@ export const createDraftStore = (
     | "siteId"
   > = {
     bricks: [],
+    elements: [],
     data: {},
     mode: "local",
   };

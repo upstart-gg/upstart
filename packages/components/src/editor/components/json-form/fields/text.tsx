@@ -1,15 +1,15 @@
 import type { FieldProps } from "./types";
 import { Text, Select, Slider } from "@upstart.gg/style-system/system";
-import type { TextSettings } from "@upstart.gg/sdk/shared/bricks/props/all";
+import type { TextStyleProps } from "@upstart.gg/sdk/shared/bricks/props/all";
 import { fieldLabel } from "../form-class";
 import { ColorPill } from "./color";
 
-export const TextField: React.FC<FieldProps<TextSettings>> = (props) => {
+export const TextField: React.FC<FieldProps<TextStyleProps>> = (props) => {
   const {
     currentValue = {
       size: "text-base",
       color: "inherit",
-    } satisfies TextSettings,
+    } satisfies TextStyleProps,
     onChange,
     required,
     title,
@@ -17,7 +17,7 @@ export const TextField: React.FC<FieldProps<TextSettings>> = (props) => {
     placeholder,
     schema,
   } = props;
-  const onSettingsChange = (newVal: Partial<TextSettings>) => onChange({ ...currentValue, ...newVal });
+  const onSettingsChange = (newVal: Partial<TextStyleProps>) => onChange({ ...currentValue, ...newVal });
 
   return (
     <div className="text-field">
@@ -33,7 +33,7 @@ export const TextField: React.FC<FieldProps<TextSettings>> = (props) => {
           <Select.Root
             defaultValue={currentValue.size}
             size="2"
-            onValueChange={(value) => onSettingsChange({ size: value as TextSettings["size"] })}
+            onValueChange={(value) => onSettingsChange({ size: value as TextStyleProps["size"] })}
           >
             <Select.Trigger radius="large" variant="ghost" />
             <Select.Content position="popper">

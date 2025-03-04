@@ -21,7 +21,7 @@ import type {
   EffectsSettings,
   FlexSettings,
   GridSettings,
-  TextSettings,
+  TextStyleProps,
   AlignBasicSettings,
   DatasourceRef,
   ImageProps,
@@ -168,14 +168,14 @@ export function getFormComponents({
         }
 
         case "text": {
-          const currentValue = (get(formData, id) ?? commonProps.schema.default) as TextSettings;
+          const currentValue = (get(formData, id) ?? commonProps.schema.default) as TextStyleProps;
           return {
             group,
             groupTitle,
             component: (
               <TextField
                 currentValue={currentValue}
-                onChange={(value: TextSettings | null) => onChange({ [id]: value }, id)}
+                onChange={(value: TextStyleProps | null) => onChange({ [id]: value }, id)}
                 {...commonProps}
               />
             ),

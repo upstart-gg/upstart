@@ -4,7 +4,7 @@ import { layout } from "./layout";
 import { border } from "./border";
 import { effects } from "./effects";
 import { background } from "./background";
-import { text } from "./text";
+import { textStyleProps } from "./text";
 
 export const commonProps = Type.Object({
   id: Type.String({
@@ -53,5 +53,5 @@ export const commonStyleProps = Type.Object({
   border,
   effects,
   background,
-  text,
+  text: textStyleProps,
 });

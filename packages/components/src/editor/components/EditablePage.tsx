@@ -409,6 +409,10 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
               <ResizeHandle direction="n" />
               <ResizeHandle direction="w" />
               <ResizeHandle direction="e" />
+              <ResizeHandle direction="se" />
+              <ResizeHandle direction="sw" />
+              <ResizeHandle direction="ne" />
+              <ResizeHandle direction="nw" />
             </BrickWrapper>
           ))}
         <div
@@ -466,20 +470,23 @@ export function ResizeHandle({
       )}
     >
       <div
-        className={tx("absolute w-[10px] h-[10px] border-orange-400 border-2 rounded-full z-10 shadow-md", {
-          "top-1/2 -translate-y-1/2 -left-[5px]": direction === "w",
-          "top-1/2 -translate-y-1/2 -right-[5px]": direction === "e",
-          "left-1/2 -translate-x-1/2 -top-[5px]": direction === "n",
-          "left-1/2 -translate-x-1/2 -bottom-[5px]": direction === "s",
+        className={tx(
+          "absolute w-[10px] h-[10px] border-upstart-500 bg-white border-2 rounded-sm z-10 shadow-md",
+          {
+            "top-1/2 -translate-y-1/2 -left-2": direction === "w",
+            "top-1/2 -translate-y-1/2 -right-2": direction === "e",
+            "left-1/2 -translate-x-1/2 -top-2": direction === "n",
+            "left-1/2 -translate-x-1/2 -bottom-2": direction === "s",
 
-          // sw and nw
-          "-bottom-[5px] -left-[5px]": direction === "sw",
-          "-top-[5px] -left-[5px]": direction === "nw",
+            // sw and nw
+            "-bottom-2 -left-2": direction === "sw",
+            "-top-2 -left-2": direction === "nw",
 
-          // se and ne
-          "-bottom-[5px] -right-[5px]": direction === "se",
-          "-top-[5px] -right-[5px]": direction === "ne",
-        })}
+            // se and ne
+            "-bottom-2 -right-2": direction === "se",
+            "-top-2 -right-2": direction === "ne",
+          },
+        )}
       />
     </div>
   );
