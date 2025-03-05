@@ -1,6 +1,6 @@
 import type { FieldProps } from "./types";
 import { Text, Select, Slider } from "@upstart.gg/style-system/system";
-import type { TextStyleProps } from "@upstart.gg/sdk/shared/bricks/props/all";
+import type { TextStyleProps } from "@upstart.gg/sdk/shared/bricks/props/text";
 import { fieldLabel } from "../form-class";
 import { ColorPill } from "./color";
 

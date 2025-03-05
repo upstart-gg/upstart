@@ -106,13 +106,13 @@ function getEditorStyles(editable: boolean, isContainerChild: boolean, selected?
     return null;
   }
   return [
-    "select-none hover:z-[9999] transition-[opcacity,colors] duration-200",
-    selected && "outline outline-4 outline-orange-200",
-    !selected && !isContainerChild && "hover:(outline outline-4 outline-upstart-500)",
+    "select-none hover:z-[9999] transition-[opcacity,colors] duration-200 rounded-sm",
+    selected && "outline outline-4 outline-upstart-500",
+    !selected && !isContainerChild && "hover:(outline outline-4 outline-upstart-500/60)",
     !selected && isContainerChild && "hover:(outline outline-4 outline-upstart-500/40)",
     css({
       "&.selected-group": {
-        outline: "2px dotted var(--violet-8) !important",
+        // outline: "2px dotted var(--violet-8) !important",
       },
     }),
   ];

@@ -1,6 +1,6 @@
 import type { FieldProps } from "./types";
 import { Text, Select } from "@upstart.gg/style-system/system";
-import type { FlexSettings } from "@upstart.gg/sdk/shared/bricks/props/all";
+import type { FlexSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
 import { fieldLabel } from "../form-class";
 import { SegmentedControl, Switch } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";

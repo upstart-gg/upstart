@@ -451,21 +451,21 @@ export function ResizeHandle({
     <div
       className={tx(
         "react-resizable-handle absolute z-10 transition-opacity duration-200 opacity-0",
-        "group-hover/brick:opacity-90 hover:!opacity-100 overflow-visible border-dashed border-upstart-600/80 hover:border-upstart-600",
+        "group-hover/brick:opacity-90 hover:!opacity-100 overflow-visible",
         `react-resizable-handle-${direction}`,
         {
-          "bottom-px left-px right-px h-1 w-[inherit] border-b cursor-s-resize": direction === "s",
-          "top-px left-px bottom-px w-1 h-[inherit] border-l cursor-w-resize": direction === "w",
-          "top-px right-px bottom-px w-1 h-[inherit] border-r cursor-e-resize": direction === "e",
-          "top-px left-px right-px h-1 w-[inherit] border-t cursor-n-resize": direction === "n",
+          "bottom-px left-px right-px h-1 w-[inherit] cursor-s-resize": direction === "s",
+          "top-px left-px bottom-px w-1 h-[inherit] cursor-w-resize": direction === "w",
+          "top-px right-px bottom-px w-1 h-[inherit] cursor-e-resize": direction === "e",
+          "top-px left-px right-px h-1 w-[inherit] cursor-n-resize": direction === "n",
 
           // sw and nw
-          "bottom-px left-px w-1 h-1 border-l border-b cursor-sw-resize": direction === "sw",
-          "top-px left-px w-1 h-1 border-l border-t cursor-nw-resize": direction === "nw",
+          "bottom-px left-px w-1 h-1 cursor-sw-resize": direction === "sw",
+          "top-px left-px w-1 h-1 cursor-nw-resize": direction === "nw",
 
           // se and ne
-          "bottom-px right-px w-1 h-1 border-r border-b cursor-se-resize": direction === "se",
-          "top-px right-px w-1 h-1 border-r border-t cursor-ne-resize": direction === "ne",
+          "bottom-px right-px w-1 h-1 cursor-se-resize": direction === "se",
+          "top-px right-px w-1 h-1 cursor-ne-resize": direction === "ne",
         },
       )}
     >
@@ -473,18 +473,18 @@ export function ResizeHandle({
         className={tx(
           "absolute w-[10px] h-[10px] border-upstart-500 bg-white border-2 rounded-sm z-10 shadow-md",
           {
-            "top-1/2 -translate-y-1/2 -left-2": direction === "w",
-            "top-1/2 -translate-y-1/2 -right-2": direction === "e",
-            "left-1/2 -translate-x-1/2 -top-2": direction === "n",
-            "left-1/2 -translate-x-1/2 -bottom-2": direction === "s",
+            "top-1/2 -translate-y-1/2 -left-[9px]": direction === "w",
+            "top-1/2 -translate-y-1/2 -right-[9px]": direction === "e",
+            "left-1/2 -translate-x-1/2 -top-[9px]": direction === "n",
+            "left-1/2 -translate-x-1/2 -bottom-[9px]": direction === "s",
 
             // sw and nw
-            "-bottom-2 -left-2": direction === "sw",
-            "-top-2 -left-2": direction === "nw",
+            "-bottom-[9px] -left-[9px]": direction === "sw",
+            "-top-[9px] -left-[9px]": direction === "nw",
 
             // se and ne
-            "-bottom-2 -right-2": direction === "se",
-            "-top-2 -right-2": direction === "ne",
+            "-bottom-[9px] -right-[9px]": direction === "se",
+            "-top-[9px] -right-[9px]": direction === "ne",
           },
         )}
       />

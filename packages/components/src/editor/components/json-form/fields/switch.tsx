@@ -1,4 +1,3 @@
-import { tx } from "@upstart.gg/style-system/twind";
 import type { FieldProps } from "./types";
 import { Switch, Text } from "@upstart.gg/style-system/system";
 

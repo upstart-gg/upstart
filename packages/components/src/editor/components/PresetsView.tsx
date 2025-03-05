@@ -3,7 +3,7 @@ import {
   type StylePreset,
   type StyleProperties,
   stylePreset,
-} from "@upstart.gg/sdk/shared/bricks/props/all";
+} from "@upstart.gg/sdk/shared/bricks/props/_style-presets";
 import { tx } from "@upstart.gg/style-system/twind";
 import { fieldLabel } from "./json-form/form-class";
 import { Button, Text, Select, Tooltip, IconButton, SegmentedControl } from "@upstart.gg/style-system/system";

@@ -1,10 +1,8 @@
 import { SegmentedControl } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
-import type { Brick } from "@upstart.gg/sdk/shared/bricks";
-import { useDraft } from "~/editor/hooks/use-editor";
 import type { FieldProps } from "./types";
-import { fieldDescription, fieldLabel } from "../form-class";
-import { Text, Select, Slider } from "@upstart.gg/style-system/system";
+import { fieldLabel } from "../form-class";
+import { Select } from "@upstart.gg/style-system/system";
 import { HelpIcon } from "../HelpIcon";
 
 interface EnumOption {

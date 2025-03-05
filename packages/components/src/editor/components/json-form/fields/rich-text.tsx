@@ -2,7 +2,7 @@ import type { FieldProps } from "./types";
 import { Text } from "@upstart.gg/style-system/system";
 import { useTextEditMode } from "~/editor/hooks/use-editor";
 import { tx } from "@upstart.gg/style-system/twind";
-import type { TextContent } from "@upstart.gg/sdk/shared/bricks/props/all";
+import type { TextContent } from "@upstart.gg/sdk/shared/bricks/props/text";
 import TextEditor from "~/shared/components/TextEditor";
 
 const RichTextField: React.FC<FieldProps<TextContent>> = (props) => {

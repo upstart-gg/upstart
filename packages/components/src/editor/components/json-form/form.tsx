@@ -14,19 +14,6 @@ import type { FieldProps } from "./fields/types";
 import { SegmentedControl } from "@upstart.gg/style-system/system";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import get from "lodash-es/get";
-import type {
-  BackgroundSettings,
-  BorderSettings,
-  LayoutSettings,
-  EffectsSettings,
-  FlexSettings,
-  GridSettings,
-  TextStyleProps,
-  AlignBasicSettings,
-  DatasourceRef,
-  ImageProps,
-  TextContent,
-} from "@upstart.gg/sdk/shared/bricks/props/all";
 import { EffectsField } from "./fields/effects";
 import type { Attributes, JSONSchemaType } from "@upstart.gg/sdk/shared/attributes";
 import { PagePaddingField } from "./fields/padding";
@@ -38,6 +25,15 @@ import { AlignBasicField } from "./fields/align-basic";
 import DatasourceField from "./fields/datasource-ref";
 import DatasourceRefField from "./fields/datasource-ref";
 import { GridField } from "./fields/grid";
+import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
+import type { EffectsSettings } from "@upstart.gg/sdk/shared/bricks/props/effects";
+import type { LayoutSettings } from "@upstart.gg/sdk/shared/bricks/props/layout";
+import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
+import type { TextContent, TextStyleProps } from "@upstart.gg/sdk/shared/bricks/props/text";
+import type { DatasourceRef } from "@upstart.gg/sdk/shared/bricks/props/datasource";
+import type { FlexSettings, GridSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
+import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
+import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 
 type FormComponent = { group: string; groupTitle: string; component: ReactNode };
 type FormComponents = (FormComponent | { group: string; groupTitle: string; components: FormComponent[] })[];

@@ -1,5 +1,5 @@
 import type { FieldProps } from "./types";
-import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/all";
+import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
 import { fieldLabel } from "../form-class";
 import { SegmentedControl } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";

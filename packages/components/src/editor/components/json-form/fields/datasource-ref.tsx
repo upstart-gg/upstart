@@ -2,14 +2,12 @@ import type { FieldProps } from "./types";
 import { Text } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import { SegmentedControl, Select } from "@upstart.gg/style-system/system";
-import type { DatasourceRef } from "@upstart.gg/sdk/shared/bricks/props/all";
+import type { DatasourceRef } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import { fieldLabel } from "../form-class";
 import { TObject, type TProperties, type TSchema, Type } from "@sinclair/typebox";
 import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { useDraftHelpers, useGetBrick } from "~/editor/hooks/use-editor";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
-import { MdKeyboardArrowDown } from "react-icons/md";
-import { useEffect, useState } from "react";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 
 const allDatasources = [
@@ -109,7 +107,9 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
 
   const datasourceSchema: TSchema | null =
     brickManifest.properties.datasource ??
-    ("childrenType" in brickInfo.props ? schemaToChildSchema(manifests[brickInfo.props.childrenType]) : null);
+    ("childrenType" in brickInfo.props
+      ? schemaToChildSchema(manifests[brickInfo.props.childrenType as keyof typeof manifests])
+      : null);
 
   console.log("brickInfo props", { brickInfo, datasourceSchema });
 

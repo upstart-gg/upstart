@@ -1,7 +1,6 @@
 import type { FieldProps } from "./types";
-import { Text, Select, Slider } from "@upstart.gg/style-system/system";
+import { Text, Select } from "@upstart.gg/style-system/system";
 import { fieldLabel } from "../form-class";
-import { tx } from "@upstart.gg/style-system/twind";
 import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 
 export const PagePaddingField: React.FC<FieldProps<Attributes["$pagePadding"]>> = (props) => {
