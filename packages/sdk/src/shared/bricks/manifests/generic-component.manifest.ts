@@ -1,6 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { commonProps, commonStyleProps, textContentProps } from "../props/all";
+import { commonProps, commonStyleProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { LAYOUT_COLS } from "~/shared/layout-constants";
 

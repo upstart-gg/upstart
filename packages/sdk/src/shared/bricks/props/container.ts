@@ -134,8 +134,8 @@ export const containerLayoutProps = Type.Object({
     "ui:responsive": true,
     ...groupLayout,
   }),
-  flex,
-  grid,
+  flex: Type.Optional(flex),
+  grid: Type.Optional(grid),
 });
 
 export const containerChildrenProps = Type.Object({

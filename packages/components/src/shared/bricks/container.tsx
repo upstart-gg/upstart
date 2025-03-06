@@ -34,8 +34,6 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) 
         : [];
   }
 
-  console.log("container props", { props, ds });
-
   return (
     <div className={tx(apply("flex relative"), className)} ref={ref}>
       {props.childrenBricks?.length > 0 ? (

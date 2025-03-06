@@ -1,14 +1,10 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import {
-  commonProps,
-  commonStyleProps,
-  containerChildrenProps,
-  containerLayoutProps,
-  datasourceRefProps,
-} from "../props/all";
+import { commonProps, commonStyleProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { LAYOUT_COLS } from "~/shared/layout-constants";
+import { containerChildrenProps, containerLayoutProps } from "../props/container";
+import { datasourceRefProps } from "../props/datasource";
 
 // Generic container can hold any type of array data source
 export const manifest = defineBrickManifest({

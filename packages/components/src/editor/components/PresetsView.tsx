@@ -6,7 +6,7 @@ import {
 } from "@upstart.gg/sdk/shared/bricks/props/_style-presets";
 import { tx } from "@upstart.gg/style-system/twind";
 import { fieldLabel } from "./json-form/form-class";
-import { Button, Text, Select, Tooltip, IconButton, SegmentedControl } from "@upstart.gg/style-system/system";
+import { SegmentedControl } from "@upstart.gg/style-system/system";
 import { useState } from "react";
 
 type PresetsViewProps = {
@@ -15,8 +15,7 @@ type PresetsViewProps = {
 
 export default function PresetsView({ onChoose }: PresetsViewProps) {
   const [variant, setVariant] = useState<StylePreset["variant"]>("primary");
-
-  const styles = Object.entries(stylePreset.properties.style.anyOf).map(([name, value]) => {
+  const styles = Object.entries(stylePreset.properties.style.anyOf).map(([, value]) => {
     return {
       name: value.title,
       value: value.const,

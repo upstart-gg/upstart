@@ -26,7 +26,13 @@ import {
 import { MdOutlineFormatItalic } from "react-icons/md";
 import { MdStrikethroughS } from "react-icons/md";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
-import { useDatasourcesSchemas, useEditor, useSelectedBrick } from "~/editor/hooks/use-editor";
+import {
+  useDatasourcesSchemas,
+  useEditingTextForBrickId,
+  useEditor,
+  useGetBrick,
+  useSelectedBrick,
+} from "~/editor/hooks/use-editor";
 import { VscDatabase } from "react-icons/vsc";
 import { BiFullscreen, BiExitFullscreen } from "react-icons/bi";
 import { JSONSchemaView } from "~/editor/components/json-form/SchemaView";
@@ -94,7 +100,6 @@ export type TextEditorProps = {
   enabled?: boolean;
   className?: string;
   brickId: Brick["id"];
-  discrete?: boolean;
   paragraphMode?: string;
   /**
    * Whether the editor is inlined in the page or appears in the panel
@@ -111,7 +116,6 @@ const TextEditor = ({
   className,
   brickId,
   enabled = false,
-  discrete = false,
   paragraphMode,
   inline,
 }: TextEditorProps) => {
@@ -119,6 +123,7 @@ const TextEditor = ({
   const datasources = useDatasourcesSchemas();
 
   const [editable, setEditable] = useState(/*enabled*/ false);
+  const [focused, setFocused] = useState(false);
   // @ts-ignore
   const fields = getJSONSchemaFieldsList({ schemas: datasources });
 
@@ -170,9 +175,7 @@ const TextEditor = ({
       content: initialContent,
       onUpdate,
       immediatelyRender: true,
-
-      // autofocus: false,
-      editable,
+      editable: true,
       editorProps: {
         attributes: {
           class: inline
@@ -194,16 +197,21 @@ const TextEditor = ({
   useEffect(() => {
     const onFocus = () => {
       mainEditor.setIsEditingText(brickId);
+      setFocused(true);
     };
 
     const onBlur = () => {
       mainEditor.setIsEditingText(false);
-      setEditable(false);
+      setFocused(false);
+      editor?.chain().blur().run();
     };
 
     editor?.on("focus", onFocus);
     editor?.on("blur", (e) => {
-      if ((e.event.target as HTMLElement)?.matches(".tiptap")) return;
+      // If there is a related target, it means the blur event was triggered by a click on the editor buttons
+      if (e.event.relatedTarget) {
+        return;
+      }
       onBlur();
     });
 
@@ -217,18 +225,9 @@ const TextEditor = ({
     <div
       className={tx({
         "fixed z-[99999] inset-[10dvw] shadow-2xl": mainEditor.textEditMode === "large",
-        "-mx-3 -mt-3": discrete,
       })}
     >
       <EditorContent
-        onDoubleClick={function (e) {
-          // e.preventDefault();
-          setEditable(true);
-          setTimeout(() => {
-            console.log("FOCUSING", editor.view);
-            editor?.view.focus();
-          }, 200);
-        }}
         autoCorrect="false"
         spellCheck="false"
         editor={editor}
@@ -236,17 +235,7 @@ const TextEditor = ({
           "min-h-full flex border-0": mainEditor.textEditMode === "large",
         })}
       />
-      {editor && editable && (
-        // <Portal container={menuContainer.current}>
-        <MenuBar
-          brickId={brickId}
-          editor={editor}
-          discrete={discrete}
-          inline={inline}
-          paragraphMode={paragraphMode}
-        />
-        // </Portal>
-      )}
+      {focused && <MenuBar brickId={brickId} editor={editor} paragraphMode={paragraphMode} />}
     </div>
   );
 };
@@ -254,18 +243,16 @@ const TextEditor = ({
 const MenuBar = ({
   editor,
   brickId,
-  discrete,
   paragraphMode,
-  inline,
 }: {
   editor: Editor;
   brickId: Brick["id"];
   paragraphMode?: string;
-  discrete?: boolean;
-  inline?: boolean;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const selectedBrick = useSelectedBrick();
+  const getBrick = useGetBrick();
+  const editingForBrickId = useEditingTextForBrickId();
+  const selectedBrick = editingForBrickId ? getBrick(editingForBrickId) : null;
 
   const className = tx(
     " flex isolate transition-opacity duration-100",
@@ -288,13 +275,6 @@ const MenuBar = ({
         <TextAlignButtonGroup editor={editor} />
         <TextStyleButtonGroup editor={editor} />
         <DatasourceItemButton editor={editor} />
-        {!inline && <DisplayModeButton icon="enlarge" />}
-        {!discrete && inline !== true && (
-          <>
-            <span className="flex-1" />
-            <DisplayModeButton icon="close" />
-          </>
-        )}
       </div>
     </div>
   );

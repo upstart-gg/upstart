@@ -791,6 +791,11 @@ export function usePageVersion() {
   return useStore(ctx, (state) => state.version);
 }
 
+export function useEditingTextForBrickId() {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.isEditingTextForBrickId);
+}
+
 export function useLastSaved() {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => state.lastSaved);

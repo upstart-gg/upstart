@@ -1,8 +1,10 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { commonProps, commonStyleProps, datasourceRefProps, textContentProps } from "../props/all";
+import { commonProps, commonStyleProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
+import { datasourceRefProps } from "../props/datasource";
+import { textContentProps } from "../props/text";
 
 export const datasource = Type.Array(
   Type.Object({

@@ -84,7 +84,7 @@ const homePageBricks = defineBricks([
       type: "text",
       props: {
         content: "Build your launch page",
-        justify: "text-center font-humanist",
+        className: "text-center font-humanist",
       },
       // take the whole width on all devices
       position: {
@@ -106,10 +106,8 @@ const homePageBricks = defineBricks([
     {
       type: "text",
       props: {
-        content:
+        textContent:
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ornare justo lectus, vel placerat arcu vulputate scelerisque. Donec eget eros pellentesque, facilisis massa id, aliquam nisl. Suspendisse auctor ipsum vitae volutpat cursus. Donec vehicula urna felis, feugiat iaculis metus luctus varius. Nam sed pretium nulla.",
-        justify: "text-center",
-        format: "html",
       },
       position: {
         mobile: {
@@ -128,7 +126,7 @@ const homePageBricks = defineBricks([
   ...createRow([
     {
       type: "text",
-      props: { content: "Something" },
+      props: { textContent: "Something" },
       position: {
         mobile: {
           x: "third",
@@ -144,7 +142,7 @@ const homePageBricks = defineBricks([
     },
     {
       type: "text",
-      props: { content: "Else" },
+      props: { textContent: "Else" },
       position: {
         mobile: {
           x: "twoThird",

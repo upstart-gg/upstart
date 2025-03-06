@@ -1,9 +1,10 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { commonProps, commonStyleProps } from "../props/_common";
+import { commonProps, commonStyleProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { LAYOUT_COLS } from "~/shared/layout-constants";
-import { backgroundColor, padding } from "../props/all";
+import { padding } from "../props/layout";
+import { backgroundColor } from "../props/background";
 
 export const manifest = defineBrickManifest({
   type: "card",

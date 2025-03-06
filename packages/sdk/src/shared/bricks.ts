@@ -232,7 +232,7 @@ export type Section = Static<typeof sectionSchema>;
 export type ResponsivePosition = Brick["position"];
 
 const definedBrickSchema = Type.Composite([
-  Type.Omit(brickSchema, ["id", "position", "manifest"]),
+  Type.Omit(brickSchema, ["id", "position", "manifest", "isDynamic"]),
   Type.Object({
     position: Type.Object({
       mobile: definedBrickPositionSchema,

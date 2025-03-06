@@ -24,7 +24,6 @@ const RichTextField: React.FC<FieldProps<TextContent>> = (props) => {
             onChange(editor.getHTML());
           }}
           paragraphMode={props.schema["ui:paragraph-mode"]}
-          discrete={textEditMode !== "large"}
           brickId={brickId}
           initialContent={currentValue}
           enabled

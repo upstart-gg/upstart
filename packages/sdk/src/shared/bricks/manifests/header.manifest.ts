@@ -1,8 +1,9 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { commonProps, textContentProps } from "../props/all";
+import { commonProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { LAYOUT_COLS } from "~/shared/layout-constants";
+import { textContentProps } from "../props/text";
 
 export const manifest = defineBrickManifest({
   type: "header",

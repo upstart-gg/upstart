@@ -60,5 +60,5 @@ export const datasourceRef = Type.Object(
 export type DatasourceRef = Static<typeof datasourceRef>;
 
 export const datasourceRefProps = Type.Object({
-  datasourceRef,
+  datasourceRef: datasourceRef,
 });

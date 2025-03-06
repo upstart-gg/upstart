@@ -1,8 +1,9 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { commonProps, imageSettings } from "../props/all";
+import { commonProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { LAYOUT_COLS } from "~/shared/layout-constants";
+import { imageProps } from "../props/image";
 
 export const manifest = defineBrickManifest({
   type: "image",
@@ -34,7 +35,7 @@ export const manifest = defineBrickManifest({
       <polyline points="21 15 16 10 5 21"></polyline>
     </svg>
   `,
-  props: Type.Composite([imageSettings, commonProps]),
+  props: Type.Composite([imageProps, commonProps]),
 });
 
 export type Manifest = Static<typeof manifest>;

@@ -2,7 +2,12 @@ import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { LAYOUT_COLS } from "~/shared/layout-constants";
-import { border, effects, layout, background, alignBasic, commonProps } from "../props/all";
+import { commonProps } from "../props/all";
+import { layout } from "../props/layout";
+import { border } from "../props/border";
+import { background } from "../props/background";
+import { effects } from "../props/effects";
+import { align } from "../props/align";
 
 const heroSize = Type.Union(
   [
@@ -62,7 +67,7 @@ export const manifest = defineBrickManifest({
   `,
   props: Type.Composite([
     commonProps,
-    Type.Object({ layout, border, background, effects, heroSize, alignBasic, content }),
+    Type.Object({ layout, border, background, effects, heroSize, align, content }),
   ]),
 });
 

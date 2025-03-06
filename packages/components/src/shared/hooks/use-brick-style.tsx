@@ -1,11 +1,5 @@
 import { tx, apply, css } from "@upstart.gg/style-system/twind";
-import type {
-  commonStyleProps,
-  textStyleProps,
-  containerLayoutProps,
-  alignBasicProps,
-} from "@upstart.gg/sdk/bricks/props/all";
-import type { commonProps } from "@upstart.gg/sdk/shared/bricks/props/_common";
+import type { commonProps, allStyleProps } from "@upstart.gg/sdk/bricks/props/all";
 import type { Static } from "@sinclair/typebox";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
@@ -13,11 +7,7 @@ import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { Value } from "@sinclair/typebox/value";
 
-type AllStyleProps = Partial<Static<typeof commonStyleProps>> &
-  Partial<Static<typeof textStyleProps>> &
-  Partial<Static<typeof commonProps>> &
-  Partial<Static<typeof alignBasicProps>> &
-  Partial<Static<typeof containerLayoutProps>>;
+type AllStyleProps = Partial<Static<typeof allStyleProps>> & Partial<Static<typeof commonProps>>;
 
 type UseBrickStyleWrapperProps = {
   brick: Brick;
@@ -27,7 +17,7 @@ type UseBrickStyleWrapperProps = {
 };
 
 type UseBrickStyleProps = AllStyleProps & {
-  mobileOverride: AllStyleProps;
+  mobileOverride: AllStyleProps | undefined;
 };
 
 /**
@@ -40,7 +30,7 @@ export function useBrickStyle({ mobileOverride, ...props }: UseBrickStyleProps) 
   return tx(apply("flex-1"), [
     props.className && apply(props.className),
     props.layout?.padding,
-    props.color ? `text-${props.color}` : null,
+    props.text?.color,
     props.text?.size,
     props.text?.color,
     // props.textAlign,
@@ -61,7 +51,7 @@ export function useBrickWrapperStyle({ brick, editable, className, selected }: U
     // container children expand to fill the space
     isContainerChild && "container-child flex-1",
 
-    getEditorStyles(editable === true, isContainerChild, selected),
+    getEditorStyles(editable === true, !!brick.isContainer, isContainerChild, selected),
 
     // Position of the wrapper
     //
@@ -101,18 +91,27 @@ export function useBrickWrapperStyle({ brick, editable, className, selected }: U
   );
 }
 
-function getEditorStyles(editable: boolean, isContainerChild: boolean, selected?: boolean) {
+function getEditorStyles(
+  editable: boolean,
+  isContainer: boolean,
+  isContainerChild: boolean,
+  selected?: boolean,
+) {
   if (!editable) {
     return null;
   }
   return [
     "select-none hover:z-[9999] transition-[opcacity,colors] duration-200 rounded-sm",
-    selected && "outline outline-4 outline-upstart-500",
-    !selected && !isContainerChild && "hover:(outline outline-4 outline-upstart-500/60)",
+    selected && "outline outline-4 outline-upstart-500 shadow-xl shadow-upstart-500/20",
+    !selected && !isContainerChild && !isContainer && "hover:(outline outline-4 outline-upstart-500/60)",
+    !selected &&
+      !isContainerChild &&
+      isContainer &&
+      "hover:(outline-dashed outline-4 outline-upstart-500/60)",
     !selected && isContainerChild && "hover:(outline outline-4 outline-upstart-500/40)",
     css({
       "&.selected-group": {
-        // outline: "2px dotted var(--violet-8) !important",
+        outline: "2px dotted var(--violet-8) !important",
       },
     }),
   ];
@@ -159,7 +158,7 @@ function getBasicAlignmentStyles(props: AllStyleProps) {
  * Flexbox handles alignment using a main axis and a cross axis.
  * We want to map the alignment to the flexbox properties.
  */
-function getFlexStyles(props: AllStyleProps, mobileOverride: Brick["mobileOverride"]) {
+function getFlexStyles(props: AllStyleProps, mobileOverride: UseBrickStyleProps["mobileOverride"]) {
   if (mobileOverride && "flex" in mobileOverride) {
     return `@desktop:(
       ${props.flex?.direction ?? ""}
@@ -170,8 +169,8 @@ function getFlexStyles(props: AllStyleProps, mobileOverride: Brick["mobileOverri
     )
     @mobile:(
       ${mobileOverride.flex?.direction ?? props.flex?.direction ?? ""}
-      ${mobileOverride.flex.justifyContent ?? props.flex?.justifyContent ?? ""}
-      ${mobileOverride.flex.alignItems ?? props.flex?.alignItems ?? ""}
+      ${mobileOverride.flex?.justifyContent ?? props.flex?.justifyContent ?? ""}
+      ${mobileOverride.flex?.alignItems ?? props.flex?.alignItems ?? ""}
       ${mobileOverride.flex?.wrap ?? props.flex?.wrap ?? ""}
       ${mobileOverride.flex?.gap ?? props.flex?.gap ?? ""}
     )`;
