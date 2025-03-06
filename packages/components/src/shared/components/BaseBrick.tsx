@@ -25,7 +25,7 @@ const BaseBrick = ({ brick, editable }: { brick: Brick; editable?: boolean } & C
     return null;
   }
 
-  const brickProps = { ...Value.Create(manifests[brick.type]).props, ...brick.props };
+  const brickProps = { ...Value.Create(manifests[brick.type]).props, ...brick.props, id: brick.id };
 
   return (
     <Suspense>

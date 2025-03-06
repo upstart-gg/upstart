@@ -107,69 +107,37 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         // editorHelpers.setCollidingBrick(dropOverPos.collision);
       },
 
-      onDragEnd: (brick, pos, gridPos, updatedPositions) => {
+      onDragEnd: (updatedPositions, event) => {
         updateDragOverGhostStyle(false);
 
-        const collisions = detectCollisions({
-          brick,
-          bricks: draft.bricks,
-          currentBp: previewMode,
-          dropPosition: gridPos,
-        });
+        const firstPos = updatedPositions[0];
+        const dropOverBrick = getBrickAtPosition(
+          firstPos.gridPosition.x,
+          firstPos.gridPosition.y,
+          draft.bricks,
+          previewMode,
+        );
 
-        // Commented to allow dropping on top of other bricks
-        // but we have to figure out how to handle this
-
-        // if (collisions.length) {
-        //   console.warn("Collisions detected, cancelling drop");
-        //   // reset the selected group
-        //   editorHelpers.setSelectedGroup();
-        //   return;
-        // }
-
-        const dropOverBrick = getBrickAtPosition(gridPos.x, gridPos.y, draft.bricks, previewMode);
-        const isSameBrick = dropOverBrick?.id === brick.id;
-        const overlap =
-          !isSameBrick && dropOverBrick ? getBricksOverlap(brick, gridPos, dropOverBrick) : null;
-        console.debug("onDragEnd (%s)", brick.id, { brick, dropOverBrick, overlap });
-
-        // if (dropOverBrick?.isContainer && overlap !== null && overlap >= 0.2) {
-        //   console.debug("Moving %s to parent %s", brick.id, dropOverBrick.id);
-        //   draftHelpers.moveBrickToParent(brick.id, dropOverBrick.id);
-        // } else {
-        //   console.debug("Updating position of %s", brick.id);
-        //   console.log("bricks before", draft.bricks);
-        //   draft.updateBrickPosition(brick.id, previewMode, {
-        //     ...draft.getBrick(brick.id)!.position[previewMode],
-        //     x: gridPos.x,
-        //     y: gridPos.y,
-        //   });
-        //   console.log("bricks after", draftStore.getState().bricks);
-        // }
-
-        if (updatedPositions) {
-          for (const [brickId, position] of Object.entries(updatedPositions)) {
-            console.log("Updating position of %s to x = %s, y = %s", brickId, position.x, position.y);
-            draft.updateBrickPosition(brickId, previewMode, {
-              ...draft.getBrick(brickId)!.position[previewMode],
-              x: position.x,
-              y: position.y,
+        if (dropOverBrick?.isContainer && event.shiftKey) {
+          console.debug("Moving eleements to parent %s", dropOverBrick.id);
+          updatedPositions.forEach(({ brick }) => {
+            draftHelpers.moveBrickToParent(brick.id, dropOverBrick.id);
+          });
+        } else {
+          updatedPositions.forEach(({ brick, gridPosition }) => {
+            console.log(
+              "Updating position of %s to x = %s, y = %s",
+              brick.id,
+              gridPosition.x,
+              gridPosition.y,
+            );
+            draft.updateBrickPosition(brick.id, previewMode, {
+              ...draft.getBrick(brick.id)!.position[previewMode],
+              x: gridPosition.x,
+              y: gridPosition.y,
             });
-          }
+          });
         }
-
-        // Commented for now
-        // Reorganize all bricks so there is no overlap
-        // const adjustments = getNeededBricksAdjustments(draftStore.getState().bricks);
-        // console.log("needed adjustments", adjustments);
-        // for (const [brickId, adjust] of Object.entries(adjustments)) {
-        //   const adjustProps = {
-        //     ...("y" in adjust ? { y: adjust.y } : {}),
-        //     ...("h" in adjust ? { h: adjust.h } : {}),
-        //   };
-        //   console.log("Adjusting brick %s: %o", brickId, adjustProps);
-        //   draft.updateBrickPosition(brickId, previewMode, adjustProps);
-        // }
 
         // reset the selected group
         editorHelpers.setSelectedGroup();

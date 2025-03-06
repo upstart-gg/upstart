@@ -62,7 +62,7 @@ const datasources = defineDataSources({
 const homePageBricks = defineBricks([
   ...createRow([
     {
-      type: "container",
+      type: "header",
       props: {
         layoutType: "flex",
         childrenBricks: [
@@ -75,16 +75,41 @@ const homePageBricks = defineBricks([
         mobile: {
           x: 0,
           w: "full",
-          h: 10,
+          h: "auto",
         },
         desktop: {
           x: 0,
           w: "full",
-          h: 16,
+          h: "auto",
         },
       },
     },
   ]),
+  // ...createRow([
+  //   {
+  //     type: "container",
+  //     props: {
+  //       layoutType: "flex",
+  //       childrenBricks: [
+  //         { type: "text", props: { textContent: "Hello World #1" } },
+  //         { type: "text", props: { textContent: "Hello World #2" } },
+  //         { type: "text", props: { textContent: "Hello World #3" } },
+  //       ],
+  //     },
+  //     position: {
+  //       mobile: {
+  //         x: 0,
+  //         w: "full",
+  //         h: 10,
+  //       },
+  //       desktop: {
+  //         x: 0,
+  //         w: "full",
+  //         h: 16,
+  //       },
+  //     },
+  //   },
+  // ]),
   ...createRow([
     {
       type: "hero",

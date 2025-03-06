@@ -3,9 +3,9 @@ import { forwardRef } from "react";
 import { css, tx } from "@upstart.gg/style-system/twind";
 import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/card.manifest";
 import TextBrick from "./text";
-import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
+import type { BrickWithProps } from "@upstart.gg/sdk/shared/bricks";
 
-const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
+const Card = forwardRef<HTMLDivElement, BrickWithProps<Manifest>>(({ props }, ref) => {
   return (
     <div className={tx("card flex flex-col")} ref={ref}>
       {props.cardTitle?.content && (

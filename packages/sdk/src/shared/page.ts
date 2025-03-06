@@ -1,5 +1,5 @@
 import { type Attributes, resolveAttributes, defaultAttributesSchema } from "./attributes";
-import { brickSchema, type Brick } from "./bricks";
+import { brickSchema, type Section, sectionSchema, type Brick } from "./bricks";
 import invariant from "./utils/invariant";
 import { themeSchema, type Theme } from "./theme";
 import { Type, type Static } from "@sinclair/typebox";
@@ -71,7 +71,7 @@ export type PageInfo = {
 /**
  * The Page config represents the page configuration (datasources, attributes, etc)
  */
-export type PageConfig<D extends DatasourcesMap, B extends Brick[]> = PageInfo & {
+export type PageConfig<D extends DatasourcesMap, S extends Section[]> = PageInfo & {
   /**
    * Data sources manifests for the page. Undefined if no data sources are defined.
    */
@@ -90,12 +90,12 @@ export type PageConfig<D extends DatasourcesMap, B extends Brick[]> = PageInfo &
    * Resolved attributes for the page.
    */
   attr?: Attributes;
-  bricks: B;
+  sections: S;
 
   tags: string[];
 };
 
-export type GenericPageConfig = PageConfig<DatasourcesMap, Brick[]>;
+export type GenericPageConfig = PageConfig<DatasourcesMap, Section[]>;
 
 export function getNewPageConfig(
   templateConfig: TemplateConfig,
@@ -105,14 +105,14 @@ export function getNewPageConfig(
   const pageConfig = templateConfig.pages.find((p) => p.path === path);
   invariant(pageConfig, `createPageConfigFromTemplateConfig: No page config found for path ${path}`);
 
-  const bricks = pageConfig.bricks;
+  const sections = pageConfig.sections;
 
   return {
     id: typeof useFixedId === "boolean" ? crypto.randomUUID() : useFixedId,
     label: pageConfig.label,
     tags: pageConfig.tags,
     path,
-    bricks,
+    sections,
     ...(pageConfig.attributes
       ? {
           attributes: pageConfig.attributes,
@@ -195,7 +195,7 @@ export type SiteAndPagesConfig = ReturnType<typeof getNewSiteConfig>;
 export const templatePageSchema = Type.Object({
   label: Type.String(),
   path: Type.String(),
-  bricks: Type.Array(brickSchema),
+  sections: Type.Array(sectionSchema),
   tags: Type.Array(Type.String()),
 });
 

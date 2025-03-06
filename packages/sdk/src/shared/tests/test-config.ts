@@ -1,7 +1,7 @@
 import { Type as ds } from "@sinclair/typebox";
 import { defineDataSources } from "../datasources";
 import { defineAttributes, attr } from "../attributes";
-import { defineBricks, createRow } from "../bricks";
+import { defineSections } from "../bricks";
 import { defineConfig } from "../page";
 import type { Theme } from "../theme";
 
@@ -57,106 +57,34 @@ const datasources = defineDataSources({
   },
 });
 
-const homePageBricks = defineBricks([
-  ...createRow([
-    {
-      type: "image",
-      props: {
-        src: "https://cdn.upstart.gg/internal/logo/upstart.svg",
-        // className: "max-h-24",
-      },
-      position: {
-        mobile: {
-          x: 0,
-          w: "full",
-          h: 3,
+const homePageSections = defineSections([
+  {
+    id: "header",
+    label: "Header",
+    bricks: [
+      {
+        type: "image",
+        props: {
+          src: "https://cdn.upstart.gg/internal/logo/upstart.svg",
+          // className: "max-h-24",
         },
-        desktop: {
-          x: 0,
-          w: "full",
-          h: 3,
-        },
-      },
-    },
-  ]),
-  ...createRow([
-    {
-      type: "text",
-      props: {
-        content: "Build your launch page",
-        className: "text-center font-humanist",
-      },
-      // take the whole width on all devices
-      position: {
-        mobile: {
-          x: 0,
-          w: "full",
-          h: 4,
-        },
-        desktop: {
-          x: 0,
-          y: 4,
-          w: "full",
-          h: 4,
+        position: {
+          mobile: {
+            x: 0,
+            y: 0,
+            w: "full",
+            h: 3,
+          },
+          desktop: {
+            x: 0,
+            y: 0,
+            w: "full",
+            h: 3,
+          },
         },
       },
-    },
-  ]),
-  ...createRow([
-    {
-      type: "text",
-      props: {
-        textContent:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ornare justo lectus, vel placerat arcu vulputate scelerisque. Donec eget eros pellentesque, facilisis massa id, aliquam nisl. Suspendisse auctor ipsum vitae volutpat cursus. Donec vehicula urna felis, feugiat iaculis metus luctus varius. Nam sed pretium nulla.",
-      },
-      position: {
-        mobile: {
-          x: 0,
-          w: "full",
-          h: 8,
-        },
-        desktop: {
-          x: 0,
-          w: "full",
-          h: 3,
-        },
-      },
-    },
-  ]),
-  ...createRow([
-    {
-      type: "text",
-      props: { textContent: "Something" },
-      position: {
-        mobile: {
-          x: "third",
-          w: "full",
-          h: 3,
-        },
-        desktop: {
-          x: "third",
-          w: "third",
-          h: 3,
-        },
-      },
-    },
-    {
-      type: "text",
-      props: { textContent: "Else" },
-      position: {
-        mobile: {
-          x: "twoThird",
-          w: "full",
-          h: 3,
-        },
-        desktop: {
-          x: "twoThird",
-          w: "third",
-          h: 3,
-        },
-      },
-    },
-  ]),
+    ],
+  },
 ]);
 
 const themes: Theme[] = [
@@ -195,7 +123,7 @@ export default defineConfig({
     {
       label: "Home",
       path: "/",
-      bricks: homePageBricks,
+      sections: homePageSections,
       tags: [],
     },
   ],

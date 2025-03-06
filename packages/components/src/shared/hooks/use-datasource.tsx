@@ -2,6 +2,7 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 import type { Static, TArray, TObject } from "@sinclair/typebox";
 import type { DatasourceRef } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import { Value } from "@sinclair/typebox/value";
+import { datasource } from "@upstart.gg/sdk/shared/bricks/manifests/images-wall.manifest";
 
 type DatasourceSchema = TObject | TArray<TObject>;
 type DatasourceMap = Map<string, unknown>;
@@ -24,8 +25,16 @@ function useDatasourceContext() {
 export function useDatasource<
   D extends DatasourceRef = DatasourceRef,
   S extends DatasourceSchema | null = null,
->(dsRef: D, schema: S = null as S) {
+>(dsRef: D | undefined, schema: S = null as S) {
   const datasources = useDatasourceContext();
+
+  if (!dsRef) {
+    return {
+      datasourceId: null,
+      data: schema !== null ? Value.Create(schema) : [],
+      isSample: true,
+    };
+  }
 
   const data = dsRef.id ? datasources.get(dsRef.id) : null;
 

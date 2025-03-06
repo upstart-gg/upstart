@@ -377,46 +377,50 @@ function FieldsMapper({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      {Object.entries(schemaFields).map(([fieldName, field]) => {
-        return (
-          <div className="flex justify-between items-center flex-wrap" key={fieldName}>
-            <label
-              className={tx(
-                "text-[85%] flex-1 flex-grow",
-                schemaRequiredFields.includes(fieldName) && "font-semibold",
-              )}
-            >
-              {field.title ?? fieldName}
-            </label>
-            <Select.Root
-              value={currentMapping[fieldName]}
-              size="1"
-              onValueChange={(value) => onChange({ ...currentMapping, [fieldName]: value })}
-            >
-              <Select.Trigger
-                radius="medium"
-                variant="ghost"
-                placeholder="Select a field"
-                className="!flex-1"
-              />
-              <Select.Content position="popper">
-                <Select.Group>
-                  {Object.entries(externalFields).map(([extFieldName, extField]) => (
-                    <Select.Item
-                      key={extFieldName}
-                      value={extFieldName}
-                      disabled={!areFieldsCompatible(field, extField)}
-                    >
-                      {extField.title ?? extFieldName}{" "}
-                      {extField.title ? <span className="font-mono text-[95%]">({extFieldName})</span> : ""}
-                    </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Content>
-            </Select.Root>
-          </div>
-        );
-      })}
+      {Object.entries(schemaFields)
+        .filter(([, field]) => {
+          return field["ui:field"] !== "hidden" && field["ui:field"] !== "dynamic-content-switch";
+        })
+        .map(([fieldName, field]) => {
+          return (
+            <div className="flex justify-between items-center flex-wrap" key={fieldName}>
+              <label
+                className={tx(
+                  "text-[85%] flex-1 flex-grow",
+                  schemaRequiredFields.includes(fieldName) && "font-semibold",
+                )}
+              >
+                {field.title ?? fieldName}
+              </label>
+              <Select.Root
+                value={currentMapping[fieldName]}
+                size="1"
+                onValueChange={(value) => onChange({ ...currentMapping, [fieldName]: value })}
+              >
+                <Select.Trigger
+                  radius="medium"
+                  variant="ghost"
+                  placeholder="Select a field"
+                  className="!flex-1"
+                />
+                <Select.Content position="popper">
+                  <Select.Group>
+                    {Object.entries(externalFields).map(([extFieldName, extField]) => (
+                      <Select.Item
+                        key={extFieldName}
+                        value={extFieldName}
+                        disabled={!areFieldsCompatible(field, extField)}
+                      >
+                        {extField.title ?? extFieldName}{" "}
+                        {extField.title ? <span className="font-mono text-[95%]">({extFieldName})</span> : ""}
+                      </Select.Item>
+                    ))}
+                  </Select.Group>
+                </Select.Content>
+              </Select.Root>
+            </div>
+          );
+        })}
     </div>
   );
 }

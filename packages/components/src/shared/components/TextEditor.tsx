@@ -41,6 +41,7 @@ import datasourceFieldSuggestions from "./datasourceFieldSuggestions";
 import { CgCloseR } from "react-icons/cg";
 import { getJSONSchemaFieldsList } from "../utils/json-field-list";
 import Highlight from "@tiptap/extension-highlight";
+import { menuBarBtnCls, menuBarBtnCommonCls } from "../styles/menubar-styles";
 
 function DatasourceFieldNode(props: NodeViewProps) {
   return (
@@ -97,7 +98,6 @@ const DatasourceFieldExtension = Node.create({
 export type TextEditorProps = {
   initialContent: string;
   onUpdate: (e: EditorEvents["update"]) => void;
-  enabled?: boolean;
   className?: string;
   brickId: Brick["id"];
   paragraphMode?: string;
@@ -115,14 +115,14 @@ const TextEditor = ({
   onUpdate,
   className,
   brickId,
-  enabled = false,
   paragraphMode,
   inline,
 }: TextEditorProps) => {
   const mainEditor = useEditor();
   const datasources = useDatasourcesSchemas();
+  const [menuBarContainer, setMenuBarContainer] = useState<HTMLDivElement | null>(null);
 
-  const [editable, setEditable] = useState(/*enabled*/ false);
+  // const [editable, setEditable] = useState(/*enabled*/ false);
   const [focused, setFocused] = useState(false);
   // @ts-ignore
   const fields = getJSONSchemaFieldsList({ schemas: datasources });
@@ -191,13 +191,17 @@ const TextEditor = ({
         mainEditor.setlastTextEditPosition(props.editor.state.selection.anchor);
       },
     },
-    [brickId, editable, mainEditor.textEditMode],
+    [brickId, mainEditor.textEditMode],
   );
 
   useEffect(() => {
     const onFocus = () => {
       mainEditor.setIsEditingText(brickId);
       setFocused(true);
+      const container = document.querySelector<HTMLDivElement>(`#text-editor-menu-${brickId}`);
+      if (container) {
+        setMenuBarContainer(container);
+      }
     };
 
     const onBlur = () => {
@@ -221,6 +225,8 @@ const TextEditor = ({
     };
   }, [editor, mainEditor, brickId]);
 
+  console.log("menubrick in container", { menuBarContainer });
+
   return (
     <div
       className={tx({
@@ -231,11 +237,15 @@ const TextEditor = ({
         autoCorrect="false"
         spellCheck="false"
         editor={editor}
-        className={tx("outline-none ring-0 ", {
+        className={tx("outline-none ring-0", {
           "min-h-full flex border-0": mainEditor.textEditMode === "large",
         })}
       />
-      {focused && <MenuBar brickId={brickId} editor={editor} paragraphMode={paragraphMode} />}
+      {focused && menuBarContainer && (
+        <Portal container={menuBarContainer} asChild>
+          <MenuBar brickId={brickId} editor={editor} paragraphMode={paragraphMode} />
+        </Portal>
+      )}
     </div>
   );
 };
@@ -249,69 +259,56 @@ const MenuBar = ({
   brickId: Brick["id"];
   paragraphMode?: string;
 }) => {
-  const ref = useRef<HTMLDivElement>(null);
   const getBrick = useGetBrick();
   const editingForBrickId = useEditingTextForBrickId();
   const selectedBrick = editingForBrickId ? getBrick(editingForBrickId) : null;
 
-  const className = tx(
-    " flex isolate transition-opacity duration-100",
-    "absolute left-0 right-0 text-sm justify-center",
-    {
-      "opacity-0 hidden": selectedBrick?.id !== brickId,
-      "bottom-[calc(100%+8px)]": (selectedBrick?.position.desktop.y ?? 0) > 2,
-      "top-[calc(100%+8px)]": (selectedBrick?.position.desktop.y ?? 0) <= 2,
-    },
-  );
-
   return (
-    <div ref={ref} id="text-editor-menubar" className={tx(className)}>
-      <div className="z-[800] flex gap-3 items-center bg-upstart-500 p-2 rounded-md shadow-xl backdrop-blur bg-gradient-to-t from-transparent to-[rgba(255,255,255,0.15)]">
-        {paragraphMode !== "hero" && (
-          <ButtonGroup>
-            <TextSizeSelect editor={editor} />
-          </ButtonGroup>
-        )}
-        <TextAlignButtonGroup editor={editor} />
-        <TextStyleButtonGroup editor={editor} />
-        <DatasourceItemButton editor={editor} />
-      </div>
-    </div>
+    <>
+      {paragraphMode !== "hero" && (
+        <ButtonGroup>
+          <TextSizeSelect editor={editor} />
+        </ButtonGroup>
+      )}
+      <TextAlignButtonGroup editor={editor} />
+      <TextStyleButtonGroup editor={editor} />
+      {/*<DatasourceItemButton editor={editor} /> */}
+    </>
   );
 };
 
 function TextAlignButtonGroup({ editor }: { editor: Editor }) {
   return (
     <ToggleGroup.Root
-      className="inline-flex space-x-px divide-x rounded-[3px] divide-gray-300/50 dark:divide-dark-400 h-8"
+      className="contents"
       type="single"
       value={editor.isActive("textAlign") ? editor.getAttributes("textAlign").alignment : undefined}
       aria-label="Text align"
       color="gray"
     >
       <ToggleGroup.Item
-        className={tx(toolbarBtnCls)}
+        className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
         value="left"
         onClick={() => editor.chain().focus().setTextAlign("left").run()}
       >
         <MdFormatAlignLeft className="w-5 h-5" />
       </ToggleGroup.Item>
       <ToggleGroup.Item
-        className={tx(toolbarBtnCls)}
+        className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
         value="center"
         onClick={() => editor.chain().focus().setTextAlign("center").run()}
       >
         <MdFormatAlignCenter className="w-5 h-5" />
       </ToggleGroup.Item>
       <ToggleGroup.Item
-        className={tx(toolbarBtnCls)}
+        className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
         value="right"
         onClick={() => editor.chain().focus().setTextAlign("right").run()}
       >
         <MdFormatAlignRight className="w-5 h-5" />
       </ToggleGroup.Item>
       <ToggleGroup.Item
-        className={tx(toolbarBtnCls)}
+        className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
         value="justify"
         onClick={() => editor.chain().focus().setTextAlign("justify").run()}
       >
@@ -468,7 +465,7 @@ function DatasourceItemButton({ editor }: { editor: Editor }) {
 function TextStyleButtonGroup({ editor }: { editor: Editor }) {
   return (
     <ToggleGroup.Root
-      className="inline-flex space-x-px divide-x rounded-[3px] divide-gray-300/500 dark:divide-dark-400 dark:bg-dark-700 dark:text-dark-200 h-8"
+      className="contents"
       type="multiple"
       value={
         [
@@ -480,25 +477,25 @@ function TextStyleButtonGroup({ editor }: { editor: Editor }) {
       aria-label="Text style"
     >
       <ToggleGroup.Item
-        className={tx(toolbarBtnCls)}
+        className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
         value="bold"
         onClick={() => editor.chain().focus().toggleBold().run()}
       >
-        <MdFormatBold className="w-5 h-5" />
+        <MdFormatBold className="w-6 h-6" />
       </ToggleGroup.Item>
       <ToggleGroup.Item
-        className={tx(toolbarBtnCls)}
+        className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
         value="italic"
         onClick={() => editor.chain().focus().toggleItalic().run()}
       >
-        <MdOutlineFormatItalic className="w-5 h-5" />
+        <MdOutlineFormatItalic className="w-6 h-6" />
       </ToggleGroup.Item>
       <ToggleGroup.Item
-        className={tx(toolbarBtnCls)}
+        className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
         value="strike"
         onClick={() => editor.chain().focus().toggleStrike().run()}
       >
-        <MdStrikethroughS className="w-5 h-5" />
+        <MdStrikethroughS className="w-6 h-6" />
       </ToggleGroup.Item>
     </ToggleGroup.Root>
   );

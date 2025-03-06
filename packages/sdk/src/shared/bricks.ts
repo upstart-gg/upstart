@@ -1,25 +1,9 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { customAlphabet } from "nanoid";
 import { LAYOUT_COLS } from "./layout-constants";
-import type { ResponsiveMode } from "./responsive";
-import { manifest as buttonManifest } from "./bricks/manifests/button.manifest";
-import { manifest as cardManifest } from "./bricks/manifests/card.manifest";
-import { manifest as carouselManifest } from "./bricks/manifests/carousel.manifest";
-import { manifest as countdownManifest } from "./bricks/manifests/countdown.manifest";
-import { manifest as footerManifest } from "./bricks/manifests/footer.manifest";
-import { manifest as formManifest } from "./bricks/manifests/form.manifest";
-import { manifest as headerManifest } from "./bricks/manifests/header.manifest";
-import { manifest as heroManifest } from "./bricks/manifests/hero.manifest";
-import { manifest as iconManifest } from "./bricks/manifests/icon.manifest";
-import { manifest as imageManifest } from "./bricks/manifests/image.manifest";
-import { manifest as imagesWallManifest } from "./bricks/manifests/images-wall.manifest";
-import { manifest as mapManifest } from "./bricks/manifests/map.manifest";
-import { manifest as socialLinksManifest } from "./bricks/manifests/social-links.manifest";
-import { manifest as textManifest } from "./bricks/manifests/text.manifest";
-import { manifest as videoManifest } from "./bricks/manifests/video.manifest";
-import { manifest as containerManifest } from "./bricks/manifests/container.manifest";
-import { manifest as genericComponentManifest } from "./bricks/manifests/generic-component.manifest";
 import { defaults } from "./bricks/manifests/all-manifests";
+import type { BrickManifest } from "./brick-manifest";
+
 /**
  * Generates a unique identifier for bricks.
  */
@@ -92,10 +76,12 @@ const definedBrickPositionSchema = Type.Object({
         "The width in columns in grid units, not pixels. Can use aliases like 'half' to represent half of the grid.",
     },
   ),
-  h: Type.Number({
-    title: "Height",
-    description: "The height in rows in grid units, not pixels.",
-  }),
+  h: Type.Union([
+    Type.Number({
+      title: "Height",
+      description: "The height in rows in grid units, not pixels.",
+    }),
+  ]),
   hidden: Type.Optional(
     Type.Boolean({
       description: "Do not use this field. It is used internally by the editor.",
@@ -105,134 +91,40 @@ const definedBrickPositionSchema = Type.Object({
 
 export type DefinedBrickPosition = Static<typeof definedBrickPositionSchema>;
 
-export const brickSchema = Type.Composite([
-  Type.Union([
-    Type.Object({
-      type: Type.Literal("button"),
-      props: buttonManifest.properties.props,
-      mobileOverride: Type.Optional(Type.Partial(buttonManifest.properties.props)),
-    }),
-    Type.Object({
-      type: Type.Literal("card"),
-      props: cardManifest.properties.props,
-      mobileOverride: Type.Optional(Type.Partial(cardManifest.properties.props)),
-    }),
-    Type.Object({
-      type: Type.Literal("carousel"),
-      props: carouselManifest.properties.props,
-      mobileOverride: Type.Optional(Type.Partial(carouselManifest.properties.props)),
-    }),
-    Type.Object({
-      type: Type.Literal("countdown"),
-      props: countdownManifest.properties.props,
-      mobileOverride: Type.Optional(Type.Partial(countdownManifest.properties.props)),
-    }),
-    Type.Object({
-      type: Type.Literal("footer"),
-      props: footerManifest.properties.props,
-      mobileOverride: Type.Optional(Type.Partial(footerManifest.properties.props)),
-    }),
-    Type.Object({
-      type: Type.Literal("form"),
-      props: formManifest.properties.props,
-      mobileOverride: Type.Optional(Type.Partial(formManifest.properties.props)),
-    }),
-    Type.Object({
-      type: Type.Literal("header"),
-      props: headerManifest.properties.props,
-      mobileOverride: Type.Optional(Type.Partial(headerManifest.properties.props)),
-    }),
-    Type.Object({
-      type: Type.Literal("hero"),
-      props: heroManifest.properties.props,
-      mobileOverride: Type.Optional(Type.Partial(heroManifest.properties.props)),
-    }),
-    Type.Object({
-      type: Type.Literal("icon"),
-      props: iconManifest.properties.props,
-      mobileOverride: Type.Optional(Type.Partial(iconManifest.properties.props)),
-    }),
-    Type.Object({
-      type: Type.Literal("image"),
-      props: imageManifest.properties.props,
-      mobileOverride: Type.Optional(Type.Partial(imageManifest.properties.props)),
-    }),
-    Type.Object({
-      type: Type.Literal("images-wall"),
-      props: imagesWallManifest.properties.props,
-      mobileOverride: Type.Optional(Type.Partial(imagesWallManifest.properties.props)),
-    }),
-    Type.Object({
-      type: Type.Literal("map"),
-      props: mapManifest.properties.props,
-      mobileOverride: Type.Optional(Type.Partial(mapManifest.properties.props)),
-    }),
-    Type.Object({
-      type: Type.Literal("social-links"),
-      props: socialLinksManifest.properties.props,
-      mobileOverride: Type.Optional(Type.Partial(socialLinksManifest.properties.props)),
-    }),
-    Type.Object({
-      type: Type.Literal("text"),
-      props: textManifest.properties.props,
-      mobileOverride: Type.Optional(Type.Partial(textManifest.properties.props)),
-    }),
-    Type.Object({
-      type: Type.Literal("video"),
-      props: videoManifest.properties.props,
-      mobileOverride: Type.Optional(Type.Partial(videoManifest.properties.props)),
-    }),
-    Type.Object({
-      type: Type.Literal("generic-component"),
-      props: genericComponentManifest.properties.props,
-      mobileOverride: Type.Optional(Type.Partial(genericComponentManifest.properties.props)),
-    }),
-    Type.Object({
-      type: Type.Literal("container"),
-      props: containerManifest.properties.props,
-      mobileOverride: Type.Optional(Type.Partial(containerManifest.properties.props)),
-    }),
-  ]),
-  Type.Object({
-    id: Type.String({
-      title: "ID",
-      description: "A unique identifier for the brick.",
-    }),
-    isContainer: Type.Optional(Type.Boolean({ default: false })),
-    parentId: Type.Optional(Type.String()),
-    hideInLibrary: Type.Optional(Type.Boolean()),
-    position: Type.Object(
-      {
-        mobile: brickPositionSchema,
-        desktop: brickPositionSchema,
-      },
-      {
-        title: "Position",
-        description: "The position of the brick in the layout.",
-      },
-    ),
+export const brickSchema = Type.Object({
+  id: Type.String({
+    title: "ID",
+    description: "A unique identifier for the brick.",
   }),
-]);
-
-export type Brick = Static<typeof brickSchema>;
-export type BricksLayout = Brick[];
-
-const sectionSchema = Type.Object({
-  id: Type.String(),
-  kind: Type.Literal("section"),
-  label: Type.Optional(Type.String()),
-  bricks: Type.Array(brickSchema),
-  styleProps: Type.Object({
-    justifyContent: Type.Optional(Type.String()),
-    alignItems: Type.Optional(Type.String()),
+  type: Type.String({
+    title: "Type",
   }),
+  props: Type.Record(Type.String(), Type.Unknown()),
+  mobileProps: Type.Optional(Type.Record(Type.String(), Type.Unknown())),
+  isContainer: Type.Optional(Type.Boolean()),
+  parentId: Type.Optional(Type.String()),
+  sectionId: Type.String(),
+  position: Type.Object(
+    {
+      mobile: brickPositionSchema,
+      desktop: brickPositionSchema,
+    },
+    {
+      title: "Position",
+      description: "The position of the brick in the layout.",
+    },
+  ),
 });
 
-export type Section = Static<typeof sectionSchema>;
-export type ResponsivePosition = Brick["position"];
+export type Brick = Static<typeof brickSchema>;
+export type BrickWithProps<M extends BrickManifest> = Omit<Brick, "props" | "mobileProps"> & {
+  props: Static<M["props"]>;
+  mobileProps: Partial<Static<M["props"]>>;
+};
+export type BricksLayout = Brick[];
 
 const definedBrickSchema = Type.Composite([
-  Type.Omit(brickSchema, ["id", "position", "manifest", "isDynamic"]),
+  Type.Omit(brickSchema, ["id", "position", "sectionId"]),
   Type.Object({
     position: Type.Object({
       mobile: definedBrickPositionSchema,
@@ -242,6 +134,22 @@ const definedBrickSchema = Type.Composite([
 ]);
 
 export type DefinedBrick = Static<typeof definedBrickSchema>;
+
+export const sectionSchema = Type.Object({
+  id: Type.String(),
+  kind: Type.Literal("section"),
+  label: Type.Optional(Type.String()),
+  bricks: Type.Array(brickSchema),
+  props: Type.Object({}, { additionalProperties: true }),
+});
+
+export type Section = Static<typeof sectionSchema>;
+export type ResponsivePosition = Brick["position"];
+export type DefinedSection = Omit<Section, "bricks" | "id" | "kind" | "props"> & {
+  id?: string;
+  props?: Record<string, unknown>;
+  bricks: DefinedBrick[];
+};
 
 export type LayoutCols = {
   mobile: number;
@@ -286,11 +194,30 @@ function mapPosition(
   };
 }
 
-export function defineBricks<B extends DefinedBrick[]>(bricks: B): Brick[] {
+export function defineSections(sections: DefinedSection[]): Section[] {
+  return sections.map((section) => {
+    const partialSection = {
+      ...section,
+      id: section.id ?? `section-${generateId()}`,
+      props: section.props ?? {},
+      kind: "section",
+    } as const;
+    return {
+      ...partialSection,
+      bricks: defineBricks(section.bricks, partialSection),
+    };
+  });
+}
+
+function defineBricks<B extends DefinedBrick[] = DefinedBrick[]>(
+  bricks: B,
+  section: { id: string },
+): Brick[] {
   return bricks.map((brick) => {
     const id = `brick-${generateId()}`;
     return {
       id,
+      sectionId: section.id,
       ...defaults[brick.type],
       ...brick,
       props: {
@@ -320,68 +247,4 @@ export function defineBricks<B extends DefinedBrick[]>(bricks: B): Brick[] {
       },
     };
   });
-}
-
-/**
- * This specific type is used to define a row of bricks.
- * The `y` property of the position is automatically set to the current row.
- */
-type DefinedRowBrick = Omit<Brick, "id" | "manifest" | "position"> & {
-  // manifest?: BrickManifest;
-  position: {
-    mobile?: Omit<DefinedBrickPosition, "y"> & { forceY?: number };
-    desktop: Omit<DefinedBrickPosition, "y"> & { forceY?: number };
-  };
-};
-
-// Helpers to generate bricks coordonates
-const currentRowByBreakpoint: Record<ResponsiveMode, number> = {
-  mobile: 0,
-  desktop: 0,
-};
-
-/**
- * Creates a new row of bricks, automatically setting the `y` property to the current row.
- */
-export function createRow<B extends DefinedRowBrick[]>(
-  bricks: B,
-  initialY = { desktop: 0, mobile: 0 },
-): DefinedBrick[] {
-  // create the row
-  const created = bricks.map((brick, index) => {
-    const adjusted = {
-      ...brick,
-      position: {
-        desktop: {
-          ...brick.position.desktop,
-          y: brick.position.desktop.forceY ?? currentRowByBreakpoint.desktop,
-        },
-        ...(brick.position.mobile
-          ? {
-              mobile: {
-                ...brick.position.mobile,
-                y: brick.position.mobile.forceY ?? currentRowByBreakpoint.mobile,
-              },
-            }
-          : null),
-      },
-    };
-
-    if (adjusted.position.mobile?.w === LAYOUT_COLS.mobile && index !== bricks.length - 1) {
-      currentRowByBreakpoint.mobile += adjusted.position.mobile.h;
-    }
-
-    return adjusted;
-  });
-
-  // Get the max height of the bricks passed
-  const maxDesktopHeight = Math.max(...bricks.map((brick) => brick.position.desktop?.h ?? initialY.desktop));
-  const maxMobileHeight = Math.max(...bricks.map((brick) => brick.position.mobile?.h ?? initialY.mobile));
-
-  // increment the current row
-  currentRowByBreakpoint.desktop += maxDesktopHeight;
-  currentRowByBreakpoint.mobile += maxMobileHeight;
-
-  // return the created bricks
-  return created as DefinedBrick[];
 }

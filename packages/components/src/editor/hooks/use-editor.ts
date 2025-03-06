@@ -847,6 +847,7 @@ export const useDraftHelpers = () => {
     deselectBrick: state.deselectBrick,
     deleteBrick: state.deleteBrick,
     getParentBrick: state.getParentBrick,
+    updateBrick: state.updateBrick,
     updateBrickProps: state.updateBrickProps,
     moveBrickWithin: state.moveBrickWithin,
     getPositionWithinParent: state.getPositionWithinParent,

@@ -14,7 +14,7 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) 
 
   const className = useBrickStyle(props);
 
-  const ds = useDatasource<Manifest["props"]["datasourceRef"]>(props.datasourceRef);
+  const ds = useDatasource(props.datasourceRef);
 
   // If this container is Dynamic
   if (ds.datasourceId && props.childrenType) {
@@ -48,6 +48,7 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) 
         <>
           <div className="bg-gradient-to-tr from-gray-300/80 to-gray-200/80 text-black flex justify-center items-center flex-1 text-lg font-bold">
             This container is dynamic.
+            <pre className="text-xs font-mono">{JSON.stringify(props, null, 2)}</pre>
           </div>
         </>
       ) : (

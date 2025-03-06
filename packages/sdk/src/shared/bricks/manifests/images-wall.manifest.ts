@@ -1,7 +1,6 @@
-import { Type, type Static } from "@sinclair/typebox";
-import { Value } from "@sinclair/typebox/value";
+import { Type } from "@sinclair/typebox";
 import { commonProps, commonStyleProps } from "../props/all";
-import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest, type StaticManifest } from "~/shared/brick-manifest";
 import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
 import { datasourceRefProps } from "../props/datasource";
 import { textContentProps } from "../props/text";
@@ -31,7 +30,7 @@ export type Datasource = typeof datasource;
 export const manifest = defineBrickManifest({
   type: "images-wall",
   kind: "widget",
-  title: "Images wall",
+  name: "Images wall",
   description: "An image collection",
   defaultInspectorTab: "content",
   isContainer: true,
@@ -99,6 +98,4 @@ export const manifest = defineBrickManifest({
   datasource,
 });
 
-export type Manifest = Static<typeof manifest>;
-
-export const defaults = Value.Create(manifest);
+export type Manifest = StaticManifest<typeof manifest>;

@@ -1,32 +1,13 @@
-import { Type, type Static } from "@sinclair/typebox";
-import { Value } from "@sinclair/typebox/value";
+import { Type } from "@sinclair/typebox";
 import { commonProps } from "../props/all";
-import { defineBrickManifest } from "~/shared/brick-manifest";
-import { LAYOUT_COLS } from "~/shared/layout-constants";
+import { defineBrickManifest, type StaticManifest } from "~/shared/brick-manifest";
 
 export const manifest = defineBrickManifest({
   type: "video",
   kind: "brick",
-  title: "Video",
+  name: "Video",
   description: "Youtube video",
   repeatable: true,
-  preferredWidth: {
-    mobile: LAYOUT_COLS.mobile / 2,
-    desktop: LAYOUT_COLS.desktop / 4,
-  },
-  preferredHeight: {
-    mobile: 6,
-    desktop: 6,
-  },
-  minWidth: {
-    mobile: 3,
-    desktop: 3,
-  },
-  minHeight: {
-    mobile: 3,
-    desktop: 3,
-  },
-  // svg icon for "video" block
   icon: `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <rect
@@ -43,13 +24,10 @@ export const manifest = defineBrickManifest({
     stroke="currentColor"
     stroke-width="4"
     stroke-linejoin="round"
-  />
-</svg>
-
-  `,
+  /></svg>`,
   props: Type.Composite([
     Type.Object({
-      src: Type.String({
+      url: Type.String({
         default: "https://placehold.co/400x200",
         title: "File",
         description: "The image file",
@@ -65,5 +43,4 @@ export const manifest = defineBrickManifest({
   ]),
 });
 
-export type Manifest = Static<typeof manifest>;
-export const defaults = Value.Create(manifest);
+export type Manifest = StaticManifest<typeof manifest>;

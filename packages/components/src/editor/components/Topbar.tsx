@@ -63,6 +63,7 @@ export default function TopBar({ showIntro }: TopBarProps) {
     `transition-opacity duration-300 bg-gradient-to-t from-transparent to-[rgba(255,255,255,0.15)] px-3 min-w-[3.7rem]`,
     showIntro && "opacity-0",
   );
+
   const commonCls = `${baseCls}
   border-x border-l-upstart-400 border-r-upstart-700
     disabled:hover:from-transparent disabled:hover:to-[rgba(255,255,255,0.15)]

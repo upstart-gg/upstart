@@ -199,13 +199,13 @@ export function canDropOnLayout(
   }
 
   // Ensure minimum width respects breakpoint constraints
-  const effectiveMinWidth = Math.max(constraints.minWidth[currentBp], 1);
+  const effectiveMinWidth = Math.max(constraints.minWidth?.[currentBp] ?? 0, 1);
 
   // Calculate the width to use - try preferred first, fall back to minimum
-  const width = Math.min(constraints.preferredWidth[currentBp] || effectiveMinWidth, LAYOUT_COLS[currentBp]);
+  const width = Math.min(constraints.defaultWidth?.[currentBp] ?? effectiveMinWidth, LAYOUT_COLS[currentBp]);
 
   // Calculate the height to use
-  const height = constraints.preferredHeight[currentBp] || defaultsPreferred[currentBp].height;
+  const height = constraints.defaultHeight?.[currentBp] || defaultsPreferred[currentBp].height;
 
   // Check if the drop position is valid
   if (isPositionValid(bricks, dropPosition.x, dropPosition.y, width, height)) {

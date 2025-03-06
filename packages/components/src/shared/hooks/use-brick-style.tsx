@@ -107,7 +107,7 @@ function getEditorStyles(
     !selected &&
       !isContainerChild &&
       isContainer &&
-      "hover:(outline-dashed outline-4 outline-upstart-500/60)",
+      "hover:(outline-dotted outline-4 outline-upstart-500/30)",
     !selected && isContainerChild && "hover:(outline outline-4 outline-upstart-500/40)",
     css({
       "&.selected-group": {

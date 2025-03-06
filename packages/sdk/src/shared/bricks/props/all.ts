@@ -33,20 +33,6 @@ export const commonProps = Type.Object({
     }),
   ),
   stylePreset,
-  isDynamic: Type.Optional(
-    Type.Boolean({
-      title: "Use dynamic content",
-      description:
-        "Content can be managed in two ways: Static or Dynamic. Static content is set in the editor. Dynamic content is fetched from a database and can be managed through our CMS.",
-      default: false,
-      "ui:field": "dynamic-content-switch",
-      "ui:inspector-tab": "content",
-      "ui:order": 0,
-      "ui:group:order": 0,
-      "ui:group": "content",
-      "ui:group:title": "Dynamic / Static Mode",
-    }),
-  ),
 });
 
 export type CommonProps = Static<typeof commonProps>;

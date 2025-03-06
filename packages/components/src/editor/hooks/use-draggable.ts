@@ -16,11 +16,12 @@ interface DragCallbacks {
     gridPosition: { x: number; y: number },
     event: Interact.InteractEvent,
   ) => void;
-  onDragEnd?: (
-    brick: Brick,
-    position: { x: number; y: number },
-    gridPosition: { x: number; y: number },
-    updatedPositions: Record<string, { x: number; y: number }> | undefined, // Added parameter
+  onDragEnd: (
+    updatedPositions: {
+      brick: Brick;
+      gridPosition: { x: number; y: number };
+      position: { x: number; y: number };
+    }[],
     event: Interact.InteractEvent,
   ) => void;
   onDragStart?: (
@@ -72,7 +73,7 @@ interface UseInteractOptions {
   dragOptions?: Partial<DraggableOptions>;
   resizeOptions?: Partial<ResizableOptions>;
   dragRestrict?: Partial<RestrictOptions>;
-  dragCallbacks?: DragCallbacks;
+  dragCallbacks: DragCallbacks;
   dropCallbacks?: DropCallbacks;
   resizeCallbacks?: ResizeCallbacks;
   gridConfig: GridConfig;
@@ -218,7 +219,7 @@ export const useEditablePage = (
     resizeEnabled = true,
     dragOptions = {},
     resizeOptions = {},
-    dragCallbacks = {},
+    dragCallbacks,
     resizeCallbacks = {},
     dropCallbacks = {},
   }: UseInteractOptions,
@@ -247,9 +248,6 @@ export const useEditablePage = (
   // Refs for tracking drag state
   const draggedBrick = useRef<string | null>(null);
   const dragStartPosition = useRef<{ x: number; y: number } | null>(null);
-  const currentSwapTarget = useRef<HTMLElement | null>(null);
-  // final bricks position after move
-  const swappedBricks = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     interactable.current = interact(bricksSelectorOrRef, {
@@ -268,7 +266,7 @@ export const useEditablePage = (
         // hold: 30,
         inertia: true,
         autoScroll: {
-          container: container,
+          container,
           margin: 40,
           speed: 800,
         },
@@ -313,7 +311,6 @@ export const useEditablePage = (
             target.style.zIndex = "1000";
 
             draggedBrick.current = target.id;
-            swappedBricks.current = new Set();
 
             const rect = target.getBoundingClientRect();
 
@@ -365,56 +362,28 @@ export const useEditablePage = (
 
             // Only proceed with collecting positions if we actually had a swap
             // (meaning we have at least 2 bricks in our set)
-            const updatedPositions: Record<string, { x: number; y: number }> = {};
-
-            if (swappedBricks.current.size >= 2) {
-              // Process all swapped bricks
-              swappedBricks.current.forEach((brickId) => {
-                const element = getBrickRef(brickId);
-                if (!element) return;
-
-                const brick = getBrick(brickId);
-                if (!brick) return;
-
-                // Get the final grid position
-                const gridPosition = getGridPosition(element, gridConfig);
-                updatedPositions[brickId] = gridPosition;
-
-                // Reset transform
-                element.style.transform = "none";
-                element.style.transition = "none";
-                element.dataset.x = "0";
-                element.dataset.y = "0";
-              });
-            } else {
-              // No actual swap happened, just get the position of the dragged brick
-              updatedPositions[target.id] = getGridPosition(target, gridConfig);
-            }
+            const updatedPositions: Parameters<DragCallbacks["onDragEnd"]>[0] = [];
 
             const elements = selectedGroup ? selectedGroup.map(getBrickRef) : [target];
-            elements.forEach((element) => {
-              if (!element) return;
-              console.log("reset element", element.id);
+            for (const element of elements) {
               const brick = getBrick(element.id);
-              if (!brick) return;
-              const position = getPosition(element, event);
-              const gridPosition = getGridPosition(element, gridConfig);
+              if (brick) {
+                updatedPositions.push({
+                  brick,
+                  position: getPosition(element, event),
+                  gridPosition: getGridPosition(element, gridConfig),
+                });
+              }
               element.style.transform = "none";
               element.style.transition = "none";
               element.dataset.x = "0";
               element.dataset.y = "0";
-              dragCallbacks.onDragEnd?.(brick, position, gridPosition, updatedPositions, event);
-            });
-
-            // Reset swap state
-            if (currentSwapTarget.current) {
-              currentSwapTarget.current.style.transition = "none";
-              currentSwapTarget.current.style.transform = "none";
             }
+
+            dragCallbacks.onDragEnd(updatedPositions, event);
+
             draggedBrick.current = null;
             dragStartPosition.current = null;
-            currentSwapTarget.current = null;
-            swappedBricks.current.clear();
           },
         },
         ...dragOptions,
@@ -452,8 +421,6 @@ export const useEditablePage = (
               width: `auto`,
               height: `auto`,
             });
-            // event.target.style.width = "auto";
-            // event.target.style.height = "auto";
           },
         },
         modifiers: [
@@ -618,7 +585,7 @@ export const useEditablePage = (
 
 interface ElementRefs {
   setBrickRef: (id: string, node: HTMLElement | null) => void;
-  getBrickRef: (id: string) => HTMLElement | undefined;
+  getBrickRef: (id: string) => HTMLElement;
 }
 
 const useBricksRefs = (): ElementRefs => {
@@ -632,16 +599,17 @@ const useBricksRefs = (): ElementRefs => {
     }
   }, []);
 
-  const getBrickRef = useCallback((id: string) => {
+  const getBrickRef = useCallback((id: string): HTMLElement => {
     const existing = elementRefs.current.get(id);
     if (existing) {
       return existing;
     }
     const node = document.getElementById(id);
-    if (node) {
-      elementRefs.current.set(id, node);
+    if (!node) {
+      throw new Error(`Brick with id ${id} not found`);
     }
-    return node ?? undefined;
+    elementRefs.current.set(id, node);
+    return node;
   }, []);
 
   return { setBrickRef, getBrickRef };

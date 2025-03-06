@@ -1,24 +1,13 @@
-import { Type, type Static } from "@sinclair/typebox";
-import { Value } from "@sinclair/typebox/value";
+import { Type } from "@sinclair/typebox";
 import { commonProps, commonStyleProps } from "../props/all";
-import { defineBrickManifest } from "~/shared/brick-manifest";
-import { LAYOUT_COLS } from "~/shared/layout-constants";
+import { defineBrickManifest, type StaticManifest } from "~/shared/brick-manifest";
 import { textContentProps } from "../props/text";
 
 export const manifest = defineBrickManifest({
   type: "button",
-  title: "Button",
-  kind: "brick",
+  name: "Button",
   repeatable: true,
   description: "A button with text and optional icon",
-  preferredWidth: {
-    mobile: LAYOUT_COLS.mobile / 2,
-    desktop: LAYOUT_COLS.desktop / 4,
-  },
-  preferredHeight: {
-    mobile: 6,
-    desktop: 6,
-  },
   icon: `
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
     <!-- Main container -->
@@ -33,5 +22,4 @@ export const manifest = defineBrickManifest({
   props: Type.Composite([textContentProps, commonProps, commonStyleProps]),
 });
 
-export type Manifest = Static<typeof manifest>;
-export const defaults = Value.Create(manifest);
+export type Manifest = StaticManifest<typeof manifest>;
