@@ -171,7 +171,7 @@ function BrickMenuBarButtons({ brick }: { brick: Brick }) {
         <IoMdColorPalette className={tx("w-5 h-5")} />
       </button>
 
-      {manifest.properties.props.properties.border && (
+      {manifest.props.border && (
         <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
           <MdBorderOuter className={tx("w-5 h-5")} />
         </button>

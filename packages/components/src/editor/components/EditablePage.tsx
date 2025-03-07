@@ -1,5 +1,5 @@
-import { css, tx, sheet } from "@upstart.gg/style-system/twind";
-import { CSSProperties, useEffect, useRef, useState } from "react";
+import { tx } from "@upstart.gg/style-system/twind";
+import { useEffect, useRef, useState } from "react";
 import { generateId, type Brick } from "@upstart.gg/sdk/shared/bricks";
 import BrickWrapper from "./EditableBrick";
 import {
@@ -17,7 +17,7 @@ import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-co
 import Selecto from "react-selecto";
 import { useEditablePage } from "~/editor/hooks/use-draggable";
 import { debounce } from "lodash-es";
-import { defaults } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
+import { defaultProps } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
 import {
   shouldAdjustBrickHeightBecauseOverflow,
@@ -160,7 +160,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
 
         if (position) {
           console.debug("New brick dropped at", position);
-          const bricksDefaults = defaults[brick.type];
+          const bricksDefaults = defaultProps[brick.type];
           const newBrick: Brick = {
             id: `brick-${generateId()}`,
             ...bricksDefaults,

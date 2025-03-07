@@ -26,7 +26,7 @@ export type TemplateConfig = {
   /**
    * The template manifest and settings
    */
-  manifest: TemplateManifest;
+  manifest?: TemplateManifest;
   /**
    * The attributes declared for the template
    */

@@ -6,7 +6,7 @@ import type { ResizableOptions } from "@interactjs/actions/resize/plugin";
 import { useGetBrick, usePreviewMode, useSelectedGroup } from "./use-editor";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import type { BrickConstraints } from "@upstart.gg/sdk/shared/brick-manifest";
-import { defaults } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
+import { defaultProps } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
 interface DragCallbacks {
@@ -435,8 +435,8 @@ export const useEditablePage = (
               if (!elementId) return { width: 0, height: 0 };
               const brickType = getBrick(elementId)?.type;
               invariant(brickType, "Brick type not found");
-              const minW = defaults[brickType].minWidth[previewMode];
-              const minH = defaults[brickType].minHeight[previewMode];
+              const minW = defaultProps[brickType].minWidth?.[previewMode];
+              const minH = defaultProps[brickType].minHeight?.[previewMode];
               return {
                 width: minW ? minW * gridConfig.colWidth : gridConfig.colWidth,
                 height: minH ? minH * gridConfig.rowHeight : gridConfig.rowHeight,
@@ -448,7 +448,7 @@ export const useEditablePage = (
               if (!elementId) return { width: Infinity, height: Infinity };
               const brickType = getBrick(elementId)?.type;
               invariant(brickType, "Brick type not found");
-              const maxW = defaults[brickType].maxWidth[previewMode];
+              const maxW = defaultProps[brickType].maxWidth?.[previewMode];
               return {
                 width: maxW ? maxW * gridConfig.colWidth : Infinity,
                 height: Infinity,
@@ -504,11 +504,13 @@ export const useEditablePage = (
             if (type) {
               console.debug("Dropped %s", type);
               const constraints: BrickConstraints = {
-                preferredHeight: defaults[type].preferredHeight,
-                preferredWidth: defaults[type].preferredWidth,
-                minHeight: defaults[type].minHeight,
-                minWidth: defaults[type].minWidth,
-                maxWidth: defaults[type].maxWidth,
+                defaultHeight: defaultProps[type].defaultHeight,
+                defaultWidth: defaultProps[type].defaultWidth,
+                minHeight: defaultProps[type].minHeight,
+                minWidth: defaultProps[type].minWidth,
+                maxWidth: defaultProps[type].maxWidth,
+                resizable: defaultProps[type].resizable,
+                movable: defaultProps[type].movable,
               };
               dropCallbacks.onDrop?.(event, pos.grid, { type: type as Brick["type"], constraints });
             }
@@ -528,11 +530,13 @@ export const useEditablePage = (
 
           if (type) {
             const constraints: BrickConstraints = {
-              preferredHeight: defaults[type].preferredHeight,
-              preferredWidth: defaults[type].preferredWidth,
-              minHeight: defaults[type].minHeight,
-              minWidth: defaults[type].minWidth,
-              maxWidth: defaults[type].maxWidth,
+              defaultHeight: defaultProps[type].defaultHeight,
+              defaultWidth: defaultProps[type].defaultWidth,
+              minHeight: defaultProps[type].minHeight,
+              minWidth: defaultProps[type].minWidth,
+              maxWidth: defaultProps[type].maxWidth,
+              resizable: defaultProps[type].resizable,
+              movable: defaultProps[type].movable,
             };
             dropCallbacks.onDropMove?.(event, pos.grid, { type: type as Brick["type"], constraints });
           }

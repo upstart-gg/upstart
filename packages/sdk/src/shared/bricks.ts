@@ -1,8 +1,9 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { customAlphabet } from "nanoid";
 import { LAYOUT_COLS } from "./layout-constants";
-import { defaults } from "./bricks/manifests/all-manifests";
+import { defaultProps } from "./bricks/manifests/all-manifests";
 import type { BrickManifest } from "./brick-manifest";
+import { background } from "./bricks/props/background";
 
 /**
  * Generates a unique identifier for bricks.
@@ -140,7 +141,12 @@ export const sectionSchema = Type.Object({
   kind: Type.Literal("section"),
   label: Type.Optional(Type.String()),
   bricks: Type.Array(brickSchema),
-  props: Type.Object({}, { additionalProperties: true }),
+  props: Type.Object(
+    {
+      background: Type.Optional(background),
+    },
+    { additionalProperties: true },
+  ),
 });
 
 export type Section = Static<typeof sectionSchema>;
@@ -218,7 +224,7 @@ function defineBricks<B extends DefinedBrick[] = DefinedBrick[]>(
     return {
       id,
       sectionId: section.id,
-      ...defaults[brick.type],
+      ...defaultProps[brick.type],
       ...brick,
       props: {
         ...brick.props,
@@ -226,7 +232,7 @@ function defineBricks<B extends DefinedBrick[] = DefinedBrick[]>(
           ? {
               childrenBricks: (brick.props.childrenBricks as DefinedBrick[]).map((childBrick) => ({
                 id: `brick-${generateId()}`,
-                ...defaults[childBrick.type],
+                ...defaultProps[childBrick.type],
                 ...childBrick,
                 parentId: id,
                 ...("position" in childBrick

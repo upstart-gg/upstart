@@ -1,10 +1,9 @@
 import { Type } from "@sinclair/typebox";
 import { defineDataSources } from "@upstart.gg/sdk/datasources";
 import { defineAttributes, attr } from "@upstart.gg/sdk/attributes";
-import { defineBricks, createRow } from "@upstart.gg/sdk/bricks";
 import { defineConfig } from "@upstart.gg/sdk/page";
-import { FirstBlock, SecondBlock } from "./test-comp";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
+import { defineSections } from "@upstart.gg/sdk/shared/bricks";
 
 // define your datasources
 const datasources = defineDataSources({
@@ -59,239 +58,34 @@ const datasources = defineDataSources({
   },
 });
 
-const homePageBricks = defineBricks([
-  ...createRow([
-    {
-      type: "header",
-      props: {
-        layoutType: "flex",
-        childrenBricks: [
-          { type: "text", props: { textContent: "Hello World #1" } },
-          { type: "text", props: { textContent: "Hello World #2" } },
-          { type: "text", props: { textContent: "Hello World #3" } },
-        ],
-      },
-      position: {
-        mobile: {
-          x: 0,
-          w: "full",
-          h: "auto",
+const homePageSections = defineSections([
+  {
+    id: "header",
+    label: "Header",
+    bricks: [
+      {
+        type: "image",
+        props: {
+          url: "https://placehold.co/400x200",
+          alt: "Enpage",
         },
-        desktop: {
-          x: 0,
-          w: "full",
-          h: "auto",
-        },
-      },
-    },
-  ]),
-  // ...createRow([
-  //   {
-  //     type: "container",
-  //     props: {
-  //       layoutType: "flex",
-  //       childrenBricks: [
-  //         { type: "text", props: { textContent: "Hello World #1" } },
-  //         { type: "text", props: { textContent: "Hello World #2" } },
-  //         { type: "text", props: { textContent: "Hello World #3" } },
-  //       ],
-  //     },
-  //     position: {
-  //       mobile: {
-  //         x: 0,
-  //         w: "full",
-  //         h: 10,
-  //       },
-  //       desktop: {
-  //         x: 0,
-  //         w: "full",
-  //         h: 16,
-  //       },
-  //     },
-  //   },
-  // ]),
-  ...createRow([
-    {
-      type: "hero",
-      props: {
-        textContent:
-          "<h1 style='text-align:center'>Reach the stars.<br />Book your next trip<br />to Space.</h1>",
-        // className:
-        //   "capitalize flex font-bold text-[2.2rem] leading-[1] @desktop:text-7xl justify-center items-center text-center [text-shadow:_2px_2px_5px_rgb(0_0_0_/_40%)]",
-      },
-      position: {
-        mobile: {
-          x: 0,
-          w: "full",
-          h: 10,
-        },
-        desktop: {
-          x: 0,
-          forceY: 18,
-          w: "half",
-          h: 16,
+        position: {
+          mobile: {
+            x: 0,
+            y: 0,
+            w: "full",
+            h: 3,
+          },
+          desktop: {
+            x: 0,
+            y: 0,
+            w: "full",
+            h: 3,
+          },
         },
       },
-    },
-  ]),
-
-  ...createRow([
-    {
-      type: "generic-component",
-      props: {
-        render: FirstBlock,
-      },
-      position: {
-        mobile: {
-          x: 0,
-          forceY: 10,
-          w: "full",
-          h: 36,
-        },
-        desktop: {
-          x: 2,
-          forceY: 40,
-          w: 15,
-          h: 20,
-        },
-      },
-    },
-    {
-      type: "generic-component",
-      props: {
-        render: SecondBlock,
-      },
-      position: {
-        mobile: {
-          x: 0,
-          w: "full",
-          forceY: 47,
-          h: 36,
-        },
-        desktop: {
-          x: 19,
-          forceY: 40,
-          w: 15,
-          h: 20,
-        },
-      },
-    },
-  ]),
-  ...createRow([
-    {
-      type: "text",
-      props: {
-        content:
-          "&laquo; The lunar view of Earth changed my perspective forever.<br />An unforgettable experience &raquo;<br /><small>- John Doe</small>",
-        className: "text-center text-3xl italic",
-        format: "html",
-      },
-      position: {
-        mobile: {
-          x: 0,
-          w: "full",
-          forceY: 85,
-          h: 8,
-        },
-        desktop: {
-          x: 3,
-          w: 28,
-          h: 6,
-          forceY: 62,
-        },
-      },
-    },
-  ]),
-  ...createRow([
-    {
-      type: "text",
-      props: {
-        textContent: " ",
-      },
-      position: {
-        mobile: {
-          x: 0,
-          w: "full",
-          forceY: 98,
-          h: 1,
-        },
-        desktop: {
-          x: 3,
-          w: 28,
-          h: 3,
-          forceY: 68,
-        },
-      },
-    },
-  ]),
-  // ]),
-  // ...createRow([
-  //   {
-  //     type: "card",
-  //     props: {
-  //       // justify: "text-center",
-  //       // format: "html",
-  //       body: { content: "Card body" },
-  //       title: { content: "Card title" },
-  //       // footer: "Card footer",
-  //     },
-  //     position: {
-  //       mobile: {
-  //         x: 0,
-  //         w: "full",
-  //         h: 8,
-  //       },
-  //       desktop: {
-  //         x: 0,
-  //         w: "full",
-  //         h: 3,
-  //       },
-  //     },
-  //   },
-  // ]),
-  // ...createRow([
-  //   {
-  //     type: "text",
-  //     props: {
-  //       content: {
-  //         text: "Build your launch page",
-  //         richText: true,
-  //       },
-  //     },
-  //     position: {
-  //       mobile: {
-  //         x: "third",
-  //         w: "full",
-  //         h: 3,
-  //       },
-  //       desktop: {
-  //         x: "third",
-  //         w: "third",
-  //         h: 3,
-  //       },
-  //     },
-  //   },
-  //   {
-  //     type: "text",
-  //     props: {
-  //       content: {
-  //         text: "Build your launch page",
-  //       },
-  //     },
-  //     position: {
-  //       mobile: {
-  //         x: "twoThird",
-  //         w: "full",
-  //         h: 3,
-  //       },
-  //       desktop: {
-  //         x: "twoThird",
-  //         w: "third",
-  //         h: 3,
-  //       },
-  //     },
-  //   },
-  // ]),
+    ],
+  },
 ]);
 
 const themes: Theme[] = [
@@ -303,7 +97,6 @@ const themes: Theme[] = [
     colors: {
       primary: "#FF9900",
       secondary: "#2dd4bf", // Teal
-      // Cyan
       accent: "#ec4899", // Pink
       neutral: "#4b5563", // Grey
     },
@@ -357,22 +150,16 @@ export default defineConfig({
     {
       label: "Home",
       path: "/",
-      bricks: homePageBricks,
+      sections: homePageSections,
       tags: ["nav"],
     },
     {
       label: "About",
       path: "/about",
-      bricks: homePageBricks,
+      sections: homePageSections,
       tags: ["nav"],
     },
   ],
   themes,
   datasources,
-  manifest: {
-    author: "John Doe",
-    name: "Example Template",
-    description: "Description of the template",
-    homepage: "https://enpage.co",
-  },
 });

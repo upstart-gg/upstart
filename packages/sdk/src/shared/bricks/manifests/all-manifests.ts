@@ -38,7 +38,7 @@ export const manifests: Record<string, BrickManifest> = {
   [containerManifest.type]: containerManifest,
 };
 
-export const defaults = {
+export const defaultProps = {
   [heroManifest.type]: getBrickManifestDefaults(heroManifest),
   [imageManifest.type]: getBrickManifestDefaults(imageManifest),
   [textManifest.type]: getBrickManifestDefaults(textManifest),

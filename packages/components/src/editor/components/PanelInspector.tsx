@@ -1,5 +1,4 @@
 import {
-  useDraft,
   useDraftHelpers,
   useEditorHelpers,
   useGetBrick,
@@ -16,7 +15,6 @@ import { IoCloseOutline } from "react-icons/io5";
 import type { JSONSchemaType } from "@upstart.gg/sdk/shared/attributes";
 import { useLocalStorage } from "usehooks-ts";
 import merge from "lodash-es/merge";
-import { BsStars } from "react-icons/bs";
 import PresetsView from "./PresetsView";
 import { useCallback, useEffect, useMemo } from "react";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
@@ -46,15 +44,13 @@ export default function Inspector() {
   }
 
   const selectedTab =
-    tabsMapping[brick.id] ??
-    manifest.properties.defaultInspectorTab.const ??
-    (previewMode === "desktop" ? "preset" : "style");
+    tabsMapping[brick.id] ?? manifest.defaultInspectorTab ?? (previewMode === "desktop" ? "preset" : "style");
 
   useEffect(() => {
-    if (!manifest.properties.isContainer && selectedTab === "content") {
+    if (!manifest.isContainer && selectedTab === "content") {
       setTabsMapping((prev) => ({ ...prev, [brick.id]: "style" }));
     }
-  }, [setTabsMapping, brick.id, selectedTab, manifest.properties.isContainer]);
+  }, [setTabsMapping, brick.id, selectedTab, manifest.isContainer]);
 
   return (
     <Tabs.Root
@@ -73,7 +69,7 @@ export default function Inspector() {
         <Tabs.Trigger value="style" className="!flex-1">
           {previewMode === "mobile" ? "Mobile styles" : "Styles"}
         </Tabs.Trigger>
-        {manifest.properties.isContainer && (
+        {manifest.isContainer && (
           <Tabs.Trigger value="content" className="!flex-1">
             Content
           </Tabs.Trigger>
@@ -107,10 +103,10 @@ export default function Inspector() {
                   {parentBrick.type}
                 </span>
                 <span className="text-xs ">&rarr;</span>
-                <span>{manifest.properties.title.const}</span>
+                <span>{manifest.name}</span>
               </div>
             ) : (
-              manifest.properties.title.const
+              manifest.name
             )}
             <span
               className="text-xs text-gray-500 font-mono lowercase opacity-0 group-hover:opacity-70 transition-opacity delay-1000"
@@ -153,10 +149,10 @@ export default function Inspector() {
                   {parentBrick.type}
                 </span>
                 <span className="text-xs ">&rarr;</span>
-                <span>{manifest.properties.title.const}</span>
+                <span>{manifest.name}</span>
               </div>
             ) : (
-              manifest.properties.title.const
+              manifest.name
             )}
             <span
               className="text-xs text-gray-500 font-mono lowercase opacity-0 group-hover:opacity-70 transition-opacity delay-1000"
@@ -207,7 +203,7 @@ function ElementInspector({ brick, manifest }: { brick: Brick; manifest: BrickMa
   // const manifest = useMemo(() => manifests[brick.type], [brick.type]);
   const formData = useMemo(() => {
     return previewMode === "mobile"
-      ? merge({}, brickInfo.props, brickInfo.mobileOverride)
+      ? merge({}, brickInfo.props, brickInfo.mobileProps)
       : brickInfo.props ?? {};
   }, [brickInfo, previewMode]);
 
@@ -216,7 +212,7 @@ function ElementInspector({ brick, manifest }: { brick: Brick; manifest: BrickMa
       <FormRenderer
         components={getFormComponents({
           brickId: brick.id,
-          formSchema: manifest.properties.props as unknown as JSONSchemaType<unknown>,
+          formSchema: manifest.props as unknown as JSONSchemaType<unknown>,
           formData,
           filter: (prop) => {
             return (
@@ -258,7 +254,7 @@ function ContentTab({ brick, manifest }: { brick: Brick; manifest: BrickManifest
       <FormRenderer
         components={getFormComponents({
           brickId: brick.id,
-          formSchema: manifest.properties.props as unknown as JSONSchemaType<unknown>,
+          formSchema: manifest.props as unknown as JSONSchemaType<unknown>,
           formData: brickInfo.props,
           filter: (prop) => {
             return (
