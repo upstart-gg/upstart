@@ -259,7 +259,7 @@ const defaultAttributes = {
 
   $pagePadding: Type.Object(
     {
-      vertical: attr.enum("Vertical spacing", "20", {
+      vertical: attr.enum("Vertical spacing", "0", {
         options: [
           { value: "0", title: "None" },
           { value: "10", title: "Small" },
@@ -272,7 +272,7 @@ const defaultAttributes = {
         "ui:group": "layout",
         "ui:group:title": "Page Layout",
       }),
-      horizontal: attr.enum("Horizontal spacing", "20", {
+      horizontal: attr.enum("Horizontal spacing", "0", {
         options: [
           { value: "0", title: "None" },
           { value: "10", title: "Small" },
@@ -288,8 +288,8 @@ const defaultAttributes = {
     },
     {
       default: {
-        vertical: "20",
-        horizontal: "20",
+        vertical: "0",
+        horizontal: "0",
       },
       "ui:field": "padding",
       "ui:group": "layout",

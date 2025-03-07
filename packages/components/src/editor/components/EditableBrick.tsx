@@ -157,8 +157,6 @@ function BrickMenuBarButtons({ brick }: { brick: Brick }) {
     return null;
   }
 
-  console.log("manifest", manifest);
-
   return (
     <>
       <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>

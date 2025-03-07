@@ -3,7 +3,8 @@ import { defineDataSources } from "@upstart.gg/sdk/datasources";
 import { defineAttributes, attr } from "@upstart.gg/sdk/attributes";
 import { defineConfig } from "@upstart.gg/sdk/page";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
-import { defineSections } from "@upstart.gg/sdk/shared/bricks";
+import { defineBricks, defineSections } from "@upstart.gg/sdk/shared/bricks";
+import { textContent } from "@upstart.gg/sdk/shared/bricks/props/text";
 
 // define your datasources
 const datasources = defineDataSources({
@@ -62,29 +63,122 @@ const homePageSections = defineSections([
   {
     id: "header",
     label: "Header",
-    bricks: [
-      {
-        type: "image",
-        props: {
-          url: "https://placehold.co/400x200",
-          alt: "Enpage",
-        },
-        position: {
-          mobile: {
-            x: 0,
-            y: 0,
-            w: "full",
-            h: 3,
-          },
-          desktop: {
-            x: 0,
-            y: 0,
-            w: "full",
-            h: 3,
-          },
-        },
+    order: 0,
+    props: {
+      background: {
+        color: "#FF9900",
       },
-    ],
+    },
+    position: {
+      mobile: {
+        h: 3,
+      },
+      desktop: {
+        h: "full",
+      },
+    },
+  },
+  {
+    id: "content",
+    label: "Content",
+    order: 1,
+    props: {
+      background: {
+        color: "#FFDD55",
+      },
+    },
+    position: {
+      mobile: {
+        h: "full",
+      },
+      desktop: {
+        h: "full",
+      },
+    },
+  },
+  {
+    id: "footer",
+    label: "Footer",
+    order: 2,
+    props: {
+      background: {
+        color: "#CCCCCC",
+      },
+    },
+    position: {
+      mobile: {
+        h: 3,
+      },
+      desktop: {
+        h: 3,
+      },
+    },
+  },
+]);
+
+const hpBricks = defineBricks([
+  {
+    type: "header",
+    sectionId: "header",
+    props: {
+      title: "Welcome to Upstart",
+    },
+    position: {
+      mobile: {
+        x: 0,
+        y: 0,
+        w: "full",
+        h: 3,
+      },
+      desktop: {
+        x: 0,
+        y: 0,
+        w: "full",
+        h: 3,
+      },
+    },
+  },
+  {
+    type: "text",
+    sectionId: "content",
+    props: {
+      textContent: "Text content",
+    },
+    position: {
+      mobile: {
+        x: 0,
+        y: 0,
+        w: "full",
+        h: 3,
+      },
+      desktop: {
+        x: 0,
+        y: 0,
+        w: "full",
+        h: 3,
+      },
+    },
+  },
+  {
+    type: "text",
+    sectionId: "footer",
+    props: {
+      textContent: "Footer text",
+    },
+    position: {
+      mobile: {
+        x: 0,
+        y: 0,
+        w: "full",
+        h: 3,
+      },
+      desktop: {
+        x: 0,
+        y: 0,
+        w: "full",
+        h: 3,
+      },
+    },
   },
 ]);
 
@@ -151,12 +245,14 @@ export default defineConfig({
       label: "Home",
       path: "/",
       sections: homePageSections,
+      bricks: hpBricks,
       tags: ["nav"],
     },
     {
       label: "About",
       path: "/about",
       sections: homePageSections,
+      bricks: hpBricks,
       tags: ["nav"],
     },
   ],

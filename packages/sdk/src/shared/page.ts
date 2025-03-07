@@ -71,7 +71,7 @@ export type PageInfo = {
 /**
  * The Page config represents the page configuration (datasources, attributes, etc)
  */
-export type PageConfig<D extends DatasourcesMap, S extends Section[]> = PageInfo & {
+export type PageConfig<D extends DatasourcesMap> = PageInfo & {
   /**
    * Data sources manifests for the page. Undefined if no data sources are defined.
    */
@@ -90,12 +90,14 @@ export type PageConfig<D extends DatasourcesMap, S extends Section[]> = PageInfo
    * Resolved attributes for the page.
    */
   attr?: Attributes;
-  sections: S;
+
+  sections: Section[];
+  bricks: Brick[];
 
   tags: string[];
 };
 
-export type GenericPageConfig = PageConfig<DatasourcesMap, Section[]>;
+export type GenericPageConfig = PageConfig<DatasourcesMap>;
 
 export function getNewPageConfig(
   templateConfig: TemplateConfig,
@@ -105,14 +107,13 @@ export function getNewPageConfig(
   const pageConfig = templateConfig.pages.find((p) => p.path === path);
   invariant(pageConfig, `createPageConfigFromTemplateConfig: No page config found for path ${path}`);
 
-  const sections = pageConfig.sections;
-
   return {
     id: typeof useFixedId === "boolean" ? crypto.randomUUID() : useFixedId,
     label: pageConfig.label,
     tags: pageConfig.tags,
     path,
-    sections,
+    sections: pageConfig.sections,
+    bricks: pageConfig.bricks,
     ...(pageConfig.attributes
       ? {
           attributes: pageConfig.attributes,
@@ -196,6 +197,7 @@ export const templatePageSchema = Type.Object({
   label: Type.String(),
   path: Type.String(),
   sections: Type.Array(sectionSchema),
+  bricks: Type.Array(brickSchema),
   tags: Type.Array(Type.String()),
 });
 

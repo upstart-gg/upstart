@@ -36,7 +36,7 @@ export function usePageStyle({
   showIntro,
 }: UsePageStyleProps) {
   return tx(
-    "grid group/page mx-auto page-container relative overflow-y-hidden",
+    "flex flex-col group/page mx-auto page-container relative overflow-y-hidden",
     isStandardColor(attributes.$pageBackground.color) &&
       css({ backgroundColor: attributes.$pageBackground.color as string }),
     !isStandardColor(attributes.$pageBackground.color) && (attributes.$pageBackground.color as string),
@@ -50,10 +50,9 @@ export function usePageStyle({
         backgroundSize: attributes.$pageBackground.size ?? "cover",
         backgroundPosition: "center top",
       }),
+
     // mobile grid
     `@mobile:(
-      grid-cols-${LAYOUT_COLS.mobile}
-      auto-rows-[minmax(${LAYOUT_ROW_HEIGHT}px,_max-content)]
       px-[10px]
       py-[10px]
       min-h-[110%]
@@ -63,12 +62,9 @@ export function usePageStyle({
     )`,
     // Desktop grid
     `@desktop:(
-      grid-cols-${LAYOUT_COLS.desktop}
-      auto-rows-[${LAYOUT_ROW_HEIGHT}px]
       px-[${attributes.$pagePadding.horizontal}px]
       py-[${attributes.$pagePadding.vertical}px]
       w-full
-      h-fit
       ${attributes.$pageWidth}
     )`,
 

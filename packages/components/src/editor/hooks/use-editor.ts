@@ -215,7 +215,7 @@ export interface DraftStateProps {
   id: string;
   path: string;
   label: string;
-  elements: Section[];
+  sections: Section[];
   bricks: Brick[];
   selectedBrick?: Brick;
   data: Record<string, unknown>;
@@ -268,9 +268,23 @@ export interface DraftState extends DraftStateProps {
   adjustMobileLayout(): void;
   setSelectedBrick: (brick?: Brick) => void;
   deselectBrick: (brickId?: Brick["id"]) => void;
+  getBricksForSection: (sectionId: string) => Brick[];
   getPositionWithinParent: (brickId: Brick["id"]) => number | null;
   canMoveToWithinParent: (brickId: Brick["id"], to: "left" | "right") => boolean;
   getBrickIndex: (id: string) => number;
+
+  // Section order management
+  moveSectionUp: (sectionId: string) => void;
+  moveSectionDown: (sectionId: string) => void;
+  reorderSections: (orderedIds: string[]) => void;
+
+  // New section methods
+  addSection: (section: Section) => void;
+  updateSection: (id: string, sectionData: Partial<Section>) => void;
+  deleteSection: (id: string) => void;
+  getSection: (id: string) => Section | undefined;
+
+  getSectionVerticalPosition: (sectionId: string) => number;
 }
 
 /**
@@ -293,30 +307,14 @@ export const createDraftStore = (
     hostname: DraftStateProps["hostname"];
     pagesMap: DraftStateProps["pagesMap"];
     theme: DraftStateProps["theme"];
+    bricks: DraftStateProps["bricks"];
+    sections: DraftStateProps["sections"];
   },
 ) => {
-  const DEFAULT_PROPS: Omit<
-    DraftStateProps,
-    | "attr"
-    | "attributes"
-    | "datasources"
-    | "datarecords"
-    | "siteLabel"
-    | "siteAttributes"
-    | "pagesMap"
-    | "theme"
-    | "id"
-    | "path"
-    | "label"
-    | "hostname"
-    | "siteId"
-  > = {
-    bricks: [],
-    elements: [],
+  const DEFAULT_PROPS: Pick<DraftStateProps, "data" | "mode"> = {
     data: {},
     mode: "local",
   };
-
   return createStore<DraftState>()(
     subscribeWithSelector(
       temporal(
@@ -324,6 +322,120 @@ export const createDraftStore = (
           immer((set, _get) => ({
             ...DEFAULT_PROPS,
             ...initProps,
+
+            addSection: (section) =>
+              set((state) => {
+                state.sections.push(section);
+              }),
+
+            updateSection: (id, sectionData) =>
+              set((state) => {
+                const sectionIndex = state.sections.findIndex((s) => s.id === id);
+                if (sectionIndex !== -1) {
+                  state.sections[sectionIndex] = {
+                    ...state.sections[sectionIndex],
+                    ...sectionData,
+                  };
+                }
+              }),
+
+            deleteSection: (id) =>
+              set((state) => {
+                // First handle bricks in this section by either deleting them
+                // or moving them to another section
+                const bricksToRemove = state.bricks.filter((b) => b.sectionId === id);
+
+                if (state.sections.length > 1) {
+                  // Find alternative section to move bricks to
+                  const alternativeSection = state.sections.find((s) => s.id !== id);
+                  if (alternativeSection) {
+                    bricksToRemove.forEach((brick) => {
+                      brick.sectionId = alternativeSection.id;
+                    });
+                  }
+                } else {
+                  // Just remove the bricks if there's no other section
+                  bricksToRemove.forEach((brick) => {
+                    state.bricks = state.bricks.filter((b) => b.id !== brick.id);
+                  });
+                }
+
+                // Then remove the section
+                state.sections = state.sections.filter((s) => s.id !== id);
+              }),
+
+            getSection: (id) => {
+              return _get().sections.find((s) => s.id === id);
+            },
+
+            moveSectionUp: (sectionId) =>
+              set((state) => {
+                const index = state.sections.findIndex((s) => s.id === sectionId);
+
+                if (index > 0) {
+                  // Swap array positions with the section above
+                  const temp = state.sections[index];
+                  state.sections[index] = state.sections[index - 1];
+                  state.sections[index - 1] = temp;
+                }
+              }),
+
+            moveSectionDown: (sectionId) =>
+              set((state) => {
+                const index = state.sections.findIndex((s) => s.id === sectionId);
+
+                if (index < state.sections.length - 1) {
+                  // Swap array positions with the section below
+                  const temp = state.sections[index];
+                  state.sections[index] = state.sections[index + 1];
+                  state.sections[index + 1] = temp;
+                }
+              }),
+
+            reorderSections: (orderedIds) =>
+              set((state) => {
+                // Create a new array of sections in the specified order
+                const newSections: Section[] = [];
+
+                // Add sections in the order specified by orderedIds
+                orderedIds.forEach((id) => {
+                  const section = state.sections.find((s) => s.id === id);
+                  if (section) {
+                    newSections.push(section);
+                  }
+                });
+
+                // Add any sections not included in orderedIds at the end
+                state.sections.forEach((section) => {
+                  if (!orderedIds.includes(section.id)) {
+                    newSections.push(section);
+                  }
+                });
+
+                // Replace the sections array
+                state.sections = newSections;
+              }),
+
+            // Helper for vertical layout rendering
+            getSectionVerticalPosition: (sectionId) => {
+              const state = _get();
+              const sections = state.sections;
+
+              let position = 0;
+              for (const section of sections) {
+                if (section.id === sectionId) {
+                  return position;
+                }
+
+                // Add section height
+                if (section.position.desktop.h === "full") {
+                  position += window.innerHeight; // Or some other logic for "full"
+                } else {
+                  position += section.position.desktop.h || 0;
+                }
+              }
+              return 0;
+            },
 
             setLastLoaded: () =>
               set((state) => {
@@ -337,6 +449,10 @@ export const createDraftStore = (
 
             getBrickIndex: (id) => {
               return _get().bricks.findIndex((b) => b.id === id);
+            },
+
+            getBricksForSection: (sectionId: string) => {
+              return _get().bricks.filter((brick) => brick.sectionId === sectionId);
             },
 
             setSelectedBrick: (brick) =>
@@ -806,6 +922,27 @@ export function useLastSaved() {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => state.lastSaved);
 }
+
+export const useSections = () => {
+  const ctx = useDraftStoreContext();
+  return useStore(ctx, (state) => state.sections);
+};
+
+export const useSection = (sectionId: string) => {
+  const ctx = useDraftStoreContext();
+  return useStore(ctx, (state) => {
+    const section = state.sections.find((s) => s.id === sectionId);
+    return {
+      ...section,
+      bricks: state.bricks.filter((b) => b.sectionId === sectionId),
+    };
+  });
+};
+
+export const useBricksBySection = (sectionId: string) => {
+  const ctx = useDraftStoreContext();
+  return useStore(ctx, (state) => state.bricks.filter((b) => b.sectionId === sectionId));
+};
 
 export const useAttributes = () => {
   const ctx = useDraftStoreContext();

@@ -78,6 +78,7 @@ export function EditorWrapper({
       id: pageConfig.id,
       path: pageConfig.path,
       label: pageConfig.label,
+      sections: pageConfig.sections,
       bricks: pageConfig.bricks,
       attr: Object.assign({}, siteConfig.attr, pageConfig.attr),
       attributes: pageConfig.attributes,

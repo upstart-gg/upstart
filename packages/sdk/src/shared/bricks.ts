@@ -125,7 +125,7 @@ export type BrickWithProps<M extends BrickManifest> = Omit<Brick, "props" | "mob
 export type BricksLayout = Brick[];
 
 const definedBrickSchema = Type.Composite([
-  Type.Omit(brickSchema, ["id", "position", "sectionId"]),
+  Type.Omit(brickSchema, ["id", "position"]),
   Type.Object({
     position: Type.Object({
       mobile: definedBrickPositionSchema,
@@ -140,21 +140,38 @@ export const sectionSchema = Type.Object({
   id: Type.String(),
   kind: Type.Literal("section"),
   label: Type.Optional(Type.String()),
-  bricks: Type.Array(brickSchema),
+  position: Type.Object({
+    mobile: Type.Object({
+      h: Type.Optional(Type.Union([Type.Number(), Type.Literal("full")])),
+    }),
+    desktop: Type.Object({
+      h: Type.Union([Type.Number(), Type.Literal("full")]),
+    }),
+  }),
+  order: Type.Number({
+    description: "Determines section order in the page (lower numbers appear first)",
+  }),
   props: Type.Object(
     {
       background: Type.Optional(background),
     },
     { additionalProperties: true },
   ),
+  mobileProps: Type.Optional(
+    Type.Object(
+      {
+        background: Type.Optional(background),
+      },
+      { additionalProperties: true },
+    ),
+  ),
 });
 
 export type Section = Static<typeof sectionSchema>;
 export type ResponsivePosition = Brick["position"];
-export type DefinedSection = Omit<Section, "bricks" | "id" | "kind" | "props"> & {
+export type DefinedSection = Omit<Section, "id" | "kind" | "props"> & {
   id?: string;
   props?: Record<string, unknown>;
-  bricks: DefinedBrick[];
 };
 
 export type LayoutCols = {
@@ -202,28 +219,20 @@ function mapPosition(
 
 export function defineSections(sections: DefinedSection[]): Section[] {
   return sections.map((section) => {
-    const partialSection = {
+    return {
       ...section,
       id: section.id ?? `section-${generateId()}`,
       props: section.props ?? {},
       kind: "section",
     } as const;
-    return {
-      ...partialSection,
-      bricks: defineBricks(section.bricks, partialSection),
-    };
   });
 }
 
-function defineBricks<B extends DefinedBrick[] = DefinedBrick[]>(
-  bricks: B,
-  section: { id: string },
-): Brick[] {
+export function defineBricks<B extends DefinedBrick[] = DefinedBrick[]>(bricks: B): Brick[] {
   return bricks.map((brick) => {
     const id = `brick-${generateId()}`;
     return {
       id,
-      sectionId: section.id,
       ...defaultProps[brick.type],
       ...brick,
       props: {

@@ -58,8 +58,8 @@ const allDatasources = [
  * without hidden fields and style props.
  */
 function schemaToChildSchema(schema: BrickManifest) {
-  console.log("schema.properties.props", schema.properties.props);
-  const filteredProperties = Object.entries(schema.properties.props.properties)
+  console.log("schema.properties.props", schema.props);
+  const filteredProperties = Object.entries(schema.props.properties)
     .filter(([key, value]) => {
       console.log("filtering", key, value);
       return value["ui:field"] !== "hidden";
@@ -69,7 +69,7 @@ function schemaToChildSchema(schema: BrickManifest) {
       return acc;
     }, {} as TSchema);
   return {
-    ...schema.properties.props,
+    ...schema.props,
     properties: filteredProperties,
   };
 }
@@ -106,7 +106,7 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
   const brickManifest = manifests[brickInfo.type];
 
   const datasourceSchema: TSchema | null =
-    brickManifest.properties.datasource ??
+    brickManifest.datasource ??
     ("childrenType" in brickInfo.props
       ? schemaToChildSchema(manifests[brickInfo.props.childrenType as keyof typeof manifests])
       : null);
@@ -189,11 +189,11 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
                 <Select.Group>
                   {Object.entries(manifests)
                     .filter(([bType, bManifest]) => {
-                      return !!bManifest.properties.repeatable.default;
+                      return !!bManifest.repeatable;
                     })
                     .map(([brickType, brickManifest]) => (
                       <Select.Item key={brickType} value={brickType}>
-                        {brickManifest.properties.title.const}
+                        {brickManifest.name}
                       </Select.Item>
                     ))}
                 </Select.Group>

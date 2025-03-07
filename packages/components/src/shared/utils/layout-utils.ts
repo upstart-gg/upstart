@@ -169,46 +169,32 @@ export function canDropOnLayout(
   currentBp: ResponsiveMode,
   dropPosition: { y: number; x: number },
   constraints: BrickConstraints,
-  checkCollisions = false,
 ): { y: number; x: number; w: number; h: number; forbidden?: boolean; parent?: Brick } | false {
   // Helper function to check if a position is valid
-  function isPositionValid(
-    existingBricks: Brick[],
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-  ): boolean {
+  function isPositionValid(x: number, y: number, width: number): boolean {
     // Check if position is within grid bounds
     if (x < 0 || x + width > LAYOUT_COLS[currentBp] || y < 0) {
       console.log("out of bounds, x = %d, y = %d, width = %d, max = %d", x, y, width, LAYOUT_COLS[currentBp]);
       return false;
     }
 
-    if (!checkCollisions) {
-      return true;
-    }
-
-    // Check for collisions with existing bricks
-    return !existingBricks.some((brick) => {
-      const brickPos = brick.position[currentBp];
-      const horizontalOverlap = x < brickPos.x + brickPos.w && x + width > brickPos.x;
-      const verticalOverlap = y < brickPos.y + brickPos.h && y + height > brickPos.y;
-      return horizontalOverlap && verticalOverlap && !brick.isContainer;
-    });
+    return true;
   }
 
   // Ensure minimum width respects breakpoint constraints
   const effectiveMinWidth = Math.max(constraints.minWidth?.[currentBp] ?? 0, 1);
 
+  // Possible width depending on x position
+  const possibleMaxWidth = LAYOUT_COLS[currentBp] - dropPosition.x;
+
   // Calculate the width to use - try preferred first, fall back to minimum
-  const width = Math.min(constraints.defaultWidth?.[currentBp] ?? effectiveMinWidth, LAYOUT_COLS[currentBp]);
+  const width = Math.min(constraints.defaultWidth?.[currentBp] ?? effectiveMinWidth, possibleMaxWidth);
 
   // Calculate the height to use
   const height = constraints.defaultHeight?.[currentBp] || defaultsPreferred[currentBp].height;
 
   // Check if the drop position is valid
-  if (isPositionValid(bricks, dropPosition.x, dropPosition.y, width, height)) {
+  if (isPositionValid(dropPosition.x, dropPosition.y, width)) {
     const brickAtPos = getBrickAtPosition(dropPosition.x, dropPosition.y, bricks, currentBp);
     return {
       x: dropPosition.x,

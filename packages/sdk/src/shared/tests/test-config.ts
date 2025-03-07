@@ -1,7 +1,7 @@
 import { Type as ds } from "@sinclair/typebox";
 import { defineDataSources } from "../datasources";
 import { defineAttributes, attr } from "../attributes";
-import { defineSections } from "../bricks";
+import { defineBricks, defineSections } from "../bricks";
 import { defineConfig } from "../page";
 import type { Theme } from "../theme";
 
@@ -61,29 +61,40 @@ const homePageSections = defineSections([
   {
     id: "header",
     label: "Header",
-    bricks: [
-      {
-        type: "image",
-        props: {
-          src: "https://cdn.upstart.gg/internal/logo/upstart.svg",
-          // className: "max-h-24",
-        },
-        position: {
-          mobile: {
-            x: 0,
-            y: 0,
-            w: "full",
-            h: 3,
-          },
-          desktop: {
-            x: 0,
-            y: 0,
-            w: "full",
-            h: 3,
-          },
-        },
+    order: 0,
+    position: {
+      mobile: {
+        h: "full",
       },
-    ],
+      desktop: {
+        h: "full",
+      },
+    },
+  },
+]);
+
+const homePageBricks = defineBricks([
+  {
+    type: "image",
+    sectionId: "header",
+    props: {
+      src: "https://cdn.upstart.gg/internal/logo/upstart.svg",
+      // className: "max-h-24",
+    },
+    position: {
+      mobile: {
+        x: 0,
+        y: 0,
+        w: "full",
+        h: 3,
+      },
+      desktop: {
+        x: 0,
+        y: 0,
+        w: "full",
+        h: 3,
+      },
+    },
   },
 ]);
 
@@ -124,6 +135,7 @@ export default defineConfig({
       label: "Home",
       path: "/",
       sections: homePageSections,
+      bricks: homePageBricks,
       tags: [],
     },
   ],

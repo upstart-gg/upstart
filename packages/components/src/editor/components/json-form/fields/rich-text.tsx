@@ -26,12 +26,9 @@ const RichTextField: React.FC<FieldProps<TextContent>> = (props) => {
           paragraphMode={props.schema["ui:paragraph-mode"]}
           brickId={brickId}
           initialContent={currentValue}
-          enabled
           className={tx("form-textarea focus:ring-0 h-full", {
             "flex-1 rounded rounded-t-none border-gray-300": textEditMode === "large",
             "border-0": textEditMode !== "large",
-            // "h-full": !!currentValue.richText,
-            // "min-h-12": !currentValue.richText,
           })}
         />
       </div>
