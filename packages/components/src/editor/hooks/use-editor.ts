@@ -362,9 +362,11 @@ export const createDraftStore = (
                         ? {
                             props: {
                               ...brick.props,
-                              childrenBricks: brick.props.childrenBricks.filter((child: Brick) => {
-                                return child.id !== id;
-                              }),
+                              childrenBricks: (brick.props.childrenBricks as Brick[]).filter(
+                                (child: Brick) => {
+                                  return child.id !== id;
+                                },
+                              ),
                             },
                           }
                         : {}),
@@ -416,7 +418,7 @@ export const createDraftStore = (
                     ? {
                         props: {
                           ...brick.props,
-                          childrenBricks: brick.props.childrenBricks.map((child: Brick) => {
+                          childrenBricks: (brick.props.childrenBricks as Brick[]).map((child: Brick) => {
                             return {
                               ...child,
                               id: `brick-${generateId()}`,
@@ -442,7 +444,7 @@ export const createDraftStore = (
                 const brick = getBrick(id, state.bricks);
                 if (brick) {
                   if (isMobileProps) {
-                    brick.mobileOverride = { ...brick.mobileOverride, ...props, lastTouched: Date.now() };
+                    brick.mobileProps = { ...brick.mobileProps, ...props, lastTouched: Date.now() };
                   } else {
                     brick.props = { ...brick.props, ...props, lastTouched: Date.now() };
                   }
@@ -539,7 +541,7 @@ export const createDraftStore = (
               if (brick?.parentId) {
                 const parent = getBrick(brick.parentId, _get().bricks);
                 if (parent && "childrenBricks" in parent.props) {
-                  return parent.props.childrenBricks.findIndex((b: Brick) => b.id === brickId);
+                  return (parent.props.childrenBricks as Brick[]).findIndex((b: Brick) => b.id === brickId);
                 }
               }
               return null;
@@ -550,8 +552,9 @@ export const createDraftStore = (
               if (brick?.parentId) {
                 const parent = getBrick(brick.parentId, _get().bricks);
                 if (parent && "childrenBricks" in parent.props) {
-                  const index = parent.props.childrenBricks.findIndex((b: Brick) => b.id === brickId);
-                  return to === "left" ? index > 0 : index < parent.props.childrenBricks.length - 1;
+                  const children = parent.props.childrenBricks as Brick[];
+                  const index = children.findIndex((b: Brick) => b.id === brickId);
+                  return to === "left" ? index > 0 : index < children.length - 1;
                 }
               }
               return false;
@@ -616,7 +619,10 @@ export const createDraftStore = (
                   const parentBrick = state.bricks.find((b) => b.id === parentContainer.id);
                   invariant(parentBrick, "Parent brick not found");
                   invariant("childrenBricks" in parentBrick.props, "Parent brick must be a container");
-                  parentBrick.props.childrenBricks?.push({ ...brick, parentId: parentContainer.id });
+                  (parentBrick.props.childrenBricks as Brick[] | undefined)?.push({
+                    ...brick,
+                    parentId: parentContainer.id,
+                  });
                 }
               }),
 
@@ -934,7 +940,7 @@ function getBrick(id: string, bricks: Brick[]) {
   if (!brick) {
     for (const brickIter of bricks) {
       if ("childrenBricks" in brickIter.props) {
-        const child = brickIter.props.childrenBricks.find((b: Brick) => b.id === id);
+        const child = (brickIter.props.childrenBricks as Brick[]).find((b: Brick) => b.id === id);
         if (child) {
           brick = child;
           break;

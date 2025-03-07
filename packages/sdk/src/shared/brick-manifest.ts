@@ -83,24 +83,25 @@ export function defineBrickManifest<
     minWidth,
     maxWidth,
     minHeight,
-    ...(datasource ? { datasource } : {}),
-    ...(datarecord ? { datarecord } : {}),
+    datasource,
+    datarecord,
     props,
   };
 }
 
-export type StaticManifest<T extends ReturnType<typeof defineBrickManifest>> = Omit<T, "props"> & {
+export type BrickManifest = ReturnType<typeof defineBrickManifest>;
+export type StaticManifest<T extends BrickManifest> = Omit<T, "props"> & {
   props: Static<T["props"]>;
-  datasource: T["datasource"] extends TObject | TArray<TObject> ? Static<T["datasource"]> : never;
-  datarecord: T["datarecord"] extends TObject ? Static<T["datarecord"]> : never;
+  datasource: TObject<TProperties> | TArray<TObject<TProperties>> | undefined;
+  datarecord: TObject<TProperties> | undefined;
 };
 
-export type BrickManifest = ReturnType<typeof defineBrickManifest>;
-
-export function getBrickManifestDefaults(manifest: BrickManifest) {
+export function getBrickManifestDefaults<M extends BrickManifest>(manifest: M) {
   return {
     ...manifest,
     props: Value.Create(manifest.props),
+    ...(manifest.datasource ? { datasource: Value.Create(manifest.datasource) } : {}),
+    ...(manifest.datarecord ? { datarecord: Value.Create(manifest.datarecord) } : {}),
   };
 }
 

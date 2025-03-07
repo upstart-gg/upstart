@@ -1,5 +1,5 @@
 import { tx, css } from "@upstart.gg/style-system/twind";
-import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
+import { defaultProps, manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { Value } from "@sinclair/typebox/value";
 import { WiStars } from "react-icons/wi";
 import {
@@ -109,10 +109,9 @@ export default function PanelLibrary() {
             {Object.values(manifests)
               .filter((m) => m.kind === "brick" && !m.hideInLibrary)
               .map((brickImport) => {
-                const brick = Value.Create(brickImport);
                 return (
                   <Tooltip content={brickImport.description} key={brickImport.type}>
-                    <DraggableBrick brick={brick} />
+                    <DraggableBrick brick={defaultProps[brickImport.type]} />
                   </Tooltip>
                 );
               })}
@@ -140,10 +139,9 @@ export default function PanelLibrary() {
             {Object.values(manifests)
               .filter((m) => m.kind === "widget" && !m.hideInLibrary)
               .map((brickImport) => {
-                const brick = Value.Create(brickImport);
                 return (
                   <Tooltip content={brickImport.description} key={brickImport.type} delayDuration={850}>
-                    <DraggableBrick brick={brick} />
+                    <DraggableBrick brick={defaultProps[brickImport.type]} />
                   </Tooltip>
                 );
               })}

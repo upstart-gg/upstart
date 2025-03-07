@@ -31,7 +31,6 @@ import {
   useEditingTextForBrickId,
   useEditor,
   useGetBrick,
-  useSelectedBrick,
 } from "~/editor/hooks/use-editor";
 import { VscDatabase } from "react-icons/vsc";
 import { BiFullscreen, BiExitFullscreen } from "react-icons/bi";
