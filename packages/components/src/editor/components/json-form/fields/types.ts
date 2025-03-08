@@ -1,6 +1,4 @@
-import type { TSchema } from "@sinclair/typebox";
-import type { JSONSchemaType } from "@upstart.gg/sdk/shared/attributes";
-import type { Brick } from "@upstart.gg/sdk/shared/bricks";
+import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
 
 /**
  * Field props
@@ -9,7 +7,7 @@ import type { Brick } from "@upstart.gg/sdk/shared/bricks";
  * F: All form fields data type
  */
 export type FieldProps<T = unknown, F = Record<string, unknown>> = {
-  brickId: Brick["id"];
+  brickId?: string;
   onChange: (value: T | null) => void;
   currentValue: T;
   /**
@@ -19,7 +17,7 @@ export type FieldProps<T = unknown, F = Record<string, unknown>> = {
   /**
    * Full form schema
    */
-  formSchema: JSONSchemaType<unknown>;
+  formSchema: TObject<TProperties>;
   /**
    * Form data
    */

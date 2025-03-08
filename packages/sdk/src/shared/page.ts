@@ -2,10 +2,9 @@ import { type Attributes, resolveAttributes, defaultAttributesSchema } from "./a
 import { brickSchema, type Section, sectionSchema, type Brick } from "./bricks";
 import invariant from "./utils/invariant";
 import { themeSchema, type Theme } from "./theme";
-import { Type, type Static } from "@sinclair/typebox";
+import { Type, type Static, type TObject, type TProperties } from "@sinclair/typebox";
 import { datasourcesMap, type DatasourcesMap, type DatasourcesResolved } from "./datasources/types";
 import { manifestSchema, type TemplateManifest } from "./manifest";
-import type { JSONSchemaType } from "ajv";
 import { customAlphabet } from "nanoid";
 import type { DatarecordsMap } from "./datarecords/types";
 
@@ -30,7 +29,7 @@ export type TemplateConfig = {
   /**
    * The attributes declared for the template
    */
-  attributes: JSONSchemaType<Attributes>;
+  attributes: TObject<TProperties>;
   attr?: Partial<Attributes>;
   /**
    * The datasources declared for the template
@@ -85,7 +84,7 @@ export type PageConfig<D extends DatasourcesMap> = PageInfo & {
   /**
    * Page attributes. (can override site attributes)
    */
-  attributes?: JSONSchemaType<Attributes>;
+  attributes?: TObject<TProperties>;
   /**
    * Resolved attributes for the page.
    */
@@ -130,7 +129,7 @@ export type SiteConfig = {
   id: string;
   label: string;
   hostname: string;
-  attributes: JSONSchemaType<Attributes>;
+  attributes: TObject<TProperties>;
   attr: Attributes;
   datasources?: DatasourcesMap;
   datarecords?: DatarecordsMap;
@@ -202,7 +201,7 @@ export const templatePageSchema = Type.Object({
 });
 
 export type TemplatePage = Static<typeof templatePageSchema> & {
-  attributes?: JSONSchemaType<Attributes>;
+  attributes?: TObject<TProperties>;
   attr?: Partial<Attributes>;
 };
 

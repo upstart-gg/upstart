@@ -1,7 +1,6 @@
 import { useMemo, type ReactNode } from "react";
 import { tx, css } from "@upstart.gg/style-system/twind";
-import type { JSONSchemaType } from "@upstart.gg/sdk/shared/attributes";
-import type { TSchema } from "@sinclair/typebox";
+import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
 import get from "lodash-es/get";
 import { sortJsonSchemaProperties } from "~/shared/utils/sort-json-schema-props";
 
@@ -37,13 +36,13 @@ import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 
 interface FormRendererProps {
-  brickId: string;
-  formSchema: JSONSchemaType<unknown>;
+  brickId?: string;
+  formSchema: TObject<TProperties>;
   formData: Record<string, unknown>;
   onChange: (data: Record<string, unknown>, id: string) => void;
   onSubmit?: (data: Record<string, unknown>) => void;
   submitButtonLabel?: string;
-  filter?: (field: JSONSchemaType<unknown>) => boolean;
+  filter?: (field: TSchema) => boolean;
   previewMode?: string;
   parents?: string[];
 }
@@ -104,7 +103,7 @@ export function FormRenderer({
 
     // Process all properties in the schema
     Object.entries(sortedSchema.properties).forEach(([fieldName, fieldSchema]) => {
-      const field = fieldSchema as JSONSchemaType<unknown>;
+      const field = fieldSchema;
 
       // Apply filter if provided
       if (filter && !filter(field)) {
@@ -129,13 +128,13 @@ export function FormRenderer({
       // Common props for all field components
       const commonProps = {
         brickId,
-        schema: fieldSchema as TSchema,
+        schema: fieldSchema,
         formSchema: sortedSchema,
         formData,
         required: sortedSchema.properties.required?.includes(fieldName) ?? false,
-        title: field.title ?? field["ui:title"],
-        description: field.description ?? field["ui:description"],
-        placeholder: field["ui:placeholder"],
+        title: (field.title ?? field["ui:title"]) as string | undefined,
+        description: (field.description ?? field["ui:description"]) as string | undefined,
+        placeholder: field["ui:placeholder"] as string | undefined,
       };
 
       // Determine field type
@@ -404,7 +403,7 @@ export function FormRenderer({
             <FormRenderer
               key={`object-${id}`}
               brickId={brickId}
-              formSchema={field}
+              formSchema={field as TObject<TProperties>}
               formData={formData}
               onChange={onChange}
               onSubmit={onSubmit}

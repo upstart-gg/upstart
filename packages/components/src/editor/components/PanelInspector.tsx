@@ -10,9 +10,8 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { Callout, IconButton, Tabs } from "@upstart.gg/style-system/system";
 import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
-import { getFormComponents, FormRenderer } from "./json-form/form";
+import { FormRenderer } from "./json-form/FormRenderer";
 import { IoCloseOutline } from "react-icons/io5";
-import type { JSONSchemaType } from "@upstart.gg/sdk/shared/attributes";
 import { useLocalStorage } from "usehooks-ts";
 import merge from "lodash-es/merge";
 import PresetsView from "./PresetsView";
@@ -210,19 +209,14 @@ function ElementInspector({ brick, manifest }: { brick: Brick; manifest: BrickMa
   return (
     <form className={tx("px-3 flex flex-col gap-3")}>
       <FormRenderer
-        components={getFormComponents({
-          brickId: brick.id,
-          formSchema: manifest.props as unknown as JSONSchemaType<unknown>,
-          formData,
-          filter: (prop) => {
-            return (
-              (previewMode !== "mobile" || prop["ui:responsive"]) && prop["ui:inspector-tab"] === "style"
-            );
-          },
-          onChange,
-        })}
-        previewMode={previewMode}
         brickId={brick.id}
+        formSchema={manifest.props}
+        formData={formData}
+        filter={(prop) => {
+          return (previewMode !== "mobile" || prop["ui:responsive"]) && prop["ui:inspector-tab"] === "style";
+        }}
+        onChange={onChange}
+        previewMode={previewMode}
       />
     </form>
   );
@@ -247,25 +241,17 @@ function ContentTab({ brick, manifest }: { brick: Brick; manifest: BrickManifest
 
   invariant(brickInfo, "Brick info props is missing in ContentTab");
 
-  console.log("content tab", brick);
-
   return (
     <form className={tx("px-3 flex flex-col gap-3")}>
       <FormRenderer
-        components={getFormComponents({
-          brickId: brick.id,
-          formSchema: manifest.props as unknown as JSONSchemaType<unknown>,
-          formData: brickInfo.props,
-          filter: (prop) => {
-            return (
-              prop["ui:inspector-tab"] === "content"
-              // &&               (brickInfo.props?.isDynamic || prop["ui:field"] === "dynamic-content-switch")
-            );
-          },
-          onChange,
-        })}
-        previewMode={previewMode}
         brickId={brick.id}
+        formSchema={manifest.props}
+        formData={brickInfo.props}
+        filter={(prop) => {
+          return prop["ui:inspector-tab"] === "content";
+        }}
+        onChange={onChange}
+        previewMode={previewMode}
       />
     </form>
   );

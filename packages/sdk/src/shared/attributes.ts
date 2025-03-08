@@ -6,6 +6,7 @@ import {
   type ObjectOptions,
   type TProperties,
   type Static,
+  type TObject,
 } from "@sinclair/typebox";
 import type { ElementColor } from "./themes/color-system";
 import type { JSONSchemaType } from "ajv";
@@ -41,7 +42,7 @@ export function defineAttributes(attrs: TProperties) {
       );
     }
   }
-  return typeboxSchemaToJSONSchema<Attributes>(Type.Object({ ...defaultAttributes, ...attrs }));
+  return Type.Object({ ...defaultAttributes, ...attrs });
 }
 
 export type { JSONSchemaType };
@@ -386,7 +387,7 @@ export const defaultAttributesSchema = Type.Object(defaultAttributes);
 export type Attributes = Static<typeof defaultAttributesSchema> & Record<string, unknown>;
 
 export function resolveAttributes(
-  attributesSchema: JSONSchemaType<Attributes>,
+  attributesSchema: TObject<TProperties>,
   initialData: Record<string, unknown> = {},
 ): Attributes {
   const validate = ajv.compile(attributesSchema);
@@ -396,5 +397,5 @@ export function resolveAttributes(
     console.log("invalid data attributes", data, validate.errors);
     throw new Error(`Invalid attributes: ${validate.errors}`);
   }
-  return data;
+  return data as Attributes;
 }

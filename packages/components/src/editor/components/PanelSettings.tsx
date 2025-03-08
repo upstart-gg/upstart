@@ -2,7 +2,7 @@ import { useAttributes, useAttributesSchema, useDraft, useEditorHelpers } from "
 import { sortJsonSchemaProperties } from "~/shared/utils/sort-json-schema-props";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FormRenderer, getFormComponents } from "./json-form/form";
+import { FormRenderer } from "./json-form/FormRenderer";
 import type { Attributes, JSONSchemaType } from "@upstart.gg/sdk/shared/attributes";
 import { Tabs, Spinner, IconButton } from "@upstart.gg/style-system/system";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
@@ -22,22 +22,6 @@ export default function SettingsForm() {
     console.log("changed attr %o", data);
     draft.updateAttributes(data as Attributes);
   }, []);
-
-  const formElements = useMemo(() => {
-    return getFormComponents({
-      brickId: "settings",
-      formSchema: filteredAttrSchema as JSONSchemaType<unknown>,
-      formData: attributes,
-      onChange,
-      filter(field) {
-        return currentTab === "page-settings"
-          ? // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-            (field as any)?.["ui:scope"] !== "site"
-          : // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-            (field as any)?.["ui:scope"] === "site";
-      },
-    });
-  }, [currentTab, attributes, filteredAttrSchema, onChange]);
 
   useEffect(() => {
     // Defer the form rendering to the next frame
@@ -80,12 +64,30 @@ export default function SettingsForm() {
       </Tabs.List>
       <ScrollablePanelTab tab="page-settings">
         <form className={tx("px-3 flex flex-col gap-y-2.5 pb-6")}>
-          <FormRenderer components={formElements} brickId={"settings"} />
+          <FormRenderer
+            formSchema={filteredAttrSchema}
+            formData={attributes}
+            filter={(field) => {
+              return currentTab === "page-settings"
+                ? field?.["ui:scope"] !== "site"
+                : field?.["ui:scope"] === "site";
+            }}
+            onChange={onChange}
+          />
         </form>
       </ScrollablePanelTab>
       <ScrollablePanelTab tab="site-settings">
         <form className={tx("px-3 flex flex-col gap-y-2.5 pb-6")}>
-          <FormRenderer components={formElements} brickId={"settings"} />
+          <FormRenderer
+            formSchema={filteredAttrSchema}
+            formData={attributes}
+            filter={(field) => {
+              return currentTab === "page-settings"
+                ? field?.["ui:scope"] !== "site"
+                : field?.["ui:scope"] === "site";
+            }}
+            onChange={onChange}
+          />
         </form>
       </ScrollablePanelTab>
     </Tabs.Root>

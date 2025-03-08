@@ -85,6 +85,9 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
     } satisfies DatasourceRef,
     brickId,
   } = props;
+
+  invariant(brickId, "DatasourceRefField requires a brickId prop");
+
   const getBrickInfo = useGetBrick();
   const draftHelpers = useDraftHelpers();
   const brickInfo = getBrickInfo(brickId);
