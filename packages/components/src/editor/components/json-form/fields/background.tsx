@@ -24,7 +24,7 @@ const BackgroundField: React.FC<FieldProps<BackgroundSettings>> = (props) => {
         <div className="flex items-center justify-between">
           <label className={fieldLabel}>{title ?? "Color / image"}</label>
         </div>
-        <div className="flex gap-1.5">
+        <div className="flex justify-end gap-1.5">
           <ColorField
             {...props}
             currentValue={currentValue.color}

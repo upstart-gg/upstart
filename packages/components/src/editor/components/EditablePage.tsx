@@ -392,10 +392,9 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         selectByClick={false}
         dragCondition={(e) => {
           // prevent triggering a selection when clicking on sections resize handle buttons
-          return !e.inputEvent.target.matches(".section-resizable-handle");
+          return !e.inputEvent.target.closest(".section-options-buttons");
         }}
         onSelect={(e) => {
-          console.log("seelctor", e);
           if (e.selected.length) {
             editorHelpers.setSelectedGroup(e.selected.map((el) => el.id));
           }

@@ -230,6 +230,8 @@ export default defineConfig({
       animation: {
         "fade-in": "fade-in 0.5s",
         "elastic-pop": "elastic-pop 1s cubic-bezier(0.22, 1, 0.36, 1) forwards",
+        "slide-in": "slide-in 0.15s ease-out",
+        "slide-back": "slide-back 0.15s ease-out",
       },
       keyframes: {
         "elastic-pop": {
@@ -241,6 +243,14 @@ export default defineConfig({
         "fade-in": {
           from: { opacity: "0" },
           to: { opacity: "1" },
+        },
+        "slide-in": {
+          from: { transform: "translateX(100%)" },
+          to: { transform: "translateX(0)" },
+        },
+        "slide-back": {
+          from: { transform: "translateX(-100%)" },
+          to: { transform: "translateX(0)" },
         },
       },
     },

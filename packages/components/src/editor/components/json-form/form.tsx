@@ -10,8 +10,6 @@ import { NumberField, SliderField } from "./fields/number";
 import SwitchField from "./fields/switch";
 import { Fragment, type ReactNode } from "react";
 import { sortJsonSchemaProperties } from "~/shared/utils/sort-json-schema-props";
-import type { FieldProps } from "./fields/types";
-import { SegmentedControl } from "@upstart.gg/style-system/system";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import get from "lodash-es/get";
 import { EffectsField } from "./fields/effects";
@@ -20,9 +18,7 @@ import { PagePaddingField } from "./fields/padding";
 import { TextField } from "./fields/text";
 import BackgroundField from "./fields/background";
 import { FlexField } from "./fields/flex";
-import { Text } from "@upstart.gg/style-system/system";
 import { AlignBasicField } from "./fields/align-basic";
-import DatasourceField from "./fields/datasource-ref";
 import DatasourceRefField from "./fields/datasource-ref";
 import { GridField } from "./fields/grid";
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
@@ -458,51 +454,4 @@ export function FormRenderer({
     currentGroup = element.group;
     return node;
   });
-}
-
-export function AnyOfField(props: FieldProps<unknown>) {
-  const {
-    schema,
-    onChange,
-    formSchema: formContext,
-    currentValue,
-    title,
-    description,
-    options,
-    brickId,
-  } = props;
-
-  const currentOpt = "foo";
-
-  return (
-    <>
-      {title && (
-        <Text as="label" size="2" weight="medium">
-          {title}
-        </Text>
-      )}
-      <SegmentedControl.Root
-        onValueChange={onChange}
-        defaultValue={currentOpt}
-        size="1"
-        className="w-full !max-w-full mt-2"
-        radius="large"
-      >
-        {(options as TSchema[])
-          .filter((o) => !o["ui:hidden-option"])
-          .map((option, index) => (
-            <SegmentedControl.Item
-              key={`${brickId}_${index}`}
-              value={option.const}
-              className={tx("[&_.rt-SegmentedControlItemLabel]:px-1")}
-            >
-              {option.title}
-            </SegmentedControl.Item>
-          ))}
-      </SegmentedControl.Root>
-      {/* {options.map((option: any, index: number) => (
-        <div key={`${id}_${index}`}>{option.title}</div>
-      ))} */}
-    </>
-  );
 }

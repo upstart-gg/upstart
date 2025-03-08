@@ -8,6 +8,8 @@ import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import type { BrickConstraints } from "@upstart.gg/sdk/shared/brick-manifest";
 import { defaultProps } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
+import { getGridPosition, getGridSize, type GridConfig } from "~/shared/utils/layout-utils";
+import { useBricksRefs } from "./use-bricks-refs";
 
 interface DragCallbacks {
   onDragMove?: (
@@ -86,15 +88,6 @@ interface InteractMethods {
   updateResizeOptions: (options: Parameters<Interact.Interactable["resizable"]>[0]) => void;
 }
 
-type QuerySelector = string;
-
-interface GridConfig {
-  colWidth: number;
-  rowHeight: number;
-  containerHorizontalPadding: number;
-  containerVerticalPadding: number;
-}
-
 interface SnapToGridConfig {
   colWidth?: number;
   rowHeight?: number;
@@ -113,58 +106,6 @@ function snapPositionToGrid({
       x: Math.round((x - paddingX) / colWidth) * colWidth + paddingX,
       y: Math.round((y - paddingY) / rowHeight) * rowHeight + paddingY,
     };
-  };
-}
-
-function createScrollAwareRestriction(container: HTMLElement, paddingX: number, paddingY: number) {
-  return function (
-    _x: number,
-    _y: number,
-    interaction: Interact.Interaction<keyof Interact.ActionMap>,
-  ): { top: number; left: number; bottom: number; right: number } {
-    const scroll = {
-      x: container.scrollLeft,
-      y: container.scrollTop,
-    };
-
-    const targetRect = interaction.element?.getBoundingClientRect();
-    invariant(targetRect, "Element not found in createScrollAwareRestriction()");
-    const containerRect = container.getBoundingClientRect();
-
-    // Calculate boundaries including scroll position
-    return {
-      top: paddingY,
-      left: paddingX,
-      bottom: containerRect.height + scroll.y - targetRect.height - paddingY,
-      right: containerRect.width + scroll.x - targetRect.width - paddingX,
-    };
-  };
-}
-
-function getGridPosition(element: HTMLElement | { left: number; top: number }, config: GridConfig) {
-  // Get element's initial position (getBoundingClientRect gives position relative to viewport)
-  const rect = element instanceof HTMLElement ? element.getBoundingClientRect() : element;
-  const container = document.querySelector(".page-container")!.getBoundingClientRect();
-
-  // Calculate actual position relative to container
-  const actualX = rect.left - container.left;
-  const actualY = rect.top - container.top;
-
-  // Calculate grid position
-  const gridX = Math.round((actualX - config.containerHorizontalPadding) / config.colWidth);
-  const gridY = Math.round((actualY - config.containerVerticalPadding) / config.rowHeight);
-
-  return {
-    x: Math.max(0, gridX),
-    y: Math.max(0, gridY),
-  };
-}
-
-function getGridSize(element: HTMLElement, config: GridConfig) {
-  const rect = element.getBoundingClientRect();
-  return {
-    w: Math.round(rect.width / config.colWidth),
-    h: Math.round(rect.height / config.rowHeight),
   };
 }
 
@@ -211,7 +152,7 @@ function getDropPosition(event: Interact.DropEvent, gridConfig: GridConfig) {
   };
 }
 export const useEditablePage = (
-  bricksSelectorOrRef: QuerySelector,
+  bricksSelectorOrRef: string,
   pageRef: RefObject<HTMLElement>,
   {
     gridConfig,
@@ -322,12 +263,6 @@ export const useEditablePage = (
             const brick = getBrick(target.id);
 
             if (brick) {
-              const {
-                position: {
-                  desktop: { w, h },
-                },
-              } = brick;
-
               const gridPosition = getGridPosition(target, gridConfig);
               // we fire the callback for the main element only
               dragCallbacks.onDragStart?.(brick, getPosition(target, event), gridPosition, event);
@@ -585,36 +520,4 @@ export const useEditablePage = (
     updateDragOptions,
     updateResizeOptions,
   };
-};
-
-interface ElementRefs {
-  setBrickRef: (id: string, node: HTMLElement | null) => void;
-  getBrickRef: (id: string) => HTMLElement;
-}
-
-const useBricksRefs = (): ElementRefs => {
-  const elementRefs = useRef(new Map<string, HTMLElement>());
-
-  const setBrickRef = useCallback((id: string, node: HTMLElement | null) => {
-    if (node) {
-      elementRefs.current.set(id, node);
-    } else {
-      elementRefs.current.delete(id);
-    }
-  }, []);
-
-  const getBrickRef = useCallback((id: string): HTMLElement => {
-    const existing = elementRefs.current.get(id);
-    if (existing) {
-      return existing;
-    }
-    const node = document.getElementById(id);
-    if (!node) {
-      throw new Error(`Brick with id ${id} not found`);
-    }
-    elementRefs.current.set(id, node);
-    return node;
-  }, []);
-
-  return { setBrickRef, getBrickRef };
 };

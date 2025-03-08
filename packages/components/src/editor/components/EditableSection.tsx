@@ -1,7 +1,13 @@
 import interact from "interactjs";
 import type { Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
-import { usePreviewMode, useSection, useSelectedBrick } from "../hooks/use-editor";
-import { DropdownMenu } from "@upstart.gg/style-system/system";
+import {
+  useDraftHelpers,
+  usePreviewMode,
+  useSection,
+  useSections,
+  useSelectedBrick,
+} from "../hooks/use-editor";
+import { DropdownMenu, Popover, Tooltip } from "@upstart.gg/style-system/system";
 import BrickWrapper from "./EditableBrick";
 import ResizeHandle from "./ResizeHandle";
 import { useSectionStyle } from "~/shared/hooks/use-section-style";
@@ -12,10 +18,16 @@ import {
   TbArrowDown,
   TbArrowUpBar,
   TbDots,
+  TbBackground,
+  TbTrash,
 } from "react-icons/tb";
+import { VscSettings } from "react-icons/vsc";
+import { PiWaveSine } from "react-icons/pi";
+
 import { tx } from "@upstart.gg/style-system/twind";
 import { useEffect, useRef, useState } from "react";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
+import TestMenu from "./json-form/TestMenu";
 
 export default function EditableSection(section: SectionType) {
   const { bricks, id } = useSection(section.id);
@@ -26,7 +38,7 @@ export default function EditableSection(section: SectionType) {
   const className = useSectionStyle({ section, editable: true, selected: selectedBrick?.id === section.id });
   return (
     <section key={id} id={id} data-element-type="section" className={className}>
-      <SectionResizeHandle section={section} />
+      <SectionOptionsButtons section={section} />
       {bricks
         .filter((b) => !b.position[previewMode]?.hidden)
         .map((brick, index) => (
@@ -52,12 +64,10 @@ function useResizableSection(section: SectionType) {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const handle = document.getElementById(`${section.id}-resize-handle`);
-    const line = document.getElementById(`${section.id}-resize-line`);
     const sectionEl = document.getElementById(section.id);
 
     invariant(sectionEl, "Section element not found");
     invariant(handle, "Resize handle not found");
-    invariant(line, "Resize line not found");
 
     interactable.current = interact(`#${section.id}`);
     interactable.current.resizable({
@@ -80,18 +90,18 @@ function useResizableSection(section: SectionType) {
           const h = sectionEl.dataset.h ? parseFloat(sectionEl.dataset.h) : sectionEl.offsetHeight;
           const newHeight = h + event.delta.y;
 
-          Object.assign(sectionEl.style, {
-            height: `${newHeight}px`,
-            maxHeight: `${newHeight}px`,
-            flex: "none",
+          requestAnimationFrame(() => {
+            Object.assign(sectionEl.style, {
+              height: `${newHeight}px`,
+              maxHeight: `${newHeight}px`,
+              flex: "none",
+            });
           });
+
           Object.assign(sectionEl.dataset, { h: newHeight });
         },
         end: (event) => {
           console.log("resize end");
-          Object.assign(line.style, {
-            opacity: "0",
-          });
         },
       },
     });
@@ -102,75 +112,114 @@ function useResizableSection(section: SectionType) {
   }, []);
 }
 
-function SectionResizeHandle({ section }: { section: SectionType }) {
-  const [dialogOpen, setDialogOpen] = useState(false);
+function SectionOptionsButtons({ section }: { section: SectionType }) {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const draftHelpers = useDraftHelpers();
+  const sections = useSections();
+  const isLastSection = section.order === sections.length - 1;
+  const isFirstSection = section.order === 0;
   return (
     <>
-      {/* this is a line that will be displayed when the section is resized */}
-      <div
-        id={`${section.id}-resize-line`}
-        className="section-resizable-line absolute z-[99998] -bottom-0 right-0 left-0 h-1
-        bg-upstart-500/70 transition-opacity duration-500 opacity-0 group-hover/section:opacity-50"
-      />
-      <div className="absolute z-[99999] -bottom-5 left-1/2 -translate-x-1/2 flex gap-0 rounded-md [&>*:first-child]:rounded-l-md [&>*:last-child]:rounded-r-md">
-        <button
-          type="button"
-          id={`${section.id}-resize-handle`}
+      <Popover.Root onOpenChange={setModalOpen}>
+        {/* Don't put height on Popover otherwise it bugs and disapears just after appearing */}
+        <Popover.Content width="390px" className="!p-0">
+          <TestMenu />
+        </Popover.Content>
+        <div
           className={tx(
-            "section-resizable-handle select-none",
-            " text-base px-2.5 h-10 backdrop-blur-md shadow-lg",
-            "transition-opacity duration-500 opacity-0 group-hover/section:opacity-80 hover:!opacity-100",
-            "bg-white/70 border-2 border-white/80 text-black/80 font-bold flex items-center cursor-ns-resize gap-1",
-            dialogOpen && "opacity-100",
+            "section-options-buttons",
+            "absolute z-[99999] left-1/2 -translate-x-1/2 flex gap-0 rounded-md [&>*:first-child]:rounded-l-md [&>*:last-child]:rounded-r-md",
+            isLastSection ? "bottom-1" : "-bottom-5",
           )}
         >
-          <TbArrowAutofitHeight className="w-6 h-6" />
-          Resize
-        </button>
-        <button
-          type="button"
-          className={tx(
-            "select-none",
-            "text-base px-2.5 h-10 backdrop-blur-md shadow-lg",
-            "transition-opacity duration-500 opacity-0 group-hover/section:opacity-80 hover:!opacity-100 active:shadow-md",
-            "bg-white/70 border-2 border-white/80 text-black/80 font-bold flex items-center cursor-pointer gap-1",
-            dialogOpen && "opacity-100",
-          )}
-        >
-          <TbBorderCorners className="w-6 h-6" />
-        </button>
-
-        <DropdownMenu.Root modal={false} onOpenChange={setDialogOpen}>
-          <DropdownMenu.Trigger>
+          <Tooltip content="Drag vertically to resize section" delayDuration={500}>
+            <button
+              type="button"
+              id={`${section.id}-resize-handle`}
+              className={tx(
+                dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
+                "section-resizable-handle select-none",
+                " text-base px-2.5 h-10 backdrop-blur-md shadow-lg",
+                "transition-opacity duration-500 group-hover/section:opacity-80 hover:!opacity-100",
+                "bg-white/70 border-2 border-white/80 text-black/80 font-bold flex items-center cursor-ns-resize gap-1",
+              )}
+            >
+              <TbArrowAutofitHeight className="w-6 h-6" />
+            </button>
+          </Tooltip>
+          <Tooltip content="Fill entire screen height" delayDuration={500}>
             <button
               type="button"
               className={tx(
                 "select-none",
+                dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
                 "text-base px-2.5 h-10 backdrop-blur-md shadow-lg",
-                "transition-opacity duration-500 opacity-0 group-hover/section:opacity-80 hover:!opacity-100",
-                "bg-white/70 border-2 border-white/80 text-black/80 font-bold flex items-center cursor-pointer gap-1 active:(outline-none ring-0) focus:(outline-none ring-0)",
-                dialogOpen && "opacity-100 shadow-md",
+                "transition-opacity duration-500 group-hover/section:opacity-80 hover:!opacity-100 active:shadow-md",
+                "bg-white/70 border-2 border-white/80 text-black/80 font-bold flex items-center cursor-pointer gap-1",
               )}
             >
-              <TbDots className="w-6 h-6" />
+              <TbBorderCorners className="w-6 h-6" />
             </button>
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Content sideOffset={-2} size="2">
-            <DropdownMenu.Item className="!pl-1">
-              <div className="flex items-center justify-start gap-1.5">
-                <TbArrowUp className="w-4 h-4" />
-                <span>Move up</span>
-              </div>
-            </DropdownMenu.Item>
-            <DropdownMenu.Item className="!pl-1">
-              <div className="flex items-center justify-start gap-1.5">
-                <TbArrowDown className="w-4 h-4" />
-                <span>Move down</span>
-              </div>
-            </DropdownMenu.Item>
-          </DropdownMenu.Content>
-        </DropdownMenu.Root>
-      </div>
+          </Tooltip>
+          <DropdownMenu.Root modal={false} onOpenChange={setDropdownOpen}>
+            <DropdownMenu.Trigger>
+              <button
+                type="button"
+                className={tx(
+                  "select-none",
+                  dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
+                  "text-base px-2.5 h-10 backdrop-blur-md shadow-lg",
+                  "transition-opacity duration-500 group-hover/section:opacity-80 hover:!opacity-100",
+                  "bg-white/70 border-2 border-white/80 text-black/80 font-bold flex items-center cursor-pointer gap-1 active:(outline-none ring-0) focus:(outline-none ring-0)",
+                )}
+              >
+                <TbDots className="w-6 h-6" />
+                <Popover.Anchor />
+              </button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content sideOffset={-2} size="2">
+              <DropdownMenu.Group>
+                <DropdownMenu.Label>Manage {section.label ?? "section"}</DropdownMenu.Label>
+                {!isFirstSection && (
+                  <DropdownMenu.Item onClick={() => draftHelpers.moveSectionUp(section.id)}>
+                    <div className="flex items-center justify-start gap-2">
+                      <TbArrowUp className="w-4 h-4" />
+                      <span>Reorder up</span>
+                    </div>
+                  </DropdownMenu.Item>
+                )}
+                {!isLastSection && (
+                  <DropdownMenu.Item onClick={() => draftHelpers.moveSectionDown(section.id)}>
+                    <div className="flex items-center justify-start gap-2">
+                      <TbArrowDown className="w-4 h-4" />
+                      <span>Reorder down</span>
+                    </div>
+                  </DropdownMenu.Item>
+                )}
+              </DropdownMenu.Group>
+              <DropdownMenu.Separator />
+              <DropdownMenu.Group>
+                <Popover.Trigger>
+                  <DropdownMenu.Item>
+                    <div className="flex items-center justify-start gap-2.5">
+                      <VscSettings className="w-4 h-4" />
+                      <span>Settings</span>
+                    </div>
+                  </DropdownMenu.Item>
+                </Popover.Trigger>
+              </DropdownMenu.Group>
+              <DropdownMenu.Separator />
+              <DropdownMenu.Item color="red" onClick={() => draftHelpers.deleteSection(section.id)}>
+                <div className="flex items-center justify-start gap-2.5">
+                  <TbTrash className="w-4 h-4" />
+                  <span>Delete</span>
+                </div>
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
+        </div>
+      </Popover.Root>
     </>
   );
 }

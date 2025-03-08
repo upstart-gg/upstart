@@ -28,9 +28,7 @@ import {
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { MdBorderOuter } from "react-icons/md";
 import { BiSolidColor } from "react-icons/bi";
-import { TbLayoutList } from "react-icons/tb";
 import { LuLayoutDashboard } from "react-icons/lu";
-import { VscSymbolColor } from "react-icons/vsc";
 import { IoMdColorPalette } from "react-icons/io";
 
 type BrickWrapperProps = ComponentProps<"div"> & {

@@ -370,26 +370,40 @@ export const createDraftStore = (
 
             moveSectionUp: (sectionId) =>
               set((state) => {
-                const index = state.sections.findIndex((s) => s.id === sectionId);
+                // current
+                const section = state.sections.find((s) => s.id === sectionId);
+                const sectionIndex = state.sections.findIndex((s) => s.id === sectionId);
+                invariant(section, "Section not found");
+                // previous
+                const previous = state.sections.find((s) => s.order === section.order - 1);
+                const previousIndex = state.sections.findIndex((s) => s.order === section.order - 1);
+                invariant(previous, "Previous section not found");
+                // swap
+                const temp = section.order;
+                section.order = previous.order;
+                previous.order = temp;
 
-                if (index > 0) {
-                  // Swap array positions with the section above
-                  const temp = state.sections[index];
-                  state.sections[index] = state.sections[index - 1];
-                  state.sections[index - 1] = temp;
-                }
+                state.sections[sectionIndex] = section;
+                state.sections[previousIndex] = previous;
               }),
 
             moveSectionDown: (sectionId) =>
               set((state) => {
-                const index = state.sections.findIndex((s) => s.id === sectionId);
+                // current
+                const section = state.sections.find((s) => s.id === sectionId);
+                const sectionIndex = state.sections.findIndex((s) => s.id === sectionId);
+                invariant(section, "Section not found");
+                // next
+                const next = state.sections.find((s) => s.order === section.order + 1);
+                const nextIndex = state.sections.findIndex((s) => s.order === section.order + 1);
+                invariant(next, "Next section not found");
 
-                if (index < state.sections.length - 1) {
-                  // Swap array positions with the section below
-                  const temp = state.sections[index];
-                  state.sections[index] = state.sections[index + 1];
-                  state.sections[index + 1] = temp;
-                }
+                // swap
+                const currentOrder = section.order;
+                const nextOrder = next.order;
+
+                state.sections[sectionIndex].order = nextOrder;
+                state.sections[nextIndex].order = currentOrder;
               }),
 
             reorderSections: (orderedIds) =>
@@ -997,6 +1011,10 @@ export const useDraftHelpers = () => {
     canMoveToWithinParent: state.canMoveToWithinParent,
     moveBrickToParent: state.moveBrickToParent,
     getBrickIndex: state.getBrickIndex,
+    deleteSection: state.deleteSection,
+    moveSectionUp: state.moveSectionUp,
+    moveSectionDown: state.moveSectionDown,
+    reorderSections: state.reorderSections,
   }));
 };
 

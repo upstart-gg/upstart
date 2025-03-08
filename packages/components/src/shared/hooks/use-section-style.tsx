@@ -37,6 +37,10 @@ export function useSectionStyle({ section, editable }: UseSectionStyleProps) {
 
     // Section editor styles
     getSectionEditorStyles(!!editable),
+
+    css({
+      order: section.order,
+    }),
   ]);
 }
 
