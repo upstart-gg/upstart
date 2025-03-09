@@ -36,7 +36,7 @@ export function usePageStyle({
   showIntro,
 }: UsePageStyleProps) {
   return tx(
-    "flex flex-col group/page mx-auto page-container relative overflow-hidden",
+    "flex flex-col group/page mx-auto page-container relative overflow-hidden max-w-full w-full p-0",
     isStandardColor(attributes.$pageBackground.color) &&
       css({ backgroundColor: attributes.$pageBackground.color as string }),
     !isStandardColor(attributes.$pageBackground.color) && (attributes.$pageBackground.color as string),
@@ -53,17 +53,12 @@ export function usePageStyle({
 
     // mobile grid
     `@mobile:(
-      p-0
       min-h-[110%]
       h-fit
-      max-w-full
-      w-full
     )`,
     // Desktop grid
     `@desktop:(
-      w-full
-      p-0
-      ${attributes.$pageWidth}
+      h-max
     )`,
 
     getTypographyStyles(typography),
