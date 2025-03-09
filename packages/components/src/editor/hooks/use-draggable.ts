@@ -8,8 +8,9 @@ import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import type { BrickConstraints } from "@upstart.gg/sdk/shared/brick-manifest";
 import { defaultProps } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
-import { getGridPosition, getGridSize, type GridConfig } from "~/shared/utils/layout-utils";
+import { getGridPosition, getGridSize } from "~/shared/utils/layout-utils";
 import { useBricksRefs } from "./use-bricks-refs";
+import type { GridConfig } from "~/shared/hooks/use-grid-config";
 
 interface DragCallbacks {
   onDragMove?: (
@@ -84,8 +85,6 @@ interface UseInteractOptions {
 interface InteractMethods {
   enable: () => void;
   disable: () => void;
-  updateDragOptions: (options: Parameters<Interact.Interactable["draggable"]>[0]) => void;
-  updateResizeOptions: (options: Parameters<Interact.Interactable["resizable"]>[0]) => void;
 }
 
 interface SnapToGridConfig {
@@ -98,13 +97,11 @@ interface SnapToGridConfig {
 function snapPositionToGrid({
   colWidth = 200, // Width of each column
   rowHeight = 80, // Fixed height of rows
-  paddingX = 40, // Horizontal padding
-  paddingY = 15, // Vertical padding
 }: SnapToGridConfig) {
   return function (x: number, y: number) {
     return {
-      x: Math.round((x - paddingX) / colWidth) * colWidth + paddingX,
-      y: Math.round((y - paddingY) / rowHeight) * rowHeight + paddingY,
+      x: Math.round(x / colWidth) * colWidth,
+      y: Math.round(y / rowHeight) * rowHeight,
     };
   };
 }
@@ -133,12 +130,8 @@ function getDropPosition(event: Interact.DropEvent, gridConfig: GridConfig) {
   };
 
   // Calculate grid position
-  const col = Math.round(
-    (rect.left - gridConfig.containerHorizontalPadding - gridConfig.colWidth / 2) / gridConfig.colWidth,
-  );
-  const row = Math.round(
-    (rect.top - gridConfig.containerVerticalPadding - gridConfig.rowHeight / 2) / gridConfig.rowHeight,
-  );
+  const col = Math.round((rect.left - gridConfig.colWidth / 2) / gridConfig.colWidth);
+  const row = Math.round((rect.top - gridConfig.rowHeight / 2) / gridConfig.rowHeight);
 
   return {
     absolute: {
@@ -186,10 +179,6 @@ export const useEditablePage = (
   const dropzone = useRef<Interact.Interactable | null>(null);
   const { getBrickRef } = useBricksRefs();
 
-  // Refs for tracking drag state
-  const draggedBrick = useRef<string | null>(null);
-  const dragStartPosition = useRef<{ x: number; y: number } | null>(null);
-
   useEffect(() => {
     interactable.current = interact(bricksSelectorOrRef, {
       styleCursor: false,
@@ -217,8 +206,6 @@ export const useEditablePage = (
               snapPositionToGrid({
                 colWidth: gridConfig.colWidth, // Your column width
                 rowHeight: gridConfig.rowHeight, // Your fixed row height
-                paddingX: gridConfig.containerHorizontalPadding, // Your container padding
-                paddingY: gridConfig.containerVerticalPadding, // Your container padding
               }),
             ],
             offset: "parent",
@@ -237,12 +224,6 @@ export const useEditablePage = (
           interact.modifiers.restrict({
             restriction: "parent",
             elementRect: { top: 0, left: 0, bottom: 1, right: 1 },
-            offset: {
-              left: gridConfig.containerHorizontalPadding,
-              top: gridConfig.containerVerticalPadding,
-              bottom: gridConfig.containerVerticalPadding,
-              right: gridConfig.containerHorizontalPadding,
-            },
           }),
         ],
         listeners: {
@@ -250,15 +231,6 @@ export const useEditablePage = (
             console.debug("useEditablePage:listeners:start()", event);
             const target = event.target as HTMLElement;
             target.style.zIndex = "1000";
-
-            draggedBrick.current = target.id;
-
-            const rect = target.getBoundingClientRect();
-
-            dragStartPosition.current = {
-              x: rect.left,
-              y: rect.top,
-            };
 
             const brick = getBrick(target.id);
 
@@ -286,7 +258,7 @@ export const useEditablePage = (
 
             const brick = getBrick(target.id);
 
-            if (brick && dragStartPosition.current) {
+            if (brick) {
               const gridPosition = getGridPosition(target, gridConfig);
               dragCallbacks.onDragMove?.(brick, getPosition(target, event), gridPosition, event);
             }
@@ -316,9 +288,6 @@ export const useEditablePage = (
             }
 
             dragCallbacks.onDragEnd(updatedPositions, event);
-
-            draggedBrick.current = null;
-            dragStartPosition.current = null;
           },
         },
         ...dragOptions,
@@ -500,24 +469,8 @@ export const useEditablePage = (
     if (resizeEnabled) interactable.current?.resizable(false);
   }, [dragEnabled, resizeEnabled]);
 
-  /**
-   * Update the draggable options
-   */
-  const updateDragOptions = useCallback((options: Parameters<Interact.Interactable["draggable"]>[0]) => {
-    interactable.current?.draggable(options);
-  }, []);
-
-  /**
-   * Update the resizable options
-   */
-  const updateResizeOptions = useCallback((options: Parameters<Interact.Interactable["resizable"]>[0]) => {
-    interactable.current?.resizable(options);
-  }, []);
-
   return {
     enable,
     disable,
-    updateDragOptions,
-    updateResizeOptions,
   };
 };

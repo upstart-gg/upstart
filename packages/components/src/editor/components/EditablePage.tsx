@@ -1,5 +1,5 @@
 import { tx } from "@upstart.gg/style-system/twind";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { generateId, type Brick } from "@upstart.gg/sdk/shared/bricks";
 import BrickWrapper from "./EditableBrick";
 import {
@@ -32,6 +32,7 @@ import {
 import { useFontWatcher } from "../hooks/use-font-watcher";
 import ResizeHandle from "./ResizeHandle";
 import Section from "./EditableSection";
+import { useGridConfig } from "~/shared/hooks/use-grid-config";
 
 const ghostValid = tx("bg-upstart-100");
 const ghostInvalid = tx("bg-red-100");
@@ -54,8 +55,9 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const dragOverRef = useRef<HTMLDivElement>(null);
   const typography = useFontWatcher();
   const pageClassName = usePageStyle({ attributes, typography, editable: true, previewMode, showIntro });
+  const gridConfig = useGridConfig(pageRef);
 
-  console.log({ sections });
+  console.log({ sections, gridConfig });
 
   // on page load, set last loaded property so that the store is saved to local storage
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -91,14 +93,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     dragOptions: {
       enabled: previewMode === "desktop",
     },
-    gridConfig: {
-      colWidth,
-      rowHeight: LAYOUT_ROW_HEIGHT,
-      containerHorizontalPadding:
-        previewMode === "desktop" ? parseInt(attributes.$pagePadding.horizontal as string) : 10,
-      containerVerticalPadding:
-        previewMode === "desktop" ? parseInt(attributes.$pagePadding.vertical as string) : 10,
-    },
+    gridConfig,
     dragCallbacks: {
       onDragMove(brick, pos, gridPosition) {
         const dropOverPos = getDropOverGhostPosition({
@@ -238,34 +233,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     },
   });
 
-  useEffect(() => {
-    // Calculate cell width on mount and window resize
-    const updateCellWidth = debounce(() => {
-      if (pageRef.current) {
-        const containerWidth = pageRef.current.offsetWidth;
-        const totalGapWidth = parseInt(attributes.$pagePadding.horizontal as string) * 2;
-        const availableWidth = containerWidth - totalGapWidth;
-        setColWidth(availableWidth / LAYOUT_COLS[previewMode]);
-      }
-    }, 250);
-
-    updateCellWidth();
-
-    // mutation oberver for the page container styles
-    const observer = new MutationObserver(updateCellWidth);
-    observer.observe(pageRef.current as Node, {
-      attributes: true,
-      attributeFilter: ["style", "class"],
-    });
-
-    window.addEventListener("resize", updateCellWidth, { passive: true });
-
-    return () => {
-      window.removeEventListener("resize", updateCellWidth);
-      observer.disconnect();
-    };
-  }, [previewMode, attributes.$pagePadding]);
-
   // listen for global click events on the document
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -377,7 +344,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     <>
       <div ref={pageRef} className={pageClassName}>
         {sections.map((section) => (
-          <Section key={section.id} {...section} />
+          <Section key={section.id} section={section} gridConfig={gridConfig} />
         ))}
         <div
           ref={dragOverRef}

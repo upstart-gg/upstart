@@ -224,8 +224,6 @@ const TextEditor = ({
     };
   }, [editor, mainEditor, brickId]);
 
-  console.log("menubrick in container", { menuBarContainer });
-
   return (
     <div
       className={tx({

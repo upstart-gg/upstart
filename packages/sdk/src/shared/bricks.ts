@@ -4,6 +4,7 @@ import { LAYOUT_COLS } from "./layout-constants";
 import { defaultProps } from "./bricks/manifests/all-manifests";
 import type { BrickManifest } from "./brick-manifest";
 import { background } from "./bricks/props/background";
+import { attr } from "./attributes";
 
 /**
  * Generates a unique identifier for bricks.
@@ -136,6 +137,32 @@ const definedBrickSchema = Type.Composite([
 
 export type DefinedBrick = Static<typeof definedBrickSchema>;
 
+const sectionProps = Type.Object(
+  {
+    background: Type.Optional(background),
+    width: Type.Optional(
+      attr.enum("Section width", "max-w-full", {
+        options: [
+          {
+            value: "max-w-screen-lg",
+            title: "Medium",
+            description: "Common for text-heavy content/blog posts",
+          },
+          { value: "max-w-screen-xl", title: "Large", description: "Usefull or some landing pages" },
+          { value: "max-w-screen-2xl", title: "Extra large", description: "Common width" },
+          { value: "max-w-full", title: "Full width", description: "Takes the entire space" },
+        ],
+        description: "The maximum width of the page. Desktop only.",
+        displayAs: "select",
+        "ui:group": "layout",
+        "ui:group:order": 3,
+        "ui:group:title": "Layout",
+      }),
+    ),
+  },
+  { additionalProperties: true },
+);
+
 export const sectionSchema = Type.Object({
   id: Type.String(),
   kind: Type.Literal("section"),
@@ -151,20 +178,8 @@ export const sectionSchema = Type.Object({
   order: Type.Number({
     description: "Determines section order in the page (lower numbers appear first)",
   }),
-  props: Type.Object(
-    {
-      background: Type.Optional(background),
-    },
-    { additionalProperties: true },
-  ),
-  mobileProps: Type.Optional(
-    Type.Object(
-      {
-        background: Type.Optional(background),
-      },
-      { additionalProperties: true },
-    ),
-  ),
+  props: sectionProps,
+  mobileProps: Type.Optional(sectionProps),
 });
 
 export type Section = Static<typeof sectionSchema>;

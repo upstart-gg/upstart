@@ -13,16 +13,19 @@ export function useSectionStyle({ section, editable }: UseSectionStyleProps) {
   return tx(apply("grid group/section bg-yellow-300 relative overflow-visible"), [
     typeof section.position.desktop.h === "number" &&
       `h-[${LAYOUT_ROW_HEIGHT * section.position.desktop.h}px]`,
-    section.position.desktop.h === "full" && "flex-1",
+
+    // full height
+    section.position.desktop.h === "full" && editable && "h-[calc(100dvh-60px)]", // when in editor mode
+    section.position.desktop.h === "full" && !editable && "h-dvh", // when in real mode
+
     // entire width of the grid
-    "col-span-full h-fit w-full",
+    "col-span-full w-full",
     // mobile grid
     `@mobile:(
       grid-cols-${LAYOUT_COLS.mobile}
       auto-rows-[minmax(${LAYOUT_ROW_HEIGHT}px,_max-content)]
       px-[10px]
       py-[10px]
-      min-h-[110%]
     )`,
     // Desktop grid
     `@desktop:(

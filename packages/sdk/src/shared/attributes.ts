@@ -11,7 +11,6 @@ import {
 import type { ElementColor } from "./themes/color-system";
 import type { JSONSchemaType } from "ajv";
 import { ajv } from "./ajv";
-import { typeboxSchemaToJSONSchema } from "./utils/schema";
 import { background } from "./bricks/props/background";
 
 type EnumOption = {
@@ -257,65 +256,6 @@ const defaultAttributes = {
   $pageLastUpdated: attr.datetime("Last updated", undefined, { "ui:hidden": true }),
 
   // --- layout attributes ---
-
-  $pagePadding: Type.Object(
-    {
-      vertical: attr.enum("Vertical spacing", "0", {
-        options: [
-          { value: "0", title: "None" },
-          { value: "10", title: "Small" },
-          { value: "20", title: "Medium" },
-          { value: "30", title: "Large" },
-          { value: "50", title: "Extra large" },
-        ],
-        description: "Desktop only.",
-        displayAs: "select",
-        "ui:group": "layout",
-        "ui:group:title": "Page Layout",
-      }),
-      horizontal: attr.enum("Horizontal spacing", "0", {
-        options: [
-          { value: "0", title: "None" },
-          { value: "10", title: "Small" },
-          { value: "20", title: "Medium" },
-          { value: "30", title: "Large" },
-          { value: "50", title: "Extra large" },
-        ],
-        description: "Desktop only.",
-        displayAs: "button-group",
-        "ui:group": "layout",
-        "ui:group:title": "Page Layout",
-      }),
-    },
-    {
-      default: {
-        vertical: "0",
-        horizontal: "0",
-      },
-      "ui:field": "padding",
-      "ui:group": "layout",
-      "ui:group:order": 3,
-      "ui:group:title": "Layout",
-    },
-  ),
-
-  $pageWidth: attr.enum("Page width", "max-w-full", {
-    options: [
-      {
-        value: "max-w-screen-lg",
-        title: "Medium",
-        description: "Common for text-heavy content/blog posts",
-      },
-      { value: "max-w-screen-xl", title: "Large", description: "Usefull or some landing pages" },
-      { value: "max-w-screen-2xl", title: "Extra large", description: "Common width" },
-      { value: "max-w-full", title: "Full width", description: "Takes the entire space" },
-    ],
-    description: "The maximum width of the page. Desktop only.",
-    displayAs: "select",
-    "ui:group": "layout",
-    "ui:group:order": 3,
-    "ui:group:title": "Layout",
-  }),
 
   $bodyBackground: Type.Composite([background], {
     default: {

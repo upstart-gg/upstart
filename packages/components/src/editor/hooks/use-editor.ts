@@ -1015,6 +1015,8 @@ export const useDraftHelpers = () => {
     moveSectionUp: state.moveSectionUp,
     moveSectionDown: state.moveSectionDown,
     reorderSections: state.reorderSections,
+    updateSection: state.updateSection,
+    addSection: state.addSection,
   }));
 };
 

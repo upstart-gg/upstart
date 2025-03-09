@@ -2,6 +2,7 @@ import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/layout-constants
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import type { ResponsiveMode } from "@upstart.gg/sdk/shared/responsive";
 import type { BrickConstraints } from "@upstart.gg/sdk/shared/brick-manifest";
+import type { GridConfig } from "../hooks/use-grid-config";
 
 const OVERFLOWING_TOLREANCE = LAYOUT_ROW_HEIGHT;
 
@@ -122,13 +123,6 @@ export function getNeededBricksAdjustments(bricks: Brick[]): Record<string, Bric
   return adjustmentsByBrickId;
 }
 
-export interface GridConfig {
-  colWidth: number;
-  rowHeight: number;
-  containerHorizontalPadding: number;
-  containerVerticalPadding: number;
-}
-
 export function getGridSize(element: HTMLElement, config: GridConfig) {
   const rect = element.getBoundingClientRect();
   return {
@@ -137,24 +131,27 @@ export function getGridSize(element: HTMLElement, config: GridConfig) {
   };
 }
 
-export function getGridPosition(element: HTMLElement | { left: number; top: number }, config: GridConfig) {
+export function getGridPosition(element: HTMLElement, config: GridConfig) {
   // Get element's initial position (getBoundingClientRect gives position relative to viewport)
-  const rect = element instanceof HTMLElement ? element.getBoundingClientRect() : element;
-  const container = document.querySelector(".page-container")!.getBoundingClientRect();
+  const rect = element.getBoundingClientRect();
+  // const container = document.querySelector(".page-container")!.getBoundingClientRect();
+  // relative to upper section
+  const container = element.closest("section")!.getBoundingClientRect();
 
   // Calculate actual position relative to container
   const actualX = rect.left - container.left;
   const actualY = rect.top - container.top;
 
   // Calculate grid position
-  const gridX = Math.round((actualX - config.containerHorizontalPadding) / config.colWidth);
-  const gridY = Math.round((actualY - config.containerVerticalPadding) / config.rowHeight);
+  const gridX = Math.round(actualX / config.colWidth);
+  const gridY = Math.round(actualY / config.rowHeight);
 
   return {
     x: Math.max(0, gridX),
     y: Math.max(0, gridY),
   };
 }
+
 /**
  * Adjust the bricks "mobile" position based on the "desktop" position by:
  * - Setting each brick to 100% width

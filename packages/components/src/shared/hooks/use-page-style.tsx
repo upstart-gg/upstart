@@ -53,8 +53,7 @@ export function usePageStyle({
 
     // mobile grid
     `@mobile:(
-      px-[10px]
-      py-[10px]
+      p-0
       min-h-[110%]
       h-fit
       max-w-full
@@ -62,9 +61,8 @@ export function usePageStyle({
     )`,
     // Desktop grid
     `@desktop:(
-      px-[${attributes.$pagePadding.horizontal}px]
-      py-[${attributes.$pagePadding.vertical}px]
       w-full
+      p-0
       ${attributes.$pageWidth}
     )`,
 
@@ -84,10 +82,7 @@ export function usePageStyle({
           content: "";
           position: absolute;
           opacity: 0.7;
-          top: ${previewMode === "desktop" ? parseInt(attributes.$pagePadding.vertical as string) : 10}px;
-          left: ${previewMode === "desktop" ? parseInt(attributes.$pagePadding.horizontal as string) : 10}px;
-          right: ${previewMode === "desktop" ? parseInt(attributes.$pagePadding.horizontal as string) : 10}px;
-          bottom: ${previewMode === "desktop" ? parseInt(attributes.$pagePadding.vertical as string) : 10}px;
+          inset: 0;
           pointer-events: none;
           background-size:
             calc(100%/${LAYOUT_COLS[previewMode]}) 100%,

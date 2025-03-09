@@ -28,14 +28,23 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { useEffect, useRef, useState } from "react";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import TestMenu from "./json-form/TestMenu";
+import type { GridConfig } from "~/shared/hooks/use-grid-config";
+import { getGridSize } from "~/shared/utils/layout-utils";
 
-export default function EditableSection(section: SectionType) {
+type EditableSectionProps = {
+  section: SectionType;
+  gridConfig: GridConfig;
+};
+
+export default function EditableSection({ section, gridConfig }: EditableSectionProps) {
   const { bricks, id } = useSection(section.id);
-  useResizableSection(section);
+  useResizableSection(section, gridConfig);
+
   const previewMode = usePreviewMode();
   // todo: replace by selected section or merge the two notions
   const selectedBrick = useSelectedBrick();
   const className = useSectionStyle({ section, editable: true, selected: selectedBrick?.id === section.id });
+
   return (
     <section key={id} id={id} data-element-type="section" className={className}>
       <SectionOptionsButtons section={section} />
@@ -57,9 +66,11 @@ export default function EditableSection(section: SectionType) {
   );
 }
 
-function useResizableSection(section: SectionType) {
+function useResizableSection(section: SectionType, gridConfig: GridConfig) {
   // Use interact.js to allow resizing a section manually
   const interactable = useRef<Interact.Interactable | null>(null);
+  const draftHelpers = useDraftHelpers();
+  const previewMode = usePreviewMode();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -101,7 +112,19 @@ function useResizableSection(section: SectionType) {
           Object.assign(sectionEl.dataset, { h: newHeight });
         },
         end: (event) => {
-          console.log("resize end");
+          const size = getGridSize(sectionEl, gridConfig);
+          sectionEl.style.height = "";
+          sectionEl.style.maxHeight = "";
+          sectionEl.style.flex = "";
+          sectionEl.dataset.h = "";
+          draftHelpers.updateSection(section.id, {
+            position: {
+              ...section.position,
+              [previewMode]: {
+                h: size.h,
+              },
+            },
+          });
         },
       },
     });
@@ -151,6 +174,18 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
           <Tooltip content="Fill entire screen height" delayDuration={500}>
             <button
               type="button"
+              onClick={() =>
+                draftHelpers.updateSection(section.id, {
+                  position: {
+                    desktop: {
+                      h: "full",
+                    },
+                    mobile: {
+                      h: "full",
+                    },
+                  },
+                })
+              }
               className={tx(
                 "select-none",
                 dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
