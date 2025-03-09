@@ -46,7 +46,7 @@ export function useBrickWrapperStyle({ brick, editable, className, selected }: U
     // container children expand to fill the space
     isContainerChild && "container-child flex-1",
 
-    getBrickEditorStyles(editable === true, !!brick.isContainer, isContainerChild, selected),
+    getBrickWrapperEditorStyles(editable === true, !!brick.isContainer, isContainerChild, selected),
 
     // Position of the wrapper
     //
@@ -85,7 +85,7 @@ export function useBrickWrapperStyle({ brick, editable, className, selected }: U
   );
 }
 
-function getBrickEditorStyles(
+function getBrickWrapperEditorStyles(
   editable: boolean,
   isContainer: boolean,
   isContainerChild: boolean,
@@ -95,14 +95,11 @@ function getBrickEditorStyles(
     return null;
   }
   return [
-    "select-none hover:z-[9999] transition-[opcacity,colors] duration-200 rounded-sm",
+    "select-none hover:z-[9999] transition-colors delay-300 duration-[500] rounded-sm outline outline-4 outline-transparent -outline-offset-4",
     selected && "outline outline-4 outline-upstart-500 shadow-xl shadow-upstart-500/20",
-    !selected && !isContainerChild && !isContainer && "hover:(outline outline-4 outline-upstart-500/60)",
-    !selected &&
-      !isContainerChild &&
-      isContainer &&
-      "hover:(outline-dotted outline-4 outline-upstart-500/30)",
-    !selected && isContainerChild && "hover:(outline outline-4 outline-upstart-500/40)",
+    !selected && !isContainerChild && !isContainer && "hover:(outline-upstart-500/60)",
+    !selected && !isContainerChild && isContainer && "hover:(outline-dotted outline-upstart-500/30)",
+    !selected && isContainerChild && "hover:(outline-upstart-500/40)",
     css({
       "&.selected-group": {
         outline: "2px dotted var(--violet-8) !important",

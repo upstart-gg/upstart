@@ -2,6 +2,7 @@ import { tx, apply, css } from "@upstart.gg/style-system/twind";
 import type { Section } from "@upstart.gg/sdk/shared/bricks";
 import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import { getBackgroundStyles, type BrickStyleProps } from "../styles/helpers";
+import { usePreviewMode } from "~/editor/hooks/use-editor";
 
 type UseSectionStyleProps = {
   section: Section;
@@ -47,12 +48,13 @@ export function useSectionStyle({ section, editable }: UseSectionStyleProps) {
   ]);
 }
 
-function getSectionEditorStyles(editable: boolean, selected?: boolean) {
+function getSectionEditorStyles(editable: boolean) {
   if (!editable) {
     return null;
   }
   return [
-    "select-none hover:z-[9999] transition-colors duration-500",
+    "select-none hover:z-[9999] transition-colors duration-500 relative",
     "outline-dotted outline-4 outline-transparent -outline-offset-2 hover:(outline-upstart-500/60 shadow-upstart-500/20)",
+    "self-stretch",
   ];
 }

@@ -36,7 +36,7 @@ export function usePageStyle({
   showIntro,
 }: UsePageStyleProps) {
   return tx(
-    "flex flex-col group/page mx-auto page-container relative overflow-y-hidden",
+    "flex flex-col group/page mx-auto page-container relative overflow-hidden",
     isStandardColor(attributes.$pageBackground.color) &&
       css({ backgroundColor: attributes.$pageBackground.color as string }),
     !isStandardColor(attributes.$pageBackground.color) && (attributes.$pageBackground.color as string),
@@ -83,6 +83,7 @@ export function usePageStyle({
           position: absolute;
           opacity: 0.7;
           inset: 0;
+          z-index: 999999;
           pointer-events: none;
           background-size:
             calc(100%/${LAYOUT_COLS[previewMode]}) 100%,

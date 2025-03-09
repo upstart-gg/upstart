@@ -78,7 +78,6 @@ function useResizableSection(section: SectionType, gridConfig: GridConfig) {
     const sectionEl = document.getElementById(section.id);
 
     invariant(sectionEl, "Section element not found");
-    invariant(handle, "Resize handle not found");
 
     interactable.current = interact(`#${section.id}`);
     interactable.current.resizable({
@@ -140,6 +139,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
   const [modalOpen, setModalOpen] = useState(false);
   const draftHelpers = useDraftHelpers();
   const sections = useSections();
+  const previewMode = usePreviewMode();
   const isLastSection = section.order === sections.length - 1;
   const isFirstSection = section.order === 0;
   return (
@@ -156,47 +156,69 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
             isLastSection ? "bottom-1" : "-bottom-5",
           )}
         >
-          <Tooltip content="Drag vertically to resize section" delayDuration={500}>
-            <button
-              type="button"
-              id={`${section.id}-resize-handle`}
-              className={tx(
-                dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
-                "section-resizable-handle select-none",
-                " text-base px-2.5 h-10 backdrop-blur-md shadow-lg",
-                "transition-opacity duration-500 group-hover/section:opacity-80 hover:!opacity-100",
-                "bg-white/70 border-2 border-white/80 text-black/80 font-bold flex items-center cursor-ns-resize gap-1",
-              )}
-            >
-              <TbArrowAutofitHeight className="w-6 h-6" />
-            </button>
-          </Tooltip>
-          <Tooltip content="Fill entire screen height" delayDuration={500}>
-            <button
-              type="button"
-              onClick={() =>
-                draftHelpers.updateSection(section.id, {
-                  position: {
-                    desktop: {
-                      h: "full",
+          <button
+            type="button"
+            disabled
+            className={tx(
+              dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
+              "section-resizable-handle select-none pointer-events-none",
+              " text-base px-2.5 h-10 backdrop-blur-md shadow-lg",
+              "transition-opacity duration-500 group-hover/section:opacity-80",
+              "bg-white/70 border-2 border-white/80 text-black/80 font-bold flex items-center cursor-default gap-1",
+            )}
+          >
+            Section
+          </button>
+          {!isLastSection && (
+            <Tooltip content="Drag vertically to resize section" delayDuration={500}>
+              <button
+                type="button"
+                id={`${section.id}-resize-handle`}
+                className={tx(
+                  dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
+                  "section-resizable-handle select-none",
+                  " text-base px-2.5 h-10 backdrop-blur-md shadow-lg",
+                  "transition-opacity duration-500 group-hover/section:opacity-80 hover:!opacity-100",
+                  "bg-white/70 border-2 border-white/80 text-black/80 font-bold flex items-center cursor-ns-resize gap-1",
+                )}
+              >
+                <TbArrowAutofitHeight className="w-6 h-6" />
+              </button>
+            </Tooltip>
+          )}
+          {section.position[previewMode]?.h !== "full" && !isLastSection && (
+            <Tooltip content="Fill entire screen height" delayDuration={500}>
+              <button
+                type="button"
+                onClick={() => {
+                  draftHelpers.updateSection(section.id, {
+                    position: {
+                      desktop: {
+                        h: "full",
+                      },
+                      mobile: {
+                        h: "full",
+                      },
                     },
-                    mobile: {
-                      h: "full",
-                    },
-                  },
-                })
-              }
-              className={tx(
-                "select-none",
-                dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
-                "text-base px-2.5 h-10 backdrop-blur-md shadow-lg",
-                "transition-opacity duration-500 group-hover/section:opacity-80 hover:!opacity-100 active:shadow-md",
-                "bg-white/70 border-2 border-white/80 text-black/80 font-bold flex items-center cursor-pointer gap-1",
-              )}
-            >
-              <TbBorderCorners className="w-6 h-6" />
-            </button>
-          </Tooltip>
+                  });
+                  setTimeout(() => {
+                    window.scrollTo(0, document.body.scrollHeight);
+                    document.getElementById(section.id)?.scrollIntoView({ behavior: "smooth" });
+                  }, 100);
+                }}
+                className={tx(
+                  "select-none",
+                  dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
+                  "text-base px-2.5 h-10 backdrop-blur-md shadow-lg",
+                  "transition-opacity duration-500 group-hover/section:opacity-80 hover:!opacity-100 active:shadow-md",
+                  "bg-white/70 border-2 border-white/80 text-black/80 font-bold flex items-center cursor-pointer gap-1",
+                )}
+              >
+                <TbBorderCorners className="w-6 h-6" />
+              </button>
+            </Tooltip>
+          )}
+
           <DropdownMenu.Root modal={false} onOpenChange={setDropdownOpen}>
             <DropdownMenu.Trigger>
               <button
@@ -213,7 +235,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
                 <Popover.Anchor />
               </button>
             </DropdownMenu.Trigger>
-            <DropdownMenu.Content sideOffset={-2} size="2">
+            <DropdownMenu.Content sideOffset={5} size="2" side="bottom" align="end">
               <DropdownMenu.Group>
                 <DropdownMenu.Label>Manage {section.label ?? "section"}</DropdownMenu.Label>
                 {!isFirstSection && (

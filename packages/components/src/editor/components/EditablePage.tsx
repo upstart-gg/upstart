@@ -51,13 +51,10 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const pageRef = useRef<HTMLDivElement>(null);
   const attributes = useAttributes();
   const sections = useSections();
-  const [colWidth, setColWidth] = useState(0);
   const dragOverRef = useRef<HTMLDivElement>(null);
   const typography = useFontWatcher();
   const pageClassName = usePageStyle({ attributes, typography, editable: true, previewMode, showIntro });
   const gridConfig = useGridConfig(pageRef);
-
-  console.log({ sections, gridConfig });
 
   // on page load, set last loaded property so that the store is saved to local storage
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
