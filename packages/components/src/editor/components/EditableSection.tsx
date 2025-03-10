@@ -167,7 +167,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
               "bg-white/70 border-2 border-white/80 text-black/80 font-bold flex items-center cursor-default gap-1",
             )}
           >
-            Section
+            {section.label ?? "Section"}
           </button>
           {!isLastSection && (
             <Tooltip content="Drag vertically to resize section" delayDuration={500}>
@@ -186,7 +186,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
               </button>
             </Tooltip>
           )}
-          {section.position[previewMode]?.h !== "full" && !isLastSection && (
+          {section.position[previewMode]?.h !== "full" && (
             <Tooltip content="Fill entire screen height" delayDuration={500}>
               <button
                 type="button"
