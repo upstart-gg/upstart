@@ -19,12 +19,7 @@ import {
 import { ContextMenu, Portal, Popover, Inset } from "@upstart.gg/style-system/system";
 import BaseBrick from "~/shared/components/BaseBrick";
 import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
-import {
-  menuBarBtnBaseCls,
-  menuBarBtnCls,
-  menuBarBtnCommonCls,
-  menuBarBtnSquareCls,
-} from "~/shared/styles/menubar-styles";
+import { menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls } from "~/shared/styles/menubar-styles";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { MdBorderOuter } from "react-icons/md";
 import { BiSolidColor } from "react-icons/bi";
@@ -38,7 +33,7 @@ type BrickWrapperProps = ComponentProps<"div"> & {
 };
 
 const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
-  ({ brick, style, children, isContainerChild, index }, ref) => {
+  ({ brick, children, isContainerChild, index }, ref) => {
     const hasMouseMoved = useRef(false);
     const selectedBrick = useSelectedBrick();
     const previewMode = usePreviewMode();
@@ -80,8 +75,8 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     };
 
     return (
-      <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
-        <BrickMenuBar brick={brick} isContainerChild={isContainerChild}>
+      <BrickMenuBar brick={brick} isContainerChild={isContainerChild}>
+        <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
           <div
             id={brick.id}
             data-x={brick.position[previewMode].x}
@@ -89,7 +84,6 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
             data-w={brick.position[previewMode].w}
             data-h={brick.position[previewMode].h}
             data-brick-type={brick.type}
-            style={style}
             className={tx(wrapperClass, `![animation-delay:${0.5 * (index + 1)}s]`)}
             ref={ref}
             onClick={onBrickWrapperClick}
@@ -109,8 +103,8 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
             {debugMode && <BrickDebugLabel brick={brick} isContainerChild={isContainerChild} />}
             {children} {/* Make sure to include children to add resizable handle */}
           </div>
-        </BrickMenuBar>
-      </BrickContextMenu>
+        </BrickContextMenu>
+      </BrickMenuBar>
     );
   },
 );
@@ -120,34 +114,32 @@ type BrickMenuBarProps = PropsWithChildren<{
   isContainerChild?: boolean;
 }>;
 
-function BrickMenuBar({ brick, isContainerChild, children }: BrickMenuBarProps) {
-  const selectedBrick = useSelectedBrick();
-  return (
-    <Popover.Root open={selectedBrick?.id === brick.id}>
-      <Popover.Trigger>{children}</Popover.Trigger>
-      <Popover.Content width="fit-content" minWidth="fit-content" maxWidth="fit-content">
-        <Inset>
-          <nav
-            role="navigation"
-            className={tx(
-              `bg-upstart-600 flex text-base text-white w-fit justify-start items-stretch transition-opacity duration-300 rounded-md`,
-            )}
-          >
-            <BrickMenuBarButtons brick={brick} />
-            <div id={`text-editor-menu-${brick.id}`} className="contents" />
-            {/* <div
+const BrickMenuBar = forwardRef<HTMLDivElement, BrickMenuBarProps>(
+  ({ brick, isContainerChild, children }, ref) => {
+    const selectedBrick = useSelectedBrick();
+
+    return (
+      <Popover.Root modal={false} open={selectedBrick?.id === brick.id}>
+        {/* @ts-ignore */}
+        <Popover.Trigger ref={ref}>{children}</Popover.Trigger>
+        <Popover.Content width="fit-content" minWidth="fit-content" maxWidth="fit-content">
+          <Inset>
+            <nav
+              role="navigation"
               className={tx(
-                "flex-1",
-                "border-x border-l-upstart-400 border-r-0 rounded-r-md",
-                menuBarBtnBaseCls,
+                `bg-upstart-600 flex text-base text-white w-fit justify-start items-stretch transition-opacity duration-300 rounded-md`,
               )}
-            /> */}
-          </nav>
-        </Inset>
-      </Popover.Content>
-    </Popover.Root>
-  );
-}
+            >
+              <BrickMenuBarButtons brick={brick} />
+              {/* container for text editor buttons */}
+              <div id={`text-editor-menu-${brick.id}`} className="contents" />
+            </nav>
+          </Inset>
+        </Popover.Content>
+      </Popover.Root>
+    );
+  },
+);
 
 function BrickMenuBarButtons({ brick }: { brick: Brick }) {
   const manifest = manifests[brick.type];
@@ -199,148 +191,152 @@ type BrickContextMenuProps = PropsWithChildren<{
   isContainerChild?: boolean;
 }>;
 
-function BrickContextMenu({ brick, isContainerChild, children }: BrickContextMenuProps) {
-  const [open, setOpen] = useState(false);
-  const draft = useDraft();
-  const draftHelpers = useDraftHelpers();
-  const editorHelpers = useEditorHelpers();
-  const debugMode = useDebugMode();
-  const canMoveLeft = isContainerChild ? draftHelpers.canMoveToWithinParent(brick.id, "left") : null;
-  const canMoveRight = isContainerChild ? draftHelpers.canMoveToWithinParent(brick.id, "right") : null;
-  const parentContainer = draft.getParentBrick(brick.id);
+const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
+  ({ brick, isContainerChild, children }, ref) => {
+    const [open, setOpen] = useState(false);
+    const draft = useDraft();
+    const draftHelpers = useDraftHelpers();
+    const editorHelpers = useEditorHelpers();
+    const debugMode = useDebugMode();
+    const canMoveLeft = isContainerChild ? draftHelpers.canMoveToWithinParent(brick.id, "left") : null;
+    const canMoveRight = isContainerChild ? draftHelpers.canMoveToWithinParent(brick.id, "right") : null;
+    const parentContainer = draft.getParentBrick(brick.id);
 
-  return (
-    <ContextMenu.Root onOpenChange={setOpen}>
-      <ContextMenu.Trigger disabled={debugMode}>{children}</ContextMenu.Trigger>
-      <Portal>
-        {/* The "nodrag" class is here to prevent the grid manager
+    return (
+      <ContextMenu.Root onOpenChange={setOpen} modal={false}>
+        <ContextMenu.Trigger disabled={debugMode} ref={ref}>
+          {children}
+        </ContextMenu.Trigger>
+        <Portal>
+          {/* The "nodrag" class is here to prevent the grid manager
             from handling click event coming from the menu items.
             We still need to stop the propagation for other listeners. */}
-        <ContextMenu.Content className="nodrag" size="2">
-          <ContextMenu.Item
-            shortcut="⌘D"
-            onClick={(e) => {
-              e.stopPropagation();
-              draft.duplicateBrick(brick.id);
-            }}
-          >
-            Duplicate
-          </ContextMenu.Item>
-          <ContextMenu.Item
-            shortcut="⌘C"
-            onClick={(e) => {
-              e.stopPropagation();
-              navigator.clipboard.writeText(JSON.stringify(brick));
-            }}
-          >
-            Copy
-          </ContextMenu.Item>
-          {canMoveLeft && (
+          <ContextMenu.Content className="nodrag" size="2">
             <ContextMenu.Item
-              shortcut="⌘&larr;"
+              shortcut="⌘D"
               onClick={(e) => {
                 e.stopPropagation();
-                draft.moveBrickWithin(brick.id, "left");
+                draft.duplicateBrick(brick.id);
               }}
             >
-              Move left
+              Duplicate
             </ContextMenu.Item>
-          )}
-          {canMoveRight && (
             <ContextMenu.Item
-              shortcut="⌘&rarr;"
+              shortcut="⌘C"
               onClick={(e) => {
                 e.stopPropagation();
-                draft.moveBrickWithin(brick.id, "right");
+                navigator.clipboard.writeText(JSON.stringify(brick));
               }}
             >
-              Move right
+              Copy
             </ContextMenu.Item>
-          )}
-          <ContextMenu.Sub>
-            <ContextMenu.SubTrigger>Visible on</ContextMenu.SubTrigger>
-            <ContextMenu.SubContent>
-              <ContextMenu.CheckboxItem
-                checked={!brick.position.mobile?.hidden}
-                onClick={(e) => e.stopPropagation()}
-                onCheckedChange={() => draft.toggleBrickVisibilityPerBreakpoint(brick.id, "mobile")}
+            {canMoveLeft && (
+              <ContextMenu.Item
+                shortcut="⌘&larr;"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  draft.moveBrickWithin(brick.id, "left");
+                }}
               >
-                Mobile
-              </ContextMenu.CheckboxItem>
-
-              <ContextMenu.CheckboxItem
-                checked={!brick.position.desktop?.hidden}
-                onClick={(e) => e.stopPropagation()}
-                onCheckedChange={() => draft.toggleBrickVisibilityPerBreakpoint(brick.id, "desktop")}
+                Move left
+              </ContextMenu.Item>
+            )}
+            {canMoveRight && (
+              <ContextMenu.Item
+                shortcut="⌘&rarr;"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  draft.moveBrickWithin(brick.id, "right");
+                }}
               >
-                Desktop
-              </ContextMenu.CheckboxItem>
-            </ContextMenu.SubContent>
-          </ContextMenu.Sub>
-          {parentContainer && (
-            <>
-              <ContextMenu.Separator />
-              <ContextMenu.Sub>
-                <ContextMenu.SubTrigger>Parent container</ContextMenu.SubTrigger>
-                <ContextMenu.SubContent>
-                  <ContextMenu.Item
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      draft.duplicateBrick(parentContainer.id);
-                    }}
-                  >
-                    Duplicate container
-                  </ContextMenu.Item>
-                  <ContextMenu.Item
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigator.clipboard.writeText(JSON.stringify(parentContainer));
-                    }}
-                  >
-                    Copy container
-                  </ContextMenu.Item>
-                  <ContextMenu.Item
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      draftHelpers.setSelectedBrick(parentContainer);
-                      editorHelpers.setPanel("inspector");
-                    }}
-                  >
-                    Edit container
-                  </ContextMenu.Item>
-                  <ContextMenu.Separator />
-                  <ContextMenu.Item
-                    shortcut="⌫"
-                    color="red"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      draft.deleteBrick(parentContainer.id);
-                      draftHelpers.deselectBrick(parentContainer.id);
-                      editorHelpers.hidePanel("inspector");
-                    }}
-                  >
-                    Delete container
-                  </ContextMenu.Item>
-                </ContextMenu.SubContent>
-              </ContextMenu.Sub>
-            </>
-          )}
+                Move right
+              </ContextMenu.Item>
+            )}
+            <ContextMenu.Sub>
+              <ContextMenu.SubTrigger>Visible on</ContextMenu.SubTrigger>
+              <ContextMenu.SubContent>
+                <ContextMenu.CheckboxItem
+                  checked={!brick.position.mobile?.hidden}
+                  onClick={(e) => e.stopPropagation()}
+                  onCheckedChange={() => draft.toggleBrickVisibilityPerBreakpoint(brick.id, "mobile")}
+                >
+                  Mobile
+                </ContextMenu.CheckboxItem>
 
-          <ContextMenu.Separator />
-          <ContextMenu.Item
-            shortcut="⌫"
-            color="red"
-            onClick={(e) => {
-              e.stopPropagation();
-              draft.deleteBrick(brick.id);
-              draftHelpers.deselectBrick(brick.id);
-              editorHelpers.hidePanel("inspector");
-            }}
-          >
-            Delete
-          </ContextMenu.Item>
-        </ContextMenu.Content>
-      </Portal>
-    </ContextMenu.Root>
-  );
-}
+                <ContextMenu.CheckboxItem
+                  checked={!brick.position.desktop?.hidden}
+                  onClick={(e) => e.stopPropagation()}
+                  onCheckedChange={() => draft.toggleBrickVisibilityPerBreakpoint(brick.id, "desktop")}
+                >
+                  Desktop
+                </ContextMenu.CheckboxItem>
+              </ContextMenu.SubContent>
+            </ContextMenu.Sub>
+            {parentContainer && (
+              <>
+                <ContextMenu.Separator />
+                <ContextMenu.Sub>
+                  <ContextMenu.SubTrigger>Parent container</ContextMenu.SubTrigger>
+                  <ContextMenu.SubContent>
+                    <ContextMenu.Item
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        draft.duplicateBrick(parentContainer.id);
+                      }}
+                    >
+                      Duplicate container
+                    </ContextMenu.Item>
+                    <ContextMenu.Item
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigator.clipboard.writeText(JSON.stringify(parentContainer));
+                      }}
+                    >
+                      Copy container
+                    </ContextMenu.Item>
+                    <ContextMenu.Item
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        draftHelpers.setSelectedBrick(parentContainer);
+                        editorHelpers.setPanel("inspector");
+                      }}
+                    >
+                      Edit container
+                    </ContextMenu.Item>
+                    <ContextMenu.Separator />
+                    <ContextMenu.Item
+                      shortcut="⌫"
+                      color="red"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        draft.deleteBrick(parentContainer.id);
+                        draftHelpers.deselectBrick(parentContainer.id);
+                        editorHelpers.hidePanel("inspector");
+                      }}
+                    >
+                      Delete container
+                    </ContextMenu.Item>
+                  </ContextMenu.SubContent>
+                </ContextMenu.Sub>
+              </>
+            )}
+
+            <ContextMenu.Separator />
+            <ContextMenu.Item
+              shortcut="⌫"
+              color="red"
+              onClick={(e) => {
+                e.stopPropagation();
+                draft.deleteBrick(brick.id);
+                draftHelpers.deselectBrick(brick.id);
+                editorHelpers.hidePanel("inspector");
+              }}
+            >
+              Delete
+            </ContextMenu.Item>
+          </ContextMenu.Content>
+        </Portal>
+      </ContextMenu.Root>
+    );
+  },
+);

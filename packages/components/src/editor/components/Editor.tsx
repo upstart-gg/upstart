@@ -137,12 +137,18 @@ function ThemePreviewConfirmButton() {
 }
 
 type PanelProps = ComponentProps<"aside">;
+
+const TEMP_PANEL_DISABLED = true;
 /**
  * Panel used to display both the inspector and the library
  */
 function Panel({ className, ...props }: PanelProps) {
   const { panel, panelPosition } = usePanel();
   const previewMode = usePreviewMode();
+
+  if (TEMP_PANEL_DISABLED) {
+    return null;
+  }
 
   return (
     <aside

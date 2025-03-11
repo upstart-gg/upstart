@@ -1,7 +1,6 @@
 import { tx } from "@upstart.gg/style-system/twind";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { generateId, type Brick } from "@upstart.gg/sdk/shared/bricks";
-import BrickWrapper from "./EditableBrick";
 import {
   useAttributes,
   useBricks,
