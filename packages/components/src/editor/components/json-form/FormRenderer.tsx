@@ -15,7 +15,7 @@ import { PathField, StringField } from "./fields/string";
 import { NumberField, SliderField } from "./fields/number";
 import SwitchField from "./fields/switch";
 import { EffectsField } from "./fields/effects";
-import { PagePaddingField } from "./fields/padding";
+import { PagePaddingField, type TempPadding } from "./fields/padding";
 import { TextField } from "./fields/text";
 import BackgroundField from "./fields/background";
 import { FlexField } from "./fields/flex";
@@ -264,13 +264,12 @@ export function FormRenderer({
         }
 
         case "padding": {
-          const currentValue = (get(formData, id) ??
-            commonProps.schema.default) as Attributes["$pagePadding"];
+          const currentValue = (get(formData, id) ?? commonProps.schema.default) as TempPadding;
           fieldComponent = (
             <PagePaddingField
               key={`field-${id}`}
               currentValue={currentValue}
-              onChange={(value: Attributes["$pagePadding"] | null) => onChange({ [id]: value }, id)}
+              onChange={(value: TempPadding | null) => onChange({ [id]: value }, id)}
               {...commonProps}
             />
           );

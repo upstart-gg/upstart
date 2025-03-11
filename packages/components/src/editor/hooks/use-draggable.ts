@@ -200,8 +200,7 @@ export const useEditablePage = (
           if (brick) {
             // Get initial position relative to container
             const initialPos = getBrickCoordsInPage(target, container);
-
-            console.log({ initialPos, initialStyle: target.style });
+            // console.log({ initialPos, initialStyle: target.style });
 
             // Now set up the element for dragging
             target.style.position = "absolute";
@@ -213,14 +212,15 @@ export const useEditablePage = (
             target.dataset.tempY = initialPos.y.toString();
             target.style.zIndex = "999999";
 
-            // const gridPosition = getGridPosition(target, gridConfig);
+            const gridPosition = getGridPosition(target, gridConfig);
             // we fire the callback for the main element only
-            // dragCallbacks.onDragStart?.(brick, getPosition(target, event), gridPosition, event);
+            dragCallbacks.onDragStart?.(brick, initialPos, gridPosition, event);
           }
         },
         end: (event: Interact.InteractEvent) => {
           const target = event.target as HTMLElement;
           target.classList.remove("moving");
+
           // Only proceed with collecting positions if we actually had a swap
           // (meaning we have at least 2 bricks in our set)
           const updatedPositions: Parameters<DragCallbacks["onDragEnd"]>[0] = [];
@@ -289,6 +289,9 @@ export const useEditablePage = (
       listeners: {
         start: (event) => {
           console.log("resize start", event);
+          const target = event.target as HTMLElement;
+          target.dataset.tempX = "0";
+          target.dataset.tempY = "0";
           resizeCallbacks.onResizeStart?.(event);
         },
         move: (event) => {
@@ -302,7 +305,6 @@ export const useEditablePage = (
             height: `${event.rect.height}px`,
             transform: `translate(${tempX}px, ${tempY}px)`,
           };
-          console.log("resize move", event, newStyle);
           Object.assign(event.target.style, newStyle);
           Object.assign(event.target.dataset, { tempX, tempY });
         },
@@ -313,7 +315,8 @@ export const useEditablePage = (
           const gridSize = getGridSize(target, gridConfig);
           target.style.width = "";
           target.style.height = "";
-          Object.assign(event.target.dataset, { tempX: "0", tempY: "0" });
+          target.dataset.tempX = "0";
+          target.dataset.tempY = "0";
           resizeCallbacks.onResizeEnd?.(target.id, size, gridSize, event);
         },
       },

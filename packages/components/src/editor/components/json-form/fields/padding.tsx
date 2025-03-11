@@ -3,7 +3,7 @@ import { Text, Select } from "@upstart.gg/style-system/system";
 import { fieldLabel } from "../form-class";
 import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 
-type TempPadding = {
+export type TempPadding = {
   horizontal: string;
   vertical: string;
 };

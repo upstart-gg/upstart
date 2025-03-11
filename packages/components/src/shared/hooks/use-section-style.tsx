@@ -52,8 +52,16 @@ function getSectionEditorStyles(editable: boolean) {
     return null;
   }
   return [
-    "select-none hover:z-[9999] transition-colors duration-500",
+    "select-none hover:z-[9999] transition-colors duration-500 relative",
     "outline-dotted outline-4 outline-transparent -outline-offset-2 hover:(outline-upstart-500/60 shadow-upstart-500/20)",
     "self-stretch",
+    css`
+    &:has(.moving) {
+      position: static;
+    }
+    &:has(.moving) ~ section {
+      position: static;
+    }
+    `,
   ];
 }
