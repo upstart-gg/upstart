@@ -58,6 +58,7 @@ export function usePageStyle({
     )`,
     // Desktop grid
     `@desktop:(
+      min-h-[inherit]
       h-max
     )`,
 

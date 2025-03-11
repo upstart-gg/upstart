@@ -236,8 +236,7 @@ export default defineConfig({
   attr: {
     $textColor: "#fff",
     $pageBackground: {
-      color: "#0B1016",
-      image: "/earth-big.jpg",
+      color: "#EFEFEF",
     },
   },
   pages: [

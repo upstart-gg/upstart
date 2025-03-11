@@ -10,7 +10,7 @@ type UseSectionStyleProps = {
 };
 
 export function useSectionStyle({ section, editable }: UseSectionStyleProps) {
-  return tx(apply("grid group/section bg-yellow-300 overflow-visible"), [
+  return tx(apply("grid group/section overflow-visible"), [
     typeof section.position.desktop.h === "number" &&
       `h-[${LAYOUT_ROW_HEIGHT * section.position.desktop.h}px]`,
 
