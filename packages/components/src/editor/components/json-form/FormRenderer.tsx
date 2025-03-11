@@ -73,6 +73,14 @@ const FormGroup: React.FC<FormGroupProps> = ({ groupTitle, groupName, children }
   );
 };
 
+type FieldGroups = Record<
+  string,
+  {
+    title: string;
+    fields: ReactNode[];
+  }
+>;
+
 /**
  * FormRenderer component that renders form fields based on schema
  */
@@ -93,13 +101,7 @@ export function FormRenderer({
   // Generate field components in a structured way
   const formStructure = useMemo(() => {
     // Group fields by their group property
-    const fieldGroups: Record<
-      string,
-      {
-        title: string;
-        fields: ReactNode[];
-      }
-    > = {};
+    const fieldGroups: FieldGroups = {};
 
     // Process all properties in the schema
     Object.entries(sortedSchema.properties).forEach(([fieldName, fieldSchema]) => {
@@ -446,6 +448,7 @@ export function FormRenderer({
     return fieldGroups;
   }, [sortedSchema, brickId, formData, filter, onChange, onSubmit, submitButtonLabel, parents, previewMode]);
 
+  console.log({ formStructure });
   // Render the form with all groups and fields
   return (
     <>

@@ -23,7 +23,7 @@ export const manifest = defineBrickManifest({
     // commonStyleProps,
     datasourceRefProps,
     Type.Object({
-      mainContainerStyles: commonStyleProps,
+      mainContainerStyles: Type.Omit(commonStyleProps, ["layout", "effects", "text"]),
       brandPart: Type.Object(
         {
           brand: Type.String({ title: "Brand name", default: "Company name" }),
