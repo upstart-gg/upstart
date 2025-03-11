@@ -36,7 +36,7 @@ export function usePageStyle({
   showIntro,
 }: UsePageStyleProps) {
   return tx(
-    "flex flex-col group/page mx-auto page-container relative overflow-hidden max-w-full w-full p-0",
+    "flex flex-col group/page mx-auto relative overflow-hidden max-w-full w-full p-0",
     isStandardColor(attributes.$pageBackground.color) &&
       css({ backgroundColor: attributes.$pageBackground.color as string }),
     !isStandardColor(attributes.$pageBackground.color) && (attributes.$pageBackground.color as string),

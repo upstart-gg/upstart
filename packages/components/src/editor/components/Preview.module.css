@@ -1,6 +1,6 @@
 .desktop {
   display: flex;
-  height: 100dvh;
+  height: max-content;
   /* width: calc(100dvw - 58px); */
   width: 100%;
   margin-block: auto;

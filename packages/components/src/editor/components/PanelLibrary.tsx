@@ -16,7 +16,6 @@ import { TbDragDrop } from "react-icons/tb";
 import { useCalloutViewCounter } from "../hooks/use-callout-view-counter";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import type { BrickManifest, StaticManifest } from "@upstart.gg/sdk/shared/brick-manifest";
-import type { Static } from "@sinclair/typebox";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import interact from "interactjs";
 import { IoCloseOutline } from "react-icons/io5";
@@ -191,11 +190,14 @@ const DraggableBrick = forwardRef<HTMLButtonElement, DraggableBrickProps>(({ bri
       data-brick-type={brick.type}
       data-brick-min-w={brick.minWidth}
       data-brick-min-h={brick.minHeight}
-      data-brick-preferred-w={brick.defaultWidth}
-      data-brick-preferred-h={brick.defaultHeight}
+      data-brick-default-w={brick.defaultWidth}
+      data-brick-default-h={brick.defaultHeight}
       type="button"
       className={tx(
-        "rounded border border-transparent hover:border-upstart-600 bg-white dark:bg-dark-700 cursor-grab active:cursor-grabbing touch-none select-none pointer-events-auto transition draggable-brick [&:is(.clone)]:(opacity-80 !bg-white)",
+        `rounded border border-transparent hover:border-upstart-600 bg-white dark:bg-dark-700 cursor-grab
+        active:cursor-grabbing touch-none select-none pointer-events-auto transition draggable-brick
+        z-[99999]
+        [&:is(.clone)]:(opacity-80 !bg-white)`,
       )}
       {...props}
     >

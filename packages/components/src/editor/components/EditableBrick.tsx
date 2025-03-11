@@ -57,7 +57,7 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       const target = e.currentTarget as HTMLElement;
       if (hasMouseMoved.current || target.matches(".react-resizable-handle") || !target.matches(".brick")) {
         // if (target.matches(".react-resizable-handle") || !target.matches(".brick")) {
-        console.warn("click ignored", target);
+        console.debug("click ignored", target);
         return;
       }
 
@@ -154,7 +154,6 @@ function BrickMenuBarButtons({ brick }: { brick: Brick }) {
   if (!manifest) {
     return null;
   }
-
   return (
     <>
       <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
@@ -166,7 +165,6 @@ function BrickMenuBarButtons({ brick }: { brick: Brick }) {
       <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
         <IoMdColorPalette className={tx("w-5 h-5")} />
       </button>
-
       {manifest.props.border && (
         <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
           <MdBorderOuter className={tx("w-5 h-5")} />
@@ -185,8 +183,11 @@ function BrickDebugLabel({ brick, isContainerChild }: { brick: Brick; isContaine
     );
   }
   return (
-    <div className="absolute bottom-0 right-0 bg-white/40 text-black text-[10px] font-mono py-0.5 px-1.5 rounded hover:bg-white/90">
-      {brick.id} {isContainerChild ? "" : `- x: ${brick.position.desktop.x} - y: ${brick.position.desktop.y}`}
+    <div className="absolute bottom-0 right-2 bg-white/40 text-black text-[10px] font-mono py-0.5 px-2 rounded hover:bg-white/90">
+      {brick.id}{" "}
+      {isContainerChild
+        ? ""
+        : ` · x: ${brick.position.desktop.x} · y: ${brick.position.desktop.y} · ${brick.position.desktop.w}/${brick.position.desktop.h}`}
     </div>
   );
 }

@@ -126,13 +126,13 @@ const hpBricks = defineBricks([
     position: {
       mobile: {
         x: 0,
-        y: 0,
+        y: 3,
         w: "full",
         h: 3,
       },
       desktop: {
         x: 0,
-        y: 0,
+        y: 3,
         w: "full",
         h: 3,
       },

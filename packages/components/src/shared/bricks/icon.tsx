@@ -5,8 +5,6 @@ import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/icon.m
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 
 const Icon = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
-  props = { ...Value.Create(manifest).props, ...props };
-
   return <span>Icon</span>;
 });
 

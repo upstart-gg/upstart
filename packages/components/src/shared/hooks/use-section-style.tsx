@@ -2,7 +2,6 @@ import { tx, apply, css } from "@upstart.gg/style-system/twind";
 import type { Section } from "@upstart.gg/sdk/shared/bricks";
 import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import { getBackgroundStyles, type BrickStyleProps } from "../styles/helpers";
-import { usePreviewMode } from "~/editor/hooks/use-editor";
 
 type UseSectionStyleProps = {
   section: Section;
@@ -11,7 +10,7 @@ type UseSectionStyleProps = {
 };
 
 export function useSectionStyle({ section, editable }: UseSectionStyleProps) {
-  return tx(apply("grid group/section bg-yellow-300 relative overflow-visible"), [
+  return tx(apply("grid group/section bg-yellow-300 overflow-visible"), [
     typeof section.position.desktop.h === "number" &&
       `h-[${LAYOUT_ROW_HEIGHT * section.position.desktop.h}px]`,
 
@@ -53,7 +52,7 @@ function getSectionEditorStyles(editable: boolean) {
     return null;
   }
   return [
-    "select-none hover:z-[9999] transition-colors duration-500 relative",
+    "select-none hover:z-[9999] transition-colors duration-500",
     "outline-dotted outline-4 outline-transparent -outline-offset-2 hover:(outline-upstart-500/60 shadow-upstart-500/20)",
     "self-stretch",
   ];

@@ -17,22 +17,22 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import Selecto from "react-selecto";
 import { useEditablePage } from "~/editor/hooks/use-draggable";
-import { debounce } from "lodash-es";
 import { defaultProps } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
 import {
   shouldAdjustBrickHeightBecauseOverflow,
   canDropOnLayout,
-  detectCollisions,
   getBrickAtPosition,
   getBricksOverlap,
   getDropOverGhostPosition,
   getNeededBricksAdjustments,
+  getSectionAtPosition,
 } from "~/shared/utils/layout-utils";
 import { useFontWatcher } from "../hooks/use-font-watcher";
 import ResizeHandle from "./ResizeHandle";
 import Section from "./EditableSection";
 import { useGridConfig } from "~/shared/hooks/use-grid-config";
+import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
 const ghostValid = tx("bg-upstart-100");
 const ghostInvalid = tx("bg-red-100");
@@ -100,7 +100,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           dropPosition: gridPosition,
         });
         // console.log("%o", dropOverPos);
-        updateDragOverGhostStyle(dropOverPos);
+        // updateDragOverGhostStyle(dropOverPos);
         // editorHelpers.setCollidingBrick(dropOverPos.collision);
       },
 
@@ -116,18 +116,20 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         );
 
         if (dropOverBrick?.isContainer && event.shiftKey) {
-          console.debug("Moving eleements to parent %s", dropOverBrick.id);
+          console.debug("Moving element(s) to parent %s", dropOverBrick.id);
           updatedPositions.forEach(({ brick }) => {
             draftHelpers.moveBrickToParent(brick.id, dropOverBrick.id);
           });
         } else {
-          updatedPositions.forEach(({ brick, gridPosition }) => {
-            console.log(
-              "Updating position of %s to x = %s, y = %s",
+          updatedPositions.forEach(({ brick, gridPosition, sectionId }) => {
+            console.debug(
+              "Updating position of %s to x = %s, y = %s in section %s",
               brick.id,
               gridPosition.x,
               gridPosition.y,
+              sectionId,
             );
+            draft.updateBrick(brick.id, { sectionId });
             draft.updateBrickPosition(brick.id, previewMode, {
               ...draft.getBrick(brick.id)!.position[previewMode],
               x: gridPosition.x,
@@ -143,6 +145,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     dropCallbacks: {
       onDropMove(event, gridPosition, brick) {
         const canDrop = canDropOnLayout(draft.bricks, previewMode, gridPosition, brick.constraints);
+        console.log("onDropMove", canDrop);
         updateDragOverGhostStyle(canDrop);
       },
       onDropDeactivate() {
@@ -154,6 +157,9 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         updateDragOverGhostStyle(false);
 
         const position = canDropOnLayout(draft.bricks, previewMode, gridPosition, brick.constraints);
+        const section = getSectionAtPosition(event.dragEvent.client.x, event.dragEvent.client.y);
+
+        invariant(section, "No section found for drop event");
 
         if (position) {
           console.debug("New brick dropped at", position);
@@ -162,7 +168,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
             id: `brick-${generateId()}`,
             ...bricksDefaults,
             //TODO: add section id
-            sectionId: "REPLACEME",
+            sectionId: section.id,
             type: brick.type,
             position: {
               desktop: position,
@@ -201,12 +207,13 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     },
     resizeCallbacks: {
       onResizeEnd: (brickId, pos, gridPos) => {
-        console.debug("onResizeEnd (%s)", previewMode, brickId, gridPos);
+        console.log("onResizeEnd (%s)", previewMode, brickId, gridPos);
 
         updateDragOverGhostStyle(false);
 
         // Check if the brick should adjust its height because of overflow
         const adjustedHeight = shouldAdjustBrickHeightBecauseOverflow(brickId);
+
         // Update the brick position (and height if needed)
         draft.updateBrickPosition(brickId, previewMode, {
           ...draft.getBrick(brickId)!.position[previewMode],
@@ -339,7 +346,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
 
   return (
     <>
-      <div ref={pageRef} className={pageClassName}>
+      <div id="page-container" ref={pageRef} className={pageClassName}>
         {sections.map((section) => (
           <Section key={section.id} section={section} gridConfig={gridConfig} />
         ))}

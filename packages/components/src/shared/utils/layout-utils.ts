@@ -131,12 +131,12 @@ export function getGridSize(element: HTMLElement, config: GridConfig) {
   };
 }
 
-export function getGridPosition(element: HTMLElement, config: GridConfig) {
+export function getGridPosition(element: HTMLElement, config: GridConfig, relatedContainer?: HTMLElement) {
   // Get element's initial position (getBoundingClientRect gives position relative to viewport)
   const rect = element.getBoundingClientRect();
   // const container = document.querySelector(".page-container")!.getBoundingClientRect();
   // relative to upper section
-  const container = element.closest("section")!.getBoundingClientRect();
+  const container = (relatedContainer ?? element.closest("section")!).getBoundingClientRect();
 
   // Calculate actual position relative to container
   const actualX = rect.left - container.left;
@@ -237,6 +237,13 @@ export function canDropOnLayout(
 
   // If the position is invalid, return false
   return false;
+}
+
+/**
+ */
+export function getSectionAtPosition(x: number, y: number) {
+  const elements = document.elementsFromPoint(x, y);
+  return elements.find((el) => el.tagName === "SECTION") as HTMLElement | undefined;
 }
 
 /**
@@ -422,6 +429,50 @@ export function detectCollisions({
   });
 
   return colisions;
+}
+
+/**
+ * Returns the coords of an element relative to the #page-container
+ */
+export function getBrickCoordsInPage(element: HTMLElement, relativeTo: HTMLElement) {
+  const rect = element.getBoundingClientRect();
+  const containerBox = relativeTo.getBoundingClientRect();
+  const mainFrame = document.querySelector("main") as HTMLElement;
+  const scrollLeft = mainFrame.scrollLeft || 0;
+  const scrollTop = mainFrame.scrollTop || 0;
+
+  return {
+    x: rect.left - containerBox.left + scrollLeft,
+    y: rect.top + scrollTop - 60,
+    w: rect.width,
+    h: rect.height,
+  };
+}
+
+export function getDropPosition(event: Interact.DropEvent, gridConfig: GridConfig) {
+  const grid = event.target as HTMLElement;
+  const gridRect = grid.getBoundingClientRect();
+
+  // Calculate position relative to grid
+  const rect = {
+    left: event.dragEvent.clientX - gridRect.left,
+    top: event.dragEvent.clientY - gridRect.top,
+  };
+
+  // Calculate grid position
+  const col = Math.round((rect.left - gridConfig.colWidth / 2) / gridConfig.colWidth);
+  const row = Math.round((rect.top - gridConfig.rowHeight / 2) / gridConfig.rowHeight);
+
+  return {
+    absolute: {
+      left: rect.left - gridConfig.colWidth / 2,
+      top: rect.top - gridConfig.rowHeight / 2,
+    },
+    grid: {
+      x: Math.max(1, col),
+      y: Math.max(1, row),
+    },
+  };
 }
 
 export function getDropOverGhostPosition({

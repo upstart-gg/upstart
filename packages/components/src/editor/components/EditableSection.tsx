@@ -74,7 +74,6 @@ function useResizableSection(section: SectionType, gridConfig: GridConfig) {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    const handle = document.getElementById(`${section.id}-resize-handle`);
     const sectionEl = document.getElementById(section.id);
 
     invariant(sectionEl, "Section element not found");
@@ -218,7 +217,6 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
               </button>
             </Tooltip>
           )}
-
           <DropdownMenu.Root modal={false} onOpenChange={setDropdownOpen}>
             <DropdownMenu.Trigger>
               <button
