@@ -8,7 +8,7 @@ import {
   useSelectedBrick,
 } from "../hooks/use-editor";
 import { DropdownMenu, Popover, Tooltip } from "@upstart.gg/style-system/system";
-import BrickWrapper from "./EditableBrick";
+import EditaleBrickWrapper from "./EditableBrick";
 import ResizeHandle from "./ResizeHandle";
 import { useSectionStyle } from "~/shared/hooks/use-section-style";
 import {
@@ -30,6 +30,7 @@ import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import TestMenu from "./json-form/TestMenu";
 import type { GridConfig } from "~/shared/hooks/use-grid-config";
 import { getGridPosition } from "~/shared/utils/layout-utils";
+import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 
 type EditableSectionProps = {
   section: SectionType;
@@ -46,21 +47,25 @@ export default function EditableSection({ section, gridConfig }: EditableSection
   const className = useSectionStyle({ section, editable: true, selected: selectedBrick?.id === section.id });
 
   return (
-    <section key={id} id={id} data-element-type="section" className={className}>
+    <section key={id} id={id} data-element-kind="section" className={className}>
       <SectionOptionsButtons section={section} />
       {bricks
         .filter((b) => !b.position[previewMode]?.hidden)
         .map((brick, index) => (
-          <BrickWrapper key={`${previewMode}-${brick.id}`} brick={brick} index={index}>
-            <ResizeHandle direction="s" />
-            <ResizeHandle direction="n" />
-            <ResizeHandle direction="w" />
-            <ResizeHandle direction="e" />
-            <ResizeHandle direction="se" />
-            <ResizeHandle direction="sw" />
-            <ResizeHandle direction="ne" />
-            <ResizeHandle direction="nw" />
-          </BrickWrapper>
+          <EditaleBrickWrapper key={`${previewMode}-${brick.id}`} brick={brick} index={index}>
+            {manifests[brick.type]?.resizable && (
+              <>
+                <ResizeHandle direction="s" />
+                <ResizeHandle direction="n" />
+                <ResizeHandle direction="w" />
+                <ResizeHandle direction="e" />
+                <ResizeHandle direction="se" />
+                <ResizeHandle direction="sw" />
+                <ResizeHandle direction="ne" />
+                <ResizeHandle direction="nw" />
+              </>
+            )}
+          </EditaleBrickWrapper>
         ))}
     </section>
   );

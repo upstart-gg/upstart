@@ -26,7 +26,7 @@ const BaseBrick = ({ brick, editable }: { brick: Brick; editable?: boolean } & C
   }
 
   const brickProps = {
-    ...defaultProps[brick.type],
+    ...defaultProps[brick.type].props,
     ...brick.props,
     mobileProps: brick.mobileProps,
     id: brick.id,

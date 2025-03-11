@@ -252,8 +252,10 @@ export function canDropOnLayout(
 /**
  */
 export function getSectionAtPosition(x: number, y: number) {
-  const elements = document.elementsFromPoint(x, y);
-  return elements.find((el) => el.tagName === "SECTION") as HTMLElement | undefined;
+  const elements = document.elementsFromPoint(x, y) as HTMLElement[];
+  return elements.find((el) => el.tagName === "SECTION" && el.dataset.elementKind === "section") as
+    | HTMLElement
+    | undefined;
 }
 
 /**
@@ -447,7 +449,7 @@ export function detectCollisions({
 export function getBrickCoordsInPage(element: HTMLElement, relativeTo: HTMLElement) {
   const rect = element.getBoundingClientRect();
   const containerBox = relativeTo.getBoundingClientRect();
-  const mainFrame = document.querySelector("main") as HTMLElement;
+  const mainFrame = document.querySelector("main.editor-main") as HTMLElement;
   const scrollLeft = mainFrame.scrollLeft || 0;
   const scrollTop = mainFrame.scrollTop || 0;
 

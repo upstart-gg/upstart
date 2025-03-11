@@ -1,5 +1,5 @@
 import { Type } from "@sinclair/typebox";
-import { defineBrickManifest, type StaticManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest } from "~/shared/brick-manifest";
 import { commonProps } from "../props/all";
 import { layout } from "../props/layout";
 import { border } from "../props/border";
@@ -50,4 +50,4 @@ export const manifest = defineBrickManifest({
   ]),
 });
 
-export type Manifest = StaticManifest<typeof manifest>;
+export type Manifest = typeof manifest;

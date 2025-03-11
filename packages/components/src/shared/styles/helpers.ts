@@ -4,7 +4,7 @@ import { propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
 
 export type BrickStyleProps = AllStyleProps & {
   className?: string;
-  mobileProps: AllStyleProps | undefined;
+  mobileProps?: AllStyleProps | undefined;
 };
 
 export function getBackgroundStyles(props: BrickStyleProps) {

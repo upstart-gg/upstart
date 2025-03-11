@@ -25,6 +25,7 @@ import { MdBorderOuter } from "react-icons/md";
 import { BiSolidColor } from "react-icons/bi";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { IoMdColorPalette } from "react-icons/io";
+import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -32,13 +33,14 @@ type BrickWrapperProps = ComponentProps<"div"> & {
   index: number;
 };
 
-const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
+const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
   ({ brick, children, isContainerChild, index }, ref) => {
     const hasMouseMoved = useRef(false);
     const selectedBrick = useSelectedBrick();
     const previewMode = usePreviewMode();
     const { getParentBrick } = useDraftHelpers();
     const debugMode = useDebugMode();
+    const manifest = useBrickManifest(brick.type);
     const wrapperClass = useBrickWrapperStyle({
       brick,
       editable: true,
@@ -84,6 +86,8 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
             data-w={brick.position[previewMode].w}
             data-h={brick.position[previewMode].h}
             data-brick-type={brick.type}
+            data-element-kind="brick"
+            {...(manifest.movable ? {} : { "data-no-drag": "true" })}
             className={tx(wrapperClass, `![animation-delay:${0.5 * (index + 1)}s]`)}
             ref={ref}
             onClick={onBrickWrapperClick}
@@ -184,7 +188,7 @@ function BrickDebugLabel({ brick, isContainerChild }: { brick: Brick; isContaine
   );
 }
 
-export default BrickWrapper;
+export default EditaleBrickWrapper;
 
 type BrickContextMenuProps = PropsWithChildren<{
   brick: Brick;

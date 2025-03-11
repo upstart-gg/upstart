@@ -14,6 +14,7 @@ import { FormRenderer } from "./json-form/FormRenderer";
 import { IoCloseOutline } from "react-icons/io5";
 import { useLocalStorage } from "usehooks-ts";
 import merge from "lodash-es/merge";
+import set from "lodash-es/set";
 import PresetsView from "./PresetsView";
 import { useCallback, useEffect, useMemo } from "react";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
@@ -187,14 +188,21 @@ function ElementInspector({ brick, manifest }: { brick: Brick; manifest: BrickMa
   const brickInfo = getBrickInfo(brick.id);
 
   const onChange = useCallback(
-    (data: Record<string, unknown>, propertyChanged: string) => {
-      if (!propertyChanged) {
+    (data: Record<string, unknown>, propertyChangedPath: string) => {
+      if (!propertyChangedPath) {
+        console.warn("propertyChangedPath is missing in Element inspector");
         // ignore changes unrelated to the brick
         return;
       }
-      updateBrickProps(brick.id, data, previewMode === "mobile");
+      // Note: this is a weird way to update the brick props, but it'it allows us to deal with frozen trees
+      const props = JSON.parse(JSON.stringify(brickInfo?.props ?? {}));
+      // `propertyChangedPath` can take the form of `a.b.c` which means we need to update `props.a.b.c`
+      // For this we use lodash.set
+      set(props, propertyChangedPath, data[propertyChangedPath]);
+      // Update the brick props in the store
+      updateBrickProps(brick.id, props, previewMode === "mobile");
     },
-    [brick.id, previewMode, updateBrickProps],
+    [brick.id, previewMode, updateBrickProps, brickInfo],
   );
 
   invariant(brickInfo, "Brick info props is missing in Element inspector");
@@ -205,6 +213,8 @@ function ElementInspector({ brick, manifest }: { brick: Brick; manifest: BrickMa
       ? merge({}, brickInfo.props, brickInfo.mobileProps)
       : brickInfo.props ?? {};
   }, [brickInfo, previewMode]);
+
+  console.log("Inspector manifest props", manifest.props);
 
   return (
     <form className={tx("px-3 flex flex-col gap-3")}>
@@ -234,6 +244,7 @@ function ContentTab({ brick, manifest }: { brick: Brick; manifest: BrickManifest
         // ignore changes unrelated to the brick
         return;
       }
+      console.log("ContentTab.onChange(%o)", data, propertyChanged);
       updateBrickProps(brick.id, data, previewMode === "mobile");
     },
     [brick.id, previewMode, updateBrickProps],

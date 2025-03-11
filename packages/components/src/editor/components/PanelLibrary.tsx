@@ -15,7 +15,7 @@ import { BsStars } from "react-icons/bs";
 import { TbDragDrop } from "react-icons/tb";
 import { useCalloutViewCounter } from "../hooks/use-callout-view-counter";
 import { forwardRef, useEffect, useRef, useState } from "react";
-import type { BrickManifest, StaticManifest } from "@upstart.gg/sdk/shared/brick-manifest";
+import type { BrickDefaults, BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import interact from "interactjs";
 import { IoCloseOutline } from "react-icons/io5";
@@ -180,7 +180,7 @@ export default function PanelLibrary() {
 }
 
 type DraggableBrickProps = {
-  brick: StaticManifest<BrickManifest>;
+  brick: BrickDefaults;
 };
 
 const DraggableBrick = forwardRef<HTMLButtonElement, DraggableBrickProps>(({ brick, ...props }, ref) => {

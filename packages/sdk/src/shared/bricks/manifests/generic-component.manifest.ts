@@ -1,6 +1,6 @@
 import { Type } from "@sinclair/typebox";
 import { commonProps, commonStyleProps } from "../props/all";
-import { defineBrickManifest, type StaticManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest } from "~/shared/brick-manifest";
 
 // get filename from esm import.meta
 export const manifest = defineBrickManifest({
@@ -28,4 +28,4 @@ export const manifest = defineBrickManifest({
   ]),
 });
 
-export type Manifest = StaticManifest<typeof manifest>;
+export type Manifest = typeof manifest;

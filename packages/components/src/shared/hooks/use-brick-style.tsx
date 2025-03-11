@@ -9,6 +9,7 @@ import {
   getFlexStyles,
   type BrickStyleProps,
 } from "../styles/helpers";
+import { useBrickManifest } from "./use-brick-manifest";
 
 type UseBrickStyleWrapperProps = {
   brick: Brick;
@@ -31,6 +32,12 @@ export function useBrickStyle(props: BrickStyleProps) {
     props.text?.color,
     // props.textAlign,
     getFlexStyles(props),
+    // Border
+    getBorderStyles(props),
+    // Background
+    getBackgroundStyles(props),
+    // Effects
+    getEffectsStyles(props),
   ]);
 }
 
@@ -70,12 +77,6 @@ export function useBrickWrapperStyle({ brick, editable, className, selected }: U
         ${position.mobile.manualHeight ? `h-[${position.mobile.manualHeight * LAYOUT_ROW_HEIGHT}px]` : ""}
       )`,
 
-    // Border
-    getBorderStyles(brick.props as BrickStyleProps),
-    // Background
-    getBackgroundStyles(brick.props as BrickStyleProps),
-    // Effects
-    getEffectsStyles(brick.props as BrickStyleProps),
     // Flex
     getFlexStyles(props as BrickStyleProps),
     // Basic alignment

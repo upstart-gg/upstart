@@ -4,7 +4,6 @@ import { defineAttributes, attr } from "@upstart.gg/sdk/attributes";
 import { defineConfig } from "@upstart.gg/sdk/page";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import { defineBricks, defineSections } from "@upstart.gg/sdk/shared/bricks";
-import { textContent } from "@upstart.gg/sdk/shared/bricks/props/text";
 
 // define your datasources
 const datasources = defineDataSources({
@@ -126,13 +125,13 @@ const hpBricks = defineBricks([
     position: {
       mobile: {
         x: 0,
-        y: 3,
+        y: 0,
         w: "full",
         h: 3,
       },
       desktop: {
         x: 0,
-        y: 3,
+        y: 0,
         w: "full",
         h: 3,
       },
@@ -228,7 +227,7 @@ const siteAttributes = defineAttributes({
     "ui:group": "other",
     "ui:group:title": "Other",
   }),
-  testUrl: attr.url("Test URL", "https://enpage.co"),
+  testUrl: attr.url("Test URL", "https://upstart.gg"),
 });
 
 export default defineConfig({

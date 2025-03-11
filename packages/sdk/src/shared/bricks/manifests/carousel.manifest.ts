@@ -1,6 +1,6 @@
 import { Type } from "@sinclair/typebox";
 import { commonProps, commonStyleProps } from "../props/all";
-import { defineBrickManifest, type StaticManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest } from "~/shared/brick-manifest";
 
 export const manifest = defineBrickManifest({
   type: "carousel",
@@ -17,4 +17,4 @@ export const manifest = defineBrickManifest({
   props: Type.Composite([commonProps, commonStyleProps]),
 });
 
-export type Manifest = StaticManifest<typeof manifest>;
+export type Manifest = typeof manifest;

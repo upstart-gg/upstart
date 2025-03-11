@@ -236,13 +236,13 @@ function ColorPillList({
 
   if (type === "solid") {
     return (
-      <div className={`grid grid-cols-${cols} gap-3`}>
+      <div className={`grid grid-cols-${cols} gap-2.5 mx-auto`}>
         {colors.map((color) => (
           <button
             type="button"
             key={color}
             className={tx(
-              "mx-auto h-8 w-8 rounded-full shadow-sm shadow-upstart-300 transition-transform",
+              "mx-auto h-7 w-7 rounded-full shadow-sm shadow-upstart-300 transition-transform",
               `bg-${color} hover:outline-gray-300 hover:scale-110`,
             )}
             onClick={() => {
@@ -294,7 +294,7 @@ function ColorPillList({
                   type="button"
                   key={`${color.from}-${color.to}`}
                   className={tx(
-                    "mx-auto h-8 w-8 rounded-full shadow-sm shadow-upstart-300 transition-transform",
+                    "mx-auto h-7 w-7 rounded-full shadow-sm shadow-upstart-300 transition-transform",
                     `bg-gradient-to-${gradientDir} from-${color.from} to-${color.to} hover:scale-110`,
                   )}
                   onClick={() => {
@@ -315,7 +315,6 @@ export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
   elementColorType,
   onChange = () => {},
 }) => {
-  console.log("ElementColorPicker", { initialValue, elementColorType });
   const defaultColorType = initialValue?.includes("gradient") ? "gradient" : "solid";
   function makeCominations(colors: string[], shades: string[]) {
     return colors.flatMap((color) => shades.map((shade) => `${color}-${shade}`));
@@ -364,20 +363,25 @@ export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
             colors={makeCominations(colors, shades)}
             onChange={onChange}
           >
-            <div className={tx(`flex gap-3 mt-1`, `col-span-${shades.length}`)}>
+            <div className={tx(`flex gap-1 mt-1 justify-between`, `col-span-${shades.length}`)}>
+              <button
+                type="button"
+                onClick={() => onChange("transparent")}
+                className="flex-1 h-6 text-xs rounded-md outline outline-gray-200 hover:outline-gray-300 bg-white"
+              >
+                Transparent
+              </button>
               <button
                 type="button"
                 onClick={() => onChange("#FFFFFF")}
-                className="flex-1 h-6 col-span-3 text-xs rounded-lg
-          outline outline-gray-200 hover:outline-gray-300 bg-white"
+                className="flex-1 h-6 text-xs rounded-md outline outline-gray-200 hover:outline-gray-300 bg-white"
               >
                 White
               </button>
               <button
                 type="button"
                 onClick={() => onChange("#000000")}
-                className="flex-1 h-6 col-span-3 text-xs rounded-lg
-          outline outline-gray-200 hover:outline-gray-300 bg-black"
+                className="flex-1 h-6 text-xs rounded-md outline outline-gray-200 hover:outline-gray-300 bg-white"
               >
                 Black
               </button>

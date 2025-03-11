@@ -85,7 +85,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     }
   }
 
-  useEditablePage(".brick:not(.container-child)", pageRef, {
+  useEditablePage(".brick:not(.container-child):not([data-no-drag='true'])", pageRef, {
     dragOptions: {
       enabled: previewMode === "desktop",
     },

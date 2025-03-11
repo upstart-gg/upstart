@@ -1,6 +1,6 @@
 import { Type } from "@sinclair/typebox";
 import { commonProps, commonStyleProps } from "../props/all";
-import { defineBrickManifest, type StaticManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest } from "~/shared/brick-manifest";
 import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
 import { datasourceRefProps } from "../props/datasource";
 import { textContentProps } from "../props/text";
@@ -98,4 +98,4 @@ export const manifest = defineBrickManifest({
   datasource,
 });
 
-export type Manifest = StaticManifest<typeof manifest>;
+export type Manifest = typeof manifest;

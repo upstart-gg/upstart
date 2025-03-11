@@ -1,34 +1,14 @@
-import { Type, type Static, type TObject, type TProperties, type TArray } from "@sinclair/typebox";
+import type { TObject, TProperties, TArray } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 
-export function defineBrickManifest<
+type BrickManifestProps<
   BProps extends TProperties,
   DSSchema extends TObject | TArray<TObject>,
   DRProps extends TProperties,
->({
-  type,
-  name,
-  description,
-  defaultWidth,
-  defaultHeight,
-  minWidth,
-  minHeight,
-  maxWidth,
-  icon,
-  props,
-  datasource,
-  datarecord,
-  kind = "brick",
-  isContainer = false,
-  hideInLibrary = false,
-  deletable = true,
-  movable = true,
-  resizable = true,
-  repeatable = false,
-  defaultInspectorTab = "preset",
-}: {
+  Kind extends "brick" | "widget" | "container",
+> = {
   type: string;
-  kind?: "brick" | "widget" | "container";
+  kind?: Kind;
   name: string;
   icon: string;
   description?: string;
@@ -36,11 +16,15 @@ export function defineBrickManifest<
     mobile: number;
     desktop: number;
   };
+  maxWidth?: {
+    mobile: number;
+    desktop: number;
+  };
   minHeight?: {
     mobile: number;
     desktop: number;
   };
-  maxWidth?: {
+  maxHeight?: {
     mobile: number;
     desktop: number;
   };
@@ -62,14 +46,34 @@ export function defineBrickManifest<
   repeatable?: boolean;
   resizable?: boolean;
   isContainer?: boolean;
-}) {
+};
+
+export function defineBrickManifest<
+  BProps extends TProperties,
+  DSSchema extends TObject | TArray<TObject>,
+  DRProps extends TProperties,
+  Kind extends "brick" | "widget" | "container",
+>({
+  props,
+  defaultWidth,
+  defaultHeight,
+  minWidth,
+  minHeight,
+  kind,
+  isContainer = false,
+  hideInLibrary = false,
+  deletable = true,
+  movable = true,
+  resizable = true,
+  repeatable = false,
+  defaultInspectorTab = "preset",
+  ...rest
+}: BrickManifestProps<BProps, DSSchema, DRProps, Kind>) {
   return {
-    type,
+    ...rest,
+    props,
     kind,
-    name,
-    description,
-    defaultInspectorTab: defaultInspectorTab ?? "preset",
-    icon,
+    defaultInspectorTab,
     hideInLibrary,
     deletable,
     movable,
@@ -81,29 +85,23 @@ export function defineBrickManifest<
     defaultHeight:
       defaultHeight ?? minHeight ?? ({ desktop: 3, mobile: 3 } as { desktop: number; mobile: number }),
     minWidth,
-    maxWidth,
     minHeight,
-    datasource,
-    datarecord,
-    props,
-  };
+  } as Required<BrickManifestProps<BProps, DSSchema, DRProps, Kind>>;
 }
 
 export type BrickManifest = ReturnType<typeof defineBrickManifest>;
-export type StaticManifest<T extends BrickManifest> = Omit<T, "props"> & {
-  props: Static<T["props"]>;
-  datasource: TObject<TProperties> | TArray<TObject<TProperties>> | undefined;
-  datarecord: TObject<TProperties> | undefined;
-};
 
 export function getBrickManifestDefaults<M extends BrickManifest>(manifest: M) {
   return {
     ...manifest,
     props: Value.Create(manifest.props),
+    mobileProps: {},
     ...(manifest.datasource ? { datasource: Value.Create(manifest.datasource) } : {}),
     ...(manifest.datarecord ? { datarecord: Value.Create(manifest.datarecord) } : {}),
   };
 }
+
+export type BrickDefaults = ReturnType<typeof getBrickManifestDefaults>;
 
 export type BrickConstraints = Pick<
   BrickManifest,

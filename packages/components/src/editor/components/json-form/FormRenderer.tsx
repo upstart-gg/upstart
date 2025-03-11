@@ -106,7 +106,7 @@ export function FormRenderer({
       const field = fieldSchema;
 
       // Apply filter if provided
-      if (filter && !filter(field)) {
+      if (filter && field.type !== "object" && !filter(field)) {
         return;
       }
 

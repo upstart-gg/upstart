@@ -102,7 +102,7 @@ export const brickSchema = Type.Object({
     title: "Type",
   }),
   props: Type.Record(Type.String(), Type.Unknown()),
-  mobileProps: Type.Optional(Type.Record(Type.String(), Type.Unknown())),
+  mobileProps: Type.Record(Type.String(), Type.Unknown()),
   isContainer: Type.Optional(Type.Boolean()),
   parentId: Type.Optional(Type.String()),
   sectionId: Type.String(),
@@ -119,15 +119,12 @@ export const brickSchema = Type.Object({
 });
 
 export type Brick = Static<typeof brickSchema>;
-export type BrickWithProps<M extends BrickManifest> = Omit<Brick, "props" | "mobileProps"> & {
-  props: Static<M["props"]>;
-  mobileProps: Partial<Static<M["props"]>>;
-};
 export type BricksLayout = Brick[];
 
 const definedBrickSchema = Type.Composite([
-  Type.Omit(brickSchema, ["id", "position"]),
+  Type.Omit(brickSchema, ["id", "position", "mobileProps"]),
   Type.Object({
+    mobileProps: Type.Optional(brickSchema.properties.props),
     position: Type.Object({
       mobile: definedBrickPositionSchema,
       desktop: definedBrickPositionSchema,
@@ -179,7 +176,7 @@ export const sectionSchema = Type.Object({
     description: "Determines section order in the page (lower numbers appear first)",
   }),
   props: sectionProps,
-  mobileProps: Type.Optional(sectionProps),
+  mobileProps: Type.Optional(Type.Partial(sectionProps)),
 });
 
 export type Section = Static<typeof sectionSchema>;
@@ -271,6 +268,7 @@ export function defineBricks<B extends DefinedBrick[] = DefinedBrick[]>(bricks: 
             }
           : {}),
       },
+      mobileProps: (brick.mobileProps ?? {}) as Brick["mobileProps"],
       position: {
         mobile: mapPosition(brick.position.mobile, "mobile"),
         desktop: mapPosition(brick.position.desktop, "desktop"),

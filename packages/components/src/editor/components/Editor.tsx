@@ -98,7 +98,7 @@ export default function Editor({ mode = "local", onDraftChange, ...props }: Edit
       {draft.previewTheme && <ThemePreviewConfirmButton />}
       <main
         className={tx(
-          "flex-1 flex place-content-center z-40 overscroll-none transition-colors duration-300",
+          "editor-main flex-1 flex place-content-center z-40 overscroll-none transition-colors duration-300",
           showIntro
             ? "overflow-x-hidden overflow-y-hidden pointer-events-none"
             : "overflow-x-auto overflow-y-visible ",
@@ -138,7 +138,7 @@ function ThemePreviewConfirmButton() {
 
 type PanelProps = ComponentProps<"aside">;
 
-const TEMP_PANEL_DISABLED = true;
+const TEMP_PANEL_DISABLED = false;
 /**
  * Panel used to display both the inspector and the library
  */
