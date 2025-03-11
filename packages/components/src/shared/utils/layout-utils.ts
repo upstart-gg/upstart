@@ -123,7 +123,7 @@ export function getNeededBricksAdjustments(bricks: Brick[]): Record<string, Bric
   return adjustmentsByBrickId;
 }
 
-export function getGridSize(element: HTMLElement, config: GridConfig) {
+function getGridSize(element: HTMLElement, config: GridConfig) {
   const rect = element.getBoundingClientRect();
   return {
     w: Math.round(rect.width / config.colWidth),
@@ -146,9 +146,19 @@ export function getGridPosition(element: HTMLElement, config: GridConfig, relate
   const gridX = Math.round(actualX / config.colWidth);
   const gridY = Math.round(actualY / config.rowHeight);
 
+  console.log("getGridPosition", {
+    rect,
+    container,
+    actualX,
+    actualY,
+    gridX,
+    gridY,
+  });
+
   return {
     x: Math.max(0, gridX),
     y: Math.max(0, gridY),
+    ...getGridSize(element, config),
   };
 }
 

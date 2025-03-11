@@ -10,7 +10,6 @@ import { defaultProps } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import {
   getGridPosition,
-  getGridSize,
   getBrickCoordsInPage,
   getSectionAtPosition,
   getDropPosition,
@@ -19,25 +18,12 @@ import { useBricksRefs } from "./use-bricks-refs";
 import type { GridConfig } from "~/shared/hooks/use-grid-config";
 
 interface DragCallbacks {
-  onDragMove?: (
-    brick: Brick,
-    position: { x: number; y: number },
-    gridPosition: { x: number; y: number },
-    event: Interact.InteractEvent,
-  ) => void;
   onDragEnd: (
     updatedPositions: {
       brick: Brick;
-      gridPosition: { x: number; y: number };
-      position: { x: number; y: number };
+      gridPosition: { w: number; h: number; x: number; y: number };
       sectionId: string;
     }[],
-    event: Interact.InteractEvent,
-  ) => void;
-  onDragStart?: (
-    brick: Brick,
-    position: { x: number; y: number },
-    gridPosition: { x: number; y: number },
     event: Interact.InteractEvent,
   ) => void;
 }
@@ -64,15 +50,13 @@ interface DropCallbacks {
 }
 
 interface ResizeCallbacks {
-  onResizeStart?: (event: Interact.InteractEvent) => void;
   onResizeMove?: (
     event: Interact.InteractEvent,
     size: { w: number; h: number; x: number; y: number },
   ) => void;
-  onResizeEnd?: (
+  onResizeEnd: (
     brickId: string,
-    size: { w: number; h: number; x: number; y: number },
-    gridSize: { w: number; h: number },
+    gridPos: { w: number; h: number; x: number; y: number },
     event: Interact.InteractEvent,
   ) => void;
 }
@@ -83,7 +67,7 @@ interface UseInteractOptions {
   dragRestrict?: Partial<RestrictOptions>;
   dragCallbacks: DragCallbacks;
   dropCallbacks?: DropCallbacks;
-  resizeCallbacks?: ResizeCallbacks;
+  resizeCallbacks: ResizeCallbacks;
   gridConfig: GridConfig;
 }
 
@@ -106,12 +90,6 @@ function snapPositionToGrid({
   };
 }
 
-const getNextPosition = (target: HTMLElement, event: Interact.InteractEvent) => {
-  const x = parseFloat(target.dataset.tempX || "0") + event.dx;
-  const y = parseFloat(target.dataset.tempY || "0") + event.dy;
-  return { x, y };
-};
-
 // Update element transform
 const updateElementTransform = (target: HTMLElement, x: number, y: number) => {
   // target.style.transform = `translate(${x}px, ${y}px)`;
@@ -129,7 +107,7 @@ export const useEditablePage = (
     dragOptions = {},
     resizeOptions = {},
     dragCallbacks,
-    resizeCallbacks = {},
+    resizeCallbacks,
     dropCallbacks = {},
   }: UseInteractOptions,
 ) => {
@@ -195,34 +173,27 @@ export const useEditablePage = (
         start: (event: Interact.InteractEvent) => {
           console.debug("useEditablePage:listeners:start()", event);
           const target = event.target as HTMLElement;
-          const brick = getBrick(target.id);
 
-          if (brick) {
-            // Get initial position relative to container
-            const initialPos = getBrickCoordsInPage(target, container);
-            // console.log({ initialPos, initialStyle: target.style });
+          // Get initial position relative to container
+          const initialPos = getBrickCoordsInPage(target, container);
 
-            // Now set up the element for dragging
-            target.style.position = "absolute";
-            target.style.top = `${initialPos.y}px`;
-            target.style.left = `${initialPos.x}px`;
-            target.style.width = `${initialPos.w}px`;
-            target.style.height = `${initialPos.h}px`;
-            target.dataset.tempX = initialPos.x.toString();
-            target.dataset.tempY = initialPos.y.toString();
-            target.style.zIndex = "999999";
+          // Now set up the element for dragging
+          target.dataset.tempX = initialPos.x.toString();
+          target.dataset.tempY = initialPos.y.toString();
 
-            const gridPosition = getGridPosition(target, gridConfig);
-            // we fire the callback for the main element only
-            dragCallbacks.onDragStart?.(brick, initialPos, gridPosition, event);
-          }
+          Object.assign(target.style, {
+            position: "absolute",
+            top: `${initialPos.y}px`,
+            left: `${initialPos.x}px`,
+            width: `${initialPos.w}px`,
+            height: `${initialPos.h}px`,
+            zIndex: "999999",
+          });
         },
+
         end: (event: Interact.InteractEvent) => {
           const target = event.target as HTMLElement;
-          target.classList.remove("moving");
 
-          // Only proceed with collecting positions if we actually had a swap
-          // (meaning we have at least 2 bricks in our set)
           const updatedPositions: Parameters<DragCallbacks["onDragEnd"]>[0] = [];
           const elements = selectedGroup ? selectedGroup.map(getBrickRef) : [target];
           const section = getSectionAtPosition(event.client.x, event.client.y);
@@ -234,51 +205,40 @@ export const useEditablePage = (
             if (brick) {
               updatedPositions.push({
                 brick,
-                position: getNextPosition(element, event),
                 gridPosition: getGridPosition(element, gridConfig, section),
                 sectionId: section.id,
               });
             }
 
-            // Reset to display mode (not dragging)
-            element.style.transform = "none";
-            element.style.transition = "none";
-            element.style.position = "relative";
-            element.style.top = "";
-            element.style.left = "";
-            element.style.width = "auto";
-            element.style.height = "auto";
-
-            // Store the final coordinates as custom attributes for the next drag
-            const finalRect = element.getBoundingClientRect();
-            const containerBox = container.getBoundingClientRect();
-            // const container = document.querySelector("#page-container")!.getBoundingClientRect();
-            // element.dataset.tempX = (finalRect.left - containerBox.left).toString();
-            // element.dataset.tempY = (finalRect.top - containerBox.top).toString();
+            // reset the styles
+            Object.assign(element.style, {
+              transform: "none",
+              transition: "none",
+              position: "relative",
+              top: "",
+              left: "",
+              width: "auto",
+              height: "auto",
+            });
           }
+
+          // Important: only remove the `moving` class after we've collected the positions
+          // otherwise the elements will snap back to their original position
+          target.classList.remove("moving");
 
           dragCallbacks.onDragEnd(updatedPositions, event);
         },
 
         move: (event: Interact.InteractEvent) => {
           const target = event.target as HTMLElement;
-
           target.classList.add("moving");
-
           const elements = selectedGroup ? selectedGroup.map(getBrickRef) : [target];
-
           elements.forEach((element) => {
             if (!element) return;
-            const position = getNextPosition(element, event);
-            updateElementTransform(element, position.x, position.y);
+            const x = parseFloat(element.dataset.tempX || "0") + event.dx;
+            const y = parseFloat(element.dataset.tempY || "0") + event.dy;
+            updateElementTransform(element, x, y);
           });
-
-          const brick = getBrick(target.id);
-
-          if (brick) {
-            const gridPosition = getGridPosition(target, gridConfig);
-            // dragCallbacks.onDragMove?.(brick, getPosition(target, event), gridPosition, event);
-          }
         },
       },
       ...dragOptions,
@@ -288,36 +248,40 @@ export const useEditablePage = (
       inertia: true,
       listeners: {
         start: (event) => {
-          console.log("resize start", event);
           const target = event.target as HTMLElement;
           target.dataset.tempX = "0";
           target.dataset.tempY = "0";
-          resizeCallbacks.onResizeStart?.(event);
         },
         move: (event) => {
           event.stopPropagation();
-          event.target.classList.add("moving");
+
           let { tempX, tempY } = event.target.dataset;
           tempX = parseFloat(tempX ?? "0") + event.deltaRect.left;
           tempY = parseFloat(tempY ?? "0") + event.deltaRect.top;
+
           const newStyle = {
             width: `${event.rect.width}px`,
             height: `${event.rect.height}px`,
             transform: `translate(${tempX}px, ${tempY}px)`,
           };
+
+          event.target.classList.add("moving");
           Object.assign(event.target.style, newStyle);
           Object.assign(event.target.dataset, { tempX, tempY });
         },
         end: (event) => {
           const target = event.target as HTMLElement;
+          const gridPos = getGridPosition(target, gridConfig);
+
+          Object.assign(target.style, {
+            width: "",
+            height: "",
+            transform: "none",
+          });
+
           target.classList.remove("moving");
-          const size = getSize(event);
-          const gridSize = getGridSize(target, gridConfig);
-          target.style.width = "";
-          target.style.height = "";
-          target.dataset.tempX = "0";
-          target.dataset.tempY = "0";
-          resizeCallbacks.onResizeEnd?.(target.id, size, gridSize, event);
+
+          resizeCallbacks.onResizeEnd(target.id, gridPos, event);
         },
       },
       modifiers: [
@@ -378,7 +342,6 @@ export const useEditablePage = (
     resizeCallbacks,
     dragOptions,
     resizeOptions,
-    getSize,
     getBrick,
     getBrickRef,
     previewMode,

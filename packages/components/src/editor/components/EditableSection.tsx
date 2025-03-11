@@ -29,7 +29,7 @@ import { useEffect, useRef, useState } from "react";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import TestMenu from "./json-form/TestMenu";
 import type { GridConfig } from "~/shared/hooks/use-grid-config";
-import { getGridSize } from "~/shared/utils/layout-utils";
+import { getGridPosition } from "~/shared/utils/layout-utils";
 
 type EditableSectionProps = {
   section: SectionType;
@@ -110,7 +110,7 @@ function useResizableSection(section: SectionType, gridConfig: GridConfig) {
           Object.assign(sectionEl.dataset, { h: newHeight });
         },
         end: (event) => {
-          const size = getGridSize(sectionEl, gridConfig);
+          const size = getGridPosition(sectionEl, gridConfig);
           sectionEl.style.height = "";
           sectionEl.style.maxHeight = "";
           sectionEl.style.flex = "";
