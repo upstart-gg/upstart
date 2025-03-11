@@ -96,7 +96,7 @@ function getBrickWrapperEditorStyles(
     return null;
   }
   return [
-    "select-none hover:z-[9999] transition-colors delay-300 duration-[500] rounded-sm outline outline-4 outline-transparent -outline-offset-4",
+    "select-none hover:z-[9999] transition-colors delay-300 duration-300 rounded-sm outline outline-4 outline-transparent -outline-offset-4",
     selected && "outline outline-4 outline-upstart-500 shadow-xl shadow-upstart-500/20",
     !selected && !isContainerChild && !isContainer && "hover:(outline-upstart-500/60)",
     !selected && !isContainerChild && isContainer && "hover:(outline-dotted outline-upstart-500/30)",

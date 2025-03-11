@@ -45,6 +45,7 @@ type BrickManifestProps<
   movable?: boolean;
   repeatable?: boolean;
   resizable?: boolean;
+  duplicatable?: boolean;
   isContainer?: boolean;
 };
 
@@ -66,6 +67,7 @@ export function defineBrickManifest<
   movable = true,
   resizable = true,
   repeatable = false,
+  duplicatable = true,
   defaultInspectorTab = "preset",
   ...rest
 }: BrickManifestProps<BProps, DSSchema, DRProps, Kind>) {
@@ -79,6 +81,7 @@ export function defineBrickManifest<
     movable,
     resizable,
     repeatable,
+    duplicatable,
     isContainer,
     defaultWidth:
       defaultWidth ?? minWidth ?? ({ desktop: 8, mobile: -1 } as { desktop: number; mobile: number }),

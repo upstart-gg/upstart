@@ -104,7 +104,7 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
             }}
           >
             <BaseBrick brick={brick} editable />
-            {debugMode && <BrickDebugLabel brick={brick} isContainerChild={isContainerChild} />}
+            <BrickEditLabel brick={brick} isContainerChild={isContainerChild} />
             {children} {/* Make sure to include children to add resizable handle */}
           </div>
         </BrickContextMenu>
@@ -170,7 +170,9 @@ function BrickMenuBarButtons({ brick }: { brick: Brick }) {
   );
 }
 
-function BrickDebugLabel({ brick, isContainerChild }: { brick: Brick; isContainerChild?: boolean }) {
+function BrickEditLabel({ brick, isContainerChild }: { brick: Brick; isContainerChild?: boolean }) {
+  const debugMode = useDebugMode();
+  const manifest = useBrickManifest(brick.type);
   if (brick.isContainer) {
     return (
       <div className="absolute top-full left-1/2 -translate-x-1/2 bg-orange-300/40 text-black text-[10px] font-mono py-0.5 px-1.5 rounded hover:bg-white/90">
@@ -179,11 +181,19 @@ function BrickDebugLabel({ brick, isContainerChild }: { brick: Brick; isContaine
     );
   }
   return (
-    <div className="absolute bottom-0 right-2 bg-white/40 text-black text-[10px] font-mono py-0.5 px-2 rounded hover:bg-white/90">
-      {brick.id}{" "}
-      {isContainerChild
-        ? ""
-        : ` · x: ${brick.position.desktop.x} · y: ${brick.position.desktop.y} · ${brick.position.desktop.w}/${brick.position.desktop.h}`}
+    <div
+      className="absolute transition-all -z-10 duration-150 opacity-0 group-hover/brick:(opacity-100 translate-y-0) tracking-wider
+    -translate-y-5 -bottom-[22px] uppercase border border-t-0 border-gray-400 left-1 bg-white/70 text-gray-600 text-xs font-semibold py-0.5 px-2 rounded-b-md"
+    >
+      {manifest.name}
+      {debugMode && (
+        <span className="font-mono">
+          {brick.id}{" "}
+          {isContainerChild
+            ? ""
+            : ` · x: ${brick.position.desktop.x} · y: ${brick.position.desktop.y} · ${brick.position.desktop.w}/${brick.position.desktop.h}`}
+        </span>
+      )}
     </div>
   );
 }
@@ -202,6 +212,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
     const draftHelpers = useDraftHelpers();
     const editorHelpers = useEditorHelpers();
     const debugMode = useDebugMode();
+    const manifest = useBrickManifest(brick.type);
     const canMoveLeft = isContainerChild ? draftHelpers.canMoveToWithinParent(brick.id, "left") : null;
     const canMoveRight = isContainerChild ? draftHelpers.canMoveToWithinParent(brick.id, "right") : null;
     const parentContainer = draft.getParentBrick(brick.id);
@@ -216,15 +227,18 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
             from handling click event coming from the menu items.
             We still need to stop the propagation for other listeners. */}
           <ContextMenu.Content className="nodrag" size="2">
-            <ContextMenu.Item
-              shortcut="⌘D"
-              onClick={(e) => {
-                e.stopPropagation();
-                draft.duplicateBrick(brick.id);
-              }}
-            >
-              Duplicate
-            </ContextMenu.Item>
+            {manifest.duplicatable && (
+              <ContextMenu.Item
+                shortcut="⌘D"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  draft.duplicateBrick(brick.id);
+                }}
+              >
+                Duplicate
+              </ContextMenu.Item>
+            )}
+
             <ContextMenu.Item
               shortcut="⌘C"
               onClick={(e) => {

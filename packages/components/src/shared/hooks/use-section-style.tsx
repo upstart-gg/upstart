@@ -58,6 +58,11 @@ function getSectionEditorStyles(editable: boolean) {
     css`
     &:has(.moving) {
       position: static;
+
+      &>[data-element-kind="brick"]:not(.moving) {
+        outline: 4px dashed rgba(0, 0, 0, 0.2);
+        outline-offset: 0px;
+      }
     }
     &:has(.moving) ~ section {
       position: static;
