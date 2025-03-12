@@ -452,11 +452,13 @@ export function FormRenderer({
   // Render the form with all groups and fields
   return (
     <>
-      {Object.entries(formStructure).map(([groupName, { title, fields }]) => (
-        <FormGroup key={`group-${groupName}`} groupName={groupName} groupTitle={title}>
-          {fields}
-        </FormGroup>
-      ))}
+      {Object.entries(formStructure)
+        .filter(([, { fields }]) => fields.length > 0)
+        .map(([groupName, { title, fields }]) => (
+          <FormGroup key={`group-${groupName}`} groupName={groupName} groupTitle={title}>
+            {fields}
+          </FormGroup>
+        ))}
     </>
   );
 }
