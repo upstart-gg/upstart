@@ -255,7 +255,9 @@ export const useEditablePage = (
         move: (event) => {
           event.stopPropagation();
 
-          let { tempX, tempY } = event.target.dataset;
+          const target = event.target as HTMLElement;
+
+          let { tempX, tempY } = target.dataset;
           tempX = parseFloat(tempX ?? "0") + event.deltaRect.left;
           tempY = parseFloat(tempY ?? "0") + event.deltaRect.top;
 
@@ -265,9 +267,9 @@ export const useEditablePage = (
             transform: `translate(${tempX}px, ${tempY}px)`,
           };
 
-          event.target.classList.add("moving");
-          Object.assign(event.target.style, newStyle);
-          Object.assign(event.target.dataset, { tempX, tempY });
+          target.classList.add("moving");
+          Object.assign(target.style, newStyle);
+          Object.assign(target.dataset, { tempX, tempY });
         },
         end: (event) => {
           const target = event.target as HTMLElement;
@@ -280,7 +282,6 @@ export const useEditablePage = (
           });
 
           target.classList.remove("moving");
-
           resizeCallbacks.onResizeEnd(target.id, gridPos, event);
         },
       },
@@ -324,10 +325,10 @@ export const useEditablePage = (
         ...(resizeOptions.modifiers || []),
       ],
       edges: {
-        top: ".react-resizable-handle-n",
-        left: ".react-resizable-handle-w",
-        bottom: ".react-resizable-handle-s",
-        right: ".react-resizable-handle-e",
+        top: true,
+        left: true,
+        bottom: true,
+        right: true,
       },
       ...resizeOptions,
     });
