@@ -188,8 +188,8 @@ function BrickEditLabel({ brick, isContainerChild }: { brick: Brick; isContainer
       data-element-type="brick-label"
       className="absolute transition-all -z-10 duration-150 opacity-0
         group-hover/brick:(opacity-100 translate-y-0) tracking-wider
-        -translate-y-5 -bottom-6 uppercase border border-t-0 border-gray-400 left-1 bg-white/70
-      text-gray-600 text-xs font-semibold py-0.5 px-2 rounded-md"
+        -translate-y-5 -bottom-6 uppercase left-1 bg-white/70 backdrop-blur-md shadow-md
+      text-gray-600 text-xs font-semibold py-0.5 px-2 rounded-sm"
     >
       {manifest.name}
       {debugMode && (

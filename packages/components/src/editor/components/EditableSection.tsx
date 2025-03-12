@@ -182,9 +182,9 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
             className={tx(
               dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
               "section-resizable-handle select-none pointer-events-none",
-              " text-base px-2.5 h-10 backdrop-blur-md shadow-lg",
+              " text-base px-2.5 h-10 bg-white/70 backdrop-blur-md shadow-lg",
               "transition-opacity duration-500 group-hover/section:opacity-80",
-              "bg-white/70 border-2 border-white/80 text-black/80 font-bold flex items-center cursor-default gap-1",
+              " border-2 border-white/80 text-black/80 font-bold flex items-center cursor-default gap-1",
             )}
           >
             {section.label ?? "Section"}
