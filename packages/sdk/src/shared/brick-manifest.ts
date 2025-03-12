@@ -1,14 +1,15 @@
 import type { TObject, TProperties, TArray } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 
+type BrickKind = "brick" | "widget" | "container";
+
 type BrickManifestProps<
   BProps extends TProperties,
   DSSchema extends TObject | TArray<TObject>,
   DRProps extends TProperties,
-  Kind extends "brick" | "widget" | "container",
 > = {
   type: string;
-  kind?: Kind;
+  kind?: BrickKind;
   name: string;
   icon: string;
   description?: string;
@@ -53,14 +54,13 @@ export function defineBrickManifest<
   BProps extends TProperties,
   DSSchema extends TObject | TArray<TObject>,
   DRProps extends TProperties,
-  Kind extends "brick" | "widget" | "container",
 >({
   props,
   defaultWidth,
   defaultHeight,
   minWidth,
   minHeight,
-  kind,
+  kind = "brick",
   isContainer = false,
   hideInLibrary = false,
   deletable = true,
@@ -70,7 +70,7 @@ export function defineBrickManifest<
   duplicatable = true,
   defaultInspectorTab = "preset",
   ...rest
-}: BrickManifestProps<BProps, DSSchema, DRProps, Kind>) {
+}: BrickManifestProps<BProps, DSSchema, DRProps>) {
   return {
     ...rest,
     props,
@@ -89,7 +89,7 @@ export function defineBrickManifest<
       defaultHeight ?? minHeight ?? ({ desktop: 3, mobile: 3 } as { desktop: number; mobile: number }),
     minWidth,
     minHeight,
-  } as Required<BrickManifestProps<BProps, DSSchema, DRProps, Kind>>;
+  } as const;
 }
 
 export type BrickManifest = ReturnType<typeof defineBrickManifest>;

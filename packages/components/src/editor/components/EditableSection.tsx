@@ -29,7 +29,7 @@ import { useEffect, useRef, useState } from "react";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import TestMenu from "./json-form/TestMenu";
 import type { GridConfig } from "~/shared/hooks/use-grid-config";
-import { getGridPosition } from "~/shared/utils/layout-utils";
+import { getBrickResizeOptions, getGridPosition } from "~/shared/utils/layout-utils";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 
 type EditableSectionProps = {
@@ -51,22 +51,38 @@ export default function EditableSection({ section, gridConfig }: EditableSection
       <SectionOptionsButtons section={section} />
       {bricks
         .filter((b) => !b.position[previewMode]?.hidden)
-        .map((brick, index) => (
-          <EditaleBrickWrapper key={`${previewMode}-${brick.id}`} brick={brick} index={index}>
-            {manifests[brick.type]?.resizable && (
-              <>
-                <ResizeHandle direction="s" />
-                <ResizeHandle direction="n" />
-                <ResizeHandle direction="w" />
-                <ResizeHandle direction="e" />
-                <ResizeHandle direction="se" />
-                <ResizeHandle direction="sw" />
-                <ResizeHandle direction="ne" />
-                <ResizeHandle direction="nw" />
-              </>
-            )}
-          </EditaleBrickWrapper>
-        ))}
+        .map((brick, index) => {
+          const resizeOpts = getBrickResizeOptions(brick, manifests[brick.type], previewMode);
+          return (
+            <EditaleBrickWrapper key={`${previewMode}-${brick.id}`} brick={brick} index={index}>
+              {manifests[brick.type]?.resizable && (
+                <>
+                  {(resizeOpts.canGrowVertical || resizeOpts.canShrinkVertical) && (
+                    <>
+                      <ResizeHandle direction="s" />
+                      <ResizeHandle direction="n" />
+                    </>
+                  )}
+                  {(resizeOpts.canGrowHorizontal || resizeOpts.canShrinkHorizontal) && (
+                    <>
+                      <ResizeHandle direction="w" />
+                      <ResizeHandle direction="e" />
+                    </>
+                  )}
+                  {((resizeOpts.canGrowVertical && resizeOpts.canGrowHorizontal) ||
+                    (resizeOpts.canShrinkVertical && resizeOpts.canShrinkHorizontal)) && (
+                    <>
+                      <ResizeHandle direction="se" />
+                      <ResizeHandle direction="sw" />
+                      <ResizeHandle direction="ne" />
+                      <ResizeHandle direction="nw" />
+                    </>
+                  )}
+                </>
+              )}
+            </EditaleBrickWrapper>
+          );
+        })}
     </section>
   );
 }

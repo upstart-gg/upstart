@@ -11,6 +11,18 @@ export const manifest = defineBrickManifest({
   name: "Header",
   description: "A header with logo and navigation",
   duplicatable: false,
+  defaultHeight: {
+    desktop: 3,
+    mobile: 3,
+  },
+  maxHeight: {
+    desktop: 3,
+    mobile: 3,
+  },
+  minHeight: {
+    desktop: 3,
+    mobile: 3,
+  },
   icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
     stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
     <rect x="3" y="11" width="18" height="8" rx="2" ry="2"></rect>

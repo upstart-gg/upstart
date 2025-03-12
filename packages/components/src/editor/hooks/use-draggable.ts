@@ -6,7 +6,7 @@ import type { ResizableOptions } from "@interactjs/actions/resize/plugin";
 import { useGetBrick, usePreviewMode, useSelectedGroup } from "./use-editor";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import type { BrickConstraints } from "@upstart.gg/sdk/shared/brick-manifest";
-import { defaultProps } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
+import { defaultProps, manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import {
   getGridPosition,
@@ -246,6 +246,7 @@ export const useEditablePage = (
 
     interactable.current.resizable({
       inertia: true,
+      ignoreFrom: ".resize-handle-disabled",
       listeners: {
         start: (event) => {
           const target = event.target as HTMLElement;
@@ -310,10 +311,11 @@ export const useEditablePage = (
             if (!elementId) return { width: Infinity, height: Infinity };
             const brickType = getBrick(elementId)?.type;
             invariant(brickType, "Brick type not found");
-            const maxW = defaultProps[brickType].maxWidth?.[previewMode];
+            const maxW = manifests[brickType].maxWidth?.[previewMode];
+            const maxH = manifests[brickType].maxHeight?.[previewMode];
             return {
               width: maxW ? maxW * gridConfig.colWidth : Infinity,
-              height: Infinity,
+              height: maxH ? maxH * gridConfig.rowHeight : Infinity,
             };
           },
         }),
@@ -324,6 +326,7 @@ export const useEditablePage = (
         }),
         ...(resizeOptions.modifiers || []),
       ],
+
       edges: {
         top: true,
         left: true,

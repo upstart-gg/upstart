@@ -39,7 +39,6 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const selectedBrick = useSelectedBrick();
     const previewMode = usePreviewMode();
     const { getParentBrick } = useDraftHelpers();
-    const debugMode = useDebugMode();
     const manifest = useBrickManifest(brick.type);
     const wrapperClass = useBrickWrapperStyle({
       brick,
@@ -175,19 +174,26 @@ function BrickEditLabel({ brick, isContainerChild }: { brick: Brick; isContainer
   const manifest = useBrickManifest(brick.type);
   if (brick.isContainer) {
     return (
-      <div className="absolute top-full left-1/2 -translate-x-1/2 bg-orange-300/40 text-black text-[10px] font-mono py-0.5 px-1.5 rounded hover:bg-white/90">
+      <div
+        data-element-type="brick-label"
+        className="absolute top-full left-1/2 -translate-x-1/2 bg-orange-300/40 text-black
+                    text-[10px] font-mono py-0.5 px-1.5 rounded hover:bg-white/90"
+      >
         {brick.id}
       </div>
     );
   }
   return (
     <div
-      className="absolute transition-all -z-10 duration-150 opacity-0 group-hover/brick:(opacity-100 translate-y-0) tracking-wider
-    -translate-y-5 -bottom-[22px] uppercase border border-t-0 border-gray-400 left-1 bg-white/70 text-gray-600 text-xs font-semibold py-0.5 px-2 rounded-b-md"
+      data-element-type="brick-label"
+      className="absolute transition-all -z-10 duration-150 opacity-0
+        group-hover/brick:(opacity-100 translate-y-0) tracking-wider
+        -translate-y-5 -bottom-6 uppercase border border-t-0 border-gray-400 left-1 bg-white/70
+      text-gray-600 text-xs font-semibold py-0.5 px-2 rounded-md"
     >
       {manifest.name}
       {debugMode && (
-        <span className="font-mono">
+        <span className="font-mono pl-4">
           {brick.id}{" "}
           {isContainerChild
             ? ""

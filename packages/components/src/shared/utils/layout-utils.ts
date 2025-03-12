@@ -1,7 +1,7 @@
 import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/layout-constants";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import type { ResponsiveMode } from "@upstart.gg/sdk/shared/responsive";
-import type { BrickConstraints } from "@upstart.gg/sdk/shared/brick-manifest";
+import type { BrickConstraints, BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import type { GridConfig } from "../hooks/use-grid-config";
 
 const OVERFLOWING_TOLREANCE = LAYOUT_ROW_HEIGHT;
@@ -36,7 +36,17 @@ export function shouldAdjustBrickHeightBecauseOverflow(brickId: string) {
     console.warn("shouldAdjustBrickHeightBecauseOverflow: Element not found!");
     return false;
   }
-  if (isOverflowing(element)) {
+
+  // Temporary hide the label to get the correct scrollHeight
+  const label = element.querySelector<HTMLDivElement>('[data-element-type="brick-label"]');
+  if (label) {
+    label.style.display = "none";
+  }
+
+  const hasOverflow = isOverflowing(element);
+  const idealHeight = hasOverflow ? getIdealHeight(element) : null;
+
+  if (hasOverflow) {
     console.debug(
       "Brick %s is overflowing. Scrollheight = %d, clientHeight = %d, tolerance = %d",
       brickId,
@@ -44,10 +54,12 @@ export function shouldAdjustBrickHeightBecauseOverflow(brickId: string) {
       element.clientHeight,
       OVERFLOWING_TOLREANCE,
     );
-    return getIdealHeight(element);
   }
 
-  return false;
+  // Restore the label visibility
+  if (label) label.style.display = "";
+
+  return idealHeight ?? false;
 }
 /**
  * Represents position adjustments needed for a brick
@@ -519,5 +531,15 @@ export function getDropOverGhostPosition({
     ...draggedRect,
     forbidden,
     colisions,
+  };
+}
+
+export function getBrickResizeOptions(brick: Brick, manifest: BrickManifest, currentBp: ResponsiveMode) {
+  const { maxHeight, maxWidth, minHeight, minWidth } = manifest;
+  return {
+    canGrowVertical: (maxHeight?.[currentBp] ?? Infinity) > brick.position[currentBp].h,
+    canGrowHorizontal: (maxWidth?.[currentBp] ?? Infinity) > brick.position[currentBp].w,
+    canShrinkVertical: (minHeight?.[currentBp] ?? 0) < brick.position[currentBp].h,
+    canShrinkHorizontal: (minWidth?.[currentBp] ?? 0) < brick.position[currentBp].w,
   };
 }

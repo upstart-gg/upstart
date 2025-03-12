@@ -11,6 +11,8 @@ export default function ResizeHandle({
         "react-resizable-handle absolute z-10 transition-opacity duration-200 opacity-0",
         "group-hover/brick:opacity-90 hover:!opacity-100 overflow-visible",
         `react-resizable-handle-${direction}`,
+        // test
+        // direction === "s" && "resize-handle-disabled",
         {
           "bottom-px left-px right-px h-1 w-[inherit] cursor-s-resize": direction === "s",
           "top-px left-px bottom-px w-1 h-[inherit] cursor-w-resize": direction === "w",
