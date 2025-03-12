@@ -60,7 +60,7 @@ function getSectionEditorStyles(editable: boolean) {
       position: static;
 
       &>[data-element-kind="brick"]:not(.moving) {
-        outline: 4px dashed rgba(0, 0, 0, 0.2);
+        outline: 2px dotted #FF9900;
         outline-offset: 0px;
       }
     }

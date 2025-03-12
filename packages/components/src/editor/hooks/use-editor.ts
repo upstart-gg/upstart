@@ -543,7 +543,10 @@ export const createDraftStore = (
                 const newBrick = {
                   ...brick,
                   id: `brick-${generateId()}`,
-                  position: getDuplicatedBrickPosition(brick),
+                  position: getDuplicatedBrickPosition(
+                    brick,
+                    _get().bricks.filter((b) => b.sectionId === brick.sectionId),
+                  ),
                   ...("childrenBricks" in brick.props
                     ? {
                         props: {
@@ -1077,14 +1080,14 @@ export const usePagePathSubscribe = (callback: (path: DraftState["path"]) => voi
 /**
  * Return the original position of the duplicated brick translated to the new position (+1 row for each breakpoint)
  */
-function getDuplicatedBrickPosition(brick: Brick) {
+function getDuplicatedBrickPosition(brick: Brick, bricksInSection: Brick[]) {
   const { mobile, desktop } = brick.position;
   return {
-    mobile: { ...(mobile ?? desktop)!, y: (mobile ?? desktop)!.y + 1 },
+    mobile: { ...mobile, y: mobile.y + mobile.h },
     desktop: {
-      ...(desktop ?? mobile)!,
-      y: (desktop ?? mobile)!.y + 1,
-      x: (desktop ?? mobile)!.x + 1,
+      ...desktop,
+      y: desktop.y + desktop.h,
+      // x: desktop.x + 1,
     },
   };
 }
