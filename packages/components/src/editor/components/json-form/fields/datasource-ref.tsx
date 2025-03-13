@@ -2,28 +2,37 @@ import type { FieldProps } from "./types";
 import { Text } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import { SegmentedControl, Select } from "@upstart.gg/style-system/system";
-import type { DatasourceRef } from "@upstart.gg/sdk/shared/bricks/props/common";
+import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import { fieldLabel } from "../form-class";
 import { type TProperties, type TSchema, Type } from "@sinclair/typebox";
 import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { useGetBrick } from "~/editor/hooks/use-editor";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { MdKeyboardArrowDown } from "react-icons/md";
-import { useEffect, useState } from "react";
+import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
+import { useCallback } from "react";
 
-const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
+const DatasourceRefField: React.FC<FieldProps<DatasourceRefSettings>> = (props) => {
   const { onChange, title, currentValue, brickId } = props;
   const getBrickInfo = useGetBrick();
-  const brickInfo = getBrickInfo(brickId);
+  invariant(brickId, `Could not find brick info for ${brickId} in DatasourceRefField`);
 
+  const brickInfo = getBrickInfo(brickId);
   invariant(brickInfo, `Could not find brick info for ${brickId} in DatasourceRefField`);
 
-  const onMappingChange = (value: Record<string, string>) => {
-    onChange({ ...currentValue, mapping: value });
-  };
+  const brickManifest = useBrickManifest(brickInfo.type);
 
-  console.log("datasource props", props);
+  const onDataSourceChange = useCallback(
+    (data: Partial<DatasourceRefSettings["datasource"]>) => {
+      if (!currentValue.datasource?.id) {
+        return;
+      }
+      onChange({ ...currentValue, datasource: { ...currentValue.datasource, ...data } });
+    },
+    [currentValue, onChange],
+  );
 
+  // test data
   const allDatasources = [
     {
       id: "1",
@@ -67,8 +76,7 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
     },
   ];
 
-  const brickManifest = manifests[brickInfo.type];
-  const datasourceSchema = brickManifest.properties.datasource;
+  const datasourceSchema = brickManifest.datasource;
 
   invariant(datasourceSchema, "Datasource schema is required for DatasourceRefField");
 
@@ -109,7 +117,7 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
     })
     .sort((a, b) => (a.compatible === b.compatible ? 0 : a.compatible ? -1 : 1));
 
-  const externalDatasource = allDatasources.find((ds) => ds.id === currentValue.id);
+  const externalDatasource = allDatasources.find((ds) => ds.id === currentValue.datasource?.id);
   const externalFields = externalDatasource
     ? externalDatasource.schema.type === "array"
       ? externalDatasource.schema.items?.properties
@@ -184,9 +192,9 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-3 flex-1 mx-px">
               <Select.Root
-                value={currentValue.id}
+                value={currentValue.datasource?.id}
                 size="1"
-                onValueChange={(value) => onChange({ ...currentValue, id: value })}
+                onValueChange={(value) => onDataSourceChange({ id: value })}
               >
                 <Select.Trigger radius="large" variant="surface" placeholder="Select a database" />
                 <Select.Content position="popper">
@@ -213,8 +221,8 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
                   <FieldsMapper
                     externalFields={externalFields}
                     schemaFields={schemaFields}
-                    onChange={onMappingChange}
-                    currentMapping={currentValue.mapping}
+                    onChange={(mapping) => onDataSourceChange({ mapping })}
+                    currentMapping={currentValue.datasource?.mapping ?? {}}
                   />
                 </div>
                 <div className="flex flex-col flex-1 gap-2">
@@ -227,9 +235,9 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRef>> = (props) => {
                   </h3>
                   <SegmentedControl.Root
                     onValueChange={(val) => {
-                      onChange({ ...currentValue, limit: parseInt(val) });
+                      onDataSourceChange({ limit: parseInt(val) });
                     }}
-                    value={(currentValue.limit ?? 10).toString()}
+                    value={(currentValue.datasource?.limit ?? 10).toString()}
                     size="1"
                     className="w-full !max-w-full !mt-1"
                     radius="large"

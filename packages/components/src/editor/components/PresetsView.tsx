@@ -61,8 +61,8 @@ export default function PresetsView({ onChoose }: PresetsViewProps) {
                   preset?.border?.radius,
                   preset?.border?.style,
                   preset?.border?.width,
-                  preset?.text?.color,
-                  preset?.effects?.shadow,
+                  preset?.color,
+                  preset?.shadow,
                 )}
               >
                 <h2 className="text-center text-xs font-medium select-none">{style.name}</h2>

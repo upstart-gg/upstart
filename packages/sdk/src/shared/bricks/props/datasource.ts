@@ -21,15 +21,15 @@ export function datasourceRef() {
           "ui:group:title": "Dynamic / Static Mode",
         }),
       ),
+      useExistingDatasource: Type.Boolean({
+        title: "Use Existing data source",
+        default: false,
+      }),
       datasource: Type.Optional(
         Type.Object(
           {
             id: Type.String({
               title: "Data Source ID",
-            }),
-            useExistingDatasource: Type.Boolean({
-              title: "Use Existing data source",
-              default: false,
             }),
             mapping: Type.Record(Type.String(), Type.String(), {
               description: "Mapping of data source fields to brick props",
