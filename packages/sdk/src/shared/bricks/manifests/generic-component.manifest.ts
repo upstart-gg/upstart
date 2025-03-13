@@ -1,6 +1,6 @@
 import { Type } from "@sinclair/typebox";
-import { commonProps, commonStyleProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineProps } from "../props/helpers";
 
 // get filename from esm import.meta
 export const manifest = defineBrickManifest({
@@ -16,16 +16,12 @@ export const manifest = defineBrickManifest({
     <line x1="9" y1="14" x2="15" y2="14"></line>
 </svg>
   `,
-  props: Type.Composite([
-    commonProps,
-    commonStyleProps,
-    Type.Object({
-      render: Type.Function([Type.Object({}, { additionalProperties: true })], Type.Any(), {
-        title: "React component",
-      }),
-      componentProps: Type.Optional(Type.Object({}, { additionalProperties: true })),
+  props: defineProps({
+    render: Type.Function([Type.Object({}, { additionalProperties: true })], Type.Any(), {
+      title: "React component",
     }),
-  ]),
+    componentProps: Type.Optional(Type.Object({}, { additionalProperties: true })),
+  }),
 });
 
 export type Manifest = typeof manifest;

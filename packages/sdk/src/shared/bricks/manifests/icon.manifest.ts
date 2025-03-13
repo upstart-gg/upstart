@@ -1,7 +1,5 @@
-import { Type } from "@sinclair/typebox";
-import { commonProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { textContentProps } from "../props/text";
+import { defineProps } from "../props/helpers";
 
 export const manifest = defineBrickManifest({
   type: "icon",
@@ -13,7 +11,7 @@ export const manifest = defineBrickManifest({
           stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
           <path d="M7 12 L12 7 L17 12 L12 17 Z"></path></svg>`,
-  props: Type.Composite([textContentProps, commonProps]),
+  props: defineProps({}),
 });
 
 export type Manifest = typeof manifest;

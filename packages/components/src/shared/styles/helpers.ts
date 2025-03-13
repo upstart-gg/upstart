@@ -1,5 +1,5 @@
 import { tx, apply, css } from "@upstart.gg/style-system/twind";
-import type { AllStyleProps } from "@upstart.gg/sdk/bricks/props/all";
+import type { AllStyleProps } from "@upstart.gg/sdk/shared/bricks/props/common";
 import { propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
 
 export type BrickStyleProps = AllStyleProps & {

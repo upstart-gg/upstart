@@ -1,4 +1,8 @@
-import { type TProperties, Type, type TSchema, TObject } from "@sinclair/typebox";
+/**
+ * Helper functions for defining and working with props and groups of props
+ */
+import { type TProperties, Type, type TSchema, type TObject } from "@sinclair/typebox";
+import { commonProps } from "./common";
 
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -14,17 +18,17 @@ export interface PropSchema extends TSchema {
   title: string;
 }
 
-export type Prop = {
-  id: string;
+export type Prop<T = TSchema> = {
   title: string;
-  schema: TSchema;
-  children?: (PropGroup | TSchema)[];
+  $id?: string;
+  description?: string;
+  schema: T;
 };
 
-export type PropGroup = {
+export type PropGroup<T extends TProperties = TProperties> = {
   title: string;
   tab: "common" | "preset";
-  children: (PropSchema | PropGroup | TSchema)[]; // Modified to allow nested PropGroup
+  children: T;
 };
 
 // UI metadata that we want to associate with schemas - only for group-related info
@@ -33,42 +37,18 @@ export type UIMetadata = {
   groupTab?: string;
 };
 
-// Type guard to check if an object is a PropGroup
-function isPropGroup(obj: PropSchema | PropGroup | TSchema): obj is PropGroup {
-  return obj && typeof obj === "object" && "title" in obj && "children" in obj;
-}
-
-// Type guard to check if an object is a TSchema with metadata
-function isSchemaWithGroupMetadata(obj: PropGroup | TSchema): obj is TSchema {
-  return obj && typeof obj === "object" && "metadata" in obj && obj.metadata !== undefined;
-}
-
 function groupTitleToId(title: string) {
   return title.toLowerCase().replace(/\s/g, "_");
 }
 
-function processGroupChild(child: PropSchema | PropGroup | TSchema) {
-  if (isPropGroup(child)) {
-    // If it's a nested group, process it recursively
-    const nestedGroup = group(child);
-    return [groupTitleToId(child.title), nestedGroup];
-  } else {
-    return [child.id ?? groupTitleToId(child.title ?? `group`), child];
-  }
-}
-
-function group({ title, children, tab = "common" }: PartialBy<PropGroup, "tab">) {
-  // Process each child, handling both PropSchema and nested PropGroup
-  const properties: TProperties = {};
-
-  for (const child of children) {
-    const [key, schema] = processGroupChild(child);
-    properties[key] = schema;
-  }
-
+function group<T extends TProperties>({
+  title,
+  children,
+  tab = "common",
+}: PartialBy<PropGroup<T>, "tab">): TObject<T> {
   // Create the TypeBox schema with title as a standard property
   // and group-specific info in metadata
-  return Type.Object(properties, {
+  return Type.Object(children, {
     title,
     metadata: {
       group: groupTitleToId(title),
@@ -77,52 +57,18 @@ function group({ title, children, tab = "common" }: PartialBy<PropGroup, "tab">)
   });
 }
 
-function prop({ id, title, schema, children }: Prop) {
-  // If there are no children, return a schema with title
-  if (!children || children.length === 0) {
-    // add the title
-    return { ...schema, title, id };
+function prop<T extends TSchema>({ title, schema, description, $id }: Prop<T>): T {
+  // add the title
+  schema.title = title;
+  // add the description
+  if (description) {
+    schema.description = description;
   }
-
-  // If there are children groups, create a properties object
-  const childProperties: TProperties = {};
-
-  // Process each child into the properties object
-  for (const child of children) {
-    if (isPropGroup(child)) {
-      // It's a PropGroup, process it recursively
-      const groupSchema = group(child);
-      childProperties[groupTitleToId(child.title)] = groupSchema;
-    } else if (isSchemaWithGroupMetadata(child)) {
-      // It's a TSchema with group metadata, extract title
-      const metadata = child.metadata as UIMetadata;
-      const schemaTitle = (child.title as string) || null;
-      if (schemaTitle) {
-        childProperties[schemaTitle.toLowerCase()] = child;
-      } else if (metadata?.group) {
-        childProperties[metadata.group] = child;
-      } else {
-        // Fallback if no title
-        const randomKey = `group_${Object.keys(childProperties).length}`;
-        childProperties[randomKey] = child;
-      }
-    } else {
-      // It's a TSchema without metadata
-      const randomKey = `group_${Object.keys(childProperties).length}`;
-      childProperties[randomKey] = child;
-    }
+  // add the id
+  if ($id) {
+    schema.$id = $id;
   }
-
-  // Create a parent object that contains both the value and child groups
-  return Type.Object(
-    {
-      value: Type.Composite([schema], { title }),
-      ...childProperties,
-    },
-    {
-      title,
-    },
-  );
+  return schema;
 }
 
 // Functions to extract metadata from schemas
@@ -135,8 +81,11 @@ function getGroupInfo(schema: TSchema) {
   };
 }
 
-export function defineProps<P extends Record<string, TSchema>>(props: P) {
-  return Type.Object(props);
+export function defineProps<P extends TProperties>(props: P) {
+  return Type.Object({ ...commonProps, ...props });
 }
+
+export const optional = Type.Optional;
+export const array = Type.Array;
 
 export { group, prop, getGroupInfo };

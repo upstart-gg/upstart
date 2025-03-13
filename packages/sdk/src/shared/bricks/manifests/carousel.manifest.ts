@@ -1,6 +1,7 @@
 import { Type } from "@sinclair/typebox";
-import { commonProps, commonStyleProps } from "../props/all";
+import { commonProps } from "../props/common";
 import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineProps } from "../props/helpers";
 
 export const manifest = defineBrickManifest({
   type: "carousel",
@@ -14,7 +15,7 @@ export const manifest = defineBrickManifest({
     <circle cx="9" cy="17" r="0.5" fill="currentColor"></circle>
     <circle cx="12" cy="17" r="0.5" fill="currentColor"></circle>
     <circle cx="15" cy="17" r="0.5" fill="currentColor"></circle></svg>`,
-  props: Type.Composite([commonProps, commonStyleProps]),
+  props: defineProps({}),
 });
 
 export type Manifest = typeof manifest;

@@ -2,9 +2,8 @@ import { Type, type Static } from "@sinclair/typebox";
 import { customAlphabet } from "nanoid";
 import { LAYOUT_COLS } from "./layout-constants";
 import { defaultProps } from "./bricks/manifests/all-manifests";
-import type { BrickManifest } from "./brick-manifest";
-import { background } from "./bricks/props/background";
 import { attr } from "./attributes";
+import { background } from "./bricks/props/background";
 
 /**
  * Generates a unique identifier for bricks.
@@ -136,7 +135,7 @@ export type DefinedBrick = Static<typeof definedBrickSchema>;
 
 const sectionProps = Type.Object(
   {
-    background: Type.Optional(background),
+    background: Type.Optional(background()),
     width: Type.Optional(
       attr.enum("Section width", "max-w-full", {
         options: [

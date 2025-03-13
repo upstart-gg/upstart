@@ -1,7 +1,6 @@
-import { Type } from "@sinclair/typebox";
-import { commonProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { imageSchema } from "../props/image";
+import { defineProps } from "../props/helpers";
+import { image } from "../props/image";
 
 export const manifest = defineBrickManifest({
   type: "image",
@@ -14,7 +13,9 @@ export const manifest = defineBrickManifest({
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
           <circle cx="8.5" cy="8.5" r="1.5"></circle>
           <polyline points="21 15 16 10 5 21"></polyline></svg>`,
-  props: Type.Composite([imageSchema, commonProps]),
+  props: defineProps({
+    image: image(),
+  }),
 });
 
 export type Manifest = typeof manifest;

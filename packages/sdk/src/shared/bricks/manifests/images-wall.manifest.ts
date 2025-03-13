@@ -1,9 +1,10 @@
 import { Type } from "@sinclair/typebox";
-import { commonProps, commonStyleProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
-import { datasourceRefProps } from "../props/datasource";
-import { textContentProps } from "../props/text";
+import { datasourceRef } from "../props/datasource";
+import { defineProps, group } from "../props/helpers";
+import { gap, layoutType } from "../props/container";
+import { number } from "../props/number";
 
 export const datasource = Type.Array(
   Type.Object({
@@ -49,52 +50,20 @@ export const manifest = defineBrickManifest({
     <rect x="5" y="12" width="6" height="7" rx="1"></rect>
     <rect x="13" y="14" width="6" height="5" rx="1"></rect>
 </svg>`,
-  props: Type.Composite([
-    textContentProps,
-    commonProps,
-    Type.Object({
-      imagesWallLayout: Type.Union(
-        [
-          Type.Literal("flex", { title: "Flex", description: "Images are displayed in a flex layout" }),
-          Type.Literal("grid", { title: "Grid", description: "Images are displayed in a grid layout" }),
-        ],
-        {
-          "ui:field": "enum",
-          "ui:group": "images-wall-layout",
-          "ui:group:order": 0,
-          "ui:group:title": "Images layout",
-          default: "grid",
-        },
-      ),
-      imagesWallColumns: Type.Number({
-        title: "Columns",
-        "ui:group": "images-wall-layout",
-        "ui:field": "slider",
-        default: 3,
-        minimum: 2,
-        maximum: 8,
-      }),
-      imagesWallGap: Type.Union(
-        [
-          Type.Literal("gap-0", { title: "None" }),
-          Type.Literal("gap-1", { title: "S" }),
-          Type.Literal("gap-2", { title: "M" }),
-          Type.Literal("gap-4", { title: "L" }),
-          Type.Literal("gap-8", { title: "XL" }),
-          Type.Literal("gap-16", { title: "XXL" }),
-        ],
-        {
-          title: "Gap",
-          description: "Space between images",
-          "ui:field": "enum",
-          "ui:group": "images-wall-layout",
-          default: "gap-1",
-        },
-      ),
+  props: defineProps({
+    content: datasourceRef(),
+    styles: group({
+      title: "Styles",
+      children: {
+        layoutType: layoutType(),
+        columns: number("Columns", 3, {
+          min: 1,
+          max: 8,
+        }),
+        gap: gap(),
+      },
     }),
-    commonStyleProps,
-    datasourceRefProps,
-  ]),
+  }),
   datasource,
 });
 

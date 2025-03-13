@@ -1,7 +1,6 @@
 import { Type } from "@sinclair/typebox";
-import { commonProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { textContentProps } from "../props/text";
+import { defineProps } from "../props/helpers";
 
 export const manifest = defineBrickManifest({
   type: "countdown",
@@ -28,7 +27,7 @@ export const manifest = defineBrickManifest({
     <path d="M17 15 L20 15"></path>
     <path d="M20 9 L20 15"></path>
 </svg>`,
-  props: Type.Composite([textContentProps, commonProps]),
+  props: defineProps({}),
 });
 
 export type Manifest = typeof manifest;

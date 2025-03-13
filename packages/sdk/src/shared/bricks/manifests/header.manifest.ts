@@ -1,13 +1,11 @@
 import { Type, type Static } from "@sinclair/typebox";
-import { commonProps, commonStyleProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { textContentProps } from "../props/text";
-import { datasourceRefProps } from "../props/datasource";
-import { background } from "../props/background";
 import { defineProps, group, prop } from "../props/helpers";
-import { propBorder } from "../props/border";
-import { propString, propUrlOrPageId } from "../props/string";
-import { propImage } from "../props/image";
+import { border } from "../props/border";
+import { string, urlOrPageId } from "../props/string";
+import { image } from "../props/image";
+import { backgroundColor } from "../props/background";
+import { color } from "../props/text";
 
 export const manifest = defineBrickManifest({
   type: "header",
@@ -36,65 +34,40 @@ export const manifest = defineBrickManifest({
 
   props: defineProps({
     containerStyles: group({
-      title: "Styles",
-      children: [propBorder("Container border")],
+      title: "Container styles",
+      children: { border: border(), backgroundColor: backgroundColor() },
     }),
     navigation: group({
       title: "Navigation",
-      children: [
-        prop({
-          id: "navItems",
+      children: {
+        navItems: prop({
           title: "Nav items",
           schema: Type.Array(
             Type.Object({
-              urlOrPageId: propUrlOrPageId("urlOrPageId"),
+              urlOrPageId: urlOrPageId(),
             }),
             { title: "Navigation items", default: [] },
           ),
         }),
-      ],
+      },
     }),
     brand: group({
       title: "Brand",
-      children: [
-        propString("brand_name", "Brand name", "Company name"),
-        propImage("logo", "Logo"),
-        group({
+      children: {
+        brandName: string("Brand name", "Acme Inc."),
+        logo: image("Logo"),
+        styles: group({
           title: "Styles",
-          children: [propBorder("Brand border")],
+          children: {
+            color: color(),
+          },
         }),
-      ],
+      },
     }),
   }),
-  // props: Type.Composite([
-  //   commonProps,
-  //   // commonStyleProps,
-  //   datasourceRefProps,
-  //   Type.Object({
-  //     mainContainerStyles: Type.Omit(commonStyleProps, ["layout", "effects", "text"]),
-  //     brandPart: Type.Object({
-  //       brand: Type.String({ title: "Brand name", default: "Company name" }),
-  //       logo: Type.Optional(Type.String({ title: "Logo", format: "uri" })),
-  //       styles: Type.Object(
-  //         {
-  //           background,
-  //         },
-  //         {
-  //           "ui:inspector-tab": "style",
-  //         },
-  //       ),
-  //     }),
-  //     navItems: Type.Array(
-  //       Type.Object({
-  //         label: Type.String({ title: "Label" }),
-  //         url: Type.String({ title: "URL" }),
-  //       }),
-  //       { title: "Navigation items", default: [] },
-  //     ),
-  //   }),
-  // ]),
 });
 
 export type Manifest = typeof manifest;
 
+// for testing
 type Props = Static<typeof manifest.props>;

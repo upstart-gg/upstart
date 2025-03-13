@@ -1,7 +1,7 @@
 import { Type } from "@sinclair/typebox";
-import { commonProps } from "../props/all";
+import { commonProps } from "../props/common";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { textContentProps } from "../props/text";
+import { defineProps } from "../props/helpers";
 
 export const manifest = defineBrickManifest({
   type: "form",
@@ -16,7 +16,7 @@ export const manifest = defineBrickManifest({
     <rect x="12" y="17" width="6" height="2" rx="1"
       fill="currentColor"
     ></rect></svg>`,
-  props: Type.Composite([textContentProps, commonProps]),
+  props: defineProps({}),
 });
 
 export type Manifest = typeof manifest;

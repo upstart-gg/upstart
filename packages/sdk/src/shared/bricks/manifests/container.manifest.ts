@@ -1,8 +1,7 @@
-import { Type } from "@sinclair/typebox";
-import { commonProps, commonStyleProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { containerChildrenProps, containerLayoutProps } from "../props/container";
-import { datasourceRefProps } from "../props/datasource";
+import { defineProps, group } from "../props/helpers";
+import { background } from "../props/background";
+import { datasourceRef } from "../props/datasource";
 
 // Generic container can hold any type of array data source
 export const manifest = defineBrickManifest({
@@ -16,15 +15,21 @@ export const manifest = defineBrickManifest({
         stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
         <line x1="3" y1="12" x2="21" y2="12"></line>
-        <line x1="12" y1="3" x2="12" y2="21"></line></svg>
-  `,
-  props: Type.Composite([
-    containerLayoutProps,
-    containerChildrenProps,
-    commonProps,
-    datasourceRefProps,
-    commonStyleProps,
-  ]),
+        <line x1="12" y1="3" x2="12" y2="21"></line></svg>`,
+  props: defineProps({
+    styles: group({
+      title: "Styles",
+      children: {
+        background: background(),
+      },
+    }),
+    datasource: group({
+      title: "Data",
+      children: {
+        ds: datasourceRef(),
+      },
+    }),
+  }),
 });
 
 export type Manifest = typeof manifest;

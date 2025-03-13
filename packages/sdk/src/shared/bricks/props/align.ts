@@ -1,50 +1,48 @@
 import { Type, type Static } from "@sinclair/typebox";
-import { groupAlign } from "./_groups";
+import { prop } from "./helpers";
 
-export const align = Type.Object(
-  {
-    horizontal: Type.Union(
-      [
-        Type.Literal("justify-start", { title: "Left" }),
-        Type.Literal("justify-center", { title: "Center" }),
-        Type.Literal("justify-end", { title: "Right" }),
-      ],
+type AlignBasicOptions = {
+  title?: string;
+  defaultValue?: {
+    horizontal: string;
+    vertical: string;
+  };
+};
+
+export function basicAlign(opts: AlignBasicOptions = {}) {
+  const { title = "Align", defaultValue = { horizontal: "justify-start", vertical: "items-center" } } = opts;
+  return prop({
+    title,
+    schema: Type.Object(
       {
-        title: "Horizontal",
-        "ui:group": "align",
-        "ui:group:title": "Alignment",
-        default: "start",
+        horizontal: Type.Union(
+          [
+            Type.Literal("justify-start", { title: "Left" }),
+            Type.Literal("justify-center", { title: "Center" }),
+            Type.Literal("justify-end", { title: "Right" }),
+          ],
+          {
+            title: "Horizontal",
+          },
+        ),
+        vertical: Type.Union(
+          [
+            Type.Literal("items-start", { title: "Top" }),
+            Type.Literal("items-center", { title: "Center" }),
+            Type.Literal("items-end", { title: "Bottom" }),
+          ],
+          {
+            title: "Vertical",
+          },
+        ),
+      },
+      {
+        "ui:responsive": true,
+        "ui:field": "align-basic",
+        default: defaultValue,
       },
     ),
-    vertical: Type.Union(
-      [
-        Type.Literal("items-start", { title: "Top" }),
-        Type.Literal("items-center", { title: "Center" }),
-        Type.Literal("items-end", { title: "Bottom" }),
-      ],
-      {
-        title: "Vertical",
-        "ui:group": "align",
-        "ui:group:title": "Alignment",
-        default: "stretch",
-      },
-    ),
-  },
-  {
-    "ui:responsive": true,
-    "ui:field": "align-basic",
-    default: {
-      horizontal: "justify-start",
-      vertical: "items-center",
-    },
-    ...groupAlign,
-  },
-);
+  });
+}
 
-export type AlignBasicSettings = Static<typeof align>;
-
-export const alignBasicProps = Type.Object({
-  align,
-});
-
-export type AlignBasicProps = Static<typeof alignBasicProps>;
+export type AlignBasicSettings = Static<ReturnType<typeof basicAlign>>;

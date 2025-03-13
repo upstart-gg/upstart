@@ -7,14 +7,8 @@ type StrFieldOptions = StringOptions &
     format?: (typeof jsonStringsSupportedFormats)[number];
   };
 
-export function propString(
-  id: string,
-  title: string,
-  defaultValue?: string,
-  options: Omit<StrFieldOptions, "default"> = {},
-) {
+export function string(title: string, defaultValue?: string, options: Omit<StrFieldOptions, "default"> = {}) {
   return prop({
-    id,
     title,
     schema: Type.String({ default: defaultValue, ...options }),
   });
@@ -29,17 +23,15 @@ const pageIdSchema = Type.String({
   "ui:field": "page-id",
 });
 
-export function propUrl(id: string, title = "URL") {
+export function url(title = "URL") {
   return prop({
-    id,
     title,
     schema: urlSchema,
   });
 }
 
-export function propUrlOrPageId(id: string, title = "URL or Page ID") {
+export function urlOrPageId(title = "URL or Page ID") {
   return prop({
-    id,
     title,
     schema: Type.Union([urlSchema, pageIdSchema], { title: "URL or Page ID" }),
   });

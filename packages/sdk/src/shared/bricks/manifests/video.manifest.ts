@@ -1,6 +1,5 @@
-import { Type } from "@sinclair/typebox";
-import { commonProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineProps } from "../props/helpers";
 
 export const manifest = defineBrickManifest({
   type: "video",
@@ -25,22 +24,7 @@ export const manifest = defineBrickManifest({
     stroke-width="4"
     stroke-linejoin="round"
   /></svg>`,
-  props: Type.Composite([
-    Type.Object({
-      url: Type.String({
-        default: "https://placehold.co/400x200",
-        title: "File",
-        description: "The image file",
-        "ui:field": "file",
-      }),
-      alt: Type.String({
-        title: "Alt Text",
-        description: "Alternative text for the image",
-        "ui:placeholder": "Your image description",
-      }),
-    }),
-    commonProps,
-  ]),
+  props: defineProps({}),
 });
 
 export type Manifest = typeof manifest;

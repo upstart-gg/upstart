@@ -1,8 +1,9 @@
 import { Type } from "@sinclair/typebox";
-import { commonProps, commonStyleProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { padding } from "../props/layout";
 import { backgroundColor } from "../props/background";
+import { defineProps, group } from "../props/helpers";
+import { textContent } from "../props/text";
 
 export const manifest = defineBrickManifest({
   type: "card",
@@ -16,70 +17,30 @@ export const manifest = defineBrickManifest({
         <line x1="3" y1="11" x2="21" y2="11"></line><line x1="7" y1="14" x2="17" y2="14"></line>
         <line x1="7" y1="17" x2="15" y2="17"></line></svg>`,
 
-  props: Type.Composite([
-    commonProps,
-    commonStyleProps,
-    Type.Object({
-      cardTitle: Type.Object(
-        {
-          content: Type.String({
-            "ui:field": "hidden",
-            "ui:group": "card-title",
-            "ui:group:title": "Title",
-            "ui:group:order": 0,
-          }),
-          padding,
-          backgroundColor,
-        },
-        {
-          title: "Title",
-          "ui:group": "card-title",
-          "ui:group:title": "Title",
-          "ui:group:order": 0,
-          default: "Edit my title",
-        },
-      ),
-      cardImage: Type.Optional(
-        Type.Object(
-          {
-            image: Type.String({
-              title: "Image",
-              "ui:field": "image",
-              "ui:accept": "image/*",
-              "ui:show-img-search": true,
-            }),
-          },
-          {
-            title: "Image",
-            "ui:group": "card-image",
-            "ui:group:title": "Image",
-            "ui:group:order": 0,
-          },
-        ),
-      ),
-      cardBody: Type.Object(
-        {
-          content: Type.String({
-            "ui:field": "hidden",
-            "ui:group": "card-body",
-            "ui:group:title": "Body",
-            "ui:group:order": 0,
-          }),
-          padding,
-          backgroundColor,
-        },
-        {
-          title: "Body",
-          "ui:group": "card-body",
-          "ui:group:title": "Body",
-          "ui:group:order": 0,
-          default: {
-            content: "Edit my content",
-          },
-        },
-      ),
+  props: defineProps({
+    cardTitle: group({
+      title: "Title",
+      children: {
+        content: textContent(),
+        padding: padding(),
+        backgroundColor: backgroundColor(),
+      },
     }),
-  ]),
+    cardImage: group({
+      title: "Image",
+      children: {
+        image: textContent(),
+      },
+    }),
+    cardBody: group({
+      title: "Body",
+      children: {
+        content: textContent(),
+        padding: padding(),
+        backgroundColor: backgroundColor(),
+      },
+    }),
+  }),
 });
 
 export type Manifest = typeof manifest;

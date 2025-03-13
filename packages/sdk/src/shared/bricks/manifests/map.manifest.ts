@@ -1,6 +1,5 @@
-import { Type } from "@sinclair/typebox";
-import { commonProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineProps } from "../props/helpers";
 
 export const manifest = defineBrickManifest({
   type: "map",
@@ -16,7 +15,7 @@ export const manifest = defineBrickManifest({
         <path d="M3 15 L21 15" stroke-width="0.3"></path>
         <path d="M12 5 C10.3431 5 9 6.34315 9 8 C9 9.3124 9.84285 10.4274 11 10.8229 L12 13 L13 10.8229
         C14.1571 10.4274 15 9.3124 15 8 C15 6.34315 13.6569 5 12 5Z"></path></svg>`,
-  props: Type.Composite([commonProps]),
+  props: defineProps({}),
 });
 
 export type Manifest = typeof manifest;

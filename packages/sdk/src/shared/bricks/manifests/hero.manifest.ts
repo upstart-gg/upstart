@@ -1,11 +1,9 @@
 import { Type } from "@sinclair/typebox";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { commonProps } from "../props/all";
-import { layout } from "../props/layout";
-import { border } from "../props/border";
+import { defineProps, group } from "../props/helpers";
+import { basicAlign } from "../props/align";
 import { background } from "../props/background";
-import { effects } from "../props/effects";
-import { align } from "../props/align";
+import { border } from "../props/border";
 
 const heroSize = Type.Union(
   [
@@ -44,10 +42,17 @@ export const manifest = defineBrickManifest({
     <rect x="10" y="10" width="80" height="80" rx="4" fill="none" stroke="currentColor" stroke-width="3"/>
     <rect x="20" y="35" width="60" height="12" rx="2" fill="currentColor"/>
     <rect x="20" y="52" width="40" height="12" rx="2" fill="currentColor"/></svg>`,
-  props: Type.Composite([
-    commonProps,
-    Type.Object({ layout, border, background, effects, heroSize, align, content }),
-  ]),
+  props: defineProps({
+    styles: group({
+      title: "Styles",
+      children: {
+        border: border(),
+        background: background(),
+        align: basicAlign(),
+        textSize: heroSize,
+      },
+    }),
+  }),
 });
 
 export type Manifest = typeof manifest;

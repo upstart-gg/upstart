@@ -257,7 +257,7 @@ const defaultAttributes = {
 
   // --- layout attributes ---
 
-  $bodyBackground: Type.Composite([background], {
+  $bodyBackground: Type.Composite([background()], {
     default: {
       color: "#ffffff",
     },
@@ -271,7 +271,7 @@ const defaultAttributes = {
 
   $pageBackground: Type.Composite(
     [
-      background,
+      background(),
       Type.Object(
         {},
         {
