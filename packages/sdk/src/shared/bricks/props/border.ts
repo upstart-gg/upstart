@@ -1,10 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
-
-const groupBorder = {
-  "ui:group": "border",
-  "ui:group:title": "Border",
-  "ui:inspector-tab": "style",
-};
+import { prop } from "./helpers";
 
 export const border = Type.Object(
   {
@@ -24,7 +19,6 @@ export const border = Type.Object(
         description: "Corners rounding",
         "ui:field": "enum",
         "ui:display": "button-group",
-        ...groupBorder,
       },
     ),
     style: Type.Union(
@@ -40,7 +34,6 @@ export const border = Type.Object(
         description: "The brick border style",
         "ui:field": "enum",
         "ui:display": "button-group",
-        ...groupBorder,
       },
     ),
     color: Type.String({
@@ -49,7 +42,6 @@ export const border = Type.Object(
       title: "Border color",
       "ui:field": "color",
       "ui:color-type": "border",
-      ...groupBorder,
     }),
     width: Type.Union(
       [
@@ -65,12 +57,11 @@ export const border = Type.Object(
         title: "Border width",
         "ui:field": "enum",
         "ui:display": "button-group",
-        ...groupBorder,
       },
     ),
   },
   {
-    title: "Border style",
+    title: "Border",
     "ui:field": "border",
     "ui:group": "border",
     "ui:group:title": "Border",
@@ -83,5 +74,13 @@ export const border = Type.Object(
     },
   },
 );
+
+export function propBorder(title = "Border", id = "border", schema = border) {
+  return prop({
+    id,
+    title,
+    schema,
+  });
+}
 
 export type BorderSettings = Static<typeof border>;

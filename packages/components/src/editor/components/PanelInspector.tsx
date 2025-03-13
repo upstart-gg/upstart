@@ -172,7 +172,7 @@ export default function Inspector() {
             </Callout.Text>
           </Callout.Root>
         )}
-        <ElementInspector brick={brick} manifest={manifest} />
+        <StyleTab brick={brick} manifest={manifest} />
       </ScrollablePanelTab>
       <ScrollablePanelTab tab="content">
         <ContentTab brick={brick} manifest={manifest} />
@@ -181,7 +181,7 @@ export default function Inspector() {
   );
 }
 
-function ElementInspector({ brick, manifest }: { brick: Brick; manifest: BrickManifest }) {
+function StyleTab({ brick, manifest }: { brick: Brick; manifest: BrickManifest }) {
   const { updateBrickProps } = useDraftHelpers();
   const previewMode = usePreviewMode();
   const getBrickInfo = useGetBrick();
@@ -190,7 +190,7 @@ function ElementInspector({ brick, manifest }: { brick: Brick; manifest: BrickMa
   const onChange = useCallback(
     (data: Record<string, unknown>, propertyChangedPath: string) => {
       if (!propertyChangedPath) {
-        console.warn("propertyChangedPath is missing in Element inspector");
+        console.warn("propertyChangedPath is missing in style tab");
         // ignore changes unrelated to the brick
         return;
       }
@@ -205,7 +205,7 @@ function ElementInspector({ brick, manifest }: { brick: Brick; manifest: BrickMa
     [brick.id, previewMode, updateBrickProps, brickInfo],
   );
 
-  invariant(brickInfo, "Brick info props is missing in Element inspector");
+  invariant(brickInfo, "Brick info props is missing in style tab");
 
   // const manifest = useMemo(() => manifests[brick.type], [brick.type]);
   const formData = useMemo(() => {

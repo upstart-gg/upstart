@@ -1,4 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
+import { prop } from "./helpers";
 
 export const groupEffects = {
   "ui:group": "effects",
@@ -24,7 +25,6 @@ export const effects = Type.Object(
         description: "Shadow",
         "ui:field": "enum",
         "ui:display": "button-group",
-        ...groupEffects,
       },
     ),
     opacity: Type.Optional(
@@ -37,7 +37,6 @@ export const effects = Type.Object(
         title: "Opacity",
         description: "Global opacity",
         "ui:field": "slider",
-        ...groupEffects,
       }),
     ),
     textShadow: Type.Optional(
@@ -54,16 +53,12 @@ export const effects = Type.Object(
           title: "Text shadow",
           "ui:field": "enum",
           "ui:display": "button-group",
-          ...groupEffects,
         },
       ),
     ),
   },
   {
-    title: "Effects",
     "ui:field": "effects",
-    "ui:group": "effects",
-    "ui:group:title": "Effects",
     default: {
       shadow: "shadow-none",
       textShadow: "text-shadow-none",
@@ -71,5 +66,32 @@ export const effects = Type.Object(
     },
   },
 );
+
+const shadowSchema = Type.Union(
+  [
+    Type.Literal("shadow-none", { title: "None" }),
+    Type.Literal("shadow-sm", { title: "Small" }),
+    Type.Literal("shadow-md", { title: "Medium" }),
+    Type.Literal("shadow-lg", { title: "Large" }),
+    Type.Literal("shadow-xl", { title: "Extra large" }),
+    Type.Literal("shadow-2xl", { title: "Extra large (2x)" }),
+  ],
+  {
+    $id: "shadow",
+    default: "shadow-none",
+    title: "Shadow",
+    description: "Shadow",
+    "ui:field": "enum",
+    "ui:display": "button-group",
+  },
+);
+
+export function propEffects(title = "Effects", id = "effects") {
+  return prop({
+    id,
+    title,
+    schema: effects,
+  });
+}
 
 export type EffectsSettings = Static<typeof effects>;

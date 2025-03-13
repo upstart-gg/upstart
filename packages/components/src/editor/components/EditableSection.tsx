@@ -162,6 +162,15 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
   const previewMode = usePreviewMode();
   const isLastSection = section.order === sections.length - 1;
   const isFirstSection = section.order === 0;
+
+  const btnCls = tx(
+    dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
+    "select-none",
+    " text-base px-2.5 h-9 bg-white/70 backdrop-blur-md",
+    "transition-opacity duration-500 group-hover/section:opacity-80",
+    "text-black/80 font-bold flex items-center gap-1",
+    "active:(outline-none ring-0) focus:(outline-none ring-0)",
+  );
   return (
     <>
       <Popover.Root onOpenChange={setModalOpen}>
@@ -171,36 +180,22 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
         </Popover.Content>
         <div
           className={tx(
-            "section-options-buttons",
-            "absolute z-[99999] left-1/2 -translate-x-1/2 flex gap-0 rounded-md [&>*:first-child]:rounded-l-md [&>*:last-child]:rounded-r-md",
-            isLastSection ? "bottom-1" : "-bottom-5",
+            "section-options-buttons bottom-0 absolute z-[99999] left-1/2 -translate-x-1/2",
+            "flex gap-0 rounded-t-md [&>*:first-child]:rounded-tl-md [&>*:last-child]:rounded-tr-md divide-x divide-white/80",
           )}
         >
-          <button
-            type="button"
-            disabled
-            className={tx(
-              dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
-              "section-resizable-handle select-none pointer-events-none",
-              " text-base px-2.5 h-10 bg-white/70 backdrop-blur-md shadow-lg",
-              "transition-opacity duration-500 group-hover/section:opacity-80",
-              " border-2 border-white/80 text-black/80 font-bold flex items-center cursor-default gap-1",
-            )}
+          <div
+            className={tx(btnCls, "cursor-default flex-col leading-[0.5] items-start justify-center gap-0")}
           >
-            {section.label ?? "Section"}
-          </button>
+            <div className="text-xs font-light leading-[0.8] ">Section</div>
+            <div className="text-sm font-semibold -mt-2">{section.label ?? "No name"}</div>
+          </div>
           {!isLastSection && (
             <Tooltip content="Drag vertically to resize section" delayDuration={500}>
               <button
                 type="button"
                 id={`${section.id}-resize-handle`}
-                className={tx(
-                  dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
-                  "section-resizable-handle select-none",
-                  " text-base px-2.5 h-10 backdrop-blur-md shadow-lg",
-                  "transition-opacity duration-500 group-hover/section:opacity-80 hover:!opacity-100",
-                  "bg-white/70 border-2 border-white/80 text-black/80 font-bold flex items-center cursor-ns-resize gap-1",
-                )}
+                className={tx(btnCls, "cursor-ns-resize", "section-resizable-handle")}
               >
                 <TbArrowAutofitHeight className="w-6 h-6" />
               </button>
@@ -226,13 +221,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
                     document.getElementById(section.id)?.scrollIntoView({ behavior: "smooth" });
                   }, 100);
                 }}
-                className={tx(
-                  "select-none",
-                  dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
-                  "text-base px-2.5 h-10 backdrop-blur-md shadow-lg",
-                  "transition-opacity duration-500 group-hover/section:opacity-80 hover:!opacity-100 active:shadow-md",
-                  "bg-white/70 border-2 border-white/80 text-black/80 font-bold flex items-center cursor-pointer gap-1",
-                )}
+                className={tx(btnCls, "cursor-pointer")}
               >
                 <TbBorderCorners className="w-6 h-6" />
               </button>
@@ -240,16 +229,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
           )}
           <DropdownMenu.Root modal={false} onOpenChange={setDropdownOpen}>
             <DropdownMenu.Trigger>
-              <button
-                type="button"
-                className={tx(
-                  "select-none",
-                  dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
-                  "text-base px-2.5 h-10 backdrop-blur-md shadow-lg",
-                  "transition-opacity duration-500 group-hover/section:opacity-80 hover:!opacity-100",
-                  "bg-white/70 border-2 border-white/80 text-black/80 font-bold flex items-center cursor-pointer gap-1 active:(outline-none ring-0) focus:(outline-none ring-0)",
-                )}
-              >
+              <button type="button" className={tx(btnCls)}>
                 <TbDots className="w-6 h-6" />
                 <Popover.Anchor />
               </button>
