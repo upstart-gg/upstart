@@ -3,13 +3,15 @@ import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/header.manifest"
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { tx, apply } from "@upstart.gg/style-system/twind";
+import { useBrickManifest } from "../hooks/use-brick-manifest";
 
-const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
+const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, ref) => {
   // props = { ...defaults.props, ...props };
 
-  console.log("editor props", props);
+  console.log("editor props", brick.props);
 
-  const className = useBrickStyle(props.containerStyles);
+  const className = useBrickStyle<Manifest>(brick);
+  const props = brick.props;
 
   return (
     <header

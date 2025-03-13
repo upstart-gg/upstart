@@ -5,42 +5,42 @@ import {
   getBackgroundStyles,
   getBasicAlignmentStyles,
   getBorderStyles,
-  getEffectsStyles,
   getFlexStyles,
-  type BrickStyleProps,
+  getShadowStyles,
+  getTextShadowStyles,
+  getOpacityStyles,
 } from "../styles/helpers";
-
-type UseBrickStyleWrapperProps = {
-  brick: Brick;
-  editable?: boolean;
-  className?: string;
-  selected?: boolean;
-};
+import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
+import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
+import { useBrickManifest } from "./use-brick-manifest";
 
 /**
  * The classNames for the brick
  */
-export function useBrickStyle(props: BrickStyleProps) {
+export function useBrickStyle<T extends BrickManifest>(brick: BrickProps<T>["brick"]) {
+  const manifest = useBrickManifest<T>(brick.type);
+  const { props } = brick;
+
   // This is the inner brick style. As the wrapper uses "display: flex",
   // we use flex-1 to make the inner brick fill the space.
   return tx(apply("flex-1"), [
-    apply(props.className),
-    props.layout?.padding,
-    props.text?.color,
-    props.text?.size,
-    props.text?.color,
-    // props.textAlign,
-    getFlexStyles(props),
-    // Border
-    getBorderStyles(props),
-    // Background
-    getBackgroundStyles(props),
-    // Effects
-    getEffectsStyles(props),
+    // apply(props.className),
+    // props.layout?.padding,
+    // props.text?.color,
+    // props.text?.size,
+    // getFlexStyles(props),
+    // getBorderStyles(props),
+    // getBackgroundStyles(props),
+    // getShadowStyles(props),
   ]);
 }
 
-export function useBrickWrapperStyle({ brick, editable, className, selected }: UseBrickStyleWrapperProps) {
+export function useBrickWrapperStyle<T extends BrickManifest>({
+  brick,
+  editable,
+  className,
+  selected,
+}: BrickProps<T>) {
   const { props, position } = brick;
   const isContainerChild = brick.parentId !== undefined;
 
@@ -76,12 +76,8 @@ export function useBrickWrapperStyle({ brick, editable, className, selected }: U
         ${position.mobile.manualHeight ? `h-[${position.mobile.manualHeight * LAYOUT_ROW_HEIGHT}px]` : ""}
       )`,
 
-    // Flex
-    getFlexStyles(props as BrickStyleProps),
-    // Basic alignment
-    getBasicAlignmentStyles(props as BrickStyleProps),
-    // z-index
-    // (brick.props.z as string) && `z-[${brick.props.z}]`,
+    // getFlexStyles(props as BrickStyleProps),
+    // getBasicAlignmentStyles(props as BrickStyleProps),
   );
 }
 

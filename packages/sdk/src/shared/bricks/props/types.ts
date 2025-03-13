@@ -1,20 +1,13 @@
 import type { Static } from "@sinclair/typebox";
 import type { BrickManifest } from "~/shared/brick-manifest";
+import type { Brick } from "~/shared/bricks";
 
-// Fixed version with proper prop typing
-export type BrickProps<M extends BrickManifest> = {
-  /**
-   * Brick ID.
-   */
-  id: string;
-
-  /**
-   * Overriden props for mobile.
-   */
-  mobileProps: Partial<Static<M["props"]>>;
-
-  /**
-   * Whether the brick is currently being displayed in the editor.
-   */
-  editable: boolean;
-} & Static<M["props"]>;
+export type BrickProps<T extends BrickManifest> = {
+  brick: Omit<Brick, "props" | "mobileProps"> & {
+    props: Static<T["props"]>;
+    mobileProps: Partial<Static<T["props"]>>;
+  };
+  editable?: boolean;
+  className?: string;
+  selected?: boolean;
+};

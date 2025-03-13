@@ -15,7 +15,11 @@ const Button = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => 
   //   "font-size": `var(--${heroFontSize})`,
   // });
 
-  return <TextBrick {...props} ref={ref} />;
+  return (
+    <button type="button">
+      <TextBrick {...props} ref={ref} />
+    </button>
+  );
 });
 
 export default Button;
