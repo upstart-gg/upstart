@@ -1,5 +1,5 @@
 import type { GenericPageContext } from "@upstart.gg/sdk/shared/page";
-import BrickWrapper from "./BrickWrapper";
+import BrickWrapper from "./Brick";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
 
 export default function Page({ page }: { page: GenericPageContext }) {
