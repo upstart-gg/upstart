@@ -33,10 +33,6 @@ export type UIMetadata = {
   groupTab?: string;
 };
 
-function isTSchema(obj: PropSchema | PropGroup | TSchema): obj is TSchema {
-  return obj && typeof obj === "object" && "type" in obj && !("children" in obj);
-}
-
 // Type guard to check if an object is a PropGroup
 function isPropGroup(obj: PropSchema | PropGroup | TSchema): obj is PropGroup {
   return obj && typeof obj === "object" && "title" in obj && "children" in obj;
@@ -51,7 +47,7 @@ function groupTitleToId(title: string) {
   return title.toLowerCase().replace(/\s/g, "_");
 }
 
-function processGroupChild(child: PropSchema | PropGroup | TSchema): [string, TSchema] {
+function processGroupChild(child: PropSchema | PropGroup | TSchema) {
   if (isPropGroup(child)) {
     // If it's a nested group, process it recursively
     const nestedGroup = group(child);
@@ -61,7 +57,7 @@ function processGroupChild(child: PropSchema | PropGroup | TSchema): [string, TS
   }
 }
 
-function group({ title, children, tab = "common" }: PartialBy<PropGroup, "tab">): TSchema {
+function group({ title, children, tab = "common" }: PartialBy<PropGroup, "tab">) {
   // Process each child, handling both PropSchema and nested PropGroup
   const properties: TProperties = {};
 
@@ -81,11 +77,11 @@ function group({ title, children, tab = "common" }: PartialBy<PropGroup, "tab">)
   });
 }
 
-function prop({ id, title, schema, children }: Prop): PropSchema {
+function prop({ id, title, schema, children }: Prop) {
   // If there are no children, return a schema with title
   if (!children || children.length === 0) {
     // add the title
-    return { ...schema, title, id } as PropSchema;
+    return { ...schema, title, id };
   }
 
   // If there are children groups, create a properties object
@@ -126,7 +122,7 @@ function prop({ id, title, schema, children }: Prop): PropSchema {
     {
       title,
     },
-  ) as PropSchema;
+  );
 }
 
 // Functions to extract metadata from schemas
@@ -139,7 +135,7 @@ function getGroupInfo(schema: TSchema) {
   };
 }
 
-export function defineProps(props: Record<string, TSchema>) {
+export function defineProps<P extends Record<string, TSchema>>(props: P) {
   return Type.Object(props);
 }
 

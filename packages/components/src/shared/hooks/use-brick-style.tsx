@@ -9,7 +9,6 @@ import {
   getFlexStyles,
   type BrickStyleProps,
 } from "../styles/helpers";
-import { useBrickManifest } from "./use-brick-manifest";
 
 type UseBrickStyleWrapperProps = {
   brick: Brick;

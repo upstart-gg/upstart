@@ -1,4 +1,4 @@
-import { Type } from "@sinclair/typebox";
+import { Type, type Static } from "@sinclair/typebox";
 import { commonProps, commonStyleProps } from "../props/all";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { textContentProps } from "../props/text";
@@ -96,3 +96,5 @@ export const manifest = defineBrickManifest({
 });
 
 export type Manifest = typeof manifest;
+
+type Props = Static<typeof manifest.props>;
