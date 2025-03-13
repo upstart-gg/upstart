@@ -65,3 +65,13 @@ export function getFlexStyles(props: FlexSettings, mobileProps?: FlexSettings) {
   }
   return [props.direction, props.justifyContent, props.alignItems, props.wrap, props.gap];
 }
+
+export const stylesHelpersMap = {
+  "#styles:background": getBackgroundStyles,
+  "#styles:basicAlign": getBasicAlignmentStyles,
+  "#styles:border": getBorderStyles,
+  "#styles:flex": getFlexStyles,
+  "#styles:shadow": getShadowStyles,
+  "#styles:textShadow": getTextShadowStyles,
+  "#styles:opacity": getOpacityStyles,
+};

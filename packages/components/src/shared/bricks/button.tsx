@@ -1,23 +1,14 @@
-import { Value } from "@sinclair/typebox/value";
 import { forwardRef } from "react";
-import { tx, css } from "@upstart.gg/style-system/twind";
-import TextBrick from "./text";
-import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/button.manifest";
+import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/button.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { getBrickManifestDefaults } from "@upstart.gg/sdk/shared/brick-manifest";
+import { useBrickStyle } from "../hooks/use-brick-style";
 
-const Button = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
-  // if (!content.startsWith("<h")) {
-  //   content = `<h1>${content}</h1>`;
-  // }
-
-  // const sizeClass = css({
-  //   "font-size": `var(--${heroFontSize})`,
-  // });
-
+const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick }, ref) => {
+  const className = useBrickStyle<Manifest>(brick);
+  const { props } = brick;
   return (
-    <button type="button">
-      <TextBrick {...props} ref={ref} />
+    <button type="button" className={className} data-text-editable={props.editable ?? false} ref={ref}>
+      {props.label}
     </button>
   );
 });

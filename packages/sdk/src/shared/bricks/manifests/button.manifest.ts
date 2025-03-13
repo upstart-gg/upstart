@@ -1,5 +1,6 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
+import { textContent } from "../props/text";
 
 export const manifest = defineBrickManifest({
   type: "button",
@@ -11,7 +12,9 @@ export const manifest = defineBrickManifest({
     <line x1="9" y1="14" x2="15" y2="14"></line>
 </svg>
   `,
-  props: defineProps({}),
+  props: defineProps({
+    label: textContent("Click here", "hero"),
+  }),
 });
 
 export type Manifest = typeof manifest;

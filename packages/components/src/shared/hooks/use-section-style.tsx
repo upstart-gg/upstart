@@ -1,7 +1,7 @@
 import { tx, apply, css } from "@upstart.gg/style-system/twind";
 import type { Section } from "@upstart.gg/sdk/shared/bricks";
 import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
-import { getBackgroundStyles, type BrickStyleProps } from "../styles/helpers";
+import { getBackgroundStyles } from "../styles/helpers";
 
 type UseSectionStyleProps = {
   section: Section;

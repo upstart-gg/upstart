@@ -88,11 +88,14 @@ export function defineProps<P extends TProperties>(props: P) {
 export const optional = Type.Optional;
 export const array = Type.Array;
 
+export type PropertyPath = string;
+export type StyleId = string;
+
 // Helper function to traverse a schema and filter to get style properties
 // (properties whose $id starts with "#styles:") and return them as an object with the path to the property
 // as the key and the $id as the value. Paths should be dot-separated.
 // The initial schema is a TObject, but nested schemas can be any type and arrays.
-export function getStyleProperties(schema: TSchema, path = "", styles: Record<string, string> = {}) {
+export function getStyleProperties(schema: TSchema, path = "", styles: Record<PropertyPath, StyleId> = {}) {
   if (schema.type === "object") {
     for (const key in schema.properties) {
       const prop = schema.properties[key];

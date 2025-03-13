@@ -1,30 +1,29 @@
 import { tx, apply, css } from "@upstart.gg/style-system/twind";
-import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
 import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
-import {
-  getBackgroundStyles,
-  getBasicAlignmentStyles,
-  getBorderStyles,
-  getFlexStyles,
-  getShadowStyles,
-  getTextShadowStyles,
-  getOpacityStyles,
-} from "../styles/helpers";
+import { getStyleProperties } from "@upstart.gg/sdk/shared/bricks/props/helpers";
+import { stylesHelpersMap } from "../styles/helpers";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useBrickManifest } from "./use-brick-manifest";
+import { get } from "lodash-es";
 
 /**
  * The classNames for the brick
  */
 export function useBrickStyle<T extends BrickManifest>(brick: BrickProps<T>["brick"]) {
   const manifest = useBrickManifest<T>(brick.type);
-  const { props } = brick;
+  const stylesProps = getStyleProperties(manifest.props);
+  const { props, mobileProps } = brick;
 
   // This is the inner brick style. As the wrapper uses "display: flex",
   // we use flex-1 to make the inner brick fill the space.
   return tx(apply("flex-1"), [
-    // apply(props.className),
+    apply(props.className as string),
+    ...Object.entries(stylesProps).map(([path, styleId]) => {
+      const helper = stylesHelpersMap[styleId as keyof typeof stylesHelpersMap];
+      // @ts-expect-error
+      return helper?.(get(props, path), get(mobileProps, path));
+    }),
     // props.layout?.padding,
     // props.text?.color,
     // props.text?.size,

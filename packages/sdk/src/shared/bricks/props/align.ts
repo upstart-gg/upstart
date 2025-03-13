@@ -12,6 +12,7 @@ type AlignBasicOptions = {
 export function basicAlign(opts: AlignBasicOptions = {}) {
   const { title = "Align", defaultValue = { horizontal: "justify-start", vertical: "items-center" } } = opts;
   return prop({
+    $id: "#styles:basicAlign",
     title,
     schema: Type.Object(
       {
