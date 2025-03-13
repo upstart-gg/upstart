@@ -1,6 +1,6 @@
 import { Type } from "@sinclair/typebox";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { padding } from "../props/layout";
+import { padding } from "../props/padding";
 import { backgroundColor } from "../props/background";
 import { defineProps, group } from "../props/helpers";
 import { textContent } from "../props/text";

@@ -12,13 +12,13 @@ describe("Align prop test suite", () => {
     });
 
     it("should have correct UI metadata", () => {
-      const schema = basicAlign().schema;
+      const schema = basicAlign();
       expect(schema["ui:field"]).toBe("align-basic");
       expect(schema["ui:responsive"]).toBe(true);
     });
 
     it("should have correct default values", () => {
-      const schema = basicAlign().schema;
+      const schema = basicAlign();
       expect(schema.default).toEqual({
         horizontal: "justify-start",
         vertical: "items-center",
@@ -30,7 +30,7 @@ describe("Align prop test suite", () => {
         horizontal: "justify-center",
         vertical: "items-start",
       };
-      const schema = basicAlign({ defaultValue: customDefault }).schema;
+      const schema = basicAlign({ defaultValue: customDefault });
       expect(schema.default).toEqual(customDefault);
     });
   });

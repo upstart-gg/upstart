@@ -54,7 +54,7 @@ export const manifest = defineBrickManifest({
     brand: group({
       title: "Brand",
       children: {
-        brandName: string("Brand name", "Acme Inc."),
+        name: string("Brand name", "Acme Inc."),
         logo: image("Logo"),
         styles: group({
           title: "Styles",

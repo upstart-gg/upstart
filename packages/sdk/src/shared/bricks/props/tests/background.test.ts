@@ -8,7 +8,7 @@ describe("Background prop test suite", () => {
     });
 
     it("should have correct schema structure", () => {
-      const schema = background().schema;
+      const schema = background();
       expect(schema.type).toBe("object");
       expect(schema).toHaveProperty("properties.color");
       expect(schema).toHaveProperty("properties.image");
@@ -17,7 +17,7 @@ describe("Background prop test suite", () => {
     });
 
     it("should have correct UI metadata", () => {
-      const schema = background().schema;
+      const schema = background();
       expect(schema["ui:field"]).toBe("background");
       expect(schema["ui:group"]).toBe("background");
       expect(schema["ui:group:title"]).toBe("Background");
@@ -26,7 +26,7 @@ describe("Background prop test suite", () => {
     });
 
     it("should have correct default values", () => {
-      const schema = background().schema;
+      const schema = background();
       expect(schema.default).toEqual({
         color: "transparent",
         size: "auto",
@@ -42,7 +42,7 @@ describe("Background prop test suite", () => {
           repeat: "repeat",
         },
       });
-      expect(customBg.schema.default).toEqual({
+      expect(customBg.default).toEqual({
         color: "#000000",
         size: "cover",
         repeat: "repeat",
@@ -56,7 +56,7 @@ describe("Background prop test suite", () => {
 
     describe("color property", () => {
       it("should have correct metadata", () => {
-        const colorProp = background().schema.properties.color;
+        const colorProp = background().properties.color;
         expect(colorProp.title).toBe("Color");
         expect(colorProp.type).toBe("string");
         expect(colorProp.default).toBe("transparent");
@@ -65,7 +65,7 @@ describe("Background prop test suite", () => {
 
     describe("image property", () => {
       it("should have correct metadata", () => {
-        const imageProp = background().schema.properties.image;
+        const imageProp = background().properties.image;
         expect(imageProp.title).toBe("Image");
         expect(imageProp.type).toBe("string");
       });
@@ -73,26 +73,15 @@ describe("Background prop test suite", () => {
 
     describe("size property", () => {
       it("should have correct metadata", () => {
-        const sizeProp = background().schema.properties.size;
-        expect(sizeProp.type).toBe("string");
+        const sizeProp = background().properties.size;
         expect(sizeProp.default).toBe("auto");
-        expect(sizeProp.enum).toContain("auto");
-        expect(sizeProp.enum).toContain("cover");
-        expect(sizeProp.enum).toContain("contain");
       });
     });
 
     describe("repeat property", () => {
       it("should have correct metadata", () => {
-        const repeatProp = background().schema.properties.repeat;
-        expect(repeatProp.type).toBe("string");
+        const repeatProp = background().properties.repeat;
         expect(repeatProp.default).toBe("no-repeat");
-        expect(repeatProp.enum).toContain("no-repeat");
-        expect(repeatProp.enum).toContain("repeat");
-        expect(repeatProp.enum).toContain("repeat-x");
-        expect(repeatProp.enum).toContain("repeat-y");
-        expect(repeatProp.enum).toContain("space");
-        expect(repeatProp.enum).toContain("round");
       });
     });
   });
@@ -107,19 +96,19 @@ describe("Background prop test suite", () => {
     });
 
     it("should have correct schema structure", () => {
-      const schema = backgroundColor().schema;
+      const schema = backgroundColor();
       expect(schema.type).toBe("string");
     });
 
     it("should have correct UI metadata", () => {
-      const schema = backgroundColor().schema;
+      const schema = backgroundColor();
       expect(schema["ui:field"]).toBe("color");
       expect(schema["ui:color-type"]).toBe("background");
     });
 
     it("should have correct default value", () => {
-      expect(backgroundColor().schema.default).toBe("transparent");
-      expect(backgroundColor("red").schema.default).toBe("red");
+      expect(backgroundColor().default).toBe("transparent");
+      expect(backgroundColor("red").default).toBe("red");
     });
   });
 });

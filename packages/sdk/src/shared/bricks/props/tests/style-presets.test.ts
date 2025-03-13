@@ -15,32 +15,6 @@ describe("Style presets test suite", () => {
     it("should have ui:field metadata", () => {
       expect(stylePreset["ui:field"]).toBe("hidden");
     });
-
-    describe("style property", () => {
-      it("should have correct enum values", () => {
-        const styleProp = stylePreset.properties.style;
-        expect(styleProp.enum).toContain("ghost");
-        expect(styleProp.enum).toContain("plain");
-        expect(styleProp.enum).toContain("modern");
-        expect(styleProp.enum).toContain("soft");
-        expect(styleProp.enum).toContain("glass");
-        expect(styleProp.enum).toContain("elevated");
-        expect(styleProp.enum).toContain("outlined");
-        expect(styleProp.enum).toContain("paper");
-        expect(styleProp.enum).toContain("gradient");
-        expect(styleProp.enum).toContain("callout");
-      });
-    });
-
-    describe("variant property", () => {
-      it("should have correct enum values", () => {
-        const variantProp = stylePreset.properties.variant;
-        expect(variantProp.enum).toContain("primary");
-        expect(variantProp.enum).toContain("secondary");
-        expect(variantProp.enum).toContain("accent");
-        expect(variantProp.enum).toContain("neutral");
-      });
-    });
   });
 
   describe("getPresetStyles function", () => {

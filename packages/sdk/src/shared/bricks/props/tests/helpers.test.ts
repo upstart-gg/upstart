@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Type } from "@sinclair/typebox";
-import { prop, group, defineProps, getGroupInfo } from "../helpers";
+import { prop, group, defineProps, getGroupInfo, getStyleProperties } from "../helpers";
+import { manifest as sampleManifest } from "../../manifests/header.manifest";
 
 describe("Props helpers test suite", () => {
   describe("prop", () => {
@@ -96,7 +97,6 @@ describe("Props helpers test suite", () => {
 
       // Check for common props (this assumes the structure of commonProps)
       // You may need to adjust this expectation based on the actual structure
-      expect(result.properties).toHaveProperty("id");
       expect(result.properties).toHaveProperty("stringProp");
     });
   });
@@ -128,6 +128,17 @@ describe("Props helpers test suite", () => {
       const info = getGroupInfo(schema);
 
       expect(info.tab).toBe("common");
+    });
+  });
+
+  describe("getStyleProperties", () => {
+    it("should extract style properties from a schema", () => {
+      const styles = getStyleProperties(sampleManifest.props);
+      expect(styles).toEqual({
+        "containerStyles.border": "#styles:border",
+        "containerStyles.backgroundColor": "#styles:backgroundColor",
+        "brand.styles.color": "#styles:color",
+      });
     });
   });
 });

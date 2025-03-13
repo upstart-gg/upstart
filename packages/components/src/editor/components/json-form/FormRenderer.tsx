@@ -6,7 +6,6 @@ import { sortJsonSchemaProperties } from "~/shared/utils/sort-json-schema-props"
 
 // Import field components
 import ColorField from "./fields/color";
-import { LayoutField } from "./fields/layout";
 import EnumField from "./fields/enum";
 import ImageField from "./fields/image";
 import RichTextField from "./fields/rich-text";
@@ -14,9 +13,7 @@ import { BorderField } from "./fields/border";
 import { PathField, StringField } from "./fields/string";
 import { NumberField, SliderField } from "./fields/number";
 import SwitchField from "./fields/switch";
-import { EffectsField } from "./fields/effects";
 import { PagePaddingField, type TempPadding } from "./fields/padding";
-import { TextField } from "./fields/text";
 import BackgroundField from "./fields/background";
 import { FlexField } from "./fields/flex";
 import { AlignBasicField } from "./fields/align-basic";
@@ -25,15 +22,12 @@ import { GridField } from "./fields/grid";
 
 // Import types
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
-import type { EffectsSettings } from "@upstart.gg/sdk/shared/bricks/props/effects";
-import type { LayoutSettings } from "@upstart.gg/sdk/shared/bricks/props/layout";
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
-import type { TextContent, TextStyleProps } from "@upstart.gg/sdk/shared/bricks/props/text";
-import type { DatasourceRef } from "@upstart.gg/sdk/shared/bricks/props/datasource";
+import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import type { FlexSettings, GridSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
-import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
+import type { TextContentSettings } from "@upstart.gg/sdk/shared/bricks/props/text";
 
 interface FormRendererProps {
   brickId?: string;
@@ -174,31 +168,32 @@ export function FormRenderer({
           break;
         }
 
-        case "effects": {
-          const currentValue = (get(formData, id) ?? commonProps.schema.default) as EffectsSettings;
-          fieldComponent = (
-            <EffectsField
-              key={`field-${id}`}
-              currentValue={currentValue}
-              onChange={(value: EffectsSettings | null) => onChange({ [id]: value }, id)}
-              {...commonProps}
-            />
-          );
-          break;
-        }
+        // Deprecated
+        // case "effects": {
+        //   const currentValue = (get(formData, id) ?? commonProps.schema.default) as EffectsSettings;
+        //   fieldComponent = (
+        //     <EffectsField
+        //       key={`field-${id}`}
+        //       currentValue={currentValue}
+        //       onChange={(value: EffectsSettings | null) => onChange({ [id]: value }, id)}
+        //       {...commonProps}
+        //     />
+        //   );
+        //   break;
+        // }
 
-        case "layout": {
-          const currentValue = (get(formData, id) ?? commonProps.schema.default) as LayoutSettings;
-          fieldComponent = (
-            <LayoutField
-              key={`field-${id}`}
-              currentValue={currentValue}
-              onChange={(value: LayoutSettings | null) => onChange({ [id]: value }, id)}
-              {...commonProps}
-            />
-          );
-          break;
-        }
+        // case "layout": {
+        //   const currentValue = (get(formData, id) ?? commonProps.schema.default) as LayoutSettings;
+        //   fieldComponent = (
+        //     <LayoutField
+        //       key={`field-${id}`}
+        //       currentValue={currentValue}
+        //       onChange={(value: LayoutSettings | null) => onChange({ [id]: value }, id)}
+        //       {...commonProps}
+        //     />
+        //   );
+        //   break;
+        // }
 
         case "align-basic": {
           const currentValue = (get(formData, id) ?? commonProps.schema.default) as AlignBasicSettings;
@@ -213,26 +208,26 @@ export function FormRenderer({
           break;
         }
 
-        case "text": {
-          const currentValue = (get(formData, id) ?? commonProps.schema.default) as TextStyleProps;
-          fieldComponent = (
-            <TextField
-              key={`field-${id}`}
-              currentValue={currentValue}
-              onChange={(value: TextStyleProps | null) => onChange({ [id]: value }, id)}
-              {...commonProps}
-            />
-          );
-          break;
-        }
+        // case "text": {
+        //   const currentValue = (get(formData, id) ?? commonProps.schema.default) as TextStyleProps;
+        //   fieldComponent = (
+        //     <TextField
+        //       key={`field-${id}`}
+        //       currentValue={currentValue}
+        //       onChange={(value: TextStyleProps | null) => onChange({ [id]: value }, id)}
+        //       {...commonProps}
+        //     />
+        //   );
+        //   break;
+        // }
 
         case "datasource-ref": {
-          const currentValue = (get(formData, id) ?? commonProps.schema.default) as DatasourceRef;
+          const currentValue = (get(formData, id) ?? commonProps.schema.default) as DatasourceRefSettings;
           fieldComponent = (
             <DatasourceRefField
               key={`field-${id}`}
               currentValue={currentValue}
-              onChange={(value: DatasourceRef | null) => onChange({ [id]: value }, id)}
+              onChange={(value: DatasourceRefSettings | null) => onChange({ [id]: value }, id)}
               {...commonProps}
             />
           );
@@ -318,7 +313,7 @@ export function FormRenderer({
         }
 
         case "rich-text": {
-          const currentValue = (get(formData, id) ?? commonProps.schema.default) as TextContent;
+          const currentValue = (get(formData, id) ?? commonProps.schema.default) as TextContentSettings;
           fieldComponent = (
             <RichTextField
               key={`field-${id}`}

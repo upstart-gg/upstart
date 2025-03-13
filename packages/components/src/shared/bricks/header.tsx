@@ -9,22 +9,22 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => 
 
   console.log("editor props", props);
 
-  const className = useBrickStyle(props.mainContainerStyles);
+  const className = useBrickStyle(props.containerStyles);
 
   return (
     <header
       className={tx(
         apply(
           "rounded-lg bg-white flex p-4 ",
-          !props.mainContainerStyles.background && "bg-gradient-to-t from-gray-200 to-gray-50",
+          !props.containerStyles.backgroundColor && "bg-gradient-to-t from-gray-200 to-gray-50",
           className,
         ),
       )}
     >
       <div className="flex justify-between items-center">
         <div className="flex items-center">
-          {props.brandPart.logo && <img src={props.brandPart.logo} alt="logo" className="h-full w-auto" />}
-          {props.brandPart.brand && <h1 className="text-2xl font-bold">{props.brandPart.brand}</h1>}
+          {props.brand.logo && <img src={props.brand.logo.src} alt="logo" className="h-full w-auto" />}
+          {props.brand.name && <h1 className="text-2xl font-bold">{props.brand.name}</h1>}
         </div>
       </div>
     </header>

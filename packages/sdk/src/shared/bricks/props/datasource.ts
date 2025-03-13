@@ -79,4 +79,4 @@ export function datasourceRef() {
   });
 }
 
-export type DatasourceRefProps = Static<ReturnType<typeof datasourceRef>>;
+export type DatasourceRefSettings = Static<ReturnType<typeof datasourceRef>>;

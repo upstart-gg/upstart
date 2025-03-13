@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import type { Static, TArray, TObject } from "@sinclair/typebox";
-import type { DatasourceRef } from "@upstart.gg/sdk/shared/bricks/props/datasource";
+import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import { Value } from "@sinclair/typebox/value";
 import { datasource } from "@upstart.gg/sdk/shared/bricks/manifests/images-wall.manifest";
 
@@ -23,7 +23,7 @@ function useDatasourceContext() {
 }
 
 export function useDatasource<
-  D extends DatasourceRef = DatasourceRef,
+  D extends DatasourceRefSettings = DatasourceRefSettings,
   S extends DatasourceSchema | null = null,
 >(dsRef: D | undefined, schema: S = null as S) {
   const datasources = useDatasourceContext();
@@ -36,14 +36,14 @@ export function useDatasource<
     };
   }
 
-  const data = dsRef.id ? datasources.get(dsRef.id) : null;
+  const data = dsRef.datasource?.id ? datasources.get(dsRef.datasource.id) : null;
 
   return {
-    datasourceId: dsRef.id,
+    datasourceId: dsRef.datasource?.id,
     data: data ?? (schema !== null ? Value.Create(schema) : []),
     isSample: !data,
   } as {
-    datasourceId: string;
+    datasourceId: string | undefined;
     data: S extends DatasourceSchema ? Static<S> : Record<string, unknown>[];
     isSample: boolean;
   };

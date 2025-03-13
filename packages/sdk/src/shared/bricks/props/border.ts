@@ -17,6 +17,7 @@ export function border({
 }: BorderOptions = {}) {
   return prop({
     title,
+    $id: "#styles:border",
     schema: Type.Object(
       {
         radius: Type.Union(

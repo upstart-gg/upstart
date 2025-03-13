@@ -12,13 +12,13 @@ describe("Container props test suite", () => {
     });
 
     it("should have correct UI metadata", () => {
-      const schema = flex().schema;
+      const schema = flex();
       expect(schema["ui:field"]).toBe("flex");
       expect(schema["ui:responsive"]).toBe(true);
     });
 
     it("should have correct default values", () => {
-      const schema = flex().schema;
+      const schema = flex();
       expect(schema.default).toEqual({
         direction: "flex-row",
         gap: "gap-1",
@@ -36,7 +36,7 @@ describe("Container props test suite", () => {
         justifyContent: "justify-center",
         alignItems: "items-center",
       };
-      const schema = flex({ defaultValue: customDefault }).schema;
+      const schema = flex({ defaultValue: customDefault });
       expect(schema.default).toEqual(customDefault);
     });
   });
@@ -47,13 +47,13 @@ describe("Container props test suite", () => {
     });
 
     it("should have correct UI metadata", () => {
-      const schema = grid().schema;
+      const schema = grid();
       expect(schema["ui:field"]).toBe("grid");
       expect(schema["ui:responsive"]).toBe(true);
     });
 
     it("should have correct default values", () => {
-      const schema = grid().schema;
+      const schema = grid();
       expect(schema.default).toEqual({
         gap: "gap-1",
         columns: 2,
@@ -65,13 +65,13 @@ describe("Container props test suite", () => {
         gap: "gap-4",
         columns: 4,
       };
-      const schema = grid({ defaultValue: customDefault }).schema;
+      const schema = grid({ defaultValue: customDefault });
       expect(schema.default).toEqual(customDefault);
     });
 
     describe("grid.columns", () => {
       it("should have correct metadata", () => {
-        const columns = grid().schema.properties.columns;
+        const columns = grid().properties.columns;
         expect(columns.title).toBe("Columns");
         expect(columns["ui:field"]).toBe("slider");
         expect(columns["ui:group"]).toBe("grid");
@@ -88,14 +88,14 @@ describe("Container props test suite", () => {
     });
 
     it("should have correct UI metadata", () => {
-      const schema = layoutType().schema;
+      const schema = layoutType();
       expect(schema["ui:field"]).toBe("enum");
       expect(schema["ui:responsive"]).toBe(true);
     });
 
     it("should have correct default value", () => {
-      expect(layoutType().schema.default).toBe("flex");
-      expect(layoutType({ defaultValue: "grid" }).schema.default).toBe("grid");
+      expect(layoutType().default).toBe("flex");
+      expect(layoutType({ defaultValue: "grid" }).default).toBe("grid");
     });
   });
 
@@ -105,7 +105,7 @@ describe("Container props test suite", () => {
     });
 
     it("should have correct schema structure", () => {
-      const schema = containerChildren().schema;
+      const schema = containerChildren();
       expect(schema.type).toBe("object");
       expect(schema).toHaveProperty("properties.childrenType");
       expect(schema).toHaveProperty("properties.childrenBricks");
@@ -113,7 +113,7 @@ describe("Container props test suite", () => {
 
     describe("childrenType", () => {
       it("should have correct metadata", () => {
-        const childrenType = containerChildren().schema.properties.childrenType;
+        const childrenType = containerChildren().properties.childrenType;
         expect(childrenType.title).toBe("Dynamic child brick type");
         expect(childrenType["ui:field"]).toBe("brick-type");
       });
@@ -121,7 +121,7 @@ describe("Container props test suite", () => {
 
     describe("childrenBricks", () => {
       it("should have correct metadata", () => {
-        const childrenBricks = containerChildren().schema.properties.childrenBricks;
+        const childrenBricks = containerChildren().properties.childrenBricks;
         expect(childrenBricks["ui:field"]).toBe("hidden");
         expect(childrenBricks.default).toEqual([]);
       });

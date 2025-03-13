@@ -41,7 +41,7 @@ function groupTitleToId(title: string) {
   return title.toLowerCase().replace(/\s/g, "_");
 }
 
-function group<T extends TProperties>({
+export function group<T extends TProperties>({
   title,
   children,
   tab = "common",
@@ -57,7 +57,7 @@ function group<T extends TProperties>({
   });
 }
 
-function prop<T extends TSchema>({ title, schema, description, $id }: Prop<T>): T {
+export function prop<T extends TSchema>({ title, schema, description, $id }: Prop<T>): T {
   // add the title
   schema.title = title;
   // add the description
@@ -72,7 +72,7 @@ function prop<T extends TSchema>({ title, schema, description, $id }: Prop<T>): 
 }
 
 // Functions to extract metadata from schemas
-function getGroupInfo(schema: TSchema) {
+export function getGroupInfo(schema: TSchema) {
   const meta = schema.metadata as UIMetadata;
   return {
     title: (schema.title ?? schema.metadata?.title) as string | undefined,
@@ -88,4 +88,21 @@ export function defineProps<P extends TProperties>(props: P) {
 export const optional = Type.Optional;
 export const array = Type.Array;
 
-export { group, prop, getGroupInfo };
+// Helper function to traverse a schema and filter to get style properties
+// (properties whose $id starts with "#styles:") and return them as an object with the path to the property
+// as the key and the $id as the value. Paths should be dot-separated.
+// The initial schema is a TObject, but nested schemas can be any type and arrays.
+export function getStyleProperties(schema: TSchema, path = "", styles: Record<string, string> = {}) {
+  if (schema.type === "object") {
+    for (const key in schema.properties) {
+      const prop = schema.properties[key];
+      if (prop.$id?.startsWith("#styles:")) {
+        styles[`${path}${key}`] = prop.$id;
+      }
+      getStyleProperties(prop, `${path}${key}.`, styles);
+    }
+  } else if (schema.type === "array") {
+    getStyleProperties(schema.items, `${path}[].`, styles);
+  }
+  return styles;
+}

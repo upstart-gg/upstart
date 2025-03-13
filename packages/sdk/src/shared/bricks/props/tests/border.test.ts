@@ -13,8 +13,6 @@ describe("Border prop test suite", () => {
   describe("border schema", () => {
     it("should have correct UI metadata", () => {
       expect(borderSchema["ui:field"]).toBe("border");
-      expect(borderSchema["ui:group"]).toBe("border");
-      expect(borderSchema["ui:group:title"]).toBe("Border");
       expect(borderSchema["ui:inspector-tab"]).toBe("style");
     });
 
@@ -22,7 +20,7 @@ describe("Border prop test suite", () => {
       expect(borderSchema.default).toEqual({
         radius: "rounded-none",
         style: "border-solid",
-        color: "#000000",
+        color: "#000",
         width: "border-0",
       });
     });

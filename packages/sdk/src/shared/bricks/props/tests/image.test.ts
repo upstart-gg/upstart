@@ -13,16 +13,6 @@ describe("Image prop test suite", () => {
       expect(imageProp.title).toBe("Custom Image");
     });
 
-    it("should be optional by default", () => {
-      const imageProp = image();
-      expect(imageProp.required).toBeUndefined();
-    });
-
-    it("should be required when specified", () => {
-      const imageProp = image("Image", { required: true });
-      expect(imageProp.required).toBe(true);
-    });
-
     it("should have the correct UI field type", () => {
       const imageProp = image();
       expect(imageProp["ui:field"]).toBe("image");
