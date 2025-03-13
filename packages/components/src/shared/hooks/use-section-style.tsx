@@ -36,11 +36,12 @@ export function useSectionStyle({ section, editable }: UseSectionStyleProps) {
       )`,
 
     // Background
-    getBackgroundStyles({ ...section.props, mobileProps: section.mobileProps }),
+    section.props.background && getBackgroundStyles(section.props.background),
 
     // Section editor styles
     getSectionEditorStyles(!!editable),
 
+    // Manage the section order using css "order" (flex) property
     css({
       order: section.order,
     }),
