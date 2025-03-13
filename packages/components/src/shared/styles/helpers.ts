@@ -34,7 +34,10 @@ export function getTextShadowStyles(value: TextShadowSettings) {
   return value;
 }
 
-export function getBorderStyles(props: BorderSettings) {
+export function getBorderStyles(props?: BorderSettings) {
+  if (!props) {
+    return null;
+  }
   return [propToStyle(props.color, "borderColor"), props.radius, props.style, props.width];
 }
 

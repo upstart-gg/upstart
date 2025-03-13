@@ -34,17 +34,12 @@ export function useBrickStyle<T extends BrickManifest>(brick: BrickProps<T>["bri
   ]);
 }
 
-export function useBrickWrapperStyle<T extends BrickManifest>({
-  brick,
-  editable,
-  className,
-  selected,
-}: BrickProps<T>) {
+export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable, selected }: BrickProps<T>) {
   const { props, position } = brick;
   const isContainerChild = brick.parentId !== undefined;
 
   return tx(
-    apply(className),
+    apply(props.className as string),
     // no transition otherwise it will slow down the drag
     "brick group/brick flex relative",
 

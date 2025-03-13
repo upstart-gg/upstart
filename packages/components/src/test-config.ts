@@ -64,8 +64,8 @@ const homePageSections = defineSections([
     label: "Header",
     order: 0,
     props: {
-      background: {
-        color: "#FF9900",
+      containerStyles: {
+        backgroundColor: "#FF9900",
       },
     },
     position: {
@@ -121,6 +121,9 @@ const hpBricks = defineBricks([
     sectionId: "header",
     props: {
       title: "Welcome to Upstart",
+      containerStyles: {
+        backgroundColor: "#FF9900",
+      },
     },
     position: {
       mobile: {

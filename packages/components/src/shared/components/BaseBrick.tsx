@@ -1,6 +1,10 @@
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { lazy, Suspense, type ComponentProps, type ComponentType, type LazyExoticComponent } from "react";
-import { defaultProps } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
+import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
+import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
+import { useSelectedBrick } from "~/editor/hooks/use-editor";
+import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
+import { merge } from "lodash-es";
 
 // Load all bricks in the bricks directory
 const bricks = import.meta.glob<false, string, { default: ComponentType<unknown> }>(["../bricks/*.tsx"]);
@@ -18,6 +22,7 @@ const bricksMap = Object.entries(bricks).reduce(
 );
 
 const BaseBrick = ({ brick, editable }: { brick: Brick; editable?: boolean } & ComponentProps<"div">) => {
+  const selectedBrick = useSelectedBrick();
   const BrickModule = bricksMap[brick.type];
 
   if (!BrickModule) {
@@ -25,12 +30,16 @@ const BaseBrick = ({ brick, editable }: { brick: Brick; editable?: boolean } & C
     return null;
   }
 
-  const brickProps = {
-    ...defaultProps[brick.type].props,
-    ...brick.props,
-    mobileProps: brick.mobileProps,
-    id: brick.id,
+  const defProps = defaultProps[brick.type];
+
+  const brickProps: BrickProps<BrickManifest> = {
+    brick: {
+      ...brick,
+      props: merge(defProps.props, brick.props),
+      mobileProps: merge(defProps.mobileProps, brick.mobileProps),
+    },
     editable,
+    selected: brick.id === selectedBrick?.id,
   };
 
   return (
