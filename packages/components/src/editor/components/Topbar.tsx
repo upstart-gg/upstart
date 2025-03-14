@@ -1,7 +1,6 @@
 import { LuUndo, LuRedo } from "react-icons/lu";
 import { RxMobile } from "react-icons/rx";
 import { RxDesktop } from "react-icons/rx";
-import { BsStars } from "react-icons/bs";
 import { VscCopy } from "react-icons/vsc";
 import { type MouseEvent, type PropsWithChildren, useCallback, useMemo } from "react";
 import {
@@ -19,7 +18,7 @@ import { tx, css } from "@upstart.gg/style-system/twind";
 import { RxRocket } from "react-icons/rx";
 import logo from "../../../../../creatives/upstart-dark.svg";
 import { RiArrowDownSLine } from "react-icons/ri";
-import { DropdownMenu, TextField, Popover } from "@upstart.gg/style-system/system";
+import { DropdownMenu } from "@upstart.gg/style-system/system";
 import { post } from "~/editor/utils/api/base-api";
 import { IoIosSave } from "react-icons/io";
 import { LuExternalLink } from "react-icons/lu";

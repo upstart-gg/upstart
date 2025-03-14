@@ -16,9 +16,7 @@ import {
   TbBorderCorners,
   TbArrowUp,
   TbArrowDown,
-  TbArrowUpBar,
   TbDots,
-  TbBackground,
   TbTrash,
 } from "react-icons/tb";
 import { VscSettings } from "react-icons/vsc";

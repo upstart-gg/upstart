@@ -115,33 +115,45 @@ type BrickMenuBarProps = PropsWithChildren<{
   isContainerChild?: boolean;
 }>;
 
-const BrickMenuBar = forwardRef<HTMLDivElement, BrickMenuBarProps>(
-  ({ brick, isContainerChild, children }, ref) => {
-    const selectedBrickId = useSelectedBrickId();
-
-    return (
-      <Popover.Root modal={false} open={selectedBrickId === brick.id}>
-        {/* @ts-ignore */}
-        <Popover.Trigger ref={ref}>{children}</Popover.Trigger>
-        <Popover.Content width="fit-content" minWidth="fit-content" maxWidth="fit-content">
-          <Inset>
-            <nav
-              role="navigation"
-              className={tx(
-                `bg-upstart-600 flex text-base text-white w-fit justify-start items-stretch
-                transition-opacity duration-300 rounded-md`,
-              )}
-            >
-              <BrickMenuBarButtons brick={brick} />
-              {/* container for text editor buttons */}
-              <div id={`text-editor-menu-${brick.id}`} className="contents" />
-            </nav>
-          </Inset>
-        </Popover.Content>
-      </Popover.Root>
-    );
-  },
-);
+/**
+ * This uses a popover to help with positioning the menu bar, but it's no a modal.
+ * The menu bar is a horizontal bar that appears at the bottom/top of the brick when it's selected.
+ */
+const BrickMenuBar = forwardRef<HTMLDivElement, BrickMenuBarProps>(({ brick, children }, ref) => {
+  const selectedBrickId = useSelectedBrickId();
+  return (
+    <Popover.Root modal={false} open={selectedBrickId === brick.id}>
+      {/* @ts-ignore */}
+      <Popover.Trigger ref={ref}>{children}</Popover.Trigger>
+      <Popover.Content
+        width="fit-content"
+        minWidth="fit-content"
+        maxWidth="fit-content"
+        sideOffset={5}
+        alignOffset={8}
+      >
+        <Inset>
+          <nav
+            role="navigation"
+            // usses data-state to animate the menu bar
+            className={tx(
+              `bg-upstart-600 flex text-base text-white w-fit justify-start items-stretch
+                transition-all duration-[500] rounded-md h-12
+                shadow-md
+                data-[state=open]:(opacity-100 translate-y-0)
+                data-[state=closed]:(opacity-0 -translate-y-[50%])
+                `,
+            )}
+          >
+            <BrickMenuBarButtons brick={brick} />
+            {/* container for text editor buttons */}
+            <div id={`text-editor-menu-${brick.id}`} className="contents" />
+          </nav>
+        </Inset>
+      </Popover.Content>
+    </Popover.Root>
+  );
+});
 
 function BrickMenuBarButtons({ brick }: { brick: Brick }) {
   const manifest = manifests[brick.type];

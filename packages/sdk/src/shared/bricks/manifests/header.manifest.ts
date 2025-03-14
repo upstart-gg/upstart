@@ -39,6 +39,7 @@ export const manifest = defineBrickManifest({
     }),
     navigation: group({
       title: "Navigation",
+
       children: {
         navItems: prop({
           title: "Nav items",
@@ -68,6 +69,3 @@ export const manifest = defineBrickManifest({
 });
 
 export type Manifest = typeof manifest;
-
-// for testing
-type Props = Static<typeof manifest.props>;

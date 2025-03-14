@@ -10,11 +10,20 @@ import {
   mergeAttributes,
   nodeInputRule,
 } from "@tiptap/react";
+import { RiArrowDownSLine } from "react-icons/ri";
 import StarterKit from "@tiptap/starter-kit"; // define your extension array
 import TextAlign from "@tiptap/extension-text-align";
-import { Callout, IconButton, Popover, Select, ToggleGroup, Portal } from "@upstart.gg/style-system/system";
+import {
+  Callout,
+  IconButton,
+  Popover,
+  DropdownMenu,
+  Select,
+  ToggleGroup,
+  Portal,
+} from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, type PropsWithChildren, type MouseEventHandler } from "react";
 import Document from "@tiptap/extension-document";
 import {
   MdFormatBold,
@@ -40,7 +49,7 @@ import datasourceFieldSuggestions from "./datasourceFieldSuggestions";
 import { CgCloseR } from "react-icons/cg";
 import { getJSONSchemaFieldsList } from "../utils/json-field-list";
 import Highlight from "@tiptap/extension-highlight";
-import { menuBarBtnCls, menuBarBtnCommonCls } from "../styles/menubar-styles";
+import { menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls } from "../styles/menubar-styles";
 import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
@@ -230,8 +239,8 @@ const TextEditor = ({
 
     const clickEventListener = (e: Event) => {
       if ((e.target as HTMLElement)?.closest(".tiptap")) {
-        editor.chain().focus().run();
-        e.stopPropagation();
+        // editor.chain().focus().run();
+        // e.stopPropagation();
       }
     };
 
@@ -260,33 +269,23 @@ const TextEditor = ({
       />
       {focused && menuBarContainer && (
         <Portal container={menuBarContainer} asChild>
-          <MenuBar brickId={brickId} editor={editor} paragraphMode={paragraphMode} />
+          <TextEditorMenuBar editor={editor} paragraphMode={paragraphMode} />
         </Portal>
       )}
     </div>
   );
 };
 
-const MenuBar = ({
+const TextEditorMenuBar = ({
   editor,
-  brickId,
   paragraphMode,
 }: {
   editor: Editor;
-  brickId: Brick["id"];
   paragraphMode?: string;
 }) => {
-  const getBrick = useGetBrick();
-  const editingForBrickId = useEditingTextForBrickId();
-  const selectedBrick = editingForBrickId ? getBrick(editingForBrickId) : null;
-
   return (
     <>
-      {paragraphMode !== "hero" && (
-        <ButtonGroup>
-          <TextSizeSelect editor={editor} />
-        </ButtonGroup>
-      )}
+      {paragraphMode !== "hero" && <TextSizeDropdown editor={editor} />}
       <TextAlignButtonGroup editor={editor} />
       <TextStyleButtonGroup editor={editor} />
       {/*<DatasourceItemButton editor={editor} /> */}
@@ -294,45 +293,107 @@ const MenuBar = ({
   );
 };
 
+const arrowClass = "h-4 w-4 opacity-60 -ml-0.5 -mr-2";
+
 function TextAlignButtonGroup({ editor }: { editor: Editor }) {
-  return (
-    <ToggleGroup.Root
-      className="contents"
-      type="single"
-      value={editor.isActive("textAlign") ? editor.getAttributes("textAlign").alignment : undefined}
-      aria-label="Text align"
-      color="gray"
-    >
-      <ToggleGroup.Item
-        className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
-        value="left"
-        onClick={() => editor.chain().focus().setTextAlign("left").run()}
-      >
-        <MdFormatAlignLeft className="w-5 h-5" />
-      </ToggleGroup.Item>
-      <ToggleGroup.Item
-        className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
-        value="center"
-        onClick={() => editor.chain().focus().setTextAlign("center").run()}
-      >
-        <MdFormatAlignCenter className="w-5 h-5" />
-      </ToggleGroup.Item>
-      <ToggleGroup.Item
-        className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
-        value="right"
-        onClick={() => editor.chain().focus().setTextAlign("right").run()}
-      >
-        <MdFormatAlignRight className="w-5 h-5" />
-      </ToggleGroup.Item>
-      <ToggleGroup.Item
-        className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
-        value="justify"
-        onClick={() => editor.chain().focus().setTextAlign("justify").run()}
-      >
-        <MdFormatAlignJustify className="w-5 h-5" />
-      </ToggleGroup.Item>
-    </ToggleGroup.Root>
+  const [currentAlignment, setCurrentAligment] = useState<string>(
+    editor.isActive("textAlign") ? editor.getAttributes("textAlign").alignment : undefined,
   );
+
+  return (
+    <DropMenu
+      items={[
+        {
+          label: "Left",
+          onClick: () => {
+            editor.chain().focus().setTextAlign("left").run();
+            setCurrentAligment("left");
+          },
+          type: "checkbox",
+          checked: !currentAlignment || currentAlignment === "left",
+        },
+        {
+          label: "Center",
+          onClick: () => {
+            editor.chain().focus().setTextAlign("center").run();
+            setCurrentAligment("center");
+          },
+          type: "checkbox",
+          checked: currentAlignment === "center",
+        },
+        {
+          label: "Right",
+          onClick: () => {
+            editor.chain().focus().setTextAlign("right").run();
+            setCurrentAligment("right");
+          },
+          type: "checkbox",
+          checked: currentAlignment === "right",
+        },
+        {
+          label: "Justify",
+          onClick: () => {
+            editor.chain().focus().setTextAlign("justify").run();
+            setCurrentAligment("justify");
+          },
+          type: "checkbox",
+          checked: currentAlignment === "justify",
+        },
+      ]}
+    >
+      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
+        {!currentAlignment || currentAlignment === "left" ? (
+          <MdFormatAlignLeft className={tx("w-5 h-5")} />
+        ) : currentAlignment === "center" ? (
+          <MdFormatAlignCenter className={tx("w-5 h-5")} />
+        ) : currentAlignment === "right" ? (
+          <MdFormatAlignRight className={tx("w-5 h-5")} />
+        ) : (
+          <MdFormatAlignJustify className={tx("w-5 h-5")} />
+        )}
+        <RiArrowDownSLine className={tx(arrowClass)} />
+      </button>
+    </DropMenu>
+  );
+  // return (
+  //   <ToggleGroup.Root
+  //     className="contents"
+  //     type="single"
+  //     value={editor.isActive("textAlign") ? editor.getAttributes("textAlign").alignment : undefined}
+  //     aria-label="Text align"
+  //     color="gray"
+  //   >
+  //     <ToggleGroup.Item
+  //       className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
+  //       value="left"
+  //       onClick={() => editor.chain().focus().setTextAlign("left").run()}
+  //     >
+  //       <MdFormatAlignLeft className="w-5 h-5" />
+  //     </ToggleGroup.Item>
+  //     <ToggleGroup.Item
+  //       className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
+  //       value="center"
+  //       onClick={() => editor.chain().focus().setTextAlign("center").run()}
+  //     >
+  //       <MdFormatAlignCenter className="w-5 h-5" />
+  //       <RiArrowDownSLine className={tx(arrowClass)} />
+  //     </ToggleGroup.Item>
+  //     <ToggleGroup.Item
+  //       className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
+  //       value="right"
+  //       onClick={() => editor.chain().focus().setTextAlign("right").run()}
+  //     >
+  //       <MdFormatAlignRight className="w-5 h-5" />
+  //     </ToggleGroup.Item>
+  //     <ToggleGroup.Item
+  //       className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
+  //       value="justify"
+  //       onClick={() => editor.chain().focus().setTextAlign("justify").run()}
+  //     >
+  //       <MdFormatAlignJustify className="w-5 h-5" />
+  //     </ToggleGroup.Item>
+  //   </ToggleGroup.Root>
+  // );
 }
 
 type DatasourceFieldPickerModalProps = {
@@ -435,6 +496,92 @@ function DisplayModeButton({ icon }: { icon: "close" | "enlarge" }) {
   );
 }
 
+type MenuItem = {
+  label: string;
+  shortcut?: string;
+  onClick?: MouseEventHandler;
+  type?: never;
+};
+
+type MenuCheckbox = {
+  label: string;
+  checked: boolean;
+  shortcut?: string;
+  onClick?: MouseEventHandler;
+  type: "checkbox";
+};
+
+type MenuSeparator = {
+  type: "separator";
+};
+type MenuLabel = {
+  type: "label";
+  label: string;
+};
+
+type TopbarMenuItems = (MenuItem | MenuSeparator | MenuLabel | MenuCheckbox)[];
+
+/**
+ */
+function DropMenu(props: PropsWithChildren<{ items: TopbarMenuItems; id?: string }>) {
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger className="focus:outline-none" id={props.id}>
+        {props.children}
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content side="bottom">
+        {props.items.map((item, index) =>
+          item.type === "separator" ? (
+            <div key={index} className="my-1.5 h-px bg-black/10" />
+          ) : item.type === "label" ? (
+            <DropdownMenu.Label key={item.label}>{item.label}</DropdownMenu.Label>
+          ) : item.type === "checkbox" ? (
+            <DropdownMenu.CheckboxItem key={item.label} checked={item.checked}>
+              <button
+                onClick={item.onClick}
+                type="button"
+                className="group flex justify-start items-center text-nowrap rounded-[inherit]
+                py-1.5 w-fulldark:text-white/90 text-left data-[focus]:bg-upstart-600 data-[focus]:text-white "
+              >
+                <span className="pr-3">{item.label}</span>
+                {item.shortcut && (
+                  <kbd
+                    className="ml-auto font-sans text-right text-[smaller] text-black/50 dark:text-dark-300
+                    group-hover:text-white/90
+                      group-data-[focus]:text-white/70 group-data-[active]:text-white/70"
+                  >
+                    {item.shortcut}
+                  </kbd>
+                )}
+              </button>
+            </DropdownMenu.CheckboxItem>
+          ) : (
+            <DropdownMenu.Item key={item.label}>
+              <button
+                onClick={item.onClick}
+                type="button"
+                className="group flex justify-start items-center text-nowrap rounded-[inherit]
+                py-1.5 w-fulldark:text-white/90 text-left data-[focus]:bg-upstart-600 data-[focus]:text-white "
+              >
+                <span className="pr-3">{item.label}</span>
+                {item.shortcut && (
+                  <kbd
+                    className="ml-auto font-sans text-right text-[smaller] text-black/50 dark:text-dark-300
+                    group-hover:text-white/90
+                      group-data-[focus]:text-white/70 group-data-[active]:text-white/70"
+                  >
+                    {item.shortcut}
+                  </kbd>
+                )}
+              </button>
+            </DropdownMenu.Item>
+          ),
+        )}
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
+  );
+}
+
 function DatasourceItemButton({ editor }: { editor: Editor }) {
   const sources = useDatasourcesSchemas();
   const mainEditor = useEditor();
@@ -526,6 +673,98 @@ type TextSizeSelectProps = {
   editor: Editor;
 };
 
+function TextSizeDropdown({ editor }: TextSizeSelectProps) {
+  const [value, setValue] = useState(
+    editor.isActive("heading")
+      ? editor.getAttributes("heading").level?.toString()
+      : editor.isActive("code")
+        ? "code"
+        : "paragraph",
+  );
+  return (
+    <DropMenu
+      items={[
+        {
+          label: "Title 1",
+          onClick: () => {
+            editor.chain().focus().toggleHeading({ level: 1 }).run();
+            setValue("1");
+          },
+          type: "checkbox",
+          checked: value === "1",
+        },
+        {
+          label: "Title 2",
+          onClick: () => {
+            editor.chain().focus().toggleHeading({ level: 2 }).run();
+            setValue("2");
+          },
+          type: "checkbox",
+          checked: value === "2",
+        },
+        {
+          label: "Title 3",
+          onClick: () => {
+            editor.chain().focus().toggleHeading({ level: 3 }).run();
+            setValue("3");
+          },
+          type: "checkbox",
+          checked: value === "3",
+        },
+        {
+          label: "Title 4",
+          onClick: () => {
+            editor.chain().focus().toggleHeading({ level: 4 }).run();
+            setValue("4");
+          },
+          type: "checkbox",
+          checked: value === "4",
+        },
+        {
+          label: "Title 5",
+          onClick: () => {
+            editor.chain().focus().toggleHeading({ level: 5 }).run();
+            setValue("5");
+          },
+          type: "checkbox",
+          checked: value === "5",
+        },
+        {
+          type: "separator",
+        },
+        {
+          label: "Paragraph",
+          onClick: () => {
+            editor.chain().focus().setParagraph().run();
+            setValue("paragraph");
+          },
+          type: "checkbox",
+          checked: value === "paragraph",
+        },
+        {
+          type: "separator",
+        },
+        {
+          label: "Code",
+          onClick: () => {
+            editor.chain().focus().toggleCode().run();
+            setValue("code");
+          },
+          type: "checkbox",
+          checked: value === "code",
+        },
+      ]}
+    >
+      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
+        <span className="text-base">
+          {value === "code" ? "Code" : value === "paragraph" ? "Paragraph" : `Title ${value}`}
+        </span>
+        <RiArrowDownSLine className={tx(arrowClass)} />
+      </button>
+    </DropMenu>
+  );
+}
+
 function TextSizeSelect({ editor }: TextSizeSelectProps) {
   return (
     <Select.Root
@@ -548,7 +787,7 @@ function TextSizeSelect({ editor }: TextSizeSelectProps) {
         }
       }}
     >
-      <Select.Trigger className={tx("px-3", toolbarBtnCls)} />
+      <Select.Trigger className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>Fooo</Select.Trigger>
       <Select.Content position="popper">
         <Select.Group>
           <Select.Label>Headings</Select.Label>

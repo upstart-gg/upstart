@@ -19,6 +19,7 @@ import PresetsView from "./PresetsView";
 import { useCallback, useEffect, useMemo } from "react";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
+import BrickPropsMenu from "./json-form/BrickPropsMenu";
 
 type TabType = "preset" | "style" | "content";
 
@@ -231,6 +232,7 @@ function StyleTab({ brick, manifest }: { brick: Brick; manifest: BrickManifest }
         onChange={onChange}
         previewMode={previewMode}
       />
+      <BrickPropsMenu brick={brick} />
     </form>
   );
 }
