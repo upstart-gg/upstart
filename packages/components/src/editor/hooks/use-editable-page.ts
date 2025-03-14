@@ -111,20 +111,6 @@ export const useEditablePage = (
     dropCallbacks = {},
   }: UseInteractOptions,
 ) => {
-  // Helper to get size from event
-  const getSize = useCallback((event: Interact.ResizeEvent) => {
-    const target = event.target as HTMLElement;
-    const rect = event.rect;
-    const x = parseFloat(target.dataset.x || "0") + (event.deltaRect?.left || 0);
-    const y = parseFloat(target.dataset.y || "0") + (event.deltaRect?.top || 0);
-    return {
-      w: rect.width,
-      h: rect.height,
-      x,
-      y,
-    };
-  }, []);
-
   const getBrick = useGetBrick();
   const selectedGroup = useSelectedGroup();
   const previewMode = usePreviewMode();

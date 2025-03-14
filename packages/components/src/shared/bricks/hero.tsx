@@ -1,65 +1,27 @@
-import { Value } from "@sinclair/typebox/value";
 import { forwardRef } from "react";
 import { tx } from "@upstart.gg/style-system/twind";
-import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/hero.manifest";
+import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/hero.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { memoizeWithout } from "../utils/memoize-without";
+import { memoizeIgnoringPaths } from "../utils/memoize";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import { useEditableText } from "../hooks/use-editable-text";
+import { TextContent } from "../components/TextContent";
 
-const Hero = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
-  props = { ...Value.Create(manifest).props, ...props };
+const Hero = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+  const className = useBrickStyle<Manifest>(brick);
+  const props = brick.props;
 
-  let { content = "my hero" } = props;
-
-  if (!content.trim().startsWith("<h")) {
-    content = `<h1>${content}</h1>`;
-  }
-
-  return props.editable ? (
-    <EditableText
-      ref={ref}
-      {...props}
-      content={content}
-      className={tx(props.className, "hero", props.heroSize)}
-    />
-  ) : (
-    <NonEditableText
-      ref={ref}
-      {...props}
-      content={content}
-      className={tx(props.className, "hero", props.heroSize)}
-    />
-  );
-});
-
-const NonEditableText = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
-  const className = useBrickStyle(props);
   return (
-    <div
-      ref={ref}
-      className={tx(className)}
-      // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-      dangerouslySetInnerHTML={{ __html: props.content }}
+    <TextContent
+      as="h1"
+      propPath="brand.name"
+      className={tx("hero", className)}
+      brickId={brick.id}
+      content={props.content}
+      editable={editable}
+      inline
     />
-  );
-});
-
-const EditableText = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
-  console.log("EditableText", props);
-  const className = useBrickStyle(props);
-  const content = useEditableText({
-    brickId: props.id,
-    initialContent: props.content,
-    inline: true,
-    paragraphMode: "hero",
-  });
-  return (
-    <div ref={ref} className={tx(className)}>
-      {content}
-    </div>
   );
 });
 
 // Memoize the component to avoid re-rendering when the text content changes
-export default memoizeWithout(Hero, "content");
+export default memoizeIgnoringPaths(Hero, ["brick.props.content"]);

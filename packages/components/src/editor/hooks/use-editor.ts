@@ -28,7 +28,9 @@ export interface EditorStateProps {
   lastTextEditPosition?: number;
   settingsVisible?: boolean;
 
+  selectedBrickId?: Brick["id"];
   selectedGroup?: Brick["id"][];
+
   isEditingTextForBrickId?: string;
   shouldShowGrid?: boolean;
   panel?: "library" | "inspector" | "theme" | "settings" | "data";
@@ -57,6 +59,8 @@ export interface EditorState extends EditorStateProps {
   togglePanel: (panel?: EditorStateProps["panel"]) => void;
   hidePanel: (panel?: EditorStateProps["panel"]) => void;
   setSelectedGroup: (group?: Brick["id"][]) => void;
+  setSelectedBrickId: (brickId?: Brick["id"]) => void;
+  deselectBrick: (brickId?: Brick["id"]) => void;
   setShouldShowGrid: (show: boolean) => void;
   setColorAdjustment: (colorAdjustment: ColorAdjustment) => void;
   togglePanelPosition: () => void;
@@ -151,6 +155,18 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                 state.selectedGroup = group;
               }),
 
+            setSelectedBrickId: (brickId) =>
+              set((state) => {
+                state.selectedBrickId = brickId;
+              }),
+
+            deselectBrick: (brickId) =>
+              set((state) => {
+                if (state.selectedBrickId && (!brickId || state.selectedBrickId === brickId)) {
+                  state.selectedBrickId = undefined;
+                }
+              }),
+
             setShouldShowGrid: (show) =>
               set((state) => {
                 state.shouldShowGrid = show;
@@ -185,7 +201,7 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                   ([key]) =>
                     ![
                       "mode",
-                      "selectedBrick",
+                      "selectedBrickId",
                       "selectedGroup",
                       "collidingBrick",
                       "panel",
@@ -217,7 +233,7 @@ export interface DraftStateProps {
   label: string;
   sections: Section[];
   bricks: Brick[];
-  selectedBrick?: Brick;
+
   data: Record<string, unknown>;
   datasources?: SiteConfig["datasources"];
   datarecords?: SiteConfig["datarecords"];
@@ -266,8 +282,7 @@ export interface DraftState extends DraftStateProps {
   setLastLoaded: () => void;
   setVersion(version: string): void;
   adjustMobileLayout(): void;
-  setSelectedBrick: (brick?: Brick) => void;
-  deselectBrick: (brickId?: Brick["id"]) => void;
+
   getBricksForSection: (sectionId: string) => Brick[];
   getPositionWithinParent: (brickId: Brick["id"]) => number | null;
   canMoveToWithinParent: (brickId: Brick["id"], to: "left" | "right") => boolean;
@@ -468,18 +483,6 @@ export const createDraftStore = (
             getBricksForSection: (sectionId: string) => {
               return _get().bricks.filter((brick) => brick.sectionId === sectionId);
             },
-
-            setSelectedBrick: (brick) =>
-              set((state) => {
-                state.selectedBrick = brick;
-              }),
-
-            deselectBrick: (brickId) =>
-              set((state) => {
-                if (state.selectedBrick && (!brickId || state.selectedBrick?.id === brickId)) {
-                  state.selectedBrick = undefined;
-                }
-              }),
 
             deleteBrick: (id) =>
               set((state) => {
@@ -799,7 +802,7 @@ export const createDraftStore = (
             partialize: (state) =>
               Object.fromEntries(
                 Object.entries(state).filter(
-                  ([key]) => !["previewTheme", "attributes", "lastSaved", "selectedBrick"].includes(key),
+                  ([key]) => !["previewTheme", "attributes", "lastSaved"].includes(key),
                 ),
               ),
           },
@@ -811,7 +814,7 @@ export const createDraftStore = (
           partialize: (state) =>
             Object.fromEntries(
               Object.entries(state).filter(
-                ([key]) => !["previewTheme", "attributes", "lastSaved", "selectedBrick"].includes(key),
+                ([key]) => !["previewTheme", "attributes", "lastSaved"].includes(key),
               ),
             ) as DraftState,
           // handleSet: (handleSet) =>
@@ -875,9 +878,9 @@ export const useSelectedGroup = () => {
   return useStore(ctx, (state) => state.selectedGroup);
 };
 
-export const useSelectedBrick = () => {
-  const ctx = useDraftStoreContext();
-  return useStore(ctx, (state) => state.selectedBrick);
+export const useSelectedBrickId = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.selectedBrickId);
 };
 
 export const useColorAdjustment = () => {
@@ -990,6 +993,8 @@ export const useEditorHelpers = () => {
     togglePanel: state.togglePanel,
     hidePanel: state.hidePanel,
     setSelectedGroup: state.setSelectedGroup,
+    setSelectedBrickId: state.setSelectedBrickId,
+    deselectBrick: state.deselectBrick,
     setShouldShowGrid: state.setShouldShowGrid,
     setColorAdjustment: state.setColorAdjustment,
     togglePanelPosition: state.togglePanelPosition,
@@ -1003,8 +1008,6 @@ export const useEditorHelpers = () => {
 export const useDraftHelpers = () => {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => ({
-    setSelectedBrick: state.setSelectedBrick,
-    deselectBrick: state.deselectBrick,
     deleteBrick: state.deleteBrick,
     getParentBrick: state.getParentBrick,
     updateBrick: state.updateBrick,

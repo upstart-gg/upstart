@@ -3,13 +3,10 @@ import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/header.manifest"
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { tx, apply } from "@upstart.gg/style-system/twind";
-import { useBrickManifest } from "../hooks/use-brick-manifest";
+import { memoizeIgnoringPaths } from "../utils/memoize";
+import { TextContent } from "../components/TextContent";
 
-const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, ref) => {
-  // props = { ...defaults.props, ...props };
-
-  console.log("header props", brick.props);
-
+const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const className = useBrickStyle<Manifest>(brick);
   const props = brick.props;
 
@@ -26,11 +23,24 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, ref)
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           {props.brand.logo && <img src={props.brand.logo.src} alt="logo" className="h-full w-auto" />}
-          {props.brand.name && <h1 className="text-2xl font-bold">{props.brand.name}</h1>}
+          {props.brand.name && (
+            <TextContent
+              as="h1"
+              propPath="brand.name"
+              className="text-2xl font-bold"
+              brickId={brick.id}
+              content={props.brand.name}
+              editable={editable}
+              inline
+            />
+          )}
         </div>
       </div>
     </header>
   );
 });
 
-export default Header;
+// Memoize the component to avoid re-rendering when the text content changes
+const MemoHeader = memoizeIgnoringPaths(Header, ["brick.props.brand.name"]);
+
+export default MemoHeader;

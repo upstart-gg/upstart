@@ -5,7 +5,7 @@ import {
   usePreviewMode,
   useSection,
   useSections,
-  useSelectedBrick,
+  useSelectedBrickId,
 } from "../hooks/use-editor";
 import { DropdownMenu, Popover, Tooltip } from "@upstart.gg/style-system/system";
 import EditaleBrickWrapper from "./EditableBrick";
@@ -41,8 +41,8 @@ export default function EditableSection({ section, gridConfig }: EditableSection
 
   const previewMode = usePreviewMode();
   // todo: replace by selected section or merge the two notions
-  const selectedBrick = useSelectedBrick();
-  const className = useSectionStyle({ section, editable: true, selected: selectedBrick?.id === section.id });
+  const selectedBrickId = useSelectedBrickId();
+  const className = useSectionStyle({ section, editable: true, selected: selectedBrickId === section.id });
 
   return (
     <section key={id} id={id} data-element-kind="section" className={className}>

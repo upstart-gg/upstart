@@ -8,7 +8,7 @@ import { sortJsonSchemaProperties } from "~/shared/utils/sort-json-schema-props"
 import ColorField from "./fields/color";
 import EnumField from "./fields/enum";
 import ImageField from "./fields/image";
-import RichTextField from "./fields/rich-text";
+// import RichTextField from "./fields/rich-text";
 import { BorderField } from "./fields/border";
 import { PathField, StringField } from "./fields/string";
 import { NumberField, SliderField } from "./fields/number";
@@ -312,18 +312,18 @@ export function FormRenderer({
           break;
         }
 
-        case "rich-text": {
-          const currentValue = (get(formData, id) ?? commonProps.schema.default) as TextContentSettings;
-          fieldComponent = (
-            <RichTextField
-              key={`field-${id}`}
-              currentValue={currentValue}
-              onChange={(value: unknown | null) => onChange({ [id]: value }, id)}
-              {...commonProps}
-            />
-          );
-          break;
-        }
+        // case "rich-text": {
+        //   const currentValue = (get(formData, id) ?? commonProps.schema.default) as TextContentSettings;
+        //   fieldComponent = (
+        //     <RichTextField
+        //       key={`field-${id}`}
+        //       currentValue={currentValue}
+        //       onChange={(value: unknown | null) => onChange({ [id]: value }, id)}
+        //       {...commonProps}
+        //     />
+        //   );
+        //   break;
+        // }
 
         case "path": {
           const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;

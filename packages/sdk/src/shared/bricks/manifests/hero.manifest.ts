@@ -4,6 +4,7 @@ import { defineProps, group } from "../props/helpers";
 import { basicAlign } from "../props/align";
 import { background } from "../props/background";
 import { border } from "../props/border";
+import { textContent } from "../props/text";
 
 const heroSize = Type.Union(
   [
@@ -16,15 +17,12 @@ const heroSize = Type.Union(
   {
     title: "Text size",
     default: "hero-size-lg",
-    "ui:group": "hero",
-    "ui:group:title": "Display",
-    "ui:group:order": 0,
     "ui:display": "button-group",
     "ui:responsive": true,
   },
 );
 
-export const content = Type.String({
+const content = Type.String({
   default: "<h1>some text here</h1>",
   "ui:field": "hidden",
   "ui:paragraph-mode": "hero",
@@ -43,6 +41,7 @@ export const manifest = defineBrickManifest({
     <rect x="20" y="35" width="60" height="12" rx="2" fill="currentColor"/>
     <rect x="20" y="52" width="40" height="12" rx="2" fill="currentColor"/></svg>`,
   props: defineProps({
+    content: textContent("I'm a big text"),
     styles: group({
       title: "Styles",
       children: {

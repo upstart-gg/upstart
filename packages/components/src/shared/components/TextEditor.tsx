@@ -41,6 +41,8 @@ import { CgCloseR } from "react-icons/cg";
 import { getJSONSchemaFieldsList } from "../utils/json-field-list";
 import Highlight from "@tiptap/extension-highlight";
 import { menuBarBtnCls, menuBarBtnCommonCls } from "../styles/menubar-styles";
+import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
+import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
 function DatasourceFieldNode(props: NodeViewProps) {
   return (
@@ -96,10 +98,10 @@ const DatasourceFieldExtension = Node.create({
 
 export type TextEditorProps = {
   initialContent: string;
-  onUpdate: (e: EditorEvents["update"]) => void;
   className?: string;
   brickId: Brick["id"];
   paragraphMode?: string;
+  propPath: string;
   /**
    * Whether the editor is inlined in the page or appears in the panel
    */
@@ -111,15 +113,17 @@ const toolbarBtnCls =
 
 const TextEditor = ({
   initialContent,
-  onUpdate,
   className,
   brickId,
   paragraphMode,
   inline,
+  propPath,
 }: TextEditorProps) => {
+  const onUpdate = useTextEditorUpdateHandler(brickId, propPath);
   const mainEditor = useEditor();
   const datasources = useDatasourcesSchemas();
   const [menuBarContainer, setMenuBarContainer] = useState<HTMLDivElement | null>(null);
+  const [content, setContent] = useState(initialContent);
 
   // const [editable, setEditable] = useState(/*enabled*/ false);
   const [focused, setFocused] = useState(false);
@@ -128,11 +132,11 @@ const TextEditor = ({
 
   const extensions = [
     StarterKit.configure({
-      ...(paragraphMode === "hero" && {
+      ...(inline && {
         document: false,
       }),
     }),
-    ...(paragraphMode === "hero" ? [Document.extend({ content: "heading" })] : []),
+    ...(inline ? [Document.extend({ content: "text*" })] : []),
     TextAlign.configure({
       types: ["heading"],
     }),
@@ -171,7 +175,7 @@ const TextEditor = ({
   const editor = useTextEditor(
     {
       extensions,
-      content: initialContent,
+      content,
       onUpdate,
       immediatelyRender: true,
       editable: true,
@@ -186,41 +190,57 @@ const TextEditor = ({
               ),
         },
       },
-      onBlur(props) {
-        mainEditor.setlastTextEditPosition(props.editor.state.selection.anchor);
-      },
     },
     [brickId, mainEditor.textEditMode],
   );
 
   useEffect(() => {
-    const onFocus = () => {
+    const onFocus = (e: EditorEvents["focus"]) => {
+      console.log("editor focus!");
+      // e.event.stopPropagation();
       mainEditor.setIsEditingText(brickId);
+      mainEditor.setSelectedBrickId(brickId);
+
       setFocused(true);
-      const container = document.querySelector<HTMLDivElement>(`#text-editor-menu-${brickId}`);
-      if (container) {
+      setTimeout(() => {
+        const container = document.querySelector<HTMLDivElement>(`#text-editor-menu-${brickId}`);
+        invariant(container, "Menu container not found");
         setMenuBarContainer(container);
-      }
+      }, 0);
     };
 
-    const onBlur = () => {
+    const onBlur = (e: EditorEvents["blur"]) => {
+      // For whatever reason, the editor content is not updated when the blur event is triggered the first time
+      // So we need to manually update the content here
+      setContent(e.editor.getHTML());
+
+      // If there is a related target, it means the blur event was triggered by a click on the editor buttons
+      if (e.event.relatedTarget) {
+        console.log("editor blured from related target", e.event.relatedTarget);
+        return;
+      }
+
       mainEditor.setIsEditingText(false);
+      mainEditor.setlastTextEditPosition(e.editor.state.selection.anchor);
       setFocused(false);
-      editor?.chain().blur().run();
     };
 
     editor?.on("focus", onFocus);
-    editor?.on("blur", (e) => {
-      // If there is a related target, it means the blur event was triggered by a click on the editor buttons
-      if (e.event.relatedTarget) {
-        return;
+    editor?.on("blur", onBlur);
+
+    const clickEventListener = (e: Event) => {
+      if ((e.target as HTMLElement)?.closest(".tiptap")) {
+        editor.chain().focus().run();
+        e.stopPropagation();
       }
-      onBlur();
-    });
+    };
+
+    editor.options.element.addEventListener("click", clickEventListener);
 
     return () => {
       editor?.off("focus", onFocus);
       editor?.off("blur", onBlur);
+      editor?.options.element.removeEventListener("click", clickEventListener);
     };
   }, [editor, mainEditor, brickId]);
 

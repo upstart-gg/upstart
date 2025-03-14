@@ -14,7 +14,7 @@ import {
   useDraftHelpers,
   useEditorHelpers,
   usePreviewMode,
-  useSelectedBrick,
+  useSelectedBrickId,
 } from "../hooks/use-editor";
 import { ContextMenu, Portal, Popover, Inset } from "@upstart.gg/style-system/system";
 import BaseBrick from "~/shared/components/BaseBrick";
@@ -36,18 +36,16 @@ type BrickWrapperProps = ComponentProps<"div"> & {
 const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
   ({ brick, children, isContainerChild, index }, ref) => {
     const hasMouseMoved = useRef(false);
-    const selectedBrick = useSelectedBrick();
+    const selectedBrickId = useSelectedBrickId();
+    const { setPanel, setSelectedBrickId: setSelectedBrick } = useEditorHelpers();
     const previewMode = usePreviewMode();
     const { getParentBrick } = useDraftHelpers();
     const manifest = useBrickManifest(brick.type);
     const wrapperClass = useBrickWrapperStyle({
       brick,
       editable: true,
-      selected: selectedBrick?.id === brick.id,
+      selected: selectedBrickId === brick.id,
     });
-
-    const { setSelectedBrick } = useDraftHelpers();
-    const { setPanel } = useEditorHelpers();
 
     const onBrickWrapperClick = (e: MouseEvent<HTMLElement>) => {
       const target = e.currentTarget as HTMLElement;
@@ -67,7 +65,7 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
         }
       }
 
-      setSelectedBrick(selectedBrick);
+      setSelectedBrick(selectedBrick.id);
       setPanel("inspector");
       hasMouseMoved.current = false;
 
@@ -119,10 +117,10 @@ type BrickMenuBarProps = PropsWithChildren<{
 
 const BrickMenuBar = forwardRef<HTMLDivElement, BrickMenuBarProps>(
   ({ brick, isContainerChild, children }, ref) => {
-    const selectedBrick = useSelectedBrick();
+    const selectedBrickId = useSelectedBrickId();
 
     return (
-      <Popover.Root modal={false} open={selectedBrick?.id === brick.id}>
+      <Popover.Root modal={false} open={selectedBrickId === brick.id}>
         {/* @ts-ignore */}
         <Popover.Trigger ref={ref}>{children}</Popover.Trigger>
         <Popover.Content width="fit-content" minWidth="fit-content" maxWidth="fit-content">
@@ -130,7 +128,8 @@ const BrickMenuBar = forwardRef<HTMLDivElement, BrickMenuBarProps>(
             <nav
               role="navigation"
               className={tx(
-                `bg-upstart-600 flex text-base text-white w-fit justify-start items-stretch transition-opacity duration-300 rounded-md`,
+                `bg-upstart-600 flex text-base text-white w-fit justify-start items-stretch
+                transition-opacity duration-300 rounded-md`,
               )}
             >
               <BrickMenuBarButtons brick={brick} />
@@ -188,7 +187,7 @@ function BrickEditLabel({ brick, isContainerChild }: { brick: Brick; isContainer
       data-element-type="brick-label"
       className="absolute transition-all -z-10 duration-150 opacity-0
         group-hover/brick:(opacity-100 translate-y-0) tracking-wider
-        -translate-y-5 -bottom-6 uppercase left-1 bg-white/70 backdrop-blur-md shadow-md
+        -translate-y-5 -bottom-6 uppercase right-1 bg-white/70 backdrop-blur-md shadow-md
       text-gray-600 text-xs font-semibold py-0.5 px-2 rounded-sm"
     >
       {manifest.name}
@@ -197,7 +196,8 @@ function BrickEditLabel({ brick, isContainerChild }: { brick: Brick; isContainer
           {brick.id}{" "}
           {isContainerChild
             ? ""
-            : ` · x: ${brick.position.desktop.x} · y: ${brick.position.desktop.y} · ${brick.position.desktop.w}/${brick.position.desktop.h}`}
+            : ` · x: ${brick.position.desktop.x} · y: ${brick.position.desktop.y} ·
+            ${brick.position.desktop.w}/${brick.position.desktop.h}`}
         </span>
       )}
     </div>
@@ -321,7 +321,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                     <ContextMenu.Item
                       onClick={(e) => {
                         e.stopPropagation();
-                        draftHelpers.setSelectedBrick(parentContainer);
+                        editorHelpers.setSelectedBrickId(parentContainer.id);
                         editorHelpers.setPanel("inspector");
                       }}
                     >
@@ -334,7 +334,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                       onClick={(e) => {
                         e.stopPropagation();
                         draft.deleteBrick(parentContainer.id);
-                        draftHelpers.deselectBrick(parentContainer.id);
+                        editorHelpers.deselectBrick(parentContainer.id);
                         editorHelpers.hidePanel("inspector");
                       }}
                     >
@@ -352,7 +352,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
               onClick={(e) => {
                 e.stopPropagation();
                 draft.deleteBrick(brick.id);
-                draftHelpers.deselectBrick(brick.id);
+                editorHelpers.deselectBrick(brick.id);
                 editorHelpers.hidePanel("inspector");
               }}
             >

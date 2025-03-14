@@ -47,7 +47,7 @@ function getSchemaEntry({
   return `${rootName}.${schema.name}`;
 }
 
-export function getJSONSchemaFieldsList({ schemas }: { schemas?: Record<string, { schema: TSchema }> }) {
+export function getJSONSchemaFieldsList(schemas?: Record<string, { schema: TSchema }>) {
   if (!schemas) return [];
   return Object.entries(schemas)
     .filter(([, ds]) => !!ds.schema)

@@ -3,7 +3,7 @@ import {
   useEditorHelpers,
   useGetBrick,
   usePreviewMode,
-  useSelectedBrick,
+  useSelectedBrickId,
 } from "../hooks/use-editor";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { tx } from "@upstart.gg/style-system/twind";
@@ -23,13 +23,16 @@ import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 type TabType = "preset" | "style" | "content";
 
 export default function Inspector() {
-  const brick = useSelectedBrick();
-  const { deselectBrick, getParentBrick, updateBrickProps, setSelectedBrick } = useDraftHelpers();
-  const { hidePanel } = useEditorHelpers();
+  const { getParentBrick, updateBrickProps } = useDraftHelpers();
+  const getBrickInfo = useGetBrick();
+  const { hidePanel, setSelectedBrickId, deselectBrick } = useEditorHelpers();
   const previewMode = usePreviewMode();
   const [tabsMapping, setTabsMapping] = useLocalStorage<Record<string, TabType>>("inspector_tabs_map", {});
 
-  if (!brick) {
+  const brickId = useSelectedBrickId();
+  const brick = brickId ? getBrickInfo(brickId) : null;
+
+  if (!brickId || !brick) {
     return null;
   }
 
@@ -97,7 +100,7 @@ export default function Inspector() {
                   className="text-upstart-700 cursor-pointer hover:(text-upstart-800 underline)"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setSelectedBrick(parentBrick);
+                    setSelectedBrickId(parentBrick.id);
                   }}
                 >
                   {parentBrick.type}
@@ -143,7 +146,7 @@ export default function Inspector() {
                   className="text-upstart-700 cursor-pointer hover:(text-upstart-800 underline)"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setSelectedBrick(parentBrick);
+                    setSelectedBrickId(parentBrick.id);
                   }}
                 >
                   {parentBrick.type}

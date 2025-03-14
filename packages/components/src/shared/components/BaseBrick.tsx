@@ -2,7 +2,7 @@ import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { lazy, Suspense, type ComponentProps, type ComponentType, type LazyExoticComponent } from "react";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
-import { useSelectedBrick } from "~/editor/hooks/use-editor";
+import { useSelectedBrickId } from "~/editor/hooks/use-editor";
 import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { merge } from "lodash-es";
 
@@ -22,7 +22,7 @@ const bricksMap = Object.entries(bricks).reduce(
 );
 
 const BaseBrick = ({ brick, editable }: { brick: Brick; editable?: boolean } & ComponentProps<"div">) => {
-  const selectedBrick = useSelectedBrick();
+  const selectedBrickId = useSelectedBrickId();
   const BrickModule = bricksMap[brick.type];
 
   if (!BrickModule) {
@@ -39,7 +39,7 @@ const BaseBrick = ({ brick, editable }: { brick: Brick; editable?: boolean } & C
       mobileProps: merge(defProps.mobileProps, brick.mobileProps),
     },
     editable,
-    selected: brick.id === selectedBrick?.id,
+    selected: brick.id === selectedBrickId,
   };
 
   return (
