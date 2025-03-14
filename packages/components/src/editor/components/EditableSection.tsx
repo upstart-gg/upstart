@@ -22,8 +22,6 @@ import {
   TbTrash,
 } from "react-icons/tb";
 import { VscSettings } from "react-icons/vsc";
-import { PiWaveSine } from "react-icons/pi";
-
 import { tx } from "@upstart.gg/style-system/twind";
 import { useEffect, useRef, useState } from "react";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
