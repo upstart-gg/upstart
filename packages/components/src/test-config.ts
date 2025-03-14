@@ -64,8 +64,8 @@ const homePageSections = defineSections([
     label: "Header",
     order: 0,
     props: {
-      containerStyles: {
-        backgroundColor: "#FF9900",
+      background: {
+        color: "#FF9900",
       },
     },
     position: {
@@ -120,9 +120,11 @@ const hpBricks = defineBricks([
     type: "header",
     sectionId: "header",
     props: {
-      title: "Welcome to Upstart",
       containerStyles: {
         backgroundColor: "#FF9900",
+      },
+      brand: {
+        name: "Upstart",
       },
     },
     position: {
@@ -236,7 +238,7 @@ const siteAttributes = defineAttributes({
 export default defineConfig({
   attributes: siteAttributes,
   attr: {
-    $textColor: "#fff",
+    $textColor: "#222",
     $pageBackground: {
       color: "#EFEFEF",
     },

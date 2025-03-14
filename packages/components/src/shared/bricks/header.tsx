@@ -8,7 +8,7 @@ import { useBrickManifest } from "../hooks/use-brick-manifest";
 const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, ref) => {
   // props = { ...defaults.props, ...props };
 
-  console.log("editor props", brick.props);
+  console.log("header props", brick.props);
 
   const className = useBrickStyle<Manifest>(brick);
   const props = brick.props;
