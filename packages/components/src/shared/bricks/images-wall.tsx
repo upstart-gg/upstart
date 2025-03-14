@@ -10,33 +10,34 @@ import { useBrickStyle } from "../hooks/use-brick-style";
  * `props.childrenBricks` are present only when the container is in Static mode. Its children are the bricks that are inside the container.
  * Otherwise, the children data are fetched from the datasource and rendered accordingly.
  */
-const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
+const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, ref) => {
+  const { props } = brick;
+  const className = useBrickStyle<Manifest>(brick);
   const { datasourceId, data, isSample } = useDatasource<
     Manifest["props"]["datasourceRef"],
     typeof datasource
-  >(props.datasourceRef, datasource);
+  >(props.content.datasource, datasource);
   // const children = props.childrenBricks;
-  const className = useBrickStyle(props);
-  const gapInt = parseInt(props.imagesWallGap.replace("gap-", "")) / 4;
+  const gapInt = parseInt(props.styles.gap.replace("gap-", "")) / 4;
   return (
     <div
       ref={ref}
       className={tx(
         className,
         "transition-all relative",
-        props.imagesWallLayout === "flex" && "flex flex-wrap justify-stretch items-center",
-        props.imagesWallLayout === "flex" &&
+        props.styles.layoutType === "flex" && "flex flex-wrap justify-stretch items-center",
+        props.styles.layoutType === "flex" &&
           css`
           &>div {
-            flex-basis: calc(100% / ${props.imagesWallColumns} - ${gapInt}rem / ${props.imagesWallColumns} * (${props.imagesWallColumns} - 1));
+            flex-basis: calc(100% / ${props.styles.columns} - ${gapInt}rem / ${props.styles.columns} * (${props.styles.columns} - 1));
           }
         `,
-        props.imagesWallLayout === "grid" &&
+        props.styles.layoutType === "grid" &&
           css({
             display: "grid",
-            gridTemplateColumns: `repeat(${props.imagesWallColumns}, 1fr)`,
+            gridTemplateColumns: `repeat(${props.styles.columns}, 1fr)`,
           }),
-        props.imagesWallGap,
+        props.styles.gap,
       )}
     >
       {props.editable && isSample && (

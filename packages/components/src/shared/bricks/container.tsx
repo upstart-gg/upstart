@@ -9,26 +9,25 @@ import { useDatasource } from "../hooks/use-datasource";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import BaseBrick from "../components/BaseBrick";
 
-const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
-  props = { ...Value.Create(manifest).props, ...props };
+const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, ref) => {
+  const props = brick.props;
 
-  const className = useBrickStyle(props);
-
-  const ds = useDatasource(props.datasourceRef);
+  const className = useBrickStyle(brick);
+  const ds = useDatasource(props.datasource.ds);
 
   // If this container is Dynamic
-  if (ds.datasourceId && props.childrenType) {
+  if (ds.datasourceId && props.layout.childrenType) {
     // Take the first child brick as a template and render it for each item in the datasource
-    const template = props.childrenBricks?.at(0) as Brick | undefined;
+    const template = props.layout.childrenBricks?.at(0) as Brick | undefined;
     // Override childrenBricks with the data from the datasource
-    props.childrenBricks =
+    props.layout.childrenBricks =
       template && ds.data !== null
         ? ds.data.map((data, index) => {
             return {
               ...template,
-              id: `${props.id}-${index}`,
-              parentId: props.id,
-              props: { ...template.props, datasourceRef: props.datasourceRef, ...data },
+              id: `${brick.id}-${index}`,
+              parentId: brick.id,
+              props: { ...template.props, datasourceRef: props.datasource, ...data },
             };
           })
         : [];
@@ -36,8 +35,8 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) 
 
   return (
     <div className={tx(apply("flex relative"), className)} ref={ref}>
-      {props.childrenBricks?.length > 0 ? (
-        props.childrenBricks.map((brick, index) => {
+      {props.layout.childrenBricks?.length > 0 ? (
+        props.layout.childrenBricks.map((brick, index) => {
           return props.editable ? (
             <EditaleBrickWrapper key={`${brick.id}`} brick={brick} isContainerChild index={index} />
           ) : (

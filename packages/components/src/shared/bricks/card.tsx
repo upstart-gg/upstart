@@ -1,25 +1,30 @@
-import { Value } from "@sinclair/typebox/value";
 import { forwardRef } from "react";
-import { css, tx } from "@upstart.gg/style-system/twind";
-import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/card.manifest";
-import TextBrick from "./text";
+import { tx } from "@upstart.gg/style-system/twind";
+import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/card.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
+import { TextContent } from "../components/TextContent";
 
-const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
+const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+  const props = brick.props;
   return (
     <div className={tx("card flex flex-col")} ref={ref}>
       {props.cardTitle?.content && (
-        <TextBrick
-          {...props}
-          textContent={props.cardTitle.content}
-          className={tx(props.className, "card-title flex-1")}
+        <TextContent
+          propPath="cardTitle.content"
+          className="card-title flex-1"
+          brickId={brick.id}
+          content={props.cardTitle.content}
+          editable={editable}
+          inline
         />
       )}
       {props.cardBody?.content && (
-        <TextBrick
-          {...props}
-          textContent={props.cardBody.content}
-          className={tx(props.className, "card-body flex-1")}
+        <TextContent
+          propPath="cardTitle.content"
+          className="card-body flex-1"
+          brickId={brick.id}
+          content={props.cardBody.content}
+          editable={editable}
         />
       )}
     </div>

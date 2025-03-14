@@ -1,13 +1,13 @@
-import { Value } from "@sinclair/typebox/value";
 import { forwardRef } from "react";
 import { tx, apply } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/image.manifest";
+import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/image.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 
-const Image = forwardRef<HTMLImageElement, BrickProps<Manifest>>((props, ref) => {
-  const className = useBrickStyle(props);
-  const { src, alt } = props;
+const Image = forwardRef<HTMLImageElement, BrickProps<Manifest>>(({ brick }, ref) => {
+  const { props } = brick;
+  const className = useBrickStyle(brick);
+  const { src, alt } = props.image;
 
   return (
     <div className={tx(apply("flex items-center justify-center h-full w-full"), className)}>

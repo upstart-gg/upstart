@@ -2,6 +2,7 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, group } from "../props/helpers";
 import { background } from "../props/background";
 import { datasourceRef } from "../props/datasource";
+import { containerChildren } from "../props/container";
 
 // Generic container can hold any type of array data source
 export const manifest = defineBrickManifest({
@@ -23,6 +24,7 @@ export const manifest = defineBrickManifest({
         background: background(),
       },
     }),
+    layout: containerChildren(),
     datasource: group({
       title: "Data",
       children: {
