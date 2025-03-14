@@ -27,7 +27,6 @@ import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/
 import type { FlexSettings, GridSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
-import type { TextContentSettings } from "@upstart.gg/sdk/shared/bricks/props/text";
 
 interface FormRendererProps {
   brickId?: string;

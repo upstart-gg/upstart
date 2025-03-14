@@ -21,33 +21,3 @@ export const commonProps = {
     }),
   ),
 };
-
-// export type CommonProps = Static<typeof commonProps>;
-
-// export const commonStyleProps = Type.Object({
-//   layout: Type.Optional(layout),
-//   border: Type.Optional(borderSchema),
-//   effects: Type.Optional(effectsSchema),
-//   background: Type.Optional(backgroundSchema),
-//   text: Type.Optional(textContent),
-// });
-
-// /**
-//  * All style props that can be applied to a brick
-//  */
-// export const allStyleProps = Type.Partial(
-//   Type.Composite([
-//     containerLayoutProps,
-//     Type.Object({
-//       align,
-//       layout,
-//       height,
-//       border: borderSchema,
-//       effects: effectsSchema,
-//       background: backgroundSchema,
-//     }),
-//   ]),
-// );
-
-// export type AllStyleProps = Static<typeof allStyleProps>;
-// export type StyleProp = keyof Required<AllStyleProps>;

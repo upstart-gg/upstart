@@ -1,4 +1,3 @@
-import { Type } from "@sinclair/typebox";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
 

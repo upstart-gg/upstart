@@ -1,5 +1,5 @@
 import { type ComponentType, memo, type ForwardRefExoticComponent } from "react";
-import { isEqualWith, isEqual, set, cloneDeep } from "lodash-es";
+import { isEqual, set, cloneDeep } from "lodash-es";
 
 /**
  * Creates a memoized version of a component that ignores changes to specific prop paths

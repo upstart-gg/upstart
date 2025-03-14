@@ -22,15 +22,6 @@ const heroSize = Type.Union(
   },
 );
 
-const content = Type.String({
-  default: "<h1>some text here</h1>",
-  "ui:field": "hidden",
-  "ui:paragraph-mode": "hero",
-  "ui:group": "content",
-  "ui:group:title": "Content",
-  "ui:group:order": 3,
-});
-
 export const manifest = defineBrickManifest({
   type: "hero",
   name: "Hero",

@@ -1,5 +1,3 @@
-import { Type } from "@sinclair/typebox";
-import { commonProps } from "../props/common";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
 

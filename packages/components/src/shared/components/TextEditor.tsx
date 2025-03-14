@@ -14,7 +14,7 @@ import StarterKit from "@tiptap/starter-kit"; // define your extension array
 import TextAlign from "@tiptap/extension-text-align";
 import { Callout, IconButton, Popover, Select, ToggleGroup, Portal } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Document from "@tiptap/extension-document";
 import {
   MdFormatBold,

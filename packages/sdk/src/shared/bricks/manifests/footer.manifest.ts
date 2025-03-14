@@ -3,7 +3,6 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { array, defineProps, group, optional } from "../props/helpers";
 import { number } from "../props/number";
 import { string, urlOrPageId } from "../props/string";
-import { str } from "ajv";
 
 export const manifest = defineBrickManifest({
   type: "footer",
