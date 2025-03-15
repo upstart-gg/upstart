@@ -129,7 +129,7 @@ const BrickMenuBars = forwardRef<HTMLDivElement, BrickMenuBarProps>(({ brick, ch
       role="navigation"
       className={tx(
         selectedBrickId !== brick.id && "opacity-0 -translate-y-[10%]",
-        `absolute left-1 top-[calc(100%+6px)] z-[9999]
+        `absolute left-0 right-0 top-full z-[9999] pt-1
                 transition-all duration-300 flex gap-2 items-center
                 group-hover/brick:(opacity-100 translate-y-0)
                 `,

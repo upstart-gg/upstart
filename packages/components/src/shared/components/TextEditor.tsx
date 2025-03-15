@@ -52,7 +52,13 @@ import datasourceFieldSuggestions from "./datasourceFieldSuggestions";
 import { CgCloseR } from "react-icons/cg";
 import { getJSONSchemaFieldsList } from "../utils/json-field-list";
 import Highlight from "@tiptap/extension-highlight";
-import { menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls } from "../styles/menubar-styles";
+import {
+  menuBarBtnActiveCls,
+  menuBarBtnCls,
+  menuBarBtnCommonCls,
+  menuBarBtnSquareCls,
+  menuNavBarCls,
+} from "../styles/menubar-styles";
 import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
@@ -296,7 +302,7 @@ const TextEditorMenuBar = ({
   );
 };
 
-const arrowClass = "h-4 w-4 opacity-60 -ml-0.5 -mr-2";
+const arrowClass = "h-4 w-4 opacity-60 -mr-2";
 
 function TextAlignButtonGroup({ editor }: { editor: Editor }) {
   const [currentAlignment, setCurrentAligment] = useState<string>(
@@ -326,7 +332,7 @@ function TextAlignButtonGroup({ editor }: { editor: Editor }) {
         })),
       ]}
     >
-      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
+      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
         {!currentAlignment || currentAlignment === "left" ? (
           <MdFormatAlignLeft className={tx("w-5 h-5")} />
         ) : currentAlignment === "center" ? (
@@ -411,34 +417,6 @@ function DatasourceFieldPickerModal(props: DatasourceFieldPickerModalProps) {
         )}
       </div>
     </div>
-  );
-}
-function DisplayModeButton({ icon }: { icon: "close" | "enlarge" }) {
-  const editor = useEditor();
-  return (
-    <IconButton
-      size="1"
-      color="gray"
-      variant="surface"
-      className={tx(toolbarBtnCls)}
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        editor.toggleTextEditMode();
-      }}
-    >
-      {!editor.textEditMode || editor.textEditMode === "default" ? (
-        icon === "close" ? (
-          <CgCloseR className="w-4 h-4 select-none pointer-events-none" />
-        ) : (
-          <BiFullscreen className="w-4 h-4 select-none pointer-events-none" />
-        )
-      ) : icon === "close" ? (
-        <CgCloseR className="w-4 h-4 select-none pointer-events-none" />
-      ) : (
-        <BiExitFullscreen className="w-4 h-4 select-none pointer-events-none" />
-      )}
-    </IconButton>
   );
 }
 
@@ -573,46 +551,45 @@ function DatasourceItemButton({ editor }: { editor: Editor }) {
 }
 
 function TextStyleButtonGroup({ editor }: { editor: Editor }) {
+  const isBold = editor.isActive("bold");
+  const isItalic = editor.isActive("italic");
+  const isStrike = editor.isActive("strike");
   return (
     <ToggleGroup.Root
-      className="contents"
+      className={tx(menuNavBarCls, "!rounded-l-none !shadow-none")}
       type="multiple"
       value={
         [
-          editor.isActive("bold") ? "bold" : undefined,
-          editor.isActive("italic") ? "italic" : undefined,
-          editor.isActive("strike") ? "strike" : undefined,
+          isBold ? "bold" : undefined,
+          isItalic ? "italic" : undefined,
+          isStrike ? "strike" : undefined,
         ].filter(Boolean) as string[]
       }
       aria-label="Text style"
     >
       <ToggleGroup.Item
-        className={tx(menuBarBtnCls, menuBarBtnCommonCls, "!rounded-l-none")}
+        className={tx(menuBarBtnCls, menuBarBtnCommonCls, "!rounded-l-none", isBold && menuBarBtnActiveCls)}
         value="bold"
         onClick={() => editor.chain().focus().toggleBold().run()}
       >
-        <MdFormatBold className="w-6 h-6" />
+        <MdFormatBold className="w-5 h-5" />
       </ToggleGroup.Item>
       <ToggleGroup.Item
-        className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
+        className={tx(menuBarBtnCls, menuBarBtnCommonCls, isItalic && menuBarBtnActiveCls)}
         value="italic"
         onClick={() => editor.chain().focus().toggleItalic().run()}
       >
-        <MdOutlineFormatItalic className="w-6 h-6" />
+        <MdOutlineFormatItalic className="w-5 h-5" />
       </ToggleGroup.Item>
       <ToggleGroup.Item
-        className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
+        className={tx(menuBarBtnCls, menuBarBtnCommonCls, isStrike && menuBarBtnActiveCls)}
         value="strike"
         onClick={() => editor.chain().focus().toggleStrike().run()}
       >
-        <MdStrikethroughS className="w-6 h-6" />
+        <MdStrikethroughS className="w-5 h-5" />
       </ToggleGroup.Item>
     </ToggleGroup.Root>
   );
-}
-
-function ButtonGroup({ children, gap = "gap-0" }: { children: React.ReactNode; gap?: string }) {
-  return <div className={tx("flex relative", gap)}>{children}</div>;
 }
 
 type TextSizeSelectProps = {
@@ -708,49 +685,6 @@ function TextSizeDropdown({ editor }: TextSizeSelectProps) {
         <RiArrowDownSLine className={tx(arrowClass)} />
       </button>
     </DropMenu>
-  );
-}
-
-function TextSizeSelect({ editor }: TextSizeSelectProps) {
-  return (
-    <Select.Root
-      size="2"
-      defaultValue={
-        editor.isActive("heading")
-          ? editor.getAttributes("heading").level?.toString()
-          : editor.isActive("code")
-            ? "code"
-            : "paragraph"
-      }
-      onValueChange={(level) => {
-        if (level === "code") {
-          editor.chain().focus().toggleCode().run();
-        } else if (level === "paragraph") {
-          editor.chain().focus().setParagraph().run();
-        } else {
-          // @ts-ignore
-          editor.chain().focus().toggleHeading({ level: +level }).run();
-        }
-      }}
-    >
-      <Select.Trigger className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>Fooo</Select.Trigger>
-      <Select.Content position="popper">
-        <Select.Group>
-          <Select.Label>Headings</Select.Label>
-          {[1, 2, 3, 4, 5].map((level) => (
-            <Select.Item value={level.toString()} key={`level-${level}`}>
-              Title {level}
-            </Select.Item>
-          ))}
-        </Select.Group>
-        <Select.Separator />
-        <Select.Group>
-          <Select.Label>Text</Select.Label>
-          <Select.Item value="paragraph">Paragraph</Select.Item>
-          <Select.Item value="code">Code</Select.Item>
-        </Select.Group>
-      </Select.Content>
-    </Select.Root>
   );
 }
 

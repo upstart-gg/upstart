@@ -150,15 +150,15 @@ const hpBricks = defineBricks([
     },
     position: {
       mobile: {
-        x: 0,
+        x: "quarter",
         y: 0,
-        w: "full",
+        w: "half",
         h: 3,
       },
       desktop: {
-        x: 0,
+        x: "quarter",
         y: 0,
-        w: "full",
+        w: "half",
         h: 3,
       },
     },
