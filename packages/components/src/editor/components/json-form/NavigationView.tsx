@@ -3,7 +3,7 @@ import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 import { tx, css } from "@upstart.gg/style-system/twind";
 
 // Types
-type NavigationItem = {
+export type NavigationItem = {
   id: string;
   label: ReactNode;
   content?: ReactNode;

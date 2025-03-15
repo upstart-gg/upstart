@@ -37,6 +37,10 @@ export const manifest = defineBrickManifest({
       title: "Container styles",
       children: { border: border(), backgroundColor: backgroundColor() },
     }),
+    singleProp: prop({
+      title: "Single prop",
+      schema: Type.String({ title: "Single prop" }),
+    }),
     navigation: group({
       title: "Navigation",
 

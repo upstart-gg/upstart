@@ -146,7 +146,7 @@ const hpBricks = defineBricks([
     type: "text",
     sectionId: "content",
     props: {
-      textContent: "Text content",
+      content: "Some specific content",
     },
     position: {
       mobile: {

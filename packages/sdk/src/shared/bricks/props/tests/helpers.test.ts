@@ -42,7 +42,7 @@ describe("Props helpers test suite", () => {
 
     it("should use the provided tab", () => {
       const children = { test: Type.String() };
-      const result = group({ title: "Test Group", children, tab: "preset" });
+      const result = group({ title: "Test Group", children, category: "presets" });
       const info = getGroupInfo(result);
       expect(info.tab).toBe("preset");
     });
@@ -106,7 +106,7 @@ describe("Props helpers test suite", () => {
       const groupSchema = group({
         title: "Test Group",
         children: { prop: Type.String() },
-        tab: "preset",
+        category: "presets",
       });
 
       const info = getGroupInfo(groupSchema);

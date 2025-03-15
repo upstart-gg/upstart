@@ -4,19 +4,23 @@ import { useBrickStyle } from "../hooks/use-brick-style";
 import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/text.manifest";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
+import { TextContent } from "../components/TextContent";
 
 /**
  * Text brick
  */
-const Text = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
-  const { brick } = props;
+const Text = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+  const { props } = brick;
   const className = useBrickStyle<Manifest>(brick);
+  console.log("renering text brick", props);
   return (
-    <div
+    <TextContent
       ref={ref}
+      propPath="content"
       className={tx(className)}
-      // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-      dangerouslySetInnerHTML={{ __html: brick.props.content }}
+      brickId={brick.id}
+      content={props.content}
+      editable={editable}
     />
   );
 });

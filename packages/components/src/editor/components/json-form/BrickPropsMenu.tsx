@@ -1,29 +1,68 @@
 import { FiSettings, FiUser } from "react-icons/fi";
 import { FaRegBell, FaSignOutAlt } from "react-icons/fa";
-import { NavigationContainer, NavigationContent, NavList, useSubMenu } from "./NavigationView";
+import {
+  NavigationContainer,
+  NavigationContent,
+  NavList,
+  useSubMenu,
+  type NavigationItem,
+} from "./NavigationView";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
-import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
+import type { TArray, TObject, TSchema } from "@sinclair/typebox";
+import type { BrickPropCategory } from "@upstart.gg/sdk/shared/bricks/props/types";
 
 type BrickPropsMenuProps = {
   brick: Brick;
 };
 
-function getNavItemsFromManifest(manifest: BrickManifest) {
-  const items = Object.entries(manifest.props).map(([key, prop]) => {
-    return {
-      id: key,
-      label: key,
-      hasChildren: true,
-      content: <div>{key}</div>,
+export type NavItem =
+  | {
+      id: string;
+      label: string;
+      path: string;
+      description?: string;
+      schema: TSchema;
+      metadata?: Record<string, string | number | boolean> & {
+        category?: BrickPropCategory;
+      };
+    }
+  | {
+      id: string;
+      label: string;
+      description?: string;
+      children: NavItem[];
+      metadata?: Record<string, string | number | boolean> & {
+        group: string;
+        category?: BrickPropCategory;
+      };
     };
-  });
+
+function getNavItemsFromManifest(manifest: TObject | TArray, pathsParts: string[] = []): NavItem[] {
+  const items = Object.entries<TSchema>(manifest.properties)
+    .filter(([, prop]) => prop["ui:field"] !== "hidden" && prop.title)
+    .map(([key, prop]) => {
+      const nextPathParts = [...pathsParts, key];
+      return {
+        id: key,
+        label: prop.title!,
+        ...(prop.metadata && { metadata: prop.metadata }),
+        ...(prop.description ? { description: prop.description } : {}),
+        ...(prop.metadata?.group
+          ? {
+              children: getNavItemsFromManifest(prop as TObject, nextPathParts),
+            }
+          : { schema: (prop.properties ?? prop.items ?? prop) as TSchema, path: nextPathParts.join(".") }),
+      };
+    });
+  return items;
 }
 
 export default function BrickPropsMenu({ brick }: BrickPropsMenuProps) {
   const manifest = useBrickManifest(brick.type);
+  const navItems = getNavItemsFromManifest(manifest.props);
 
-  console.log({ manifest });
+  console.dir(navItems, { compact: false });
 
   // Build the navigation items based on the brick manifest
 

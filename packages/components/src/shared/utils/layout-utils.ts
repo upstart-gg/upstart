@@ -38,10 +38,11 @@ export function shouldAdjustBrickHeightBecauseOverflow(brickId: string) {
   }
 
   // Temporary hide the label to get the correct scrollHeight
-  const label = element.querySelector<HTMLDivElement>('[data-element-type="brick-label"]');
-  if (label) {
-    label.style.display = "none";
-  }
+  const uiElements = element.querySelectorAll<HTMLDivElement>("[data-ui]");
+  uiElements.forEach((el) => {
+    el.dataset.display = el.style.display;
+    el.style.display = "none";
+  });
 
   const hasOverflow = isOverflowing(element);
   const idealHeight = hasOverflow ? getIdealHeight(element) : null;
@@ -57,7 +58,9 @@ export function shouldAdjustBrickHeightBecauseOverflow(brickId: string) {
   }
 
   // Restore the label visibility
-  if (label) label.style.display = "";
+  uiElements.forEach((el) => {
+    el.style.display = el.dataset.display as string;
+  });
 
   return idealHeight ?? false;
 }

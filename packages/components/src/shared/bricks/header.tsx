@@ -21,7 +21,7 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
       )}
     >
       <div className="flex justify-between items-center">
-        <div className="flex items-center">
+        <div className="flex items-center brand">
           {props.brand.logo && <img src={props.brand.logo.src} alt="logo" className="h-full w-auto" />}
           {props.brand.name && (
             <TextContent

@@ -16,16 +16,21 @@ import {
   usePreviewMode,
   useSelectedBrickId,
 } from "../hooks/use-editor";
-import { ContextMenu, Portal, Popover, Inset } from "@upstart.gg/style-system/system";
+import { VscDatabase, VscSettingsGear } from "react-icons/vsc";
+import { ContextMenu, Portal, Popover, Inset, Tooltip } from "@upstart.gg/style-system/system";
 import BaseBrick from "~/shared/components/BaseBrick";
 import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
-import { menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls } from "~/shared/styles/menubar-styles";
+import {
+  menuBarBtnCls,
+  menuBarBtnCommonCls,
+  menuBarBtnSquareCls,
+  menuBarTooltipCls,
+  menuNavBarCls,
+} from "~/shared/styles/menubar-styles";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
-import { MdBorderOuter } from "react-icons/md";
 import { BiSolidColor } from "react-icons/bi";
-import { LuLayoutDashboard } from "react-icons/lu";
-import { IoMdColorPalette } from "react-icons/io";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
+import { FiSettings, FiDatabase } from "react-icons/fi";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -50,8 +55,7 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const onBrickWrapperClick = (e: MouseEvent<HTMLElement>) => {
       const target = e.currentTarget as HTMLElement;
       if (hasMouseMoved.current || target.matches(".react-resizable-handle") || !target.matches(".brick")) {
-        // if (target.matches(".react-resizable-handle") || !target.matches(".brick")) {
-        console.debug("click ignored", target);
+        console.debug("onBrickWrapperClick: click ignored");
         return;
       }
 
@@ -74,38 +78,37 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     };
 
     return (
-      <BrickMenuBar brick={brick} isContainerChild={isContainerChild}>
-        <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
-          <div
-            id={brick.id}
-            data-x={brick.position[previewMode].x}
-            data-y={brick.position[previewMode].y}
-            data-w={brick.position[previewMode].w}
-            data-h={brick.position[previewMode].h}
-            data-brick-type={brick.type}
-            data-element-kind="brick"
-            {...(manifest.movable ? {} : { "data-no-drag": "true" })}
-            className={tx(wrapperClass, `![animation-delay:${0.5 * (index + 1)}s]`)}
-            ref={ref}
-            onClick={onBrickWrapperClick}
-            onMouseDown={(e) => {
+      <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
+        <div
+          id={brick.id}
+          data-x={brick.position[previewMode].x}
+          data-y={brick.position[previewMode].y}
+          data-w={brick.position[previewMode].w}
+          data-h={brick.position[previewMode].h}
+          data-brick-type={brick.type}
+          data-element-kind="brick"
+          {...(manifest.movable ? {} : { "data-no-drag": "true" })}
+          className={tx(wrapperClass, `![animation-delay:${0.5 * (index + 1)}s]`)}
+          ref={ref}
+          onClick={onBrickWrapperClick}
+          onMouseDown={(e) => {
+            hasMouseMoved.current = false;
+          }}
+          onMouseUp={(e) => {
+            setTimeout(() => {
               hasMouseMoved.current = false;
-            }}
-            onMouseUp={(e) => {
-              setTimeout(() => {
-                hasMouseMoved.current = false;
-              }, 100);
-            }}
-            onMouseMove={(e) => {
-              hasMouseMoved.current = true;
-            }}
-          >
-            <BaseBrick brick={brick} editable />
-            <BrickEditLabel brick={brick} isContainerChild={isContainerChild} />
-            {children} {/* Make sure to include children to add resizable handle */}
-          </div>
-        </BrickContextMenu>
-      </BrickMenuBar>
+            }, 100);
+          }}
+          onMouseMove={(e) => {
+            hasMouseMoved.current = true;
+          }}
+        >
+          <BaseBrick brick={brick} editable />
+          <BrickEditLabel brick={brick} isContainerChild={isContainerChild} />
+          {children} {/* Make sure to include children to add resizable handle */}
+          <BrickMenuBars brick={brick} isContainerChild={isContainerChild} />
+        </div>
+      </BrickContextMenu>
     );
   },
 );
@@ -119,64 +122,55 @@ type BrickMenuBarProps = PropsWithChildren<{
  * This uses a popover to help with positioning the menu bar, but it's no a modal.
  * The menu bar is a horizontal bar that appears at the bottom/top of the brick when it's selected.
  */
-const BrickMenuBar = forwardRef<HTMLDivElement, BrickMenuBarProps>(({ brick, children }, ref) => {
+const BrickMenuBars = forwardRef<HTMLDivElement, BrickMenuBarProps>(({ brick, children }, ref) => {
   const selectedBrickId = useSelectedBrickId();
   return (
-    <Popover.Root modal={false} open={selectedBrickId === brick.id}>
-      {/* @ts-ignore */}
-      <Popover.Trigger ref={ref}>{children}</Popover.Trigger>
-      <Popover.Content
-        width="fit-content"
-        minWidth="fit-content"
-        maxWidth="fit-content"
-        sideOffset={5}
-        alignOffset={8}
-      >
-        <Inset>
-          <nav
-            role="navigation"
-            // usses data-state to animate the menu bar
-            className={tx(
-              `bg-upstart-600 flex text-base text-white w-fit justify-start items-stretch
-                transition-all duration-[500] rounded-md h-12
-                shadow-md
-                data-[state=open]:(opacity-100 translate-y-0)
-                data-[state=closed]:(opacity-0 -translate-y-[50%])
+    <div
+      data-ui
+      role="navigation"
+      className={tx(
+        selectedBrickId !== brick.id && "opacity-0 -translate-y-[10%]",
+        `absolute left-1 top-[calc(100%+6px)] z-[9999]
+                transition-all duration-300 flex gap-2 items-center
+                group-hover/brick:(opacity-100 translate-y-0)
                 `,
-            )}
-          >
-            <BrickMenuBarButtons brick={brick} />
-            {/* container for text editor buttons */}
-            <div id={`text-editor-menu-${brick.id}`} className="contents" />
-          </nav>
-        </Inset>
-      </Popover.Content>
-    </Popover.Root>
+      )}
+    >
+      <BrickMainNavBar brick={brick} />
+      {/* container for text editor buttons */}
+      <BrickTextNavBar brick={brick} />
+    </div>
   );
 });
 
-function BrickMenuBarButtons({ brick }: { brick: Brick }) {
+function BrickTextNavBar({ brick }: { brick: Brick }) {
+  return <div id={`text-editor-menu-${brick.id}`} className={tx("contents", menuNavBarCls)} />;
+}
+
+function BrickMainNavBar({ brick }: { brick: Brick }) {
   const manifest = manifests[brick.type];
   if (!manifest) {
     return null;
   }
   return (
-    <>
+    <nav className={menuNavBarCls}>
+      {/* Presets: @TODO check if brick has presets */}
       <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
         <BiSolidColor className={tx("w-5 h-5")} />
+        <span className={tx(menuBarTooltipCls)}>Ready to use presets</span>
       </button>
+      {/* Settings & styles */}
       <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-        <LuLayoutDashboard className={tx("w-5 h-5")} />
+        <FiSettings className={tx("w-5 h-5")} />
+        <span className={tx(menuBarTooltipCls)}>Settings & styles</span>
       </button>
+      {/* Content */}
       <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-        <IoMdColorPalette className={tx("w-5 h-5")} />
+        <FiDatabase className={tx("w-5 h-5")} />
+        <span className={tx(menuBarTooltipCls)}>Dynamic content</span>
       </button>
-      {manifest.props.border && (
-        <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-          <MdBorderOuter className={tx("w-5 h-5")} />
-        </button>
-      )}
-    </>
+      {/* Todo: data source / content */}
+    </nav>
   );
 }
 
@@ -186,7 +180,7 @@ function BrickEditLabel({ brick, isContainerChild }: { brick: Brick; isContainer
   if (brick.isContainer) {
     return (
       <div
-        data-element-type="brick-label"
+        data-ui
         className="absolute top-full left-1/2 -translate-x-1/2 bg-orange-300/40 text-black
                     text-[10px] font-mono py-0.5 px-1.5 rounded hover:bg-white/90"
       >
@@ -196,7 +190,7 @@ function BrickEditLabel({ brick, isContainerChild }: { brick: Brick; isContainer
   }
   return (
     <div
-      data-element-type="brick-label"
+      data-ui
       className="absolute transition-all -z-10 duration-150 opacity-0
         group-hover/brick:(opacity-100 translate-y-0) tracking-wider
         -translate-y-5 -bottom-6 uppercase right-1 bg-white/70 backdrop-blur-md shadow-md

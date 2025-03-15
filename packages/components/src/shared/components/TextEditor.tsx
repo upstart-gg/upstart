@@ -23,7 +23,15 @@ import {
   Portal,
 } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
-import { useState, useEffect, useMemo, type PropsWithChildren, type MouseEventHandler } from "react";
+import {
+  useState,
+  useEffect,
+  useMemo,
+  type PropsWithChildren,
+  type MouseEventHandler,
+  type ElementType,
+  type ComponentPropsWithoutRef,
+} from "react";
 import Document from "@tiptap/extension-document";
 import {
   MdFormatBold,
@@ -105,7 +113,13 @@ const DatasourceFieldExtension = Node.create({
   },
 });
 
-export type TextEditorProps = {
+type PolymorphicProps<E extends ElementType> = PropsWithChildren<
+  ComponentPropsWithoutRef<E> & {
+    as?: E;
+  }
+>;
+
+export type TextEditorProps<E extends ElementType> = PolymorphicProps<E> & {
   initialContent: string;
   className?: string;
   brickId: Brick["id"];
@@ -120,14 +134,15 @@ export type TextEditorProps = {
 const toolbarBtnCls =
   "!bg-white first:rounded-l last:rounded-r text-sm text-gray-800 px-1 hover:[&:not([data-state=on])]:bg-upstart-100 dark:hover:[&:not([data-state=on])]:(bg-dark-900) leading-none data-[state=on]:(!bg-upstart-600 text-white)";
 
-const TextEditor = ({
+const TextEditor = <T extends ElementType = "div">({
   initialContent,
   className,
   brickId,
   paragraphMode,
   inline,
   propPath,
-}: TextEditorProps) => {
+  as,
+}: TextEditorProps<T>) => {
   const onUpdate = useTextEditorUpdateHandler(brickId, propPath);
   const mainEditor = useEditor();
   const datasources = useDatasourcesSchemas();
@@ -145,9 +160,9 @@ const TextEditor = ({
         document: false,
       }),
     }),
-    ...(inline ? [Document.extend({ content: "text*" })] : []),
+    ...(inline ? [Document.extend({ content: "paragraph" })] : []),
     TextAlign.configure({
-      types: ["heading"],
+      types: ["heading", "paragraph"],
     }),
     Highlight.configure({ multicolor: true }),
     // DatasourceFieldExtension,
@@ -190,13 +205,7 @@ const TextEditor = ({
       editable: true,
       editorProps: {
         attributes: {
-          class: inline
-            ? tx(className)
-            : tx(
-                "max-w-[100%] focus:outline-none focus:border-gray-300 prose prose-sm mx-auto min-h-[46px] dark:(bg-dark-800 text-dark-100) p-2 shadow-[inset_0_1px_2px_rgba(0,0,0,0.1),inset_0_-1px_2px_rgba(0,0,0,0.1)]",
-                className,
-                mainEditor.textEditMode === "large" && "flex-1 !h-[inherit]",
-              ),
+          class: tx(className),
         },
       },
     },
@@ -254,25 +263,19 @@ const TextEditor = ({
   }, [editor, mainEditor, brickId]);
 
   return (
-    <div
-      className={tx({
-        "fixed z-[99999] inset-[10dvw] shadow-2xl": mainEditor.textEditMode === "large",
-      })}
-    >
+    <>
       <EditorContent
         autoCorrect="false"
         spellCheck="false"
         editor={editor}
-        className={tx("outline-none ring-0", {
-          "min-h-full flex border-0": mainEditor.textEditMode === "large",
-        })}
+        className={tx("outline-none ring-0 flex-1 min-h-full w-full")}
       />
       {focused && menuBarContainer && (
         <Portal container={menuBarContainer} asChild>
           <TextEditorMenuBar editor={editor} paragraphMode={paragraphMode} />
         </Portal>
       )}
-    </div>
+    </>
   );
 };
 
@@ -300,45 +303,27 @@ function TextAlignButtonGroup({ editor }: { editor: Editor }) {
     editor.isActive("textAlign") ? editor.getAttributes("textAlign").alignment : undefined,
   );
 
+  const alignments = {
+    left: "Left",
+    center: "Center",
+    right: "Right",
+    justify: "Justify",
+  };
+
   return (
     <DropMenu
       items={[
-        {
-          label: "Left",
+        ...Object.entries(alignments).map<TopbarMenuItems[number]>(([key, label]) => ({
+          label,
           onClick: () => {
-            editor.chain().focus().setTextAlign("left").run();
-            setCurrentAligment("left");
+            const alignOk = editor.commands.setTextAlign(key);
+            // const alignOk = editor.chain().focus().setTextAlign(key).run();
+            console.log("alignOk", key, alignOk);
+            setCurrentAligment(key);
           },
           type: "checkbox",
-          checked: !currentAlignment || currentAlignment === "left",
-        },
-        {
-          label: "Center",
-          onClick: () => {
-            editor.chain().focus().setTextAlign("center").run();
-            setCurrentAligment("center");
-          },
-          type: "checkbox",
-          checked: currentAlignment === "center",
-        },
-        {
-          label: "Right",
-          onClick: () => {
-            editor.chain().focus().setTextAlign("right").run();
-            setCurrentAligment("right");
-          },
-          type: "checkbox",
-          checked: currentAlignment === "right",
-        },
-        {
-          label: "Justify",
-          onClick: () => {
-            editor.chain().focus().setTextAlign("justify").run();
-            setCurrentAligment("justify");
-          },
-          type: "checkbox",
-          checked: currentAlignment === "justify",
-        },
+          checked: currentAlignment === key,
+        })),
       ]}
     >
       <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
@@ -355,45 +340,6 @@ function TextAlignButtonGroup({ editor }: { editor: Editor }) {
       </button>
     </DropMenu>
   );
-  // return (
-  //   <ToggleGroup.Root
-  //     className="contents"
-  //     type="single"
-  //     value={editor.isActive("textAlign") ? editor.getAttributes("textAlign").alignment : undefined}
-  //     aria-label="Text align"
-  //     color="gray"
-  //   >
-  //     <ToggleGroup.Item
-  //       className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
-  //       value="left"
-  //       onClick={() => editor.chain().focus().setTextAlign("left").run()}
-  //     >
-  //       <MdFormatAlignLeft className="w-5 h-5" />
-  //     </ToggleGroup.Item>
-  //     <ToggleGroup.Item
-  //       className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
-  //       value="center"
-  //       onClick={() => editor.chain().focus().setTextAlign("center").run()}
-  //     >
-  //       <MdFormatAlignCenter className="w-5 h-5" />
-  //       <RiArrowDownSLine className={tx(arrowClass)} />
-  //     </ToggleGroup.Item>
-  //     <ToggleGroup.Item
-  //       className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
-  //       value="right"
-  //       onClick={() => editor.chain().focus().setTextAlign("right").run()}
-  //     >
-  //       <MdFormatAlignRight className="w-5 h-5" />
-  //     </ToggleGroup.Item>
-  //     <ToggleGroup.Item
-  //       className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
-  //       value="justify"
-  //       onClick={() => editor.chain().focus().setTextAlign("justify").run()}
-  //     >
-  //       <MdFormatAlignJustify className="w-5 h-5" />
-  //     </ToggleGroup.Item>
-  //   </ToggleGroup.Root>
-  // );
 }
 
 type DatasourceFieldPickerModalProps = {
@@ -525,7 +471,7 @@ type TopbarMenuItems = (MenuItem | MenuSeparator | MenuLabel | MenuCheckbox)[];
  */
 function DropMenu(props: PropsWithChildren<{ items: TopbarMenuItems; id?: string }>) {
   return (
-    <DropdownMenu.Root>
+    <DropdownMenu.Root modal={false}>
       <DropdownMenu.Trigger className="focus:outline-none" id={props.id}>
         {props.children}
       </DropdownMenu.Trigger>
@@ -641,7 +587,7 @@ function TextStyleButtonGroup({ editor }: { editor: Editor }) {
       aria-label="Text style"
     >
       <ToggleGroup.Item
-        className={tx(menuBarBtnCls, menuBarBtnCommonCls)}
+        className={tx(menuBarBtnCls, menuBarBtnCommonCls, "!rounded-l-none")}
         value="bold"
         onClick={() => editor.chain().focus().toggleBold().run()}
       >

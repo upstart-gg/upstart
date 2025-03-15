@@ -1,5 +1,6 @@
 import { Type, type NumberOptions } from "@sinclair/typebox";
-import { type FieldMetadata, prop } from "./helpers";
+import { prop } from "./helpers";
+import type { FieldMetadata } from "./types";
 
 type NumberFieldOptions = NumberOptions & FieldMetadata;
 

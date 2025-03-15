@@ -1,6 +1,8 @@
-import type { Static } from "@sinclair/typebox";
+import type { Static, TProperties, TSchema } from "@sinclair/typebox";
 import type { BrickManifest } from "~/shared/brick-manifest";
 import type { Brick } from "~/shared/bricks";
+
+export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export type BrickProps<T extends BrickManifest> = {
   brick: Omit<Brick, "props" | "mobileProps"> & {
@@ -9,4 +11,37 @@ export type BrickProps<T extends BrickManifest> = {
   };
   editable?: boolean;
   selected?: boolean;
+};
+
+export type BrickPropCategory = "settings" | "presets" | "content";
+
+// Export the TSchema type for use in other files
+export type { TSchema };
+
+export type FieldMetadata = {
+  "ui:field"?: string;
+  [key: string]: string | number | boolean | undefined;
+};
+
+export interface PropSchema extends TSchema {
+  title: string;
+}
+
+export type Prop<T = TSchema> = {
+  title: string;
+  $id?: string;
+  description?: string;
+  schema: T;
+};
+
+export type PropGroup<T extends TProperties = TProperties> = {
+  title: string;
+  category: BrickPropCategory;
+  children: T;
+};
+
+// UI metadata that we want to associate with schemas - only for group-related info
+export type UIMetadata = {
+  group?: string;
+  groupTab?: string;
 };

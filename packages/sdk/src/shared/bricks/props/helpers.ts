@@ -3,56 +3,21 @@
  */
 import { type TProperties, Type, type TSchema, type TObject } from "@sinclair/typebox";
 import { commonProps } from "./common";
-
-export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-
-// Export the TSchema type for use in other files
-export type { TSchema };
-
-export type FieldMetadata = {
-  "ui:field"?: string;
-  [key: string]: string | number | boolean | undefined;
-};
-
-export interface PropSchema extends TSchema {
-  title: string;
-}
-
-export type Prop<T = TSchema> = {
-  title: string;
-  $id?: string;
-  description?: string;
-  schema: T;
-};
-
-export type PropGroup<T extends TProperties = TProperties> = {
-  title: string;
-  tab: "common" | "preset";
-  children: T;
-};
-
-// UI metadata that we want to associate with schemas - only for group-related info
-export type UIMetadata = {
-  group?: string;
-  groupTab?: string;
-};
-
-function groupTitleToId(title: string) {
-  return title.toLowerCase().replace(/\s/g, "_");
-}
+import type { PartialBy, Prop, PropGroup, UIMetadata } from "./types";
 
 export function group<T extends TProperties>({
   title,
   children,
-  tab = "common",
-}: PartialBy<PropGroup<T>, "tab">): TObject<T> {
+  category = "settings",
+}: PartialBy<PropGroup<T>, "category">): TObject<T> {
   // Create the TypeBox schema with title as a standard property
   // and group-specific info in metadata
   return Type.Object(children, {
     title,
     metadata: {
-      group: groupTitleToId(title),
-      groupTab: tab,
+      // group: groupTitleToId(title),
+      category,
+      group: true,
     },
   });
 }
