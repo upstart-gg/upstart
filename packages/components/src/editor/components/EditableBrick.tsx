@@ -16,8 +16,7 @@ import {
   usePreviewMode,
   useSelectedBrickId,
 } from "../hooks/use-editor";
-import { VscDatabase, VscSettingsGear } from "react-icons/vsc";
-import { ContextMenu, Portal, Popover, Inset, Tooltip } from "@upstart.gg/style-system/system";
+import { ContextMenu, Portal } from "@upstart.gg/style-system/system";
 import BaseBrick from "~/shared/components/BaseBrick";
 import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
 import {

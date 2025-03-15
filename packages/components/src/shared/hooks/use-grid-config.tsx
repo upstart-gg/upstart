@@ -1,5 +1,5 @@
 import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { usePreviewMode } from "~/editor/hooks/use-editor";
 import { debounce } from "lodash-es";
 

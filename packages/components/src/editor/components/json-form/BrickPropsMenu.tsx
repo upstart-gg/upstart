@@ -1,12 +1,6 @@
 import { FiSettings, FiUser } from "react-icons/fi";
 import { FaRegBell, FaSignOutAlt } from "react-icons/fa";
-import {
-  NavigationContainer,
-  NavigationContent,
-  NavList,
-  useSubMenu,
-  type NavigationItem,
-} from "./NavigationView";
+import { NavigationContainer, NavigationContent, NavList } from "./NavigationView";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import type { TArray, TObject, TSchema } from "@sinclair/typebox";

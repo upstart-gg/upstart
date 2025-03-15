@@ -43,12 +43,7 @@ import {
 import { MdOutlineFormatItalic } from "react-icons/md";
 import { MdStrikethroughS } from "react-icons/md";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
-import {
-  useDatasourcesSchemas,
-  useEditingTextForBrickId,
-  useEditor,
-  useGetBrick,
-} from "~/editor/hooks/use-editor";
+import { useDatasourcesSchemas, useEditor } from "~/editor/hooks/use-editor";
 import { VscDatabase } from "react-icons/vsc";
 import { BiFullscreen, BiExitFullscreen } from "react-icons/bi";
 import { JSONSchemaView } from "~/editor/components/json-form/SchemaView";
@@ -159,7 +154,12 @@ const TextEditor = <T extends ElementType = "div">({
       ...(inline && {
         document: false,
       }),
+      dropcursor: {
+        class: "drop-cursor",
+        color: "#FF9900",
+      },
     }),
+
     ...(inline ? [Document.extend({ content: "paragraph" })] : []),
     TextAlign.configure({
       types: ["heading", "paragraph"],

@@ -1,6 +1,6 @@
 import { LuPlus, LuPanelLeft, LuPanelRight } from "react-icons/lu";
 import { PiPalette } from "react-icons/pi";
-import { VscSettings, VscDatabase } from "react-icons/vsc";
+import { VscSettings } from "react-icons/vsc";
 import type { MouseEvent, PropsWithChildren } from "react";
 import { useEditorHelpers, usePanel, usePreviewMode } from "../hooks/use-editor";
 import { tx, css } from "@upstart.gg/style-system/twind";

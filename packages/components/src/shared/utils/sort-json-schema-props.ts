@@ -1,5 +1,4 @@
-import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
-import type { Attributes, JSONSchemaType } from "@upstart.gg/sdk/shared/attributes";
+import type { TObject, TProperties } from "@sinclair/typebox";
 
 interface PropertyWithMetadata {
   key: string;
