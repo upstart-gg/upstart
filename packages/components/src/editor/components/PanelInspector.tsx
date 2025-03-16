@@ -19,7 +19,7 @@ import PresetsView from "./PresetsView";
 import { useCallback, useEffect, useMemo } from "react";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
-import BrickPropsMenu from "./json-form/BrickPropsMenu";
+import BrickSettingsMenu from "./json-form/BrickSettingsMenu";
 
 type TabType = "preset" | "style" | "content";
 
@@ -47,8 +47,9 @@ export default function Inspector() {
     return null;
   }
 
-  const selectedTab =
-    tabsMapping[brick.id] ?? manifest.defaultInspectorTab ?? (previewMode === "desktop" ? "preset" : "style");
+  // const selectedTab =
+  //   tabsMapping[brick.id] ?? manifest.defaultInspectorTab ?? (previewMode === "desktop" ? "preset" : "style");
+  const selectedTab = tabsMapping[brick.id] ?? "style";
 
   useEffect(() => {
     if (!manifest.isContainer && selectedTab === "content") {
@@ -232,7 +233,7 @@ function StyleTab({ brick, manifest }: { brick: Brick; manifest: BrickManifest }
         onChange={onChange}
         previewMode={previewMode}
       />
-      <BrickPropsMenu brick={brick} />
+      <BrickSettingsMenu brick={brick} />
     </form>
   );
 }

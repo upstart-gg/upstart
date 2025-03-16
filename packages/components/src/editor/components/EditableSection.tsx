@@ -23,7 +23,6 @@ import { VscSettings } from "react-icons/vsc";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useEffect, useRef, useState } from "react";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
-import TestMenu from "./json-form/TestMenu";
 import type { GridConfig } from "~/shared/hooks/use-grid-config";
 import { getBrickResizeOptions, getGridPosition } from "~/shared/utils/layout-utils";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
@@ -172,7 +171,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
       <Popover.Root onOpenChange={setModalOpen}>
         {/* Don't put height on Popover otherwise it bugs and disapears just after appearing */}
         <Popover.Content width="390px" className="!p-0">
-          <TestMenu />
+          Foo
         </Popover.Content>
         <div
           className={tx(

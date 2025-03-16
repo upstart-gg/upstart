@@ -1,18 +1,12 @@
-import { useState, useCallback, createContext, useContext, type ReactNode } from "react";
+import { useState, useCallback, createContext, useContext, type ReactNode, type FC } from "react";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 import { tx, css } from "@upstart.gg/style-system/twind";
-
-// Types
-export type NavigationItem = {
-  id: string;
-  label: ReactNode;
-  content?: ReactNode;
-  hasChildren?: boolean;
-  onSelect?: () => void;
-};
+import type { NavItem, NavItemProperty } from "./types";
+import { processObjectSchemaToFields } from "./field-factory";
+import { Type, type TObject } from "@sinclair/typebox";
 
 type NavigationContextType = {
-  navigateTo: (content: ReactNode, title: string) => void;
+  navigateTo: (item: NavItem) => void;
   navigateBack: () => void;
   isRootView: boolean;
 };
@@ -30,59 +24,70 @@ export const useNavigation = () => {
 };
 
 // Navigation Content component
-export const NavigationContent: React.FC<{ children: ReactNode }> = ({ children }) => {
-  return <div className={tx("p-4 flex-1 overflow-auto")}>{children}</div>;
+const NavigationContent: FC<{ children: ReactNode }> = ({ children }) => {
+  return <div className={tx("p-4 flex-1 overflow-auto")}>content: {children}</div>;
 };
 
 // Create List component
-export const NavList: React.FC<{ items: NavigationItem[] }> = ({ items }) => {
+export const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
   const { navigateTo } = useNavigation();
-
   return (
     <ul className={tx("list-none p-0 m-0")}>
-      {items.map((item) => (
-        <li
-          key={item.id}
-          className={tx(
-            "p-3 flex items-center justify-between border-b border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors duration-200",
-          )}
-          onClick={() => {
-            if (item.onSelect) {
-              item.onSelect();
-            }
-            if (item.hasChildren && item.content) {
-              const title = typeof item.label === "string" ? item.label : "Detail";
-              navigateTo(item.content, title);
-            }
-          }}
-        >
-          {item.label}
-          {item.hasChildren && <FiChevronRight className={tx("text-gray-400")} />}
-        </li>
-      ))}
+      {items.map((item) => {
+        return (
+          <li
+            key={item.id}
+            className={tx(
+              `select-none p-2.5 flex items-center text-sm justify-between border-b border-gray-200
+            dark:border-dark-400 transition-colors duration-200 font-medium`,
+              item.children && "cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-600",
+            )}
+            onClick={() => {
+              console.log("clicked on %o", item);
+              if (item.children) {
+                console.log("navigating to %o", item);
+                navigateTo(item);
+              }
+            }}
+          >
+            {item.schema ? <SchemaField item={item} /> : item.label}
+            {item.children && <FiChevronRight className={tx("text-gray-400")} />}
+          </li>
+        );
+      })}
     </ul>
   );
 };
 
+function SchemaField({ item, brickId }: { item: NavItemProperty; brickId?: string }) {
+  const onChange = (value: any) => {};
+  console.log("Generating fields for %s, schema = %o", item.id, item.schema);
+  const fields = processObjectSchemaToFields(Type.Object({ [item.id]: item.schema }), {}, onChange, {
+    brickId,
+  });
+  console.log("fields: %o", fields);
+  return fields.length ? fields : <div>No fields for {item.id} </div>;
+}
+
 // Main navigation component
 type NavigationContainerProps = {
-  rootTitle: string;
-  rootItems: NavigationItem[];
+  title: string;
+  navItems: NavItem[];
   className?: string;
   style?: React.CSSProperties;
 };
 
 export const NavigationContainer: React.FC<NavigationContainerProps> = ({
-  rootTitle,
-  rootItems,
+  title,
+  navItems,
   className,
   style,
 }) => {
   // Stack of views (each with content and title)
   const [viewStack, setViewStack] = useState<{ content: ReactNode; title: string }[]>([
     {
-      content: <NavList items={rootItems} />,
-      title: rootTitle,
+      content: <NavList items={navItems} />,
+      title,
     },
   ]);
 
@@ -90,10 +95,12 @@ export const NavigationContainer: React.FC<NavigationContainerProps> = ({
   const [animationDirection, setAnimationDirection] = useState<"forward" | "backward" | null>(null);
 
   // Navigate to a new view
-  const navigateTo = useCallback((content: ReactNode, title: string) => {
+  const navigateTo = useCallback((item: NavItem) => {
     setAnimationDirection("forward");
-    setViewStack((prev) => [...prev, { content, title }]);
 
+    const content = item.children ? <NavList items={item.children} /> : <div>content: {item.label}</div>;
+    const title = item.label ?? "Untitled";
+    setViewStack((prev) => [...prev, { content, title }]);
     // Reset animation direction after animation completes
     setTimeout(() => {
       setAnimationDirection(null);
@@ -131,9 +138,13 @@ export const NavigationContainer: React.FC<NavigationContainerProps> = ({
       }}
     >
       <div
-        className={tx("relative overflow-hidden rounded-md border border-gray-200 bg-white", className)}
+        className={tx(
+          "relative overflow-hidden rounded-md border border-gray-200 dark:border-dark-400 bg-white dark:bg-dark-500",
+          className,
+        )}
         style={{
-          height: "500px",
+          // height: "500px",
+          minHeight: "300px",
           width: "100%",
           ...style,
         }}
@@ -141,12 +152,13 @@ export const NavigationContainer: React.FC<NavigationContainerProps> = ({
         {/* Current View */}
         <div className={tx("absolute inset-0 flex flex-col", getAnimationClass())}>
           {/* Header */}
-          <div className={tx("flex items-center p-3 border-b border-gray-200 min-h-12")}>
+          <div className={tx("flex items-center p-2.5 border-b border-gray-200 dark:border-dark-400")}>
             {viewStack.length > 1 && (
               <button
                 type="button"
                 className={tx(
-                  "flex items-center gap-1 p-0 bg-transparent text-upstart-600 border-0 cursor-pointer font-medium text-sm hover:opacity-90 focus:outline-none",
+                  `flex items-center gap-1 p-0 bg-transparent text-upstart-600 dark:text-upstart-300
+                  border-0 cursor-pointer font-medium text-sm hover:opacity-90 focus:outline-none`,
                 )}
                 onClick={navigateBack}
               >
@@ -154,10 +166,12 @@ export const NavigationContainer: React.FC<NavigationContainerProps> = ({
                 Back
               </button>
             )}
-            <h3 className={tx("flex-1 m-0 text-base font-semibold text-center")}>{currentView.title}</h3>
+            <h3 className={tx("flex-1 m-0 text-sm font-semibold text-center select-none")}>
+              {currentView.title}
+            </h3>
             {viewStack.length > 1 && <div className={tx("w-10")} />} {/* Spacer for alignment */}
           </div>
-          <div className={tx("flex-1 overflow-auto")}>{currentView.content}</div>
+          <div className={tx("flex-1 overflow-auto min-h-max h-fit")}>{currentView.content}</div>
         </div>
       </div>
     </NavigationContext.Provider>
@@ -165,6 +179,6 @@ export const NavigationContainer: React.FC<NavigationContainerProps> = ({
 };
 
 // Helper function to create a submenu
-export const useSubMenu = (title: string, items: NavigationItem[]) => {
+export const useSubMenu = (title: string, items: NavItem[]) => {
   return <NavList items={items} />;
 };

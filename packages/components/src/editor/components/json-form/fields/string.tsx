@@ -9,7 +9,7 @@ export const StringField: React.FC<FieldProps<string>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
 
   return (
-    <div className="field field-string">
+    <div className="field field-string basis-full">
       {title && (
         <div className="flex items-center justify-between">
           <label className={fieldLabel}>{title}</label>

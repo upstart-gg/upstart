@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import ModalSearchImage from "~/editor/components/ModalSearchImage";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import { IoIosHelpCircleOutline } from "react-icons/io";
+import { fieldLabel } from "../form-class";
 
 const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
   const {
@@ -26,12 +27,10 @@ const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
 
   return (
     <>
-      <div className="file-field flex items-center flex-wrap gap-1">
+      <div className="file-field flex items-center flex-wrap gap-1 flex-1">
         {title && (
           <div className="flex items-center justify-between">
-            <Text as="label" size="2" weight="medium">
-              {title}
-            </Text>
+            <label className={fieldLabel}>{title}</label>
           </div>
         )}
         <div className="flex gap-1 flex-1">

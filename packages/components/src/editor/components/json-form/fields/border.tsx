@@ -23,7 +23,8 @@ export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
   const onSettingsChange = (newVal: Partial<BorderSettings>) => onChange({ ...currentValue, ...newVal });
 
   return (
-    <div className="border-field">
+    <div className="border-field flex flex-col gap-2">
+      {title && <label className={fieldLabel}>{title}</label>}
       {description && (
         <Text as="p" color="gray" size="1">
           {description}

@@ -32,7 +32,7 @@ export const AlignBasicField: React.FC<FieldProps<AlignBasicSettings>> = (props)
   };
 
   return (
-    <div className="layout-field">
+    <div className="layout-field basis-full">
       <div className="flex items-start flex-wrap gap-x-4 gap-y-1">
         <div className="flex flex-col gap-1 flex-1">
           <label className={fieldLabel}>Horizontal</label>

@@ -43,7 +43,6 @@ export const manifest = defineBrickManifest({
     }),
     navigation: group({
       title: "Navigation",
-
       children: {
         navItems: prop({
           title: "Nav items",
@@ -65,6 +64,7 @@ export const manifest = defineBrickManifest({
           title: "Styles",
           children: {
             color: color(),
+            backgroundColor: backgroundColor(),
           },
         }),
       },

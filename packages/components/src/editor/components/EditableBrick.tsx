@@ -129,7 +129,7 @@ const BrickMenuBars = forwardRef<HTMLDivElement, BrickMenuBarProps>(({ brick, ch
       role="navigation"
       className={tx(
         selectedBrickId !== brick.id && "opacity-0 -translate-y-[10%]",
-        `absolute left-0 right-0 top-full z-[9999] pt-1
+        `absolute left-0 top-full z-[9999] pt-1
                 transition-all duration-300 flex gap-2 items-center
                 group-hover/brick:(opacity-100 translate-y-0)
                 `,
@@ -369,3 +369,19 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
     );
   },
 );
+
+/**
+ * This hook is used to get the position of the brick's nav bar according to the brick's position,
+ * the viewport, and the other bricks around it.
+ *
+ * @todo: use @floating-ui/react to position the nav bar
+ */
+function useBrickNavBarPosition(brick: Brick) {
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Blaklist of postions depending on the position of the brick within the viewport
+  const possiblePositions = [brick];
+
+  return { ref, position };
+}

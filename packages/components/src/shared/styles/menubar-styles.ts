@@ -1,7 +1,7 @@
 export const menuNavBarCls = `h-10 shadow-lg rounded-lg bg-white/70 backdrop-blur-md flex text-base
                               text-gray-500 w-fit justify-start items-stretch divide-x divide-gray-300 `;
 
-const menuBarBtnBaseCls = `transition-opacity duration-300 bg-gradient-to-t from-[#FFFAF0] to-[#FFFAAA]`;
+const menuBarBtnBaseCls = `transition-opacity duration-300 bg-gradient-to-t from-[#FFFAF0] to-[#FFFFEE]`;
 
 export const menuBarBtnCommonCls = `${menuBarBtnBaseCls}
   relative group overflow-visible
