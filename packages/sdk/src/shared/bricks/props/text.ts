@@ -47,10 +47,15 @@ export function color(defaultValue: string | "auto" = "auto", title = "Text colo
 
 export type ColorSettings = Static<ReturnType<typeof color>>;
 
+type TextContentOptions = {
+  paragraphMode?: "auto" | "hero";
+  showInSettings?: boolean;
+};
+
 export function textContent(
   title = "Text",
   defaultContent = "some text here",
-  paragraphMode: "auto" | "hero" = "auto",
+  { paragraphMode = "auto", showInSettings }: TextContentOptions = {},
 ) {
   return prop({
     title,
@@ -58,7 +63,7 @@ export function textContent(
     schema: Type.String({
       default: defaultContent,
       "ui:paragraph-mode": paragraphMode,
-      "ui:field": "hidden",
+      "ui:field": showInSettings ? "string" : "hidden",
     }),
   });
 }

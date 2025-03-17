@@ -22,12 +22,14 @@ function useDatasourceContext() {
 }
 
 export function useDatasource<
-  D extends DatasourceRefSettings = DatasourceRefSettings,
   S extends DatasourceSchema | null = null,
->(dsRef: D | undefined, schema: S = null as S) {
+  D extends DatasourceRefSettings = DatasourceRefSettings,
+>(dsRef: D | undefined, schema: S) {
   const datasources = useDatasourceContext();
 
-  if (!dsRef) {
+  console.log("datasources", { datasources, dsRef });
+
+  if (!dsRef?.datasource) {
     return {
       datasourceId: null,
       data: schema !== null ? Value.Create(schema) : [],

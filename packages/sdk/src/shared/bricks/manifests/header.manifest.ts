@@ -7,12 +7,37 @@ import { image } from "../props/image";
 import { backgroundColor } from "../props/background";
 import { color, textContent } from "../props/text";
 import { shadow } from "../props/effects";
+import { datasourceRef } from "../props/datasource";
+
+export const datasource = Type.Array(
+  Type.Object({
+    href: urlOrPageId(),
+    label: Type.String(),
+  }),
+  {
+    default: [
+      {
+        href: "#",
+        label: "Link 1",
+      },
+      {
+        href: "#",
+        label: "Link 2",
+      },
+      {
+        href: "#",
+        label: "Link 3",
+      },
+    ],
+  },
+);
 
 export const manifest = defineBrickManifest({
   type: "header",
   kind: "widget",
   name: "Header",
   description: "A header with logo and navigation",
+  datasource,
   duplicatable: false,
   defaultHeight: {
     desktop: 3,
@@ -56,14 +81,26 @@ export const manifest = defineBrickManifest({
     brand: group({
       title: "Brand",
       children: {
-        name: textContent("Brand name", "Acme Inc."),
+        name: textContent("Brand name", "Acme Inc.", { showInSettings: true }),
         logo: optional(image("Logo")),
         color: color(),
       },
     }),
     navigation: group({
-      title: "Navigation",
+      title: "Links",
       children: {
+        position: prop({
+          title: "Position",
+          schema: Type.Union(
+            [
+              Type.Literal("left", { title: "Left" }),
+              Type.Literal("center", { title: "Center" }),
+              Type.Literal("right", { title: "Right" }),
+            ],
+            { default: "right" },
+          ),
+        }),
+        items: datasourceRef(),
         navItems: prop({
           title: "Nav items",
           schema: Type.Array(

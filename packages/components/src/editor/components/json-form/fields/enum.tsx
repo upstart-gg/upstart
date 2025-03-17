@@ -85,7 +85,7 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
           <SegmentedControl.Root
             onValueChange={onChange}
             defaultValue={currentValue as string}
-            size="1"
+            size="2"
             radius="large"
           >
             {options
@@ -94,7 +94,7 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
                 <SegmentedControl.Item
                   key={option.const}
                   value={option.const}
-                  className={tx("[&_.rt-SegmentedControlItemLabel]:px-1.5")}
+                  className={tx("[&_.rt-SegmentedControlItemLabel]:px-2")}
                 >
                   {option.title}
                 </SegmentedControl.Item>
