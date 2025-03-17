@@ -6,6 +6,7 @@ import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 
 const Image = forwardRef<HTMLImageElement, BrickProps<Manifest>>(({ brick }, ref) => {
   const { props } = brick;
+  console.log("image brick", brick);
   const className = useBrickStyle(brick);
   const { src, alt } = props.image;
 

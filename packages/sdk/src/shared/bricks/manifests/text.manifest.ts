@@ -10,7 +10,16 @@ export const manifest = defineBrickManifest({
   kind: "brick",
   name: "Text",
   description: "Text with formatting options",
+  minHeight: {
+    desktop: 2,
+    mobile: 2,
+  },
+  minWidth: {
+    desktop: 2,
+    mobile: 2,
+  },
   repeatable: true,
+
   icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
         stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
         <path d="M4 7h16M4 12h16M4 17h16"></path></svg>`,

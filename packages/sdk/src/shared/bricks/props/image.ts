@@ -4,11 +4,10 @@ import { prop } from "./helpers";
 type PropImageOptions = {
   defaultImageUrl?: string;
   showImgSearch?: boolean;
-  required?: boolean;
 };
 
 export function image(title = "Image", options?: PropImageOptions) {
-  const { required, defaultImageUrl, showImgSearch = false } = options || {};
+  const { defaultImageUrl, showImgSearch = false } = options || {};
   const schema = Type.Object(
     {
       src: Type.String({
@@ -31,7 +30,7 @@ export function image(title = "Image", options?: PropImageOptions) {
   );
   return prop({
     title,
-    schema: required ? schema : Type.Optional(schema),
+    schema,
   });
 }
 

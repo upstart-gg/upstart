@@ -1,6 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, group, prop } from "../props/helpers";
+import { defineProps, group, optional, prop } from "../props/helpers";
 import { border } from "../props/border";
 import { string, urlOrPageId } from "../props/string";
 import { image } from "../props/image";
@@ -57,7 +57,7 @@ export const manifest = defineBrickManifest({
       title: "Brand",
       children: {
         name: textContent("Brand name", "Acme Inc."),
-        logo: image("Logo"),
+        logo: optional(image("Logo")),
         color: color(),
       },
     }),

@@ -226,11 +226,9 @@ const TextEditor = <T extends ElementType = "div">({
 
   useEffect(() => {
     const onFocus = (e: EditorEvents["focus"]) => {
-      console.log("editor focus!");
       // e.event.stopPropagation();
       mainEditor.setIsEditingText(brickId);
       mainEditor.setSelectedBrickId(brickId);
-
       setFocused(true);
       setTimeout(() => {
         const container = document.querySelector<HTMLDivElement>(`#text-editor-menu-${brickId}`);

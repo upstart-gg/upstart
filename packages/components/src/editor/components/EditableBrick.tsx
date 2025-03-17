@@ -56,12 +56,17 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const previewMode = usePreviewMode();
     const { getParentBrick } = useDraftHelpers();
     const manifest = useBrickManifest(brick.type);
-    const { refs, floatingStyles } = useFloating({
+    const {
+      refs,
+      floatingStyles,
+      update: updateBarsPlacement,
+    } = useFloating({
+      transform: true,
       middleware: [
+        offset({ mainAxis: 4, crossAxis: 4 }),
         autoPlacement({
           allowedPlacements: ["bottom-start", "top-start"],
         }),
-        offset({ mainAxis: 4, crossAxis: 4 }),
       ],
     });
     const brickRef = useMergeRefs([ref, refs.setReference]);
@@ -74,7 +79,7 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
 
     const onBrickWrapperClick = (e: MouseEvent<HTMLElement>) => {
       const target = e.currentTarget as HTMLElement;
-      if (hasMouseMoved.current || target.matches(".react-resizable-handle") || !target.matches(".brick")) {
+      if (hasMouseMoved.current || !target.matches(".brick")) {
         console.debug("onBrickWrapperClick: click ignored");
         return;
       }
@@ -117,8 +122,10 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
             hasMouseMoved.current = false;
           }}
           onMouseUp={(e) => {
+            console.log("onMouseUp");
             setTimeout(() => {
               hasMouseMoved.current = false;
+              updateBarsPlacement();
             }, 100);
           }}
           onMouseMove={(e) => {
