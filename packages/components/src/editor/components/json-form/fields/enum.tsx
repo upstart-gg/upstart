@@ -143,7 +143,7 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
 
     default:
       return (
-        <div className="flex flex-col gap-1 flex-1">
+        <div className="flex justify-between flex-1 pr-1">
           <label className={fieldLabel}>{title}</label>
           <Select.Root defaultValue={currentValue} size="2" onValueChange={(value) => onChange(value)}>
             <Select.Trigger radius="large" variant="ghost" />

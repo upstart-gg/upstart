@@ -22,7 +22,7 @@ export function shadow({ title = "Shadow", defaultValue = "shadow-none" }: Shado
         $id: "shadow",
         default: defaultValue,
         "ui:field": "enum",
-        "ui:display": "button-group",
+        "ui:display": "select",
       },
     ),
   });

@@ -13,10 +13,20 @@ import {
   useDraft,
   useDraftHelpers,
   useEditorHelpers,
+  useGetBrick,
   usePreviewMode,
   useSelectedBrickId,
 } from "../hooks/use-editor";
-import { ContextMenu, Portal } from "@upstart.gg/style-system/system";
+import {
+  ContextMenu,
+  Portal,
+  useFloating,
+  useMergeRefs,
+  autoPlacement,
+  offset,
+  Popover,
+  Inset,
+} from "@upstart.gg/style-system/system";
 import BaseBrick from "~/shared/components/BaseBrick";
 import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
 import {
@@ -30,6 +40,7 @@ import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests
 import { BiSolidColor } from "react-icons/bi";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { FiSettings, FiDatabase } from "react-icons/fi";
+import BrickSettingsMenu from "./json-form/BrickSettingsMenu";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -45,6 +56,16 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const previewMode = usePreviewMode();
     const { getParentBrick } = useDraftHelpers();
     const manifest = useBrickManifest(brick.type);
+    const { refs, floatingStyles } = useFloating({
+      middleware: [
+        autoPlacement({
+          allowedPlacements: ["bottom-start", "top-start"],
+        }),
+        offset({ mainAxis: 4, crossAxis: 4 }),
+      ],
+    });
+    const brickRef = useMergeRefs([ref, refs.setReference]);
+
     const wrapperClass = useBrickWrapperStyle({
       brick,
       editable: true,
@@ -69,7 +90,9 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       }
 
       setSelectedBrick(selectedBrick.id);
-      setPanel("inspector");
+
+      // setPanel("inspector");
+
       hasMouseMoved.current = false;
 
       // stop propagation otherwise the click could then be handled by the container
@@ -88,7 +111,7 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           data-element-kind="brick"
           {...(manifest.movable ? {} : { "data-no-drag": "true" })}
           className={tx(wrapperClass, `![animation-delay:${0.5 * (index + 1)}s]`)}
-          ref={ref}
+          ref={brickRef}
           onClick={onBrickWrapperClick}
           onMouseDown={(e) => {
             hasMouseMoved.current = false;
@@ -105,36 +128,44 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           <BaseBrick brick={brick} editable />
           <BrickEditLabel brick={brick} isContainerChild={isContainerChild} />
           {children} {/* Make sure to include children to add resizable handle */}
-          <BrickMenuBars brick={brick} isContainerChild={isContainerChild} />
+          <BrickMenuBarsContainer
+            ref={refs.setFloating}
+            brick={brick}
+            isContainerChild={isContainerChild}
+            style={floatingStyles}
+          />
         </div>
       </BrickContextMenu>
     );
   },
 );
 
-type BrickMenuBarProps = PropsWithChildren<{
-  brick: Brick;
-  isContainerChild?: boolean;
-}>;
+type BrickMenuBarProps = ComponentProps<"div"> &
+  PropsWithChildren<{
+    brick: Brick;
+    isContainerChild?: boolean;
+  }>;
 
 /**
- * This uses a popover to help with positioning the menu bar, but it's no a modal.
- * The menu bar is a horizontal bar that appears at the bottom/top of the brick when it's selected.
+ * The An horizontal container holding Menu bars that appears at the bottom/top of the brick when it's selected.
  */
-const BrickMenuBars = forwardRef<HTMLDivElement, BrickMenuBarProps>(({ brick, children }, ref) => {
+const BrickMenuBarsContainer = forwardRef<HTMLDivElement, BrickMenuBarProps>(({ brick, style }, ref) => {
   const selectedBrickId = useSelectedBrickId();
   return (
     <div
+      ref={ref}
       data-ui
       role="navigation"
       className={tx(
-        selectedBrickId !== brick.id && "opacity-0 -translate-y-[10%]",
-        `absolute left-0 top-full z-[9999] pt-1
-                transition-all duration-300 flex gap-2 items-center
-                group-hover/brick:(opacity-100 translate-y-0)
-                `,
+        // absolute left-0 top-full pt-1
+        selectedBrickId !== brick.id && "opacity-0",
+        `z-[99999]  delay-100
+        transition-all duration-300 flex gap-2 items-center
+        group-hover/brick:(opacity-100)`,
       )}
+      style={style}
     >
+      {/* container for main nav bar */}
       <BrickMainNavBar brick={brick} />
       {/* container for text editor buttons */}
       <BrickTextNavBar brick={brick} />
@@ -156,13 +187,15 @@ function BrickMainNavBar({ brick }: { brick: Brick }) {
       {/* Presets: @TODO check if brick has presets */}
       <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
         <BiSolidColor className={tx("w-5 h-5")} />
-        <span className={tx(menuBarTooltipCls)}>Ready to use presets</span>
+        <span className={tx(menuBarTooltipCls)}>Presets</span>
       </button>
       {/* Settings & styles */}
-      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-        <FiSettings className={tx("w-5 h-5")} />
-        <span className={tx(menuBarTooltipCls)}>Settings & styles</span>
-      </button>
+      <BrickSettingsPopover brick={brick}>
+        <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
+          <FiSettings className={tx("w-5 h-5")} />
+          <span className={tx(menuBarTooltipCls)}>Settings</span>
+        </button>
+      </BrickSettingsPopover>
       {/* Content */}
       <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
         <FiDatabase className={tx("w-5 h-5")} />
@@ -170,6 +203,23 @@ function BrickMainNavBar({ brick }: { brick: Brick }) {
       </button>
       {/* Todo: data source / content */}
     </nav>
+  );
+}
+
+type BrickSettingsPopoverProps = PropsWithChildren<{
+  brick: Brick;
+}>;
+
+function BrickSettingsPopover({ brick, children }: BrickSettingsPopoverProps) {
+  return (
+    <Popover.Root>
+      <Popover.Trigger>{children}</Popover.Trigger>
+      <Popover.Content width="300px">
+        <Inset>
+          <BrickSettingsMenu brick={brick} />
+        </Inset>
+      </Popover.Content>
+    </Popover.Root>
   );
 }
 
@@ -192,7 +242,7 @@ function BrickEditLabel({ brick, isContainerChild }: { brick: Brick; isContainer
       data-ui
       className="absolute transition-all -z-10 duration-150 opacity-0
         group-hover/brick:(opacity-100 translate-y-0) tracking-wider
-        -translate-y-5 -bottom-6 uppercase right-1 bg-white/70 backdrop-blur-md shadow-md
+        translate-y-1 -bottom-6 uppercase right-1 bg-white/70 backdrop-blur-md shadow-md
       text-gray-600 text-xs font-semibold py-0.5 px-2 rounded-sm"
     >
       {manifest.name}
@@ -369,19 +419,3 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
     );
   },
 );
-
-/**
- * This hook is used to get the position of the brick's nav bar according to the brick's position,
- * the viewport, and the other bricks around it.
- *
- * @todo: use @floating-ui/react to position the nav bar
- */
-function useBrickNavBarPosition(brick: Brick) {
-  const [position, setPosition] = useState({ top: 0, left: 0 });
-  const ref = useRef<HTMLDivElement>(null);
-
-  // Blaklist of postions depending on the position of the brick within the viewport
-  const possiblePositions = [brick];
-
-  return { ref, position };
-}

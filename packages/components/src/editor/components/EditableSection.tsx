@@ -37,9 +37,7 @@ export default function EditableSection({ section, gridConfig }: EditableSection
   useResizableSection(section, gridConfig);
 
   const previewMode = usePreviewMode();
-  // todo: replace by selected section or merge the two notions
-  const selectedBrickId = useSelectedBrickId();
-  const className = useSectionStyle({ section, editable: true, selected: selectedBrickId === section.id });
+  const className = useSectionStyle({ section, editable: true });
 
   return (
     <section key={id} id={id} data-element-kind="section" className={className}>

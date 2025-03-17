@@ -6,6 +6,9 @@ import { getBackgroundStyles } from "../styles/helpers";
 type UseSectionStyleProps = {
   section: Section;
   editable?: boolean;
+  /**
+   * Not used yet
+   */
   selected?: boolean;
 };
 

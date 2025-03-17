@@ -4,34 +4,46 @@ import { getStyleProperties } from "@upstart.gg/sdk/shared/bricks/props/helpers"
 import { stylesHelpersMap } from "../styles/helpers";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { useBrickManifest } from "./use-brick-manifest";
 import { get } from "lodash-es";
+import { useBrickManifest } from "./use-brick-manifest";
+
+// Return the upper path without the last part (the property name)
+function extractStylePath(path: string) {
+  if (!path.includes(".")) {
+    return path;
+  }
+  return path.split(".").slice(0, -1).join(".");
+}
 
 /**
  * The classNames for the brick
  */
 export function useBrickStyle<T extends BrickManifest>(brick: BrickProps<T>["brick"]) {
-  const manifest = useBrickManifest<T>(brick.type);
+  const manifest = useBrickManifest(brick.type);
   const stylesProps = getStyleProperties(manifest.props);
   const { props, mobileProps } = brick;
 
+  const classes = Object.entries(stylesProps).reduce(
+    (acc, [path, styleId]) => {
+      const helper = stylesHelpersMap[styleId as keyof typeof stylesHelpersMap];
+      if (!helper) {
+        console.warn("No helper found for styleId %s", styleId);
+      }
+      console.log("style for %s (extracted=%s) is %o", path, extractStylePath(path), get(props, path));
+      const part = extractStylePath(path);
+      acc[part] = acc[part] ?? [];
+      acc[part].push(
+        // @ts-expect-error
+        tx(helper?.(get(props, path), get(mobileProps, path))),
+      );
+      return acc;
+    },
+    {} as Record<string, string[]>,
+  );
+
   // This is the inner brick style. As the wrapper uses "display: flex",
   // we use flex-1 to make the inner brick fill the space.
-  return tx(apply("flex-1"), [
-    apply(props.className as string),
-    ...Object.entries(stylesProps).map(([path, styleId]) => {
-      const helper = stylesHelpersMap[styleId as keyof typeof stylesHelpersMap];
-      // @ts-expect-error
-      return helper?.(get(props, path), get(mobileProps, path));
-    }),
-    // props.layout?.padding,
-    // props.text?.color,
-    // props.text?.size,
-    // getFlexStyles(props),
-    // getBorderStyles(props),
-    // getBackgroundStyles(props),
-    // getShadowStyles(props),
-  ]);
+  return classes;
 }
 
 export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable, selected }: BrickProps<T>) {
@@ -85,8 +97,8 @@ function getBrickWrapperEditorStyles(
     return null;
   }
   return [
-    "select-none hover:z-[9999] transition-colors delay-300 duration-300 rounded-sm outline outline-4 outline-transparent -outline-offset-2",
-    selected && "outline outline-4 outline-upstart-500 shadow-xl shadow-upstart-500/20",
+    "select-none hover:z-[9999] transition-colors delay-300 duration-300 rounded-sm outline outline-2 outline-transparent -outline-offset-1",
+    selected && "outline-upstart-500 shadow-xl shadow-upstart-500/20",
     !selected && !isContainerChild && !isContainer && "hover:(outline-upstart-500/60)",
     !selected && !isContainerChild && isContainer && "hover:(outline-dotted outline-upstart-500/30)",
     !selected && isContainerChild && "hover:(outline-upstart-500/40)",

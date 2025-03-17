@@ -1,7 +1,7 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { prop } from "./helpers";
 
-export function padding() {
+export function padding(defaultValue = "p-0") {
   return prop({
     title: "Padding",
     $id: "#styles:padding",
@@ -16,7 +16,7 @@ export function padding() {
           Type.Literal("p-16", { title: "Extra large (v2)" }),
         ],
         {
-          default: "p-2",
+          default: defaultValue,
           description: "Space between the content and the border",
           "ui:field": "enum",
           "ui:display": "select",

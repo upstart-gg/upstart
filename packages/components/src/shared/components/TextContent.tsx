@@ -1,40 +1,18 @@
-import { forwardRef, type ComponentPropsWithoutRef, type ElementType, type PropsWithChildren } from "react";
-import TextEditor from "./TextEditor";
-
-type PolymorphicProps<E extends ElementType> = PropsWithChildren<
-  ComponentPropsWithoutRef<E> & {
-    as?: E;
-  }
->;
-
-type TextContentProps<E extends ElementType> = PolymorphicProps<E> & {
-  content: string;
-  brickId: string;
-  propPath: string;
-  editable?: boolean;
-  inline?: boolean;
-};
+import { forwardRef } from "react";
+import TextEditor, { type TextEditorProps } from "./TextEditor";
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-export const TextContent = forwardRef<HTMLDivElement, TextContentProps<any>>(
+export const TextContent = forwardRef<HTMLDivElement, TextEditorProps<any>>(
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  (props: TextContentProps<any>, ref) => {
+  (props: TextEditorProps<any>, ref) => {
     if (props.editable) {
-      return (
-        <TextEditor
-          propPath={props.propPath}
-          initialContent={props.content}
-          className={props.className}
-          brickId={props.brickId}
-          inline={props.inline}
-        />
-      );
+      return <TextEditor ref={ref} {...props} />;
     }
     const Component = props.as || "div";
     return (
       <Component
         ref={ref}
-        className="text-content"
+        className={props.className}
         // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
         dangerouslySetInnerHTML={{ __html: props.content }}
       />

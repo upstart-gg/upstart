@@ -25,17 +25,6 @@ import type { FlexSettings, GridSettings } from "@upstart.gg/sdk/shared/bricks/p
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 
-export interface FieldProps {
-  brickId?: string;
-  schema: TSchema;
-  formSchema: TObject<TProperties>;
-  formData: Record<string, unknown>;
-  required: boolean;
-  title?: string;
-  description?: string;
-  placeholder?: string;
-}
-
 export interface FieldFactoryOptions {
   brickId?: string;
   fieldName: string;
@@ -47,23 +36,8 @@ export interface FieldFactoryOptions {
   parents?: string[];
 }
 
-export interface GroupedFields {
-  [groupName: string]: {
-    title: string;
-    fields: ReactNode[];
-  };
-}
-
-// Helper function to get field group information
-export function getFieldGroupInfo(field: TSchema): { group: string; groupTitle: string } {
-  const group = (field["ui:group"] ?? "other") as string;
-  const groupTitle = (field["ui:group:title"] ?? "Other") as string;
-
-  return { group, groupTitle };
-}
-
 // Helper function to get common props for fields
-export function getCommonFieldProps(options: FieldFactoryOptions, fieldSchema: TSchema): FieldProps {
+function getCommonFieldProps(options: FieldFactoryOptions, fieldSchema: TSchema) {
   const { brickId, fieldName, formSchema, formData } = options;
   return {
     brickId,
@@ -312,14 +286,13 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
 export function processObjectSchemaToFields(
   schema: TObject<TProperties>,
   formData: Record<string, unknown>,
-  onChange: (data: Record<string, unknown>, id: string) => void,
+  onChange: (data: Record<string, unknown>, propPath: string) => void,
   options: {
     brickId?: string;
     filter?: (field: TSchema) => boolean;
     parents?: string[];
   },
 ): ReactNode[] {
-  console.log({ schema, formData, onChange, options });
   const { brickId, filter, parents = [] } = options;
   const fields: ReactNode[] = [];
 
@@ -328,21 +301,12 @@ export function processObjectSchemaToFields(
 
     // Apply filter if provided
     if (filter && field.type !== "object" && !filter(field)) {
+      console.log("processObjectSchemaToFields: filtering field", field);
       return;
     }
 
     // Build the field ID
     const id = parents.length ? `${parents.join(".")}.${fieldName}` : fieldName;
-
-    // Handle object type differently
-    // if (field.type === "object" && field["ui:field"] !== "object") {
-    //   console.log("Skipping object field", field);
-    //   // This is just a placeholder for recursive field rendering
-    //   // The actual rendering happens in FormRenderer
-    //   return;
-    // }
-
-    console.log("Using field %o", field);
 
     // Create field component
     const fieldComponent = createFieldComponent({
@@ -356,7 +320,6 @@ export function processObjectSchemaToFields(
       parents,
     });
 
-    // If we have a field component, add it to the appropriate group
     if (fieldComponent) {
       fields.push(fieldComponent);
     }
@@ -364,5 +327,3 @@ export function processObjectSchemaToFields(
 
   return fields;
 }
-
-function shemaToField(schema: TSchema) {}

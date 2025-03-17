@@ -177,7 +177,7 @@ export default function Inspector() {
             </Callout.Text>
           </Callout.Root>
         )}
-        <StyleTab brick={brick} manifest={manifest} />
+        <StyleTab brick={brick} />
       </ScrollablePanelTab>
       <ScrollablePanelTab tab="content">
         <ContentTab brick={brick} manifest={manifest} />
@@ -186,53 +186,9 @@ export default function Inspector() {
   );
 }
 
-function StyleTab({ brick, manifest }: { brick: Brick; manifest: BrickManifest }) {
-  const { updateBrickProps } = useDraftHelpers();
-  const previewMode = usePreviewMode();
-  const getBrickInfo = useGetBrick();
-  const brickInfo = getBrickInfo(brick.id);
-
-  const onChange = useCallback(
-    (data: Record<string, unknown>, propertyChangedPath: string) => {
-      if (!propertyChangedPath) {
-        console.warn("propertyChangedPath is missing in style tab");
-        // ignore changes unrelated to the brick
-        return;
-      }
-      // Note: this is a weird way to update the brick props, but it'it allows us to deal with frozen trees
-      const props = JSON.parse(JSON.stringify(brickInfo?.props ?? {}));
-      // `propertyChangedPath` can take the form of `a.b.c` which means we need to update `props.a.b.c`
-      // For this we use lodash.set
-      set(props, propertyChangedPath, data[propertyChangedPath]);
-      // Update the brick props in the store
-      updateBrickProps(brick.id, props, previewMode === "mobile");
-    },
-    [brick.id, previewMode, updateBrickProps, brickInfo],
-  );
-
-  invariant(brickInfo, "Brick info props is missing in style tab");
-
-  // const manifest = useMemo(() => manifests[brick.type], [brick.type]);
-  const formData = useMemo(() => {
-    return previewMode === "mobile"
-      ? merge({}, brickInfo.props, brickInfo.mobileProps)
-      : brickInfo.props ?? {};
-  }, [brickInfo, previewMode]);
-
-  console.log("Inspector manifest props", manifest.props);
-
+function StyleTab({ brick }: { brick: Brick }) {
   return (
     <form className={tx("px-3 flex flex-col gap-3")}>
-      <FormRenderer
-        brickId={brick.id}
-        formSchema={manifest.props}
-        formData={formData}
-        filter={(prop) => {
-          return (previewMode !== "mobile" || prop["ui:responsive"]) && prop["ui:inspector-tab"] === "style";
-        }}
-        onChange={onChange}
-        previewMode={previewMode}
-      />
       <BrickSettingsMenu brick={brick} />
     </form>
   );

@@ -120,8 +120,8 @@ const hpBricks = defineBricks([
     type: "header",
     sectionId: "header",
     props: {
-      containerStyles: {
-        backgroundColor: "#FF9900",
+      container: {
+        backgroundColor: "#FFFFDD",
       },
       brand: {
         name: "Upstart",

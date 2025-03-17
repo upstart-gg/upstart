@@ -11,19 +11,20 @@ import { TextContent } from "../components/TextContent";
  */
 const Text = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const { props } = brick;
-  const className = useBrickStyle<Manifest>(brick);
-  console.log("renering text brick", props);
+  const styles = useBrickStyle<Manifest>(brick);
   return (
-    <TextContent
-      ref={ref}
-      propPath="content"
-      className={tx(className)}
-      brickId={brick.id}
-      content={props.content}
-      editable={editable}
-    />
+    <div className={tx("flex-1", ...Object.values(styles))}>
+      <TextContent
+        ref={ref}
+        propPath="content"
+        // className={tx("flex-1", ...styles)}
+        brickId={brick.id}
+        content={props.content}
+        editable={editable}
+      />
+    </div>
   );
 });
 
 // Memoize the component to avoid re-rendering when the text content changes
-export default memoizeIgnoringPaths(Text, ["brick.props.content"]);
+export default Text;

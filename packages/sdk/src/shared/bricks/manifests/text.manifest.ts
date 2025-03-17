@@ -2,6 +2,8 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { textContent } from "../props/text";
 import { defineProps, group } from "../props/helpers";
 import { backgroundColor } from "../props/background";
+import { padding } from "../props/padding";
+import { border } from "../props/border";
 
 export const manifest = defineBrickManifest({
   type: "text",
@@ -14,12 +16,15 @@ export const manifest = defineBrickManifest({
         <path d="M4 7h16M4 12h16M4 17h16"></path></svg>`,
   props: defineProps({
     content: textContent(),
-    styles: group({
-      title: "Styles",
-      children: {
-        backgroundColor: backgroundColor(),
-      },
-    }),
+    backgroundColor: backgroundColor(),
+    padding: padding("p-2"),
+    border: border(),
+    // styles: group({
+    //   title: "Styles",
+    //   children: {
+    //     backgroundColor: backgroundColor(),
+    //   },
+    // }),
   }),
 });
 

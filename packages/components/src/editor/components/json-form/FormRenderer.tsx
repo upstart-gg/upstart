@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
 import { sortJsonSchemaProperties } from "~/shared/utils/sort-json-schema-props";
-import { processObjectSchemaToFields, type GroupedFields } from "./field-factory";
+import { processObjectSchemaToFields } from "./field-factory";
 
 interface FormRendererProps {
   brickId?: string;

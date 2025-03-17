@@ -5,7 +5,8 @@ import { border } from "../props/border";
 import { string, urlOrPageId } from "../props/string";
 import { image } from "../props/image";
 import { backgroundColor } from "../props/background";
-import { color } from "../props/text";
+import { color, textContent } from "../props/text";
+import { shadow } from "../props/effects";
 
 export const manifest = defineBrickManifest({
   type: "header",
@@ -33,14 +34,15 @@ export const manifest = defineBrickManifest({
     <line x1="17" y1="14" x2="19" y2="14"></line></svg>`,
 
   props: defineProps({
-    containerStyles: group({
-      title: "Container styles",
-      children: { border: border(), backgroundColor: backgroundColor() },
+    container: group({
+      title: "Container",
+      children: { border: border(), backgroundColor: backgroundColor(), shadow: shadow(), color: color() },
     }),
     singleProp: prop({
       title: "Single prop",
       schema: Type.String({ title: "Single prop" }),
     }),
+    singleColor: color("red", "My color"),
     navigation: group({
       title: "Navigation",
       children: {
@@ -58,15 +60,10 @@ export const manifest = defineBrickManifest({
     brand: group({
       title: "Brand",
       children: {
-        name: string("Brand name", "Acme Inc."),
+        name: textContent("Brand name", "Acme Inc."),
         logo: image("Logo"),
-        styles: group({
-          title: "Styles",
-          children: {
-            color: color(),
-            backgroundColor: backgroundColor(),
-          },
-        }),
+        color: color(),
+        backgroundColor: backgroundColor(),
       },
     }),
   }),

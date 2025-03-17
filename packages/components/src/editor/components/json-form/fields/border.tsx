@@ -23,14 +23,14 @@ export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
   const onSettingsChange = (newVal: Partial<BorderSettings>) => onChange({ ...currentValue, ...newVal });
 
   return (
-    <div className="border-field flex flex-col gap-2">
+    <div className="border-field flex flex-col gap-2 flex-1">
       {title && <label className={fieldLabel}>{title}</label>}
       {description && (
         <Text as="p" color="gray" size="1">
           {description}
         </Text>
       )}
-      <div className="flex items-center flex-wrap gap-x-4 gap-y-1">
+      <div className="flex items-center flex-wrap gap-x-6 gap-y-1 px-1">
         {/* border width */}
         <div className="flex flex-col gap-1 flex-1">
           <label className={fieldLabel}>Width</label>
@@ -60,7 +60,7 @@ export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
             size="2"
             onValueChange={(value) => onSettingsChange({ style: value as BorderSettings["style"] })}
           >
-            <Select.Trigger radius="large" variant="ghost" />
+            <Select.Trigger radius="large" variant="ghost" className="ml-1" />
             <Select.Content position="popper">
               <Select.Group>
                 {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}

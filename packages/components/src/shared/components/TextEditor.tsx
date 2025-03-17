@@ -121,11 +121,12 @@ type PolymorphicProps<E extends ElementType> = PropsWithChildren<
 >;
 
 export type TextEditorProps<E extends ElementType> = PolymorphicProps<E> & {
-  initialContent: string;
+  content: string;
   className?: string;
   brickId: Brick["id"];
   paragraphMode?: string;
   propPath: string;
+  noTextAlign?: boolean;
   /**
    * Whether the editor is inlined in the page or appears in the panel
    */
@@ -136,19 +137,20 @@ const toolbarBtnCls =
   "!bg-white first:rounded-l last:rounded-r text-sm text-gray-800 px-1 hover:[&:not([data-state=on])]:bg-upstart-100 dark:hover:[&:not([data-state=on])]:(bg-dark-900) leading-none data-[state=on]:(!bg-upstart-600 text-white)";
 
 const TextEditor = <T extends ElementType = "div">({
-  initialContent,
+  content,
   className,
   brickId,
   paragraphMode,
   inline,
   propPath,
+  noTextAlign,
   as,
 }: TextEditorProps<T>) => {
   const onUpdate = useTextEditorUpdateHandler(brickId, propPath);
   const mainEditor = useEditor();
   const datasources = useDatasourcesSchemas();
   const [menuBarContainer, setMenuBarContainer] = useState<HTMLDivElement | null>(null);
-  const [content, setContent] = useState(initialContent);
+  const [currentContent, setContent] = useState(content);
 
   // const [editable, setEditable] = useState(/*enabled*/ false);
   const [focused, setFocused] = useState(false);
@@ -167,9 +169,13 @@ const TextEditor = <T extends ElementType = "div">({
     }),
 
     ...(inline ? [Document.extend({ content: "paragraph" })] : []),
-    TextAlign.configure({
-      types: ["heading", "paragraph"],
-    }),
+    ...(!noTextAlign
+      ? [
+          TextAlign.configure({
+            types: ["heading", "paragraph"],
+          }),
+        ]
+      : []),
     Highlight.configure({ multicolor: true }),
     // DatasourceFieldExtension,
     Mention.configure({
@@ -205,7 +211,7 @@ const TextEditor = <T extends ElementType = "div">({
   const editor = useTextEditor(
     {
       extensions,
-      content,
+      content: currentContent,
       onUpdate,
       immediatelyRender: true,
       editable: true,
@@ -252,19 +258,9 @@ const TextEditor = <T extends ElementType = "div">({
     editor?.on("focus", onFocus);
     editor?.on("blur", onBlur);
 
-    const clickEventListener = (e: Event) => {
-      if ((e.target as HTMLElement)?.closest(".tiptap")) {
-        // editor.chain().focus().run();
-        // e.stopPropagation();
-      }
-    };
-
-    editor.options.element.addEventListener("click", clickEventListener);
-
     return () => {
       editor?.off("focus", onFocus);
       editor?.off("blur", onBlur);
-      editor?.options.element.removeEventListener("click", clickEventListener);
     };
   }, [editor, mainEditor, brickId]);
 
@@ -278,7 +274,7 @@ const TextEditor = <T extends ElementType = "div">({
       />
       {focused && menuBarContainer && (
         <Portal container={menuBarContainer} asChild>
-          <TextEditorMenuBar editor={editor} paragraphMode={paragraphMode} />
+          <TextEditorMenuBar editor={editor} paragraphMode={paragraphMode} noTextAlign={noTextAlign} />
         </Portal>
       )}
     </>
@@ -288,16 +284,18 @@ const TextEditor = <T extends ElementType = "div">({
 const TextEditorMenuBar = ({
   editor,
   paragraphMode,
+  noTextAlign,
 }: {
   editor: Editor;
   paragraphMode?: string;
+  noTextAlign?: boolean;
 }) => {
   return (
     <>
       {paragraphMode !== "hero" && <TextSizeDropdown editor={editor} />}
-      <TextAlignButtonGroup editor={editor} />
+      {!noTextAlign && <TextAlignButtonGroup editor={editor} />}
       <TextStyleButtonGroup editor={editor} />
-      {/*<DatasourceItemButton editor={editor} /> */}
+      <DatasourceItemButton editor={editor} />
     </>
   );
 };

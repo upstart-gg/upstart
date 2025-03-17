@@ -1,18 +1,23 @@
 import { css } from "@upstart.gg/style-system/twind";
 import { propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
-import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
+import type {
+  BackgroundSettings,
+  BackgroundColorSettings,
+} from "@upstart.gg/sdk/shared/bricks/props/background";
 import type {
   OpacitySettings,
   ShadowSettings,
   TextShadowSettings,
 } from "@upstart.gg/sdk/shared/bricks/props/effects";
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
+import type { PaddingSettings } from "@upstart.gg/sdk/shared/bricks/props/padding";
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
+import type { ColorSettings } from "@upstart.gg/sdk/shared/bricks/props/text";
 import type { FlexSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
 
 export function getBackgroundStyles(props: BackgroundSettings) {
   return [
-    propToStyle(props.color, "backgroundColor"),
+    props.color && propToStyle(props.color, "backgroundColor"),
     props.image &&
       css({
         backgroundImage: `url(${props.image})`,
@@ -22,11 +27,22 @@ export function getBackgroundStyles(props: BackgroundSettings) {
   ];
 }
 
+export function getBackgroundColorStyles(value: BackgroundColorSettings) {
+  return propToStyle(value, "backgroundColor");
+}
+
+export function getColorStyles(value: ColorSettings) {
+  return propToStyle(value, "color");
+}
+
 export function getOpacityStyles(opacity: OpacitySettings) {
   return propToStyle(opacity, "opacity");
 }
 
 export function getShadowStyles(value: ShadowSettings) {
+  return value;
+}
+export function getPaddingStyles(value: PaddingSettings) {
   return value;
 }
 
@@ -70,7 +86,10 @@ export function getFlexStyles(props: FlexSettings, mobileProps?: FlexSettings) {
 }
 
 export const stylesHelpersMap = {
+  "#styles:backgroundColor": getBackgroundColorStyles,
   "#styles:background": getBackgroundStyles,
+  "#styles:padding": getPaddingStyles,
+  "#styles:color": getColorStyles,
   "#styles:basicAlign": getBasicAlignmentStyles,
   "#styles:border": getBorderStyles,
   "#styles:flex": getFlexStyles,

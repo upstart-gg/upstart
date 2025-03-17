@@ -1,36 +1,43 @@
-import { useState, useCallback, createContext, useContext, type ReactNode, type FC } from "react";
+import {
+  useState,
+  useCallback,
+  createContext,
+  useContext,
+  type ReactNode,
+  type FC,
+  useRef,
+  useEffect,
+} from "react";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
-import { tx, css } from "@upstart.gg/style-system/twind";
+import { tx } from "@upstart.gg/style-system/twind";
 import type { NavItem, NavItemProperty } from "./types";
 import { processObjectSchemaToFields } from "./field-factory";
-import { Type, type TObject } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
+import { useMutationObserver } from "~/editor/hooks/use-mutation-observer";
 
-type NavigationContextType = {
+type FormNavigatorContextType = {
   navigateTo: (item: NavItem) => void;
   navigateBack: () => void;
+  onChange: (data: Record<string, unknown>, changedPath: string) => void;
+  formData: Record<string, unknown>;
   isRootView: boolean;
 };
 
 // Create context for navigation
-const NavigationContext = createContext<NavigationContextType | null>(null);
+const FormNavigatorContext = createContext<FormNavigatorContextType | null>(null);
 
 // Custom hook to use navigation
-export const useNavigation = () => {
-  const context = useContext(NavigationContext);
+export const useFormNavigation = () => {
+  const context = useContext(FormNavigatorContext);
   if (!context) {
-    throw new Error("useNavigation must be used within a NavigationProvider");
+    throw new Error("useNavigation must be used within a FormNavigatorContext");
   }
   return context;
 };
 
-// Navigation Content component
-const NavigationContent: FC<{ children: ReactNode }> = ({ children }) => {
-  return <div className={tx("p-4 flex-1 overflow-auto")}>content: {children}</div>;
-};
-
 // Create List component
 export const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
-  const { navigateTo } = useNavigation();
+  const { navigateTo } = useFormNavigation();
   return (
     <ul className={tx("list-none p-0 m-0")}>
       {items.map((item) => {
@@ -38,14 +45,12 @@ export const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
           <li
             key={item.id}
             className={tx(
-              `select-none p-2.5 flex items-center text-sm justify-between border-b border-gray-200
-            dark:border-dark-400 transition-colors duration-200 font-medium`,
-              item.children && "cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-600",
+              `select-none p-2.5 flex items-center text-[0.9rem] justify-between border-b last:border-b-0 border-gray-200
+            dark:border-dark-400 transition-colors duration-200`,
+              item.children && "cursor-pointer hover:bg-upstart-50 dark:hover:bg-dark-600",
             )}
             onClick={() => {
-              console.log("clicked on %o", item);
               if (item.children) {
-                console.log("navigating to %o", item);
                 navigateTo(item);
               }
             }}
@@ -60,28 +65,31 @@ export const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
 };
 
 function SchemaField({ item, brickId }: { item: NavItemProperty; brickId?: string }) {
-  const onChange = (value: any) => {};
-  console.log("Generating fields for %s, schema = %o", item.id, item.schema);
-  const fields = processObjectSchemaToFields(Type.Object({ [item.id]: item.schema }), {}, onChange, {
+  const { onChange, formData } = useFormNavigation();
+  const fields = processObjectSchemaToFields(Type.Object({ [item.id]: item.schema }), formData, onChange, {
     brickId,
+    parents: item.path.split(".").slice(0, -1),
   });
-  console.log("fields: %o", fields);
   return fields.length ? fields : <div>No fields for {item.id} </div>;
 }
 
 // Main navigation component
-type NavigationContainerProps = {
+type FormNavigatorProps = {
   title: string;
   navItems: NavItem[];
+  onChange: (data: Record<string, unknown>, changedPath: string) => void;
+  formData: Record<string, unknown>;
   className?: string;
   style?: React.CSSProperties;
 };
 
-export const NavigationContainer: React.FC<NavigationContainerProps> = ({
+const FormNavigator: React.FC<FormNavigatorProps> = ({
   title,
   navItems,
   className,
   style,
+  onChange,
+  formData,
 }) => {
   // Stack of views (each with content and title)
   const [viewStack, setViewStack] = useState<{ content: ReactNode; title: string }[]>([
@@ -91,8 +99,28 @@ export const NavigationContainer: React.FC<NavigationContainerProps> = ({
     },
   ]);
 
+  const ref = useRef<HTMLDivElement>(null);
+
   // Direction of animation
   const [animationDirection, setAnimationDirection] = useState<"forward" | "backward" | null>(null);
+
+  // watch for overflow changes on vertical scroll
+  useMutationObserver(
+    ref,
+    (entries) => {
+      // wait for end of animation
+      setTimeout(() => {
+        for (const entry of entries) {
+          const target = (entry.target as HTMLElement).closest(".navigator-view");
+          if (!target?.clientHeight) return;
+          if (ref.current && target.scrollHeight - target.clientHeight > 5) {
+            ref.current.style.minHeight = `${target.scrollHeight + 2}px`;
+          }
+        }
+      }, 200);
+    },
+    {},
+  );
 
   // Navigate to a new view
   const navigateTo = useCallback((item: NavItem) => {
@@ -130,16 +158,19 @@ export const NavigationContainer: React.FC<NavigationContainerProps> = ({
   };
 
   return (
-    <NavigationContext.Provider
+    <FormNavigatorContext.Provider
       value={{
         navigateTo,
         navigateBack,
+        onChange,
+        formData,
         isRootView: viewStack.length === 1,
       }}
     >
       <div
+        ref={ref}
         className={tx(
-          "relative overflow-hidden rounded-md border border-gray-200 dark:border-dark-400 bg-white dark:bg-dark-500",
+          "navigator-view transition-all relative overflow-x-hidden overflow-y-hidden rounded-md  bg-white dark:bg-dark-500",
           className,
         )}
         style={{
@@ -152,7 +183,11 @@ export const NavigationContainer: React.FC<NavigationContainerProps> = ({
         {/* Current View */}
         <div className={tx("absolute inset-0 flex flex-col", getAnimationClass())}>
           {/* Header */}
-          <div className={tx("flex items-center p-2.5 border-b border-gray-200 dark:border-dark-400")}>
+          <div
+            className={tx(
+              "flex items-center p-2.5 border-b border-gray-200 dark:border-dark-400 bg-gray-50 sticky top-0 z-10",
+            )}
+          >
             {viewStack.length > 1 && (
               <button
                 type="button"
@@ -174,7 +209,7 @@ export const NavigationContainer: React.FC<NavigationContainerProps> = ({
           <div className={tx("flex-1 overflow-auto min-h-max h-fit")}>{currentView.content}</div>
         </div>
       </div>
-    </NavigationContext.Provider>
+    </FormNavigatorContext.Provider>
   );
 };
 
@@ -182,3 +217,5 @@ export const NavigationContainer: React.FC<NavigationContainerProps> = ({
 export const useSubMenu = (title: string, items: NavItem[]) => {
   return <NavList items={items} />;
 };
+
+export default FormNavigator;

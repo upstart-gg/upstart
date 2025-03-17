@@ -47,9 +47,13 @@ export function color(defaultValue: string | "auto" = "auto", title = "Text colo
 
 export type ColorSettings = Static<ReturnType<typeof color>>;
 
-export function textContent(defaultContent = "some text here", paragraphMode: "auto" | "hero" = "auto") {
+export function textContent(
+  title = "Text",
+  defaultContent = "some text here",
+  paragraphMode: "auto" | "hero" = "auto",
+) {
   return prop({
-    title: "Text",
+    title,
     $id: "#content:text",
     schema: Type.String({
       default: defaultContent,

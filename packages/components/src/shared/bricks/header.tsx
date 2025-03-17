@@ -1,27 +1,27 @@
 import { forwardRef } from "react";
-import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/header.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/header.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { tx, apply } from "@upstart.gg/style-system/twind";
-import { memoizeIgnoringPaths } from "../utils/memoize";
 import { TextContent } from "../components/TextContent";
 
 const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
-  const className = useBrickStyle<Manifest>(brick);
+  const styles = useBrickStyle<Manifest>(brick);
   const props = brick.props;
+
+  console.log("header styles", styles);
 
   return (
     <header
+      ref={ref}
       className={tx(
-        apply(
-          "rounded-lg bg-white flex p-4 ",
-          !props.containerStyles.backgroundColor && "bg-gradient-to-t from-gray-200 to-gray-50",
-          className,
-        ),
+        "flex-1 rounded-lg flex p-4 ",
+        !props.container.backgroundColor && "bg-gradient-to-t from-gray-200 to-gray-50",
+        styles.container,
       )}
     >
       <div className="flex justify-between items-center">
-        <div className="flex items-center brand">
+        <div className={tx("flex items-center brand", styles.brand)}>
           {props.brand.logo && <img src={props.brand.logo.src} alt="logo" className="h-full w-auto" />}
           {props.brand.name && (
             <TextContent
@@ -31,6 +31,7 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
               brickId={brick.id}
               content={props.brand.name}
               editable={editable}
+              noTextAlign={true}
               inline
             />
           )}
@@ -41,6 +42,6 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
 });
 
 // Memoize the component to avoid re-rendering when the text content changes
-const MemoHeader = memoizeIgnoringPaths(Header, ["brick.props.brand.name"]);
+// const MemoHeader = memoizeIgnoringPaths(Header, ["brick.props.brand.name"]);
 
-export default MemoHeader;
+export default Header;
