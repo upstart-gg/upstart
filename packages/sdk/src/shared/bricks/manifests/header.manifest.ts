@@ -36,13 +36,31 @@ export const manifest = defineBrickManifest({
   props: defineProps({
     container: group({
       title: "Container",
-      children: { border: border(), backgroundColor: backgroundColor(), shadow: shadow(), color: color() },
+      children: {
+        border: border(),
+        backgroundColor: backgroundColor(),
+        shadow: shadow(),
+        position: prop({
+          title: "Position",
+          schema: Type.Union(
+            [
+              Type.Literal("flowing", { title: "Flowing" }),
+              Type.Literal("fixed", { title: "Fixed" }),
+              Type.Literal("sticky", { title: "Sticky" }),
+            ],
+            { default: "flowing" },
+          ),
+        }),
+      },
     }),
-    singleProp: prop({
-      title: "Single prop",
-      schema: Type.String({ title: "Single prop" }),
+    brand: group({
+      title: "Brand",
+      children: {
+        name: textContent("Brand name", "Acme Inc."),
+        logo: image("Logo"),
+        color: color(),
+      },
     }),
-    singleColor: color("red", "My color"),
     navigation: group({
       title: "Navigation",
       children: {
@@ -55,15 +73,6 @@ export const manifest = defineBrickManifest({
             { title: "Navigation items", default: [] },
           ),
         }),
-      },
-    }),
-    brand: group({
-      title: "Brand",
-      children: {
-        name: textContent("Brand name", "Acme Inc."),
-        logo: image("Logo"),
-        color: color(),
-        backgroundColor: backgroundColor(),
       },
     }),
   }),

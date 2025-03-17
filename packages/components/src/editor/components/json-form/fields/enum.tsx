@@ -75,18 +75,17 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
 
     case "button-group":
       return (
-        <div className="button-group-field">
+        <div className="button-group-field flex-1 flex justify-between">
           {title && (
-            <div className="flex gap-1 items-center">
+            <div className="flex gap-1 items-center flex-1">
               <label className={fieldLabel}>{title}</label>
-              {description && <HelpIcon help={description} />}
+              {/* {description && <HelpIcon help={description} />} */}
             </div>
           )}
           <SegmentedControl.Root
             onValueChange={onChange}
             defaultValue={currentValue as string}
             size="1"
-            className="w-full !max-w-full mt-1"
             radius="large"
           >
             {options
@@ -95,7 +94,7 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
                 <SegmentedControl.Item
                   key={option.const}
                   value={option.const}
-                  className={tx("[&_.rt-SegmentedControlItemLabel]:px-1")}
+                  className={tx("[&_.rt-SegmentedControlItemLabel]:px-1.5")}
                 >
                   {option.title}
                 </SegmentedControl.Item>
