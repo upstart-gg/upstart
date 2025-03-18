@@ -7,10 +7,9 @@ import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { debounce, get } from "lodash-es";
 import { useBrickManifest } from "./use-brick-manifest";
 import { getTextContrastedColor } from "@upstart.gg/sdk/shared/themes/color-system";
-import { useDebounceCallback } from "usehooks-ts";
-import { useMutationObserver } from "~/editor/hooks/use-mutation-observer";
 import { useEffect } from "react";
 import { useGetBrick } from "~/editor/hooks/use-editor";
+
 // Return the upper path without the last part (the property name)
 function extractStylePath(path: string) {
   if (!path.includes(".")) {
@@ -66,7 +65,7 @@ function usePreprocessTextColors<T extends BrickManifest>(
         }
       }
     }
-  }, 200);
+  }, 300);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(onChange, [brickInfo]);
@@ -148,6 +147,9 @@ function getBrickWrapperEditorStyles(
     css({
       "&.selected-group": {
         outline: "2px dotted var(--violet-8) !important",
+      },
+      "& [data-brick-part]:hover": {
+        outline: "1px dashed var(--violet-8)",
       },
     }),
   ];

@@ -13,12 +13,13 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
 
   const ds = useDatasource(props.navigation.items, manifest.datasource);
 
-  console.log("header props", props);
+  // console.log("header props", props);
   // console.log("header styles", styles);
 
   return (
     <header
       ref={ref}
+      data-brick-part="container"
       className={tx(
         "flex-1 rounded-lg flex p-4 ",
         !props.container.backgroundColor && "bg-gradient-to-t from-gray-200 to-gray-50",
@@ -26,7 +27,7 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
       )}
     >
       <div className="flex flex-1 items-center gap-8 ">
-        <div className={tx("flex items-center brand", styles.brand)}>
+        <div className={tx("flex items-center brand", styles.brand)} data-brick-part="brand">
           {props.brand.logo?.src && <img src={props.brand.logo.src} alt="logo" className="h-full w-auto" />}
           {props.brand.name && (
             <TextContent
@@ -42,6 +43,7 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
           )}
         </div>
         <nav
+          data-brick-part="navigation"
           className={tx(
             "flex items-center gap-2",
             styles.navigation,

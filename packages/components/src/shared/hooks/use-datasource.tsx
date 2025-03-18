@@ -31,7 +31,7 @@ export function useDatasource<
 >(dsRef: D | undefined, schema: S) {
   const datasources = useDatasourceContext();
 
-  console.log("datasources", { datasources, dsRef });
+  // console.log("datasources", { datasources, dsRef });
 
   type DatasourceInfo = {
     datasourceId: string | null;

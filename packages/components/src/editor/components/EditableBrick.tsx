@@ -70,6 +70,7 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
         }),
       ],
     });
+
     const brickRef = useMergeRefs([ref, refs.setReference]);
 
     const wrapperClass = useBrickWrapperStyle({
@@ -79,8 +80,18 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     });
 
     const onBrickWrapperClick = (e: MouseEvent<HTMLElement>) => {
-      const target = e.currentTarget as HTMLElement;
-      if (hasMouseMoved.current || !target.matches(".brick")) {
+      console.log("onBrickWrapperClick", e.target);
+
+      const brickTarget = e.currentTarget as HTMLElement;
+      const target = e.target as HTMLElement;
+      const part = target.closest<HTMLElement>("[data-brick-part]");
+
+      if (part) {
+        console.log("clicked on part", part.dataset.brickPart);
+        return;
+      }
+
+      if (hasMouseMoved.current || !brickTarget.matches(".brick")) {
         console.debug("onBrickWrapperClick: click ignored");
         return;
       }
@@ -124,7 +135,6 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
             hasMouseMoved.current = false;
           }}
           onMouseUp={(e) => {
-            console.log("onMouseUp");
             setTimeout(() => {
               hasMouseMoved.current = false;
               updateBarsPlacement();
