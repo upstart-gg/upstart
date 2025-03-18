@@ -4,6 +4,7 @@ import { LAYOUT_COLS } from "./layout-constants";
 import { defaultProps } from "./bricks/manifests/all-manifests";
 import { attr } from "./attributes";
 import { background } from "./bricks/props/background";
+import { merge } from "lodash-es";
 
 /**
  * Generates a unique identifier for bricks.
@@ -274,4 +275,13 @@ export function defineBricks<B extends DefinedBrick[] = DefinedBrick[]>(bricks: 
       },
     };
   });
+}
+
+export function processBrickProps<B extends Brick>(brick: B): B {
+  const defProps = defaultProps[brick.type];
+  return {
+    ...brick,
+    props: merge(defProps.props, brick.props),
+    mobileProps: merge(defProps.mobileProps, brick.mobileProps),
+  };
 }

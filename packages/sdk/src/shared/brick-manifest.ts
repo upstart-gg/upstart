@@ -3,11 +3,7 @@ import { Value } from "@sinclair/typebox/value";
 
 type BrickKind = "brick" | "widget" | "container";
 
-type BrickManifestProps<
-  BProps extends TProperties,
-  DSSchema extends TObject | TArray<TObject>,
-  DRProps extends TProperties,
-> = {
+type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | TArray<TObject>> = {
   type: string;
   kind?: BrickKind;
   name: string;
@@ -39,7 +35,6 @@ type BrickManifestProps<
   };
   props: TObject<BProps>;
   datasource?: DSSchema;
-  datarecord?: TObject<DRProps>;
   hideInLibrary?: boolean;
   defaultInspectorTab?: "preset" | "style" | "content";
   deletable?: boolean;
@@ -50,11 +45,7 @@ type BrickManifestProps<
   isContainer?: boolean;
 };
 
-export function defineBrickManifest<
-  BProps extends TProperties,
-  DSSchema extends TObject | TArray<TObject>,
-  DRProps extends TProperties,
->({
+export function defineBrickManifest<BProps extends TProperties, DSSchema extends TObject | TArray<TObject>>({
   props,
   defaultWidth,
   defaultHeight,
@@ -69,10 +60,12 @@ export function defineBrickManifest<
   repeatable = false,
   duplicatable = true,
   defaultInspectorTab = "preset",
+  datasource,
   ...rest
-}: BrickManifestProps<BProps, DSSchema, DRProps>) {
+}: BrickManifestProps<BProps, DSSchema>) {
   return {
     ...rest,
+    datasource: datasource as DSSchema,
     props,
     kind,
     defaultInspectorTab,
@@ -100,7 +93,7 @@ export function getBrickManifestDefaults<M extends BrickManifest>(manifest: M) {
     props: Value.Create(manifest.props),
     mobileProps: {},
     ...(manifest.datasource ? { datasource: Value.Create(manifest.datasource) } : {}),
-    ...(manifest.datarecord ? { datarecord: Value.Create(manifest.datarecord) } : {}),
+    // ...(manifest.datarecord ? { datarecord: Value.Create(manifest.datarecord) } : {}),
   };
 }
 

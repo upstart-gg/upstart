@@ -1,23 +1,20 @@
 import { forwardRef } from "react";
-import { manifest, datasource, type Manifest } from "@upstart.gg/sdk/bricks/manifests/header.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/header.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { urlOrPageId } from "@upstart.gg/sdk/shared/bricks/props/string";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { tx, apply } from "@upstart.gg/style-system/twind";
 import { TextContent } from "../components/TextContent";
 import { useDatasource } from "../hooks/use-datasource";
-import { Type } from "@sinclair/typebox";
 
 const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
   const props = brick.props;
 
-  const { datasourceId, data, isSample } = useDatasource<typeof datasource>(
-    props.navigation.items,
-    datasource,
-  );
+  const ds = useDatasource(props.navigation.items, manifest.datasource);
 
-  console.log("header styles", styles);
+  console.log("header props", props);
+  // console.log("header styles", styles);
 
   return (
     <header
@@ -52,7 +49,7 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
             props.navigation.position === "center" && "mx-auto",
           )}
         >
-          {data.map((item, index) => {
+          {ds.data.map((item, index) => {
             return (
               <a
                 key={index}

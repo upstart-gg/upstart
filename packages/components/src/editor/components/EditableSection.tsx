@@ -26,6 +26,7 @@ import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import type { GridConfig } from "~/shared/hooks/use-grid-config";
 import { getBrickResizeOptions, getGridPosition } from "~/shared/utils/layout-utils";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
+import { processBrickProps } from "@upstart.gg/sdk/shared/bricks";
 
 type EditableSectionProps = {
   section: SectionType;
@@ -47,7 +48,11 @@ export default function EditableSection({ section, gridConfig }: EditableSection
         .map((brick, index) => {
           const resizeOpts = getBrickResizeOptions(brick, manifests[brick.type], previewMode);
           return (
-            <EditaleBrickWrapper key={`${previewMode}-${brick.id}`} brick={brick} index={index}>
+            <EditaleBrickWrapper
+              key={`${previewMode}-${brick.id}`}
+              brick={processBrickProps(brick)}
+              index={index}
+            >
               {manifests[brick.type]?.resizable && (
                 <>
                   {(resizeOpts.canGrowVertical || resizeOpts.canShrinkVertical) && (
@@ -157,10 +162,8 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
   const isFirstSection = section.order === 0;
 
   const btnCls = tx(
-    dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
     "select-none",
-    " text-base px-2.5 h-9 bg-white/70 backdrop-blur-md",
-    "transition-opacity duration-500 group-hover/section:opacity-80",
+    "text-base px-2.5 h-9  ",
     "text-black/80 font-bold flex items-center gap-1",
     "active:(outline-none ring-0) focus:(outline-none ring-0)",
   );
@@ -173,8 +176,10 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
         </Popover.Content>
         <div
           className={tx(
-            "section-options-buttons bottom-0 absolute z-[99999] left-1/2 -translate-x-1/2",
+            dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
+            "section-options-buttons bottom-0 absolute z-[99999] left-1/2 -translate-x-1/2 border border-gray-200 border-b-0",
             "flex gap-0 rounded-t-md [&>*:first-child]:rounded-tl-md [&>*:last-child]:rounded-tr-md divide-x divide-white/80",
+            "bg-white/70 backdrop-blur-md transition-opacity duration-500  group-hover/section:opacity-80",
           )}
         >
           <div

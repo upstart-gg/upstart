@@ -32,7 +32,7 @@ export function fontSize(defaultValue = "inherit", title = "Font size") {
 
 export type FontSizeSettings = Static<ReturnType<typeof fontSize>>;
 
-export function color(defaultValue: string | "auto" = "auto", title = "Text color") {
+export function color(defaultValue: string | "color-auto" = "color-auto", title = "Text color") {
   return prop({
     title,
     $id: "#styles:color",

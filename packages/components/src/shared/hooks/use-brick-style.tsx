@@ -1,12 +1,16 @@
 import { tx, apply, css } from "@upstart.gg/style-system/twind";
 import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import { getStyleProperties } from "@upstart.gg/sdk/shared/bricks/props/helpers";
-import { stylesHelpersMap } from "../styles/helpers";
+import { brickStylesHelpersMap, brickWrapperStylesHelpersMap } from "../styles/helpers";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { get } from "lodash-es";
+import { debounce, get } from "lodash-es";
 import { useBrickManifest } from "./use-brick-manifest";
-
+import { getTextContrastedColor } from "@upstart.gg/sdk/shared/themes/color-system";
+import { useDebounceCallback } from "usehooks-ts";
+import { useMutationObserver } from "~/editor/hooks/use-mutation-observer";
+import { useEffect } from "react";
+import { useGetBrick } from "~/editor/hooks/use-editor";
 // Return the upper path without the last part (the property name)
 function extractStylePath(path: string) {
   if (!path.includes(".")) {
@@ -15,21 +19,16 @@ function extractStylePath(path: string) {
   return path.split(".").slice(0, -1).join(".");
 }
 
-/**
- * The classNames for the brick
- */
-export function useBrickStyle<T extends BrickManifest>(brick: BrickProps<T>["brick"]) {
-  const manifest = useBrickManifest(brick.type);
-  const stylesProps = getStyleProperties(manifest.props);
+function getClassesFromStyleProps<T extends BrickManifest>(
+  stylesProps: Record<string, string>,
+  brick: BrickProps<T>["brick"],
+  type: "brick" | "wrapper",
+) {
   const { props, mobileProps } = brick;
-
+  const helpers = type === "brick" ? brickStylesHelpersMap : brickWrapperStylesHelpersMap;
   const classes = Object.entries(stylesProps).reduce(
     (acc, [path, styleId]) => {
-      const helper = stylesHelpersMap[styleId as keyof typeof stylesHelpersMap];
-      if (!helper) {
-        console.warn("No helper found for styleId %s", styleId);
-      }
-      console.log("style for %s (extracted=%s) is %o", path, extractStylePath(path), get(props, path));
+      const helper = helpers[styleId as keyof typeof helpers];
       const part = extractStylePath(path);
       acc[part] = acc[part] ?? [];
       acc[part].push(
@@ -40,20 +39,62 @@ export function useBrickStyle<T extends BrickManifest>(brick: BrickProps<T>["bri
     },
     {} as Record<string, string[]>,
   );
-
-  // This is the inner brick style. As the wrapper uses "display: flex",
-  // we use flex-1 to make the inner brick fill the space.
   return classes;
+}
+
+function usePreprocessTextColors<T extends BrickManifest>(
+  brick: BrickProps<T>["brick"],
+  stylesProps: ReturnType<typeof getStyleProperties>,
+) {
+  const getBrickInfo = useGetBrick();
+  const brickInfo = getBrickInfo(brick.id);
+  const onChange = debounce(function process() {
+    const { props } = brick;
+    for (const [path, styleId] of Object.entries(stylesProps)) {
+      if (styleId === "#styles:color") {
+        const value = get(props, path);
+        if (value === "color-auto") {
+          const selector = `#${brick.id}.color-auto, #${brick.id} .color-auto`;
+          const elements = document.querySelectorAll<HTMLElement>(selector);
+          if (!elements.length) {
+            console.warn("No elements found for selector %s", selector);
+          }
+          elements.forEach((el) => {
+            const chosenColor = getTextContrastedColor(el);
+            el.style.setProperty("--color-auto", `${chosenColor}`);
+          });
+        }
+      }
+    }
+  }, 200);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(onChange, [brickInfo]);
+}
+
+/**
+ * The classNames for the brick
+ */
+export function useBrickStyle<T extends BrickManifest>(brick: BrickProps<T>["brick"]) {
+  const manifest = useBrickManifest(brick.type);
+  const stylesProps = getStyleProperties(manifest.props);
+  return getClassesFromStyleProps(stylesProps, brick, "brick");
 }
 
 export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable, selected }: BrickProps<T>) {
   const { props, position } = brick;
   const isContainerChild = brick.parentId !== undefined;
+  const manifest = useBrickManifest(brick.type);
+  const stylesProps = getStyleProperties(manifest.props);
+  usePreprocessTextColors(brick, stylesProps);
+  const styleIds = Object.values(stylesProps);
+  const classes = getClassesFromStyleProps(stylesProps, brick, "wrapper");
 
   return tx(
     apply(props.className as string),
     // no transition otherwise it will slow down the drag
-    "brick group/brick flex relative",
+    "brick group/brick flex",
+    styleIds.includes("#styles:fixedPositioned") === false && "relative",
 
     // container children expand to fill the space
     isContainerChild && "container-child flex-1",
@@ -82,6 +123,8 @@ export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable,
         ${position.mobile.manualHeight ? `h-[${position.mobile.manualHeight * LAYOUT_ROW_HEIGHT}px]` : ""}
       )`,
 
+    ...Object.values(classes).flat(),
+
     // getFlexStyles(props as BrickStyleProps),
     // getBasicAlignmentStyles(props as BrickStyleProps),
   );
@@ -98,7 +141,7 @@ function getBrickWrapperEditorStyles(
   }
   return [
     "select-none hover:z-[9999] transition-colors delay-300 duration-300 rounded-sm outline outline-2 outline-transparent -outline-offset-1",
-    selected && "outline-upstart-500 shadow-xl shadow-upstart-500/20",
+    selected && "outline-upstart-500 shadow-lg shadow-upstart-500/20",
     !selected && !isContainerChild && !isContainer && "hover:(outline-upstart-500/60)",
     !selected && !isContainerChild && isContainer && "hover:(outline-dotted outline-upstart-500/30)",
     !selected && isContainerChild && "hover:(outline-upstart-500/40)",

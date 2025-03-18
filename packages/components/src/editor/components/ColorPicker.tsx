@@ -316,6 +316,7 @@ export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
   onChange = () => {},
 }) => {
   const defaultColorType = initialValue?.includes("gradient") ? "gradient" : "solid";
+
   function makeCominations(colors: string[], shades: string[]) {
     return colors.flatMap((color) => shades.map((shade) => `${color}-${shade}`));
   }
@@ -470,7 +471,7 @@ export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
 
   if (elementColorType === "background") {
     const colors = ["primary", "secondary", "neutral"];
-    const shades = ["50", "100", "200"];
+    const shades = ["50", "100", "200", "400", "600", "800"];
 
     return (
       <Tabs.Root defaultValue={defaultColorType}>

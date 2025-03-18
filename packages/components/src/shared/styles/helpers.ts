@@ -1,4 +1,4 @@
-import { css } from "@upstart.gg/style-system/twind";
+import { css, tx } from "@upstart.gg/style-system/twind";
 import { propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
 import type {
   BackgroundSettings,
@@ -10,6 +10,7 @@ import type {
   TextShadowSettings,
 } from "@upstart.gg/sdk/shared/bricks/props/effects";
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
+import type { FixedPositionedSettings, PositionSettings } from "@upstart.gg/sdk/shared/bricks/props/position";
 import type { PaddingSettings } from "@upstart.gg/sdk/shared/bricks/props/padding";
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
 import type { ColorSettings } from "@upstart.gg/sdk/shared/bricks/props/text";
@@ -50,6 +51,24 @@ export function getTextShadowStyles(value: TextShadowSettings) {
   return value;
 }
 
+function getPositionStyles(value: PositionSettings) {
+  switch (value) {
+    case "fixed":
+      return tx("fixed top-inherit left-auto right-auto self-start w-fill");
+    case "sticky":
+      return "sticky top-inherit left-auto right-auto self-start";
+    default:
+      return null;
+  }
+}
+
+export function getFixedPositionedStyles(value: FixedPositionedSettings) {
+  if (!value) {
+    return null;
+  }
+  return tx("fixed top-inherit left-auto right-auto self-start w-fill z-[99999]");
+}
+
 export function getBorderStyles(props?: BorderSettings) {
   if (!props) {
     return null;
@@ -85,7 +104,7 @@ export function getFlexStyles(props: FlexSettings, mobileProps?: FlexSettings) {
   return [props.direction, props.justifyContent, props.alignItems, props.wrap, props.gap];
 }
 
-export const stylesHelpersMap = {
+export const brickStylesHelpersMap = {
   "#styles:backgroundColor": getBackgroundColorStyles,
   "#styles:background": getBackgroundStyles,
   "#styles:padding": getPaddingStyles,
@@ -93,7 +112,12 @@ export const stylesHelpersMap = {
   "#styles:basicAlign": getBasicAlignmentStyles,
   "#styles:border": getBorderStyles,
   "#styles:flex": getFlexStyles,
-  "#styles:shadow": getShadowStyles,
+
+  // "#styles:shadow": getShadowStyles,
   "#styles:textShadow": getTextShadowStyles,
   "#styles:opacity": getOpacityStyles,
+};
+export const brickWrapperStylesHelpersMap = {
+  "#styles:shadow": getShadowStyles,
+  "#styles:fixedPositioned": getFixedPositionedStyles,
 };

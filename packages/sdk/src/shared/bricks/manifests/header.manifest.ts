@@ -8,6 +8,7 @@ import { backgroundColor } from "../props/background";
 import { color, textContent } from "../props/text";
 import { shadow } from "../props/effects";
 import { datasourceRef } from "../props/datasource";
+import { fixedPositioned, position } from "../props/position";
 
 export const datasource = Type.Array(
   Type.Object({
@@ -65,23 +66,13 @@ export const manifest = defineBrickManifest({
         border: border(),
         backgroundColor: backgroundColor(),
         shadow: shadow(),
-        position: prop({
-          title: "Position",
-          schema: Type.Union(
-            [
-              Type.Literal("flowing", { title: "Flowing" }),
-              Type.Literal("fixed", { title: "Fixed" }),
-              Type.Literal("sticky", { title: "Sticky" }),
-            ],
-            { default: "flowing" },
-          ),
-        }),
+        fixedPositioned: fixedPositioned(),
       },
     }),
     brand: group({
       title: "Brand",
       children: {
-        name: textContent("Brand name", "Acme Inc.", { showInSettings: true }),
+        name: textContent("Brand name", "Acme Inc."),
         logo: optional(image("Logo")),
         color: color(),
       },

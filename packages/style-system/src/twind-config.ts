@@ -73,7 +73,7 @@ export default defineConfig({
     ["outline-accent-", ({ $$ }) => ({ outlineColor: `var(--color-accent-${$$})` })],
     ["outline-neutral-", ({ $$ }) => ({ outlineColor: `var(--color-neutral-${$$})` })],
 
-    ["color-", ({ $$ }) => ({ color: `var(--color-${$$})` })],
+    // ["color-", ({ $$ }) => ({ color: `var(--color-${$$})` })],
     [
       "neutral-",
       ({ $$ }) => ({ backgroundColor: `var(--color-neutral-${$$})`, color: `var(--text-neutral-${$$})` }),
@@ -91,6 +91,10 @@ export default defineConfig({
       "secondary-",
       ({ $$ }) => ({ backgroundColor: `var(--color-secondary-${$$})`, color: `var(--text-secondary-${$$})` }),
     ],
+
+    ["w-fill", { width: ["fill-available", "-webkit-fill-available", "-moz-available"] }],
+    ["h-fill", { height: ["fill-available", "-webkit-fill-available", "-moz-available"] }],
+    ["color-auto", { color: "var(--color-auto, #111)" }],
 
     ["brick-light-", ({ $$ }) => `bg-${$$}-300 text-${$$}-50`],
     ["brick-normal-", ({ $$ }) => `bg-${$$}-500 text-${$$}-100`],

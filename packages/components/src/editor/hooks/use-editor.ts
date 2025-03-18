@@ -577,6 +577,7 @@ export const createDraftStore = (
 
             updateBrickProps: (id, props, isMobileProps) =>
               set((state) => {
+                console.debug("updateBrickProps", { id, props, isMobileProps });
                 const brick = getBrick(id, state.bricks);
                 if (brick) {
                   if (isMobileProps) {

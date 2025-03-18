@@ -3,6 +3,9 @@ import { defineProps, group } from "../props/helpers";
 import { background } from "../props/background";
 import { datasourceRef } from "../props/datasource";
 import { containerChildren } from "../props/container";
+import { Type } from "@sinclair/typebox";
+
+export const datasource = Type.Array(Type.Object({}, { additionalProperties: true }));
 
 // Generic container can hold any type of array data source
 export const manifest = defineBrickManifest({
@@ -11,6 +14,7 @@ export const manifest = defineBrickManifest({
   name: "Container",
   description: "A container that can hold other bricks and align them horizontally or vertically",
   isContainer: true,
+  datasource,
   // svg icon for the "container" brick
   icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
         stroke-width="1" stroke-linecap="round" stroke-linejoin="round">

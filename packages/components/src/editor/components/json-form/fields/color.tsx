@@ -12,10 +12,6 @@ const ColorField: React.FC<FieldProps<string | undefined>> = (props) => {
   const elementColorType = (schema["ui:color-type"] ??
     "page-background") as ColorElementPreviewPillProps["elementColorType"];
 
-  if (schema["ui:display"] === "inline") {
-    return <div>inline color pill</div>;
-  }
-
   return (
     <ColorFieldRow
       name={title}
@@ -107,12 +103,28 @@ type ColorElementPreviewPillProps = {
   onChange: (newVal: ElementColor) => void;
 };
 
+function formatColorName(color?: ElementColor) {
+  if (!color) {
+    return null;
+  }
+  if (color.includes("bg-gradient")) {
+    return "gradient";
+  }
+  if (color.startsWith("var(")) {
+    return color
+      .substring(6, color.length - 1)
+      .replace("color", "")
+      .replace(/-+/, "");
+  }
+  return color;
+}
+
 function ColorElementPreviewPill({
   color,
   onChange,
   elementColorType,
   side = "bottom",
-  align = "center",
+  align = "end",
   showReset,
 }: ColorElementPreviewPillProps) {
   const pillBgFile = color === "transparent" ? `url("${transSvg}")` : "none";
@@ -122,6 +134,7 @@ function ColorElementPreviewPill({
     <Popover.Root>
       <Popover.Trigger>
         <div className="flex items-center gap-2">
+          {formatColorName(color)}
           <button
             type="button"
             data-color={color}
@@ -182,6 +195,7 @@ function ColorBasePreviewPill({
     <Popover.Root>
       <Popover.Trigger>
         <div className="flex items-center gap-2">
+          {formatColorName(color)}
           <button
             type="button"
             className={tx(
@@ -237,7 +251,7 @@ function ColorElementPopover({
   switch (elementColorType) {
     case "page-background":
     case "background":
-      width = "200px";
+      width = "216px";
       break;
     case "page-text":
       width = "180px";
@@ -255,12 +269,5 @@ function ColorElementPopover({
     </Popover.Content>
   );
 }
-
-// function elementColorToClassName(color: ElementColor, prefix = "bg") {
-//   if (isStandardColor(color)) {
-//     return `${prefix}-[${color}]`;
-//   }
-//   return color;
-// }
 
 export default ColorField;

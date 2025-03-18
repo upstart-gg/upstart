@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import { tx, apply } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/container.manifest";
+import { type Manifest, manifest } from "@upstart.gg/sdk/bricks/manifests/container.manifest";
 import EditaleBrickWrapper from "~/editor/components/EditableBrick";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useDatasource } from "../hooks/use-datasource";
@@ -12,7 +12,7 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, r
   const props = brick.props;
 
   const className = useBrickStyle(brick);
-  const ds = useDatasource(props.datasource.ds);
+  const ds = useDatasource(props.datasource.ds, manifest.datasource);
 
   // If this container is Dynamic
   if (ds.datasourceId && props.layout.childrenType) {

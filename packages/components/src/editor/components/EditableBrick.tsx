@@ -37,6 +37,7 @@ import {
   menuNavBarCls,
 } from "~/shared/styles/menubar-styles";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
+import { processBrickProps } from "@upstart.gg/sdk/shared/utils/process-brick-props";
 import { BiSolidColor } from "react-icons/bi";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { FiSettings, FiDatabase } from "react-icons/fi";
@@ -52,7 +53,7 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
   ({ brick, children, isContainerChild, index }, ref) => {
     const hasMouseMoved = useRef(false);
     const selectedBrickId = useSelectedBrickId();
-    const { setPanel, setSelectedBrickId: setSelectedBrick } = useEditorHelpers();
+    const { setPanel, setSelectedBrickId } = useEditorHelpers();
     const previewMode = usePreviewMode();
     const { getParentBrick } = useDraftHelpers();
     const manifest = useBrickManifest(brick.type);
@@ -94,7 +95,7 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
         }
       }
 
-      setSelectedBrick(selectedBrick.id);
+      setSelectedBrickId(selectedBrick.id);
 
       // setPanel("inspector");
 
@@ -114,6 +115,7 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           data-h={brick.position[previewMode].h}
           data-brick-type={brick.type}
           data-element-kind="brick"
+          data-last-touched={brick.props.lastTouched ?? "0"}
           {...(manifest.movable ? {} : { "data-no-drag": "true" })}
           className={tx(wrapperClass, `![animation-delay:${0.5 * (index + 1)}s]`)}
           ref={brickRef}

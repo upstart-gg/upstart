@@ -9,6 +9,7 @@ type ShadowOptions = {
 export function shadow({ title = "Shadow", defaultValue = "shadow-none" }: ShadowOptions = {}) {
   return prop({
     title,
+    $id: "#styles:shadow",
     schema: Type.Union(
       [
         Type.Literal("shadow-none", { title: "None" }),
@@ -19,7 +20,6 @@ export function shadow({ title = "Shadow", defaultValue = "shadow-none" }: Shado
         Type.Literal("shadow-2xl", { title: "Extra large (2x)" }),
       ],
       {
-        $id: "shadow",
         default: defaultValue,
         "ui:field": "enum",
         "ui:display": "select",

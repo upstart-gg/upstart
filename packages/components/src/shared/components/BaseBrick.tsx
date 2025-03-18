@@ -1,10 +1,15 @@
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
-import { lazy, Suspense, type ComponentProps, type ComponentType, type LazyExoticComponent } from "react";
+import {
+  lazy,
+  Suspense,
+  type ComponentProps,
+  type ComponentType,
+  type LazyExoticComponent,
+  type Component,
+} from "react";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import { useSelectedBrickId } from "~/editor/hooks/use-editor";
-import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
-import { merge } from "lodash-es";
 
 // Load all bricks in the bricks directory
 const bricks = import.meta.glob<false, string, { default: ComponentType<unknown> }>(["../bricks/*.tsx"]);
@@ -30,17 +35,11 @@ const BaseBrick = ({ brick, editable }: { brick: Brick; editable?: boolean } & C
     return null;
   }
 
-  const defProps = defaultProps[brick.type];
-
-  const brickProps: BrickProps<BrickManifest> = {
-    brick: {
-      ...brick,
-      props: merge(defProps.props, brick.props),
-      mobileProps: merge(defProps.mobileProps, brick.mobileProps),
-    },
+  const brickProps = {
+    brick,
     editable,
     selected: brick.id === selectedBrickId,
-  };
+  } satisfies BrickProps<BrickManifest>;
 
   return (
     <Suspense>

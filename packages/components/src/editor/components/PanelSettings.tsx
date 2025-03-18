@@ -3,7 +3,7 @@ import { sortJsonSchemaProperties } from "~/shared/utils/sort-json-schema-props"
 import { tx } from "@upstart.gg/style-system/twind";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FormRenderer } from "./json-form/FormRenderer";
-import type { Attributes, JSONSchemaType } from "@upstart.gg/sdk/shared/attributes";
+import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 import { Tabs, Spinner, IconButton } from "@upstart.gg/style-system/system";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import { IoCloseOutline } from "react-icons/io5";
