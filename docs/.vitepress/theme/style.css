@@ -139,7 +139,7 @@
  * Custom styles
  * -------------------------------------------------------------------------- */
 :root {
-  --vp-nav-logo-height: 70px;
+  --vp-nav-logo-height: 40px;
 }
 
 .VPNavBar:not(.has-sidebar) {
@@ -149,6 +149,15 @@
 .VPSidebar {
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0);
+}
+
+.VPHomeHero {
+  text-align: center;
+}
+
+.VPHome .name.clip {
+  @apply !text-4xl md:!text-6xl 2xl:!text-7xl text-balance mx-auto;
+  max-width: max(calc(100dvw / 3), 300px) !important;
 }
 
 body:has(.VPContent.is-home) {
@@ -173,9 +182,6 @@ div.VPContent.is-home {
 
 }
 
-h1.name {
-  @apply !text-4xl md:!text-6xl 2xl:!text-8xl pt-20 text-balance;
-}
 
 h1.name,
 p.tagline {

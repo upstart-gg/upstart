@@ -8,8 +8,8 @@ export default defineConfig({
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     logo: {
-      dark: "/enpage-dark.svg",
-      light: "/enpage.svg",
+      dark: "/upstart-dark.svg",
+      light: "/upstart.svg",
       alt: "Upstart Developer Documentation",
     },
     siteTitle: false,
@@ -18,7 +18,7 @@ export default defineConfig({
       { text: "Quick start", link: "/getting-started" },
       { text: "Help", link: "/help" },
       { text: "Publish your template", link: "/publishing" },
-      { text: "Upstart.gg", link: "https://upstart.co" },
+      { text: "Upstart.gg", link: "https://upstart.gg" },
     ],
     sidebar: [
       {
