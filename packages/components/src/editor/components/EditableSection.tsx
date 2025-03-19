@@ -8,7 +8,7 @@ import {
   useSelectedBrickId,
 } from "../hooks/use-editor";
 import { DropdownMenu, Popover, Tooltip } from "@upstart.gg/style-system/system";
-import EditaleBrickWrapper from "./EditableBrick";
+import EditableBrickWrapper from "./EditableBrick";
 import ResizeHandle from "./ResizeHandle";
 import { useSectionStyle } from "~/shared/hooks/use-section-style";
 import {
@@ -26,7 +26,7 @@ import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import type { GridConfig } from "~/shared/hooks/use-grid-config";
 import { getBrickResizeOptions, getGridPosition } from "~/shared/utils/layout-utils";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
-import { processBrickProps } from "@upstart.gg/sdk/shared/bricks";
+import { brickWithDefaults } from "@upstart.gg/sdk/shared/bricks";
 
 type EditableSectionProps = {
   section: SectionType;
@@ -47,12 +47,10 @@ export default function EditableSection({ section, gridConfig }: EditableSection
         .filter((b) => !b.position[previewMode]?.hidden)
         .map((brick, index) => {
           const resizeOpts = getBrickResizeOptions(brick, manifests[brick.type], previewMode);
+          const brickWithDef = brickWithDefaults(brick);
+          console.log({ brickWithDef });
           return (
-            <EditaleBrickWrapper
-              key={`${previewMode}-${brick.id}`}
-              brick={processBrickProps(brick)}
-              index={index}
-            >
+            <EditableBrickWrapper key={`${previewMode}-${brick.id}`} brick={brickWithDef} index={index}>
               {manifests[brick.type]?.resizable && (
                 <>
                   {(resizeOpts.canGrowVertical || resizeOpts.canShrinkVertical) && (
@@ -78,7 +76,7 @@ export default function EditableSection({ section, gridConfig }: EditableSection
                   )}
                 </>
               )}
-            </EditaleBrickWrapper>
+            </EditableBrickWrapper>
           );
         })}
     </section>

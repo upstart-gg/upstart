@@ -91,6 +91,7 @@ export const manifest = defineBrickManifest({
             { default: "right" },
           ),
         }),
+        color: color(),
         items: datasourceRef(),
         navItems: prop({
           title: "Nav items",

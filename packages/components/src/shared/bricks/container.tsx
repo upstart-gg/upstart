@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import { tx, apply } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { type Manifest, manifest } from "@upstart.gg/sdk/bricks/manifests/container.manifest";
-import EditaleBrickWrapper from "~/editor/components/EditableBrick";
+import EditableBrickWrapper from "~/editor/components/EditableBrick";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useDatasource } from "../hooks/use-datasource";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
@@ -37,7 +37,7 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, r
       {props.layout.childrenBricks?.length > 0 ? (
         props.layout.childrenBricks.map((brick, index) => {
           return props.editable ? (
-            <EditaleBrickWrapper key={`${brick.id}`} brick={brick} isContainerChild index={index} />
+            <EditableBrickWrapper key={`${brick.id}`} brick={brick} isContainerChild index={index} />
           ) : (
             <BaseBrick key={brick.id} brick={brick} />
           );

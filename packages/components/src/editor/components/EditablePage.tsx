@@ -1,4 +1,5 @@
 import { tx } from "@upstart.gg/style-system/twind";
+import { Toaster } from "@upstart.gg/style-system/system";
 import { useEffect, useRef } from "react";
 import { generateId, type Brick } from "@upstart.gg/sdk/shared/bricks";
 import {
@@ -26,6 +27,8 @@ import { useFontWatcher } from "../hooks/use-font-watcher";
 import Section from "./EditableSection";
 import { useGridConfig } from "~/shared/hooks/use-grid-config";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
+import { useBrickSettingsPopover } from "../hooks/use-brick-settings-popover";
+import { BrickSettingsGroupMenu } from "./EditableBrick";
 
 const ghostValid = tx("bg-upstart-100");
 const ghostInvalid = tx("bg-red-100");
@@ -50,10 +53,14 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const gridConfig = useGridConfig(pageRef);
 
   // on page load, set last loaded property so that the store is saved to local storage
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    draft.setLastLoaded();
-  }, []);
+  useEffect(draft.setLastLoaded, []);
+
+  const { popoverElement: brickSettingsPopover, isOpen: isBrickSettingsPopoverOpen } =
+    useBrickSettingsPopover({
+      Component: BrickSettingsGroupMenu,
+      selector: "[data-brick-group]",
+      placement: "bottom",
+    });
 
   /**
    *  Update the ghost style based on the drop position
@@ -356,6 +363,25 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           e.removed.forEach((el) => {
             el.classList.remove("selected-group");
           });
+        }}
+      />
+      {isBrickSettingsPopoverOpen === true && brickSettingsPopover}
+      <Toaster
+        toastOptions={{
+          position: "bottom-center",
+          style: {
+            padding: "0.5rem 1rem",
+            borderRadius: "0.5rem",
+            background: "rgba(0, 0, 0, 0.9)",
+            color: "white",
+            fontSize: "0.85rem",
+            fontWeight: "500",
+          },
+          error: {
+            style: {
+              background: "#880808",
+            },
+          },
         }}
       />
     </>

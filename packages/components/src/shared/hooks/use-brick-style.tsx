@@ -94,6 +94,10 @@ export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable,
     // no transition otherwise it will slow down the drag
     "brick group/brick flex",
     styleIds.includes("#styles:fixedPositioned") === false && "relative",
+    styleIds.includes("#styles:fixedPositioned") &&
+      css({
+        height: `${position.desktop.h * LAYOUT_ROW_HEIGHT}px`,
+      }),
 
     // container children expand to fill the space
     isContainerChild && "container-child flex-1",
@@ -148,8 +152,9 @@ function getBrickWrapperEditorStyles(
       "&.selected-group": {
         outline: "2px dotted var(--violet-8) !important",
       },
-      "& [data-brick-part]:hover": {
+      "& [data-brick-group]:hover": {
         outline: "1px dashed var(--violet-8)",
+        "background-color": "var(--violet-2)",
       },
     }),
   ];

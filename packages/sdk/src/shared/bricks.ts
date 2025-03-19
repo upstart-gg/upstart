@@ -277,7 +277,7 @@ export function defineBricks<B extends DefinedBrick[] = DefinedBrick[]>(bricks: 
   });
 }
 
-export function processBrickProps<B extends Brick>(brick: B): B {
+export function brickWithDefaults<B extends Brick>(brick: B): B {
   const defProps = defaultProps[brick.type];
   return {
     ...brick,

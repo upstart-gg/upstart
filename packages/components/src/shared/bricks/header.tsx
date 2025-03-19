@@ -1,7 +1,6 @@
 import { forwardRef } from "react";
 import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/header.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { urlOrPageId } from "@upstart.gg/sdk/shared/bricks/props/string";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { tx, apply } from "@upstart.gg/style-system/twind";
 import { TextContent } from "../components/TextContent";
@@ -19,15 +18,19 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
   return (
     <header
       ref={ref}
-      data-brick-part="container"
+      data-brick-group="container"
       className={tx(
-        "flex-1 rounded-lg flex p-4 ",
+        "flex-1 rounded-lg flex px-4",
         !props.container.backgroundColor && "bg-gradient-to-t from-gray-200 to-gray-50",
         styles.container,
       )}
     >
       <div className="flex flex-1 items-center gap-8 ">
-        <div className={tx("flex items-center brand", styles.brand)} data-brick-part="brand">
+        <div
+          className={tx("flex items-center brand", styles.brand)}
+          data-brick-group="brand"
+          data-brick-menu-offset="70"
+        >
           {props.brand.logo?.src && <img src={props.brand.logo.src} alt="logo" className="h-full w-auto" />}
           {props.brand.name && (
             <TextContent
@@ -43,7 +46,7 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
           )}
         </div>
         <nav
-          data-brick-part="navigation"
+          data-brick-group="navigation"
           className={tx(
             "flex items-center gap-2",
             styles.navigation,

@@ -1,5 +1,4 @@
 import { forwardRef } from "react";
-import { memoizeIgnoringPaths } from "../utils/memoize";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/text.manifest";
 import { tx } from "@upstart.gg/style-system/twind";
@@ -12,8 +11,9 @@ import { TextContent } from "../components/TextContent";
 const Text = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const { props } = brick;
   const styles = useBrickStyle<Manifest>(brick);
+  const classes = Object.values(styles);
   return (
-    <div className={tx("flex-1", ...Object.values(styles))}>
+    <div className={tx("flex-1", ...classes)}>
       <TextContent
         ref={ref}
         propPath="content"

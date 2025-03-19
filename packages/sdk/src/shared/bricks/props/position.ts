@@ -5,15 +5,13 @@ export function position(defaultValue = "flowing", title = "Position") {
   return prop({
     title,
     $id: "#styles:position",
-    schema: Type.Optional(
-      Type.Union(
-        [
-          Type.Literal("flowing", { title: "Flowing" }),
-          Type.Literal("fixed", { title: "Fixed" }),
-          Type.Literal("sticky", { title: "Sticky" }),
-        ],
-        { default: defaultValue },
-      ),
+    schema: Type.Union(
+      [
+        Type.Literal("flowing", { title: "Flowing" }),
+        Type.Literal("fixed", { title: "Fixed" }),
+        Type.Literal("sticky", { title: "Sticky" }),
+      ],
+      { default: defaultValue },
     ),
   });
 }

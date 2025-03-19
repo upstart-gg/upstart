@@ -535,11 +535,11 @@ function DatasourceItemButton({ editor }: { editor: Editor }) {
   return (
     <Popover.Root>
       <Popover.Trigger>
-        <IconButton size="2" color="gray" variant="surface" className={tx(toolbarBtnCls)}>
+        <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
           <VscDatabase className="w-5 h-5" />
-        </IconButton>
+        </button>
       </Popover.Trigger>
-      <Popover.Content width="460px" side="right" align="center" size="2" maxHeight="50vh" sideOffset={50}>
+      <Popover.Content width="460px" side="right" align="start" size="2" maxHeight="50vh" sideOffset={10}>
         <DatasourceFieldPickerModal onFieldSelect={onFieldSelect} />
       </Popover.Content>
     </Popover.Root>
@@ -552,7 +552,7 @@ function TextStyleButtonGroup({ editor }: { editor: Editor }) {
   const isStrike = editor.isActive("strike");
   return (
     <ToggleGroup.Root
-      className={tx(menuNavBarCls, "!rounded-l-none !shadow-none")}
+      className={tx("flex !rounded-l-none !shadow-none divide-x")}
       type="multiple"
       value={
         [
@@ -578,7 +578,7 @@ function TextStyleButtonGroup({ editor }: { editor: Editor }) {
         <MdOutlineFormatItalic className="w-5 h-5" />
       </ToggleGroup.Item>
       <ToggleGroup.Item
-        className={tx(menuBarBtnCls, menuBarBtnCommonCls, isStrike && menuBarBtnActiveCls)}
+        className={tx(menuBarBtnCls, menuBarBtnCommonCls, "!rounded-none", isStrike && menuBarBtnActiveCls)}
         value="strike"
         onClick={() => editor.chain().focus().toggleStrike().run()}
       >
@@ -675,7 +675,7 @@ function TextSizeDropdown({ editor }: TextSizeSelectProps) {
       ]}
     >
       <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
-        <span className="text-base">
+        <span className="text-base font-medium">
           {value === "code" ? "Code" : value === "paragraph" ? "Paragraph" : `Title ${value}`}
         </span>
         <RiArrowDownSLine className={tx(arrowClass)} />

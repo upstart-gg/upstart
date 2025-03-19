@@ -225,6 +225,7 @@ function ColorPillList({
   elementColorType,
 }: PropsWithChildren<ColorPillListProps>) {
   const [gradientDir, setGradientDir] = useState<string>(getInitialGradientDir());
+  const [gradient, setGradient] = useState<{ from: string; to: string } | null>(getInitialGradient());
 
   function getInitialGradientDir() {
     const match = currentColor?.match(/to-(\w+)/);
@@ -232,6 +233,15 @@ function ColorPillList({
       return match[1];
     }
     return "t";
+  }
+
+  function getInitialGradient() {
+    if (currentColor?.includes("bg-gradient")) {
+      const from = currentColor.match(/from-(\w+)/)?.[1];
+      const to = currentColor.match(/to-(\w+)/)?.[1];
+      return from && to ? { from, to } : null;
+    }
+    return null;
   }
 
   if (type === "solid") {
@@ -259,7 +269,7 @@ function ColorPillList({
       ["200", "400"],
       ["400", "600"],
       ["600", "800"],
-      ["800", "900"],
+      ["700", "900"],
     ];
     return (
       <>
@@ -268,6 +278,10 @@ function ColorPillList({
           size="1"
           onValueChange={(g) => {
             setGradientDir(g);
+            console.log("gradient dir changed while gradient was %o", gradient);
+            if (gradient) {
+              onChange(`bg-gradient-to-${g} from-${gradient.from} to-${gradient.to}`);
+            }
           }}
         >
           <Select.Trigger className="!w-full" />
@@ -299,6 +313,7 @@ function ColorPillList({
                   )}
                   onClick={() => {
                     onChange(`bg-gradient-to-${gradientDir} from-${color.from} to-${color.to}`);
+                    setGradient(color);
                   }}
                 />
               )),
@@ -329,7 +344,8 @@ export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
         // don't mix neutral with other colors
         if (
           (colors[i] === "neutral" && colors[j] !== "neutral") ||
-          (colors[i] !== "neutral" && colors[j] === "neutral")
+          (colors[i] !== "neutral" && colors[j] === "neutral") ||
+          colors[i] !== colors[j]
         ) {
           continue;
         }
@@ -470,7 +486,7 @@ export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
   }
 
   if (elementColorType === "background") {
-    const colors = ["primary", "secondary", "neutral"];
+    const colors = ["primary", "secondary", "accent", "neutral"];
     const shades = ["50", "100", "200", "400", "600", "800"];
 
     return (

@@ -7,6 +7,7 @@ import {
   type FC,
   useRef,
   useEffect,
+  type CSSProperties,
 } from "react";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 import { tx } from "@upstart.gg/style-system/twind";
@@ -80,16 +81,18 @@ type FormNavigatorProps = {
   onChange: (data: Record<string, unknown>, changedPath: string) => void;
   formData: Record<string, unknown>;
   className?: string;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
+  initialGroup?: string;
 };
 
-const FormNavigator: React.FC<FormNavigatorProps> = ({
+const FormNavigator: FC<FormNavigatorProps> = ({
   title,
   navItems,
   className,
   style,
   onChange,
   formData,
+  initialGroup,
 }) => {
   // Stack of views (each with content and title)
   const [viewStack, setViewStack] = useState<{ content: ReactNode; title: string }[]>([
@@ -100,6 +103,7 @@ const FormNavigator: React.FC<FormNavigatorProps> = ({
   ]);
 
   const ref = useRef<HTMLDivElement>(null);
+  const refNavigated = useRef(false);
 
   // Direction of animation
   const [animationDirection, setAnimationDirection] = useState<"forward" | "backward" | null>(null);
@@ -154,8 +158,24 @@ const FormNavigator: React.FC<FormNavigatorProps> = ({
   // Get animation classes based on direction
   const getAnimationClass = () => {
     if (!animationDirection) return "";
+    if (initialGroup && !refNavigated.current) {
+      return "";
+    }
     return animationDirection === "forward" ? "animate-slide-in" : "animate-slide-back";
   };
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    if (initialGroup && !refNavigated.current) {
+      const item = navItems.find((item) => item.id === initialGroup);
+      if (item) {
+        navigateTo(item);
+        setTimeout(() => {
+          refNavigated.current = true;
+        }, 0);
+      }
+    }
+  }, []);
 
   return (
     <FormNavigatorContext.Provider
@@ -188,7 +208,7 @@ const FormNavigator: React.FC<FormNavigatorProps> = ({
               "flex items-center p-2.5 border-b border-gray-200 dark:border-dark-400 bg-gray-50 sticky top-0 z-10",
             )}
           >
-            {viewStack.length > 1 && (
+            {!initialGroup && viewStack.length > 1 && (
               <button
                 type="button"
                 className={tx(

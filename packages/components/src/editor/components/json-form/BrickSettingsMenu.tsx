@@ -8,7 +8,7 @@ import { merge, set } from "lodash-es";
 import { useDraftHelpers, useGetBrick, usePreviewMode } from "~/editor/hooks/use-editor";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
-type SchemaFilter = (prop: TSchema) => boolean;
+type SchemaFilter = (prop: TSchema, key: string) => boolean;
 
 const defaultFilter: SchemaFilter = () => true;
 
@@ -17,9 +17,10 @@ function getNavItemsFromManifest(
   filter = defaultFilter,
   pathsParts: string[] = [],
 ): NavItem[] {
+  console.log("manifest props", manifest.properties);
   const items = Object.entries<TSchema>(manifest.properties)
     .filter(([, prop]) => prop["ui:field"] !== "hidden")
-    .filter(([, prop]) => filter(prop))
+    .filter(([key, prop]) => filter(prop, key))
     .map(([key, prop]) => {
       const nextPathParts = [...pathsParts, key];
       return {
@@ -40,21 +41,26 @@ function getNavItemsFromManifest(
 
 type BrickSettingsMenuProps = {
   brick: Brick;
+  group?: string;
 };
 
-export default function BrickSettingsMenu({ brick }: BrickSettingsMenuProps) {
+export default function BrickSettingsMenu({ brick, group }: BrickSettingsMenuProps) {
   const { updateBrickProps } = useDraftHelpers();
   const manifest = useBrickManifest(brick.type);
   const previewMode = usePreviewMode();
   const getBrickInfo = useGetBrick();
   const brickInfo = getBrickInfo(brick.id);
-  const filter: SchemaFilter = (prop) => {
+  const filter: SchemaFilter = (prop, key) => {
     return (
       (previewMode !== "mobile" || prop["ui:responsive"]) &&
       (!prop.metadata?.category || prop.metadata?.category === "settings")
+      /* &&
+      (!group || !prop.metadata?.group || (prop.metadata?.group && key === group))*/
     );
   };
+
   const navItems = getNavItemsFromManifest(manifest.props, filter);
+
   const formData = useMemo(() => {
     return previewMode === "mobile" ? merge({}, brick.props, brick.mobileProps) : brick.props ?? {};
   }, [brick, previewMode]);
@@ -77,5 +83,13 @@ export default function BrickSettingsMenu({ brick }: BrickSettingsMenuProps) {
     [brick.id, previewMode, updateBrickProps, brickInfo],
   );
 
-  return <FormNavigator title="Settings" navItems={navItems} formData={formData} onChange={onChange} />;
+  return (
+    <FormNavigator
+      title="Settings"
+      initialGroup={group}
+      navItems={navItems}
+      formData={formData}
+      onChange={onChange}
+    />
+  );
 }

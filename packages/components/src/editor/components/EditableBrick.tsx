@@ -26,6 +26,7 @@ import {
   offset,
   Popover,
   Inset,
+  toast,
 } from "@upstart.gg/style-system/system";
 import BaseBrick from "~/shared/components/BaseBrick";
 import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
@@ -37,7 +38,6 @@ import {
   menuNavBarCls,
 } from "~/shared/styles/menubar-styles";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
-import { processBrickProps } from "@upstart.gg/sdk/shared/utils/process-brick-props";
 import { BiSolidColor } from "react-icons/bi";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { FiSettings, FiDatabase } from "react-icons/fi";
@@ -49,17 +49,18 @@ type BrickWrapperProps = ComponentProps<"div"> & {
   index: number;
 };
 
-const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
+const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
   ({ brick, children, isContainerChild, index }, ref) => {
     const hasMouseMoved = useRef(false);
     const selectedBrickId = useSelectedBrickId();
-    const { setPanel, setSelectedBrickId } = useEditorHelpers();
+    const { setSelectedBrickId } = useEditorHelpers();
     const previewMode = usePreviewMode();
     const { getParentBrick } = useDraftHelpers();
     const manifest = useBrickManifest(brick.type);
+    // const clientPoint = useClientPoint(context);
     const {
-      refs,
-      floatingStyles,
+      refs: barsRefs,
+      floatingStyles: barsFloatingStyles,
       update: updateBarsPlacement,
     } = useFloating({
       transform: true,
@@ -71,7 +72,7 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       ],
     });
 
-    const brickRef = useMergeRefs([ref, refs.setReference]);
+    const brickRef = useMergeRefs([ref, barsRefs.setReference]);
 
     const wrapperClass = useBrickWrapperStyle({
       brick,
@@ -80,14 +81,12 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     });
 
     const onBrickWrapperClick = (e: MouseEvent<HTMLElement>) => {
-      console.log("onBrickWrapperClick", e.target);
-
       const brickTarget = e.currentTarget as HTMLElement;
       const target = e.target as HTMLElement;
-      const part = target.closest<HTMLElement>("[data-brick-part]");
+      const group = target.closest<HTMLElement>("[data-brick-group]");
 
-      if (part) {
-        console.log("clicked on part", part.dataset.brickPart);
+      if (group) {
+        toast(`Clicked on part: ${group.dataset.brickGroup}`);
         return;
       }
 
@@ -109,7 +108,6 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       setSelectedBrickId(selectedBrick.id);
 
       // setPanel("inspector");
-
       hasMouseMoved.current = false;
 
       // stop propagation otherwise the click could then be handled by the container
@@ -120,6 +118,7 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
         <div
           id={brick.id}
+          data-brick-id={brick.id}
           data-x={brick.position[previewMode].x}
           data-y={brick.position[previewMode].y}
           data-w={brick.position[previewMode].w}
@@ -148,16 +147,29 @@ const EditaleBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           <BrickEditLabel brick={brick} isContainerChild={isContainerChild} />
           {children} {/* Make sure to include children to add resizable handle */}
           <BrickMenuBarsContainer
-            ref={refs.setFloating}
+            ref={barsRefs.setFloating}
             brick={brick}
             isContainerChild={isContainerChild}
-            style={floatingStyles}
+            style={barsFloatingStyles}
           />
         </div>
       </BrickContextMenu>
     );
   },
 );
+
+export function BrickSettingsGroupMenu({ brickId, group }: { brickId: Brick["id"]; group: string }) {
+  const getBrickInfo = useGetBrick();
+  const brick = getBrickInfo(brickId);
+  if (!brick) {
+    return null;
+  }
+  return (
+    <div className="w-[320px]">
+      <BrickSettingsMenu brick={brick} group={group} />
+    </div>
+  );
+}
 
 type BrickMenuBarProps = ComponentProps<"div"> &
   PropsWithChildren<{
@@ -278,7 +290,7 @@ function BrickEditLabel({ brick, isContainerChild }: { brick: Brick; isContainer
   );
 }
 
-export default EditaleBrickWrapper;
+export default EditableBrickWrapper;
 
 type BrickContextMenuProps = PropsWithChildren<{
   brick: Brick;

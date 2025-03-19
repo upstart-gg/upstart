@@ -1,12 +1,12 @@
 export const menuNavBarCls = `h-10 shadow-lg rounded-lg bg-white/70 backdrop-blur-md flex text-base
-                              text-gray-500 w-fit justify-start items-stretch divide-x divide-gray-300 `;
+                              text-gray-500 w-fit justify-start items-stretch divide-x divide-gray-200 border border-gray-200`;
 
 const menuBarBtnBaseCls = `transition-opacity duration-150 bg-gradient-to-t from-white to-white/70`;
 
 export const menuBarBtnCommonCls = `${menuBarBtnBaseCls}
   relative group overflow-visible
   disabled:hover:from-transparent disabled:hover:to-[rgba(255,255,255,0.15)]
-  hover:(from-white/10 to-white/40 text-upstart-800)
+  hover:(from-gray-100 to-white/40 text-upstart-800)
   active:(opacity-60)
   disabled:text-white/40 first:rounded-l-lg last:rounded-r-lg`;
 
