@@ -1,5 +1,5 @@
 <p align="center">
-    <img alt="Upstart SDK" src="https://raw.githubusercontent.com/enpage/enpage/main/docs/public/upstart.svg" width="437">
+    <img alt="Upstart SDK" src="https://raw.githubusercontent.com/upstart-gg/upstart/main/docs/public/upstart.svg" width="437">
 </p>
 
 # Upstart SDK

@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@3.0.1/schema.json",
-  "changelog": ["@changesets/changelog-github", { "repo": "enpage/enpage" }],
+  "changelog": ["@changesets/changelog-github", { "repo": "upstart-gg/upstart" }],
   "linked": [],
   "fixed": [["@upstart.gg/sdk", "@upstart.gg/components", "@upstart.gg/template-example"]],
   "access": "public",

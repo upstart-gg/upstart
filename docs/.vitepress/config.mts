@@ -188,9 +188,9 @@ export default defineConfig({
       },
     ],
     editLink: {
-      pattern: "https://github.com/enpage/enpage/edit/main/docs/:path",
+      pattern: "https://github.com/upstart-gg/upstart/edit/main/docs/:path",
     },
-    socialLinks: [{ icon: "github", link: "https://github.com/enpage/enpage" }],
+    socialLinks: [{ icon: "github", link: "https://github.com/upstart-gg/upstart" }],
     footer: {
       message: "Enpage SDK is released under AGPL-3.0 license",
       copyright: "Copyright © 2024-present Flippable - Made with ❤️ in Paris",

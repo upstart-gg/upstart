@@ -2,7 +2,7 @@
 
 If you need help with the Enpage SDK, you can reach out to us in the following ways:
 
-- [Github Discussions](https://github.com/enpage/enpage/discussions)
+- [Github Discussions](https://github.com/upstart-gg/upstart/discussions)
 - [Discord](https://discord.gg/SR9y3ApxHc)
 
 
