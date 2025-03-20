@@ -41,7 +41,7 @@ import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests
 import { BiSolidColor } from "react-icons/bi";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { FiSettings, FiDatabase } from "react-icons/fi";
-import { BrickSettingsPopover } from "./BrickSettingsPopover";
+import { BrickPopover } from "./BrickPopover";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -84,8 +84,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       const brickTarget = e.currentTarget as HTMLElement;
       const target = e.target as HTMLElement;
       const group = target.closest<HTMLElement>("[data-brick-group]");
-
-      console.debug("onBrickWrapperClick", { target, group });
 
       if (group) {
         console.debug("onBrickWrapperClick: click ignored (group)");
@@ -212,17 +210,19 @@ function BrickMainNavBar({ brick }: { brick: Brick }) {
   return (
     <nav className={menuNavBarCls}>
       {/* Presets: @TODO check if brick has presets */}
-      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-        <BiSolidColor className={tx("w-5 h-5")} />
-        <span className={tx(menuBarTooltipCls)}>Presets</span>
-      </button>
+      <BrickPopover brick={brick} view="presets">
+        <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
+          <BiSolidColor className={tx("w-5 h-5")} />
+          <span className={tx(menuBarTooltipCls)}>Presets</span>
+        </button>
+      </BrickPopover>
       {/* Settings & styles */}
-      <BrickSettingsPopover brick={brick}>
+      <BrickPopover brick={brick} view="settings">
         <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
           <FiSettings className={tx("w-5 h-5")} />
           <span className={tx(menuBarTooltipCls)}>Settings</span>
         </button>
-      </BrickSettingsPopover>
+      </BrickPopover>
       {/* Content */}
       <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
         <FiDatabase className={tx("w-5 h-5")} />

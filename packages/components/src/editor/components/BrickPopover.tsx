@@ -2,7 +2,8 @@ import type { PropsWithChildren } from "react";
 import { useBrickSettingsPopover } from "../hooks/use-brick-settings-popover";
 import BrickSettingsGroupMenu from "./BrickSettingsGroupMenu";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
-import BrickSettingsMenu from "./json-form/BrickSettingsMenu";
+import BrickSettingsView from "./BrickSettingsView";
+import BrickPresetsView from "./BrickPresetsView";
 import { Popover, Inset } from "@upstart.gg/style-system/system";
 
 /**
@@ -17,20 +18,24 @@ export default function BrickSettingsGroupPopover() {
   return brickSettingsPopover;
 }
 
-type BrickSettingsPopoverProps = PropsWithChildren<{
+type BrickPopoverProps = PropsWithChildren<{
   brick: Brick;
+  view: "settings" | "presets";
 }>;
 
 /**
  * Generic popover for brick settings
  */
-export function BrickSettingsPopover({ brick, children }: BrickSettingsPopoverProps) {
+export function BrickPopover({ brick, children, view }: BrickPopoverProps) {
   return (
     <Popover.Root>
       <Popover.Trigger>{children}</Popover.Trigger>
-      <Popover.Content width="300px">
+      <Popover.Content
+        width={view === "settings" ? "300px" : "600px"}
+        maxWidth={view === "settings" ? "100%" : "100%"}
+      >
         <Inset>
-          <BrickSettingsMenu brick={brick} />
+          {view === "settings" ? <BrickSettingsView brick={brick} /> : <BrickPresetsView brick={brick} />}
         </Inset>
       </Popover.Content>
     </Popover.Root>

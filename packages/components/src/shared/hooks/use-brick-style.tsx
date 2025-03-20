@@ -60,12 +60,12 @@ function usePreprocessTextColors<T extends BrickManifest>(
           }
           elements.forEach((el) => {
             const chosenColor = getTextContrastedColor(el);
-            el.style.setProperty("--color-auto", `${chosenColor}`);
+            el.style.setProperty("--up-color-auto", `${chosenColor}`);
           });
         }
       }
     }
-  }, 300);
+  }, 50);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(onChange, [brickInfo]);

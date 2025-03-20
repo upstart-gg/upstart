@@ -6,7 +6,6 @@ import presetLineClamp from "@twind/preset-line-clamp";
 import presetForms from "@twind/preset-tailwind-forms";
 import presetTypo from "@twind/preset-typography";
 import presetContainerQueries from "@twind/preset-container-queries";
-import { modularScale } from "polished";
 
 export default defineConfig({
   darkMode: "media",
@@ -31,13 +30,11 @@ export default defineConfig({
         gridColumn: "1 / span 12",
       },
     ],
-    [
-      // specific padding classes for bricks
-      "brick-p-",
-      ({ $$ }) => ({ padding: `${$$ === "1" ? "1px" : $$ === "0" ? "0" : `${modularScale(+$$, "1rem")}`}` }),
-    ],
+    // [
+    //   "brick-p-",
+    //   ({ $$ }) => ({ padding: `${$$ === "1" ? "1px" : $$ === "0" ? "0" : `${modularScale(+$$, "1rem")}`}` }),
+    // ],
     // ["family-", ({ $$ }) => ({ fontFamily: `var(--font-${$$})` })],
-
     [
       "h-dvh",
       {
@@ -50,10 +47,38 @@ export default defineConfig({
         width: "100dvw",
       },
     ],
-    ["bg-neutral-", ({ $$ }) => ({ backgroundColor: `var(--color-neutral-${$$})` })],
-    ["bg-accent-", ({ $$ }) => ({ backgroundColor: `var(--color-accent-${$$})` })],
-    ["bg-primary-", ({ $$ }) => ({ backgroundColor: `var(--color-primary-${$$})` })],
-    ["bg-secondary-", ({ $$ }) => ({ backgroundColor: `var(--color-secondary-${$$})` })],
+    [
+      "bg-neutral-",
+      ({ $$ }) => ({
+        backgroundColor: `var(--up-bg-color)`,
+        "--up-bg-color": `var(--color-neutral-${$$})`,
+        "--up-color-auto": `color-contrast(var(--up-bg-color) vs white, black)`,
+      }),
+    ],
+    [
+      "bg-accent-",
+      ({ $$ }) => ({
+        backgroundColor: `var(--up-bg-color)`,
+        "--up-bg-color": `var(--color-accent-${$$})`,
+        "--up-color-auto": `color-contrast(var(--up-bg-color) vs white, black)`,
+      }),
+    ],
+    [
+      "bg-primary-",
+      ({ $$ }) => ({
+        backgroundColor: `var(--up-bg-color)`,
+        "--up-bg-color": `var(--color-primary-${$$})`,
+        "--up-color-auto": `color-contrast(var(--up-bg-color) vs white, black)`,
+      }),
+    ],
+    [
+      "bg-secondary-",
+      ({ $$ }) => ({
+        backgroundColor: `var(--up-bg-color)`,
+        "--up-bg-color": `var(--color-secondary-${$$})`,
+        "--up-color-auto": `color-contrast(var(--up-bg-color) vs white, black)`,
+      }),
+    ],
 
     ["border-neutral-", ({ $$ }) => ({ borderColor: `var(--color-neutral-${$$})` })],
     ["border-accent-", ({ $$ }) => ({ borderColor: `var(--color-accent-${$$})` })],
@@ -72,6 +97,88 @@ export default defineConfig({
     ["outline-secondary-", ({ $$ }) => ({ outlineColor: `var(--color-secondary-${$$})` })],
     ["outline-accent-", ({ $$ }) => ({ outlineColor: `var(--color-accent-${$$})` })],
     ["outline-neutral-", ({ $$ }) => ({ outlineColor: `var(--color-neutral-${$$})` })],
+
+    ["preset-bg-gradient-primary-1", "bg-gradient-to-t from-primary-100 to-primary-50"],
+    ["preset-bg-gradient-primary-2", "bg-gradient-to-t from-primary-300 to-primary-100"],
+    ["preset-bg-gradient-primary-3", "bg-gradient-to-t from-primary-500 to-primary-300"],
+    ["preset-bg-gradient-primary-4", "bg-gradient-to-t from-primary-700 to-primary-500"],
+    ["preset-bg-gradient-primary-5", "bg-gradient-to-t from-primary-900 to-primary-700"],
+
+    ["preset-bg-gradient-secondary-1", "bg-gradient-to-t from-secondary-100 to-secondary-50"],
+    ["preset-bg-gradient-secondary-2", "bg-gradient-to-t from-secondary-300 to-secondary-100"],
+    ["preset-bg-gradient-secondary-3", "bg-gradient-to-t from-secondary-500 to-secondary-300"],
+    ["preset-bg-gradient-secondary-4", "bg-gradient-to-t from-secondary-700 to-secondary-500"],
+    ["preset-bg-gradient-secondary-5", "bg-gradient-to-t from-secondary-900 to-secondary-700"],
+
+    ["preset-bg-gradient-neutral-1", "bg-gradient-to-t from-neutral-100 to-neutral-50"],
+    ["preset-bg-gradient-neutral-2", "bg-gradient-to-t from-neutral-300 to-neutral-100"],
+    ["preset-bg-gradient-neutral-3", "bg-gradient-to-t from-neutral-500 to-neutral-300"],
+    ["preset-bg-gradient-neutral-4", "bg-gradient-to-t from-neutral-700 to-neutral-500"],
+    ["preset-bg-gradient-neutral-5", "bg-gradient-to-t from-neutral-900 to-neutral-700"],
+
+    ["preset-border-primary-1", { borderColor: `var(--color-primary-300)` }],
+    ["preset-border-primary-2", { borderColor: `var(--color-primary-500)` }],
+    ["preset-border-primary-3", { borderColor: `var(--color-primary-700)` }],
+    ["preset-border-primary-4", { borderColor: `var(--color-primary-900)` }],
+    ["preset-border-primary-5", { borderColor: `var(--color-primary-400)` }],
+
+    ["preset-border-secondary-1", { borderColor: `var(--color-secondary-300)` }],
+    ["preset-border-secondary-2", { borderColor: `var(--color-secondary-500)` }],
+    ["preset-border-secondary-3", { borderColor: `var(--color-secondary-700)` }],
+    ["preset-border-secondary-4", { borderColor: `var(--color-secondary-900)` }],
+    ["preset-border-secondary-5", { borderColor: `var(--color-secondary-400)` }],
+
+    ["preset-border-accent-1", { borderColor: `var(--color-accent-300)` }],
+    ["preset-border-accent-2", { borderColor: `var(--color-accent-500)` }],
+    ["preset-border-accent-3", { borderColor: `var(--color-accent-700)` }],
+    ["preset-border-accent-4", { borderColor: `var(--color-accent-900)` }],
+    ["preset-border-accent-5", { borderColor: `var(--color-accent-400)` }],
+
+    ["preset-border-neutral-1", { borderColor: `var(--color-neutral-300)` }],
+    ["preset-border-neutral-2", { borderColor: `var(--color-neutral-500)` }],
+    ["preset-border-neutral-3", { borderColor: `var(--color-neutral-700)` }],
+    ["preset-border-neutral-4", { borderColor: `var(--color-neutral-900)` }],
+    ["preset-border-neutral-5", { borderColor: `var(--color-neutral-400)` }],
+
+    ["preset-color-neutral-1", "bg-neutral-50 color-auto"],
+    ["preset-color-neutral-2", "bg-neutral-100 color-auto"],
+    ["preset-color-neutral-3", "bg-neutral-200 color-auto"],
+    ["preset-color-neutral-4", "bg-neutral-300 color-auto"],
+    ["preset-color-neutral-5", "bg-neutral-400 color-auto"],
+    ["preset-color-neutral-6", "bg-neutral-500 color-auto"],
+    ["preset-color-neutral-7", "bg-neutral-600 color-auto"],
+    ["preset-color-neutral-8", "bg-neutral-700 color-auto"],
+    ["preset-color-neutral-9", "bg-neutral-900 color-auto"],
+
+    ["preset-color-accent-1", "bg-accent-50 color-auto"],
+    ["preset-color-accent-2", "bg-accent-100 color-auto"],
+    ["preset-color-accent-3", "bg-accent-200 color-auto"],
+    ["preset-color-accent-4", "bg-accent-300 color-auto"],
+    ["preset-color-accent-5", "bg-accent-400 color-auto"],
+    ["preset-color-accent-6", "bg-accent-500 color-auto"],
+    ["preset-color-accent-7", "bg-accent-600 color-auto"],
+    ["preset-color-accent-8", "bg-accent-700 color-auto"],
+    ["preset-color-accent-9", "bg-accent-900 color-auto"],
+
+    ["preset-color-primary-1", "bg-primary-50 color-auto"],
+    ["preset-color-primary-2", "bg-primary-100 color-auto"],
+    ["preset-color-primary-3", "bg-primary-200 color-auto"],
+    ["preset-color-primary-4", "bg-primary-300 color-auto"],
+    ["preset-color-primary-5", "bg-primary-400 color-auto"],
+    ["preset-color-primary-6", "bg-primary-500 color-auto"],
+    ["preset-color-primary-7", "bg-primary-600 color-auto"],
+    ["preset-color-primary-8", "bg-primary-700 color-auto"],
+    ["preset-color-primary-9", "bg-primary-900 color-auto"],
+
+    ["preset-color-secondary-1", "bg-secondary-50 color-auto"],
+    ["preset-color-secondary-2", "bg-secondary-100 color-auto"],
+    ["preset-color-secondary-3", "bg-secondary-200 color-auto"],
+    ["preset-color-secondary-4", "bg-secondary-300 color-auto"],
+    ["preset-color-secondary-5", "bg-secondary-400 color-auto"],
+    ["preset-color-secondary-6", "bg-secondary-500 color-auto"],
+    ["preset-color-secondary-7", "bg-secondary-600 color-auto"],
+    ["preset-color-secondary-8", "bg-secondary-700 color-auto"],
+    ["preset-color-secondary-9", "bg-secondary-900 color-auto"],
 
     // ["color-", ({ $$ }) => ({ color: `var(--color-${$$})` })],
     [
@@ -94,11 +201,8 @@ export default defineConfig({
 
     ["w-fill", { width: ["fill-available", "-webkit-fill-available", "-moz-available"] }],
     ["h-fill", { height: ["fill-available", "-webkit-fill-available", "-moz-available"] }],
-    ["color-auto", { color: "var(--color-auto, #111)" }],
-
-    ["brick-light-", ({ $$ }) => `bg-${$$}-300 text-${$$}-50`],
-    ["brick-normal-", ({ $$ }) => `bg-${$$}-500 text-${$$}-100`],
-    ["brick-dark-", ({ $$ }) => `bg-${$$}-800 text-${$$}-200`],
+    // ["color-auto", { color: "light-dark(white, black)" }],
+    ["color-auto", { color: "var(--up-color-auto)" }],
 
     ["hero-size-md", { fontSize: "clamp(3rem, 2.5vw + 2.5rem, 4.75rem)", lineHeight: "1.1" }],
     ["hero-size-lg", { fontSize: "clamp(3.75rem, 3vw + 3rem, 5.75rem)", lineHeight: "1.1" }],

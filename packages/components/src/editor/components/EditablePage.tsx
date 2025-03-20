@@ -28,7 +28,7 @@ import Section from "./EditableSection";
 import { useGridConfig } from "~/shared/hooks/use-grid-config";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { useBrickSettingsPopover } from "../hooks/use-brick-settings-popover";
-import BrickSettingsPopover from "./BrickSettingsPopover";
+import BrickSettingsPopover from "./BrickPopover";
 
 const ghostValid = tx("bg-upstart-100");
 const ghostInvalid = tx("bg-red-100");

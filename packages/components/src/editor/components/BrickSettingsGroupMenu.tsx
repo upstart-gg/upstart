@@ -1,6 +1,6 @@
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { useGetBrick } from "../hooks/use-editor";
-import BrickSettingsMenu from "./json-form/BrickSettingsMenu";
+import BrickSettingsView from "./BrickSettingsView";
 
 export default function BrickSettingsGroupMenu({ brickId, group }: { brickId: Brick["id"]; group: string }) {
   const getBrickInfo = useGetBrick();
@@ -10,7 +10,7 @@ export default function BrickSettingsGroupMenu({ brickId, group }: { brickId: Br
   }
   return (
     <div className="w-[320px]">
-      <BrickSettingsMenu brick={brick} group={group} />
+      <BrickSettingsView brick={brick} group={group} />
     </div>
   );
 }

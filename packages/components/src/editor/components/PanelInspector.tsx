@@ -13,13 +13,11 @@ import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import { FormRenderer } from "./json-form/FormRenderer";
 import { IoCloseOutline } from "react-icons/io5";
 import { useLocalStorage } from "usehooks-ts";
-import merge from "lodash-es/merge";
-import set from "lodash-es/set";
-import PresetsView from "./PresetsView";
+import PresetsView from "./BrickPresetsView";
 import { useCallback, useEffect, useMemo } from "react";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
-import BrickSettingsMenu from "./json-form/BrickSettingsMenu";
+import BrickSettingsView from "./BrickSettingsView";
 
 type TabType = "preset" | "style" | "content";
 
@@ -131,12 +129,13 @@ export default function Inspector() {
               further in the <span className="font-semibold">Settings</span> tab.
             </Callout.Text>
           </Callout.Root>
-          <PresetsView
+          {/* <PresetsView
             onChoose={(preset) => {
               console.log("onChoose(%o)", preset);
               updateBrickProps(brick.id, preset, previewMode === "mobile");
             }}
-          />
+          /> */}
+          Old preset view here
         </div>
       </ScrollablePanelTab>
       <ScrollablePanelTab tab="style">
@@ -189,7 +188,7 @@ export default function Inspector() {
 function StyleTab({ brick }: { brick: Brick }) {
   return (
     <form className={tx("px-3 flex flex-col gap-3")}>
-      <BrickSettingsMenu brick={brick} />
+      <BrickSettingsView brick={brick} />
     </form>
   );
 }

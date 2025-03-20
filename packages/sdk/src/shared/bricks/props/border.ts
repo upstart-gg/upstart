@@ -8,12 +8,19 @@ type BorderOptions = {
     style: string;
     color: string;
     width: string;
+    side?: string[];
   };
 };
 
 export function border({
   title = "Border",
-  defaultValue = { color: "#000", radius: "rounded-none", style: "border-solid", width: "border-0" },
+  defaultValue = {
+    color: "#000",
+    radius: "rounded-none",
+    style: "border-solid",
+    width: "border-0",
+    side: ["border"],
+  },
 }: BorderOptions = {}) {
   return prop({
     title,
@@ -30,7 +37,6 @@ export function border({
             Type.Literal("rounded-full", { title: "Full" }),
           ],
           {
-            $id: "borderRadius",
             default: "rounded-none",
             title: "Rounding",
             description: "Corners rounding",
@@ -45,7 +51,6 @@ export function border({
             Type.Literal("border-dotted", { title: "Dotted" }),
           ],
           {
-            $id: "borderStyle",
             default: "border-solid",
             title: "Border style",
             description: "The brick border style",
@@ -54,7 +59,6 @@ export function border({
           },
         ),
         color: Type.String({
-          $id: "borderColor",
           default: "transparent",
           title: "Border color",
           "ui:field": "color",
@@ -69,11 +73,24 @@ export function border({
             Type.Literal("border-8", { title: "Extra large" }),
           ],
           {
-            $id: "borderWidth",
             default: "border-0",
             title: "Border width",
             "ui:field": "enum",
             "ui:display": "button-group",
+          },
+        ),
+        side: Type.Array(
+          Type.Union([
+            Type.Literal("all", { title: "All" }),
+            Type.Literal("border-l", { title: "Left" }),
+            Type.Literal("border-t", { title: "Top" }),
+            Type.Literal("border-r", { title: "Right" }),
+            Type.Literal("border-b", { title: "Bottom" }),
+          ]),
+          {
+            default: ["border"],
+            title: "Border side",
+            "ui:field": "border-side",
           },
         ),
       },

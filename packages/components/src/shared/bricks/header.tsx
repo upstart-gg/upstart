@@ -9,18 +9,14 @@ import { useDatasource } from "../hooks/use-datasource";
 const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
   const props = brick.props;
-
   const ds = useDatasource(props.navigation.items, manifest.datasource);
-
-  // console.log("header props", props);
-  // console.log("header styles", styles);
 
   return (
     <header
       ref={ref}
       data-brick-group="container"
       className={tx(
-        "flex-1 rounded-lg flex px-4",
+        "flex-1 flex px-4",
         !props.container.backgroundColor && "bg-gradient-to-t from-gray-200 to-gray-50",
         styles.container,
       )}
@@ -74,8 +70,5 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
     </header>
   );
 });
-
-// Memoize the component to avoid re-rendering when the text content changes
-// const MemoHeader = memoizeIgnoringPaths(Header, ["brick.props.brand.name"]);
 
 export default Header;

@@ -47,7 +47,7 @@ describe("Style presets test suite", () => {
     });
 
     it("should return correct styles for elevated preset", () => {
-      const styles = getPresetStyles({ style: "elevated", variant: "accent" });
+      const styles = getPresetStyles({ style: "elevated", variant: "neutral" });
 
       expect(styles.background).toEqual({
         color: "bg-accent-100",

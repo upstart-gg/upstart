@@ -73,7 +73,21 @@ export function getBorderStyles(props?: BorderSettings) {
   if (!props) {
     return null;
   }
-  return [propToStyle(props.color, "borderColor"), props.radius, props.style, props.width];
+  let borderProcessedClass = "";
+
+  const originalWith = props.width.includes("-") ? props.width.split("-")[1] : null;
+
+  if (!props.side.includes("all")) {
+    borderProcessedClass = props.side
+      .map((side) => {
+        return `${side}${originalWith ? `-${originalWith}` : ""}`;
+      })
+      .join(" ");
+  } else {
+    borderProcessedClass = props.width;
+  }
+
+  return [propToStyle(props.color, "borderColor"), props.radius, props.style, borderProcessedClass];
 }
 
 export function getBasicAlignmentStyles(props: AlignBasicSettings) {

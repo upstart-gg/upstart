@@ -97,10 +97,6 @@ export const stylePreset = Type.Optional(
           title: "Secondary",
           description: "Uses the theme secondary color as the main color",
         }),
-        Type.Literal("accent", {
-          title: "Accent",
-          description: "Uses the theme accent color as the main color",
-        }),
         Type.Literal("neutral", {
           title: "Neutral",
           description: "Uses the theme neutral color as the main color",
@@ -152,8 +148,6 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         return alt ? "accent" : "secondary";
       case "secondary":
         return alt ? "primary" : "accent";
-      case "accent":
-        return alt ? "secondary" : "primary";
       case "neutral":
         return alt ? "primary" : "accent";
     }

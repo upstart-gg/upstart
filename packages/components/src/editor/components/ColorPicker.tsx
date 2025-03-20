@@ -351,7 +351,7 @@ function makeGradientCombinations(colors: string[]) {
 function getAvailableColorsAndShadesForElement(elementType: ElementColorType) {
   if (elementType === "page-background") {
     return {
-      colors: ["primary", "secondary", "accent", "neutral"],
+      colors: ["primary", "secondary", "neutral"],
       shades: ["100", "300", "500", "700", "900"],
       colorButtons: [
         { label: "White", value: "#FFFFFF" },
@@ -361,7 +361,7 @@ function getAvailableColorsAndShadesForElement(elementType: ElementColorType) {
   }
   if (elementType === "background") {
     return {
-      colors: ["primary", "secondary", "accent", "neutral"],
+      colors: ["primary", "secondary", "neutral"],
       shades: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
       colorButtons: [
         { label: "White", value: "#FFFFFF" },
@@ -382,13 +382,13 @@ function getAvailableColorsAndShadesForElement(elementType: ElementColorType) {
   }
   if (elementType === "border") {
     return {
-      colors: ["gray", "primary", "secondary", "accent", "neutral"],
-      shades: ["100", "200", "300", "400"],
+      colors: ["primary", "secondary", "accent", "neutral"],
+      shades: ["100", "300", "500", "700", "900"],
     };
   }
   if (elementType === "text") {
     return {
-      colors: ["gray", "primary", "secondary", "accent", "neutral"],
+      colors: ["primary", "secondary", "neutral"],
       shades: ["100", "300", "500", "700", "900"],
       colorButtons: [
         { label: "Auto", value: "color-auto" },

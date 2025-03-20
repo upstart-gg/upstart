@@ -208,7 +208,7 @@ const FormNavigator: FC<FormNavigatorProps> = ({
               "flex items-center p-2.5 border-b border-gray-200 dark:border-dark-400 bg-gray-50 sticky top-0 z-10",
             )}
           >
-            {!initialGroup && viewStack.length > 1 && (
+            {!initialGroup && viewStack.length > 1 ? (
               <button
                 type="button"
                 className={tx(
@@ -220,6 +220,8 @@ const FormNavigator: FC<FormNavigatorProps> = ({
                 <FiChevronLeft />
                 Back
               </button>
+            ) : (
+              <div className={tx("w-10")} />
             )}
             <h3 className={tx("flex-1 m-0 text-sm font-semibold text-center select-none")}>
               {currentView.title}

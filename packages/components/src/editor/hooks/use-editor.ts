@@ -1,5 +1,5 @@
 import { createStore, useStore } from "zustand";
-import { debounce, isEqual } from "lodash-es";
+import { debounce, isEqual, merge } from "lodash-es";
 import { persist, subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { createContext, useContext, useEffect } from "react";
@@ -577,13 +577,12 @@ export const createDraftStore = (
 
             updateBrickProps: (id, props, isMobileProps) =>
               set((state) => {
-                console.debug("updateBrickProps", { id, props, isMobileProps });
                 const brick = getBrick(id, state.bricks);
                 if (brick) {
                   if (isMobileProps) {
-                    brick.mobileProps = { ...brick.mobileProps, ...props, lastTouched: Date.now() };
+                    brick.mobileProps = merge({}, brick.mobileProps, props, { lastTouched: Date.now() });
                   } else {
-                    brick.props = { ...brick.props, ...props, lastTouched: Date.now() };
+                    brick.props = merge({}, brick.props, props, { lastTouched: Date.now() });
                   }
                 }
               }),

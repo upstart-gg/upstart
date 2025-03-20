@@ -187,9 +187,9 @@ const themes: Theme[] = [
     description: "Vibrant gradients with ethereal color transitions",
     tags: ["gradient", "vibrant", "modern", "creative", "dynamic", "artistic", "bold"],
     colors: {
-      primary: "#FF9900",
-      secondary: "#2dd4bf", // Teal
-      accent: "#ec4899", // Pink
+      primary: "#2F5ABF",
+      secondary: "#50C5B7",
+      accent: "#533A71",
       neutral: "#4b5563", // Grey
     },
     typography: {

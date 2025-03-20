@@ -1,8 +1,8 @@
-import FormNavigator from "./FormNavigator";
+import FormNavigator from "./json-form/FormNavigator";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import type { TArray, TObject, TSchema } from "@sinclair/typebox";
-import type { NavItem } from "./types";
+import type { NavItem } from "./json-form/types";
 import { useCallback, useMemo } from "react";
 import { merge, set } from "lodash-es";
 import { useDraftHelpers, useGetBrick, usePreviewMode } from "~/editor/hooks/use-editor";
@@ -38,12 +38,12 @@ function getNavItemsFromManifest(
   return items;
 }
 
-type BrickSettingsMenuProps = {
+type BrickSettingsViewProps = {
   brick: Brick;
   group?: string;
 };
 
-export default function BrickSettingsMenu({ brick, group }: BrickSettingsMenuProps) {
+export default function BrickSettingsView({ brick, group }: BrickSettingsViewProps) {
   const { updateBrickProps } = useDraftHelpers();
   const manifest = useBrickManifest(brick.type);
   const previewMode = usePreviewMode();

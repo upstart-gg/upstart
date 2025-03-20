@@ -33,6 +33,84 @@ export const datasource = Type.Array(
   },
 );
 
+const borderedPresets = [1, 2, 3, 4, 5].reduce(
+  (acc, i) => {
+    const id = `bordered-${i}`;
+    acc[id] = {
+      label: `Bordered ${i}`,
+      previewClasses: `preset-bg-gradient-<variant>-${i} color-auto border-b-4 preset-border-<variant>-${i}`,
+      props: {
+        container: {
+          backgroundColor: `preset-bg-gradient-<variant>-${i}`,
+          border: {
+            side: ["border-b"],
+            color: `preset-border-<variant>-${i}`,
+            radius: "rounded-none",
+            style: "border-solid",
+            width: "border-2",
+          },
+        },
+        brand: {
+          color: "color-auto",
+        },
+      },
+    };
+    return acc;
+  },
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  {} as Record<string, any>,
+);
+
+const borderedAltPresets = [1, 2, 3, 4, 5].reduce(
+  (acc, i) => {
+    const id = `bordered-alt-${i}`;
+    acc[id] = {
+      label: `Bordered ${i}`,
+      previewClasses: `preset-bg-gradient-<variant>-${i} color-auto border-b-4 preset-border-accent-${i}`,
+      props: {
+        container: {
+          backgroundColor: `preset-bg-gradient-<variant>-${i}`,
+          border: {
+            side: ["border-b"],
+            color: `preset-border-accent-${i}`,
+            radius: "rounded-none",
+            style: "border-solid",
+            width: "border-2",
+          },
+        },
+        brand: {
+          color: "color-auto",
+        },
+      },
+    };
+    return acc;
+  },
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  {} as Record<string, any>,
+);
+
+const shadowPresets = [1, 2, 3, 4, 5].reduce(
+  (acc, i) => {
+    const id = `shadow-${i}`;
+    acc[id] = {
+      label: `Shadow ${i}`,
+      previewClasses: `preset-bg-gradient-<variant>-${i} color-auto shadow-lg`,
+      props: {
+        container: {
+          backgroundColor: `preset-bg-gradient-<variant>-${i}`,
+          shadow: "shadow-lg",
+        },
+        brand: {
+          color: "color-auto",
+        },
+      },
+    };
+    return acc;
+  },
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  {} as Record<string, any>,
+);
+
 export const manifest = defineBrickManifest({
   type: "header",
   kind: "widget",
@@ -59,22 +137,28 @@ export const manifest = defineBrickManifest({
     <line x1="13" y1="14" x2="15" y2="14"></line>
     <line x1="17" y1="14" x2="19" y2="14"></line></svg>`,
 
+  presets: {
+    ...borderedPresets,
+    ...borderedAltPresets,
+    ...shadowPresets,
+  },
+
   props: defineProps({
     container: group({
       title: "Container",
       children: {
-        border: border(),
+        border: optional(border()),
         backgroundColor: backgroundColor(),
-        shadow: shadow(),
-        fixedPositioned: fixedPositioned(),
+        shadow: optional(shadow()),
+        fixedPositioned: optional(fixedPositioned()),
       },
     }),
     brand: group({
       title: "Brand",
       children: {
-        name: textContent("Brand name", "Acme Inc."),
+        name: optional(textContent("Brand name", "Acme Inc.")),
         logo: optional(image("Logo")),
-        color: color(),
+        color: optional(color()),
       },
     }),
     navigation: group({
