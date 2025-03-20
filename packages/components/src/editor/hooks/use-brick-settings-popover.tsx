@@ -121,12 +121,13 @@ export const useBrickSettingsPopover = ({
   const handleGlobalClick = useCallback(
     (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      console.log("global click", { target, trigger: state.currentTrigger });
+      console.log("global click", { target, trigger: state.currentTrigger, nodeName: target.nodeName });
       // Don't close if clicking on the popover or the trigger
       if (
         refs.floating.current?.contains(target) ||
         state.currentTrigger?.contains(target) ||
-        target?.closest('[data-ui], [role="dialog"]')
+        target?.closest('[data-ui], [role="dialog"]') ||
+        !target.closest("#page-container")
       ) {
         console.debug("global click ignored");
         return;

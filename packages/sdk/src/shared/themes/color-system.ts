@@ -4,14 +4,7 @@ export { default as chroma } from "chroma-js";
 import { colors, css, tx } from "@upstart.gg/style-system/twind";
 
 export type ColorType = "primary" | "secondary" | "accent" | "neutral";
-export type ElementColorType =
-  | "page-background"
-  | "background"
-  | "text"
-  | "page-text"
-  | "border"
-  | "shadow"
-  | "accent";
+export type ElementColorType = "page-background" | "background" | "text" | "page-text" | "border" | "shadow";
 
 export type HarmonyType = "complementary" | "analogous" | "triadic" | "split-complementary" | "tetradic";
 

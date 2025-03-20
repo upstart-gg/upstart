@@ -107,6 +107,15 @@ function formatColorName(color?: ElementColor) {
   if (!color) {
     return null;
   }
+  if (color === "color-auto") {
+    return "auto";
+  }
+  if (color === "#FFFFFF") {
+    return "white";
+  }
+  if (color === "#000000") {
+    return "black";
+  }
   if (color.includes("bg-gradient")) {
     return "gradient";
   }
@@ -251,7 +260,7 @@ function ColorElementPopover({
   switch (elementColorType) {
     case "page-background":
     case "background":
-      width = "216px";
+      width = "310px";
       break;
     case "page-text":
       width = "180px";
