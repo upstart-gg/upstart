@@ -10,7 +10,7 @@ import {
   FloatingArrow,
 } from "@upstart.gg/style-system/system";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
-
+import { useHotkeys } from "react-hotkeys-hook";
 // Types
 interface PopoverOptions {
   Component: FC<{ brickId: string; group: string }>;
@@ -68,16 +68,25 @@ export const useBrickSettingsPopover = ({
     whileElementsMounted: autoUpdate,
   });
 
+  useHotkeys("esc", closePopover);
+
   // Helper for closing the popover
-  const closePopover = () => {
+  function closePopover() {
+    console.debug("close popover");
     setState((prev) => ({ ...prev, isOpen: false }));
-  };
+  }
 
   // Helper for opening the popover
   const openPopover = (event: MouseEvent | FocusEvent) => {
     const element = (event.target as HTMLElement | null)?.closest<HTMLElement>(selector);
+    const parentBrick = element?.closest<HTMLElement>("[data-brick-id]");
+
+    if (parentBrick?.dataset.wasDragged === "true") {
+      console.debug("Ignoring click event on dragged brick");
+      return;
+    }
+
     invariant(element, "Could not find element matching selector");
-    console.log("openPopover", element);
     setState({
       isOpen: true,
       currentTrigger: element,
@@ -102,10 +111,8 @@ export const useBrickSettingsPopover = ({
 
   // Find and register all matching elements
   const registerMatchingElements = () => {
-    document.querySelectorAll(selector).forEach((el) => {
-      if (el instanceof HTMLElement) {
-        attachEventListeners(el);
-      }
+    document.querySelectorAll<HTMLElement>(selector).forEach((el) => {
+      attachEventListeners(el);
     });
   };
 
@@ -114,8 +121,14 @@ export const useBrickSettingsPopover = ({
   const handleGlobalClick = useCallback(
     (e: MouseEvent) => {
       const target = e.target as HTMLElement;
+      console.log("global click", { target, trigger: state.currentTrigger });
       // Don't close if clicking on the popover or the trigger
-      if (refs.floating.current?.contains(target) || state.currentTrigger?.contains(target)) {
+      if (
+        refs.floating.current?.contains(target) ||
+        state.currentTrigger?.contains(target) ||
+        target?.closest('[data-ui], [role="dialog"]')
+      ) {
+        console.debug("global click ignored");
         return;
       }
       closePopover();
@@ -174,7 +187,8 @@ export const useBrickSettingsPopover = ({
       <FloatingPortal root={container}>
         <div
           ref={refs.setFloating}
-          className="shadow-xl rounded-md bg-white border border-gray-200 "
+          className="shadow-xl rounded-md bg-white border border-gray-200"
+          data-ui
           style={{
             ...floatingStyles,
             zIndex,

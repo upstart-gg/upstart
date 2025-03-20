@@ -17,7 +17,6 @@ function getNavItemsFromManifest(
   filter = defaultFilter,
   pathsParts: string[] = [],
 ): NavItem[] {
-  console.log("manifest props", manifest.properties);
   const items = Object.entries<TSchema>(manifest.properties)
     .filter(([, prop]) => prop["ui:field"] !== "hidden")
     .filter(([key, prop]) => filter(prop, key))

@@ -28,7 +28,7 @@ import Section from "./EditableSection";
 import { useGridConfig } from "~/shared/hooks/use-grid-config";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { useBrickSettingsPopover } from "../hooks/use-brick-settings-popover";
-import { BrickSettingsGroupMenu } from "./EditableBrick";
+import BrickSettingsPopover from "./BrickSettingsPopover";
 
 const ghostValid = tx("bg-upstart-100");
 const ghostInvalid = tx("bg-red-100");
@@ -55,12 +55,11 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   // on page load, set last loaded property so that the store is saved to local storage
   useEffect(draft.setLastLoaded, []);
 
-  const { popoverElement: brickSettingsPopover, isOpen: isBrickSettingsPopoverOpen } =
-    useBrickSettingsPopover({
-      Component: BrickSettingsGroupMenu,
-      selector: "[data-brick-group]",
-      placement: "bottom",
-    });
+  // const { popoverElement: brickSettingsPopover } = useBrickSettingsPopover({
+  //   Component: BrickSettingsGroupMenu,
+  //   selector: "[data-brick-group]",
+  //   placement: "bottom",
+  // });
 
   /**
    *  Update the ghost style based on the drop position
@@ -365,7 +364,8 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           });
         }}
       />
-      {isBrickSettingsPopoverOpen === true && brickSettingsPopover}
+      {/* {brickSettingsPopover} */}
+      <BrickSettingsPopover />
       <Toaster
         toastOptions={{
           position: "bottom-center",

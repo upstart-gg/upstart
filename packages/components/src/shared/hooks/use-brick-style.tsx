@@ -154,7 +154,7 @@ function getBrickWrapperEditorStyles(
       },
       "& [data-brick-group]:hover": {
         outline: "1px dashed var(--violet-8)",
-        "background-color": "var(--violet-2)",
+        opacity: 0.85,
       },
     }),
   ];

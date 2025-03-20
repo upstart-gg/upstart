@@ -163,6 +163,7 @@ export const useEditablePage = (
         start: (event: Interact.InteractEvent) => {
           console.debug("useEditablePage:listeners:start()", event);
           const target = event.target as HTMLElement;
+          target.dataset.wasDragged = "false";
 
           // Get initial position relative to container
           const initialPos = getBrickCoordsInPage(target, container);
@@ -182,8 +183,8 @@ export const useEditablePage = (
         },
 
         end: (event: Interact.InteractEvent) => {
+          console.log("useEditablePage:listeners:end()", event);
           const target = event.target as HTMLElement;
-
           const updatedPositions: Parameters<DragCallbacks["onDragEnd"]>[0] = [];
           const elements = selectedGroup ? selectedGroup.map(getBrickRef) : [target];
           const section = getSectionAtPosition(event.client.x, event.client.y);
@@ -217,10 +218,15 @@ export const useEditablePage = (
           target.classList.remove("moving");
 
           dragCallbacks.onDragEnd(updatedPositions, event);
+
+          setTimeout(() => {
+            target.dataset.wasDragged = "false";
+          }, 300);
         },
 
         move: (event: Interact.InteractEvent) => {
           const target = event.target as HTMLElement;
+          target.dataset.wasDragged = "true";
           target.classList.add("moving");
           const elements = selectedGroup ? selectedGroup.map(getBrickRef) : [target];
           elements.forEach((element) => {

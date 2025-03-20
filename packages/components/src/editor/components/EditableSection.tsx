@@ -48,7 +48,6 @@ export default function EditableSection({ section, gridConfig }: EditableSection
         .map((brick, index) => {
           const resizeOpts = getBrickResizeOptions(brick, manifests[brick.type], previewMode);
           const brickWithDef = brickWithDefaults(brick);
-          console.log({ brickWithDef });
           return (
             <EditableBrickWrapper key={`${previewMode}-${brick.id}`} brick={brickWithDef} index={index}>
               {manifests[brick.type]?.resizable && (

@@ -41,7 +41,7 @@ import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests
 import { BiSolidColor } from "react-icons/bi";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { FiSettings, FiDatabase } from "react-icons/fi";
-import BrickSettingsMenu from "./json-form/BrickSettingsMenu";
+import { BrickSettingsPopover } from "./BrickSettingsPopover";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -85,8 +85,11 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       const target = e.target as HTMLElement;
       const group = target.closest<HTMLElement>("[data-brick-group]");
 
+      console.debug("onBrickWrapperClick", { target, group });
+
       if (group) {
-        toast(`Clicked on part: ${group.dataset.brickGroup}`);
+        console.debug("onBrickWrapperClick: click ignored (group)");
+        // toast(`Clicked on part: ${group.dataset.brickGroup}`);
         return;
       }
 
@@ -158,19 +161,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
   },
 );
 
-export function BrickSettingsGroupMenu({ brickId, group }: { brickId: Brick["id"]; group: string }) {
-  const getBrickInfo = useGetBrick();
-  const brick = getBrickInfo(brickId);
-  if (!brick) {
-    return null;
-  }
-  return (
-    <div className="w-[320px]">
-      <BrickSettingsMenu brick={brick} group={group} />
-    </div>
-  );
-}
-
 type BrickMenuBarProps = ComponentProps<"div"> &
   PropsWithChildren<{
     brick: Brick;
@@ -205,7 +195,13 @@ const BrickMenuBarsContainer = forwardRef<HTMLDivElement, BrickMenuBarProps>(({ 
 });
 
 function BrickTextNavBar({ brick }: { brick: Brick }) {
-  return <div id={`text-editor-menu-${brick.id}`} className={tx("contents", menuNavBarCls)} />;
+  return (
+    <div
+      id={`text-editor-menu-${brick.id}`}
+      // Hide the menu if it doesn't have any children so that the border doesn't show up
+      className={tx("contents", menuNavBarCls, "[&:not(:has(*))]:hidden")}
+    />
+  );
 }
 
 function BrickMainNavBar({ brick }: { brick: Brick }) {
@@ -234,23 +230,6 @@ function BrickMainNavBar({ brick }: { brick: Brick }) {
       </button>
       {/* Todo: data source / content */}
     </nav>
-  );
-}
-
-type BrickSettingsPopoverProps = PropsWithChildren<{
-  brick: Brick;
-}>;
-
-function BrickSettingsPopover({ brick, children }: BrickSettingsPopoverProps) {
-  return (
-    <Popover.Root>
-      <Popover.Trigger>{children}</Popover.Trigger>
-      <Popover.Content width="300px">
-        <Inset>
-          <BrickSettingsMenu brick={brick} />
-        </Inset>
-      </Popover.Content>
-    </Popover.Root>
   );
 }
 
@@ -299,7 +278,7 @@ type BrickContextMenuProps = PropsWithChildren<{
 
 const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
   ({ brick, isContainerChild, children }, ref) => {
-    const [open, setOpen] = useState(false);
+    // const [open, setOpen] = useState(false);
     const draft = useDraft();
     const draftHelpers = useDraftHelpers();
     const editorHelpers = useEditorHelpers();
@@ -310,7 +289,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
     const parentContainer = draft.getParentBrick(brick.id);
 
     return (
-      <ContextMenu.Root onOpenChange={setOpen} modal={false}>
+      <ContextMenu.Root modal={false}>
         <ContextMenu.Trigger disabled={debugMode} ref={ref}>
           {children}
         </ContextMenu.Trigger>
