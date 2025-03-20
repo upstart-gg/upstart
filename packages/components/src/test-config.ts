@@ -218,10 +218,6 @@ const siteAttributes = defineAttributes({
     "ui:group": "other",
     "ui:group:title": "Other",
   }),
-  testBoolTrue: attr.boolean("Test Bool True", true, {
-    "ui:group": "other",
-    "ui:group:title": "Other",
-  }),
   customerId: attr.string("Customer ID", "", {
     "ui:group": "other",
     "ui:group:title": "Other",

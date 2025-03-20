@@ -24,7 +24,7 @@ export default defineConfig({
       {
         text: "Introduction",
         items: [
-          { text: "What is Upstart?", link: "/what-is-upstart" },
+          { text: "About", link: "/about" },
           { text: "Getting Started", link: "/getting-started" },
         ],
       },
