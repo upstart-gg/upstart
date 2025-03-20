@@ -171,6 +171,7 @@ export const useEditablePage = (
           // Now set up the element for dragging
           target.dataset.tempX = initialPos.x.toString();
           target.dataset.tempY = initialPos.y.toString();
+          target.dataset.originalStylePos = target.style.position;
 
           Object.assign(target.style, {
             position: "absolute",
@@ -205,7 +206,7 @@ export const useEditablePage = (
             Object.assign(element.style, {
               transform: "none",
               transition: "none",
-              position: "relative",
+              position: target.dataset.originalStylePos ?? "relative",
               top: "",
               left: "",
               width: "auto",
