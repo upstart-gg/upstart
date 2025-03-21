@@ -19,7 +19,7 @@ export function border({
     radius: "rounded-none",
     style: "border-solid",
     width: "border-0",
-    side: ["border"],
+    side: ["all"],
   },
 }: BorderOptions = {}) {
   return prop({
@@ -79,19 +79,21 @@ export function border({
             "ui:display": "button-group",
           },
         ),
-        side: Type.Array(
-          Type.Union([
-            Type.Literal("all", { title: "All" }),
-            Type.Literal("border-l", { title: "Left" }),
-            Type.Literal("border-t", { title: "Top" }),
-            Type.Literal("border-r", { title: "Right" }),
-            Type.Literal("border-b", { title: "Bottom" }),
-          ]),
-          {
-            default: ["border"],
-            title: "Border side",
-            "ui:field": "border-side",
-          },
+        side: Type.Optional(
+          Type.Array(
+            Type.Union([
+              Type.Literal("all", { title: "All" }),
+              Type.Literal("border-l", { title: "Left" }),
+              Type.Literal("border-t", { title: "Top" }),
+              Type.Literal("border-r", { title: "Right" }),
+              Type.Literal("border-b", { title: "Bottom" }),
+            ]),
+            {
+              default: ["all"],
+              title: "Border side",
+              "ui:field": "border-side",
+            },
+          ),
         ),
       },
       {

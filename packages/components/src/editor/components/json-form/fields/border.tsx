@@ -34,7 +34,7 @@ export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
     schema,
   } = props;
   const onSettingsChange = (newVal: Partial<BorderSettings>) => onChange({ ...currentValue, ...newVal });
-  const [currentSide, setSide] = useState<string[]>(currentValue.side);
+  const [currentSide, setSide] = useState<string[]>(currentValue.side ?? ["all"]);
 
   return (
     <div className="border-field flex flex-col gap-2 flex-1">

@@ -256,7 +256,7 @@ function ColorPillList({
               `bg-${color} hover:outline-gray-300 hover:scale-110`,
             )}
             onClick={() => {
-              onChange(`var(--color-${color})`);
+              onChange(`bg-${color}`);
             }}
           />
         ))}

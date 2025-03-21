@@ -56,7 +56,7 @@ export function getFixedPositionedStyles(value: FixedPositionedSettings) {
   if (!value) {
     return null;
   }
-  return tx("fixed top-inherit left-auto right-auto self-start w-fill z-[99999]");
+  return tx("fixed top-inherit left-auto right-auto self-start w-fill z-[99999] isolate");
 }
 
 export function getBorderStyles(props?: Partial<BorderSettings>) {
