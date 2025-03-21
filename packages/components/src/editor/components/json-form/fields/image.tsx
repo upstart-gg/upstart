@@ -27,7 +27,7 @@ const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
 
   return (
     <>
-      <div className="file-field flex items-center flex-wrap gap-1 flex-1">
+      <div className="file-field flex items-center gap-1 flex-1">
         {title && (
           <div className="flex items-center justify-between">
             <label className={fieldLabel}>{title}</label>
@@ -40,9 +40,10 @@ const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
             className="overflow-hidden w-[0.1px] h-[0.1px] opacity-0 absolute -z-10"
             accept={schema["ui:accept"]}
             onChange={(e) => {
-              const src = e.target.files?.[0]?.name;
-              if (src) {
-                onChange({ ...currentValue, src: src as string });
+              const file = e.target.files?.[0];
+              if (file) {
+                const src = URL.createObjectURL(file);
+                onPropsChange({ src: src });
               }
             }}
             required={required}
@@ -73,9 +74,12 @@ const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
         )}
       </div>
       {currentValue.src && (
-        <div className="border border-upstart-200 p-2 mt-3">
-          <img src={currentValue.src} alt="Preview" className="max-w-full h-auto" />
-        </div>
+        <>
+          <div className="basis-full w-0" />
+          <div className="border border-upstart-200 p-2 mt-3 ml-auto">
+            <img src={currentValue.src} alt="Preview" className="max-w-full h-auto" />
+          </div>
+        </>
       )}
       <ModalSearchImage
         open={showSearch}

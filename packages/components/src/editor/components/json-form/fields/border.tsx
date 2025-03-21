@@ -32,7 +32,7 @@ export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
           {description}
         </Text>
       )}
-      <div className="flex items-center flex-wrap gap-x-6 gap-y-1">
+      <div className="flex items-center flex-wrap gap-x-6 gap-y-1.5">
         {/* border width */}
         <div className="flex flex-col gap-1 flex-1">
           <label className={fieldLabel}>Width</label>

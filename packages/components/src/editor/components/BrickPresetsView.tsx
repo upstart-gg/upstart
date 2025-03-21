@@ -76,36 +76,38 @@ export default function PresetsView({ brick }: BrickPresetsViewProps) {
 
   return (
     <div className="flex flex-col gap-3 flex-1 p-4" ref={ref}>
-      <label className="text-lg font-bold">Presets</label>
-      <div className="flex gap-3">
-        <div className="flex flex-col gap-1">
-          <SegmentedControl.Root
-            onValueChange={(value) => setVariant(value as StylePreset["variant"])}
-            defaultValue={variant}
-            size="1"
-            className="w-full mt-1"
-            radius="large"
-          >
-            {["primary", "secondary", "neutral"].map((option) => (
-              <SegmentedControl.Item
-                key={option}
-                value={option}
-                className={tx("[&_.rt-SegmentedControlItemLabel]:px-1.5")}
-              >
-                <span className="capitalize">{option}</span>
-              </SegmentedControl.Item>
-            ))}
-          </SegmentedControl.Root>
+      <div className="flex justify-between items-center">
+        <label className="text-lg font-bold">Presets</label>
+        <div className="flex gap-3">
+          <div className="flex flex-col gap-1">
+            <SegmentedControl.Root
+              onValueChange={(value) => setVariant(value as StylePreset["variant"])}
+              defaultValue={variant}
+              size="1"
+              className="w-full mt-1"
+              radius="large"
+            >
+              {["primary", "secondary", "accent", "neutral"].map((option) => (
+                <SegmentedControl.Item
+                  key={option}
+                  value={option}
+                  className={tx("[&_.rt-SegmentedControlItemLabel]:px-1.5")}
+                >
+                  <span className="capitalize">{option}</span>
+                </SegmentedControl.Item>
+              ))}
+            </SegmentedControl.Root>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-5 gap-2 mt-3">
+      <div className="grid grid-cols-4 gap-5 mt-3">
         {Object.entries(presets).map(([presetId, preset]) => {
           // const preset = getPresetStyles({ style: style.value, variant });
           return (
             <div
               key={`${presetId}`}
-              className="bg-gray-200 transition-all duration-100 hover:(scale-105) rounded-lg gap-2 flex items-stretch justify-center h-16 text-gray-800 cursor-pointer"
+              className="outline outline-primary-200 outline-offset-4 transition-all duration-100 hover:(scale-105) rounded gap-2 flex items-stretch justify-center h-16 text-gray-800 cursor-pointer"
               onClick={() => onChoose(preset, variant)}
             >
               <div
@@ -115,7 +117,7 @@ export default function PresetsView({ brick }: BrickPresetsViewProps) {
                   preset.previewClasses.replace(/<variant>/g, variant),
                 )}
               >
-                <h2 className="text-center text-xs font-medium select-none">{preset.label}</h2>
+                <h2 className="text-center text-xs font-medium select-none text-pretty">{preset.label}</h2>
               </div>
             </div>
           );

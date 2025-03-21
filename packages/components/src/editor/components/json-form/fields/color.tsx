@@ -119,6 +119,9 @@ function formatColorName(color?: ElementColor) {
   if (color.includes("bg-gradient")) {
     return "gradient";
   }
+  if (color.startsWith("preset-")) {
+    return "preset";
+  }
   if (color.startsWith("var(")) {
     return color
       .substring(6, color.length - 1)

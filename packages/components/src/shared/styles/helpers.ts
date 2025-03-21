@@ -69,25 +69,32 @@ export function getFixedPositionedStyles(value: FixedPositionedSettings) {
   return tx("fixed top-inherit left-auto right-auto self-start w-fill z-[99999]");
 }
 
-export function getBorderStyles(props?: BorderSettings) {
+export function getBorderStyles(props?: Partial<BorderSettings>) {
   if (!props) {
     return null;
   }
+  const {
+    width = "border-0",
+    side = ["all"],
+    color = "border-transparent",
+    style = "border-solid",
+    radius = "rounded-none",
+  } = props;
   let borderProcessedClass = "";
 
-  const originalWith = props.width.includes("-") ? props.width.split("-")[1] : null;
+  const originalWith = width.includes("-") ? width.split("-")[1] : null;
 
-  if (!props.side.includes("all")) {
-    borderProcessedClass = props.side
+  if (!props.side?.includes("all")) {
+    borderProcessedClass = side
       .map((side) => {
         return `${side}${originalWith ? `-${originalWith}` : ""}`;
       })
       .join(" ");
   } else {
-    borderProcessedClass = props.width;
+    borderProcessedClass = width;
   }
 
-  return [propToStyle(props.color, "borderColor"), props.radius, props.style, borderProcessedClass];
+  return [propToStyle(color, "borderColor"), radius, style, borderProcessedClass];
 }
 
 export function getBasicAlignmentStyles(props: AlignBasicSettings) {

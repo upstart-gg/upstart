@@ -55,12 +55,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   // on page load, set last loaded property so that the store is saved to local storage
   useEffect(draft.setLastLoaded, []);
 
-  // const { popoverElement: brickSettingsPopover } = useBrickSettingsPopover({
-  //   Component: BrickSettingsGroupMenu,
-  //   selector: "[data-brick-group]",
-  //   placement: "bottom",
-  // });
-
   /**
    *  Update the ghost style based on the drop position
    */

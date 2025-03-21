@@ -33,22 +33,23 @@ export const datasource = Type.Array(
   },
 );
 
-const borderedPresets = [1, 2, 3, 4, 5].reduce(
+const softBorderedPresets = [1, 2, 3, 4].reduce(
   (acc, i) => {
-    const id = `bordered-${i}`;
+    const id = `soft-bordered-${i}`;
     acc[id] = {
-      label: `Bordered ${i}`,
-      previewClasses: `preset-bg-gradient-<variant>-${i} color-auto border-b-4 preset-border-<variant>-${i}`,
+      label: `Soft Bordered ${i}`,
+      previewClasses: `color-auto border-b-4 bg-transparent preset-border-<variant>-${i}`,
       props: {
         container: {
-          backgroundColor: `preset-bg-gradient-<variant>-${i}`,
           border: {
             side: ["border-b"],
             color: `preset-border-<variant>-${i}`,
             radius: "rounded-none",
             style: "border-solid",
-            width: "border-2",
+            width: "border-4",
           },
+          backgroundColor: `bg-transparent`,
+          shadow: "shadow-none",
         },
         brand: {
           color: "color-auto",
@@ -61,21 +62,18 @@ const borderedPresets = [1, 2, 3, 4, 5].reduce(
   {} as Record<string, any>,
 );
 
-const borderedAltPresets = [1, 2, 3, 4, 5].reduce(
+const gradientPresets = [1, 2, 3, 4].reduce(
   (acc, i) => {
-    const id = `bordered-alt-${i}`;
+    const id = `gradient-${i}`;
     acc[id] = {
-      label: `Bordered ${i}`,
-      previewClasses: `preset-bg-gradient-<variant>-${i} color-auto border-b-4 preset-border-accent-${i}`,
+      label: `Gradient ${i}`,
+      previewClasses: `preset-bg-gradient-<variant>-${i} color-auto`,
       props: {
         container: {
           backgroundColor: `preset-bg-gradient-<variant>-${i}`,
+          shadow: "shadow-none",
           border: {
-            side: ["border-b"],
-            color: `preset-border-accent-${i}`,
-            radius: "rounded-none",
-            style: "border-solid",
-            width: "border-2",
+            width: "border-0",
           },
         },
         brand: {
@@ -88,17 +86,19 @@ const borderedAltPresets = [1, 2, 3, 4, 5].reduce(
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   {} as Record<string, any>,
 );
-
-const shadowPresets = [1, 2, 3, 4, 5].reduce(
+const solidPresets = [1, 2, 3, 4].reduce(
   (acc, i) => {
-    const id = `shadow-${i}`;
+    const id = `solid-${i}`;
     acc[id] = {
-      label: `Shadow ${i}`,
-      previewClasses: `preset-bg-gradient-<variant>-${i} color-auto shadow-lg`,
+      label: `Solid ${i}`,
+      previewClasses: `preset-bg-solid-<variant>-${i} color-auto`,
       props: {
         container: {
-          backgroundColor: `preset-bg-gradient-<variant>-${i}`,
-          shadow: "shadow-lg",
+          backgroundColor: `preset-bg-solid-<variant>-${i}`,
+          shadow: "shadow-none",
+          border: {
+            width: "border-0",
+          },
         },
         brand: {
           color: "color-auto",
@@ -138,9 +138,9 @@ export const manifest = defineBrickManifest({
     <line x1="17" y1="14" x2="19" y2="14"></line></svg>`,
 
   presets: {
-    ...borderedPresets,
-    ...borderedAltPresets,
-    ...shadowPresets,
+    ...softBorderedPresets,
+    ...solidPresets,
+    ...gradientPresets,
   },
 
   props: defineProps({

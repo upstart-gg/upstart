@@ -143,7 +143,9 @@ function getBrickWrapperEditorStyles(
     return null;
   }
   return [
-    "select-none hover:z-[9999] transition-colors delay-300 duration-300 rounded-sm outline outline-2 outline-transparent -outline-offset-1",
+    "select-none hover:z-[9999] transition-colors delay-300 duration-300 rounded-sm",
+    "outline outline-2 outline-transparent -outline-offset-1",
+    "active:(shadow-xl shadow-upstart-500/20)",
     selected && "outline-upstart-500 shadow-lg shadow-upstart-500/20",
     !selected && !isContainerChild && !isContainer && "hover:(outline-upstart-500/60)",
     !selected && !isContainerChild && isContainer && "hover:(outline-dotted outline-upstart-500/30)",
@@ -155,6 +157,9 @@ function getBrickWrapperEditorStyles(
       "& [data-brick-group]:hover": {
         outline: "1px dashed var(--violet-8)",
         opacity: 0.85,
+      },
+      "&.moving [data-ui]": {
+        display: "none",
       },
     }),
   ];

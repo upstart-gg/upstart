@@ -163,7 +163,6 @@ export const useEditablePage = (
         start: (event: Interact.InteractEvent) => {
           console.debug("useEditablePage:listeners:start()", event);
           const target = event.target as HTMLElement;
-          target.dataset.wasDragged = "false";
 
           // Get initial position relative to container
           const initialPos = getBrickCoordsInPage(target, container);
@@ -172,6 +171,7 @@ export const useEditablePage = (
           target.dataset.tempX = initialPos.x.toString();
           target.dataset.tempY = initialPos.y.toString();
           target.dataset.originalStylePos = target.style.position;
+          target.dataset.wasDragged = "false";
 
           Object.assign(target.style, {
             position: "absolute",
@@ -179,12 +179,14 @@ export const useEditablePage = (
             left: `${initialPos.x}px`,
             width: `${initialPos.w}px`,
             height: `${initialPos.h}px`,
+            cursor: "move",
             zIndex: "999999",
           });
         },
 
         end: (event: Interact.InteractEvent) => {
           console.log("useEditablePage:listeners:end()", event);
+
           const target = event.target as HTMLElement;
           const updatedPositions: Parameters<DragCallbacks["onDragEnd"]>[0] = [];
           const elements = selectedGroup ? selectedGroup.map(getBrickRef) : [target];

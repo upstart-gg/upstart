@@ -5,6 +5,7 @@ import { useBrickStyle } from "../hooks/use-brick-style";
 import { tx, apply } from "@upstart.gg/style-system/twind";
 import { TextContent } from "../components/TextContent";
 import { useDatasource } from "../hooks/use-datasource";
+import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 
 const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
@@ -17,17 +18,24 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
       data-brick-group="container"
       className={tx(
         "flex-1 flex px-4",
+        // " @mobile:(-mx-4 -mt-4) @desktop(mx-auto my-initial)",
         !props.container.backgroundColor && "bg-gradient-to-t from-gray-200 to-gray-50",
         styles.container,
       )}
     >
-      <div className="flex flex-1 items-center gap-8 ">
+      <div className={tx("flex flex-1 items-center", props.navigation.position !== "center" && "gap-4")}>
         <div
-          className={tx("flex items-center brand", styles.brand)}
+          className={tx("flex items-center brand gap-3 relative", styles.brand)}
           data-brick-group="brand"
           data-brick-menu-offset="70"
         >
-          {props.brand.logo?.src && <img src={props.brand.logo.src} alt="logo" className="h-full w-auto" />}
+          {props.brand.logo?.src && (
+            <img
+              src={props.brand.logo.src}
+              alt={props.brand.logo.alt ?? "Logo"}
+              className={`h-full max-h-[${brick.position.desktop.h * LAYOUT_ROW_HEIGHT - 16}px] w-auto`}
+            />
+          )}
           {props.brand.name && (
             <TextContent
               as="h1"

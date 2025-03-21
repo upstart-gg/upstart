@@ -98,89 +98,288 @@ export default defineConfig({
     ["outline-accent-", ({ $$ }) => ({ outlineColor: `var(--color-accent-${$$})` })],
     ["outline-neutral-", ({ $$ }) => ({ outlineColor: `var(--color-neutral-${$$})` })],
 
-    ["preset-bg-gradient-primary-1", "bg-gradient-to-t from-primary-100 to-primary-50"],
-    ["preset-bg-gradient-primary-2", "bg-gradient-to-t from-primary-300 to-primary-100"],
-    ["preset-bg-gradient-primary-3", "bg-gradient-to-t from-primary-500 to-primary-300"],
-    ["preset-bg-gradient-primary-4", "bg-gradient-to-t from-primary-700 to-primary-500"],
-    ["preset-bg-gradient-primary-5", "bg-gradient-to-t from-primary-900 to-primary-700"],
+    [
+      "preset-bg-solid-primary-1",
+      {
+        "--up-bg-color": "var(--color-primary-100)",
+        backgroundImage: "none",
+        backgroundColor: "var(--color-primary-100)",
+      },
+    ],
+    [
+      "preset-bg-solid-primary-2",
+      {
+        "--up-bg-color": "var(--color-primary-200)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+    [
+      "preset-bg-solid-primary-3",
+      {
+        "--up-bg-color": "var(--color-primary-400)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+    [
+      "preset-bg-solid-primary-4",
+      {
+        "--up-bg-color": "var(--color-primary-600)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
 
-    ["preset-bg-gradient-secondary-1", "bg-gradient-to-t from-secondary-100 to-secondary-50"],
-    ["preset-bg-gradient-secondary-2", "bg-gradient-to-t from-secondary-300 to-secondary-100"],
-    ["preset-bg-gradient-secondary-3", "bg-gradient-to-t from-secondary-500 to-secondary-300"],
-    ["preset-bg-gradient-secondary-4", "bg-gradient-to-t from-secondary-700 to-secondary-500"],
-    ["preset-bg-gradient-secondary-5", "bg-gradient-to-t from-secondary-900 to-secondary-700"],
+    [
+      "preset-bg-solid-secondary-1",
+      {
+        "--up-bg-color": "var(--color-secondary-100)",
+        backgroundImage: "none",
+        backgroundColor: "var(--color-secondary-100)",
+      },
+    ],
+    [
+      "preset-bg-solid-secondary-2",
+      {
+        "--up-bg-color": "var(--color-secondary-200)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+    [
+      "preset-bg-solid-secondary-3",
+      {
+        "--up-bg-color": "var(--color-secondary-400)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+    [
+      "preset-bg-solid-secondary-4",
+      {
+        "--up-bg-color": "var(--color-secondary-600)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+    [
+      "preset-bg-solid-accent-1",
+      {
+        "--up-bg-color": "var(--color-accent-100)",
+        backgroundImage: "none",
+        backgroundColor: "var(--color-accent-100)",
+      },
+    ],
+    [
+      "preset-bg-solid-accent-2",
+      {
+        "--up-bg-color": "var(--color-accent-200)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+    [
+      "preset-bg-solid-accent-3",
+      {
+        "--up-bg-color": "var(--color-accent-400)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+    [
+      "preset-bg-solid-accent-4",
+      {
+        "--up-bg-color": "var(--color-accent-600)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
 
-    ["preset-bg-gradient-neutral-1", "bg-gradient-to-t from-neutral-100 to-neutral-50"],
-    ["preset-bg-gradient-neutral-2", "bg-gradient-to-t from-neutral-300 to-neutral-100"],
-    ["preset-bg-gradient-neutral-3", "bg-gradient-to-t from-neutral-500 to-neutral-300"],
-    ["preset-bg-gradient-neutral-4", "bg-gradient-to-t from-neutral-700 to-neutral-500"],
-    ["preset-bg-gradient-neutral-5", "bg-gradient-to-t from-neutral-900 to-neutral-700"],
+    [
+      "preset-bg-solid-neutral-1",
+      {
+        "--up-bg-color": "var(--color-neutral-100)",
+        backgroundImage: "none",
+        backgroundColor: "var(--color-neutral-100)",
+      },
+    ],
+    [
+      "preset-bg-solid-neutral-2",
+      {
+        "--up-bg-color": "var(--color-neutral-200)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+    [
+      "preset-bg-solid-neutral-3",
+      {
+        "--up-bg-color": "var(--color-neutral-400)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+    [
+      "preset-bg-solid-neutral-4",
+      {
+        "--up-bg-color": "var(--color-neutral-600)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
 
-    ["preset-border-primary-1", { borderColor: `var(--color-primary-300)` }],
-    ["preset-border-primary-2", { borderColor: `var(--color-primary-500)` }],
-    ["preset-border-primary-3", { borderColor: `var(--color-primary-700)` }],
-    ["preset-border-primary-4", { borderColor: `var(--color-primary-900)` }],
-    ["preset-border-primary-5", { borderColor: `var(--color-primary-400)` }],
+    [
+      "preset-bg-gradient-primary-1",
+      {
+        "--up-bg-color": "var(--color-primary-200)",
+        backgroundImage: "linear-gradient(to top, var(--color-primary-200), var(--color-primary-100))",
+      },
+    ],
+    [
+      "preset-bg-gradient-primary-2",
+      {
+        "--up-bg-color": "var(--color-primary-400)",
+        backgroundImage: "linear-gradient(to top, var(--color-primary-400), var(--color-primary-300))",
+      },
+    ],
+    [
+      "preset-bg-gradient-primary-3",
+      {
+        "--up-bg-color": "var(--color-primary-600)",
+        backgroundImage: "linear-gradient(to top, var(--color-primary-600), var(--color-primary-500))",
+      },
+    ],
+    [
+      "preset-bg-gradient-primary-4",
+      {
+        "--up-bg-color": "var(--color-primary-800)",
+        backgroundImage: "linear-gradient(to top, var(--color-primary-800), var(--color-primary-700))",
+      },
+    ],
 
-    ["preset-border-secondary-1", { borderColor: `var(--color-secondary-300)` }],
-    ["preset-border-secondary-2", { borderColor: `var(--color-secondary-500)` }],
-    ["preset-border-secondary-3", { borderColor: `var(--color-secondary-700)` }],
-    ["preset-border-secondary-4", { borderColor: `var(--color-secondary-900)` }],
-    ["preset-border-secondary-5", { borderColor: `var(--color-secondary-400)` }],
+    [
+      "preset-bg-gradient-secondary-1",
+      {
+        "--up-bg-color": "var(--color-secondary-200)",
+        backgroundImage: "linear-gradient(to top, var(--color-secondary-200), var(--color-secondary-100))",
+      },
+    ],
 
-    ["preset-border-accent-1", { borderColor: `var(--color-accent-300)` }],
-    ["preset-border-accent-2", { borderColor: `var(--color-accent-500)` }],
-    ["preset-border-accent-3", { borderColor: `var(--color-accent-700)` }],
-    ["preset-border-accent-4", { borderColor: `var(--color-accent-900)` }],
-    ["preset-border-accent-5", { borderColor: `var(--color-accent-400)` }],
+    [
+      "preset-bg-gradient-secondary-2",
+      {
+        "--up-bg-color": "var(--color-secondary-400)",
+        backgroundImage: "linear-gradient(to top, var(--color-secondary-400), var(--color-secondary-300))",
+      },
+    ],
 
-    ["preset-border-neutral-1", { borderColor: `var(--color-neutral-300)` }],
-    ["preset-border-neutral-2", { borderColor: `var(--color-neutral-500)` }],
-    ["preset-border-neutral-3", { borderColor: `var(--color-neutral-700)` }],
-    ["preset-border-neutral-4", { borderColor: `var(--color-neutral-900)` }],
-    ["preset-border-neutral-5", { borderColor: `var(--color-neutral-400)` }],
+    [
+      "preset-bg-gradient-secondary-3",
+      {
+        "--up-bg-color": "var(--color-secondary-600)",
+        backgroundImage: "linear-gradient(to top, var(--color-secondary-600), var(--color-secondary-500))",
+      },
+    ],
 
-    ["preset-color-neutral-1", "bg-neutral-50 color-auto"],
-    ["preset-color-neutral-2", "bg-neutral-100 color-auto"],
-    ["preset-color-neutral-3", "bg-neutral-200 color-auto"],
-    ["preset-color-neutral-4", "bg-neutral-300 color-auto"],
-    ["preset-color-neutral-5", "bg-neutral-400 color-auto"],
-    ["preset-color-neutral-6", "bg-neutral-500 color-auto"],
-    ["preset-color-neutral-7", "bg-neutral-600 color-auto"],
-    ["preset-color-neutral-8", "bg-neutral-700 color-auto"],
-    ["preset-color-neutral-9", "bg-neutral-900 color-auto"],
+    [
+      "preset-bg-gradient-secondary-4",
+      {
+        "--up-bg-color": "var(--color-secondary-800)",
+        backgroundImage: "linear-gradient(to top, var(--color-secondary-800), var(--color-secondary-700))",
+      },
+    ],
+    [
+      "preset-bg-gradient-accent-1",
+      {
+        "--up-bg-color": "var(--color-accent-200)",
+        backgroundImage: "linear-gradient(to top, var(--color-accent-200), var(--color-accent-100))",
+      },
+    ],
 
-    ["preset-color-accent-1", "bg-accent-50 color-auto"],
-    ["preset-color-accent-2", "bg-accent-100 color-auto"],
-    ["preset-color-accent-3", "bg-accent-200 color-auto"],
-    ["preset-color-accent-4", "bg-accent-300 color-auto"],
-    ["preset-color-accent-5", "bg-accent-400 color-auto"],
-    ["preset-color-accent-6", "bg-accent-500 color-auto"],
-    ["preset-color-accent-7", "bg-accent-600 color-auto"],
-    ["preset-color-accent-8", "bg-accent-700 color-auto"],
-    ["preset-color-accent-9", "bg-accent-900 color-auto"],
+    [
+      "preset-bg-gradient-accent-2",
+      {
+        "--up-bg-color": "var(--color-accent-400)",
+        backgroundImage: "linear-gradient(to top, var(--color-accent-400), var(--color-accent-300))",
+      },
+    ],
 
-    ["preset-color-primary-1", "bg-primary-50 color-auto"],
-    ["preset-color-primary-2", "bg-primary-100 color-auto"],
-    ["preset-color-primary-3", "bg-primary-200 color-auto"],
-    ["preset-color-primary-4", "bg-primary-300 color-auto"],
-    ["preset-color-primary-5", "bg-primary-400 color-auto"],
-    ["preset-color-primary-6", "bg-primary-500 color-auto"],
-    ["preset-color-primary-7", "bg-primary-600 color-auto"],
-    ["preset-color-primary-8", "bg-primary-700 color-auto"],
-    ["preset-color-primary-9", "bg-primary-900 color-auto"],
+    [
+      "preset-bg-gradient-accent-3",
+      {
+        "--up-bg-color": "var(--color-accent-600)",
+        backgroundImage: "linear-gradient(to top, var(--color-accent-600), var(--color-accent-500))",
+      },
+    ],
 
-    ["preset-color-secondary-1", "bg-secondary-50 color-auto"],
-    ["preset-color-secondary-2", "bg-secondary-100 color-auto"],
-    ["preset-color-secondary-3", "bg-secondary-200 color-auto"],
-    ["preset-color-secondary-4", "bg-secondary-300 color-auto"],
-    ["preset-color-secondary-5", "bg-secondary-400 color-auto"],
-    ["preset-color-secondary-6", "bg-secondary-500 color-auto"],
-    ["preset-color-secondary-7", "bg-secondary-600 color-auto"],
-    ["preset-color-secondary-8", "bg-secondary-700 color-auto"],
-    ["preset-color-secondary-9", "bg-secondary-900 color-auto"],
+    [
+      "preset-bg-gradient-accent-4",
+      {
+        "--up-bg-color": "var(--color-accent-800)",
+        backgroundImage: "linear-gradient(to top, var(--color-accent-800), var(--color-accent-700))",
+      },
+    ],
 
-    // ["color-", ({ $$ }) => ({ color: `var(--color-${$$})` })],
+    [
+      "preset-bg-gradient-neutral-1",
+      {
+        "--up-bg-color": "var(--color-neutral-200)",
+        backgroundImage: "linear-gradient(to top, var(--color-neutral-200), var(--color-neutral-100))",
+      },
+    ],
+
+    [
+      "preset-bg-gradient-neutral-2",
+      {
+        "--up-bg-color": "var(--color-neutral-400)",
+        backgroundImage: "linear-gradient(to top, var(--color-neutral-400), var(--color-neutral-300))",
+      },
+    ],
+
+    [
+      "preset-bg-gradient-neutral-3",
+      {
+        "--up-bg-color": "var(--color-neutral-600)",
+        backgroundImage: "linear-gradient(to top, var(--color-neutral-600), var(--color-neutral-500))",
+      },
+    ],
+
+    [
+      "preset-bg-gradient-neutral-4",
+      {
+        "--up-bg-color": "var(--color-neutral-800)",
+        backgroundImage: "linear-gradient(to top, var(--color-neutral-800), var(--color-neutral-700))",
+      },
+    ],
+
+    [
+      "preset-border-color-auto",
+      {
+        borderColor: "hsl(from var(--up-bg-color) h s calc(l - 10))",
+      },
+    ],
+
+    ["preset-border-primary-1", { borderColor: `var(--color-primary-100)` }],
+    ["preset-border-primary-2", { borderColor: `var(--color-primary-300)` }],
+    ["preset-border-primary-3", { borderColor: `var(--color-primary-500)` }],
+    ["preset-border-primary-4", { borderColor: `var(--color-primary-700)` }],
+
+    ["preset-border-secondary-1", { borderColor: `var(--color-secondary-100)` }],
+    ["preset-border-secondary-2", { borderColor: `var(--color-secondary-300)` }],
+    ["preset-border-secondary-3", { borderColor: `var(--color-secondary-500)` }],
+    ["preset-border-secondary-4", { borderColor: `var(--color-secondary-700)` }],
+
+    ["preset-border-accent-1", { borderColor: `var(--color-accent-100)` }],
+    ["preset-border-accent-2", { borderColor: `var(--color-accent-300)` }],
+    ["preset-border-accent-3", { borderColor: `var(--color-accent-500)` }],
+    ["preset-border-accent-4", { borderColor: `var(--color-accent-700)` }],
+
+    ["preset-border-neutral-1", { borderColor: `var(--color-neutral-100)` }],
+    ["preset-border-neutral-2", { borderColor: `var(--color-neutral-300)` }],
+    ["preset-border-neutral-3", { borderColor: `var(--color-neutral-500)` }],
+    ["preset-border-neutral-4", { borderColor: `var(--color-neutral-700)` }],
+
     [
       "neutral-",
       ({ $$ }) => ({ backgroundColor: `var(--color-neutral-${$$})`, color: `var(--text-neutral-${$$})` }),
@@ -215,6 +414,9 @@ export default defineConfig({
     ["text-shadow-md", { textShadow: "0 2px 4px rgba(0, 0, 0, 0.2)" }],
     ["text-shadow-lg", { textShadow: "0 4px 8px rgba(0, 0, 0, 0.25)" }],
     ["text-shadow-xl", { textShadow: "0 6px 12px rgba(0, 0, 0, 0.3)" }],
+
+    ["text-pretty", { textWrap: "pretty" }],
+    ["text-balance", { textWrap: "balance" }],
 
     ["scrollbar-thin", { scrollbarWidth: "thin" }],
     ["scrollbar-color-", ({ $$ }) => ({ scrollbarColor: `var(--${$$}-6) var(--${$$}-surface)` })],

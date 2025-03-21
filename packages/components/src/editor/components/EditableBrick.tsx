@@ -118,6 +118,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     return (
       <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
         <div
+          role="button"
           id={brick.id}
           data-brick-id={brick.id}
           data-x={brick.position[previewMode].x}
@@ -138,7 +139,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
             setTimeout(() => {
               hasMouseMoved.current = false;
               updateBarsPlacement();
-            }, 100);
+            }, 200);
           }}
           onMouseMove={(e) => {
             hasMouseMoved.current = true;

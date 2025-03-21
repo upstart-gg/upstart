@@ -47,7 +47,7 @@ export const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
             key={item.id}
             className={tx(
               `select-none p-2.5 flex items-center text-[0.9rem] justify-between border-b last:border-b-0 border-gray-200
-            dark:border-dark-400 transition-colors duration-200`,
+            dark:border-dark-400 transition-colors duration-200 flex-wrap`,
               item.children && "cursor-pointer hover:bg-upstart-50 dark:hover:bg-dark-600",
             )}
             onClick={() => {

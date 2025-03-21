@@ -105,8 +105,6 @@ export const useBrickSettingsPopover = ({
     element.addEventListener("click", openPopover, true);
     // Add to registered set
     registeredElements.current.add(element);
-    // Add visual indicator that element is a trigger
-    element.style.cursor = "pointer";
   };
 
   // Find and register all matching elements
