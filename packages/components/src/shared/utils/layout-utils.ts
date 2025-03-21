@@ -161,15 +161,6 @@ export function getGridPosition(element: HTMLElement, config: GridConfig, relate
   const gridX = Math.round(actualX / config.colWidth);
   const gridY = Math.round(actualY / config.rowHeight);
 
-  console.log("getGridPosition", {
-    rect,
-    container,
-    actualX,
-    actualY,
-    gridX,
-    gridY,
-  });
-
   return {
     x: Math.max(0, gridX),
     y: Math.max(0, gridY),
@@ -464,13 +455,9 @@ export function detectCollisions({
 export function getBrickCoordsInPage(element: HTMLElement, relativeTo: HTMLElement) {
   const rect = element.getBoundingClientRect();
   const containerBox = relativeTo.getBoundingClientRect();
-  const mainFrame = document.querySelector("main.editor-main") as HTMLElement;
-  const scrollLeft = mainFrame.scrollLeft || 0;
-  const scrollTop = mainFrame.scrollTop || 0;
-
   return {
-    x: rect.left - containerBox.left + scrollLeft,
-    y: rect.top + scrollTop - 60,
+    x: rect.left - containerBox.left,
+    y: rect.top - containerBox.top,
     w: rect.width,
     h: rect.height,
   };

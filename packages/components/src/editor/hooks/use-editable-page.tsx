@@ -72,15 +72,15 @@ interface UseInteractOptions {
 }
 
 interface SnapToGridConfig {
-  colWidth?: number;
-  rowHeight?: number;
+  colWidth: number;
+  rowHeight: number;
   paddingX?: number;
   paddingY?: number;
 }
 
 function snapPositionToGrid({
-  colWidth = 200, // Width of each column
-  rowHeight = 80, // Fixed height of rows
+  colWidth, // Width of each column
+  rowHeight, // Fixed height of rows
 }: SnapToGridConfig) {
   return function (x: number, y: number) {
     return {
@@ -98,10 +98,6 @@ const updateElementTransform = (target: HTMLElement, x: number, y: number) => {
   target.dataset.tempX = x.toString();
   target.dataset.tempY = y.toString();
 };
-
-// const BrickPopover = forwardRef<HTMLDivElement, { brick: Brick; children: React.ReactNode }>((props, ref) => {
-//   return <div ref={ref}>fooo</div>;
-// });
 
 export const useEditablePage = (
   bricksSelectorOrRef: string,
@@ -171,6 +167,7 @@ export const useEditablePage = (
           target.dataset.tempX = initialPos.x.toString();
           target.dataset.tempY = initialPos.y.toString();
           target.dataset.originalStylePos = target.style.position;
+          target.dataset.originalStyleZIndex = target.style.zIndex;
           target.dataset.wasDragged = "false";
 
           Object.assign(target.style, {
@@ -179,7 +176,6 @@ export const useEditablePage = (
             left: `${initialPos.x}px`,
             width: `${initialPos.w}px`,
             height: `${initialPos.h}px`,
-            cursor: "move",
             zIndex: "999999",
           });
         },
@@ -209,6 +205,7 @@ export const useEditablePage = (
               transform: "none",
               transition: "none",
               position: target.dataset.originalStylePos ?? "relative",
+              zIndex: target.dataset.originalStyleZIndex ?? "",
               top: "",
               left: "",
               width: "auto",

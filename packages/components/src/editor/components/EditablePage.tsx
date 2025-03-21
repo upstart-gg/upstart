@@ -80,12 +80,11 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
 
   useEditablePage(".brick:not(.container-child):not([data-no-drag='true'])", pageRef, {
     dragOptions: {
-      enabled: previewMode === "desktop",
+      // enabled: previewMode === "desktop",
     },
     gridConfig,
     dragCallbacks: {
       onDragEnd: (updatedPositions, event) => {
-        console.log("onDragEnd", updatedPositions, event);
         updateDragOverGhostStyle(false);
 
         const firstPos = updatedPositions[0];
@@ -128,7 +127,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     dropCallbacks: {
       onDropMove(event, gridPosition, brick) {
         const canDrop = canDropOnLayout(draft.bricks, previewMode, gridPosition, brick.constraints);
-        console.log("onDropMove", canDrop);
         updateDragOverGhostStyle(canDrop);
       },
       onDropDeactivate() {
