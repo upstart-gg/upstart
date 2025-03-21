@@ -194,8 +194,7 @@ const FormNavigator: FC<FormNavigatorProps> = ({
           className,
         )}
         style={{
-          // height: "500px",
-          minHeight: "300px",
+          minHeight: "380px",
           width: "100%",
           ...style,
         }}
@@ -213,7 +212,7 @@ const FormNavigator: FC<FormNavigatorProps> = ({
                 type="button"
                 className={tx(
                   `flex items-center gap-1 p-0 bg-transparent text-upstart-600 dark:text-upstart-300
-                  border-0 cursor-pointer font-medium text-sm hover:opacity-90 focus:outline-none`,
+                  border-0 cursor-pointer font-medium text-sm hover:opacity-90 focus:outline-none select-none`,
                 )}
                 onClick={navigateBack}
               >

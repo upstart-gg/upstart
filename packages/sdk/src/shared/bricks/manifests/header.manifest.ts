@@ -9,6 +9,7 @@ import { color, textContent } from "../props/text";
 import { shadow } from "../props/effects";
 import { datasourceRef } from "../props/datasource";
 import { fixedPositioned, position } from "../props/position";
+import { boolean } from "../props/boolean";
 
 export const datasource = Type.Array(
   Type.Object({
@@ -145,19 +146,23 @@ export const manifest = defineBrickManifest({
 
   props: defineProps({
     container: group({
-      title: "Container",
+      title: "Main Container",
       children: {
         border: optional(border()),
         backgroundColor: backgroundColor(),
         shadow: optional(shadow()),
         fixedPositioned: optional(fixedPositioned()),
       },
+      metadata: {
+        "ui:responsive": true,
+      },
     }),
     brand: group({
       title: "Brand",
       children: {
-        name: optional(textContent("Brand name", "Acme Inc.")),
+        name: optional(textContent("Brand name", "Acme Inc.", { disableSizing: true })),
         logo: optional(image("Logo")),
+        hideText: optional(boolean("Hide text")),
         color: optional(color()),
       },
     }),

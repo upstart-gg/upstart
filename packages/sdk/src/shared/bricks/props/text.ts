@@ -50,12 +50,19 @@ export type ColorSettings = Static<ReturnType<typeof color>>;
 type TextContentOptions = {
   paragraphMode?: "auto" | "hero";
   showInSettings?: boolean;
+  disableSizing?: boolean;
+  disableAlignment?: boolean;
 };
 
 export function textContent(
   title = "Text",
   defaultContent = "some text here",
-  { paragraphMode = "auto", showInSettings }: TextContentOptions = {},
+  {
+    paragraphMode = "auto",
+    showInSettings,
+    disableSizing = false,
+    disableAlignment = false,
+  }: TextContentOptions = {},
 ) {
   return prop({
     title,
@@ -63,6 +70,8 @@ export function textContent(
     schema: Type.String({
       default: defaultContent,
       "ui:paragraph-mode": paragraphMode,
+      "ui:disable-sizing": disableSizing,
+      "ui:disable-alignment": disableAlignment,
       "ui:field": showInSettings ? "string" : "hidden",
     }),
   });

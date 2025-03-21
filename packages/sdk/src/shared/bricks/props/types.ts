@@ -18,8 +18,18 @@ export type BrickPropCategory = "settings" | "presets" | "content";
 // Export the TSchema type for use in other files
 export type { TSchema };
 
-export type FieldMetadata = {
+type CommonMetadata = {
+  "ui:responsive"?: boolean | "mobile" | "mobile-only";
+};
+
+export type FieldMetadata = CommonMetadata & {
   "ui:field"?: string;
+  [key: string]: string | number | boolean | undefined;
+};
+
+export type GroupMetadata = CommonMetadata & {
+  group?: string;
+  groupTab?: string;
   [key: string]: string | number | boolean | undefined;
 };
 
@@ -38,10 +48,5 @@ export type PropGroup<T extends TProperties = TProperties> = {
   title: string;
   category: BrickPropCategory;
   children: T;
-};
-
-// UI metadata that we want to associate with schemas - only for group-related info
-export type UIMetadata = {
-  group?: string;
-  groupTab?: string;
+  metadata?: GroupMetadata;
 };

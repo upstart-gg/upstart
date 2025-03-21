@@ -18,10 +18,22 @@ import {
 import { useEffect, useState } from "react";
 
 export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
-  const { currentValue, onChange, required, title, description, placeholder, schema } = props;
-
+  const {
+    currentValue = {
+      color: "#000000",
+      radius: "rounded-none",
+      side: ["all"],
+      style: "border-solid",
+      width: "border-0",
+    },
+    onChange,
+    required,
+    title,
+    description,
+    placeholder,
+    schema,
+  } = props;
   const onSettingsChange = (newVal: Partial<BorderSettings>) => onChange({ ...currentValue, ...newVal });
-
   const [currentSide, setSide] = useState<string[]>(currentValue.side);
 
   return (

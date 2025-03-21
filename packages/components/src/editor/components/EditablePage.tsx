@@ -27,7 +27,6 @@ import { useFontWatcher } from "../hooks/use-font-watcher";
 import Section from "./EditableSection";
 import { useGridConfig } from "~/shared/hooks/use-grid-config";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
-import { useBrickSettingsPopover } from "../hooks/use-brick-settings-popover";
 import BrickSettingsPopover from "./BrickPopover";
 
 const ghostValid = tx("bg-upstart-100");
@@ -358,7 +357,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           });
         }}
       />
-      {/* {brickSettingsPopover} */}
       <BrickSettingsPopover />
       <Toaster
         toastOptions={{

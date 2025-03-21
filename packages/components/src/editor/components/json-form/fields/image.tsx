@@ -6,6 +6,7 @@ import ModalSearchImage from "~/editor/components/ModalSearchImage";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import { IoIosHelpCircleOutline } from "react-icons/io";
 import { fieldLabel } from "../form-class";
+import trans from "./trans.svg?url";
 
 const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
   const {
@@ -76,7 +77,12 @@ const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
       {currentValue.src && (
         <>
           <div className="basis-full w-0" />
-          <div className="border border-upstart-200 p-2 mt-3 ml-auto">
+          <div
+            className="border border-upstart-200 p-2 mt-3 ml-auto"
+            style={{
+              backgroundImage: `url(${trans})`,
+            }}
+          >
             <img src={currentValue.src} alt="Preview" className="max-w-full h-auto" />
           </div>
         </>

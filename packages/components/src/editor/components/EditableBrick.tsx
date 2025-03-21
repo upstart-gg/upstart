@@ -208,15 +208,20 @@ function BrickMainNavBar({ brick }: { brick: Brick }) {
   if (!manifest) {
     return null;
   }
+
+  if (brick.type === "text") {
+    console.log("text manifest", manifest);
+  }
   return (
     <nav className={menuNavBarCls}>
-      {/* Presets: @TODO check if brick has presets */}
-      <BrickPopover brick={brick} view="presets">
-        <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-          <BiSolidColor className={tx("w-5 h-5")} />
-          <span className={tx(menuBarTooltipCls)}>Presets</span>
-        </button>
-      </BrickPopover>
+      {manifest.presets && (
+        <BrickPopover brick={brick} view="presets">
+          <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
+            <BiSolidColor className={tx("w-5 h-5")} />
+            <span className={tx(menuBarTooltipCls)}>Presets</span>
+          </button>
+        </BrickPopover>
+      )}
       {/* Settings & styles */}
       <BrickPopover brick={brick} view="settings">
         <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>

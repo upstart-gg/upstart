@@ -27,8 +27,8 @@ export function useSectionStyle({ section, editable }: UseSectionStyleProps) {
     `@mobile:(
       grid-cols-${LAYOUT_COLS.mobile}
       auto-rows-[minmax(${LAYOUT_ROW_HEIGHT}px,_max-content)]
-      px-[10px]
-      py-[10px]
+      px-0
+      py-0
     )`,
     // Desktop grid
     `@desktop:(

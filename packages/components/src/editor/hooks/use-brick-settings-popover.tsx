@@ -2,13 +2,16 @@ import { useState, useEffect, useRef, type ReactNode, useCallback, type FC } fro
 import {
   useFloating,
   autoUpdate,
+  useClientPoint,
   offset,
   flip,
   shift,
   arrow,
   FloatingPortal,
   FloatingArrow,
+  useInteractions,
 } from "@upstart.gg/style-system/system";
+
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { useHotkeys } from "react-hotkeys-hook";
 // Types
@@ -56,7 +59,7 @@ export const useBrickSettingsPopover = ({
     elements: {
       reference: state.currentTrigger,
     },
-    placement,
+    // placement,
     middleware: [
       offset({ mainAxis: state.offset ?? 16, crossAxis: 60, alignmentAxis: 20 }, [
         state.currentTrigger,
@@ -111,6 +114,7 @@ export const useBrickSettingsPopover = ({
   const registerMatchingElements = () => {
     document.querySelectorAll<HTMLElement>(selector).forEach((el) => {
       attachEventListeners(el);
+      // Object.assign(el, refProps);
     });
   };
 

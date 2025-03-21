@@ -43,23 +43,13 @@ export function getOpacityStyles(opacity: OpacitySettings) {
 export function getShadowStyles(value: ShadowSettings) {
   return value;
 }
+
 export function getPaddingStyles(value: PaddingSettings) {
   return value;
 }
 
 export function getTextShadowStyles(value: TextShadowSettings) {
   return value;
-}
-
-function getPositionStyles(value: PositionSettings) {
-  switch (value) {
-    case "fixed":
-      return tx("fixed top-inherit left-auto right-auto self-start w-fill");
-    case "sticky":
-      return "sticky top-inherit left-auto right-auto self-start";
-    default:
-      return null;
-  }
 }
 
 export function getFixedPositionedStyles(value: FixedPositionedSettings) {
@@ -97,7 +87,7 @@ export function getBorderStyles(props?: Partial<BorderSettings>) {
   return [propToStyle(color, "borderColor"), radius, style, borderProcessedClass];
 }
 
-export function getBasicAlignmentStyles(props: AlignBasicSettings) {
+export function getBasicAlignmentStyles(props: AlignBasicSettings, mobileProps?: AlignBasicSettings) {
   return [props.vertical, props.horizontal];
 }
 

@@ -1,6 +1,6 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { textContent } from "../props/text";
-import { defineProps, group } from "../props/helpers";
+import { defineProps } from "../props/helpers";
 import { backgroundColor } from "../props/background";
 import { padding } from "../props/padding";
 import { border } from "../props/border";
@@ -28,12 +28,6 @@ export const manifest = defineBrickManifest({
     backgroundColor: backgroundColor(),
     padding: padding("p-2"),
     border: border(),
-    // styles: group({
-    //   title: "Styles",
-    //   children: {
-    //     backgroundColor: backgroundColor(),
-    //   },
-    // }),
   }),
 });
 

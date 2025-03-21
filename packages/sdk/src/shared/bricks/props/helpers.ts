@@ -3,21 +3,22 @@
  */
 import { type TProperties, Type, type TSchema, type TObject } from "@sinclair/typebox";
 import { commonProps } from "./common";
-import type { PartialBy, Prop, PropGroup, UIMetadata } from "./types";
+import type { PartialBy, Prop, PropGroup, GroupMetadata } from "./types";
 
 export function group<T extends TProperties>({
   title,
   children,
   category = "settings",
+  metadata,
 }: PartialBy<PropGroup<T>, "category">): TObject<T> {
   // Create the TypeBox schema with title as a standard property
   // and group-specific info in metadata
   return Type.Object(children, {
     title,
     metadata: {
-      // group: groupTitleToId(title),
       category,
       group: true,
+      ...metadata,
     },
   });
 }
@@ -38,7 +39,7 @@ export function prop<T extends TSchema>({ title, schema, description, $id }: Pro
 
 // Functions to extract metadata from schemas
 export function getGroupInfo(schema: TSchema) {
-  const meta = schema.metadata as UIMetadata;
+  const meta = schema.metadata as GroupMetadata;
   return {
     title: (schema.title ?? schema.metadata?.title) as string | undefined,
     meta,

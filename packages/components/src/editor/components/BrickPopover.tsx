@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from "react";
+import type { PropsWithChildren, RefObject } from "react";
 import { useBrickSettingsPopover } from "../hooks/use-brick-settings-popover";
 import BrickSettingsGroupMenu from "./BrickSettingsGroupMenu";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
@@ -31,7 +31,7 @@ export function BrickPopover({ brick, children, view }: BrickPopoverProps) {
     <Popover.Root>
       <Popover.Trigger>{children}</Popover.Trigger>
       <Popover.Content
-        width={view === "settings" ? "300px" : "600px"}
+        width={view === "settings" ? "340px" : "600px"}
         maxWidth={view === "settings" ? "100%" : "100%"}
       >
         <Inset>

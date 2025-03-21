@@ -7,6 +7,7 @@ import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { useDraftHelpers } from "../hooks/use-editor";
 import { getTextContrastedColor } from "@upstart.gg/sdk/shared/themes/color-system";
+import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
 // type PresetsViewProps = {
 //   onChoose: (presetStyles: StyleProperties) => void;
@@ -58,7 +59,7 @@ export default function PresetsView({ brick }: BrickPresetsViewProps) {
 
   const { presets } = manifest;
 
-  const onChoose = (preset: (typeof presets)[string], variant: string) => {
+  const onChoose = (preset: { props: Brick["props"] }, variant: string) => {
     const styleProps = processPresetProps(preset.props, variant);
     updateBrickProps(brick.id, styleProps);
   };
@@ -75,9 +76,9 @@ export default function PresetsView({ brick }: BrickPresetsViewProps) {
   }, [variant]);
 
   return (
-    <div className="flex flex-col gap-3 flex-1 p-4" ref={ref}>
+    <div className="flex flex-col gap-3 flex-1 p-10 justify-start" ref={ref}>
       <div className="flex justify-between items-center">
-        <label className="text-lg font-bold">Presets</label>
+        <label className="text-lg font-bold">{manifest.name} Presets</label>
         <div className="flex gap-3">
           <div className="flex flex-col gap-1">
             <SegmentedControl.Root
@@ -101,9 +102,8 @@ export default function PresetsView({ brick }: BrickPresetsViewProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-5 mt-3">
-        {Object.entries(presets).map(([presetId, preset]) => {
-          // const preset = getPresetStyles({ style: style.value, variant });
+      <div className="grid grid-cols-4 gap-5 mt-6">
+        {Object.entries(presets ?? {}).map(([presetId, preset]) => {
           return (
             <div
               key={`${presetId}`}

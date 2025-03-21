@@ -232,7 +232,7 @@ function ColorPillList({
     if (match) {
       return match[1];
     }
-    return "t";
+    return "b";
   }
 
   function getInitialGradient() {
@@ -361,7 +361,7 @@ function getAvailableColorsAndShadesForElement(elementType: ElementColorType) {
   }
   if (elementType === "background") {
     return {
-      colors: ["primary", "secondary", "neutral"],
+      colors: ["primary", "secondary", "accent", "neutral"],
       shades: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
       colorButtons: [
         { label: "White", value: "#FFFFFF" },
@@ -388,7 +388,7 @@ function getAvailableColorsAndShadesForElement(elementType: ElementColorType) {
   }
   if (elementType === "text") {
     return {
-      colors: ["primary", "secondary", "neutral"],
+      colors: ["primary", "secondary", "accent", "neutral"],
       shades: ["100", "300", "500", "700", "900"],
       colorButtons: [
         { label: "Auto", value: "color-auto" },

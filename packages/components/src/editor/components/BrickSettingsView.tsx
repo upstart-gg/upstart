@@ -17,6 +17,7 @@ function getNavItemsFromManifest(
   filter = defaultFilter,
   pathsParts: string[] = [],
 ): NavItem[] {
+  console.log("manifest.properties", manifest.properties);
   const items = Object.entries<TSchema>(manifest.properties)
     .filter(([, prop]) => prop["ui:field"] !== "hidden")
     .filter(([key, prop]) => filter(prop, key))
@@ -49,9 +50,11 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
   const previewMode = usePreviewMode();
   const getBrickInfo = useGetBrick();
   const brickInfo = getBrickInfo(brick.id);
-  const filter: SchemaFilter = (prop, key) => {
+  const filter: SchemaFilter = (prop) => {
     return (
-      (previewMode !== "mobile" || prop["ui:responsive"]) &&
+      (previewMode !== "mobile" ||
+        prop.metadata?.["ui:responsive"] === true ||
+        prop.metadata?.["ui:responsive"] === "mobile") &&
       (!prop.metadata?.category || prop.metadata?.category === "settings")
       /* &&
       (!group || !prop.metadata?.group || (prop.metadata?.group && key === group))*/

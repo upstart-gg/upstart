@@ -127,14 +127,13 @@ export type TextEditorProps<E extends ElementType> = PolymorphicProps<E> & {
   paragraphMode?: string;
   propPath: string;
   noTextAlign?: boolean;
+  noTextStrike?: boolean;
+  noTextType?: boolean;
   /**
    * Whether the editor is inlined in the page or appears in the panel
    */
   inline?: boolean;
 };
-
-const toolbarBtnCls =
-  "!bg-white first:rounded-l last:rounded-r text-sm text-gray-800 px-1 hover:[&:not([data-state=on])]:bg-upstart-100 dark:hover:[&:not([data-state=on])]:(bg-dark-900) leading-none data-[state=on]:(!bg-upstart-600 text-white)";
 
 const TextEditor = <T extends ElementType = "div">({
   content,
@@ -144,7 +143,8 @@ const TextEditor = <T extends ElementType = "div">({
   inline,
   propPath,
   noTextAlign,
-  as,
+  noTextType,
+  noTextStrike,
 }: TextEditorProps<T>) => {
   const onUpdate = useTextEditorUpdateHandler(brickId, propPath);
   const mainEditor = useEditor();
@@ -272,7 +272,13 @@ const TextEditor = <T extends ElementType = "div">({
       />
       {focused && menuBarContainer && (
         <Portal container={menuBarContainer} asChild>
-          <TextEditorMenuBar editor={editor} paragraphMode={paragraphMode} noTextAlign={noTextAlign} />
+          <TextEditorMenuBar
+            editor={editor}
+            paragraphMode={paragraphMode}
+            noTextAlign={noTextAlign}
+            noTextType={noTextType}
+            noTextStrike={noTextStrike}
+          />
         </Portal>
       )}
     </>
@@ -283,16 +289,20 @@ const TextEditorMenuBar = ({
   editor,
   paragraphMode,
   noTextAlign,
+  noTextType,
+  noTextStrike,
 }: {
   editor: Editor;
   paragraphMode?: string;
   noTextAlign?: boolean;
+  noTextType?: boolean;
+  noTextStrike?: boolean;
 }) => {
   return (
     <>
-      {paragraphMode !== "hero" && <TextSizeDropdown editor={editor} />}
+      {paragraphMode !== "hero" && !noTextType && <TextSizeDropdown editor={editor} />}
       {!noTextAlign && <TextAlignButtonGroup editor={editor} />}
-      <TextStyleButtonGroup editor={editor} />
+      <TextStyleButtonGroup editor={editor} noTextStrike={noTextStrike} noTextType={noTextType} />
       <DatasourceItemButton editor={editor} />
     </>
   );
@@ -546,13 +556,17 @@ function DatasourceItemButton({ editor }: { editor: Editor }) {
   );
 }
 
-function TextStyleButtonGroup({ editor }: { editor: Editor }) {
+function TextStyleButtonGroup({
+  editor,
+  noTextStrike,
+  noTextType,
+}: { editor: Editor; noTextStrike?: boolean; noTextType?: boolean }) {
   const isBold = editor.isActive("bold");
   const isItalic = editor.isActive("italic");
   const isStrike = editor.isActive("strike");
   return (
     <ToggleGroup.Root
-      className={tx("flex !rounded-l-none !shadow-none divide-x")}
+      className={tx("flex !shadow-none divide-x", !noTextType && "!rounded-l-none")}
       type="multiple"
       value={
         [
@@ -564,7 +578,12 @@ function TextStyleButtonGroup({ editor }: { editor: Editor }) {
       aria-label="Text style"
     >
       <ToggleGroup.Item
-        className={tx(menuBarBtnCls, menuBarBtnCommonCls, "!rounded-l-none", isBold && menuBarBtnActiveCls)}
+        className={tx(
+          menuBarBtnCls,
+          menuBarBtnCommonCls,
+          !noTextType && "!rounded-l-none",
+          isBold && menuBarBtnActiveCls,
+        )}
         value="bold"
         onClick={() => editor.chain().focus().toggleBold().run()}
       >
@@ -577,13 +596,15 @@ function TextStyleButtonGroup({ editor }: { editor: Editor }) {
       >
         <MdOutlineFormatItalic className="w-5 h-5" />
       </ToggleGroup.Item>
-      <ToggleGroup.Item
-        className={tx(menuBarBtnCls, menuBarBtnCommonCls, "!rounded-none", isStrike && menuBarBtnActiveCls)}
-        value="strike"
-        onClick={() => editor.chain().focus().toggleStrike().run()}
-      >
-        <MdStrikethroughS className="w-5 h-5" />
-      </ToggleGroup.Item>
+      {!noTextStrike && (
+        <ToggleGroup.Item
+          className={tx(menuBarBtnCls, menuBarBtnCommonCls, "!rounded-none", isStrike && menuBarBtnActiveCls)}
+          value="strike"
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+        >
+          <MdStrikethroughS className="w-5 h-5" />
+        </ToggleGroup.Item>
+      )}
     </ToggleGroup.Root>
   );
 }
