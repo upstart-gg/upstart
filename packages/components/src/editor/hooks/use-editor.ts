@@ -5,6 +5,7 @@ import { immer } from "zustand/middleware/immer";
 import { createContext, useContext, useEffect } from "react";
 import { temporal } from "zundo";
 import type { ResponsiveMode } from "@upstart.gg/sdk/shared/responsive";
+import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import type { Brick, BrickPosition, Section } from "@upstart.gg/sdk/shared/bricks";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
@@ -580,9 +581,11 @@ export const createDraftStore = (
                 const brick = getBrick(id, state.bricks);
                 if (brick) {
                   if (isMobileProps) {
-                    brick.mobileProps = merge({}, brick.mobileProps, props, { lastTouched: Date.now() });
+                    brick.mobileProps = mergeIgnoringArrays({}, brick.mobileProps, props, {
+                      lastTouched: Date.now(),
+                    });
                   } else {
-                    brick.props = merge({}, brick.props, props, { lastTouched: Date.now() });
+                    brick.props = mergeIgnoringArrays({}, brick.props, props, { lastTouched: Date.now() });
                   }
                 }
               }),

@@ -17,6 +17,17 @@ import { Button, TextField, Text, Select, Tabs, Inset } from "@upstart.gg/style-
 import { useColorAdjustment, useEditor, useTheme } from "~/editor/hooks/use-editor";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
+const gradientMixs = [
+  ["50", "200"],
+  ["100", "300"],
+  ["200", "400"],
+  ["300", "500"],
+  ["400", "600"],
+  ["500", "700"],
+  ["600", "800"],
+  ["700", "900"],
+];
+
 interface BaseColorPickerProps {
   colorType: ColorType;
   initialValue?: number | string;
@@ -270,17 +281,6 @@ function ColorPillList({
       </div>
     );
   } else if (type === "gradient") {
-    const mixs = [
-      ["50", "100"],
-      ["50", "200"],
-      ["100", "300"],
-      ["200", "400"],
-      ["300", "400"],
-      ["400", "600"],
-      ["500", "600"],
-      ["600", "800"],
-      ["700", "900"],
-    ];
     return (
       <>
         <Select.Root
@@ -309,9 +309,9 @@ function ColorPillList({
             </Select.Group>
           </Select.Content>
         </Select.Root>
-        <div className={`grid grid-cols-${mixs.length} gap-3 mt-3.5`}>
+        <div className={`grid grid-cols-${gradientMixs.length} gap-3 mt-3.5`}>
           {colors.flatMap((color) =>
-            mixs
+            gradientMixs
               .map((mix) => ({ from: `${color.from}-${mix[0]}`, to: `${color.to}-${mix[1]}` }))
               .map((color) => (
                 <button

@@ -68,12 +68,12 @@ function getBorderStyles(props?: Partial<BorderSettings>) {
   if (!props) {
     return null;
   }
-  const { width = "border-0", side = ["all"], color = "border-transparent", style = "border-solid" } = props;
+  const { width = "border-0", side = [], color = "border-transparent", style = "border-solid" } = props;
   let borderProcessedClass = "";
 
   const originalWith = width.includes("-") ? width.split("-")[1] : null;
 
-  if (props.side?.length) {
+  if (side?.length) {
     borderProcessedClass = side
       .map((side) => {
         return `${side}${originalWith ? `-${originalWith}` : ""}`;

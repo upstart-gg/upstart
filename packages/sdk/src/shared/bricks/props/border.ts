@@ -90,6 +90,7 @@ export function border({
   defaultValue = {
     style: "border-solid",
     width: "border-0",
+    side: [],
   },
 }: BorderOptions = {}) {
   return group({

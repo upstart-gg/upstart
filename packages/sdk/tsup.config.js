@@ -88,6 +88,7 @@ export default defineConfig((options) => {
         "src/shared/datarecords/types.ts",
         "src/shared/layout-constants.ts",
         "src/shared/utils/invariant.ts",
+        "src/shared/utils/merge.ts",
         "src/shared/oauth.ts",
         "src/shared/ajv.ts",
         "src/shared/themes",

@@ -4,13 +4,11 @@ import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border"
 import { fieldLabel } from "../form-class";
 import { tx } from "@upstart.gg/style-system/twind";
 import { MdBorderBottom, MdBorderLeft, MdBorderRight, MdBorderTop } from "react-icons/md";
-import { useState } from "react";
 
 export const BorderSideField: React.FC<FieldProps<BorderSettings["side"]>> = (props) => {
   const { currentValue = [], onChange, title, description, schema } = props;
-  const onSettingsChange = (newVal: Partial<BorderSettings>) => onChange({ ...currentValue, ...newVal });
 
-  const [currentSide, setSide] = useState<string[]>(currentValue);
+  console.log("init with currentValue", currentValue);
 
   return (
     <div className="border-side-field flex flex-1">
@@ -23,17 +21,15 @@ export const BorderSideField: React.FC<FieldProps<BorderSettings["side"]>> = (pr
               type="button"
               key={option.const}
               onClick={() => {
-                const side = currentSide.includes(option.const)
-                  ? currentSide.filter((s) => s !== option.const)
-                  : [...currentSide, option.const];
-                setSide(side);
-                onSettingsChange({
-                  side,
-                });
+                const side = currentValue.includes(option.const)
+                  ? currentValue.filter((s) => s !== option.const)
+                  : [...currentValue.filter((s) => s !== option.const), option.const];
+
+                onChange(side);
               }}
               className={tx(
                 "p-1 px-2 inline-flex  first:rounded-l last:rounded-r",
-                currentSide.includes(option.const)
+                currentValue.includes(option.const)
                   ? "bg-upstart-500 text-white"
                   : "bg-gray-100 hover:bg-gray-300 dark:bg-dark-600 dark:hover:bg-dark-500 text-gray-500 dark:text-white/50 ",
               )}
