@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { type Manifest, datasource } from "@upstart.gg/sdk/bricks/manifests/images-wall.manifest";
+import { type Manifest, datasource, manifest } from "@upstart.gg/sdk/bricks/manifests/images-wall.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { useDatasource } from "../hooks/use-datasource";
@@ -13,10 +13,7 @@ import { useBrickStyle } from "../hooks/use-brick-style";
 const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, ref) => {
   const { props } = brick;
   const className = useBrickStyle<Manifest>(brick);
-  const { datasourceId, data, isSample } = useDatasource<
-    Manifest["props"]["datasourceRef"],
-    typeof datasource
-  >(props.content.datasource, datasource);
+  const { datasourceId, data, isSample } = useDatasource(props.content, manifest.datasource);
   // const children = props.childrenBricks;
   const gapInt = parseInt(props.styles.gap.replace("gap-", "")) / 4;
   return (

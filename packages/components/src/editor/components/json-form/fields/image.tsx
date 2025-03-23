@@ -93,25 +93,47 @@ const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
             />
           </div>
           <div className="basis-full w-0" />
-          <div className="flex justify-between gap-12 flex-1 items-center mt-3 pr-1.5">
-            <label className={fieldLabel}>Fit</label>
-            <Select.Root
-              defaultValue={currentValue.fit}
-              size="2"
-              onValueChange={(value) => onPropsChange({ fit: value as ImageProps["fit"] })}
-            >
-              <Select.Trigger radius="large" variant="ghost" />
-              <Select.Content position="popper">
-                <Select.Group>
-                  {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
-                  {schema.properties.fit.anyOf.map((item: any) => (
-                    <Select.Item key={item.const} value={item.const}>
-                      {item.title}
-                    </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Content>
-            </Select.Root>
+          <div className="flex gap-12 flex-1 mt-3 pr-1.5">
+            <div className="flex flex-col gap-2 flex-1">
+              <label className={fieldLabel}>Fit</label>
+              <Select.Root
+                defaultValue={currentValue.fit}
+                size="2"
+                onValueChange={(value) => onPropsChange({ fit: value as ImageProps["fit"] })}
+              >
+                <Select.Trigger radius="large" variant="ghost" />
+                <Select.Content position="popper">
+                  <Select.Group>
+                    {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
+                    {schema.properties.fit.anyOf.map((item: any) => (
+                      <Select.Item key={item.const} value={item.const}>
+                        {item.title}
+                      </Select.Item>
+                    ))}
+                  </Select.Group>
+                </Select.Content>
+              </Select.Root>
+            </div>
+            <div className="flex flex-col gap-2 flex-1">
+              <label className={fieldLabel}>Position</label>
+              <Select.Root
+                defaultValue={currentValue.position}
+                size="2"
+                onValueChange={(value) => onPropsChange({ position: value as ImageProps["position"] })}
+              >
+                <Select.Trigger radius="large" variant="ghost" />
+                <Select.Content position="popper">
+                  <Select.Group>
+                    {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
+                    {schema.properties.position.anyOf.map((item: any) => (
+                      <Select.Item key={item.const} value={item.const}>
+                        {item.title}
+                      </Select.Item>
+                    ))}
+                  </Select.Group>
+                </Select.Content>
+              </Select.Root>
+            </div>
           </div>
         </>
       )}

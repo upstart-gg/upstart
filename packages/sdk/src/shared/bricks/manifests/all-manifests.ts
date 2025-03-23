@@ -16,7 +16,7 @@ import { manifest as socialLinksManifest } from "./social-links.manifest";
 import { manifest as countdownManifest } from "./countdown.manifest";
 import { manifest as genericComponentManifest } from "./generic-component.manifest";
 
-import { getBrickManifestDefaults, type BrickManifest } from "../../brick-manifest";
+import { getBrickManifestDefaults, type BrickDefaults, type BrickManifest } from "../../brick-manifest";
 
 export const manifests: Record<string, BrickManifest> = {
   [heroManifest.type]: heroManifest,
@@ -38,7 +38,7 @@ export const manifests: Record<string, BrickManifest> = {
   [containerManifest.type]: containerManifest,
 };
 
-export const defaultProps = {
+export const defaultProps: Record<string, BrickDefaults> = {
   [heroManifest.type]: getBrickManifestDefaults(heroManifest),
   [imageManifest.type]: getBrickManifestDefaults(imageManifest),
   [textManifest.type]: getBrickManifestDefaults(textManifest),

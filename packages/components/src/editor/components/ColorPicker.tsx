@@ -380,7 +380,12 @@ function getAvailableColorsAndShadesForElement(elementType: ElementColorType) {
   if (elementType === "border") {
     return {
       colors: ["primary", "secondary", "accent", "neutral"],
-      shades: ["100", "300", "500", "700", "900"],
+      shades: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+      colorButtons: [
+        { label: "White", value: "#FFFFFF" },
+        { label: "Black", value: "#000000" },
+        { label: "Transparent", value: "transparent" },
+      ],
     };
   }
   if (elementType === "text") {
@@ -466,14 +471,30 @@ export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
 
   if (elementColorType === "border") {
     return (
-      <ColorPillList
-        type="solid"
-        elementColorType={elementColorType}
-        currentColor={initialValue}
-        cols={shades.length}
-        colors={makeCominations(colors, shades)}
-        onChange={onChange}
-      />
+      <>
+        <ColorPillList
+          type="solid"
+          elementColorType={elementColorType}
+          currentColor={initialValue}
+          cols={shades.length}
+          colors={makeCominations(colors, shades)}
+          onChange={onChange}
+        />
+        {colorButtons && (
+          <div className={tx(`flex gap-3 mt-3`, `col-span-${shades.length}`)}>
+            {colorButtons.map((button) => (
+              <button
+                key={button.value}
+                type="button"
+                onClick={() => onChange(button.value)}
+                className="flex-1 h-6 text-xs rounded-lg outline outline-gray-200 hover:outline-gray-300"
+              >
+                {button.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </>
     );
   }
   if (elementColorType === "text") {

@@ -30,7 +30,10 @@ export function BrickPopover({ brick, children, view }: BrickPopoverProps) {
   return (
     <Popover.Root>
       <Popover.Trigger>{children}</Popover.Trigger>
+      <Popover.Anchor />
       <Popover.Content
+        sideOffset={8}
+        alignOffset={8}
         width={view === "settings" ? "340px" : "600px"}
         maxWidth={view === "settings" ? "100%" : "100%"}
       >

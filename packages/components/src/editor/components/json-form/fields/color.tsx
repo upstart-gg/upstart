@@ -270,7 +270,7 @@ function ColorElementPopover({
       width = "310px";
       break;
     case "border":
-      width = "186px";
+      width = "310px";
       break;
     case "text":
       width = "216px";

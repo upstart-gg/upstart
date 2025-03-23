@@ -4,14 +4,17 @@ import { useBrickStyle } from "../hooks/use-brick-style";
 import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/image.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 
-const Image = forwardRef<HTMLImageElement, BrickProps<Manifest>>(({ brick }, ref) => {
+const Image = forwardRef<HTMLImageElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const { props } = brick;
   const { image: imageStyles, ...containerStyles } = useBrickStyle(brick);
   const { src, alt } = props.image;
 
   return (
     <div
-      className={tx(apply("flex items-center justify-center h-full w-full"), Object.values(containerStyles))}
+      className={tx(
+        apply("group/image flex items-center justify-center h-full w-full"),
+        Object.values(containerStyles),
+      )}
     >
       <img
         src={src}
@@ -22,6 +25,19 @@ const Image = forwardRef<HTMLImageElement, BrickProps<Manifest>>(({ brick }, ref
           imageStyles,
         )}
       />
+      {editable && (
+        <div
+          className={tx(
+            apply(
+              "opacity-0 transition-opacity duration-300 group-hover/image:opacity-100 flex absolute delay-300 inset-0 bg-black/30 items-center justify-center text-xl text-white font-semibold",
+            ),
+          )}
+        >
+          <div className="text-ellipsis text-nowrap flex-nowrap text-center">
+            Drop an image here to replace it
+          </div>
+        </div>
+      )}
     </div>
   );
 });

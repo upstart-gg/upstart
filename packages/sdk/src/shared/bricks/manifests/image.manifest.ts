@@ -2,7 +2,9 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
 import { image } from "../props/image";
 import { backgroundColor } from "../props/background";
-import { rounding } from "../props/border";
+import { border, rounding } from "../props/border";
+import { shadow } from "../props/effects";
+import { padding } from "../props/padding";
 
 export const manifest = defineBrickManifest({
   type: "image",
@@ -21,7 +23,10 @@ export const manifest = defineBrickManifest({
   props: defineProps({
     image: image(),
     backgroundColor: backgroundColor(),
+    border: border(),
     rounding: rounding(),
+    padding: padding(),
+    shadow: shadow(),
   }),
 });
 

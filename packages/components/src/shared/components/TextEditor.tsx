@@ -238,6 +238,7 @@ const TextEditor = <T extends ElementType = "div">({
     };
 
     const onBlur = (e: EditorEvents["blur"]) => {
+      console.log("BLURRR");
       // For whatever reason, the editor content is not updated when the blur event is triggered the first time
       // So we need to manually update the content here
       setContent(e.editor.getHTML());
@@ -250,6 +251,22 @@ const TextEditor = <T extends ElementType = "div">({
 
       mainEditor.setIsEditingText(false);
       mainEditor.setlastTextEditPosition(e.editor.state.selection.anchor);
+
+      console.log("setting selection to ", {
+        from: e.editor.state.doc.content.size,
+        to: e.editor.state.doc.content.size,
+      });
+
+      // reset the selection to the end of the document
+      const unselected = e.editor.commands.setTextSelection({
+        from: e.editor.state.doc.content.size,
+        to: e.editor.state.doc.content.size,
+      });
+
+      e.editor.commands.blur();
+
+      console.log("unselected", unselected);
+
       setFocused(false);
     };
 
@@ -268,7 +285,7 @@ const TextEditor = <T extends ElementType = "div">({
         autoCorrect="false"
         spellCheck="false"
         editor={editor}
-        className={tx("outline-none ring-0 flex-1 min-h-full w-full")}
+        className={tx("outline-none ring-0 min-h-full flex flex-1")}
       />
       {focused && menuBarContainer && (
         <Portal container={menuBarContainer} asChild>

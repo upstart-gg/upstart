@@ -2,7 +2,7 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, group } from "../props/helpers";
 import { background } from "../props/background";
 import { datasourceRef } from "../props/datasource";
-import { containerChildren } from "../props/container";
+import { containerProps } from "../props/container";
 import { Type } from "@sinclair/typebox";
 
 export const datasource = Type.Array(Type.Object({}, { additionalProperties: true }));
@@ -28,13 +28,15 @@ export const manifest = defineBrickManifest({
         background: background(),
       },
     }),
-    layout: containerChildren(),
+
     datasource: group({
       title: "Data",
       children: {
         ds: datasourceRef(),
       },
     }),
+
+    ...containerProps(),
   }),
 });
 

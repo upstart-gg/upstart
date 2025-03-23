@@ -30,7 +30,7 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
         )}
       >
         <div
-          className={tx("flex items-center brand gap-3 relative", styles.brand)}
+          className={tx("flex items-center gap-3", styles.brand)}
           data-brick-group="brand"
           data-brick-menu-offset="70"
         >
@@ -38,14 +38,14 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
             <img
               src={props.brand.logo.src}
               alt={props.brand.logo.alt ?? "Logo"}
-              className={`h-full max-h-[${brick.position.desktop.h * LAYOUT_ROW_HEIGHT - 24}px] w-auto`}
+              className={`h-full max-h-[${brick.position.desktop.h * LAYOUT_ROW_HEIGHT - 10}px] flex-1`}
             />
           )}
           {props.brand.name && !props.brand.hideText && (
             <TextContent
               as="h1"
               propPath="brand.name"
-              className={tx("text-2xl font-bold")}
+              className={tx("text-2xl font-bold flex-1")}
               brickId={brick.id}
               content={props.brand.name}
               editable={editable}

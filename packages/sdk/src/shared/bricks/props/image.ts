@@ -12,7 +12,7 @@ export function image(title = "Image", options: PropImageOptions = {}) {
   const schema = Type.Object(
     {
       src: Type.String({
-        default: defaultImageUrl,
+        // default: defaultImageUrl,
         title,
       }),
       alt: Type.Optional(
@@ -32,11 +32,28 @@ export function image(title = "Image", options: PropImageOptions = {}) {
         ],
         {
           $id: "#styles:objectFit",
-          default: "object-cover",
           title: "Fit",
           description: "How the image should be resized to fit its container.",
           "ui:field": "enum",
-          "ui:display": "button-group",
+        },
+      ),
+      position: Type.Union(
+        [
+          Type.Literal("object-top", { title: "Top" }),
+          Type.Literal("object-center", { title: "Center" }),
+          Type.Literal("object-bottom", { title: "Bottom" }),
+          Type.Literal("object-left", { title: "Left" }),
+          Type.Literal("object-right", { title: "Right" }),
+          Type.Literal("object-left-top", { title: "Top left" }),
+          Type.Literal("object-right-top", { title: "Top right" }),
+          Type.Literal("object-left-bottom", { title: "Bottom left" }),
+          Type.Literal("object-right-bottom", { title: "Bottom right" }),
+        ],
+        {
+          $id: "#styles:objectPosition",
+          title: "Position",
+          description: "The position of the image inside its container.",
+          "ui:field": "enum",
         },
       ),
     },
@@ -44,6 +61,12 @@ export function image(title = "Image", options: PropImageOptions = {}) {
       "ui:field": "image",
       "ui:accept": "image/*",
       "ui:show-img-search": !!showImgSearch,
+      default: {
+        src: defaultImageUrl,
+        alt: "Image",
+        fit: "object-cover",
+        position: "object-center",
+      },
     },
   );
   return prop({

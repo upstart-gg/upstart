@@ -243,10 +243,13 @@ function BrickEditLabel({ brick, isContainerChild }: { brick: Brick; isContainer
     return (
       <div
         data-ui
-        className="absolute top-full left-1/2 -translate-x-1/2 bg-orange-300/40 text-black
-                    text-[10px] font-mono py-0.5 px-1.5 rounded hover:bg-white/90"
+        className="absolute top-[calc(100%+4px)] left-1/2 -translate-x-1/2 bg-orange-300/40 text-black opacity-0
+                    text-xs font-semibold py-0.5 px-1.5 rounded hover:bg-white/90 translate-y-1
+                     group-hover/brick:(opacity-100 translate-y-0) transition-all duration-150
+                    "
       >
-        {brick.id}
+        {manifest.name}
+        {debugMode && <span className="font-mono pl-4">{brick.id}</span>}
       </div>
     );
   }

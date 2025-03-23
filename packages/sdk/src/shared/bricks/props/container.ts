@@ -206,25 +206,21 @@ export function layoutType({
 
 export type LayoutTypeSettings = Static<ReturnType<typeof layoutType>>;
 
-export function containerChildren() {
-  return prop({
-    $id: "#container:children",
-    title: "Children",
-    schema: Type.Object({
-      childrenType: Type.Optional(
-        Type.String({
-          title: "Dynamic child brick type",
-          description: "Type of the child bricks that will be created when container is dynamic.",
-          "ui:field": "brick-type",
-        }),
-      ),
-      childrenBricks: Type.Array(Type.Any(), {
-        "ui:field": "hidden",
-        description: "List of nested bricks",
-        default: [],
+export function containerProps() {
+  return {
+    $childrenType: Type.Optional(
+      Type.String({
+        $id: "#container:childrenType",
+        title: "Dynamic child brick type",
+        description: "Type of the child bricks that will be created when container is dynamic.",
+        "ui:field": "brick-type",
       }),
+    ),
+    $childrenBricks: Type.Array(Type.Any(), {
+      $id: "#container:childrenBricks",
+      "ui:field": "hidden",
+      description: "List of nested bricks",
+      default: [],
     }),
-  });
+  };
 }
-
-export type ContainerChildrenSettings = Static<ReturnType<typeof containerChildren>>;

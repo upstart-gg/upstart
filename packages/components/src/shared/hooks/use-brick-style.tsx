@@ -145,14 +145,13 @@ function getBrickWrapperEditorStyles(
   return [
     "select-none hover:z-[9999] transition-colors delay-300 duration-300 rounded-sm",
     "outline outline-2 outline-transparent -outline-offset-1",
-    "active:(shadow-xl shadow-upstart-500/20)",
     selected && "outline-upstart-500 shadow-lg shadow-upstart-500/20",
     !selected && !isContainerChild && !isContainer && "hover:(outline-upstart-500/60)",
-    !selected && !isContainerChild && isContainer && "hover:(outline-dotted outline-upstart-500/30)",
+    !selected && !isContainerChild && isContainer && "hover:(outline-dotted outline-orange-500/30)",
     !selected && isContainerChild && "hover:(outline-upstart-500/40)",
     css({
       "&.selected-group": {
-        outline: "2px dotted var(--violet-8) !important",
+        outlineColor: "var(--violet-8) !important",
       },
       "& [data-brick-group]:hover": {
         outline: "1px dashed var(--violet-8)",

@@ -15,11 +15,11 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, r
   const ds = useDatasource(props.datasource.ds, manifest.datasource);
 
   // If this container is Dynamic
-  if (ds.datasourceId && props.layout.childrenType) {
+  if (ds.datasourceId && props.$childrenType) {
     // Take the first child brick as a template and render it for each item in the datasource
-    const template = props.layout.childrenBricks?.at(0) as Brick | undefined;
+    const template = props.$childrenBricks?.at(0) as Brick | undefined;
     // Override childrenBricks with the data from the datasource
-    props.layout.childrenBricks =
+    props.$childrenBricks =
       template && ds.data !== null
         ? ds.data.map((data, index) => {
             return {
@@ -34,8 +34,8 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, r
 
   return (
     <div className={tx(apply("flex relative"), className)} ref={ref}>
-      {props.layout.childrenBricks?.length > 0 ? (
-        props.layout.childrenBricks.map((brick, index) => {
+      {props.$childrenBricks?.length > 0 ? (
+        props.$childrenBricks.map((brick, index) => {
           return props.editable ? (
             <EditableBrickWrapper key={`${brick.id}`} brick={brick} isContainerChild index={index} />
           ) : (

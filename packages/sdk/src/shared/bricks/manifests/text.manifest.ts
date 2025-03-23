@@ -18,6 +18,14 @@ export const manifest = defineBrickManifest({
     desktop: 2,
     mobile: 2,
   },
+  defaultHeight: {
+    desktop: 7,
+    mobile: 7,
+  },
+  defaultWidth: {
+    desktop: 6,
+    mobile: 6,
+  },
   repeatable: true,
 
   icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
