@@ -1,12 +1,6 @@
 import interact from "interactjs";
 import type { Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
-import {
-  useDraftHelpers,
-  usePreviewMode,
-  useSection,
-  useSections,
-  useSelectedBrickId,
-} from "../hooks/use-editor";
+import { useDraftHelpers, usePreviewMode, useSection, useSections } from "../hooks/use-editor";
 import { DropdownMenu, Popover, Tooltip } from "@upstart.gg/style-system/system";
 import EditableBrickWrapper from "./EditableBrick";
 import ResizeHandle from "./ResizeHandle";

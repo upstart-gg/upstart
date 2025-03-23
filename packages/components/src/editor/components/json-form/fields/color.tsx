@@ -143,7 +143,7 @@ function ColorElementPreviewPill({
   showReset,
 }: ColorElementPreviewPillProps) {
   const pillBgFile = color === "transparent" ? `url("${transSvg}")` : "none";
-  const backgroundSize = color === "transparent" ? "100% 100%" : "auto";
+  const backgroundSize = color === "transparent" ? "12px 12px" : "auto";
 
   return (
     <Popover.Root>
@@ -160,6 +160,7 @@ function ColorElementPreviewPill({
                 backgroundImage: pillBgFile,
                 backgroundColor: color === "transparent" ? "transparent" : color,
                 backgroundSize,
+                backgroundPosition: "center",
               }),
             )}
           />

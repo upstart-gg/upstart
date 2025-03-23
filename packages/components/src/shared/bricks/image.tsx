@@ -6,18 +6,21 @@ import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 
 const Image = forwardRef<HTMLImageElement, BrickProps<Manifest>>(({ brick }, ref) => {
   const { props } = brick;
-  const className = useBrickStyle(brick);
+  const { image: imageStyles, ...containerStyles } = useBrickStyle(brick);
   const { src, alt } = props.image;
 
-  console.log("image brick", { brick, className });
-
   return (
-    <div className={tx(apply("flex items-center justify-center h-full w-full"), className)}>
+    <div
+      className={tx(apply("flex items-center justify-center h-full w-full"), Object.values(containerStyles))}
+    >
       <img
         src={src}
         ref={ref}
         alt={alt}
-        className={tx(apply("max-h-full min-w-1 min-h-1 brick-content select-none pointer-events-none"))}
+        className={tx(
+          apply("max-h-full w-full h-full min-w-1 min-h-1 select-none pointer-events-none"),
+          imageStyles,
+        )}
       />
     </div>
   );

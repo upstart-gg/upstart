@@ -127,6 +127,7 @@ export const brickStylesHelpersMap = {
   // "#styles:shadow": getShadowStyles,
   "#styles:textShadow": simpleClassHandler,
   "#styles:opacity": getOpacityStyles,
+  "#styles:objectFit": simpleClassHandler,
 };
 export const brickWrapperStylesHelpersMap = {
   "#styles:shadow": simpleClassHandler,

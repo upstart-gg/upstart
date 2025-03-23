@@ -281,7 +281,7 @@ export function brickWithDefaults<B extends Brick>(brick: B): B {
   const defProps = defaultProps[brick.type];
   return {
     ...brick,
-    props: merge(defProps.props, brick.props),
-    mobileProps: merge(defProps.mobileProps, brick.mobileProps),
+    props: merge({}, defProps.props, brick.props),
+    mobileProps: merge({}, defProps.mobileProps, brick.mobileProps),
   };
 }

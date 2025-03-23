@@ -93,8 +93,11 @@ function snapPositionToGrid({
 // Update element transform
 const updateElementTransform = (target: HTMLElement, x: number, y: number) => {
   // target.style.transform = `translate(${x}px, ${y}px)`;
-  target.style.left = `${x}px`;
-  target.style.top = `${y}px`;
+
+  requestAnimationFrame(() => {
+    target.style.left = `${x}px`;
+    target.style.top = `${y}px`;
+  });
   target.dataset.tempX = x.toString();
   target.dataset.tempY = y.toString();
 };
@@ -131,7 +134,7 @@ export const useEditablePage = (
 
     const container = document.querySelector<HTMLElement>("#page-container")!;
     interactable.current.draggable({
-      inertia: true,
+      // inertia: true,
       autoScroll: {
         container,
         margin: 40,
@@ -166,7 +169,8 @@ export const useEditablePage = (
           // Now set up the element for dragging
           target.dataset.tempX = initialPos.x.toString();
           target.dataset.tempY = initialPos.y.toString();
-          target.dataset.originalStylePos = target.style.position;
+          target.dataset.originalStylePos =
+            target.style.position && target.style.position !== "" ? target.style.position : "relative";
           target.dataset.originalStyleZIndex = target.style.zIndex;
           target.dataset.wasDragged = "false";
 
@@ -201,33 +205,40 @@ export const useEditablePage = (
             }
 
             // reset the styles
-            Object.assign(element.style, {
-              transform: "none",
-              transition: "none",
-              position: target.dataset.originalStylePos ?? "relative",
-              zIndex: target.dataset.originalStyleZIndex ?? "",
-              top: "",
-              left: "",
-              width: "auto",
-              height: "auto",
+            requestAnimationFrame(() => {
+              Object.assign(element.style, {
+                transform: "none",
+                transition: "none",
+                position: target.dataset.originalStylePos ?? "relative",
+                zIndex: target.dataset.originalStyleZIndex ?? "",
+                top: "",
+                left: "",
+                width: "auto",
+                height: "auto",
+              });
             });
           }
 
           // Important: only remove the `moving` class after we've collected the positions
           // otherwise the elements will snap back to their original position
-          target.classList.remove("moving");
-
-          dragCallbacks.onDragEnd(updatedPositions, event);
+          requestAnimationFrame(() => {
+            target.classList.remove("moving");
+            dragCallbacks.onDragEnd(updatedPositions, event);
+          });
 
           setTimeout(() => {
             target.dataset.wasDragged = "false";
-          }, 300);
+          }, 200);
         },
 
         move: (event: Interact.InteractEvent) => {
           const target = event.target as HTMLElement;
           target.dataset.wasDragged = "true";
-          target.classList.add("moving");
+
+          requestAnimationFrame(() => {
+            target.classList.add("moving");
+          });
+
           const elements = selectedGroup ? selectedGroup.map(getBrickRef) : [target];
           elements.forEach((element) => {
             if (!element) return;
@@ -241,7 +252,7 @@ export const useEditablePage = (
     });
 
     interactable.current.resizable({
-      inertia: true,
+      // inertia: true,
       ignoreFrom: ".resize-handle-disabled",
       listeners: {
         start: (event) => {
@@ -264,22 +275,26 @@ export const useEditablePage = (
             transform: `translate(${tempX}px, ${tempY}px)`,
           };
 
-          target.classList.add("moving");
-          Object.assign(target.style, newStyle);
           Object.assign(target.dataset, { tempX, tempY });
+
+          requestAnimationFrame(() => {
+            target.classList.add("moving");
+            Object.assign(target.style, newStyle);
+          });
         },
         end: (event) => {
           const target = event.target as HTMLElement;
           const gridPos = getGridPosition(target, gridConfig);
 
-          Object.assign(target.style, {
-            width: "",
-            height: "",
-            transform: "none",
+          requestAnimationFrame(() => {
+            Object.assign(target.style, {
+              width: "",
+              height: "",
+              transform: "none",
+            });
+            target.classList.remove("moving");
+            resizeCallbacks.onResizeEnd(target.id, gridPos, event);
           });
-
-          target.classList.remove("moving");
-          resizeCallbacks.onResizeEnd(target.id, gridPos, event);
         },
       },
       modifiers: [

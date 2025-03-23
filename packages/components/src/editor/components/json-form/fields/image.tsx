@@ -1,23 +1,16 @@
 import type { FieldProps } from "./types";
 import { nanoid } from "nanoid";
-import { Button, Text, Tooltip, IconButton } from "@upstart.gg/style-system/system";
+import { Button, TextField, Tooltip, IconButton, Select } from "@upstart.gg/style-system/system";
 import { useMemo, useState } from "react";
 import ModalSearchImage from "~/editor/components/ModalSearchImage";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import { IoIosHelpCircleOutline } from "react-icons/io";
 import { fieldLabel } from "../form-class";
 import trans from "./trans.svg?url";
+import { debounce } from "lodash-es";
 
 const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
-  const {
-    schema,
-    formData,
-    onChange,
-    required,
-    title,
-    description,
-    currentValue = { src: "", alt: "" },
-  } = props;
+  const { schema, formData, onChange, required, title, description, currentValue } = props;
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);
   // const [src, setSrc] = useState<string | null>(currentValue.src);
@@ -25,6 +18,8 @@ const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
   const onPropsChange = (newVal: Partial<ImageProps>) => {
     onChange({ ...(currentValue ?? {}), ...newVal });
   };
+
+  const debouncedOnPropsChange = debounce(onPropsChange, 300);
 
   return (
     <>
@@ -78,12 +73,45 @@ const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
         <>
           <div className="basis-full w-0" />
           <div
-            className="border border-upstart-200 p-2 mt-3 ml-auto"
+            className="border border-upstart-200 p-2 mt-3 ml-auto w-full h-auto"
             style={{
               backgroundImage: `url(${trans})`,
+              backgroundSize: "12px 12px",
             }}
           >
             <img src={currentValue.src} alt="Preview" className="max-w-full h-auto" />
+          </div>
+          <div className="basis-full w-0" />
+          <div className="flex justify-between gap-12 flex-1 items-center mt-3">
+            <label className={fieldLabel}>Alt text</label>
+            <TextField.Root
+              defaultValue={currentValue.alt}
+              className="!flex-1"
+              onChange={(e) => debouncedOnPropsChange({ alt: e.target.value })}
+              required={required}
+              spellCheck={!!schema["ui:spellcheck"]}
+            />
+          </div>
+          <div className="basis-full w-0" />
+          <div className="flex justify-between gap-12 flex-1 items-center mt-3 pr-1.5">
+            <label className={fieldLabel}>Fit</label>
+            <Select.Root
+              defaultValue={currentValue.fit}
+              size="2"
+              onValueChange={(value) => onPropsChange({ fit: value as ImageProps["fit"] })}
+            >
+              <Select.Trigger radius="large" variant="ghost" />
+              <Select.Content position="popper">
+                <Select.Group>
+                  {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
+                  {schema.properties.fit.anyOf.map((item: any) => (
+                    <Select.Item key={item.const} value={item.const}>
+                      {item.title}
+                    </Select.Item>
+                  ))}
+                </Select.Group>
+              </Select.Content>
+            </Select.Root>
           </div>
         </>
       )}
