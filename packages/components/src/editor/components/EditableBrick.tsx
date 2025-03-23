@@ -118,7 +118,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     return (
       <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
         <div
-          role="button"
+          // role="button"
           id={brick.id}
           data-brick-id={brick.id}
           data-x={brick.position[previewMode].x}
@@ -209,9 +209,6 @@ function BrickMainNavBar({ brick }: { brick: Brick }) {
     return null;
   }
 
-  if (brick.type === "text") {
-    console.log("text manifest", manifest);
-  }
   return (
     <nav className={menuNavBarCls}>
       {manifest.presets && (

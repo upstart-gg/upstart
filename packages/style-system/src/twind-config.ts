@@ -47,6 +47,12 @@ export default defineConfig({
         width: "100dvw",
       },
     ],
+
+    [
+      /^bg-color-\[([\S]+)\]$/,
+      ({ 1: $1 }) => ({ "--up-bg-color": `${$1}`, backgroundColor: "var(--up-bg-color)" }),
+    ],
+
     [
       "bg-neutral-",
       ({ $$ }) => ({

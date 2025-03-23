@@ -18,21 +18,7 @@ import {
 import { useEffect, useState } from "react";
 
 export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
-  const {
-    currentValue = {
-      color: "#000000",
-      radius: "rounded-none",
-      side: ["all"],
-      style: "border-solid",
-      width: "border-0",
-    },
-    onChange,
-    required,
-    title,
-    description,
-    placeholder,
-    schema,
-  } = props;
+  const { currentValue, onChange, required, title, description, placeholder, schema } = props;
   const onSettingsChange = (newVal: Partial<BorderSettings>) => onChange({ ...currentValue, ...newVal });
   const [currentSide, setSide] = useState<string[]>(currentValue.side ?? ["all"]);
 
@@ -89,27 +75,7 @@ export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
         </div>
         {/* break */}
         <div className="basis-full w-0" />
-        {/* border radius */}
-        <div className="flex flex-col gap-1 flex-1">
-          <label className={fieldLabel}>Rounding</label>
-          <Select.Root
-            defaultValue={currentValue.radius}
-            size="2"
-            onValueChange={(value) => onSettingsChange({ radius: value as BorderSettings["radius"] })}
-          >
-            <Select.Trigger radius="large" variant="ghost" />
-            <Select.Content position="popper">
-              <Select.Group>
-                {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
-                {schema.properties.radius.anyOf.map((item: any) => (
-                  <Select.Item key={item.const} value={item.const}>
-                    {item.title}
-                  </Select.Item>
-                ))}
-              </Select.Group>
-            </Select.Content>
-          </Select.Root>
-        </div>
+
         {/* border color */}
         <div className="flex flex-col gap-1 flex-1">
           <label className={fieldLabel}>Color</label>
@@ -119,42 +85,31 @@ export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
             onChange={(e) => onChange({ ...currentValue, color: e })}
           />
         </div>
-        {/* break */}
-        <div className="basis-full w-0" />
-        {/* border side */}
-        <div className="flex flex-1 justify-between">
+
+        <div className="flex flex-col gap-1 flex-1">
           <label className={fieldLabel}>Side</label>
-          <div className="flex divide-x divide-gray-300 dark:divide-dark-500 rounded bg-gray-100 border border-gray-300">
+          <div className="inline-flex divide-x divide-gray-300 dark:divide-dark-500 rounded bg-gray-100 border grow-0 border-gray-300 max-w-min">
             {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
             {schema.properties.side.items.anyOf.map((option: any) => (
               <button
                 type="button"
                 key={option.const}
                 onClick={() => {
-                  if (option.const === "all") {
-                    const side = ["all"];
-                    setSide(side);
-                    onSettingsChange({
-                      side: ["all"],
-                    });
-                  } else {
-                    const side = currentSide.includes(option.const)
-                      ? currentSide.filter((s) => s !== option.const && s !== "all")
-                      : [...currentSide.filter((s) => s !== "all"), option.const];
-                    setSide(side);
-                    onSettingsChange({
-                      side,
-                    });
-                  }
+                  const side = currentSide.includes(option.const)
+                    ? currentSide.filter((s) => s !== option.const)
+                    : [...currentSide, option.const];
+                  setSide(side);
+                  onSettingsChange({
+                    side,
+                  });
                 }}
                 className={tx(
-                  "p-1 px-2 flex items-center justify-center first:rounded-l last:rounded-r",
+                  "p-1 px-2 inline-flex  first:rounded-l last:rounded-r",
                   currentSide.includes(option.const)
-                    ? "bg-upstart-500 text-white/80 "
+                    ? "bg-upstart-500 text-white"
                     : "bg-gray-100 hover:bg-gray-300 dark:bg-dark-600 dark:hover:bg-dark-500 text-gray-500 dark:text-white/50 ",
                 )}
               >
-                {option.const === "all" && <MdBorderAll className="w-4 h-4" />}
                 {option.const === "border-t" && <MdBorderTop className="w-4 h-4" />}
                 {option.const === "border-b" && <MdBorderBottom className="w-4 h-4" />}
                 {option.const === "border-l" && <MdBorderLeft className="w-4 h-4" />}

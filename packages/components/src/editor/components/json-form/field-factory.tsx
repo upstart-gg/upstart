@@ -7,6 +7,7 @@ import ColorField from "./fields/color";
 import EnumField from "./fields/enum";
 import ImageField from "./fields/image";
 import { BorderField } from "./fields/border";
+import { BorderSideField } from "./fields/border-side";
 import { PathField, StringField } from "./fields/string";
 import { NumberField, SliderField } from "./fields/number";
 import SwitchField from "./fields/switch";
@@ -96,6 +97,18 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
           key={`field-${id}`}
           currentValue={currentValue}
           onChange={(value: BorderSettings | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
+    case "border-side": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as BorderSettings["side"];
+      return (
+        <BorderSideField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: BorderSettings["side"] | null) => onChange({ [id]: value }, id)}
           {...commonProps}
         />
       );

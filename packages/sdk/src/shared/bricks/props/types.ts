@@ -1,4 +1,4 @@
-import type { Static, TProperties, TSchema } from "@sinclair/typebox";
+import type { Static, TObject, TProperties, TSchema } from "@sinclair/typebox";
 import type { BrickManifest } from "~/shared/brick-manifest";
 import type { Brick } from "~/shared/bricks";
 
@@ -49,4 +49,6 @@ export type PropGroup<T extends TProperties = TProperties> = {
   category: BrickPropCategory;
   children: T;
   metadata?: GroupMetadata;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  options?: Record<string, any>;
 };

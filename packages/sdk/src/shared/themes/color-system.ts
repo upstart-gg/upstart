@@ -4,7 +4,7 @@ export { default as chroma } from "chroma-js";
 import { colors, css, tx } from "@upstart.gg/style-system/twind";
 
 export type ColorType = "primary" | "secondary" | "accent" | "neutral";
-export type ElementColorType = "page-background" | "background" | "text" | "page-text" | "border" | "shadow";
+export type ElementColorType = "page-background" | "background" | "text" | "border" | "shadow";
 
 export type HarmonyType = "complementary" | "analogous" | "triadic" | "split-complementary" | "tetradic";
 
@@ -215,6 +215,13 @@ export function propToStyle(prop: string | number | undefined, cssAttr: string) 
   }
   // @ts-ignore
   return isStandardColor(prop) || typeof prop === "number" ? css({ [cssAttr as string]: prop }) : tx(prop);
+}
+
+export function propToClass(value: string | number | undefined, classPrefix: string) {
+  if (typeof value === "undefined") {
+    return undefined;
+  }
+  return isStandardColor(value) || typeof value === "number" ? `${classPrefix}-[${value}]` : value;
 }
 
 export function generateColorsVars(theme: Theme) {

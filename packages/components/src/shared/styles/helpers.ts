@@ -1,14 +1,10 @@
 import { css, tx } from "@upstart.gg/style-system/twind";
-import { propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
+import { propToClass, propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
 import type {
   BackgroundSettings,
   BackgroundColorSettings,
 } from "@upstart.gg/sdk/shared/bricks/props/background";
-import type {
-  OpacitySettings,
-  ShadowSettings,
-  TextShadowSettings,
-} from "@upstart.gg/sdk/shared/bricks/props/effects";
+import type { OpacitySettings } from "@upstart.gg/sdk/shared/bricks/props/effects";
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import type { FixedPositionedSettings, PositionSettings } from "@upstart.gg/sdk/shared/bricks/props/position";
 import type { PaddingSettings } from "@upstart.gg/sdk/shared/bricks/props/padding";
@@ -28,53 +24,56 @@ export function getBackgroundStyles(props: BackgroundSettings) {
   ];
 }
 
-export function getBackgroundColorStyles(value: BackgroundColorSettings) {
-  return propToStyle(value, "backgroundColor");
+function getBackgroundColorStyles(value: BackgroundColorSettings, mobileValue?: BackgroundColorSettings) {
+  if (!mobileValue) {
+    return propToClass(value, "bg");
+  }
+  return `@desktop:(${propToClass(value, "bg-color")}) @mobile:(${propToClass(mobileValue, "bg-color")})`;
 }
 
-export function getColorStyles(value: ColorSettings) {
+function getColorStyles(value: ColorSettings, mobileValue?: ColorSettings) {
+  // if (!mobileValue) {
+  //   return propToClass(value, "text");
+  // }
+  // return `@desktop:(${propToClass(value, "text")}) @mobile:(${propToClass(mobileValue, "text")})`;
   return propToStyle(value, "color");
 }
 
-export function getOpacityStyles(opacity: OpacitySettings) {
+function getOpacityStyles(opacity: OpacitySettings) {
   return propToStyle(opacity, "opacity");
 }
 
-export function getShadowStyles(value: ShadowSettings) {
-  return value;
+function getPaddingStyles(value: PaddingSettings, mobileValue?: PaddingSettings) {
+  if (!mobileValue) {
+    return value;
+  }
+  return `@desktop:(${value ?? mobileValue}) @mobile:(${mobileValue})`;
 }
 
-export function getPaddingStyles(value: PaddingSettings) {
-  return value;
+function simpleClassHandler(value: string, mobileValue?: string) {
+  if (!mobileValue) {
+    return value;
+  }
+  return `@desktop:(${value ?? mobileValue}) @mobile:(${mobileValue})`;
 }
 
-export function getTextShadowStyles(value: TextShadowSettings) {
-  return value;
-}
-
-export function getFixedPositionedStyles(value: FixedPositionedSettings) {
+function getFixedPositionedStyles(value: FixedPositionedSettings) {
   if (!value) {
     return null;
   }
   return tx("fixed top-inherit left-auto right-auto self-start w-fill z-[99999] isolate");
 }
 
-export function getBorderStyles(props?: Partial<BorderSettings>) {
+function getBorderStyles(props?: Partial<BorderSettings>) {
   if (!props) {
     return null;
   }
-  const {
-    width = "border-0",
-    side = ["all"],
-    color = "border-transparent",
-    style = "border-solid",
-    radius = "rounded-none",
-  } = props;
+  const { width = "border-0", side = ["all"], color = "border-transparent", style = "border-solid" } = props;
   let borderProcessedClass = "";
 
   const originalWith = width.includes("-") ? width.split("-")[1] : null;
 
-  if (!props.side?.includes("all")) {
+  if (props.side?.length) {
     borderProcessedClass = side
       .map((side) => {
         return `${side}${originalWith ? `-${originalWith}` : ""}`;
@@ -84,7 +83,7 @@ export function getBorderStyles(props?: Partial<BorderSettings>) {
     borderProcessedClass = width;
   }
 
-  return [propToStyle(color, "borderColor"), radius, style, borderProcessedClass];
+  return [propToStyle(color, "borderColor"), style, borderProcessedClass];
 }
 
 export function getBasicAlignmentStyles(props: AlignBasicSettings, mobileProps?: AlignBasicSettings) {
@@ -122,13 +121,14 @@ export const brickStylesHelpersMap = {
   "#styles:color": getColorStyles,
   "#styles:basicAlign": getBasicAlignmentStyles,
   "#styles:border": getBorderStyles,
+  "#styles:rounding": simpleClassHandler,
   "#styles:flex": getFlexStyles,
 
   // "#styles:shadow": getShadowStyles,
-  "#styles:textShadow": getTextShadowStyles,
+  "#styles:textShadow": simpleClassHandler,
   "#styles:opacity": getOpacityStyles,
 };
 export const brickWrapperStylesHelpersMap = {
-  "#styles:shadow": getShadowStyles,
+  "#styles:shadow": simpleClassHandler,
   "#styles:fixedPositioned": getFixedPositionedStyles,
 };

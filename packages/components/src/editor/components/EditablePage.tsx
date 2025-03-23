@@ -113,9 +113,11 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
             );
             draft.updateBrick(brick.id, { sectionId });
             draft.updateBrickPosition(brick.id, previewMode, {
-              ...draft.getBrick(brick.id)!.position[previewMode],
+              // ...draft.getBrick(brick.id)!.position[previewMode],
               x: gridPosition.x,
               y: gridPosition.y,
+              w: gridPosition.w,
+              h: gridPosition.h,
             });
           });
         }
@@ -174,8 +176,8 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           }, 200);
 
           // auto select the new brick
-          editorHelpers.setSelectedBrickId(newBrick.id);
-          editorHelpers.setPanel("inspector");
+          // editorHelpers.setSelectedBrickId(newBrick.id);
+          // editorHelpers.setPanel("inspector");
         } else {
           console.warn("Can't drop here");
         }

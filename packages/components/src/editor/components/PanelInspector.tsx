@@ -22,7 +22,7 @@ import BrickSettingsView from "./BrickSettingsView";
 type TabType = "preset" | "style" | "content";
 
 export default function Inspector() {
-  const { getParentBrick, updateBrickProps } = useDraftHelpers();
+  const { getParentBrick } = useDraftHelpers();
   const getBrickInfo = useGetBrick();
   const { hidePanel, setSelectedBrickId, deselectBrick } = useEditorHelpers();
   const previewMode = usePreviewMode();

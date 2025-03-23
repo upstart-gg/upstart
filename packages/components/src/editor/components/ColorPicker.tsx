@@ -256,7 +256,13 @@ function ColorPillList({
               `bg-${color} hover:outline-gray-300 hover:scale-110`,
             )}
             onClick={() => {
-              onChange(`bg-${color}`);
+              if (elementColorType.includes("background")) {
+                onChange(`bg-${color}`);
+              } else if (elementColorType.includes("text")) {
+                onChange(`text-${color}`);
+              } else if (elementColorType.includes("border")) {
+                onChange(`border-${color}`);
+              }
             }}
           />
         ))}
@@ -370,16 +376,7 @@ function getAvailableColorsAndShadesForElement(elementType: ElementColorType) {
       ],
     };
   }
-  if (elementType === "page-text") {
-    return {
-      colors: ["gray", "neutral"],
-      shades: ["50", "100", "800", "900"],
-      colorButtons: [
-        { label: "White", value: "#FFFFFF" },
-        { label: "Black", value: "#000000" },
-      ],
-    };
-  }
+
   if (elementType === "border") {
     return {
       colors: ["primary", "secondary", "accent", "neutral"],
@@ -464,34 +461,6 @@ export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
           />
         </Tabs.Content>
       </Tabs.Root>
-    );
-  }
-
-  if (elementColorType === "page-text") {
-    return (
-      <ColorPillList
-        type="solid"
-        elementColorType={elementColorType}
-        currentColor={initialValue}
-        cols={shades.length}
-        colors={makeCominations(colors, shades)}
-        onChange={onChange}
-      >
-        {colorButtons && (
-          <div className={tx(`flex gap-3 mt-1`, `col-span-${shades.length}`)}>
-            {colorButtons.map((button) => (
-              <button
-                key={button.value}
-                type="button"
-                onClick={() => onChange(button.value)}
-                className="flex-1 h-6 text-xs rounded-lg outline outline-gray-200 hover:outline-gray-300"
-              >
-                {button.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </ColorPillList>
     );
   }
 

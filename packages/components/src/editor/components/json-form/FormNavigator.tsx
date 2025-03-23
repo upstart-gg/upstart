@@ -47,7 +47,7 @@ export const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
             key={item.id}
             className={tx(
               `select-none p-2.5 flex items-center text-[0.9rem] justify-between border-b last:border-b-0 border-gray-200
-            dark:border-dark-400 transition-colors duration-200 flex-wrap`,
+            dark:border-dark-400 transition-colors duration-200 flex-wrap font-medium`,
               item.children && "cursor-pointer hover:bg-upstart-50 dark:hover:bg-dark-600",
             )}
             onClick={() => {
@@ -71,7 +71,7 @@ function SchemaField({ item, brickId }: { item: NavItemProperty; brickId?: strin
     brickId,
     parents: item.path.split(".").slice(0, -1),
   });
-  return fields.length ? fields : <div>No fields for {item.id} </div>;
+  return fields.length ? fields : <div className="text-red-500 font-medium">No fields for {item.id} </div>;
 }
 
 // Main navigation component
@@ -115,7 +115,7 @@ const FormNavigator: FC<FormNavigatorProps> = ({
       // wait for end of animation
       setTimeout(() => {
         for (const entry of entries) {
-          const target = (entry.target as HTMLElement).closest(".navigator-view");
+          const target = (entry.target as HTMLElement)?.closest(".navigator-view");
           if (!target?.clientHeight) return;
           if (ref.current && target.scrollHeight - target.clientHeight > 5) {
             ref.current.style.minHeight = `${target.scrollHeight + 2}px`;
@@ -127,8 +127,10 @@ const FormNavigator: FC<FormNavigatorProps> = ({
   );
 
   // Navigate to a new view
-  const navigateTo = useCallback((item: NavItem) => {
-    setAnimationDirection("forward");
+  const navigateTo = useCallback((item: NavItem, direction: typeof animationDirection = "forward") => {
+    setAnimationDirection(direction);
+
+    console.log("Navigating to", item);
 
     const content = item.children ? <NavList items={item.children} /> : <div>content: {item.label}</div>;
     const title = item.label ?? "Untitled";
@@ -158,21 +160,16 @@ const FormNavigator: FC<FormNavigatorProps> = ({
   // Get animation classes based on direction
   const getAnimationClass = () => {
     if (!animationDirection) return "";
-    if (initialGroup && !refNavigated.current) {
-      return "";
-    }
     return animationDirection === "forward" ? "animate-slide-in" : "animate-slide-back";
   };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (initialGroup && !refNavigated.current) {
+      refNavigated.current = true;
       const item = navItems.find((item) => item.id === initialGroup);
       if (item) {
-        navigateTo(item);
-        setTimeout(() => {
-          refNavigated.current = true;
-        }, 0);
+        navigateTo(item, null);
       }
     }
   }, []);
@@ -207,7 +204,7 @@ const FormNavigator: FC<FormNavigatorProps> = ({
               "flex items-center p-2.5 border-b border-gray-200 dark:border-dark-400 bg-gray-50 sticky top-0 z-10",
             )}
           >
-            {!initialGroup && viewStack.length > 1 ? (
+            {viewStack.length > 1 ? (
               <button
                 type="button"
                 className={tx(

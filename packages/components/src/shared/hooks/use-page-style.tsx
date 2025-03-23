@@ -101,6 +101,9 @@ export function usePageStyle({
         &>div:not(.moving) {
           outline: 2px dotted #d3daf250 !important;
         }
+        & [data-floating-ui-portal] {
+          display: none;
+        }
       }
     `,
   );

@@ -10,11 +10,13 @@ export function group<T extends TProperties>({
   children,
   category = "settings",
   metadata,
+  options,
 }: PartialBy<PropGroup<T>, "category">): TObject<T> {
   // Create the TypeBox schema with title as a standard property
   // and group-specific info in metadata
   return Type.Object(children, {
     title,
+    ...options,
     metadata: {
       category,
       group: true,

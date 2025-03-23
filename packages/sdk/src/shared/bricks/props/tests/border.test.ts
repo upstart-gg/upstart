@@ -25,18 +25,6 @@ describe("Border prop test suite", () => {
       });
     });
 
-    describe("border.radius", () => {
-      it("should have correct metadata", () => {
-        const radiusProp = borderSchema.properties.radius;
-        expect(radiusProp.$id).toBe("borderRadius");
-        expect(radiusProp.title).toBe("Rounding");
-        expect(radiusProp.description).toBe("Corners rounding");
-        expect(radiusProp["ui:field"]).toBe("enum");
-        expect(radiusProp["ui:display"]).toBe("button-group");
-        expect(radiusProp.default).toBe("rounded-none");
-      });
-    });
-
     describe("border.style", () => {
       it("should have correct metadata", () => {
         const styleProp = borderSchema.properties.style;

@@ -14,6 +14,7 @@ import {
 
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { useHotkeys } from "react-hotkeys-hook";
+import { useEditorHelpers } from "./use-editor";
 // Types
 interface PopoverOptions {
   Component: FC<{ brickId: string; group: string }>;
@@ -50,6 +51,8 @@ export const useBrickSettingsPopover = ({
   const observerRef = useRef<MutationObserver | null>(null);
   const registeredElements = useRef<Set<HTMLElement>>(new Set());
 
+  const { setSelectedBrickId } = useEditorHelpers();
+
   // Set up floating UI
   const { refs, floatingStyles, context, isPositioned, update } = useFloating({
     open: state.isOpen,
@@ -77,6 +80,7 @@ export const useBrickSettingsPopover = ({
   function closePopover() {
     console.debug("close popover");
     setState((prev) => ({ ...prev, isOpen: false }));
+    setSelectedBrickId();
   }
 
   // Helper for opening the popover
@@ -98,8 +102,10 @@ export const useBrickSettingsPopover = ({
     if (element.dataset.brickMenuOffset) {
       const offset = parseInt(element.dataset.brickMenuOffset);
       setState((prev) => ({ ...prev, offset }));
-      // update();
+      update();
     }
+
+    setSelectedBrickId(parentBrick?.id);
   };
 
   // Attach event listeners to an element

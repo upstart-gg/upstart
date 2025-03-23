@@ -296,7 +296,7 @@ const defaultAttributes = {
     "ui:field": "color",
     "ui:group": "layout",
     "ui:group:title": "Page Layout",
-    "ui:color-type": "page-text",
+    "ui:color-type": "text",
   }),
 
   $siteHeadTags: Type.Optional(

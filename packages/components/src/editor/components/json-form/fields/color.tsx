@@ -105,7 +105,7 @@ type ColorElementPreviewPillProps = {
 
 function formatColorName(color?: ElementColor) {
   if (!color) {
-    return null;
+    return "transparent";
   }
   if (color === "color-auto") {
     return "auto";
@@ -121,6 +121,9 @@ function formatColorName(color?: ElementColor) {
   }
   if (color.startsWith("preset-")) {
     return "preset";
+  }
+  if (color.startsWith("border-")) {
+    return color.substring(7);
   }
   if (color.startsWith("var(")) {
     return color
@@ -145,7 +148,7 @@ function ColorElementPreviewPill({
   return (
     <Popover.Root>
       <Popover.Trigger>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 font-normal">
           {formatColorName(color)}
           <button
             type="button"
@@ -264,9 +267,6 @@ function ColorElementPopover({
     case "page-background":
     case "background":
       width = "310px";
-      break;
-    case "page-text":
-      width = "180px";
       break;
     case "border":
       width = "186px";

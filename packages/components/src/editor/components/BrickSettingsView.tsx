@@ -6,7 +6,6 @@ import type { NavItem } from "./json-form/types";
 import { useCallback, useMemo } from "react";
 import { merge, set } from "lodash-es";
 import { useDraftHelpers, useGetBrick, usePreviewMode } from "~/editor/hooks/use-editor";
-import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
 type SchemaFilter = (prop: TSchema, key: string) => boolean;
 
@@ -17,7 +16,6 @@ function getNavItemsFromManifest(
   filter = defaultFilter,
   pathsParts: string[] = [],
 ): NavItem[] {
-  console.log("manifest.properties", manifest.properties);
   const items = Object.entries<TSchema>(manifest.properties)
     .filter(([, prop]) => prop["ui:field"] !== "hidden")
     .filter(([key, prop]) => filter(prop, key))
@@ -52,9 +50,9 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
   const brickInfo = getBrickInfo(brick.id);
   const filter: SchemaFilter = (prop) => {
     return (
-      (previewMode !== "mobile" ||
+      (typeof prop.metadata?.["ui:responsive"] === "undefined" ||
         prop.metadata?.["ui:responsive"] === true ||
-        prop.metadata?.["ui:responsive"] === "mobile") &&
+        prop.metadata?.["ui:responsive"] === previewMode) &&
       (!prop.metadata?.category || prop.metadata?.category === "settings")
       /* &&
       (!group || !prop.metadata?.group || (prop.metadata?.group && key === group))*/
