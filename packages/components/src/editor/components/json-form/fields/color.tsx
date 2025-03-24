@@ -12,7 +12,7 @@ import type { FieldProps } from "./types";
 import { IoCloseOutline } from "react-icons/io5";
 import { fieldLabel } from "../form-class";
 
-const ColorField: React.FC<FieldProps<string | undefined>> = (props) => {
+const ColorField: React.FC<FieldProps<string | undefined> & { hideColorLabel?: boolean }> = (props) => {
   const { schema, onChange, formSchema: formContext, currentValue, title, description } = props;
   const elementColorType = (schema["ui:color-type"] ??
     "page-background") as ColorElementPreviewPillProps["elementColorType"];
@@ -25,6 +25,7 @@ const ColorField: React.FC<FieldProps<string | undefined>> = (props) => {
       required={schema.required}
       onChange={onChange}
       elementColorType={elementColorType}
+      hideColorLabel={props.hideColorLabel}
     />
   );
 };
@@ -35,6 +36,7 @@ type ColorFieldRowProps = {
   description?: string;
   required?: boolean;
   showReset?: boolean;
+  hideColorLabel?: boolean;
 } & (
   | {
       color?: string;
@@ -71,6 +73,7 @@ export function ColorFieldRow({
   colorType,
   showReset,
   elementColorType,
+  hideColorLabel,
 }: ColorFieldRowProps) {
   return (
     <div className="color-field flex-1 flex items-center justify-between">
@@ -85,7 +88,13 @@ export function ColorFieldRow({
         </div>
       )}
       {colorType && (
-        <ColorBasePreviewPill onChange={onChange} colorType={colorType} color={color} showReset={showReset} />
+        <ColorBasePreviewPill
+          onChange={onChange}
+          colorType={colorType}
+          color={color}
+          showReset={showReset}
+          hideColorLabel={hideColorLabel}
+        />
       )}
       {elementColorType && (
         <ColorElementPreviewPill
@@ -93,6 +102,7 @@ export function ColorFieldRow({
           elementColorType={elementColorType}
           color={color}
           showReset={showReset}
+          hideColorLabel={hideColorLabel}
         />
       )}
     </div>
@@ -105,6 +115,7 @@ type ColorElementPreviewPillProps = {
   align?: "start" | "center" | "end";
   elementColorType: ElementColorType;
   showReset?: boolean;
+  hideColorLabel?: boolean;
   onChange: (newVal: ElementColor) => void;
 };
 
@@ -162,6 +173,7 @@ function ColorElementPreviewPill({
   side = "bottom",
   align = "end",
   showReset,
+  hideColorLabel,
 }: ColorElementPreviewPillProps) {
   const pillBgFile = color === "transparent" ? `url("${transSvg}")` : "none";
   const backgroundSize = color === "transparent" ? "12px 12px" : "auto";
@@ -170,7 +182,7 @@ function ColorElementPreviewPill({
     <Popover.Root>
       <Popover.Trigger>
         <div className="flex items-center gap-2 font-normal">
-          {formatColorName(color)}
+          {!hideColorLabel && formatColorName(color)}
           <button
             type="button"
             data-color={color}
@@ -218,6 +230,7 @@ type ColorBasePreviewPillProps = {
   align?: "start" | "center" | "end";
   colorType: ColorType;
   showReset?: boolean;
+  hideColorLabel?: boolean;
   onChange: (newVal: string) => void;
 };
 
@@ -228,6 +241,7 @@ function ColorBasePreviewPill({
   side = "bottom",
   align = "center",
   showReset,
+  hideColorLabel,
 }: ColorBasePreviewPillProps) {
   const pillBgFile = color === "transparent" ? `url("${transSvg}")` : "none";
   const backgroundSize = color === "transparent" ? "100% 100%" : "auto";
@@ -235,7 +249,7 @@ function ColorBasePreviewPill({
     <Popover.Root>
       <Popover.Trigger>
         <div className="flex items-center gap-2">
-          {formatColorName(color)}
+          {!hideColorLabel && formatColorName(color)}
           <button
             type="button"
             className={tx(
