@@ -14,7 +14,7 @@ import { UploaderProvider } from "./UploaderContext";
 
 import "@radix-ui/themes/styles.css";
 import "@upstart.gg/style-system/radix.css";
-import "@upstart.gg/style-system/default-theme.css";
+// import "@upstart.gg/style-system/default-theme.css";
 import "@upstart.gg/style-system/tiptap-text-editor.css";
 import "@upstart.gg/style-system/react-resizable.css";
 import { DatasourceProvider } from "~/shared/hooks/use-datasource";

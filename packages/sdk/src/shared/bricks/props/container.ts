@@ -206,7 +206,7 @@ export function layoutType({
 
 export type LayoutTypeSettings = Static<ReturnType<typeof layoutType>>;
 
-export function containerProps() {
+export function makeContainerProps() {
   return {
     $childrenType: Type.Optional(
       Type.String({
@@ -216,7 +216,7 @@ export function containerProps() {
         "ui:field": "brick-type",
       }),
     ),
-    $childrenBricks: Type.Array(Type.Any(), {
+    $children: Type.Array(Type.Any(), {
       $id: "#container:childrenBricks",
       "ui:field": "hidden",
       description: "List of nested bricks",

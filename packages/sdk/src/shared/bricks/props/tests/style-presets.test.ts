@@ -40,7 +40,6 @@ describe("Style presets test suite", () => {
         color: "border-secondary-900",
         style: "border-solid",
         width: "border",
-        radius: "rounded-sm",
       });
       expect(styles.shadow).toBe("shadow-sm");
       expect(styles.color).toBe("text-secondary-50");

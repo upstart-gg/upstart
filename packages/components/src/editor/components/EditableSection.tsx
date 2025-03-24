@@ -38,7 +38,7 @@ export default function EditableSection({ section, gridConfig }: EditableSection
     <section key={id} id={id} data-element-kind="section" className={className}>
       <SectionOptionsButtons section={section} />
       {bricks
-        .filter((b) => !b.position[previewMode]?.hidden)
+        .filter((b) => !b.position[previewMode]?.hidden && !b.parentId)
         .map((brick, index) => {
           const resizeOpts = getBrickResizeOptions(brick, manifests[brick.type], previewMode);
           const brickWithDef = brickWithDefaults(brick);

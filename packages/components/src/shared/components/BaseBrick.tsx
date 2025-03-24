@@ -9,7 +9,6 @@ import {
 } from "react";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
-import { useSelectedBrickId } from "~/editor/hooks/use-editor";
 
 // Load all bricks in the bricks directory
 const bricks = import.meta.glob<false, string, { default: ComponentType<unknown> }>(["../bricks/*.tsx"]);
@@ -26,8 +25,15 @@ const bricksMap = Object.entries(bricks).reduce(
   {} as Record<string, LazyExoticComponent<ComponentType<any>>>,
 );
 
-const BaseBrick = ({ brick, editable }: { brick: Brick; editable?: boolean } & ComponentProps<"div">) => {
-  const selectedBrickId = useSelectedBrickId();
+const BaseBrick = ({
+  brick,
+  editable,
+  selectedBrickId,
+}: {
+  brick: Brick;
+  editable?: boolean;
+  selectedBrickId?: string;
+} & ComponentProps<"div">) => {
   const BrickModule = bricksMap[brick.type];
 
   if (!BrickModule) {

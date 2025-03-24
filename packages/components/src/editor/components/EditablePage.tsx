@@ -78,7 +78,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     }
   }
 
-  useEditablePage(".brick:not(.container-child):not([data-no-drag='true'])", pageRef, {
+  useEditablePage("[data-brick]:not(.container-child):not([data-no-drag='true'])", pageRef, {
     dragOptions: {
       // enabled: previewMode === "desktop",
     },
@@ -235,8 +235,8 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         !target.closest("#text-editor-menubar") &&
         !target.matches("html") &&
         !target.matches("body") &&
-        !target.matches(".brick") &&
-        !target.closest(".brick")
+        !target.matches("[data-brick]") &&
+        !target.closest("[data-brick]")
       ) {
         console.debug("click out, hidding", event, event.target);
         editorHelpers.deselectBrick();
@@ -337,7 +337,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       </div>
       <Selecto
         className="selecto"
-        selectableTargets={[".brick:not(.container-child)"]}
+        selectableTargets={["[data-brick]:not(.container-child)"]}
         selectFromInside={false}
         hitRate={1}
         selectByClick={false}

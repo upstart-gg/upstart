@@ -11,9 +11,11 @@ export default function Section({ section, bricks }: EditableSectionProps) {
   const className = useSectionStyle({ section });
   return (
     <section key={section.id} id={section.id} data-element-kind="section" className={className}>
-      {bricks.map((brick, index) => {
-        return <BrickWrapper key={brick.id} brick={brick} />;
-      })}
+      {bricks
+        .filter((b) => !b.parentId)
+        .map((brick) => {
+          return <BrickWrapper key={brick.id} brick={brick} />;
+        })}
     </section>
   );
 }

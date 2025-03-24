@@ -18,7 +18,8 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
       ref={ref}
       data-brick-group="container"
       className={tx(
-        "flex-1 flex px-4",
+        // Always apply the "brick" class
+        "flex-1 flex px-4 brick",
         !props.container.backgroundColor && "bg-gradient-to-t from-gray-200 to-gray-50",
         styles.container,
       )}
@@ -38,7 +39,7 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
             <img
               src={props.brand.logo.src}
               alt={props.brand.logo.alt ?? "Logo"}
-              className={`h-full max-h-[${brick.position.desktop.h * LAYOUT_ROW_HEIGHT - 10}px] flex-1`}
+              className={`h-full max-h-[${brick.position.desktop.h * LAYOUT_ROW_HEIGHT - 18}px] flex-1`}
             />
           )}
           {props.brand.name && !props.brand.hideText && (

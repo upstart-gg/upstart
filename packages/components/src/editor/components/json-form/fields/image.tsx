@@ -8,6 +8,10 @@ import { IoIosHelpCircleOutline } from "react-icons/io";
 import { fieldLabel } from "../form-class";
 import trans from "./trans.svg?url";
 import { debounce } from "lodash-es";
+import { IoCloseCircleOutline } from "react-icons/io5";
+import { AiOutlineCloseSquare } from "react-icons/ai";
+import { CgCloseR } from "react-icons/cg";
+import { IoMdClose } from "react-icons/io";
 
 const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
   const { schema, formData, onChange, required, title, description, currentValue } = props;
@@ -73,13 +77,16 @@ const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
         <>
           <div className="basis-full w-0" />
           <div
-            className="border border-upstart-200 p-2 mt-3 ml-auto w-full h-auto"
+            className="border border-upstart-200 p-2 mt-3 ml-auto w-full h-auto relative"
             style={{
               backgroundImage: `url(${trans})`,
               backgroundSize: "12px 12px",
             }}
           >
             <img src={currentValue.src} alt="Preview" className="max-w-full h-auto" />
+            <div className="absolute flex items-center justify-center top-1 right-1 text-gray-500 p-0.5 bg-white cursor-pointer hover:(bg-red-800 text-white) rounded border border-gray-300 shadow-sm">
+              <IoMdClose className="w-4 h-4 " onClick={() => onPropsChange({ src: "" })} />
+            </div>
           </div>
           <div className="basis-full w-0" />
           <div className="flex justify-between gap-12 flex-1 items-center mt-3">
@@ -93,48 +100,50 @@ const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
             />
           </div>
           <div className="basis-full w-0" />
-          <div className="flex gap-12 flex-1 mt-3 pr-1.5">
-            <div className="flex flex-col gap-2 flex-1">
-              <label className={fieldLabel}>Fit</label>
-              <Select.Root
-                defaultValue={currentValue.fit}
-                size="2"
-                onValueChange={(value) => onPropsChange({ fit: value as ImageProps["fit"] })}
-              >
-                <Select.Trigger radius="large" variant="ghost" />
-                <Select.Content position="popper">
-                  <Select.Group>
-                    {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
-                    {schema.properties.fit.anyOf.map((item: any) => (
-                      <Select.Item key={item.const} value={item.const}>
-                        {item.title}
-                      </Select.Item>
-                    ))}
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
+          {!schema["ui:no-object-options"] && (
+            <div className="flex gap-12 flex-1 mt-3 pr-1.5">
+              <div className="flex flex-col gap-2 flex-1">
+                <label className={fieldLabel}>Fit</label>
+                <Select.Root
+                  defaultValue={currentValue.fit}
+                  size="2"
+                  onValueChange={(value) => onPropsChange({ fit: value as ImageProps["fit"] })}
+                >
+                  <Select.Trigger radius="large" variant="ghost" />
+                  <Select.Content position="popper">
+                    <Select.Group>
+                      {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
+                      {schema.properties.fit.anyOf.map((item: any) => (
+                        <Select.Item key={item.const} value={item.const}>
+                          {item.title}
+                        </Select.Item>
+                      ))}
+                    </Select.Group>
+                  </Select.Content>
+                </Select.Root>
+              </div>
+              <div className="flex flex-col gap-2 flex-1">
+                <label className={fieldLabel}>Position</label>
+                <Select.Root
+                  defaultValue={currentValue.position}
+                  size="2"
+                  onValueChange={(value) => onPropsChange({ position: value as ImageProps["position"] })}
+                >
+                  <Select.Trigger radius="large" variant="ghost" />
+                  <Select.Content position="popper">
+                    <Select.Group>
+                      {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
+                      {schema.properties.position.anyOf.map((item: any) => (
+                        <Select.Item key={item.const} value={item.const}>
+                          {item.title}
+                        </Select.Item>
+                      ))}
+                    </Select.Group>
+                  </Select.Content>
+                </Select.Root>
+              </div>
             </div>
-            <div className="flex flex-col gap-2 flex-1">
-              <label className={fieldLabel}>Position</label>
-              <Select.Root
-                defaultValue={currentValue.position}
-                size="2"
-                onValueChange={(value) => onPropsChange({ position: value as ImageProps["position"] })}
-              >
-                <Select.Trigger radius="large" variant="ghost" />
-                <Select.Content position="popper">
-                  <Select.Group>
-                    {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
-                    {schema.properties.position.anyOf.map((item: any) => (
-                      <Select.Item key={item.const} value={item.const}>
-                        {item.title}
-                      </Select.Item>
-                    ))}
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
-            </div>
-          </div>
+          )}
         </>
       )}
       <ModalSearchImage

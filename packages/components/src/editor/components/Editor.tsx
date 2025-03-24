@@ -67,9 +67,8 @@ export default function Editor({ mode = "local", onDraftChange, ...props }: Edit
             .join("\n")}
 
           --color-link: var(--color-primary);
-
         }
-    }
+      }
     `;
 
     injectGlobal(injected);

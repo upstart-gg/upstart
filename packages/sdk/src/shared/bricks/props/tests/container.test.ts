@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { flex, grid, layoutType, containerProps } from "../container";
+import { flex, grid, layoutType, makeContainerProps } from "../container";
 
 describe("Container props test suite", () => {
   describe("flex", () => {
@@ -102,7 +102,7 @@ describe("Container props test suite", () => {
   describe("containerChildren", () => {
     describe("childrenType", () => {
       it("should have correct metadata", () => {
-        const childrenType = containerProps().$childrenType;
+        const childrenType = makeContainerProps().$childrenType;
         expect(childrenType.title).toBe("Dynamic child brick type");
         expect(childrenType["ui:field"]).toBe("brick-type");
       });
@@ -110,7 +110,7 @@ describe("Container props test suite", () => {
 
     describe("childrenBricks", () => {
       it("should have correct metadata", () => {
-        const childrenBricks = containerProps().$childrenBricks;
+        const childrenBricks = makeContainerProps().$children;
         expect(childrenBricks["ui:field"]).toBe("hidden");
         expect(childrenBricks.default).toEqual([]);
       });

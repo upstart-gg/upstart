@@ -92,7 +92,7 @@ export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable,
   return tx(
     apply(props.className as string),
     // no transition otherwise it will slow down the drag
-    "brick group/brick flex",
+    "brick-wrapper group/brick flex",
     styleIds.includes("#styles:fixedPositioned") === false && "relative",
     styleIds.includes("#styles:fixedPositioned") &&
       css({
@@ -143,7 +143,7 @@ function getBrickWrapperEditorStyles(
     return null;
   }
   return [
-    "select-none hover:z-[9999] transition-colors delay-300 duration-300 rounded-sm",
+    "select-none hover:z-[9999] transition-colors delay-300 duration-300",
     "outline outline-2 outline-transparent -outline-offset-1",
     selected && "outline-upstart-500 shadow-lg shadow-upstart-500/20",
     !selected && !isContainerChild && !isContainer && "hover:(outline-upstart-500/60)",

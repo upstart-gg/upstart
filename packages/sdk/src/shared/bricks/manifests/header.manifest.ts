@@ -163,7 +163,7 @@ export const manifest = defineBrickManifest({
       title: "Brand",
       children: {
         name: optional(textContent("Brand name", "Acme Inc.", { disableSizing: true })),
-        logo: optional(image("Logo")),
+        logo: optional(image("Logo", { noObjectOptions: true })),
         hideText: optional(boolean("Hide text")),
         color: color(),
       },

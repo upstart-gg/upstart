@@ -10,6 +10,8 @@ import {
   mergeAttributes,
   nodeInputRule,
 } from "@tiptap/react";
+import Placeholder from "@tiptap/extension-placeholder";
+
 import { RiArrowDownSLine } from "react-icons/ri";
 import StarterKit from "@tiptap/starter-kit"; // define your extension array
 import TextAlign from "@tiptap/extension-text-align";
@@ -167,7 +169,18 @@ const TextEditor = <T extends ElementType = "div">({
         color: "#FF9900",
       },
     }),
+    Placeholder.configure({
+      // Use a placeholder:
+      placeholder: "Write something …",
+      // Use different placeholders depending on the node type:
+      // placeholder: ({ node }) => {
+      //   if (node.type.name === 'heading') {
+      //     return 'What’s the title?'
+      //   }
 
+      //   return 'Can you add some further context?'
+      // },
+    }),
     ...(inline ? [Document.extend({ content: "paragraph" })] : []),
     ...(!noTextAlign
       ? [

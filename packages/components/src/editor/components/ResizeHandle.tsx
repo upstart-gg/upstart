@@ -14,16 +14,16 @@ export default function ResizeHandle({
         // test
         // direction === "s" && "resize-handle-disabled",
         {
-          "-bottom-0.5 left-px right-px h-1 w-[inherit] cursor-s-resize": direction === "s",
-          "top-px -left-0.5 bottom-px w-1 h-[inherit] cursor-w-resize": direction === "w",
-          "top-px -right-0.5 bottom-px w-1 h-[inherit] cursor-e-resize": direction === "e",
-          "-top-0.5 left-px right-px h-1 w-[inherit] cursor-n-resize": direction === "n",
+          "-bottom-0 left-0 right-0 h-1 w-[inherit] cursor-s-resize": direction === "s",
+          "top-0 -left-0 bottom-0 w-1 h-[inherit] cursor-w-resize": direction === "w",
+          "top-0 -right-0 bottom-0 w-1 h-[inherit] cursor-e-resize": direction === "e",
+          "-top-0 left-0 right-0 h-1 w-[inherit] cursor-n-resize": direction === "n",
           // sw and nw
-          "bottom-px left-px w-1 h-1 cursor-sw-resize": direction === "sw",
-          "top-px left-px w-1 h-1 cursor-nw-resize": direction === "nw",
+          "bottom-0 left-0 w-1 h-1 cursor-sw-resize": direction === "sw",
+          "top-0 left-0 w-1 h-1 cursor-nw-resize": direction === "nw",
           // se and ne
-          "bottom-px right-px w-1 h-1 cursor-se-resize": direction === "se",
-          "top-px right-px w-1 h-1 cursor-ne-resize": direction === "ne",
+          "bottom-0 right-0 w-1 h-1 cursor-se-resize": direction === "se",
+          "top-0 right-0 w-1 h-1 cursor-ne-resize": direction === "ne",
         },
       )}
     >

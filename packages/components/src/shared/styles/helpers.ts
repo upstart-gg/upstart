@@ -121,7 +121,7 @@ export const brickStylesHelpersMap = {
   "#styles:color": getColorStyles,
   "#styles:basicAlign": getBasicAlignmentStyles,
   "#styles:border": getBorderStyles,
-  "#styles:rounding": simpleClassHandler,
+
   "#styles:flex": getFlexStyles,
 
   // "#styles:shadow": getShadowStyles,
@@ -131,6 +131,7 @@ export const brickStylesHelpersMap = {
   "#styles:objectPosition": simpleClassHandler,
 };
 export const brickWrapperStylesHelpersMap = {
+  "#styles:rounding": simpleClassHandler,
   "#styles:shadow": simpleClassHandler,
   "#styles:fixedPositioned": getFixedPositionedStyles,
 };

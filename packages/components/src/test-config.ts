@@ -137,6 +137,51 @@ const hpBricks = defineBricks([
     },
   },
   {
+    type: "container",
+    sectionId: "header",
+    props: {
+      styles: {
+        background: {
+          color: "#f9f9f9",
+        },
+      },
+      $children: [
+        {
+          type: "text",
+          props: {
+            content: "Some text #1",
+          },
+        },
+        {
+          type: "text",
+          props: {
+            content: "Some text #2",
+          },
+        },
+        {
+          type: "text",
+          props: {
+            content: "Some text #3",
+          },
+        },
+      ],
+    },
+    position: {
+      mobile: {
+        x: 0,
+        y: 8,
+        w: "full",
+        h: 8,
+      },
+      desktop: {
+        x: 0,
+        y: 8,
+        w: "full",
+        h: 8,
+      },
+    },
+  },
+  {
     type: "text",
     sectionId: "content",
     props: {
