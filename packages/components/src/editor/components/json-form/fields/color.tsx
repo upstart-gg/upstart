@@ -1,7 +1,12 @@
 import { IconButton, Popover, Text } from "@upstart.gg/style-system/system";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import transSvg from "./trans.svg?url";
-import type { ColorType, ElementColor, ElementColorType } from "@upstart.gg/sdk/shared/themes/color-system";
+import {
+  isStandardColor,
+  type ColorType,
+  type ElementColor,
+  type ElementColorType,
+} from "@upstart.gg/sdk/shared/themes/color-system";
 import BaseColorPicker, { ElementColorPicker } from "~/editor/components/ColorPicker";
 import type { FieldProps } from "./types";
 import { IoCloseOutline } from "react-icons/io5";
@@ -125,6 +130,9 @@ function formatColorName(color?: ElementColor) {
   if (color.startsWith("border-")) {
     return color.substring(7);
   }
+  if (color.startsWith("bg-")) {
+    return color.substring(3);
+  }
   if (color.startsWith("var(")) {
     return color
       .substring(6, color.length - 1)
@@ -132,6 +140,19 @@ function formatColorName(color?: ElementColor) {
       .replace(/-+/, "");
   }
   return color;
+}
+
+function getColorPillBackgroundClass(color: string) {
+  if (color.startsWith("bg-")) {
+    return color;
+  }
+  if (color.match(/^(border|text|shadow)-/)) {
+    return color.replace(/^(border|text|shadow)-/, "bg-");
+  }
+  if (isStandardColor(color)) {
+    return `bg-[${color}]`;
+  }
+  return `bg-${color}`;
 }
 
 function ColorElementPreviewPill({
@@ -156,9 +177,12 @@ function ColorElementPreviewPill({
             data-element-color-type={elementColorType}
             className={tx(
               "rounded-full w-6 h-6 ring ring-transparent hover:ring-upstart-400 border border-gray-200",
+              getColorPillBackgroundClass(color ?? "bg-transparent"),
+              !color?.includes("gradient") &&
+                css({
+                  backgroundImage: pillBgFile,
+                }),
               css({
-                backgroundImage: pillBgFile,
-                backgroundColor: color === "transparent" ? "transparent" : color,
                 backgroundSize,
                 backgroundPosition: "center",
               }),
@@ -216,10 +240,14 @@ function ColorBasePreviewPill({
             type="button"
             className={tx(
               "rounded-full w-6 h-6 ring ring-transparent hover:ring-upstart-400 border border-gray-200",
+              getColorPillBackgroundClass(color ?? "bg-transparent"),
+              !color?.includes("gradient") &&
+                css({
+                  backgroundImage: pillBgFile,
+                }),
               css({
-                backgroundImage: pillBgFile,
-                backgroundColor: color === "transparent" ? "transparent" : color,
                 backgroundSize,
+                backgroundPosition: "center",
               }),
             )}
           />

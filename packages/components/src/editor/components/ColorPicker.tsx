@@ -576,5 +576,5 @@ export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
       </Tabs.Root>
     );
   }
-  return <div>Element color picker "{elementColorType}"</div>;
+  return null;
 };

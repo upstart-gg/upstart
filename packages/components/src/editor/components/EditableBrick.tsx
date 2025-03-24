@@ -62,6 +62,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const { getParentBrick } = useDraftHelpers();
     const manifest = useBrickManifest(brick.type);
     const [isMenuBarVisible, setMenuBarVisible] = useState(false);
+    const position = brick.position[previewMode];
 
     // const clientPoint = useClientPoint(context);
     const {
@@ -74,7 +75,11 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       onOpenChange: setMenuBarVisible,
       // transform: true,
       middleware: [
-        offset(manifest.isContainer ? { mainAxis: 8, crossAxis: 0 } : { mainAxis: -44, crossAxis: 3 }),
+        offset(
+          manifest.isContainer
+            ? { mainAxis: 8, crossAxis: 0 }
+            : { mainAxis: position.h > 5 ? -44 : 4, crossAxis: 3 },
+        ),
         autoPlacement({
           allowedPlacements: manifest.isContainer ? ["bottom", "top"] : ["bottom-start", "top-start"],
         }),
