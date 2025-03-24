@@ -1,5 +1,11 @@
 # create-enpage
 
+## 0.0.43
+
+### Patch Changes
+
+- [#276](https://github.com/upstart-gg/upstart/pull/276) [`df4d16c`](https://github.com/upstart-gg/upstart/commit/df4d16c6677ba578d3f9bb8eae1e4401b5d5130a) Thanks [@mattallty](https://github.com/mattallty)! - Various improvements
+
 ## 0.0.42
 
 ### Patch Changes
