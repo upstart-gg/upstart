@@ -1,21 +1,20 @@
 import type { FieldProps } from "./types";
 import { nanoid } from "nanoid";
-import { Button, Text, Tooltip, IconButton } from "@upstart.gg/style-system/system";
+import { Button, TextField, Tooltip, IconButton, Select } from "@upstart.gg/style-system/system";
 import { useMemo, useState } from "react";
 import ModalSearchImage from "~/editor/components/ModalSearchImage";
-import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/common";
+import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import { IoIosHelpCircleOutline } from "react-icons/io";
+import { fieldLabel } from "../form-class";
+import trans from "./trans.svg?url";
+import { debounce } from "lodash-es";
+import { IoCloseCircleOutline } from "react-icons/io5";
+import { AiOutlineCloseSquare } from "react-icons/ai";
+import { CgCloseR } from "react-icons/cg";
+import { IoMdClose } from "react-icons/io";
 
 const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
-  const {
-    schema,
-    formData,
-    onChange,
-    required,
-    title,
-    description,
-    currentValue = { src: "", alt: "" },
-  } = props;
+  const { schema, formData, onChange, required, title, description, currentValue } = props;
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);
   // const [src, setSrc] = useState<string | null>(currentValue.src);
@@ -24,14 +23,14 @@ const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
     onChange({ ...(currentValue ?? {}), ...newVal });
   };
 
+  const debouncedOnPropsChange = debounce(onPropsChange, 300);
+
   return (
     <>
-      <div className="file-field flex items-center flex-wrap gap-1">
+      <div className="file-field flex items-center gap-1 flex-1">
         {title && (
           <div className="flex items-center justify-between">
-            <Text as="label" size="2" weight="medium">
-              {title}
-            </Text>
+            <label className={fieldLabel}>{title}</label>
           </div>
         )}
         <div className="flex gap-1 flex-1">
@@ -41,9 +40,10 @@ const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
             className="overflow-hidden w-[0.1px] h-[0.1px] opacity-0 absolute -z-10"
             accept={schema["ui:accept"]}
             onChange={(e) => {
-              const src = e.target.files?.[0]?.name;
-              if (src) {
-                onChange({ ...currentValue, src: src as string });
+              const file = e.target.files?.[0];
+              if (file) {
+                const src = URL.createObjectURL(file);
+                onPropsChange({ src: src });
               }
             }}
             required={required}
@@ -74,9 +74,77 @@ const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
         )}
       </div>
       {currentValue.src && (
-        <div className="border border-upstart-200 p-2 mt-3">
-          <img src={currentValue.src} alt="Preview" className="max-w-full h-auto" />
-        </div>
+        <>
+          <div className="basis-full w-0" />
+          <div
+            className="border border-upstart-200 p-2 mt-3 ml-auto w-full h-auto relative"
+            style={{
+              backgroundImage: `url(${trans})`,
+              backgroundSize: "12px 12px",
+            }}
+          >
+            <img src={currentValue.src} alt="Preview" className="max-w-full h-auto" />
+            <div className="absolute flex items-center justify-center top-1 right-1 text-gray-500 p-0.5 bg-white cursor-pointer hover:(bg-red-800 text-white) rounded border border-gray-300 shadow-sm">
+              <IoMdClose className="w-4 h-4 " onClick={() => onPropsChange({ src: "" })} />
+            </div>
+          </div>
+          <div className="basis-full w-0" />
+          <div className="flex justify-between gap-12 flex-1 items-center mt-3">
+            <label className={fieldLabel}>Alt text</label>
+            <TextField.Root
+              defaultValue={currentValue.alt}
+              className="!flex-1"
+              onChange={(e) => debouncedOnPropsChange({ alt: e.target.value })}
+              required={required}
+              spellCheck={!!schema["ui:spellcheck"]}
+            />
+          </div>
+          <div className="basis-full w-0" />
+          {!schema["ui:no-object-options"] && (
+            <div className="flex gap-12 flex-1 mt-3 pr-1.5">
+              <div className="flex flex-col gap-2 flex-1">
+                <label className={fieldLabel}>Fit</label>
+                <Select.Root
+                  defaultValue={currentValue.fit}
+                  size="2"
+                  onValueChange={(value) => onPropsChange({ fit: value as ImageProps["fit"] })}
+                >
+                  <Select.Trigger radius="large" variant="ghost" />
+                  <Select.Content position="popper">
+                    <Select.Group>
+                      {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
+                      {schema.properties.fit.anyOf.map((item: any) => (
+                        <Select.Item key={item.const} value={item.const}>
+                          {item.title}
+                        </Select.Item>
+                      ))}
+                    </Select.Group>
+                  </Select.Content>
+                </Select.Root>
+              </div>
+              <div className="flex flex-col gap-2 flex-1">
+                <label className={fieldLabel}>Position</label>
+                <Select.Root
+                  defaultValue={currentValue.position}
+                  size="2"
+                  onValueChange={(value) => onPropsChange({ position: value as ImageProps["position"] })}
+                >
+                  <Select.Trigger radius="large" variant="ghost" />
+                  <Select.Content position="popper">
+                    <Select.Group>
+                      {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
+                      {schema.properties.position.anyOf.map((item: any) => (
+                        <Select.Item key={item.const} value={item.const}>
+                          {item.title}
+                        </Select.Item>
+                      ))}
+                    </Select.Group>
+                  </Select.Content>
+                </Select.Root>
+              </div>
+            </div>
+          )}
+        </>
       )}
       <ModalSearchImage
         open={showSearch}

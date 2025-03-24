@@ -1,7 +1,9 @@
 .desktop {
   display: flex;
-  height: 100dvh;
-  width: calc(100dvw - 58px);
+  min-height: 100dvh;
+  height: max-content;
+  /* width: calc(100dvw - 58px); */
+  width: 100%;
   margin-block: auto;
   overflow: visible;
 }
@@ -16,11 +18,6 @@
   overflow: auto;
 }
 
-.tablet{
-  height: 94dvh;
-  max-height: 1024px;
-  aspect-ratio: 1024/1366;
-}
 
 .mobile {
   min-height: 800px;

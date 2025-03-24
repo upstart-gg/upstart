@@ -1,1 +1,1 @@
-/*! Upstart.gg - Copyright (C) 2024 Flippable - https://github.com/enpage/enpage/blob/main/LICENSE */
+/*! Upstart.gg - Copyright (C) 2024 Flippable - https://github.com/upstart-gg/upstart/blob/main/LICENSE */

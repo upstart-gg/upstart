@@ -1,10 +1,9 @@
 import { SegmentedControl } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
-import type { Brick } from "@upstart.gg/sdk/shared/bricks";
-import { useDraft } from "~/editor/hooks/use-editor";
 import type { FieldProps } from "./types";
-import { fieldDescription, fieldLabel } from "../form-class";
-import { Text, Select, Slider } from "@upstart.gg/style-system/system";
+import { fieldLabel } from "../form-class";
+import { Select } from "@upstart.gg/style-system/system";
+import { HelpIcon } from "../HelpIcon";
 
 interface EnumOption {
   const: string;
@@ -17,7 +16,6 @@ interface EnumOption {
 const EnumField: React.FC<FieldProps<string>> = (props) => {
   const { schema, currentValue, formData, onChange, required, title, description } = props;
   // const context = formContext as { brickId: Brick["id"] };
-  const draft = useDraft();
   // const brick = draft.getBrick(context.brickId);
 
   // if (!brick) {
@@ -43,16 +41,12 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
   switch (displayAs) {
     case "radio":
       return (
-        <div className="enum-field">
+        <div className="radio-field">
           {title && (
-            <Text as="label" size="2" weight="medium">
-              {title}
-            </Text>
-          )}
-          {description && (
-            <Text as="p" color="gray" size="1">
-              {description}
-            </Text>
+            <div className="flex gap-1 items-center">
+              <label className={fieldLabel}>{title}</label>
+              {description && <HelpIcon help={description} />}
+            </div>
           )}
           <div className="flex flex-col gap-2 mt-1.5">
             {options
@@ -81,22 +75,17 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
 
     case "button-group":
       return (
-        <div className="enum-field">
+        <div className="button-group-field flex-1 flex justify-between flex-wrap">
           {title && (
-            <Text as="label" size="2" weight="medium">
-              {title}
-            </Text>
-          )}
-          {description && (
-            <Text as="p" color="gray" size="1">
-              {description}
-            </Text>
+            <div className="flex gap-1 items-center flex-1">
+              <label className={fieldLabel}>{title}</label>
+              {/* {description && <HelpIcon help={description} />} */}
+            </div>
           )}
           <SegmentedControl.Root
             onValueChange={onChange}
             defaultValue={currentValue as string}
             size="1"
-            className="w-full !max-w-full mt-2"
             radius="large"
           >
             {options
@@ -105,7 +94,7 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
                 <SegmentedControl.Item
                   key={option.const}
                   value={option.const}
-                  className={tx("[&_.rt-SegmentedControlItemLabel]:px-1")}
+                  className={tx("[&_.rt-SegmentedControlItemLabel]:px-2")}
                 >
                   {option.title}
                 </SegmentedControl.Item>
@@ -116,16 +105,12 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
 
     case "icon-group":
       return (
-        <div className="enum-field">
+        <div className="icon-group-field">
           {title && (
-            <Text as="label" size="2" weight="medium">
-              {title}
-            </Text>
-          )}
-          {description && (
-            <Text as="p" color="gray" size="1">
-              {description}
-            </Text>
+            <div className="flex gap-1 items-center">
+              <label className={fieldLabel}>{title}</label>
+              {description && <HelpIcon help={description} />}
+            </div>
           )}
           <div className="flex divide-x divide-white dark:divide-dark-500">
             {options
@@ -157,34 +142,7 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
 
     default:
       return (
-        // <div className="enum-field">
-        //   {title && (
-        //     <Text as="label" size="2" weight="medium">
-        //       {title}
-        //     </Text>
-        //   )}
-        //   {description && (
-        //     <Text as="p" color="gray" size="1">
-        //       {description}
-        //     </Text>
-        //   )}
-        //   <select
-        //     className="form-select mt-2"
-        //     value={currentValue}
-        //     onChange={(e) => onChange(e.target.value)}
-        //     required={required}
-        //   >
-        //     {options
-        //       .filter((o) => !o["ui:hidden-option"])
-        //       .map((option) => (
-        //         <option key={option.const} value={option.const}>
-        //           {option.title}
-        //         </option>
-        //       ))}
-        //   </select>
-        // </div>
-
-        <div className="flex flex-col gap-1 flex-1">
+        <div className="flex justify-between flex-1 pr-1 gap-1">
           <label className={fieldLabel}>{title}</label>
           <Select.Root defaultValue={currentValue} size="2" onValueChange={(value) => onChange(value)}>
             <Select.Trigger radius="large" variant="ghost" />

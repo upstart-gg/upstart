@@ -1,11 +1,10 @@
 import { type Attributes, resolveAttributes, defaultAttributesSchema } from "./attributes";
-import { brickSchema, type Brick } from "./bricks";
+import { brickSchema, type Section, sectionSchema, type Brick } from "./bricks";
 import invariant from "./utils/invariant";
 import { themeSchema, type Theme } from "./theme";
-import { Type, type Static } from "@sinclair/typebox";
+import { Type, type Static, type TObject, type TProperties } from "@sinclair/typebox";
 import { datasourcesMap, type DatasourcesMap, type DatasourcesResolved } from "./datasources/types";
 import { manifestSchema, type TemplateManifest } from "./manifest";
-import type { JSONSchemaType } from "ajv";
 import { customAlphabet } from "nanoid";
 import type { DatarecordsMap } from "./datarecords/types";
 
@@ -26,11 +25,11 @@ export type TemplateConfig = {
   /**
    * The template manifest and settings
    */
-  manifest: TemplateManifest;
+  manifest?: TemplateManifest;
   /**
    * The attributes declared for the template
    */
-  attributes: JSONSchemaType<Attributes>;
+  attributes: TObject<TProperties>;
   attr?: Partial<Attributes>;
   /**
    * The datasources declared for the template
@@ -71,7 +70,7 @@ export type PageInfo = {
 /**
  * The Page config represents the page configuration (datasources, attributes, etc)
  */
-export type PageConfig<D extends DatasourcesMap, B extends Brick[]> = PageInfo & {
+export type PageConfig<D extends DatasourcesMap> = PageInfo & {
   /**
    * Data sources manifests for the page. Undefined if no data sources are defined.
    */
@@ -85,17 +84,19 @@ export type PageConfig<D extends DatasourcesMap, B extends Brick[]> = PageInfo &
   /**
    * Page attributes. (can override site attributes)
    */
-  attributes?: JSONSchemaType<Attributes>;
+  attributes?: TObject<TProperties>;
   /**
    * Resolved attributes for the page.
    */
   attr?: Attributes;
-  bricks: B;
+
+  sections: Section[];
+  bricks: Brick[];
 
   tags: string[];
 };
 
-export type GenericPageConfig = PageConfig<DatasourcesMap, Brick[]>;
+export type GenericPageConfig = PageConfig<DatasourcesMap>;
 
 export function getNewPageConfig(
   templateConfig: TemplateConfig,
@@ -105,14 +106,13 @@ export function getNewPageConfig(
   const pageConfig = templateConfig.pages.find((p) => p.path === path);
   invariant(pageConfig, `createPageConfigFromTemplateConfig: No page config found for path ${path}`);
 
-  const bricks = pageConfig.bricks;
-
   return {
     id: typeof useFixedId === "boolean" ? crypto.randomUUID() : useFixedId,
     label: pageConfig.label,
     tags: pageConfig.tags,
     path,
-    bricks,
+    sections: pageConfig.sections,
+    bricks: pageConfig.bricks,
     ...(pageConfig.attributes
       ? {
           attributes: pageConfig.attributes,
@@ -129,7 +129,7 @@ export type SiteConfig = {
   id: string;
   label: string;
   hostname: string;
-  attributes: JSONSchemaType<Attributes>;
+  attributes: TObject<TProperties>;
   attr: Attributes;
   datasources?: DatasourcesMap;
   datarecords?: DatarecordsMap;
@@ -161,7 +161,7 @@ export function getNewSiteConfig(
   useFixedIds = false,
 ) {
   const id = useFixedIds ? "00000000-0000-0000-0000-000000000001" : crypto.randomUUID();
-  const hostname = `${nanoid()}.upstart.gg`;
+  const hostname = `${nanoid()}.upstart.do`;
   const pages = templateConfig.pages.map((p, index) =>
     getNewPageConfig(
       templateConfig,
@@ -195,12 +195,13 @@ export type SiteAndPagesConfig = ReturnType<typeof getNewSiteConfig>;
 export const templatePageSchema = Type.Object({
   label: Type.String(),
   path: Type.String(),
+  sections: Type.Array(sectionSchema),
   bricks: Type.Array(brickSchema),
   tags: Type.Array(Type.String()),
 });
 
 export type TemplatePage = Static<typeof templatePageSchema> & {
-  attributes?: JSONSchemaType<Attributes>;
+  attributes?: TObject<TProperties>;
   attr?: Partial<Attributes>;
 };
 

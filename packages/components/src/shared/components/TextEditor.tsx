@@ -10,11 +10,30 @@ import {
   mergeAttributes,
   nodeInputRule,
 } from "@tiptap/react";
+import Placeholder from "@tiptap/extension-placeholder";
+
+import { RiArrowDownSLine } from "react-icons/ri";
 import StarterKit from "@tiptap/starter-kit"; // define your extension array
 import TextAlign from "@tiptap/extension-text-align";
-import { Callout, IconButton, Popover, Select, ToggleGroup, Portal } from "@upstart.gg/style-system/system";
+import {
+  Callout,
+  IconButton,
+  Popover,
+  DropdownMenu,
+  Select,
+  ToggleGroup,
+  Portal,
+} from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
-import { useState, useRef, useEffect, useMemo } from "react";
+import {
+  useState,
+  useEffect,
+  useMemo,
+  type PropsWithChildren,
+  type MouseEventHandler,
+  type ElementType,
+  type ComponentPropsWithoutRef,
+} from "react";
 import Document from "@tiptap/extension-document";
 import {
   MdFormatBold,
@@ -26,7 +45,7 @@ import {
 import { MdOutlineFormatItalic } from "react-icons/md";
 import { MdStrikethroughS } from "react-icons/md";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
-import { useDatasourcesSchemas, useEditor, useSelectedBrick } from "~/editor/hooks/use-editor";
+import { useDatasourcesSchemas, useEditor } from "~/editor/hooks/use-editor";
 import { VscDatabase } from "react-icons/vsc";
 import { BiFullscreen, BiExitFullscreen } from "react-icons/bi";
 import { JSONSchemaView } from "~/editor/components/json-form/SchemaView";
@@ -34,6 +53,16 @@ import Mention from "@tiptap/extension-mention";
 import datasourceFieldSuggestions from "./datasourceFieldSuggestions";
 import { CgCloseR } from "react-icons/cg";
 import { getJSONSchemaFieldsList } from "../utils/json-field-list";
+import Highlight from "@tiptap/extension-highlight";
+import {
+  menuBarBtnActiveCls,
+  menuBarBtnCls,
+  menuBarBtnCommonCls,
+  menuBarBtnSquareCls,
+  menuNavBarCls,
+} from "../styles/menubar-styles";
+import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
+import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
 function DatasourceFieldNode(props: NodeViewProps) {
   return (
@@ -87,53 +116,80 @@ const DatasourceFieldExtension = Node.create({
   },
 });
 
-export type TextEditorProps = {
-  initialContent: string;
-  onUpdate: (e: EditorEvents["update"]) => void;
-  enabled?: boolean;
+type PolymorphicProps<E extends ElementType> = PropsWithChildren<
+  ComponentPropsWithoutRef<E> & {
+    as?: E;
+  }
+>;
+
+export type TextEditorProps<E extends ElementType> = PolymorphicProps<E> & {
+  content: string;
   className?: string;
   brickId: Brick["id"];
-  menuPlacement: "above-editor" | "page";
-  discrete?: boolean;
   paragraphMode?: string;
+  propPath: string;
+  noTextAlign?: boolean;
+  noTextStrike?: boolean;
+  noTextType?: boolean;
   /**
    * Whether the editor is inlined in the page or appears in the panel
    */
   inline?: boolean;
 };
 
-const toolbarBtnCls =
-  "!bg-white first:rounded-l last:rounded-r text-sm px-1 hover:[&:not([data-state=on])]:bg-upstart-100 dark:hover:[&:not([data-state=on])]:(bg-dark-900) leading-none data-[state=on]:(bg-upstart-500 text-white)";
-
-const TextEditor = ({
-  initialContent,
-  onUpdate,
+const TextEditor = <T extends ElementType = "div">({
+  content,
   className,
   brickId,
-  menuPlacement,
-  enabled = false,
-  discrete = false,
   paragraphMode,
   inline,
-}: TextEditorProps) => {
+  propPath,
+  noTextAlign,
+  noTextType,
+  noTextStrike,
+}: TextEditorProps<T>) => {
+  const onUpdate = useTextEditorUpdateHandler(brickId, propPath);
   const mainEditor = useEditor();
   const datasources = useDatasourcesSchemas();
-  const [editable, setEditable] = useState(enabled);
-  const menuContainer = useRef<HTMLDivElement>(document.querySelector("#editor"));
+  const [menuBarContainer, setMenuBarContainer] = useState<HTMLDivElement | null>(null);
+  const [currentContent, setContent] = useState(content);
 
+  // const [editable, setEditable] = useState(/*enabled*/ false);
+  const [focused, setFocused] = useState(false);
   // @ts-ignore
   const fields = getJSONSchemaFieldsList({ schemas: datasources });
 
   const extensions = [
     StarterKit.configure({
-      ...(paragraphMode === "hero" && {
+      ...(inline && {
         document: false,
       }),
+      dropcursor: {
+        class: "drop-cursor",
+        color: "#FF9900",
+      },
     }),
-    ...(paragraphMode === "hero" ? [Document.extend({ content: "heading" })] : []),
-    TextAlign.configure({
-      types: ["heading"],
+    Placeholder.configure({
+      // Use a placeholder:
+      placeholder: "Write something …",
+      // Use different placeholders depending on the node type:
+      // placeholder: ({ node }) => {
+      //   if (node.type.name === 'heading') {
+      //     return 'What’s the title?'
+      //   }
+
+      //   return 'Can you add some further context?'
+      // },
     }),
+    ...(inline ? [Document.extend({ content: "paragraph" })] : []),
+    ...(!noTextAlign
+      ? [
+          TextAlign.configure({
+            types: ["heading", "paragraph"],
+          }),
+        ]
+      : []),
+    Highlight.configure({ multicolor: true }),
     // DatasourceFieldExtension,
     Mention.configure({
       HTMLAttributes: {
@@ -152,7 +208,7 @@ const TextEditor = ({
           "span",
           {
             "data-type": "mention",
-            class: tx("bg-upstart-100 text-[94%] px-0.5 py-0.5 rounded"),
+            class: tx("bg-upstart-500 text-white text-[94%] px-0.5 py-0.5 rounded"),
             "data-field": field,
           },
           `${options.suggestion.char}${field}}}`,
@@ -168,44 +224,67 @@ const TextEditor = ({
   const editor = useTextEditor(
     {
       extensions,
-      content: initialContent,
+      content: currentContent,
       onUpdate,
       immediatelyRender: true,
-      // autofocus: false,
-      editable,
+      editable: true,
       editorProps: {
         attributes: {
-          class: inline
-            ? tx(className)
-            : tx(
-                "max-w-[100%] focus:outline-none focus:border-gray-300 prose prose-sm mx-auto min-h-[46px] dark:(bg-dark-800 text-dark-100) p-2 shadow-[inset_0_1px_2px_rgba(0,0,0,0.1),inset_0_-1px_2px_rgba(0,0,0,0.1)]",
-                className,
-                mainEditor.textEditMode === "large" && "flex-1 !h-[inherit]",
-              ),
+          class: tx(className),
         },
       },
-      onBlur(props) {
-        mainEditor.setlastTextEditPosition(props.editor.state.selection.anchor);
-      },
     },
-    [brickId, editable, mainEditor.textEditMode],
+    [brickId, mainEditor.textEditMode],
   );
 
   useEffect(() => {
-    const onFocus = () => {
+    const onFocus = (e: EditorEvents["focus"]) => {
+      // e.event.stopPropagation();
       mainEditor.setIsEditingText(brickId);
+      mainEditor.setSelectedBrickId(brickId);
+      setFocused(true);
+      setTimeout(() => {
+        const container = document.querySelector<HTMLDivElement>(`#text-editor-menu-${brickId}`);
+        invariant(container, "Menu container not found");
+        setMenuBarContainer(container);
+      }, 0);
     };
 
-    const onBlur = () => {
+    const onBlur = (e: EditorEvents["blur"]) => {
+      console.log("BLURRR");
+      // For whatever reason, the editor content is not updated when the blur event is triggered the first time
+      // So we need to manually update the content here
+      setContent(e.editor.getHTML());
+
+      // If there is a related target, it means the blur event was triggered by a click on the editor buttons
+      if (e.event.relatedTarget) {
+        console.log("editor blured from related target", e.event.relatedTarget);
+        return;
+      }
+
       mainEditor.setIsEditingText(false);
-      setEditable(false);
+      mainEditor.setlastTextEditPosition(e.editor.state.selection.anchor);
+
+      console.log("setting selection to ", {
+        from: e.editor.state.doc.content.size,
+        to: e.editor.state.doc.content.size,
+      });
+
+      // reset the selection to the end of the document
+      const unselected = e.editor.commands.setTextSelection({
+        from: e.editor.state.doc.content.size,
+        to: e.editor.state.doc.content.size,
+      });
+
+      e.editor.commands.blur();
+
+      console.log("unselected", unselected);
+
+      setFocused(false);
     };
 
     editor?.on("focus", onFocus);
-    editor?.on("blur", (e) => {
-      if ((e.event.target as HTMLElement)?.matches(".tiptap")) return;
-      onBlur();
-    });
+    editor?.on("blur", onBlur);
 
     return () => {
       editor?.off("focus", onFocus);
@@ -214,150 +293,94 @@ const TextEditor = ({
   }, [editor, mainEditor, brickId]);
 
   return (
-    <div
-      className={tx({
-        "fixed z-[99999] inset-[10dvw] shadow-2xl": mainEditor.textEditMode === "large",
-        "-mx-3 -mt-3": discrete,
-      })}
-    >
-      {editor && editable && menuPlacement === "above-editor" && (
-        <MenuBar
-          brickId={brickId}
-          editor={editor}
-          placement={menuPlacement}
-          discrete={discrete}
-          inline={inline}
-          paragraphMode={paragraphMode}
-        />
-      )}
+    <>
       <EditorContent
-        onDoubleClick={(e) => {
-          e.preventDefault();
-          console.log("dblclick");
-          setEditable(true);
-          setTimeout(() => {
-            editor?.view.focus();
-          }, 200);
-        }}
         autoCorrect="false"
         spellCheck="false"
         editor={editor}
-        className={tx("outline-none ring-0 ", {
-          "min-h-full flex border-0": mainEditor.textEditMode === "large",
-        })}
+        className={tx("outline-none ring-0 min-h-full flex flex-1")}
       />
-      {editor && editable && menuPlacement === "page" && (
-        <Portal container={menuContainer.current}>
-          <MenuBar
-            brickId={brickId}
+      {focused && menuBarContainer && (
+        <Portal container={menuBarContainer} asChild>
+          <TextEditorMenuBar
             editor={editor}
-            placement={menuPlacement}
-            discrete={discrete}
-            inline={inline}
             paragraphMode={paragraphMode}
+            noTextAlign={noTextAlign}
+            noTextType={noTextType}
+            noTextStrike={noTextStrike}
           />
         </Portal>
       )}
-    </div>
+    </>
   );
 };
 
-const MenuBar = ({
+const TextEditorMenuBar = ({
   editor,
-  brickId,
-  placement,
-  discrete,
   paragraphMode,
-  inline,
+  noTextAlign,
+  noTextType,
+  noTextStrike,
 }: {
   editor: Editor;
-  brickId: Brick["id"];
-  placement: TextEditorProps["menuPlacement"];
   paragraphMode?: string;
-  discrete?: boolean;
-  inline?: boolean;
+  noTextAlign?: boolean;
+  noTextType?: boolean;
+  noTextStrike?: boolean;
 }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const selectedBrick = useSelectedBrick();
-  let className = "";
-
-  if (placement === "above-editor") {
-    className = tx(
-      "z-[900] text-gray-800 flex gap-1 p-1 bg-gray-100 dark:bg-dark-700 text-sm flex flex-wrap",
-      {
-        "border border-b-0 border-gray-300 rounded-t ": !discrete,
-      },
-    );
-  } else {
-    className = tx(
-      "z-[800] text-gray-800 flex isolate transition-opacity duration-100",
-      "fixed top-[66px] left-0 right-0 text-sm justify-center",
-      // "z-[900] text-gray-800 flex gap-3 p-1 bg-upstart-600/25",
-      // "shadow-lg rounded absolute -top-11 left-1/2 -translate-x-1/2 text-sm backdrop-blur transition-all duration-100",
-      {
-        "opacity-0 hidden": selectedBrick?.id !== brickId,
-      },
-    );
-  }
-
   return (
-    <div ref={ref} id="text-editor-menubar" className={tx(className)}>
-      <div className="flex gap-3 items-center bg-upstart-500 p-2 rounded-md shadow-xl backdrop-blur bg-gradient-to-t from-transparent to-[rgba(255,255,255,0.15)]">
-        <ButtonGroup>
-          <TextSizeSelect editor={editor} paragraphMode={paragraphMode} />
-        </ButtonGroup>
-        <TextAlignButtonGroup editor={editor} />
-        <TextStyleButtonGroup editor={editor} />
-        <DatasourceItemButton editor={editor} />
-        {!inline && <DisplayModeButton icon="enlarge" />}
-        {!discrete && inline !== true && (
-          <>
-            <span className="flex-1" />
-            <DisplayModeButton icon="close" />
-          </>
-        )}
-      </div>
-    </div>
+    <>
+      {paragraphMode !== "hero" && !noTextType && <TextSizeDropdown editor={editor} />}
+      {!noTextAlign && <TextAlignButtonGroup editor={editor} />}
+      <TextStyleButtonGroup editor={editor} noTextStrike={noTextStrike} noTextType={noTextType} />
+      <DatasourceItemButton editor={editor} />
+    </>
   );
 };
 
+const arrowClass = "h-4 w-4 opacity-60 -mr-2";
+
 function TextAlignButtonGroup({ editor }: { editor: Editor }) {
+  const [currentAlignment, setCurrentAligment] = useState<string>(
+    editor.isActive("textAlign") ? editor.getAttributes("textAlign").alignment : undefined,
+  );
+
+  const alignments = {
+    left: "Left",
+    center: "Center",
+    right: "Right",
+    justify: "Justify",
+  };
+
   return (
-    <ToggleGroup.Root
-      className="inline-flex space-x-px divide-x rounded-[3px] divide-gray-300 dark:divide-dark-400  bg-white dark:bg-dark-700 dark:text-dark-200 border border-gray-300 dark:!border-dark-500 h-8"
-      type="single"
-      value={editor.isActive("textAlign") ? editor.getAttributes("textAlign").alignment : undefined}
-      aria-label="Text align"
+    <DropMenu
+      items={[
+        ...Object.entries(alignments).map<TopbarMenuItems[number]>(([key, label]) => ({
+          label,
+          onClick: () => {
+            const alignOk = editor.commands.setTextAlign(key);
+            // const alignOk = editor.chain().focus().setTextAlign(key).run();
+            console.log("alignOk", key, alignOk);
+            setCurrentAligment(key);
+          },
+          type: "checkbox",
+          checked: currentAlignment === key,
+        })),
+      ]}
     >
-      <ToggleGroup.Item
-        className={tx(toolbarBtnCls)}
-        value="left"
-        onClick={() => editor.chain().focus().setTextAlign("left").run()}
-      >
-        <MdFormatAlignLeft className="w-5 h-5" />
-      </ToggleGroup.Item>
-      <ToggleGroup.Item
-        className={tx(toolbarBtnCls)}
-        value="center"
-        onClick={() => editor.chain().focus().setTextAlign("center").run()}
-      >
-        <MdFormatAlignCenter className="w-5 h-5" />
-      </ToggleGroup.Item>
-      <ToggleGroup.Item
-        className={tx(toolbarBtnCls)}
-        value="right"
-        onClick={() => editor.chain().focus().setTextAlign("right").run()}
-      >
-        <MdFormatAlignRight className="w-5 h-5" />
-      </ToggleGroup.Item>
-      <ToggleGroup.Item
-        className={tx(toolbarBtnCls)}
-        value="justify"
-        onClick={() => editor.chain().focus().setTextAlign("justify").run()}
-      >
-        <MdFormatAlignJustify className="w-5 h-5" />
-      </ToggleGroup.Item>
-    </ToggleGroup.Root>
+      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
+        {!currentAlignment || currentAlignment === "left" ? (
+          <MdFormatAlignLeft className={tx("w-5 h-5")} />
+        ) : currentAlignment === "center" ? (
+          <MdFormatAlignCenter className={tx("w-5 h-5")} />
+        ) : currentAlignment === "right" ? (
+          <MdFormatAlignRight className={tx("w-5 h-5")} />
+        ) : (
+          <MdFormatAlignJustify className={tx("w-5 h-5")} />
+        )}
+        <RiArrowDownSLine className={tx(arrowClass)} />
+      </button>
+    </DropMenu>
   );
 }
 
@@ -432,32 +455,90 @@ function DatasourceFieldPickerModal(props: DatasourceFieldPickerModalProps) {
     </div>
   );
 }
-function DisplayModeButton({ icon }: { icon: "close" | "enlarge" }) {
-  const editor = useEditor();
+
+type MenuItem = {
+  label: string;
+  shortcut?: string;
+  onClick?: MouseEventHandler;
+  type?: never;
+};
+
+type MenuCheckbox = {
+  label: string;
+  checked: boolean;
+  shortcut?: string;
+  onClick?: MouseEventHandler;
+  type: "checkbox";
+};
+
+type MenuSeparator = {
+  type: "separator";
+};
+type MenuLabel = {
+  type: "label";
+  label: string;
+};
+
+type TopbarMenuItems = (MenuItem | MenuSeparator | MenuLabel | MenuCheckbox)[];
+
+/**
+ */
+function DropMenu(props: PropsWithChildren<{ items: TopbarMenuItems; id?: string }>) {
   return (
-    <IconButton
-      size="1"
-      color="gray"
-      variant="surface"
-      className={tx(toolbarBtnCls)}
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        editor.toggleTextEditMode();
-      }}
-    >
-      {!editor.textEditMode || editor.textEditMode === "default" ? (
-        icon === "close" ? (
-          <CgCloseR className="w-4 h-4 select-none pointer-events-none" />
-        ) : (
-          <BiFullscreen className="w-4 h-4 select-none pointer-events-none" />
-        )
-      ) : icon === "close" ? (
-        <CgCloseR className="w-4 h-4 select-none pointer-events-none" />
-      ) : (
-        <BiExitFullscreen className="w-4 h-4 select-none pointer-events-none" />
-      )}
-    </IconButton>
+    <DropdownMenu.Root modal={false}>
+      <DropdownMenu.Trigger className="focus:outline-none" id={props.id}>
+        {props.children}
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content side="bottom">
+        {props.items.map((item, index) =>
+          item.type === "separator" ? (
+            <div key={index} className="my-1.5 h-px bg-black/10" />
+          ) : item.type === "label" ? (
+            <DropdownMenu.Label key={item.label}>{item.label}</DropdownMenu.Label>
+          ) : item.type === "checkbox" ? (
+            <DropdownMenu.CheckboxItem key={item.label} checked={item.checked}>
+              <button
+                onClick={item.onClick}
+                type="button"
+                className="group flex justify-start items-center text-nowrap rounded-[inherit]
+                py-1.5 w-fulldark:text-white/90 text-left data-[focus]:bg-upstart-600 data-[focus]:text-white "
+              >
+                <span className="pr-3">{item.label}</span>
+                {item.shortcut && (
+                  <kbd
+                    className="ml-auto font-sans text-right text-[smaller] text-black/50 dark:text-dark-300
+                    group-hover:text-white/90
+                      group-data-[focus]:text-white/70 group-data-[active]:text-white/70"
+                  >
+                    {item.shortcut}
+                  </kbd>
+                )}
+              </button>
+            </DropdownMenu.CheckboxItem>
+          ) : (
+            <DropdownMenu.Item key={item.label}>
+              <button
+                onClick={item.onClick}
+                type="button"
+                className="group flex justify-start items-center text-nowrap rounded-[inherit]
+                py-1.5 w-fulldark:text-white/90 text-left data-[focus]:bg-upstart-600 data-[focus]:text-white "
+              >
+                <span className="pr-3">{item.label}</span>
+                {item.shortcut && (
+                  <kbd
+                    className="ml-auto font-sans text-right text-[smaller] text-black/50 dark:text-dark-300
+                    group-hover:text-white/90
+                      group-data-[focus]:text-white/70 group-data-[active]:text-white/70"
+                  >
+                    {item.shortcut}
+                  </kbd>
+                )}
+              </button>
+            </DropdownMenu.Item>
+          ),
+        )}
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
   );
 }
 
@@ -494,109 +575,163 @@ function DatasourceItemButton({ editor }: { editor: Editor }) {
   return (
     <Popover.Root>
       <Popover.Trigger>
-        <IconButton size="2" color="gray" variant="surface" className={tx(toolbarBtnCls)}>
+        <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
           <VscDatabase className="w-5 h-5" />
-        </IconButton>
+        </button>
       </Popover.Trigger>
-      <Popover.Content width="460px" side="right" align="center" size="2" maxHeight="50vh" sideOffset={50}>
+      <Popover.Content width="460px" side="right" align="start" size="2" maxHeight="50vh" sideOffset={10}>
         <DatasourceFieldPickerModal onFieldSelect={onFieldSelect} />
       </Popover.Content>
     </Popover.Root>
   );
 }
 
-function TextStyleButtonGroup({ editor }: { editor: Editor }) {
+function TextStyleButtonGroup({
+  editor,
+  noTextStrike,
+  noTextType,
+}: { editor: Editor; noTextStrike?: boolean; noTextType?: boolean }) {
+  const isBold = editor.isActive("bold");
+  const isItalic = editor.isActive("italic");
+  const isStrike = editor.isActive("strike");
   return (
     <ToggleGroup.Root
-      className="inline-flex space-x-px divide-x rounded-[3px] divide-gray-300 dark:divide-dark-400  bg-white dark:bg-dark-700 dark:text-dark-200 border border-gray-300 dark:!border-dark-500 h-8"
+      className={tx("flex !shadow-none divide-x", !noTextType && "!rounded-l-none")}
       type="multiple"
       value={
         [
-          editor.isActive("bold") ? "bold" : undefined,
-          editor.isActive("italic") ? "italic" : undefined,
-          editor.isActive("strike") ? "strike" : undefined,
+          isBold ? "bold" : undefined,
+          isItalic ? "italic" : undefined,
+          isStrike ? "strike" : undefined,
         ].filter(Boolean) as string[]
       }
       aria-label="Text style"
     >
       <ToggleGroup.Item
-        className={tx(toolbarBtnCls)}
+        className={tx(
+          menuBarBtnCls,
+          menuBarBtnCommonCls,
+          !noTextType && "!rounded-l-none",
+          isBold && menuBarBtnActiveCls,
+        )}
         value="bold"
         onClick={() => editor.chain().focus().toggleBold().run()}
       >
         <MdFormatBold className="w-5 h-5" />
       </ToggleGroup.Item>
       <ToggleGroup.Item
-        className={tx(toolbarBtnCls)}
+        className={tx(menuBarBtnCls, menuBarBtnCommonCls, isItalic && menuBarBtnActiveCls)}
         value="italic"
         onClick={() => editor.chain().focus().toggleItalic().run()}
       >
         <MdOutlineFormatItalic className="w-5 h-5" />
       </ToggleGroup.Item>
-      <ToggleGroup.Item
-        className={tx(toolbarBtnCls)}
-        value="strike"
-        onClick={() => editor.chain().focus().toggleStrike().run()}
-      >
-        <MdStrikethroughS className="w-5 h-5" />
-      </ToggleGroup.Item>
+      {!noTextStrike && (
+        <ToggleGroup.Item
+          className={tx(menuBarBtnCls, menuBarBtnCommonCls, "!rounded-none", isStrike && menuBarBtnActiveCls)}
+          value="strike"
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+        >
+          <MdStrikethroughS className="w-5 h-5" />
+        </ToggleGroup.Item>
+      )}
     </ToggleGroup.Root>
   );
 }
 
-function ButtonGroup({ children, gap = "gap-0" }: { children: React.ReactNode; gap?: string }) {
-  return <div className={tx("flex relative", gap)}>{children}</div>;
-}
-
 type TextSizeSelectProps = {
   editor: Editor;
-  paragraphMode?: string;
 };
 
-function TextSizeSelect({ editor, paragraphMode }: TextSizeSelectProps) {
+function TextSizeDropdown({ editor }: TextSizeSelectProps) {
+  const [value, setValue] = useState(
+    editor.isActive("heading")
+      ? editor.getAttributes("heading").level?.toString()
+      : editor.isActive("code")
+        ? "code"
+        : "paragraph",
+  );
   return (
-    <Select.Root
-      size="2"
-      defaultValue={
-        editor.isActive("heading")
-          ? editor.getAttributes("heading").level?.toString()
-          : editor.isActive("code")
-            ? "code"
-            : "paragraph"
-      }
-      onValueChange={(level) => {
-        if (level === "code") {
-          editor.chain().focus().toggleCode().run();
-        } else if (level === "paragraph") {
-          editor.chain().focus().setParagraph().run();
-        } else {
-          // @ts-ignore
-          editor.chain().focus().toggleHeading({ level: +level }).run();
-        }
-      }}
+    <DropMenu
+      items={[
+        {
+          label: "Title 1",
+          onClick: () => {
+            editor.chain().focus().toggleHeading({ level: 1 }).run();
+            setValue("1");
+          },
+          type: "checkbox",
+          checked: value === "1",
+        },
+        {
+          label: "Title 2",
+          onClick: () => {
+            editor.chain().focus().toggleHeading({ level: 2 }).run();
+            setValue("2");
+          },
+          type: "checkbox",
+          checked: value === "2",
+        },
+        {
+          label: "Title 3",
+          onClick: () => {
+            editor.chain().focus().toggleHeading({ level: 3 }).run();
+            setValue("3");
+          },
+          type: "checkbox",
+          checked: value === "3",
+        },
+        {
+          label: "Title 4",
+          onClick: () => {
+            editor.chain().focus().toggleHeading({ level: 4 }).run();
+            setValue("4");
+          },
+          type: "checkbox",
+          checked: value === "4",
+        },
+        {
+          label: "Title 5",
+          onClick: () => {
+            editor.chain().focus().toggleHeading({ level: 5 }).run();
+            setValue("5");
+          },
+          type: "checkbox",
+          checked: value === "5",
+        },
+        {
+          type: "separator",
+        },
+        {
+          label: "Paragraph",
+          onClick: () => {
+            editor.chain().focus().setParagraph().run();
+            setValue("paragraph");
+          },
+          type: "checkbox",
+          checked: value === "paragraph",
+        },
+        {
+          type: "separator",
+        },
+        {
+          label: "Code",
+          onClick: () => {
+            editor.chain().focus().toggleCode().run();
+            setValue("code");
+          },
+          type: "checkbox",
+          checked: value === "code",
+        },
+      ]}
     >
-      <Select.Trigger className={tx("px-3", toolbarBtnCls)} />
-      <Select.Content position="popper">
-        <Select.Group>
-          <Select.Label>Headings</Select.Label>
-          {[1, 2, 3, 4, 5].map((level) => (
-            <Select.Item value={level.toString()} key={`level-${level}`}>
-              Title {level}
-            </Select.Item>
-          ))}
-        </Select.Group>
-        {paragraphMode !== "hero" && (
-          <>
-            <Select.Separator />
-            <Select.Group>
-              <Select.Label>Text</Select.Label>
-              <Select.Item value="paragraph">Paragraph</Select.Item>
-              <Select.Item value="code">Code</Select.Item>
-            </Select.Group>
-          </>
-        )}
-      </Select.Content>
-    </Select.Root>
+      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
+        <span className="text-base font-medium">
+          {value === "code" ? "Code" : value === "paragraph" ? "Paragraph" : `Title ${value}`}
+        </span>
+        <RiArrowDownSLine className={tx(arrowClass)} />
+      </button>
+    </DropMenu>
   );
 }
 

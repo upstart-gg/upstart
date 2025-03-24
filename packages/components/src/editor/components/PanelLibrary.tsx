@@ -1,5 +1,5 @@
 import { tx, css } from "@upstart.gg/style-system/twind";
-import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
+import { defaultProps, manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { Value } from "@sinclair/typebox/value";
 import { WiStars } from "react-icons/wi";
 import {
@@ -15,8 +15,7 @@ import { BsStars } from "react-icons/bs";
 import { TbDragDrop } from "react-icons/tb";
 import { useCalloutViewCounter } from "../hooks/use-callout-view-counter";
 import { forwardRef, useEffect, useRef, useState } from "react";
-import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
-import type { Static } from "@sinclair/typebox";
+import type { BrickDefaults, BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import interact from "interactjs";
 import { IoCloseOutline } from "react-icons/io5";
@@ -107,13 +106,11 @@ export default function PanelLibrary() {
             }}
           >
             {Object.values(manifests)
-              .filter((m) => m.properties.kind.const === "brick" && !m.properties.hideInLibrary.default)
+              .filter((m) => m.kind === "brick" && !m.hideInLibrary)
               .map((brickImport) => {
-                const brick = Value.Create(brickImport);
-                const ref = useRef<HTMLDivElement>(null);
                 return (
-                  <Tooltip content={brick.description} key={brick.type}>
-                    <DraggableBrick brick={brick} />
+                  <Tooltip content={brickImport.description} key={brickImport.type}>
+                    <DraggableBrick brick={defaultProps[brickImport.type]} />
                   </Tooltip>
                 );
               })}
@@ -139,12 +136,11 @@ export default function PanelLibrary() {
             }}
           >
             {Object.values(manifests)
-              .filter((m) => m.properties.kind.const === "widget" && !m.properties.hideInLibrary.default)
+              .filter((m) => m.kind === "widget" && !m.hideInLibrary)
               .map((brickImport) => {
-                const brick = Value.Create(brickImport);
                 return (
-                  <Tooltip content={brick.description} key={brick.type} delayDuration={850}>
-                    <DraggableBrick brick={brick} />
+                  <Tooltip content={brickImport.description} key={brickImport.type} delayDuration={850}>
+                    <DraggableBrick brick={defaultProps[brickImport.type]} />
                   </Tooltip>
                 );
               })}
@@ -184,7 +180,7 @@ export default function PanelLibrary() {
 }
 
 type DraggableBrickProps = {
-  brick: Static<BrickManifest>;
+  brick: BrickDefaults;
 };
 
 const DraggableBrick = forwardRef<HTMLButtonElement, DraggableBrickProps>(({ brick, ...props }, ref) => {
@@ -194,11 +190,14 @@ const DraggableBrick = forwardRef<HTMLButtonElement, DraggableBrickProps>(({ bri
       data-brick-type={brick.type}
       data-brick-min-w={brick.minWidth}
       data-brick-min-h={brick.minHeight}
-      data-brick-preferred-w={brick.preferredWidth}
-      data-brick-preferred-h={brick.preferredHeight}
+      data-brick-default-w={brick.defaultWidth}
+      data-brick-default-h={brick.defaultHeight}
       type="button"
       className={tx(
-        "rounded border border-transparent hover:border-upstart-600 bg-white dark:bg-dark-700 cursor-grab active:cursor-grabbing touch-none select-none pointer-events-auto transition draggable-brick [&:is(.clone)]:(opacity-80 !bg-white)",
+        `rounded border border-transparent hover:border-upstart-600 bg-white dark:bg-dark-700 cursor-grab
+        active:cursor-grabbing touch-none select-none pointer-events-auto transition draggable-brick
+        z-[99999]
+        [&:is(.clone)]:(opacity-80 !bg-white)`,
       )}
       {...props}
     >
@@ -214,7 +213,7 @@ const DraggableBrick = forwardRef<HTMLButtonElement, DraggableBrickProps>(({ bri
           // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
           dangerouslySetInnerHTML={{ __html: brick.icon }}
         />
-        <span className={tx("whitespace-nowrap text-xs")}>{brick.title}</span>
+        <span className={tx("whitespace-nowrap text-xs")}>{brick.name}</span>
       </div>
     </button>
   );

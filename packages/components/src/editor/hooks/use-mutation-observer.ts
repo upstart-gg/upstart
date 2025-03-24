@@ -1,6 +1,10 @@
 import { useEffect, type RefObject } from "react";
 
-export const useMutationObserver = (ref: RefObject<Element> | string, callback: MutationCallback) => {
+export const useMutationObserver = (
+  ref: RefObject<Element> | string,
+  callback: MutationCallback,
+  opts: MutationObserverInit = {},
+) => {
   useEffect(() => {
     const el = typeof ref === "string" ? document.querySelector(ref) : ref.current;
     if (el) {
@@ -10,8 +14,9 @@ export const useMutationObserver = (ref: RefObject<Element> | string, callback: 
         characterData: true,
         childList: true,
         subtree: true,
+        ...opts,
       });
       return () => observer.disconnect();
     }
-  }, [callback, ref]);
+  }, [callback, ref, opts]);
 };

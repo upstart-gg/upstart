@@ -1,30 +1,30 @@
 # Publish your template
 
-Once you have finished developing your template, you can publish it to the Enpage Platform.
+Once you have finished developing your template, you can publish it to the Upstart Platform.
 
 ## Prerequisites
 
-Before you can publish your template, you need to have an Enpage account. If you don't have one yet, you can [sign up here](https://enpage.co).
+Before you can publish your template, you need to have an Upstart account. If you don't have one yet, you can [sign up here](https://upstart.gg).
 
 
 ## Publishing
 
 To publish your template, follow these steps:
 
-1. Log in to the Enpage Platform using the CLI:
+1. Log in to the Upstart Platform using the CLI:
 
 :::code-group
 
 ```bash [npm]
-npm run enpage:login
+npm run upstart:login
 ```
 
 ```bash [pnpm]
-pnpm enpage:login
+pnpm upstart:login
 ```
 
 ```bash [yarn]
-yarn enpage:login
+yarn upstart:login
 ```
 :::
 

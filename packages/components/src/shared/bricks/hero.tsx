@@ -1,22 +1,27 @@
-import { Value } from "@sinclair/typebox/value";
 import { forwardRef } from "react";
-import { tx, css } from "@upstart.gg/style-system/twind";
-import TextBrick from "./text";
-import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/hero.manifest";
+import { tx } from "@upstart.gg/style-system/twind";
+import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/hero.manifest";
+import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
+import { memoizeIgnoringPaths } from "../utils/memoize";
+import { useBrickStyle } from "../hooks/use-brick-style";
+import { TextContent } from "../components/TextContent";
 
-const Hero = forwardRef<HTMLDivElement, Manifest["props"]>((props, ref) => {
-  props = { ...Value.Create(manifest).props, ...props };
-  let { content = "" } = props;
+const Hero = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+  const className = useBrickStyle<Manifest>(brick);
+  const props = brick.props;
 
-  if (!content.startsWith("<h")) {
-    content = `<h1>${content}</h1>`;
-  }
-
-  const sizeClass = css({
-    // "font-size": `var(--${heroFontSize})`,
-  });
-
-  return <TextBrick {...props} content={content} className={tx(props.className, sizeClass)} ref={ref} />;
+  return (
+    <TextContent
+      as="h1"
+      propPath="brand.name"
+      className={tx("hero", className)}
+      brickId={brick.id}
+      content={props.content}
+      editable={editable}
+      inline
+    />
+  );
 });
 
-export default Hero;
+// Memoize the component to avoid re-rendering when the text content changes
+export default memoizeIgnoringPaths(Hero, ["brick.props.content"]);

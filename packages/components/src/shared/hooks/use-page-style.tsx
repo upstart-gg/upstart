@@ -5,57 +5,69 @@ import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 import type { ResponsiveMode } from "@upstart.gg/sdk/shared/responsive";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 
+type UsePageStyleProps = {
+  attributes: Attributes;
+  editable?: boolean;
+  previewMode?: ResponsiveMode;
+  typography: Theme["typography"];
+  showIntro?: boolean;
+};
+
+export function useBodyStyle({ attributes }: { attributes: Attributes }) {
+  return tx(
+    isStandardColor(attributes.$bodyBackground.color) &&
+      css({ backgroundColor: attributes.$bodyBackground.color as string }),
+    !isStandardColor(attributes.$bodyBackground.color) && (attributes.$bodyBackground.color as string),
+    typeof attributes.$bodyBackground.image === "string" &&
+      css({
+        backgroundImage: `url(${attributes.$bodyBackground.image})`,
+        backgroundRepeat: "no-repeat",
+        backgroundSize: attributes.$bodyBackground.size ?? "cover",
+        backgroundPosition: "center top",
+      }),
+  );
+}
+
 export function usePageStyle({
   attributes,
   editable,
   previewMode,
   typography,
-}: {
-  attributes: Attributes;
-  typography: Theme["typography"];
-  editable?: boolean;
-  previewMode?: ResponsiveMode;
-}) {
+  showIntro,
+}: UsePageStyleProps) {
   return tx(
-    "grid group/page mx-auto page-container relative",
-    isStandardColor(attributes.$background.color) &&
-      css({ backgroundColor: attributes.$background.color as string }),
+    "flex flex-col group/page mx-auto relative overflow-hidden max-w-full w-full p-0 antialiased",
+    isStandardColor(attributes.$pageBackground.color) &&
+      css({ backgroundColor: attributes.$pageBackground.color as string }),
+    !isStandardColor(attributes.$pageBackground.color) && (attributes.$pageBackground.color as string),
     isStandardColor(attributes.$textColor) && css({ color: attributes.$textColor as string }),
-    !isStandardColor(attributes.$background.color) && (attributes.$background.color as string),
     !isStandardColor(attributes.$textColor) && (attributes.$textColor as string),
-    typeof attributes.$background.image === "string" &&
+    typeof attributes.$pageBackground.image === "string" &&
       css({
-        backgroundImage: `url(${attributes.$background.image})`,
+        backgroundImage: `url(${attributes.$pageBackground.image})`,
         //todo: make it dynamic, by using attributes
         backgroundRepeat: "no-repeat",
-        backgroundSize: attributes.$background.size ?? "cover",
+        backgroundSize: attributes.$pageBackground.size ?? "cover",
         backgroundPosition: "center top",
       }),
+
     // mobile grid
     `@mobile:(
-      grid-cols-${LAYOUT_COLS.mobile}
-      auto-rows-[minmax(${LAYOUT_ROW_HEIGHT}px,_max-content)]
-      px-[10px]
-      py-[10px]
       min-h-[110%]
       h-fit
-      max-w-full
-      w-full
     )`,
     // Desktop grid
     `@desktop:(
-      grid-cols-${LAYOUT_COLS.desktop}
-      auto-rows-[${LAYOUT_ROW_HEIGHT}px]
-      px-[${attributes.$pagePadding.horizontal}px]
-      py-[${attributes.$pagePadding.vertical}px]
-      w-full
-      h-fit
-      ${attributes.$pageWidth}
+      min-h-[inherit]
+      h-max
     )`,
 
     getTypographyStyles(typography),
 
     editable && "transition-all duration-300",
+
+    // Animate all bricks when the page is loading
+    editable && showIntro && "[&>.brick-wrapper]:(opacity-0 animate-elastic-pop)",
 
     // this is the grid overlay shown when dragging
     editable &&
@@ -65,36 +77,38 @@ export function usePageStyle({
         &::before {
           content: "";
           position: absolute;
-          opacity: 0.3;
-          top: ${previewMode === "desktop" ? parseInt(attributes.$pagePadding.vertical as string) : 10}px;
-          left: ${previewMode === "desktop" ? parseInt(attributes.$pagePadding.horizontal as string) : 10}px;
-          right: ${previewMode === "desktop" ? parseInt(attributes.$pagePadding.horizontal as string) : 10}px;
-          bottom: ${previewMode === "desktop" ? parseInt(attributes.$pagePadding.vertical as string) : 10}px;
+          opacity: 0.7;
+          inset: 0;
+          z-index: 999999;
           pointer-events: none;
           background-size:
             calc(100%/${LAYOUT_COLS[previewMode]}) 100%,
             100% ${LAYOUT_ROW_HEIGHT}px;
           background-image:
             repeating-linear-gradient(to right,
-              rgba(81, 101, 255, 0.3) 0px,
-              rgba(81, 101, 255, 0.3) 1px,
+              rgba(81, 101, 255, 0.4) 0px,
+              rgba(81, 101, 255, 0.4) 1px,
               transparent 1px,
               transparent 200px
             ),
             repeating-linear-gradient(to bottom,
-              rgba(81, 101, 255, 0.3) 0px,
-              rgba(81, 101, 255, 0.3) 1px,
+              rgba(81, 101, 255, 0.4) 0px,
+              rgba(81, 101, 255, 0.4) 1px,
               transparent 1px,
               transparent 80px
             );
         }
-        &>div {
-          outline: 2px dotted #d3daf2 !important;
+        &>div:not(.moving) {
+          outline: 2px dotted #d3daf250 !important;
+        }
+        & [data-floating-ui-portal] {
+          display: none;
         }
       }
     `,
   );
 }
+//
 
 function getTypographyStyles(typography: Theme["typography"]) {
   function formatFontFamily(font: typeof typography.body) {

@@ -1,48 +1,58 @@
-import { css, tx, sheet } from "@upstart.gg/style-system/twind";
-import { CSSProperties, useEffect, useRef, useState } from "react";
+import { tx } from "@upstart.gg/style-system/twind";
+import { Toaster } from "@upstart.gg/style-system/system";
+import { useEffect, useRef } from "react";
 import { generateId, type Brick } from "@upstart.gg/sdk/shared/bricks";
-import BrickWrapper from "./EditableBrick";
 import {
   useAttributes,
-  useBricks,
   useDraft,
   useDraftHelpers,
   useEditorHelpers,
   usePreviewMode,
-  useSelectedBrick,
+  useSections,
+  useSelectedBrickId,
 } from "../hooks/use-editor";
 import { useHotkeys } from "react-hotkeys-hook";
-import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import Selecto from "react-selecto";
-import { useEditablePage } from "~/editor/hooks/use-draggable";
-import { debounce } from "lodash-es";
-import { defaults } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
+import { useEditablePage } from "~/editor/hooks/use-editable-page";
+import { defaultProps } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
-import { canDropOnLayout, detectCollisions, getDropOverGhostPosition } from "~/shared/utils/layout-utils";
+import {
+  shouldAdjustBrickHeightBecauseOverflow,
+  canDropOnLayout,
+  getBrickAtPosition,
+  type getDropOverGhostPosition,
+  getSectionAtPosition,
+} from "~/shared/utils/layout-utils";
 import { useFontWatcher } from "../hooks/use-font-watcher";
+import Section from "./EditableSection";
+import { useGridConfig } from "~/shared/hooks/use-grid-config";
+import invariant from "@upstart.gg/sdk/shared/utils/invariant";
+import BrickSettingsPopover from "./BrickPopover";
 
 const ghostValid = tx("bg-upstart-100");
 const ghostInvalid = tx("bg-red-100");
 
-export default function EditablePage() {
+type EditablePageProps = {
+  showIntro?: boolean;
+};
+
+export default function EditablePage({ showIntro }: EditablePageProps) {
   const previewMode = usePreviewMode();
   const editorHelpers = useEditorHelpers();
   const draftHelpers = useDraftHelpers();
-  const selectedBrick = useSelectedBrick();
+  const selectedBrickId = useSelectedBrickId();
+  // const draftStore = useDraftStoreContext();
   const draft = useDraft();
   const pageRef = useRef<HTMLDivElement>(null);
   const attributes = useAttributes();
-  const bricks = useBricks();
-  const [colWidth, setColWidth] = useState(0);
+  const sections = useSections();
   const dragOverRef = useRef<HTMLDivElement>(null);
   const typography = useFontWatcher();
-  const pageClassName = usePageStyle({ attributes, typography, editable: true, previewMode });
+  const pageClassName = usePageStyle({ attributes, typography, editable: true, previewMode, showIntro });
+  const gridConfig = useGridConfig(pageRef);
 
   // on page load, set last loaded property so that the store is saved to local storage
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    draft.setLastLoaded();
-  }, []);
+  useEffect(draft.setLastLoaded, []);
 
   /**
    *  Update the ghost style based on the drop position
@@ -68,61 +78,57 @@ export default function EditablePage() {
     }
   }
 
-  useEditablePage(".brick:not(.container-child)", pageRef, {
+  useEditablePage("[data-brick]:not(.container-child):not([data-no-drag='true'])", pageRef, {
     dragOptions: {
-      enabled: previewMode === "desktop",
+      // enabled: previewMode === "desktop",
     },
-    gridConfig: {
-      colWidth,
-      rowHeight: LAYOUT_ROW_HEIGHT,
-      containerHorizontalPadding:
-        previewMode === "desktop" ? parseInt(attributes.$pagePadding.horizontal as string) : 10,
-      containerVerticalPadding:
-        previewMode === "desktop" ? parseInt(attributes.$pagePadding.vertical as string) : 10,
-    },
+    gridConfig,
     dragCallbacks: {
-      onDragMove(brick, pos, gridPosition) {
-        const dropOverPos = getDropOverGhostPosition({
-          brick,
-          bricks: draft.bricks,
-          currentBp: previewMode,
-          dropPosition: gridPosition,
-        });
-        // console.log("%o", dropOverPos);
-        updateDragOverGhostStyle(dropOverPos);
-        // editorHelpers.setCollidingBrick(dropOverPos.collision);
-      },
-      onDragEnd: (brick, pos, gridPos) => {
-        console.debug("onDragEnd (%s)", previewMode, gridPos);
-
+      onDragEnd: (updatedPositions, event) => {
         updateDragOverGhostStyle(false);
 
-        const collisions = detectCollisions({
-          brick,
-          bricks: draft.bricks,
-          currentBp: previewMode,
-          dropPosition: gridPos,
-        });
+        const firstPos = updatedPositions[0];
+        const dropOverBrick = getBrickAtPosition(
+          firstPos.gridPosition.x,
+          firstPos.gridPosition.y,
+          draft.bricks,
+          previewMode,
+        );
 
-        if (collisions.length) {
-          console.warn("Collisions detected, cancelling drop");
-          // reset the selected group
-          editorHelpers.setSelectedGroup();
-          return;
+        if (dropOverBrick?.isContainer && event.shiftKey) {
+          console.debug("Moving element(s) to parent %s", dropOverBrick.id);
+          updatedPositions.forEach(({ brick }) => {
+            draftHelpers.moveBrickToParent(brick.id, dropOverBrick.id);
+          });
+        } else {
+          updatedPositions.forEach(({ brick, gridPosition, sectionId }) => {
+            console.debug(
+              "Updating position of %s to x = %s, y = %s, w = %s, h = %s in section %s",
+              brick.id,
+              gridPosition.x,
+              gridPosition.y,
+              gridPosition.w,
+              gridPosition.h,
+              sectionId,
+            );
+            draft.updateBrick(brick.id, { sectionId });
+            draft.updateBrickPosition(brick.id, previewMode, {
+              // ...draft.getBrick(brick.id)!.position[previewMode],
+              x: gridPosition.x,
+              y: gridPosition.y,
+              w: gridPosition.w,
+              h: gridPosition.h,
+            });
+          });
         }
 
-        draft.updateBrickPosition(brick.id, previewMode, {
-          ...draft.getBrick(brick.id)!.position[previewMode],
-          x: gridPos.x,
-          y: gridPos.y,
-        });
         // reset the selected group
         editorHelpers.setSelectedGroup();
       },
     },
     dropCallbacks: {
       onDropMove(event, gridPosition, brick) {
-        const canDrop = canDropOnLayout(draft.bricks, previewMode, gridPosition, brick.constraints, false);
+        const canDrop = canDropOnLayout(draft.bricks, previewMode, gridPosition, brick.constraints);
         updateDragOverGhostStyle(canDrop);
       },
       onDropDeactivate() {
@@ -134,13 +140,17 @@ export default function EditablePage() {
         updateDragOverGhostStyle(false);
 
         const position = canDropOnLayout(draft.bricks, previewMode, gridPosition, brick.constraints);
+        const section = getSectionAtPosition(event.dragEvent.client.x, event.dragEvent.client.y);
+
+        invariant(section, "No section found for drop event");
 
         if (position) {
-          console.log("dropped at", position);
-          const bricksDefaults = defaults[brick.type];
+          console.debug("New brick dropped at", position);
+          const bricksDefaults = defaultProps[brick.type];
           const newBrick: Brick = {
             id: `brick-${generateId()}`,
             ...bricksDefaults,
+            sectionId: section.id,
             type: brick.type,
             position: {
               desktop: position,
@@ -152,31 +162,50 @@ export default function EditablePage() {
           // add the new brick to the store
           draft.addBrick(newBrick, position.parent);
 
-          // rewrite the mobile layout based on the desktop layout
-          draft.adjustMobileLayout();
+          setTimeout(() => {
+            console.log("Checking for overflow");
+            // Check if the brick should adjust its height because of overflow
+            const adjustedHeight = shouldAdjustBrickHeightBecauseOverflow(newBrick.id);
+            if (adjustedHeight) {
+              draft.updateBrickPosition(newBrick.id, previewMode, {
+                h: adjustedHeight,
+              });
+            }
+            // rewrite the mobile layout based on the desktop layout
+            draft.adjustMobileLayout();
+          }, 200);
 
           // auto select the new brick
-          draftHelpers.setSelectedBrick(newBrick);
-          editorHelpers.setPanel("inspector");
+          // editorHelpers.setSelectedBrickId(newBrick.id);
+          // editorHelpers.setPanel("inspector");
         } else {
           console.warn("Can't drop here");
         }
       },
     },
     resizeCallbacks: {
-      onResizeEnd: (brickId, pos, gridPos) => {
+      onResizeEnd: (brickId, gridPos) => {
         console.debug("onResizeEnd (%s)", previewMode, brickId, gridPos);
 
         updateDragOverGhostStyle(false);
 
+        // Check if the brick should adjust its height because of overflow
+        const adjustedHeight = shouldAdjustBrickHeightBecauseOverflow(brickId);
+
+        // Update the brick position (and height if needed)
         draft.updateBrickPosition(brickId, previewMode, {
           ...draft.getBrick(brickId)!.position[previewMode],
-          w: gridPos.w,
-          h: gridPos.h,
+          ...gridPos,
+          // Give the priority to the adjusted height if it is bigger than the current height
+          h: adjustedHeight && adjustedHeight > gridPos.h ? adjustedHeight : gridPos.h,
           // when resizing through the mobile view, set the manual height
           // so that the system knows that the height is not automatic
           ...(previewMode === "mobile" ? { manualHeight: gridPos.h } : {}),
         });
+
+        // Reorganize all bricks so there is no overlap
+        // const adjustments = getNeededBricksAdjustments(draft.bricks);
+        // console.log("needed adjustments", adjustments);
 
         // try to automatically adjust the mobile layout when resizing from desktop
         if (previewMode === "desktop") {
@@ -186,33 +215,7 @@ export default function EditablePage() {
     },
   });
 
-  useEffect(() => {
-    // Calculate cell width on mount and window resize
-    const updateCellWidth = debounce(() => {
-      if (pageRef.current) {
-        const containerWidth = pageRef.current.offsetWidth;
-        const totalGapWidth = parseInt(attributes.$pagePadding.horizontal as string) * 2;
-        const availableWidth = containerWidth - totalGapWidth;
-        setColWidth(availableWidth / LAYOUT_COLS[previewMode]);
-      }
-    }, 250);
-
-    updateCellWidth();
-
-    // mutation oberver for the page container styles
-    const observer = new MutationObserver(updateCellWidth);
-    observer.observe(pageRef.current as Node, {
-      attributes: true,
-      attributeFilter: ["style", "class"],
-    });
-
-    window.addEventListener("resize", updateCellWidth, { passive: true });
-
-    return () => {
-      window.removeEventListener("resize", updateCellWidth);
-      observer.disconnect();
-    };
-  }, [previewMode, attributes.$pagePadding]);
+  // useEditableTextManager();
 
   // listen for global click events on the document
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -228,28 +231,29 @@ export default function EditablePage() {
         !target.closest('[role="toolbar"]') &&
         !target.closest('[role="navigation"]') &&
         !target.matches('[role="menuitem"]') &&
+        !target.matches(".drop-indicator") &&
         !target.closest("#text-editor-menubar") &&
         !target.matches("html") &&
         !target.matches("body") &&
-        !target.matches(".brick") &&
-        !target.closest(".brick")
+        !target.matches("[data-brick]") &&
+        !target.closest("[data-brick]")
       ) {
-        console.debug("click out, hidding", event.target);
-        draftHelpers.deselectBrick();
+        console.debug("click out, hidding", event, event.target);
+        editorHelpers.deselectBrick();
         // also deselect the library panel
         editorHelpers.hidePanel("library");
         editorHelpers.hidePanel("inspector");
         editorHelpers.setTextEditMode("default");
       }
     };
-    document.addEventListener("click", listener, false);
+    document.addEventListener("click", listener, true);
     return () => {
-      document.removeEventListener("click", listener, false);
+      document.removeEventListener("click", listener, true);
     };
   }, []);
 
   useHotkeys("esc", () => {
-    draftHelpers.deselectBrick();
+    editorHelpers.deselectBrick();
     editorHelpers.hidePanel();
   });
 
@@ -262,10 +266,10 @@ export default function EditablePage() {
   });
 
   useHotkeys(["backspace", "del"], (e) => {
-    if (selectedBrick) {
+    if (selectedBrickId) {
       e.preventDefault();
-      draft.deleteBrick(selectedBrick.id);
-      draftHelpers.deselectBrick(selectedBrick.id);
+      draft.deleteBrick(selectedBrickId);
+      editorHelpers.deselectBrick(selectedBrickId);
       editorHelpers.hidePanel("inspector");
     }
   });
@@ -293,9 +297,10 @@ export default function EditablePage() {
    */
   useHotkeys("mod+left", (e) => {
     e.preventDefault();
-    if (selectedBrick) {
+    if (selectedBrickId) {
       // console
-      console.log("Moving %s to left", selectedBrick.id);
+      console.log("Moving %s to left", selectedBrickId);
+      draftHelpers.moveBrickWithin(selectedBrickId, "left");
     }
   });
   /**
@@ -304,44 +309,42 @@ export default function EditablePage() {
    */
   useHotkeys("mod+right", (e) => {
     e.preventDefault();
-    if (selectedBrick) {
+    if (selectedBrickId) {
       // console
-      console.log("Moving %s to right", selectedBrick.id);
+      console.log("Moving %s to right", selectedBrickId);
+      draftHelpers.moveBrickWithin(selectedBrickId, "right");
     }
   });
 
   // mod+d to duplicate the selected brick
   useHotkeys("mod+d", (e) => {
     e.preventDefault();
-    if (selectedBrick) {
-      draft.duplicateBrick(selectedBrick.id);
+    if (selectedBrickId) {
+      draft.duplicateBrick(selectedBrickId);
     }
   });
 
   return (
     <>
-      <div ref={pageRef} className={pageClassName}>
-        {bricks
-          .filter((b) => !b.position[previewMode]?.hidden)
-          .map((brick, index) => (
-            <BrickWrapper key={`${previewMode}-${brick.id}`} brick={brick}>
-              <ResizeHandle direction="s" />
-              <ResizeHandle direction="n" />
-              <ResizeHandle direction="w" />
-              <ResizeHandle direction="e" />
-            </BrickWrapper>
-          ))}
+      <div id="page-container" ref={pageRef} className={pageClassName}>
+        {sections.map((section) => (
+          <Section key={section.id} section={section} gridConfig={gridConfig} />
+        ))}
         <div
           ref={dragOverRef}
-          className={tx("drop-indicator bg-upstart-50 rounded transition-all opacity-0 hidden")}
+          className={tx("drop-indicator bg-upstart-50 rounded transition-all duration-200 opacity-0 hidden")}
         />
       </div>
       <Selecto
         className="selecto"
-        selectableTargets={[".brick:not(.container-child)"]}
+        selectableTargets={["[data-brick]:not(.container-child)"]}
         selectFromInside={false}
         hitRate={1}
         selectByClick={false}
+        dragCondition={(e) => {
+          // prevent triggering a selection when clicking on sections resize handle buttons
+          return !e.inputEvent.target.closest(".section-options-buttons");
+        }}
         onSelect={(e) => {
           if (e.selected.length) {
             editorHelpers.setSelectedGroup(e.selected.map((el) => el.id));
@@ -354,53 +357,25 @@ export default function EditablePage() {
           });
         }}
       />
-    </>
-  );
-}
-
-export function ResizeHandle({
-  direction,
-}: {
-  direction: "s" | "w" | "e" | "n" | "sw" | "nw" | "se" | "ne";
-}) {
-  return (
-    <div
-      className={tx(
-        "react-resizable-handle absolute z-10 transition-opacity duration-200 opacity-0",
-        "group-hover/brick:opacity-90 hover:!opacity-100 overflow-visible border-dashed border-upstart-600/80 hover:border-upstart-600",
-        `react-resizable-handle-${direction}`,
-        {
-          "bottom-px left-px right-px h-1 w-[inherit] border-b cursor-s-resize": direction === "s",
-          "top-px left-px bottom-px w-1 h-[inherit] border-l cursor-w-resize": direction === "w",
-          "top-px right-px bottom-px w-1 h-[inherit] border-r cursor-e-resize": direction === "e",
-          "top-px left-px right-px h-1 w-[inherit] border-t cursor-n-resize": direction === "n",
-
-          // sw and nw
-          "bottom-px left-px w-1 h-1 border-l border-b cursor-sw-resize": direction === "sw",
-          "top-px left-px w-1 h-1 border-l border-t cursor-nw-resize": direction === "nw",
-
-          // se and ne
-          "bottom-px right-px w-1 h-1 border-r border-b cursor-se-resize": direction === "se",
-          "top-px right-px w-1 h-1 border-r border-t cursor-ne-resize": direction === "ne",
-        },
-      )}
-    >
-      <div
-        className={tx("absolute w-[10px] h-[10px] border-orange-400 border-2 rounded-full z-10 shadow-md", {
-          "top-1/2 -translate-y-1/2 -left-[5px]": direction === "w",
-          "top-1/2 -translate-y-1/2 -right-[5px]": direction === "e",
-          "left-1/2 -translate-x-1/2 -top-[5px]": direction === "n",
-          "left-1/2 -translate-x-1/2 -bottom-[5px]": direction === "s",
-
-          // sw and nw
-          "-bottom-[5px] -left-[5px]": direction === "sw",
-          "-top-[5px] -left-[5px]": direction === "nw",
-
-          // se and ne
-          "-bottom-[5px] -right-[5px]": direction === "se",
-          "-top-[5px] -right-[5px]": direction === "ne",
-        })}
+      <BrickSettingsPopover />
+      <Toaster
+        toastOptions={{
+          position: "bottom-center",
+          style: {
+            padding: "0.5rem 1rem",
+            borderRadius: "0.5rem",
+            background: "rgba(0, 0, 0, 0.9)",
+            color: "white",
+            fontSize: "0.85rem",
+            fontWeight: "500",
+          },
+          error: {
+            style: {
+              background: "#880808",
+            },
+          },
+        }}
       />
-    </div>
+    </>
   );
 }

@@ -4,12 +4,15 @@ import { TbSlash } from "react-icons/tb";
 import { fieldLabel } from "../form-class";
 import { Text } from "@upstart.gg/style-system/system";
 import { HelpIcon } from "../HelpIcon";
+import { useDebounceCallback } from "usehooks-ts";
 
 export const StringField: React.FC<FieldProps<string>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
 
+  const onChangeDebounced = useDebounceCallback(onChange, 300);
+
   return (
-    <div className="field field-string">
+    <div className="field field-string basis-full">
       {title && (
         <div className="flex items-center justify-between">
           <label className={fieldLabel}>{title}</label>
@@ -19,7 +22,7 @@ export const StringField: React.FC<FieldProps<string>> = (props) => {
       {schema["ui:multiline"] ? (
         <TextArea
           defaultValue={currentValue}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => onChangeDebounced(e.target.value)}
           className="!mt-1 scrollbar-thin"
           required={required}
           placeholder={placeholder}
@@ -29,7 +32,7 @@ export const StringField: React.FC<FieldProps<string>> = (props) => {
       ) : (
         <TextField.Root
           defaultValue={currentValue}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => onChangeDebounced(e.target.value)}
           className="!mt-1"
           required={required}
           placeholder={placeholder}
@@ -42,7 +45,7 @@ export const StringField: React.FC<FieldProps<string>> = (props) => {
 
 export const PathField: React.FC<FieldProps<string>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder } = props;
-
+  const onChangeDebounced = useDebounceCallback(onChange, 300);
   // remove leading slash
   const path = (currentValue || "").toString().replace(/^\//, "");
 
@@ -60,7 +63,7 @@ export const PathField: React.FC<FieldProps<string>> = (props) => {
       )}
       <TextField.Root
         defaultValue={path}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChangeDebounced(e.target.value)}
         className="!mt-1.5"
         required={required}
         placeholder={placeholder}

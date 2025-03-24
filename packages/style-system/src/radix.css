@@ -309,3 +309,20 @@
   background-color: var(--violet-a3) !important;
   border-color: var(--violet-8) !important;
 }
+
+
+*::selection {
+  color: white;
+  background: #5b57ab;
+}
+
+
+*::-moz-selection { /* Code for Firefox */
+  color: white;
+  background: #5b57ab;
+}
+
+*::-webkit-selection {
+  color: white;
+  background: #5b57ab;
+}

@@ -1,12 +1,13 @@
 import { createStore, useStore } from "zustand";
-import { debounce, isEqual } from "lodash-es";
+import { debounce, isEqual, merge } from "lodash-es";
 import { persist, subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { createContext, useContext, useEffect } from "react";
 import { temporal } from "zundo";
 import type { ResponsiveMode } from "@upstart.gg/sdk/shared/responsive";
+import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
-import type { Brick, BrickPosition } from "@upstart.gg/sdk/shared/bricks";
+import type { Brick, BrickPosition, Section } from "@upstart.gg/sdk/shared/bricks";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 import { generateId } from "@upstart.gg/sdk/shared/bricks";
@@ -21,13 +22,16 @@ export interface EditorStateProps {
    * It is used when the user is not logged in yet or does not have an account yet
    */
   mode: "local" | "remote";
+  debugMode?: boolean;
   // pageConfig: GenericPageConfig;
   previewMode: ResponsiveMode;
   textEditMode?: "default" | "large";
   lastTextEditPosition?: number;
   settingsVisible?: boolean;
 
+  selectedBrickId?: Brick["id"];
   selectedGroup?: Brick["id"][];
+
   isEditingTextForBrickId?: string;
   shouldShowGrid?: boolean;
   panel?: "library" | "inspector" | "theme" | "settings" | "data";
@@ -56,6 +60,8 @@ export interface EditorState extends EditorStateProps {
   togglePanel: (panel?: EditorStateProps["panel"]) => void;
   hidePanel: (panel?: EditorStateProps["panel"]) => void;
   setSelectedGroup: (group?: Brick["id"][]) => void;
+  setSelectedBrickId: (brickId?: Brick["id"]) => void;
+  deselectBrick: (brickId?: Brick["id"]) => void;
   setShouldShowGrid: (show: boolean) => void;
   setColorAdjustment: (colorAdjustment: ColorAdjustment) => void;
   togglePanelPosition: () => void;
@@ -76,6 +82,7 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
     onShowLogin: () => {
       console.warn("onShowLogin is not implemented");
     },
+    debugMode: false,
   };
 
   return createStore<EditorState>()(
@@ -149,6 +156,18 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                 state.selectedGroup = group;
               }),
 
+            setSelectedBrickId: (brickId) =>
+              set((state) => {
+                state.selectedBrickId = brickId;
+              }),
+
+            deselectBrick: (brickId) =>
+              set((state) => {
+                if (state.selectedBrickId && (!brickId || state.selectedBrickId === brickId)) {
+                  state.selectedBrickId = undefined;
+                }
+              }),
+
             setShouldShowGrid: (show) =>
               set((state) => {
                 state.shouldShowGrid = show;
@@ -183,7 +202,7 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                   ([key]) =>
                     ![
                       "mode",
-                      "selectedBrick",
+                      "selectedBrickId",
                       "selectedGroup",
                       "collidingBrick",
                       "panel",
@@ -194,6 +213,7 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                       "seenTours",
                       "disableTours",
                       "logoLink",
+                      "debugMode",
                     ].includes(key),
                 ),
               ),
@@ -212,8 +232,9 @@ export interface DraftStateProps {
   id: string;
   path: string;
   label: string;
+  sections: Section[];
   bricks: Brick[];
-  selectedBrick?: Brick;
+
   data: Record<string, unknown>;
   datasources?: SiteConfig["datasources"];
   datarecords?: SiteConfig["datarecords"];
@@ -241,9 +262,11 @@ export interface DraftStateProps {
 export interface DraftState extends DraftStateProps {
   setBricks: (bricks: Brick[]) => void;
   getBrick: (id: string) => Brick | undefined;
+  getParentBrick: (id: string) => Brick | undefined;
   deleteBrick: (id: string) => void;
   duplicateBrick: (id: string) => void;
-  moveBrick: (id: string, to: "left" | "right") => void;
+  moveBrickWithin: (id: string, to: "left" | "right") => void;
+  moveBrickToParent: (id: string, parentId: string) => void;
   addBrick: (brick: Brick, parentContainer?: Brick) => void;
   updateBrick: (id: string, brick: Partial<Brick>) => void;
   updateBrickProps: (id: string, props: Record<string, unknown>, isMobileProps?: boolean) => void;
@@ -260,8 +283,30 @@ export interface DraftState extends DraftStateProps {
   setLastLoaded: () => void;
   setVersion(version: string): void;
   adjustMobileLayout(): void;
-  setSelectedBrick: (brick?: Brick) => void;
-  deselectBrick: (brickId?: Brick["id"]) => void;
+
+  getBricksForSection: (sectionId: string) => Brick[];
+  getPositionWithinParent: (brickId: Brick["id"]) => number | null;
+  canMoveToWithinParent: (brickId: Brick["id"], to: "left" | "right") => boolean;
+  getBrickIndex: (id: string) => number;
+
+  isLastBrickOfSection: (brickId: string) => boolean;
+  isFirstBrickOfSection: (brickId: string) => boolean;
+
+  isFirstSection: (sectionId: string) => boolean;
+  isLastSection: (sectionId: string) => boolean;
+
+  // Section order management
+  moveSectionUp: (sectionId: string) => void;
+  moveSectionDown: (sectionId: string) => void;
+  reorderSections: (orderedIds: string[]) => void;
+
+  // New section methods
+  addSection: (section: Section) => void;
+  updateSection: (id: string, sectionData: Partial<Section>) => void;
+  deleteSection: (id: string) => void;
+  getSection: (id: string) => Section | undefined;
+
+  getSectionVerticalPosition: (sectionId: string) => number;
 }
 
 /**
@@ -284,29 +329,14 @@ export const createDraftStore = (
     hostname: DraftStateProps["hostname"];
     pagesMap: DraftStateProps["pagesMap"];
     theme: DraftStateProps["theme"];
+    bricks: DraftStateProps["bricks"];
+    sections: DraftStateProps["sections"];
   },
 ) => {
-  const DEFAULT_PROPS: Omit<
-    DraftStateProps,
-    | "attr"
-    | "attributes"
-    | "datasources"
-    | "datarecords"
-    | "siteLabel"
-    | "siteAttributes"
-    | "pagesMap"
-    | "theme"
-    | "id"
-    | "path"
-    | "label"
-    | "hostname"
-    | "siteId"
-  > = {
-    bricks: [],
+  const DEFAULT_PROPS: Pick<DraftStateProps, "data" | "mode"> = {
     data: {},
     mode: "local",
   };
-
   return createStore<DraftState>()(
     subscribeWithSelector(
       temporal(
@@ -314,6 +344,162 @@ export const createDraftStore = (
           immer((set, _get) => ({
             ...DEFAULT_PROPS,
             ...initProps,
+
+            isFirstSection: (sectionId) => {
+              const state = _get();
+              return state.sections.find((s) => s.order === 0)?.id === sectionId;
+            },
+
+            isLastSection: (sectionId) => {
+              const state = _get();
+              return state.sections.find((s) => s.order === state.sections.length - 1)?.id === sectionId;
+            },
+
+            isLastBrickOfSection: (brickId) => {
+              const state = _get();
+              const info = state.getBrick(brickId);
+              invariant(info, "isLastBrickOfSection: Brick not found");
+              const sectionId = info.sectionId;
+              const sectionBricks = state.getBricksForSection(sectionId);
+              return sectionBricks.at(-1)?.id === brickId;
+            },
+
+            isFirstBrickOfSection: (brickId) => {
+              const state = _get();
+              const info = state.getBrick(brickId);
+              invariant(info, "isFirstBrickOfSection: Brick not found");
+              const sectionId = info.sectionId;
+              const sectionBricks = state.getBricksForSection(sectionId);
+              return sectionBricks.at(0)?.id === brickId;
+            },
+
+            addSection: (section) =>
+              set((state) => {
+                state.sections.push(section);
+              }),
+
+            updateSection: (id, sectionData) =>
+              set((state) => {
+                const sectionIndex = state.sections.findIndex((s) => s.id === id);
+                if (sectionIndex !== -1) {
+                  state.sections[sectionIndex] = {
+                    ...state.sections[sectionIndex],
+                    ...sectionData,
+                  };
+                }
+              }),
+
+            deleteSection: (id) =>
+              set((state) => {
+                // First handle bricks in this section by either deleting them
+                // or moving them to another section
+                const bricksToRemove = state.bricks.filter((b) => b.sectionId === id);
+
+                if (state.sections.length > 1) {
+                  // Find alternative section to move bricks to
+                  const alternativeSection = state.sections.find((s) => s.id !== id);
+                  if (alternativeSection) {
+                    bricksToRemove.forEach((brick) => {
+                      brick.sectionId = alternativeSection.id;
+                    });
+                  }
+                } else {
+                  // Just remove the bricks if there's no other section
+                  bricksToRemove.forEach((brick) => {
+                    state.bricks = state.bricks.filter((b) => b.id !== brick.id);
+                  });
+                }
+
+                // Then remove the section
+                state.sections = state.sections.filter((s) => s.id !== id);
+              }),
+
+            getSection: (id) => {
+              return _get().sections.find((s) => s.id === id);
+            },
+
+            moveSectionUp: (sectionId) =>
+              set((state) => {
+                // current
+                const section = state.sections.find((s) => s.id === sectionId);
+                const sectionIndex = state.sections.findIndex((s) => s.id === sectionId);
+                invariant(section, "Section not found");
+                // previous
+                const previous = state.sections.find((s) => s.order === section.order - 1);
+                const previousIndex = state.sections.findIndex((s) => s.order === section.order - 1);
+                invariant(previous, "Previous section not found");
+                // swap
+                const temp = section.order;
+                section.order = previous.order;
+                previous.order = temp;
+
+                state.sections[sectionIndex] = section;
+                state.sections[previousIndex] = previous;
+              }),
+
+            moveSectionDown: (sectionId) =>
+              set((state) => {
+                // current
+                const section = state.sections.find((s) => s.id === sectionId);
+                const sectionIndex = state.sections.findIndex((s) => s.id === sectionId);
+                invariant(section, "Section not found");
+                // next
+                const next = state.sections.find((s) => s.order === section.order + 1);
+                const nextIndex = state.sections.findIndex((s) => s.order === section.order + 1);
+                invariant(next, "Next section not found");
+
+                // swap
+                const currentOrder = section.order;
+                const nextOrder = next.order;
+
+                state.sections[sectionIndex].order = nextOrder;
+                state.sections[nextIndex].order = currentOrder;
+              }),
+
+            reorderSections: (orderedIds) =>
+              set((state) => {
+                // Create a new array of sections in the specified order
+                const newSections: Section[] = [];
+
+                // Add sections in the order specified by orderedIds
+                orderedIds.forEach((id) => {
+                  const section = state.sections.find((s) => s.id === id);
+                  if (section) {
+                    newSections.push(section);
+                  }
+                });
+
+                // Add any sections not included in orderedIds at the end
+                state.sections.forEach((section) => {
+                  if (!orderedIds.includes(section.id)) {
+                    newSections.push(section);
+                  }
+                });
+
+                // Replace the sections array
+                state.sections = newSections;
+              }),
+
+            // Helper for vertical layout rendering
+            getSectionVerticalPosition: (sectionId) => {
+              const state = _get();
+              const sections = state.sections;
+
+              let position = 0;
+              for (const section of sections) {
+                if (section.id === sectionId) {
+                  return position;
+                }
+
+                // Add section height
+                if (section.position.desktop.h === "full") {
+                  position += window.innerHeight; // Or some other logic for "full"
+                } else {
+                  position += section.position.desktop.h || 0;
+                }
+              }
+              return 0;
+            },
 
             setLastLoaded: () =>
               set((state) => {
@@ -325,17 +511,13 @@ export const createDraftStore = (
                 state.bricks = bricks;
               }),
 
-            setSelectedBrick: (brick) =>
-              set((state) => {
-                state.selectedBrick = brick;
-              }),
+            getBrickIndex: (id) => {
+              return _get().bricks.findIndex((b) => b.id === id);
+            },
 
-            deselectBrick: (brickId) =>
-              set((state) => {
-                if (state.selectedBrick && (!brickId || state.selectedBrick?.id === brickId)) {
-                  state.selectedBrick = undefined;
-                }
-              }),
+            getBricksForSection: (sectionId: string) => {
+              return _get().bricks.filter((brick) => brick.sectionId === sectionId);
+            },
 
             deleteBrick: (id) =>
               set((state) => {
@@ -344,11 +526,11 @@ export const createDraftStore = (
                   if (brick.id !== id) {
                     bricks.push({
                       ...brick,
-                      ...("children" in brick.props
+                      ...("$children" in brick.props
                         ? {
                             props: {
                               ...brick.props,
-                              children: brick.props.children.filter((child: Brick) => {
+                              $children: (brick.props.$children as Brick[]).filter((child: Brick) => {
                                 return child.id !== id;
                               }),
                             },
@@ -362,15 +544,60 @@ export const createDraftStore = (
 
             duplicateBrick: (id) =>
               set((state) => {
-                const brick = state.bricks.find((item) => item.id === id);
-                if (brick) {
+                const brick = state.getBrick(id);
+                if (!brick) {
+                  console.error("Cannot duplicate brick %s, it does not exist", id);
+                  return;
+                }
+
+                // if the container has a parent brick, we need to duplicate the brick within the parent brick children
+                if (brick.parentId) {
+                  const parent = state.bricks.find((item) => item.id === brick.parentId);
+                  if (!parent || !("$children" in parent.props)) {
+                    console.error(
+                      "Cannot duplicate brick %s, parent brick %s not found or not a container",
+                      id,
+                      brick.parentId,
+                    );
+                    return;
+                  }
+                  const children = parent.props.$children as Brick[];
+                  const index = children.findIndex((b) => b.id === id);
+                  if (index === -1) {
+                    console.error("Cannot duplicate brick %s, it is not a child of its parent", id);
+                    return;
+                  }
                   const newBrick = {
                     ...brick,
                     id: `brick-${generateId()}`,
-                    position: getDuplicatedBrickPosition(brick),
                   };
-                  state.bricks.push(newBrick);
+                  children.splice(index + 1, 0, newBrick);
+                  return;
                 }
+
+                // simple top-level brick duplication
+                const newBrick = {
+                  ...brick,
+                  id: `brick-${generateId()}`,
+                  position: getDuplicatedBrickPosition(
+                    brick,
+                    _get().bricks.filter((b) => b.sectionId === brick.sectionId),
+                  ),
+                  ...("$children" in brick.props
+                    ? {
+                        props: {
+                          ...brick.props,
+                          $children: (brick.props.$children as Brick[]).map((child: Brick) => {
+                            return {
+                              ...child,
+                              id: `brick-${generateId()}`,
+                            };
+                          }),
+                        },
+                      }
+                    : { props: brick.props }),
+                };
+                state.bricks.push(newBrick);
               }),
 
             updateBrick: (id, brick) =>
@@ -386,9 +613,11 @@ export const createDraftStore = (
                 const brick = getBrick(id, state.bricks);
                 if (brick) {
                   if (isMobileProps) {
-                    brick.mobileProps = { ...brick.mobileProps, ...props, lastTouched: Date.now() };
+                    brick.mobileProps = mergeIgnoringArrays({}, brick.mobileProps, props, {
+                      lastTouched: Date.now(),
+                    });
                   } else {
-                    brick.props = { ...brick.props, ...props, lastTouched: Date.now() };
+                    brick.props = mergeIgnoringArrays({}, brick.props, props, { lastTouched: Date.now() });
                   }
                 }
               }),
@@ -397,7 +626,7 @@ export const createDraftStore = (
              * Move abrick inside its container.
              * If the brick does not belong to a container, does nothing
              */
-            moveBrick: (id, to) =>
+            moveBrickWithin: (id, to) =>
               set((state) => {
                 const brick = getBrick(id, state.bricks);
                 if (!brick?.parentId) {
@@ -413,11 +642,95 @@ export const createDraftStore = (
                   );
                   return;
                 }
+                const parentBrickIndex = state.bricks.findIndex((b) => b.id === parentBrick.id);
+                if ("$children" in parentBrick.props) {
+                  const children = parentBrick.props.$children as Brick[];
+                  const index = children.findIndex((b) => b.id === id);
+                  if (index === -1) {
+                    console.error("Cannot move brick %s, it is not a child of its parent", id);
+                    return;
+                  }
+                  const newIndex = to === "left" ? index - 1 : index + 1;
+                  if (newIndex < 0 || newIndex >= children.length) {
+                    console.error("Cannot move brick %s, it would be out of bounds", id);
+                    return;
+                  }
+                  // clone children array
+                  const newChildren = [...children];
+                  // splice the array
+                  newChildren.splice(index, 1);
+                  newChildren.splice(newIndex, 0, brick);
+                  // recreate parent brick with new children
+                  const newParentBrick = {
+                    ...parentBrick,
+                    props: { ...parentBrick.props, $children: newChildren },
+                  };
+                  state.bricks[parentBrickIndex] = newParentBrick;
+                }
+              }),
+
+            moveBrickToParent: (id, parentId) =>
+              set((state) => {
+                const brick = getBrick(id, state.bricks);
+                if (!brick) {
+                  console.error("Cannot move brick %s, it does not exist", id);
+                  return;
+                }
+                const parent = getBrick(parentId, state.bricks);
+                if (!parent) {
+                  console.error("Cannot move brick %s, parent brick %s not found", id, parentId);
+                  return;
+                }
+                if (!("$children" in parent.props)) {
+                  console.error("Cannot move brick %s, parent brick %s is not a container", id, parentId);
+                  return;
+                }
+
+                // remove brick from its current parent
+                const parentIndex = state.bricks.findIndex((b) => b.id === brick.parentId);
+
+                const children = (parent.props.$children ?? []) as Brick[];
+                children.push({ ...brick, parentId });
+
+                delete state.bricks[parentIndex];
+                state.bricks = state.bricks.filter((b) => b.id !== id);
               }),
 
             getBrick: (id) => {
               return getBrick(id, _get().bricks);
             },
+
+            getParentBrick: (id) => {
+              const brick = getBrick(id, _get().bricks);
+              if (brick?.parentId) {
+                return getBrick(brick.parentId, _get().bricks);
+              }
+            },
+
+            getPositionWithinParent: (brickId) => {
+              const brick = getBrick(brickId, _get().bricks);
+              if (brick?.parentId) {
+                const parent = getBrick(brick.parentId, _get().bricks);
+                if (parent && "$children" in parent.props) {
+                  return (parent.props.$children as Brick[]).findIndex((b: Brick) => b.id === brickId);
+                }
+              }
+              return null;
+            },
+
+            canMoveToWithinParent: (brickId, to) => {
+              const brick = getBrick(brickId, _get().bricks);
+              if (brick?.parentId) {
+                const parent = getBrick(brick.parentId, _get().bricks);
+                if (parent && "$children" in parent.props) {
+                  const children = parent.props.$children as Brick[];
+                  const index = children.findIndex((b: Brick) => b.id === brickId);
+                  return to === "left" ? index > 0 : index < children.length - 1;
+                }
+              }
+              return false;
+            },
+
             setPreviewTheme: (theme) =>
               set((state) => {
                 state.previewTheme = theme;
@@ -472,13 +785,15 @@ export const createDraftStore = (
             addBrick: (brick, parentContainer) =>
               set((state) => {
                 if (!parentContainer) {
-                  console.log("Adding brick", brick);
                   state.bricks.push(brick);
                 } else {
-                  console.log("Adding brick %o to container %o", brick, parentContainer);
                   const parentBrick = state.bricks.find((b) => b.id === parentContainer.id);
-                  // @ts-ignore
-                  parentBrick?.props.children?.push({ ...brick, parentId: parentContainer.id });
+                  invariant(parentBrick, "Parent brick not found");
+                  invariant("$children" in parentBrick.props, "Parent brick must be a container");
+                  (parentBrick.props.$children as Brick[] | undefined)?.push({
+                    ...brick,
+                    parentId: parentContainer.id,
+                  });
                 }
               }),
 
@@ -522,7 +837,7 @@ export const createDraftStore = (
             partialize: (state) =>
               Object.fromEntries(
                 Object.entries(state).filter(
-                  ([key]) => !["previewTheme", "attributes", "lastSaved", "selectedBrick"].includes(key),
+                  ([key]) => !["previewTheme", "attributes", "lastSaved"].includes(key),
                 ),
               ),
           },
@@ -534,15 +849,15 @@ export const createDraftStore = (
           partialize: (state) =>
             Object.fromEntries(
               Object.entries(state).filter(
-                ([key]) => !["previewTheme", "attributes", "lastSaved", "selectedBrick"].includes(key),
+                ([key]) => !["previewTheme", "attributes", "lastSaved"].includes(key),
               ),
             ) as DraftState,
-          handleSet: (handleSet) =>
-            debounce<typeof handleSet>((state) => {
-              if (state) {
-                handleSet(state);
-              }
-            }, 200),
+          // handleSet: (handleSet) =>
+          //   debounce<typeof handleSet>((state) => {
+          //     if (state) {
+          //       handleSet(state);
+          //     }
+          //   }, 200),
         },
       ),
     ),
@@ -598,14 +913,19 @@ export const useSelectedGroup = () => {
   return useStore(ctx, (state) => state.selectedGroup);
 };
 
-export const useSelectedBrick = () => {
-  const ctx = useDraftStoreContext();
-  return useStore(ctx, (state) => state.selectedBrick);
+export const useSelectedBrickId = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.selectedBrickId);
 };
 
 export const useColorAdjustment = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => state.colorAdjustment);
+};
+
+export const useDebugMode = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => !!state.debugMode);
 };
 
 export const usePanel = () => {
@@ -648,10 +968,37 @@ export function usePageVersion() {
   return useStore(ctx, (state) => state.version);
 }
 
+export function useEditingTextForBrickId() {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.isEditingTextForBrickId);
+}
+
 export function useLastSaved() {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => state.lastSaved);
 }
+
+export const useSections = () => {
+  const ctx = useDraftStoreContext();
+  return useStore(ctx, (state) => state.sections);
+};
+
+export const useSection = (sectionId: string) => {
+  const ctx = useDraftStoreContext();
+  return useStore(ctx, (state) => {
+    const section = state.sections.find((s) => s.id === sectionId);
+    invariant(section, `Section '${sectionId}' not found`);
+    return {
+      ...section,
+      bricks: state.bricks.filter((b) => b.sectionId === sectionId),
+    };
+  });
+};
+
+export const useBricksBySection = (sectionId: string) => {
+  const ctx = useDraftStoreContext();
+  return useStore(ctx, (state) => state.bricks.filter((b) => b.sectionId === sectionId));
+};
 
 export const useAttributes = () => {
   const ctx = useDraftStoreContext();
@@ -682,6 +1029,8 @@ export const useEditorHelpers = () => {
     togglePanel: state.togglePanel,
     hidePanel: state.hidePanel,
     setSelectedGroup: state.setSelectedGroup,
+    setSelectedBrickId: state.setSelectedBrickId,
+    deselectBrick: state.deselectBrick,
     setShouldShowGrid: state.setShouldShowGrid,
     setColorAdjustment: state.setColorAdjustment,
     togglePanelPosition: state.togglePanelPosition,
@@ -695,9 +1044,25 @@ export const useEditorHelpers = () => {
 export const useDraftHelpers = () => {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => ({
-    setSelectedBrick: state.setSelectedBrick,
-    deselectBrick: state.deselectBrick,
     deleteBrick: state.deleteBrick,
+    getParentBrick: state.getParentBrick,
+    updateBrick: state.updateBrick,
+    updateBrickProps: state.updateBrickProps,
+    moveBrickWithin: state.moveBrickWithin,
+    getPositionWithinParent: state.getPositionWithinParent,
+    canMoveToWithinParent: state.canMoveToWithinParent,
+    moveBrickToParent: state.moveBrickToParent,
+    getBrickIndex: state.getBrickIndex,
+    deleteSection: state.deleteSection,
+    moveSectionUp: state.moveSectionUp,
+    moveSectionDown: state.moveSectionDown,
+    reorderSections: state.reorderSections,
+    updateSection: state.updateSection,
+    addSection: state.addSection,
+    isLastBrickOfSection: state.isLastBrickOfSection,
+    isFirstBrickOfSection: state.isFirstBrickOfSection,
+    isFirstSection: state.isFirstSection,
+    isLastSection: state.isLastSection,
   }));
 };
 
@@ -758,14 +1123,14 @@ export const usePagePathSubscribe = (callback: (path: DraftState["path"]) => voi
 /**
  * Return the original position of the duplicated brick translated to the new position (+1 row for each breakpoint)
  */
-function getDuplicatedBrickPosition(brick: Brick) {
+function getDuplicatedBrickPosition(brick: Brick, bricksInSection: Brick[]) {
   const { mobile, desktop } = brick.position;
   return {
-    mobile: { ...(mobile ?? desktop)!, y: (mobile ?? desktop)!.y + 1 },
+    mobile: { ...mobile, y: mobile.y + mobile.h },
     desktop: {
-      ...(desktop ?? mobile)!,
-      y: (desktop ?? mobile)!.y + 1,
-      x: (desktop ?? mobile)!.x + 1,
+      ...desktop,
+      y: desktop.y + desktop.h,
+      // x: desktop.x + 1,
     },
   };
 }
@@ -777,8 +1142,8 @@ function getBrick(id: string, bricks: Brick[]) {
   let brick = bricks.find((b) => b.id === id);
   if (!brick) {
     for (const brickIter of bricks) {
-      if ("children" in brickIter.props) {
-        const child = brickIter.props.children.find((b: Brick) => b.id === id);
+      if ("$children" in brickIter.props) {
+        const child = (brickIter.props.$children as Brick[]).find((b: Brick) => b.id === id);
         if (child) {
           brick = child;
           break;

@@ -1,4 +1,3 @@
-import { tx } from "@upstart.gg/style-system/twind";
 import type { FieldProps } from "./types";
 import { Slider } from "@upstart.gg/style-system/system";
 import { TextField, Text } from "@upstart.gg/style-system/system";

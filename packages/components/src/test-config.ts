@@ -1,11 +1,9 @@
-// @ts-check
 import { Type } from "@sinclair/typebox";
 import { defineDataSources } from "@upstart.gg/sdk/datasources";
 import { defineAttributes, attr } from "@upstart.gg/sdk/attributes";
-import { defineBricks, createRow } from "@upstart.gg/sdk/bricks";
 import { defineConfig } from "@upstart.gg/sdk/page";
-import { FirstBlock, SecondBlock } from "./test-comp";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
+import { defineBricks, defineSections } from "@upstart.gg/sdk/shared/bricks";
 
 // define your datasources
 const datasources = defineDataSources({
@@ -21,7 +19,7 @@ const datasources = defineDataSources({
     ),
     sampleData: [
       { title: "Enpage", url: "https://enpage.co" },
-      { title: "Github", url: "https://github.com/enpage/enpage" },
+      { title: "Github", url: "https://github.com/upstart-gg/upstart" },
       { title: "Developers docs", url: "https://developers.enpage.co" },
     ],
   },
@@ -60,214 +58,171 @@ const datasources = defineDataSources({
   },
 });
 
-const homePageBricks = defineBricks([
-  ...createRow([
-    {
-      type: "container",
-      props: {
-        children: [
-          { type: "text", props: { content: "Hello World #1" } },
-          { type: "text", props: { content: "Hello World #2" } },
-          { type: "text", props: { content: "Hello World #3" } },
-        ],
+const homePageSections = defineSections([
+  {
+    id: "header",
+    label: "Header",
+    order: 0,
+    props: {},
+    position: {
+      mobile: {
+        h: 3,
       },
-      position: {
-        mobile: {
-          x: 0,
-          w: "full",
-          h: 10,
-        },
-        desktop: {
-          x: 0,
-          w: "full",
-          h: 16,
-        },
+      desktop: {
+        h: "full",
       },
     },
-  ]),
-  ...createRow([
-    {
-      type: "hero",
-      props: {
-        content: "Reach the stars.<br />Book your next trip<br />to Space.",
-        // className:
-        //   "capitalize flex font-bold text-[2.2rem] leading-[1] @desktop:text-7xl justify-center items-center text-center [text-shadow:_2px_2px_5px_rgb(0_0_0_/_40%)]",
-      },
-      position: {
-        mobile: {
-          x: 0,
-          w: "full",
-          h: 10,
-        },
-        desktop: {
-          x: 0,
-          forceY: 20,
-          w: "full",
-          h: 16,
-        },
+  },
+  {
+    id: "content",
+    label: "Content",
+    order: 1,
+    props: {
+      background: {
+        color: "#FFDD55",
       },
     },
-  ]),
+    position: {
+      mobile: {
+        h: "full",
+      },
+      desktop: {
+        h: "full",
+      },
+    },
+  },
+  {
+    id: "footer",
+    label: "Footer",
+    order: 2,
+    props: {
+      background: {
+        color: "#CCCCCC",
+      },
+    },
+    position: {
+      mobile: {
+        h: 3,
+      },
+      desktop: {
+        h: 3,
+      },
+    },
+  },
+]);
 
-  ...createRow([
-    {
-      type: "generic-component",
-      props: {
-        render: FirstBlock,
-      },
-      position: {
-        mobile: {
-          x: 0,
-          forceY: 10,
-          w: "full",
-          h: 36,
-        },
-        desktop: {
-          x: 2,
-          forceY: 40,
-          w: 15,
-          h: 20,
-        },
+const hpBricks = defineBricks([
+  {
+    type: "header",
+    sectionId: "header",
+    props: {
+      container: {},
+      brand: {
+        name: "Upstart",
       },
     },
-    {
-      type: "generic-component",
-      props: {
-        render: SecondBlock,
+    position: {
+      mobile: {
+        x: 0,
+        y: 0,
+        w: "full",
+        h: 3,
       },
-      position: {
-        mobile: {
-          x: 0,
-          w: "full",
-          forceY: 47,
-          h: 36,
-        },
-        desktop: {
-          x: 19,
-          forceY: 40,
-          w: 15,
-          h: 20,
-        },
+      desktop: {
+        x: 0,
+        y: 0,
+        w: "full",
+        h: 3,
       },
     },
-  ]),
-  ...createRow([
-    {
-      type: "text",
-      props: {
-        content:
-          "&laquo; The lunar view of Earth changed my perspective forever.<br />An unforgettable experience &raquo;<br /><small>- John Doe</small>",
-        className: "text-center text-3xl italic",
-        format: "html",
+  },
+  {
+    type: "container",
+    sectionId: "header",
+    props: {
+      styles: {
+        background: {
+          color: "#f9f9f9",
+        },
       },
-      position: {
-        mobile: {
-          x: 0,
-          w: "full",
-          forceY: 85,
-          h: 8,
+      $children: [
+        {
+          type: "text",
+          props: {
+            content: "Some text #1",
+          },
         },
-        desktop: {
-          x: 3,
-          w: 28,
-          h: 6,
-          forceY: 62,
+        {
+          type: "text",
+          props: {
+            content: "Some text #2",
+          },
         },
+        {
+          type: "text",
+          props: {
+            content: "Some text #3",
+          },
+        },
+      ],
+    },
+    position: {
+      mobile: {
+        x: 0,
+        y: 8,
+        w: "full",
+        h: 8,
+      },
+      desktop: {
+        x: 0,
+        y: 8,
+        w: "full",
+        h: 8,
       },
     },
-  ]),
-  ...createRow([
-    {
-      type: "text",
-      props: {
-        content: " ",
-        justify: "text-center",
-        format: "html",
+  },
+  {
+    type: "text",
+    sectionId: "content",
+    props: {
+      content: "Some specific content",
+    },
+    position: {
+      mobile: {
+        x: "quarter",
+        y: 0,
+        w: "half",
+        h: 3,
       },
-      position: {
-        mobile: {
-          x: 0,
-          w: "full",
-          forceY: 98,
-          h: 1,
-        },
-        desktop: {
-          x: 3,
-          w: 28,
-          h: 3,
-          forceY: 68,
-        },
+      desktop: {
+        x: "quarter",
+        y: 0,
+        w: "half",
+        h: 3,
       },
     },
-  ]),
-  // ]),
-  // ...createRow([
-  //   {
-  //     type: "card",
-  //     props: {
-  //       // justify: "text-center",
-  //       // format: "html",
-  //       body: { content: "Card body" },
-  //       title: { content: "Card title" },
-  //       // footer: "Card footer",
-  //     },
-  //     position: {
-  //       mobile: {
-  //         x: 0,
-  //         w: "full",
-  //         h: 8,
-  //       },
-  //       desktop: {
-  //         x: 0,
-  //         w: "full",
-  //         h: 3,
-  //       },
-  //     },
-  //   },
-  // ]),
-  // ...createRow([
-  //   {
-  //     type: "text",
-  //     props: {
-  //       content: {
-  //         text: "Build your launch page",
-  //         richText: true,
-  //       },
-  //     },
-  //     position: {
-  //       mobile: {
-  //         x: "third",
-  //         w: "full",
-  //         h: 3,
-  //       },
-  //       desktop: {
-  //         x: "third",
-  //         w: "third",
-  //         h: 3,
-  //       },
-  //     },
-  //   },
-  //   {
-  //     type: "text",
-  //     props: {
-  //       content: {
-  //         text: "Build your launch page",
-  //       },
-  //     },
-  //     position: {
-  //       mobile: {
-  //         x: "twoThird",
-  //         w: "full",
-  //         h: 3,
-  //       },
-  //       desktop: {
-  //         x: "twoThird",
-  //         w: "third",
-  //         h: 3,
-  //       },
-  //     },
-  //   },
-  // ]),
+  },
+  {
+    type: "text",
+    sectionId: "footer",
+    props: {
+      textContent: "Footer text",
+    },
+    position: {
+      mobile: {
+        x: 0,
+        y: 0,
+        w: "full",
+        h: 3,
+      },
+      desktop: {
+        x: 0,
+        y: 0,
+        w: "full",
+        h: 3,
+      },
+    },
+  },
 ]);
 
 const themes: Theme[] = [
@@ -277,10 +232,9 @@ const themes: Theme[] = [
     description: "Vibrant gradients with ethereal color transitions",
     tags: ["gradient", "vibrant", "modern", "creative", "dynamic", "artistic", "bold"],
     colors: {
-      primary: "#FF9900",
-      secondary: "#2dd4bf", // Teal
-      // Cyan
-      accent: "#ec4899", // Pink
+      primary: "#2F5ABF",
+      secondary: "#50C5B7",
+      accent: "#533A71",
       neutral: "#4b5563", // Grey
     },
     typography: {
@@ -309,46 +263,37 @@ const siteAttributes = defineAttributes({
     "ui:group": "other",
     "ui:group:title": "Other",
   }),
-  testBoolTrue: attr.boolean("Test Bool True", true, {
-    "ui:group": "other",
-    "ui:group:title": "Other",
-  }),
   customerId: attr.string("Customer ID", "", {
     "ui:group": "other",
     "ui:group:title": "Other",
   }),
-  testUrl: attr.url("Test URL", "https://enpage.co"),
+  testUrl: attr.url("Test URL", "https://upstart.gg"),
 });
 
 export default defineConfig({
   attributes: siteAttributes,
   attr: {
-    $textColor: "#fff",
-    $background: {
-      color: "#0B1016",
-      image: "/earth-big.jpg",
+    $textColor: "#222",
+    $pageBackground: {
+      color: "#FFFFFF",
     },
   },
   pages: [
     {
       label: "Home",
       path: "/",
-      bricks: homePageBricks,
+      sections: homePageSections,
+      bricks: hpBricks,
       tags: ["nav"],
     },
     {
       label: "About",
       path: "/about",
-      bricks: homePageBricks,
+      sections: homePageSections,
+      bricks: hpBricks,
       tags: ["nav"],
     },
   ],
   themes,
   datasources,
-  manifest: {
-    author: "John Doe",
-    name: "Example Template",
-    description: "Description of the template",
-    homepage: "https://enpage.co",
-  },
 });

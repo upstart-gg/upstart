@@ -37,7 +37,9 @@ export async function loadConfigFromJsFile(
     readme[language] = await readFile(file, "utf-8");
   }
 
-  config.manifest.readme = readme;
+  if (config.manifest) {
+    config.manifest.readme = readme;
+  }
 
   return config;
 }

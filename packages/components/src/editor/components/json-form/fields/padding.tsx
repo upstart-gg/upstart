@@ -1,13 +1,16 @@
 import type { FieldProps } from "./types";
-import { Text, Select, Slider } from "@upstart.gg/style-system/system";
+import { Text, Select } from "@upstart.gg/style-system/system";
 import { fieldLabel } from "../form-class";
-import { tx } from "@upstart.gg/style-system/twind";
 import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 
-export const PagePaddingField: React.FC<FieldProps<Attributes["$pagePadding"]>> = (props) => {
+export type TempPadding = {
+  horizontal: string;
+  vertical: string;
+};
+
+export const PagePaddingField: React.FC<FieldProps<TempPadding>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
-  const onSettingsChange = (newVal: Partial<Attributes["$pagePadding"]>) =>
-    onChange({ ...currentValue, ...newVal });
+  const onSettingsChange = (newVal: Partial<TempPadding>) => onChange({ ...currentValue, ...newVal });
 
   return (
     <div className="border-field">
@@ -23,9 +26,7 @@ export const PagePaddingField: React.FC<FieldProps<Attributes["$pagePadding"]>> 
           <Select.Root
             defaultValue={currentValue.horizontal}
             size="2"
-            onValueChange={(value) =>
-              onSettingsChange({ horizontal: value as Attributes["$pagePadding"]["horizontal"] })
-            }
+            onValueChange={(value) => onSettingsChange({ horizontal: value as TempPadding["horizontal"] })}
           >
             <Select.Trigger radius="large" variant="ghost" />
             <Select.Content position="popper">
@@ -45,9 +46,7 @@ export const PagePaddingField: React.FC<FieldProps<Attributes["$pagePadding"]>> 
           <Select.Root
             defaultValue={currentValue.vertical}
             size="2"
-            onValueChange={(value) =>
-              onSettingsChange({ vertical: value as Attributes["$pagePadding"]["horizontal"] })
-            }
+            onValueChange={(value) => onSettingsChange({ vertical: value as TempPadding["horizontal"] })}
           >
             <Select.Trigger radius="large" variant="ghost" />
             <Select.Content position="popper">

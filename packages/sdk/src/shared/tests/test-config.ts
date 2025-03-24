@@ -1,7 +1,7 @@
 import { Type as ds } from "@sinclair/typebox";
 import { defineDataSources } from "../datasources";
 import { defineAttributes, attr } from "../attributes";
-import { defineBricks, createRow } from "../bricks";
+import { defineBricks, defineSections } from "../bricks";
 import { defineConfig } from "../page";
 import type { Theme } from "../theme";
 
@@ -19,7 +19,7 @@ const datasources = defineDataSources({
     ),
     sampleData: [
       { title: "Enpage", url: "https://enpage.co" },
-      { title: "Github", url: "https://github.com/enpage/enpage" },
+      { title: "Github", url: "https://github.com/upstart-gg/upstart" },
       { title: "Developers docs", url: "https://developers.enpage.co" },
     ],
   },
@@ -57,108 +57,45 @@ const datasources = defineDataSources({
   },
 });
 
+const homePageSections = defineSections([
+  {
+    id: "header",
+    label: "Header",
+    order: 0,
+    position: {
+      mobile: {
+        h: "full",
+      },
+      desktop: {
+        h: "full",
+      },
+    },
+  },
+]);
+
 const homePageBricks = defineBricks([
-  ...createRow([
-    {
-      type: "image",
-      props: {
-        src: "https://cdn.upstart.gg/internal/logo/upstart.svg",
-        // className: "max-h-24",
+  {
+    type: "image",
+    sectionId: "header",
+    props: {
+      src: "https://cdn.upstart.gg/internal/logo/upstart.svg",
+      // className: "max-h-24",
+    },
+    position: {
+      mobile: {
+        x: 0,
+        y: 0,
+        w: "full",
+        h: 3,
       },
-      position: {
-        mobile: {
-          x: 0,
-          w: "full",
-          h: 3,
-        },
-        desktop: {
-          x: 0,
-          w: "full",
-          h: 3,
-        },
+      desktop: {
+        x: 0,
+        y: 0,
+        w: "full",
+        h: 3,
       },
     },
-  ]),
-  ...createRow([
-    {
-      type: "text",
-      props: {
-        content: "Build your launch page",
-        justify: "text-center font-humanist",
-      },
-      // take the whole width on all devices
-      position: {
-        mobile: {
-          x: 0,
-          w: "full",
-          h: 4,
-        },
-        desktop: {
-          x: 0,
-          y: 4,
-          w: "full",
-          h: 4,
-        },
-      },
-    },
-  ]),
-  ...createRow([
-    {
-      type: "text",
-      props: {
-        content:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ornare justo lectus, vel placerat arcu vulputate scelerisque. Donec eget eros pellentesque, facilisis massa id, aliquam nisl. Suspendisse auctor ipsum vitae volutpat cursus. Donec vehicula urna felis, feugiat iaculis metus luctus varius. Nam sed pretium nulla.",
-        justify: "text-center",
-        format: "html",
-      },
-      position: {
-        mobile: {
-          x: 0,
-          w: "full",
-          h: 8,
-        },
-        desktop: {
-          x: 0,
-          w: "full",
-          h: 3,
-        },
-      },
-    },
-  ]),
-  ...createRow([
-    {
-      type: "text",
-      props: { content: "Something" },
-      position: {
-        mobile: {
-          x: "third",
-          w: "full",
-          h: 3,
-        },
-        desktop: {
-          x: "third",
-          w: "third",
-          h: 3,
-        },
-      },
-    },
-    {
-      type: "text",
-      props: { content: "Else" },
-      position: {
-        mobile: {
-          x: "twoThird",
-          w: "full",
-          h: 3,
-        },
-        desktop: {
-          x: "twoThird",
-          w: "third",
-          h: 3,
-        },
-      },
-    },
-  ]),
+  },
 ]);
 
 const themes: Theme[] = [
@@ -197,6 +134,7 @@ export default defineConfig({
     {
       label: "Home",
       path: "/",
+      sections: homePageSections,
       bricks: homePageBricks,
       tags: [],
     },

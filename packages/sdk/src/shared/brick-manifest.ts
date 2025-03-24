@@ -1,39 +1,15 @@
-import { Type, type Static, type TObject, type TProperties } from "@sinclair/typebox";
-import { LAYOUT_COLS } from "./layout-constants";
+import type { TObject, TProperties, TArray, Static } from "@sinclair/typebox";
+import { Value } from "@sinclair/typebox/value";
 
-export function defineBrickManifest<
-  BType extends string,
-  BTitle extends string,
-  BIcon extends string,
-  BDesc extends string,
-  BProps extends TProperties,
->({
-  type,
-  kind,
-  title,
-  description,
-  preferredWidth,
-  preferredHeight,
-  minWidth,
-  minHeight,
-  maxWidth,
-  icon,
-  props,
-  datasource,
-  datarecord,
-  isContainer,
-  hideInLibrary,
-}: {
-  type: BType;
-  kind: string;
-  title: BTitle;
-  icon: BIcon;
-  description: BDesc;
+type BrickKind = "brick" | "widget" | "container";
+
+type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | TArray<TObject>> = {
+  type: string;
+  kind?: BrickKind;
+  name: string;
+  icon: string;
+  description?: string;
   minWidth?: {
-    mobile: number;
-    desktop: number;
-  };
-  minHeight?: {
     mobile: number;
     desktop: number;
   };
@@ -41,73 +17,95 @@ export function defineBrickManifest<
     mobile: number;
     desktop: number;
   };
-  preferredWidth?: {
+  minHeight?: {
     mobile: number;
     desktop: number;
   };
-  preferredHeight?: {
+  maxHeight?: {
+    mobile: number;
+    desktop: number;
+  };
+  defaultWidth?: {
+    mobile: number;
+    desktop: number;
+  };
+  defaultHeight?: {
     mobile: number;
     desktop: number;
   };
   props: TObject<BProps>;
-  datasource?: TObject;
-  datarecord?: TObject;
+  presets?: Record<
+    string,
+    { label: string; previewClasses: string; props: Partial<Static<TObject<BProps>>> }
+  >;
+  datasource?: DSSchema;
   hideInLibrary?: boolean;
+  defaultInspectorTab?: "preset" | "style" | "content";
+  deletable?: boolean;
+  movable?: boolean;
+  repeatable?: boolean;
+  resizable?: boolean;
+  duplicatable?: boolean;
   isContainer?: boolean;
-}) {
-  return Type.Object({
-    type: Type.Literal(type),
-    kind: Type.Literal(kind),
-    title: Type.Literal(title),
-    description: Type.Literal(description),
-    icon: Type.Literal(icon),
-    hideInLibrary: Type.Boolean({ default: hideInLibrary ?? false }),
-    isContainer: Type.Boolean({ default: isContainer ?? false }),
-    preferredWidth: Type.Object(
-      {
-        mobile: Type.Number(),
-        desktop: Type.Number(),
-      },
-      { default: preferredWidth ?? minWidth },
-    ),
-    preferredHeight: Type.Object(
-      {
-        mobile: Type.Number(),
-        desktop: Type.Number(),
-      },
-      { default: preferredHeight ?? minHeight },
-    ),
-    minWidth: Type.Object(
-      {
-        mobile: Type.Number(),
-        desktop: Type.Number(),
-      },
-      { default: minWidth ?? { mobile: 1, desktop: 1 } },
-    ),
-    maxWidth: Type.Object(
-      {
-        mobile: Type.Number(),
-        desktop: Type.Number(),
-      },
-      { default: maxWidth ?? { mobile: LAYOUT_COLS.mobile, desktop: LAYOUT_COLS.desktop } },
-    ),
-    minHeight: Type.Object(
-      {
-        mobile: Type.Number(),
-        desktop: Type.Number(),
-      },
-      { default: minHeight ?? { mobile: 1, desktop: 1 } },
-    ),
-    ...(datasource && { datasource }),
-    ...(datarecord && { datarecord }),
+};
+
+export function defineBrickManifest<BProps extends TProperties, DSSchema extends TObject | TArray<TObject>>({
+  props,
+  defaultWidth,
+  defaultHeight,
+  minWidth,
+  minHeight,
+  kind = "brick",
+  isContainer = false,
+  hideInLibrary = false,
+  deletable = true,
+  movable = true,
+  resizable = true,
+  repeatable = false,
+  duplicatable = true,
+  defaultInspectorTab = "preset",
+  datasource,
+  presets,
+  ...rest
+}: BrickManifestProps<BProps, DSSchema>) {
+  return {
+    ...rest,
+    datasource: datasource as DSSchema,
     props,
-  });
+    presets,
+    kind,
+    defaultInspectorTab,
+    hideInLibrary,
+    deletable,
+    movable,
+    resizable,
+    repeatable,
+    duplicatable,
+    isContainer,
+    defaultWidth:
+      defaultWidth ?? minWidth ?? ({ desktop: 8, mobile: -1 } as { desktop: number; mobile: number }),
+    defaultHeight:
+      defaultHeight ?? minHeight ?? ({ desktop: 3, mobile: 3 } as { desktop: number; mobile: number }),
+    minWidth,
+    minHeight,
+  } as const;
 }
 
 export type BrickManifest = ReturnType<typeof defineBrickManifest>;
-export type ResolvedBrickManifest = Static<BrickManifest>;
+
+export function getBrickManifestDefaults<M extends BrickManifest>(manifest: M) {
+  return {
+    ...manifest,
+    props: Value.Create(manifest.props),
+    mobileProps: {},
+    ...(manifest.datasource ? { datasource: Value.Create(manifest.datasource) } : {}),
+    // ...(manifest.datarecord ? { datarecord: Value.Create(manifest.datarecord) } : {}),
+  };
+}
+
+export type BrickDefaults = ReturnType<typeof getBrickManifestDefaults>;
 
 export type BrickConstraints = Pick<
-  ResolvedBrickManifest,
-  "preferredWidth" | "preferredHeight" | "minWidth" | "minHeight" | "maxWidth"
+  BrickManifest,
+  "defaultWidth" | "defaultHeight" | "minWidth" | "minHeight" | "maxWidth" | "resizable" | "movable"
 >;

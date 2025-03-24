@@ -1,7 +1,6 @@
 import { LuUndo, LuRedo } from "react-icons/lu";
 import { RxMobile } from "react-icons/rx";
 import { RxDesktop } from "react-icons/rx";
-import { BsStars } from "react-icons/bs";
 import { VscCopy } from "react-icons/vsc";
 import { type MouseEvent, type PropsWithChildren, useCallback, useMemo } from "react";
 import {
@@ -19,12 +18,17 @@ import { tx, css } from "@upstart.gg/style-system/twind";
 import { RxRocket } from "react-icons/rx";
 import logo from "../../../../../creatives/upstart-dark.svg";
 import { RiArrowDownSLine } from "react-icons/ri";
-import { DropdownMenu, TextField, Popover } from "@upstart.gg/style-system/system";
+import { DropdownMenu } from "@upstart.gg/style-system/system";
 import { post } from "~/editor/utils/api/base-api";
 import { IoIosSave } from "react-icons/io";
+import { LuExternalLink } from "react-icons/lu";
 import { formatDistance } from "date-fns";
 
-export default function TopBar() {
+type TopBarProps = {
+  showIntro: boolean;
+};
+
+export default function TopBar({ showIntro }: TopBarProps) {
   const editorHelpers = useEditorHelpers();
   const previewMode = usePreviewMode();
   const logoLink = useLogoLink();
@@ -54,7 +58,11 @@ export default function TopBar() {
   );
 
   // bg-upstart-600
-  const baseCls = `bg-gradient-to-t from-transparent to-[rgba(255,255,255,0.15)] px-3 min-w-[3.7rem]`;
+  const baseCls = tx(
+    `transition-opacity duration-300 bg-gradient-to-t from-transparent to-[rgba(255,255,255,0.15)] px-3 min-w-[3.7rem]`,
+    showIntro && "opacity-0",
+  );
+
   const commonCls = `${baseCls}
   border-x border-l-upstart-400 border-r-upstart-700
     disabled:hover:from-transparent disabled:hover:to-[rgba(255,255,255,0.15)]
@@ -63,8 +71,12 @@ export default function TopBar() {
     disabled:text-white/40
   `;
 
-  const rocketBtn = `px-3 bg-gradient-to-tr from-orange-500 !to-yellow-400 border-l border-l-orange-300
-  hover:bg-gradient-to-tr hover:from-orange-600 hover:to-yellow-500`;
+  const rocketBtn = tx(
+    `transition-opacity duration-300
+    px-3 bg-gradient-to-tr from-orange-500 !to-yellow-400 border-l border-l-orange-300
+  hover:bg-gradient-to-tr hover:from-orange-600 hover:to-yellow-500`,
+    showIntro && "opacity-0",
+  );
 
   const btnWithArrow = "cursor-default !aspect-auto";
 
@@ -85,7 +97,7 @@ export default function TopBar() {
         role="navigation"
         className={tx(
           `bg-upstart-600 z-[9999] shadow-xl
-          flex text-xl text-white w-full justify-start items-stretch
+          flex text-xl text-white w-full justify-start items-stretch transition-opacity duration-300
           `,
           css({
             gridArea: "topbar",
@@ -98,12 +110,12 @@ export default function TopBar() {
           onClick={() => {
             window.location.href = logoLink;
           }}
-          className={tx(baseCls, "flex-shrink-0")}
+          className={tx(baseCls, "flex-shrink-0 logo")}
         >
           <img src={logo} alt="Upstart" className={tx("h-8 w-auto")} />
         </button>
 
-        <div className={tx(baseCls, "px-5 max-lg:hidden flex-1", css({ paddingBlock: "0.6rem" }))}>
+        {/* <div className={tx(baseCls, "px-5 max-lg:hidden flex-1", css({ paddingBlock: "0.6rem" }))}>
           <Popover.Root>
             <Popover.Trigger>
               <button type="button" className="w-full">
@@ -144,13 +156,14 @@ export default function TopBar() {
               </div>
             </Popover.Content>
           </Popover.Root>
-        </div>
+        </div> */}
+
+        {/* spacer */}
+        <div className={tx(baseCls, "px-5 max-lg:hidden flex-1", css({ paddingBlock: "0.6rem" }))} />
 
         <button
           disabled={!canUndo}
-          onClick={() => {
-            undo();
-          }}
+          onClick={() => undo()}
           type="button"
           className={tx(btnClass, commonCls, squareBtn, "ml-auto")}
         >
@@ -212,6 +225,18 @@ export default function TopBar() {
 
         <div className={tx("flex-1", "border-x border-l-upstart-400 border-r-upstart-700", baseCls)} />
 
+        <button
+          type="button"
+          className={tx(btnClass, commonCls, "text-base px-5")}
+          onClick={() => {
+            window.open(`/sites/${draft.siteId}/pages/${draft.id}/preview`, "upstart_preview");
+          }}
+        >
+          Preview
+          <LuExternalLink className="h-4 w-auto ml-1" />
+          <span className={tx(tooltipCls)}>Open page preview</span>
+        </button>
+
         {editorMode === "remote" && (
           <div className={tx(btnClass, baseCls, "border-x border-l-upstart-400 border-r-upstart-700 px-8")}>
             {lastSaved ? (
@@ -235,7 +260,7 @@ export default function TopBar() {
           >
             <button type="button" className={tx(btnClass, rocketBtn, btnWithArrow, "px-4")}>
               <RxRocket className={tx("h-6 w-auto")} />
-              <span className={tx("font-bold italic px-2", css({ fontSize: "1.2rem" }))}>Publish</span>
+              <span className={tx("font-bold italic px-2", css({ fontSize: "1rem" }))}>Publish</span>
               <RiArrowDownSLine className={arrowClass} />
             </button>
           </TopbarMenu>
@@ -249,7 +274,7 @@ export default function TopBar() {
             }}
           >
             <IoIosSave className={tx("h-5 w-auto")} />
-            <span className={tx("font-bold px-2", css({ fontSize: "1.2rem" }))}>Save your site</span>
+            <span className={tx("font-semibold px-2", css({ fontSize: "1.1rem" }))}>Save your site</span>
           </button>
         )}
       </nav>

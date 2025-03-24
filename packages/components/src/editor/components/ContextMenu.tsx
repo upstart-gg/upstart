@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ComponentProps } from "react";
-import { ContextMenu } from "@upstart.gg/style-system/system";
+import { ContextMenu, Portal } from "@upstart.gg/style-system/system";
 import { LuChevronRight } from "react-icons/lu";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { useDraft } from "../hooks/use-editor";
@@ -14,8 +14,8 @@ const ContextMenuWrapper = ({ children }: ComponentProps<"div">) => {
   useEffect(() => {
     const handler = (e: Event) => {
       const target = e.target as HTMLElement | null;
-      const isBrick = target?.matches(".brick");
-      const isBrickChild = target?.closest(".brick");
+      const isBrick = target?.matches("[data-brick]");
+      const isBrickChild = target?.closest("[data-brick]");
       const brickElement = (isBrick ? target : isBrickChild ?? null) as HTMLElement | null;
 
       if (brickElement) {
@@ -61,13 +61,12 @@ const ContextMenuWrapper = ({ children }: ComponentProps<"div">) => {
 
   return (
     <ContextMenu.Root>
-      <ContextMenu.Trigger asChild>{children}</ContextMenu.Trigger>
-      <ContextMenu.Portal>
+      <ContextMenu.Trigger>{children}</ContextMenu.Trigger>
+      <Portal>
         <ContextMenu.Content
           className="min-w-[220px] overflow-hidden rounded-md bg-white p-1.5 shadow-2xl"
           // sideOffset={5}
           alignOffset={5}
-
           // align="end"
         >
           <ContextMenu.Item className="group relative flex h-[25px] select-none items-center rounded-[3px] pl-[25px] pr-[5px] text-sm leading-none text-violet11 outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-upstart-200 data-[disabled]:text-mauve8 data-[highlighted]:text-violet1">
@@ -98,7 +97,7 @@ const ContextMenuWrapper = ({ children }: ComponentProps<"div">) => {
                 <LuChevronRight />
               </div>
             </ContextMenu.SubTrigger>
-            <ContextMenu.Portal>
+            <Portal>
               <ContextMenu.SubContent
                 className="min-w-[220px] overflow-hidden rounded-md bg-white p-1.5 shadow-2xl"
                 sideOffset={2}
@@ -121,7 +120,7 @@ const ContextMenuWrapper = ({ children }: ComponentProps<"div">) => {
                   Developer Tools
                 </ContextMenu.Item>
               </ContextMenu.SubContent>
-            </ContextMenu.Portal>
+            </Portal>
           </ContextMenu.Sub>
 
           <ContextMenu.Separator className="m-[5px] h-px bg-gray-200" />
@@ -164,7 +163,7 @@ const ContextMenuWrapper = ({ children }: ComponentProps<"div">) => {
             </ContextMenu.RadioItem>
           </ContextMenu.RadioGroup>
         </ContextMenu.Content>
-      </ContextMenu.Portal>
+      </Portal>
     </ContextMenu.Root>
   );
 };

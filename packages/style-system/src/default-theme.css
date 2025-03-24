@@ -13,7 +13,9 @@
     --luminance-threshold: 0.6;
     --l-threshold: 0.7;
     --l: clamp(0, (var(--l-threshold) / l - 1) * infinity, 1);
+
   }
+
   :root {
 
     [data-upstart-theme="clarity"] {
@@ -238,6 +240,7 @@
       color: var(--text-secondary-4);
     }
   }
+
 
 
 }

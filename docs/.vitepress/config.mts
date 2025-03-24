@@ -8,8 +8,8 @@ export default defineConfig({
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     logo: {
-      dark: "/enpage-dark.svg",
-      light: "/enpage.svg",
+      dark: "/upstart-dark.svg",
+      light: "/upstart.svg",
       alt: "Upstart Developer Documentation",
     },
     siteTitle: false,
@@ -18,13 +18,13 @@ export default defineConfig({
       { text: "Quick start", link: "/getting-started" },
       { text: "Help", link: "/help" },
       { text: "Publish your template", link: "/publishing" },
-      { text: "Upstart.gg", link: "https://upstart.co" },
+      { text: "Upstart.gg", link: "https://upstart.gg" },
     ],
     sidebar: [
       {
         text: "Introduction",
         items: [
-          { text: "What is Upstart?", link: "/what-is-upstart" },
+          { text: "About", link: "/about" },
           { text: "Getting Started", link: "/getting-started" },
         ],
       },
@@ -188,9 +188,9 @@ export default defineConfig({
       },
     ],
     editLink: {
-      pattern: "https://github.com/enpage/enpage/edit/main/docs/:path",
+      pattern: "https://github.com/upstart-gg/upstart/edit/main/docs/:path",
     },
-    socialLinks: [{ icon: "github", link: "https://github.com/enpage/enpage" }],
+    socialLinks: [{ icon: "github", link: "https://github.com/upstart-gg/upstart" }],
     footer: {
       message: "Enpage SDK is released under AGPL-3.0 license",
       copyright: "Copyright © 2024-present Flippable - Made with ❤️ in Paris",

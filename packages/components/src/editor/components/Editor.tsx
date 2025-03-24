@@ -8,7 +8,8 @@ import {
 } from "../hooks/use-editor";
 import Toolbar from "./Toolbar";
 import Topbar from "./Topbar";
-import { lazy, Suspense, useEffect, useRef, type ComponentProps } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, type ComponentProps } from "react";
+import { useDebounceCallback } from "usehooks-ts";
 import { DeviceFrame } from "./Preview";
 import EditablePage from "./EditablePage";
 import { tx, injectGlobal, css } from "@upstart.gg/style-system/twind";
@@ -27,24 +28,29 @@ type EditorProps = ComponentProps<"div"> & {
   onDraftChange?: (state: DraftState, pageInfo: ReturnType<typeof usePageInfo>) => void;
 };
 
-// const PanelTheme = lazy(() => import("./PanelTheme"));
-// const PanelSettings = lazy(() => import("./PanelSettings"));
-// const PanelInspector = lazy(() => import("./PanelInspector"));
-// const PanelLibrary = lazy(() => import("./PanelLibrary"));
-
-function PanelSpinner() {
-  return (
-    <div className="w-full h-full flex justify-center items-center">
-      <Spinner size="3" />
-    </div>
-  );
-}
-
 export default function Editor({ mode = "local", onDraftChange, ...props }: EditorProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const draft = useDraft();
   const previewMode = usePreviewMode();
-  const { panel, panelPosition } = usePanel();
+
+  // intro is a state when the site has just been created.
+  // It is used for animating the editor.
+  const [showIntro, setShowIntro] = useState(new URLSearchParams(window.location.search).has("intro"));
+  const setShowIntroDebounced = useDebounceCallback(setShowIntro, 300);
+
+  const { panelPosition } = usePanel();
+
+  useEffect(() => {
+    if (showIntro) {
+      const listener = (event: AnimationEvent) => {
+        setShowIntroDebounced(false);
+      };
+      addEventListener("animationend", listener);
+      return () => {
+        removeEventListener("animationend", listener);
+      };
+    }
+  }, [showIntro, setShowIntroDebounced]);
 
   usePageAutoSave();
   useOnDraftChange(onDraftChange);
@@ -61,16 +67,8 @@ export default function Editor({ mode = "local", onDraftChange, ...props }: Edit
             .join("\n")}
 
           --color-link: var(--color-primary);
-
-          --font-size-hero-1: clamp(2rem, 9vw, 3.5rem);
-          --font-size-hero-2: clamp(3rem, 9vw, 5rem);
-          --font-size-hero-3: clamp(4rem, 9vw, 7rem);
-          --font-size-hero-4: clamp(5rem, 9vw, 9rem);
-          --font-size-hero-5: clamp(6rem, 9vw, 11rem);
-
         }
-
-    }
+      }
     `;
 
     injectGlobal(injected);
@@ -81,25 +79,28 @@ export default function Editor({ mode = "local", onDraftChange, ...props }: Edit
       id="editor"
       className={tx(
         "min-h-[100dvh] max-h-[100dvh] grid relative overscroll-none overflow-hidden",
-        css({
-          gridTemplateAreas:
-            panelPosition === "left" ? `"topbar topbar" "toolbar main"` : `"topbar topbar" "main toolbar"`,
-          gridTemplateRows: "3.7rem 1fr",
-          // gridTemplateColumns: "3.7rem 1fr",
-          gridTemplateColumns: panelPosition === "left" ? "3.7rem 1fr" : "1fr 3.7rem",
-        }),
+        getEditorCss(showIntro, panelPosition),
+        // css({
+        //   gridTemplateAreas:
+        //     panelPosition === "left" ? `"topbar topbar" "toolbar main"` : `"topbar topbar" "main toolbar"`,
+        //   gridTemplateRows: "3.7rem 1fr",
+        //   gridTemplateColumns: panelPosition === "left" ? "3.7rem 1fr" : "1fr 3.7rem",
+        // }),
       )}
       {...props}
       ref={rootRef}
     >
-      <Tour />
-      <Topbar />
+      {showIntro === false && <Tour />}
+      <Topbar showIntro={showIntro} />
       <Panel />
-      <Toolbar />
+      <Toolbar showIntro={showIntro} />
       {draft.previewTheme && <ThemePreviewConfirmButton />}
-      <div
+      <main
         className={tx(
-          "flex-1 flex place-content-center z-40 overscroll-none overflow-x-auto overflow-y-visible transition-colors duration-300",
+          "editor-main flex-1 flex place-content-center z-40 overscroll-none transition-colors duration-300",
+          showIntro
+            ? "overflow-x-hidden overflow-y-hidden pointer-events-none"
+            : "overflow-x-auto overflow-y-visible ",
           previewMode === "mobile" && "bg-gray-300",
           css({
             gridArea: "main",
@@ -114,11 +115,20 @@ export default function Editor({ mode = "local", onDraftChange, ...props }: Edit
         )}
       >
         <DeviceFrame>
-          <EditablePage />
+          <EditablePage showIntro={showIntro} />
         </DeviceFrame>
-      </div>
+      </main>
     </div>
   );
+}
+
+function getEditorCss(showIntro: boolean, panelPosition: "left" | "right") {
+  return css({
+    gridTemplateAreas:
+      panelPosition === "left" ? `"topbar topbar" "toolbar main"` : `"topbar topbar" "main toolbar"`,
+    gridTemplateRows: "3.7rem 1fr",
+    gridTemplateColumns: panelPosition === "left" ? "3.7rem 1fr" : "1fr 3.7rem",
+  });
 }
 
 function ThemePreviewConfirmButton() {
@@ -126,12 +136,18 @@ function ThemePreviewConfirmButton() {
 }
 
 type PanelProps = ComponentProps<"aside">;
+
+const TEMP_PANEL_DISABLED = false;
 /**
  * Panel used to display both the inspector and the library
  */
 function Panel({ className, ...props }: PanelProps) {
   const { panel, panelPosition } = usePanel();
   const previewMode = usePreviewMode();
+
+  if (TEMP_PANEL_DISABLED) {
+    return null;
+  }
 
   return (
     <aside

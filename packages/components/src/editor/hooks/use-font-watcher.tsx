@@ -11,7 +11,6 @@ export function useFontWatcher() {
     buildHtmlHeadLinks();
     updateLinks(theme.typography);
   }, [theme.typography]);
-
   return theme.typography;
 }
 
@@ -20,13 +19,10 @@ function updateLinks(typography: Theme["typography"]) {
     // if we have a google font, we need to load the font
     if (typography[font].type === "google") {
       const linkElement = document.getElementById(`stylesheet-font-${font}`) as HTMLLinkElement;
-
       linkElement.href = `https://fonts.googleapis.com/css2?family=${typography[font].family.replace(
         / /g,
         "+",
       )}&display=swap`;
-
-      console.log("linkElement", linkElement);
     }
   }
 }

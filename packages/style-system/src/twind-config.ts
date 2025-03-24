@@ -6,7 +6,7 @@ import presetLineClamp from "@twind/preset-line-clamp";
 import presetForms from "@twind/preset-tailwind-forms";
 import presetTypo from "@twind/preset-typography";
 import presetContainerQueries from "@twind/preset-container-queries";
-import { modularScale } from "polished";
+import { borderRadius } from "polished";
 
 export default defineConfig({
   darkMode: "media",
@@ -32,12 +32,16 @@ export default defineConfig({
       },
     ],
     [
-      // specific padding classes for bricks
-      "brick-p-",
-      ({ $$ }) => ({ padding: `${$$ === "1" ? "1px" : $$ === "0" ? "0" : `${modularScale(+$$, "1rem")}`}` }),
+      "brick",
+      {
+        borderRadius: "inherit",
+      },
     ],
+    // [
+    //   "brick-p-",
+    //   ({ $$ }) => ({ padding: `${$$ === "1" ? "1px" : $$ === "0" ? "0" : `${modularScale(+$$, "1rem")}`}` }),
+    // ],
     // ["family-", ({ $$ }) => ({ fontFamily: `var(--font-${$$})` })],
-
     [
       "h-dvh",
       {
@@ -50,10 +54,44 @@ export default defineConfig({
         width: "100dvw",
       },
     ],
-    ["bg-neutral-", ({ $$ }) => ({ backgroundColor: `var(--color-neutral-${$$})` })],
-    ["bg-accent-", ({ $$ }) => ({ backgroundColor: `var(--color-accent-${$$})` })],
-    ["bg-primary-", ({ $$ }) => ({ backgroundColor: `var(--color-primary-${$$})` })],
-    ["bg-secondary-", ({ $$ }) => ({ backgroundColor: `var(--color-secondary-${$$})` })],
+
+    [
+      /^bg-color-\[([\S]+)\]$/,
+      ({ 1: $1 }) => ({ "--up-bg-color": `${$1}`, backgroundColor: "var(--up-bg-color)" }),
+    ],
+
+    [
+      "bg-neutral-",
+      ({ $$ }) => ({
+        backgroundColor: `var(--up-bg-color)`,
+        "--up-bg-color": `var(--color-neutral-${$$})`,
+        "--up-color-auto": `color-contrast(var(--up-bg-color) vs white, black)`,
+      }),
+    ],
+    [
+      "bg-accent-",
+      ({ $$ }) => ({
+        backgroundColor: `var(--up-bg-color)`,
+        "--up-bg-color": `var(--color-accent-${$$})`,
+        "--up-color-auto": `color-contrast(var(--up-bg-color) vs white, black)`,
+      }),
+    ],
+    [
+      "bg-primary-",
+      ({ $$ }) => ({
+        backgroundColor: `var(--up-bg-color)`,
+        "--up-bg-color": `var(--color-primary-${$$})`,
+        "--up-color-auto": `color-contrast(var(--up-bg-color) vs white, black)`,
+      }),
+    ],
+    [
+      "bg-secondary-",
+      ({ $$ }) => ({
+        backgroundColor: `var(--up-bg-color)`,
+        "--up-bg-color": `var(--color-secondary-${$$})`,
+        "--up-color-auto": `color-contrast(var(--up-bg-color) vs white, black)`,
+      }),
+    ],
 
     ["border-neutral-", ({ $$ }) => ({ borderColor: `var(--color-neutral-${$$})` })],
     ["border-accent-", ({ $$ }) => ({ borderColor: `var(--color-accent-${$$})` })],
@@ -73,7 +111,288 @@ export default defineConfig({
     ["outline-accent-", ({ $$ }) => ({ outlineColor: `var(--color-accent-${$$})` })],
     ["outline-neutral-", ({ $$ }) => ({ outlineColor: `var(--color-neutral-${$$})` })],
 
-    ["color-", ({ $$ }) => ({ color: `var(--color-${$$})` })],
+    [
+      "preset-bg-solid-primary-1",
+      {
+        "--up-bg-color": "var(--color-primary-100)",
+        backgroundImage: "none",
+        backgroundColor: "var(--color-primary-100)",
+      },
+    ],
+    [
+      "preset-bg-solid-primary-2",
+      {
+        "--up-bg-color": "var(--color-primary-200)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+    [
+      "preset-bg-solid-primary-3",
+      {
+        "--up-bg-color": "var(--color-primary-400)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+    [
+      "preset-bg-solid-primary-4",
+      {
+        "--up-bg-color": "var(--color-primary-600)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+
+    [
+      "preset-bg-solid-secondary-1",
+      {
+        "--up-bg-color": "var(--color-secondary-100)",
+        backgroundImage: "none",
+        backgroundColor: "var(--color-secondary-100)",
+      },
+    ],
+    [
+      "preset-bg-solid-secondary-2",
+      {
+        "--up-bg-color": "var(--color-secondary-200)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+    [
+      "preset-bg-solid-secondary-3",
+      {
+        "--up-bg-color": "var(--color-secondary-400)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+    [
+      "preset-bg-solid-secondary-4",
+      {
+        "--up-bg-color": "var(--color-secondary-600)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+    [
+      "preset-bg-solid-accent-1",
+      {
+        "--up-bg-color": "var(--color-accent-100)",
+        backgroundImage: "none",
+        backgroundColor: "var(--color-accent-100)",
+      },
+    ],
+    [
+      "preset-bg-solid-accent-2",
+      {
+        "--up-bg-color": "var(--color-accent-200)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+    [
+      "preset-bg-solid-accent-3",
+      {
+        "--up-bg-color": "var(--color-accent-400)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+    [
+      "preset-bg-solid-accent-4",
+      {
+        "--up-bg-color": "var(--color-accent-600)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+
+    [
+      "preset-bg-solid-neutral-1",
+      {
+        "--up-bg-color": "var(--color-neutral-100)",
+        backgroundImage: "none",
+        backgroundColor: "var(--color-neutral-100)",
+      },
+    ],
+    [
+      "preset-bg-solid-neutral-2",
+      {
+        "--up-bg-color": "var(--color-neutral-200)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+    [
+      "preset-bg-solid-neutral-3",
+      {
+        "--up-bg-color": "var(--color-neutral-400)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+    [
+      "preset-bg-solid-neutral-4",
+      {
+        "--up-bg-color": "var(--color-neutral-600)",
+        backgroundImage: "none",
+        backgroundColor: "var(--up-bg-color)",
+      },
+    ],
+
+    [
+      "preset-bg-gradient-primary-1",
+      {
+        "--up-bg-color": "var(--color-primary-200)",
+        backgroundImage: "linear-gradient(to top, var(--color-primary-200), var(--color-primary-100))",
+      },
+    ],
+    [
+      "preset-bg-gradient-primary-2",
+      {
+        "--up-bg-color": "var(--color-primary-400)",
+        backgroundImage: "linear-gradient(to top, var(--color-primary-400), var(--color-primary-300))",
+      },
+    ],
+    [
+      "preset-bg-gradient-primary-3",
+      {
+        "--up-bg-color": "var(--color-primary-600)",
+        backgroundImage: "linear-gradient(to top, var(--color-primary-600), var(--color-primary-500))",
+      },
+    ],
+    [
+      "preset-bg-gradient-primary-4",
+      {
+        "--up-bg-color": "var(--color-primary-800)",
+        backgroundImage: "linear-gradient(to top, var(--color-primary-800), var(--color-primary-700))",
+      },
+    ],
+
+    [
+      "preset-bg-gradient-secondary-1",
+      {
+        "--up-bg-color": "var(--color-secondary-200)",
+        backgroundImage: "linear-gradient(to top, var(--color-secondary-200), var(--color-secondary-100))",
+      },
+    ],
+
+    [
+      "preset-bg-gradient-secondary-2",
+      {
+        "--up-bg-color": "var(--color-secondary-400)",
+        backgroundImage: "linear-gradient(to top, var(--color-secondary-400), var(--color-secondary-300))",
+      },
+    ],
+
+    [
+      "preset-bg-gradient-secondary-3",
+      {
+        "--up-bg-color": "var(--color-secondary-600)",
+        backgroundImage: "linear-gradient(to top, var(--color-secondary-600), var(--color-secondary-500))",
+      },
+    ],
+
+    [
+      "preset-bg-gradient-secondary-4",
+      {
+        "--up-bg-color": "var(--color-secondary-800)",
+        backgroundImage: "linear-gradient(to top, var(--color-secondary-800), var(--color-secondary-700))",
+      },
+    ],
+    [
+      "preset-bg-gradient-accent-1",
+      {
+        "--up-bg-color": "var(--color-accent-200)",
+        backgroundImage: "linear-gradient(to top, var(--color-accent-200), var(--color-accent-100))",
+      },
+    ],
+
+    [
+      "preset-bg-gradient-accent-2",
+      {
+        "--up-bg-color": "var(--color-accent-400)",
+        backgroundImage: "linear-gradient(to top, var(--color-accent-400), var(--color-accent-300))",
+      },
+    ],
+
+    [
+      "preset-bg-gradient-accent-3",
+      {
+        "--up-bg-color": "var(--color-accent-600)",
+        backgroundImage: "linear-gradient(to top, var(--color-accent-600), var(--color-accent-500))",
+      },
+    ],
+
+    [
+      "preset-bg-gradient-accent-4",
+      {
+        "--up-bg-color": "var(--color-accent-800)",
+        backgroundImage: "linear-gradient(to top, var(--color-accent-800), var(--color-accent-700))",
+      },
+    ],
+
+    [
+      "preset-bg-gradient-neutral-1",
+      {
+        "--up-bg-color": "var(--color-neutral-200)",
+        backgroundImage: "linear-gradient(to top, var(--color-neutral-200), var(--color-neutral-100))",
+      },
+    ],
+
+    [
+      "preset-bg-gradient-neutral-2",
+      {
+        "--up-bg-color": "var(--color-neutral-400)",
+        backgroundImage: "linear-gradient(to top, var(--color-neutral-400), var(--color-neutral-300))",
+      },
+    ],
+
+    [
+      "preset-bg-gradient-neutral-3",
+      {
+        "--up-bg-color": "var(--color-neutral-600)",
+        backgroundImage: "linear-gradient(to top, var(--color-neutral-600), var(--color-neutral-500))",
+      },
+    ],
+
+    [
+      "preset-bg-gradient-neutral-4",
+      {
+        "--up-bg-color": "var(--color-neutral-800)",
+        backgroundImage: "linear-gradient(to top, var(--color-neutral-800), var(--color-neutral-700))",
+      },
+    ],
+
+    [
+      "preset-border-color-auto",
+      {
+        borderColor: "hsl(from var(--up-bg-color) h s calc(l - 10))",
+      },
+    ],
+
+    ["preset-border-primary-1", { borderColor: `var(--color-primary-100)` }],
+    ["preset-border-primary-2", { borderColor: `var(--color-primary-300)` }],
+    ["preset-border-primary-3", { borderColor: `var(--color-primary-500)` }],
+    ["preset-border-primary-4", { borderColor: `var(--color-primary-700)` }],
+
+    ["preset-border-secondary-1", { borderColor: `var(--color-secondary-100)` }],
+    ["preset-border-secondary-2", { borderColor: `var(--color-secondary-300)` }],
+    ["preset-border-secondary-3", { borderColor: `var(--color-secondary-500)` }],
+    ["preset-border-secondary-4", { borderColor: `var(--color-secondary-700)` }],
+
+    ["preset-border-accent-1", { borderColor: `var(--color-accent-100)` }],
+    ["preset-border-accent-2", { borderColor: `var(--color-accent-300)` }],
+    ["preset-border-accent-3", { borderColor: `var(--color-accent-500)` }],
+    ["preset-border-accent-4", { borderColor: `var(--color-accent-700)` }],
+
+    ["preset-border-neutral-1", { borderColor: `var(--color-neutral-100)` }],
+    ["preset-border-neutral-2", { borderColor: `var(--color-neutral-300)` }],
+    ["preset-border-neutral-3", { borderColor: `var(--color-neutral-500)` }],
+    ["preset-border-neutral-4", { borderColor: `var(--color-neutral-700)` }],
+
     [
       "neutral-",
       ({ $$ }) => ({ backgroundColor: `var(--color-neutral-${$$})`, color: `var(--text-neutral-${$$})` }),
@@ -92,15 +411,26 @@ export default defineConfig({
       ({ $$ }) => ({ backgroundColor: `var(--color-secondary-${$$})`, color: `var(--text-secondary-${$$})` }),
     ],
 
-    ["brick-light-", ({ $$ }) => `bg-${$$}-300 text-${$$}-50`],
-    ["brick-normal-", ({ $$ }) => `bg-${$$}-500 text-${$$}-100`],
-    ["brick-dark-", ({ $$ }) => `bg-${$$}-800 text-${$$}-200`],
+    ["w-fill", { width: ["fill-available", "-webkit-fill-available", "-moz-available"] }],
+    ["h-fill", { height: ["fill-available", "-webkit-fill-available", "-moz-available"] }],
+    // ["color-auto", { color: "light-dark(white, black)" }],
+    ["color-auto", { color: "var(--up-color-auto)" }],
 
-    ["hero-1", { fontSize: "clamp(1.75rem, 1.5vw + 1.25rem, 2.5rem)", lineHeight: "1.25" }],
-    ["hero-2", { fontSize: "clamp(2rem, 1.75vw + 1.375rem, 2.875rem)", lineHeight: "1.25" }],
-    ["hero-3", { fontSize: "clamp(2.25rem, 2vw + 1.5rem, 3.25rem)", lineHeight: "1.25" }],
-    ["hero-4", { fontSize: "clamp(2.5rem, 2.25vw + 1.625rem, 3.625rem)", lineHeight: "1.25" }],
-    ["hero-5", { fontSize: "clamp(2.75rem, 2.5vw + 1.75rem, 4rem)", lineHeight: "1.25" }],
+    ["hero-size-md", { fontSize: "clamp(3rem, 2.5vw + 2.5rem, 4.75rem)", lineHeight: "1.1" }],
+    ["hero-size-lg", { fontSize: "clamp(3.75rem, 3vw + 3rem, 5.75rem)", lineHeight: "1.1" }],
+    ["hero-size-xl", { fontSize: "clamp(4.5rem, 3.5vw + 3.5rem, 6.75rem)", lineHeight: "1.1" }],
+    ["hero-size-2xl", { fontSize: "clamp(5.25rem, 4vw + 4rem, 7.75rem)", lineHeight: "1.1" }],
+    ["hero-size-3xl", { fontSize: "clamp(6rem, 4.5vw + 4.5rem, 8.75rem)", lineHeight: "1.1" }],
+
+    ["text-shadow-none", { textShadow: "none" }],
+    ["text-shadow-sm", { textShadow: "0 1px 2px rgba(0, 0, 0, 0.15)" }],
+    ["text-shadow-md", { textShadow: "0 2px 4px rgba(0, 0, 0, 0.2)" }],
+    ["text-shadow-lg", { textShadow: "0 4px 8px rgba(0, 0, 0, 0.25)" }],
+    ["text-shadow-xl", { textShadow: "0 6px 12px rgba(0, 0, 0, 0.3)" }],
+
+    ["text-pretty", { textWrap: "pretty" }],
+    ["text-balance", { textWrap: "balance" }],
+
     ["scrollbar-thin", { scrollbarWidth: "thin" }],
     ["scrollbar-color-", ({ $$ }) => ({ scrollbarColor: `var(--${$$}-6) var(--${$$}-surface)` })],
     [
@@ -222,11 +552,28 @@ export default defineConfig({
 
       animation: {
         "fade-in": "fade-in 0.5s",
+        "elastic-pop": "elastic-pop 1s cubic-bezier(0.22, 1, 0.36, 1) forwards",
+        "slide-in": "slide-in 0.15s ease-out",
+        "slide-back": "slide-back 0.15s ease-out",
       },
       keyframes: {
+        "elastic-pop": {
+          "0%": { transform: "scale(0)", opacity: "0" },
+          "50%": { transform: "scale(1.1)", opacity: "0.8" },
+          "70%": { transform: "scale(0.98)", opacity: "1" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
         "fade-in": {
           from: { opacity: "0" },
           to: { opacity: "1" },
+        },
+        "slide-in": {
+          from: { transform: "translateX(100%)" },
+          to: { transform: "translateX(0)" },
+        },
+        "slide-back": {
+          from: { transform: "translateX(-100%)" },
+          to: { transform: "translateX(0)" },
         },
       },
     },

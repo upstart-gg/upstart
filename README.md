@@ -1,5 +1,5 @@
 <p align="center">
-    <img alt="Upstart SDK" src="https://raw.githubusercontent.com/enpage/enpage/main/docs/public/upstart.svg" width="437">
+    <img alt="Upstart SDK" src="https://raw.githubusercontent.com/upstart-gg/upstart/main/docs/public/upstart.svg" width="437">
 </p>
 
 # Upstart SDK
@@ -10,16 +10,16 @@ in creating templates that are responsive, accessible, and easy to customize and
 
 ## Get your Upstart website
 
-Visit [https://upstart.gg](https://upstart.co) to try the Upstart Editor and create your own website for free.
+Visit [https://upstart.gg](https://upstart.gg) to try the Upstart Editor and create your own website for free.
 
 
 ## Develop templates for Upstart
 
-Please visit the documentation at [https://developers.upstart.co](https://developers.upstart.co)
+Please visit the documentation at [https://developers.upstart.gg](https://developers.upstart.gg)
 
 ## Contributing
 
-Visit https://developers.upstart.co/contribute.html for more information on how to contribute to the Upstart SDK.
+Visit https://developers.upstart.gg/contribute.html for more information on how to contribute to the Upstart SDK.
 
 
 ### SDK Development

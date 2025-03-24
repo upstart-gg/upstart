@@ -17,6 +17,17 @@ import { Button, TextField, Text, Select, Tabs, Inset } from "@upstart.gg/style-
 import { useColorAdjustment, useEditor, useTheme } from "~/editor/hooks/use-editor";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
+const gradientMixs = [
+  ["50", "200"],
+  ["100", "300"],
+  ["200", "400"],
+  ["300", "500"],
+  ["400", "600"],
+  ["500", "700"],
+  ["600", "800"],
+  ["700", "900"],
+];
+
 interface BaseColorPickerProps {
   colorType: ColorType;
   initialValue?: number | string;
@@ -225,28 +236,44 @@ function ColorPillList({
   elementColorType,
 }: PropsWithChildren<ColorPillListProps>) {
   const [gradientDir, setGradientDir] = useState<string>(getInitialGradientDir());
+  const [gradient, setGradient] = useState<{ from: string; to: string } | null>(getInitialGradient());
 
   function getInitialGradientDir() {
     const match = currentColor?.match(/to-(\w+)/);
     if (match) {
       return match[1];
     }
-    return "t";
+    return "b";
+  }
+
+  function getInitialGradient() {
+    if (currentColor?.includes("bg-gradient")) {
+      const from = currentColor.match(/from-(\w+)/)?.[1];
+      const to = currentColor.match(/to-(\w+)/)?.[1];
+      return from && to ? { from, to } : null;
+    }
+    return null;
   }
 
   if (type === "solid") {
     return (
-      <div className={`grid grid-cols-${cols} gap-3`}>
+      <div className={`grid grid-cols-${cols} gap-2.5 mx-auto`}>
         {colors.map((color) => (
           <button
             type="button"
             key={color}
             className={tx(
-              "mx-auto h-8 w-8 rounded-full shadow-sm shadow-upstart-300 transition-transform",
+              "mx-auto h-7 w-7 rounded-full shadow-sm shadow-upstart-300 transition-transform",
               `bg-${color} hover:outline-gray-300 hover:scale-110`,
             )}
             onClick={() => {
-              onChange(`var(--color-${color})`);
+              if (elementColorType.includes("background")) {
+                onChange(`bg-${color}`);
+              } else if (elementColorType.includes("text")) {
+                onChange(`text-${color}`);
+              } else if (elementColorType.includes("border")) {
+                onChange(`border-${color}`);
+              }
             }}
           />
         ))}
@@ -254,13 +281,6 @@ function ColorPillList({
       </div>
     );
   } else if (type === "gradient") {
-    const mixs = [
-      ["50", "200"],
-      ["200", "400"],
-      ["400", "600"],
-      ["600", "800"],
-      ["800", "900"],
-    ];
     return (
       <>
         <Select.Root
@@ -268,6 +288,10 @@ function ColorPillList({
           size="1"
           onValueChange={(g) => {
             setGradientDir(g);
+            console.log("gradient dir changed while gradient was %o", gradient);
+            if (gradient) {
+              onChange(`bg-gradient-to-${g} from-${gradient.from} to-${gradient.to}`);
+            }
           }}
         >
           <Select.Trigger className="!w-full" />
@@ -285,20 +309,21 @@ function ColorPillList({
             </Select.Group>
           </Select.Content>
         </Select.Root>
-        <div className={`grid grid-cols-${mixs.length} gap-3 mt-3.5`}>
+        <div className={`grid grid-cols-${gradientMixs.length} gap-3 mt-3.5`}>
           {colors.flatMap((color) =>
-            mixs
+            gradientMixs
               .map((mix) => ({ from: `${color.from}-${mix[0]}`, to: `${color.to}-${mix[1]}` }))
               .map((color) => (
                 <button
                   type="button"
                   key={`${color.from}-${color.to}`}
                   className={tx(
-                    "mx-auto h-8 w-8 rounded-full shadow-sm shadow-upstart-300 transition-transform",
+                    "mx-auto h-7 w-7 rounded-full shadow-sm shadow-upstart-300 transition-transform",
                     `bg-gradient-to-${gradientDir} from-${color.from} to-${color.to} hover:scale-110`,
                   )}
                   onClick={() => {
                     onChange(`bg-gradient-to-${gradientDir} from-${color.from} to-${color.to}`);
+                    setGradient(color);
                   }}
                 />
               )),
@@ -310,39 +335,89 @@ function ColorPillList({
   }
 }
 
+function makeGradientCombinations(colors: string[]) {
+  // combine gradients between each color
+  const gradients: { from: string; to: string }[] = [];
+  for (let i = 0; i < colors.length; i++) {
+    for (let j = i; j < colors.length; j++) {
+      // don't mix neutral with other colors
+      if (
+        (colors[i] === "neutral" && colors[j] !== "neutral") ||
+        (colors[i] !== "neutral" && colors[j] === "neutral") ||
+        colors[i] !== colors[j]
+      ) {
+        continue;
+      }
+      gradients.push({ from: colors[i], to: colors[j] });
+    }
+  }
+  return gradients;
+}
+
+function getAvailableColorsAndShadesForElement(elementType: ElementColorType) {
+  if (elementType === "page-background") {
+    return {
+      colors: ["primary", "secondary", "neutral"],
+      shades: ["100", "300", "500", "700", "900"],
+      colorButtons: [
+        { label: "White", value: "#FFFFFF" },
+        { label: "Black", value: "#000000" },
+      ],
+    };
+  }
+  if (elementType === "background") {
+    return {
+      colors: ["primary", "secondary", "accent", "neutral"],
+      shades: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+      colorButtons: [
+        { label: "White", value: "#FFFFFF" },
+        { label: "Black", value: "#000000" },
+        { label: "Transparent", value: "transparent" },
+      ],
+    };
+  }
+
+  if (elementType === "border") {
+    return {
+      colors: ["primary", "secondary", "accent", "neutral"],
+      shades: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+      colorButtons: [
+        { label: "White", value: "#FFFFFF" },
+        { label: "Black", value: "#000000" },
+        { label: "Transparent", value: "transparent" },
+      ],
+    };
+  }
+  if (elementType === "text") {
+    return {
+      colors: ["primary", "secondary", "accent", "neutral"],
+      shades: ["100", "300", "500", "700", "900"],
+      colorButtons: [
+        { label: "Auto", value: "color-auto" },
+        { label: "White", value: "#FFFFFF" },
+        { label: "Black", value: "#000000" },
+      ],
+    };
+  }
+  return {
+    colors: ["gray", "primary", "secondary", "accent", "neutral"],
+    shades: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  };
+}
+
+function makeCominations(colors: string[], shades: string[]) {
+  return colors.flatMap((color) => shades.map((shade) => `${color}-${shade}`));
+}
+
 export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
   initialValue,
   elementColorType,
   onChange = () => {},
 }) => {
-  console.log("ElementColorPicker", { initialValue, elementColorType });
   const defaultColorType = initialValue?.includes("gradient") ? "gradient" : "solid";
-  function makeCominations(colors: string[], shades: string[]) {
-    return colors.flatMap((color) => shades.map((shade) => `${color}-${shade}`));
-  }
-
-  function makeGradientCombinations(colors: string[]) {
-    // combine gradients between each color
-    const gradients: { from: string; to: string }[] = [];
-    for (let i = 0; i < colors.length; i++) {
-      for (let j = i; j < colors.length; j++) {
-        // don't mix neutral with other colors
-        if (
-          (colors[i] === "neutral" && colors[j] !== "neutral") ||
-          (colors[i] !== "neutral" && colors[j] === "neutral")
-        ) {
-          continue;
-        }
-        gradients.push({ from: colors[i], to: colors[j] });
-      }
-    }
-    return gradients;
-  }
+  const { colors, shades, colorButtons } = getAvailableColorsAndShadesForElement(elementColorType);
 
   if (elementColorType === "page-background") {
-    const colors = ["primary", "secondary", "accent", "neutral"];
-    const shades = ["100", "300", "500", "700", "900"];
-
     return (
       <Tabs.Root defaultValue={defaultColorType}>
         <Inset clip="padding-box" side="top" pb="current">
@@ -364,24 +439,20 @@ export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
             colors={makeCominations(colors, shades)}
             onChange={onChange}
           >
-            <div className={tx(`flex gap-3 mt-1`, `col-span-${shades.length}`)}>
-              <button
-                type="button"
-                onClick={() => onChange("#FFFFFF")}
-                className="flex-1 h-6 col-span-3 text-xs rounded-lg
-          outline outline-gray-200 hover:outline-gray-300 bg-white"
-              >
-                White
-              </button>
-              <button
-                type="button"
-                onClick={() => onChange("#000000")}
-                className="flex-1 h-6 col-span-3 text-xs rounded-lg
-          outline outline-gray-200 hover:outline-gray-300 bg-black"
-              >
-                Black
-              </button>
-            </div>
+            {colorButtons && (
+              <div className={tx(`flex gap-3 mt-1`, `col-span-${shades.length}`)}>
+                {colorButtons.map((button) => (
+                  <button
+                    key={button.value}
+                    type="button"
+                    onClick={() => onChange(button.value)}
+                    className="flex-1 h-6 text-xs rounded-lg outline outline-gray-200 hover:outline-gray-300"
+                  >
+                    {button.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </ColorPillList>
         </Tabs.Content>
         <Tabs.Content value="gradient">
@@ -398,10 +469,35 @@ export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
     );
   }
 
-  if (elementColorType === "page-text") {
-    const colors = ["gray", "neutral"];
-    const shades = ["50", "100", "800", "900"];
-
+  if (elementColorType === "border") {
+    return (
+      <>
+        <ColorPillList
+          type="solid"
+          elementColorType={elementColorType}
+          currentColor={initialValue}
+          cols={shades.length}
+          colors={makeCominations(colors, shades)}
+          onChange={onChange}
+        />
+        {colorButtons && (
+          <div className={tx(`flex gap-3 mt-3`, `col-span-${shades.length}`)}>
+            {colorButtons.map((button) => (
+              <button
+                key={button.value}
+                type="button"
+                onClick={() => onChange(button.value)}
+                className="flex-1 h-6 text-xs rounded-lg outline outline-gray-200 hover:outline-gray-300"
+              >
+                {button.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </>
+    );
+  }
+  if (elementColorType === "text") {
     return (
       <ColorPillList
         type="solid"
@@ -411,63 +507,25 @@ export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
         colors={makeCominations(colors, shades)}
         onChange={onChange}
       >
-        <div className={tx(`flex gap-3 mt-1`, `col-span-${shades.length}`)}>
-          <button
-            type="button"
-            onClick={() => onChange("#FFFFFF")}
-            className="flex-1 h-6 col-span-3 text-xs rounded-lg
-          outline outline-gray-200 hover:outline-gray-300 bg-white"
-          >
-            White
-          </button>
-          <button
-            type="button"
-            onClick={() => onChange("#000000")}
-            className="flex-1 h-6 col-span-3 text-xs rounded-lg
-          outline outline-gray-200 hover:outline-gray-300 bg-black"
-          >
-            Black
-          </button>
-        </div>
+        {colorButtons && (
+          <div className={tx(`flex gap-3 mt-1`, `col-span-${shades.length}`)}>
+            {colorButtons.map((button) => (
+              <button
+                key={button.value}
+                type="button"
+                onClick={() => onChange(button.value)}
+                className="flex-1 h-6 text-xs rounded-lg outline outline-gray-200 hover:outline-gray-300"
+              >
+                {button.label}
+              </button>
+            ))}
+          </div>
+        )}
       </ColorPillList>
     );
   }
 
-  if (elementColorType === "border") {
-    const colors = ["gray", "primary", "secondary", "accent", "neutral"];
-    const shades = ["100", "200", "300", "400"];
-
-    return (
-      <ColorPillList
-        type="solid"
-        elementColorType={elementColorType}
-        currentColor={initialValue}
-        cols={shades.length}
-        colors={makeCominations(colors, shades)}
-        onChange={onChange}
-      />
-    );
-  }
-  if (elementColorType === "text") {
-    const colors = ["gray", "primary", "secondary", "accent", "neutral"];
-    const shades = ["100", "300", "500", "700", "900"];
-
-    return (
-      <ColorPillList
-        type="solid"
-        elementColorType={elementColorType}
-        currentColor={initialValue}
-        cols={shades.length}
-        colors={makeCominations(colors, shades)}
-        onChange={onChange}
-      />
-    );
-  }
-
   if (elementColorType === "background") {
-    const colors = ["primary", "secondary", "neutral"];
-    const shades = ["50", "100", "200"];
-
     return (
       <Tabs.Root defaultValue={defaultColorType}>
         <Inset clip="padding-box" side="top" pb="current">
@@ -488,7 +546,22 @@ export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
             cols={shades.length}
             colors={makeCominations(colors, shades)}
             onChange={onChange}
-          />
+          >
+            {colorButtons && (
+              <div className={tx(`flex gap-3 mt-1`, `col-span-${shades.length}`)}>
+                {colorButtons.map((button) => (
+                  <button
+                    key={button.value}
+                    type="button"
+                    onClick={() => onChange(button.value)}
+                    className="flex-1 h-6 text-xs rounded-lg outline outline-gray-200 hover:outline-gray-300"
+                  >
+                    {button.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </ColorPillList>
         </Tabs.Content>
         <Tabs.Content value="gradient">
           <ColorPillList
@@ -503,5 +576,5 @@ export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
       </Tabs.Root>
     );
   }
-  return <div>Element color picker "{elementColorType}"</div>;
+  return null;
 };

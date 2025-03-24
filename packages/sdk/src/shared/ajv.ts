@@ -8,8 +8,7 @@ export const ajv = new Ajv({
   strictSchema: false,
 });
 
-// Add formats to Ajv
-addFormats(ajv, [
+export const jsonStringsSupportedFormats = [
   "date-time",
   "time",
   "date",
@@ -24,7 +23,10 @@ addFormats(ajv, [
   "json-pointer",
   "relative-json-pointer",
   "regex",
-]);
+] as const;
+
+// Add formats to Ajv
+addFormats(ajv, [...jsonStringsSupportedFormats]);
 
 ajv.addFormat("date-object", {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>

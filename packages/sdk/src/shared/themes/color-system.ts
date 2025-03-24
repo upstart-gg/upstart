@@ -4,14 +4,7 @@ export { default as chroma } from "chroma-js";
 import { colors, css, tx } from "@upstart.gg/style-system/twind";
 
 export type ColorType = "primary" | "secondary" | "accent" | "neutral";
-export type ElementColorType =
-  | "page-background"
-  | "background"
-  | "text"
-  | "page-text"
-  | "border"
-  | "shadow"
-  | "accent";
+export type ElementColorType = "page-background" | "background" | "text" | "border" | "shadow";
 
 export type HarmonyType = "complementary" | "analogous" | "triadic" | "split-complementary" | "tetradic";
 
@@ -168,56 +161,53 @@ export function isStandardColor(color: unknown): boolean {
   );
 }
 
-function cleanGradientClass(className: string): string {
-  const matches = className.match(/\s((from|to-)[\S]+)/);
-  return matches ? matches[1] : className;
+const textContrastRequirements: ContrastRequirements = { minContrast: 4, preferredContrast: 7 };
+
+export function getTextContrastedColor(element: HTMLElement) {
+  // Get all elements that are background of the element
+  const styles = window.getComputedStyle(element);
+  const { backgroundColor, backgroundImage } = styles;
+  let resolved = chroma(backgroundColor);
+
+  // If resolved color is transparent, get underlying elemments
+  if (resolved.alpha() < 0.7) {
+    // Try to check if there are gradients
+    if (backgroundImage !== "none") {
+      // extract possible rgb() or hsl() values from gradient
+      const gradientColors = backgroundImage.match(/(rgb|hsl)\(.*?\)/g);
+      if (gradientColors) {
+        for (const color of gradientColors) {
+          // override resolved color with the darkest color from gradient
+          const tmp = chroma(color);
+          if (tmp.luminance() < resolved.luminance() || !resolved.luminance()) {
+            resolved = tmp;
+          }
+        }
+      }
+    }
+    if (resolved.alpha() < 0.7) {
+      const parent = element.parentElement;
+      if (parent) {
+        return getTextContrastedColor(parent);
+      }
+    }
+  }
+
+  const blackContrast = chroma.contrast(resolved, "#000000");
+  const whiteContrast = chroma.contrast(resolved, "#FFFFFF");
+
+  console.log({ blackContrast, whiteContrast });
+
+  if (
+    whiteContrast >= textContrastRequirements.minContrast ||
+    blackContrast >= textContrastRequirements.minContrast
+  ) {
+    return whiteContrast > blackContrast || blackContrast - whiteContrast < 2 ? "#FFFFFF" : "#000000";
+  }
+  // // If neither provides enough contrast, adjust the better one
+  // fallback to black
+  return "#000000";
 }
-
-/**
- * @deprecated Not working well with gradients
- */
-export const generateReadableTextColor = (
-  backgroundColor: string,
-  requirements: ContrastRequirements = { minContrast: 4.5, preferredContrast: 7 },
-): string => {
-  if (!isStandardColor(backgroundColor)) {
-    backgroundColor = cleanGradientClass(backgroundColor);
-    console.log("backgroundColor rewrite to", backgroundColor);
-    const matchingElement = document.querySelector(`.${backgroundColor}`);
-    if (!matchingElement) {
-      console.warn("No matching element:", backgroundColor);
-      return "#000000"; // Fallback to black
-    }
-    backgroundColor = window.getComputedStyle(matchingElement).backgroundColor;
-    console.log("backgroundColor from element", backgroundColor);
-  }
-
-  try {
-    // Calculate relative luminance for contrast ratio
-    const bgLuminance = chroma(backgroundColor).luminance();
-
-    // Test both black and white text
-    const blackContrast = chroma.contrast(backgroundColor, "#000000");
-    const whiteContrast = chroma.contrast(backgroundColor, "#FFFFFF");
-
-    // Choose the color with better contrast
-    if (whiteContrast >= requirements.minContrast || blackContrast >= requirements.minContrast) {
-      return whiteContrast > blackContrast ? "#FFFFFF" : "#000000";
-    }
-
-    // If neither provides enough contrast, adjust the better one
-    if (bgLuminance > 0.5) {
-      // Dark background, use white text
-      return "#FFFFFF";
-    } else {
-      // Light background, use black text
-      return "#000000";
-    }
-  } catch (e) {
-    console.warn("Invalid color provided:", backgroundColor);
-    return "#000000"; // Fallback to black
-  }
-};
 
 export function propToStyle(prop: string | number | undefined, cssAttr: string) {
   if (typeof prop === "undefined") {
@@ -225,6 +215,13 @@ export function propToStyle(prop: string | number | undefined, cssAttr: string) 
   }
   // @ts-ignore
   return isStandardColor(prop) || typeof prop === "number" ? css({ [cssAttr as string]: prop }) : tx(prop);
+}
+
+export function propToClass(value: string | number | undefined, classPrefix: string) {
+  if (typeof value === "undefined") {
+    return undefined;
+  }
+  return isStandardColor(value) || typeof value === "number" ? `${classPrefix}-[${value}]` : value;
 }
 
 export function generateColorsVars(theme: Theme) {

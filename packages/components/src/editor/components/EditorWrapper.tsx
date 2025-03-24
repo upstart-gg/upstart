@@ -3,6 +3,7 @@ import {
   DraftStoreContext,
   createDraftStore,
   createEditorStore,
+  type EditorState,
 } from "../hooks/use-editor";
 import { useEffect, useRef, type PropsWithChildren } from "react";
 import type { GenericPageConfig, SiteConfig } from "@upstart.gg/sdk/shared/page";
@@ -13,9 +14,10 @@ import { UploaderProvider } from "./UploaderContext";
 
 import "@radix-ui/themes/styles.css";
 import "@upstart.gg/style-system/radix.css";
-import "@upstart.gg/style-system/default-theme.css";
+// import "@upstart.gg/style-system/default-theme.css";
 import "@upstart.gg/style-system/tiptap-text-editor.css";
 import "@upstart.gg/style-system/react-resizable.css";
+import { DatasourceProvider } from "~/shared/hooks/use-datasource";
 
 export type EditorWrapperProps = {
   mode?: "local" | "remote";
@@ -56,7 +58,17 @@ export function EditorWrapper({
   onShowLogin,
   onReady = () => {},
 }: PropsWithChildren<EditorWrapperProps>) {
-  const editorStore = useRef(createEditorStore({ mode, seenTours, onShowLogin, disableTours })).current;
+  const debugMode = new URLSearchParams(window.location.search).has("debug");
+  const editorStore = useRef(
+    createEditorStore({
+      mode,
+      seenTours,
+      onShowLogin,
+      disableTours,
+      debugMode,
+      panel: (new URL(self.location.href).searchParams.get("panel") as EditorState["panel"]) ?? undefined,
+    }),
+  ).current;
   const draftStore = useRef(
     createDraftStore({
       siteId: siteConfig.id,
@@ -66,6 +78,7 @@ export function EditorWrapper({
       id: pageConfig.id,
       path: pageConfig.path,
       label: pageConfig.label,
+      sections: pageConfig.sections,
       bricks: pageConfig.bricks,
       attr: Object.assign({}, siteConfig.attr, pageConfig.attr),
       attributes: pageConfig.attributes,
@@ -82,18 +95,20 @@ export function EditorWrapper({
   useEffect(onReady, []);
 
   return (
-    <UploaderProvider onImageUpload={onImageUpload}>
-      <EditorStoreContext.Provider value={editorStore} key="EditorStoreContext">
-        <DraftStoreContext.Provider value={draftStore} key="DraftStoreContext">
-          <Theme
-            accentColor="violet"
-            className={tx("w-[100dvw] overflow-hidden")}
-            appearance={isDarkMode ? "dark" : "light"}
-          >
-            {children}
-          </Theme>
-        </DraftStoreContext.Provider>
-      </EditorStoreContext.Provider>
-    </UploaderProvider>
+    <DatasourceProvider>
+      <UploaderProvider onImageUpload={onImageUpload}>
+        <EditorStoreContext.Provider value={editorStore} key="EditorStoreContext">
+          <DraftStoreContext.Provider value={draftStore} key="DraftStoreContext">
+            <Theme
+              accentColor="violet"
+              className={tx("w-[100dvw] overflow-hidden")}
+              appearance={isDarkMode ? "dark" : "light"}
+            >
+              {children}
+            </Theme>
+          </DraftStoreContext.Provider>
+        </EditorStoreContext.Provider>
+      </UploaderProvider>
+    </DatasourceProvider>
   );
 }

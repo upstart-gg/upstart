@@ -6,7 +6,7 @@ We take the security of our projects seriously. If you discover a security vulne
 
 ### How to Report a Vulnerability
 
-1. Go to https://github.com/enpage/enpage/security
+1. Go to https://github.com/upstart-gg/upstart/security
 2. Click on "Report a vulnerability"
 
 When reporting a vulnerability, please include:

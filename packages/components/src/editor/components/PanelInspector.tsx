@@ -1,35 +1,41 @@
 import {
-  useDraft,
   useDraftHelpers,
   useEditorHelpers,
   useGetBrick,
   usePreviewMode,
-  useSelectedBrick,
+  useSelectedBrickId,
 } from "../hooks/use-editor";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { tx } from "@upstart.gg/style-system/twind";
 import { Callout, IconButton, Tabs } from "@upstart.gg/style-system/system";
 import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
-import { getFormComponents, FormRenderer } from "./json-form/form";
+import { FormRenderer } from "./json-form/FormRenderer";
 import { IoCloseOutline } from "react-icons/io5";
-import type { JSONSchemaType } from "@upstart.gg/sdk/shared/attributes";
 import { useLocalStorage } from "usehooks-ts";
-import { BsStars } from "react-icons/bs";
-import PresetsView from "./PresetsView";
-import { useCallback, useMemo } from "react";
+import PresetsView from "./BrickPresetsView";
+import { useCallback, useEffect, useMemo } from "react";
+import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
+import invariant from "@upstart.gg/sdk/shared/utils/invariant";
+import BrickSettingsView from "./BrickSettingsView";
+
+type TabType = "preset" | "style" | "content";
 
 export default function Inspector() {
-  const brick = useSelectedBrick();
-  const { deselectBrick } = useDraftHelpers();
-  const { hidePanel } = useEditorHelpers();
+  const { getParentBrick } = useDraftHelpers();
+  const getBrickInfo = useGetBrick();
+  const { hidePanel, setSelectedBrickId, deselectBrick } = useEditorHelpers();
   const previewMode = usePreviewMode();
-  const [selectedTab, setSelectedTab] = useLocalStorage("inspector_tab", "preset");
-  const draft = useDraft();
+  const [tabsMapping, setTabsMapping] = useLocalStorage<Record<string, TabType>>("inspector_tabs_map", {});
 
-  if (!brick) {
+  const brickId = useSelectedBrickId();
+  const brick = brickId ? getBrickInfo(brickId) : null;
+
+  if (!brickId || !brick) {
     return null;
   }
+
+  const parentBrick = getParentBrick(brick.id);
 
   const manifest = manifests[brick.type];
   if (!manifest) {
@@ -39,28 +45,36 @@ export default function Inspector() {
     return null;
   }
 
+  // const selectedTab =
+  //   tabsMapping[brick.id] ?? manifest.defaultInspectorTab ?? (previewMode === "desktop" ? "preset" : "style");
+  const selectedTab = tabsMapping[brick.id] ?? "style";
+
+  useEffect(() => {
+    if (!manifest.isContainer && selectedTab === "content") {
+      setTabsMapping((prev) => ({ ...prev, [brick.id]: "style" }));
+    }
+  }, [setTabsMapping, brick.id, selectedTab, manifest.isContainer]);
+
   return (
-    <Tabs.Root defaultValue={selectedTab} onValueChange={setSelectedTab}>
+    <Tabs.Root
+      value={selectedTab}
+      onValueChange={(val) => {
+        console.log("changing tab to %s", val);
+        setTabsMapping((prev) => ({ ...prev, [brick.id]: val as TabType }));
+      }}
+    >
       <Tabs.List className="sticky top-0 z-50">
-        <Tabs.Trigger value="preset" className="!flex-1">
-          Preset
-        </Tabs.Trigger>
+        {previewMode === "desktop" && (
+          <Tabs.Trigger value="preset" className="!flex-1">
+            Style Preset
+          </Tabs.Trigger>
+        )}
         <Tabs.Trigger value="style" className="!flex-1">
-          Settings
+          {previewMode === "mobile" ? "Mobile styles" : "Styles"}
         </Tabs.Trigger>
-        {manifest.properties.datasource && (
-          <Tabs.Trigger value="datasource" className="!flex-1">
-            Data source
-          </Tabs.Trigger>
-        )}
-        {manifest.properties.datarecord && (
-          <Tabs.Trigger value="datarecord" className="!flex-1">
-            Data record
-          </Tabs.Trigger>
-        )}
-        {brick.type === "text" && (
-          <Tabs.Trigger value="ai" className="!flex-1">
-            AI <BsStars className={tx("ml-1 w-4 h-4 text-upstart-600")} />
+        {manifest.isContainer && (
+          <Tabs.Trigger value="content" className="!flex-1">
+            Content
           </Tabs.Trigger>
         )}
         <IconButton
@@ -80,8 +94,31 @@ export default function Inspector() {
       <ScrollablePanelTab tab="preset">
         <div className="flex justify-between pr-0">
           <h2 className="py-1.5 px-2 flex justify-between bg-gray-100 dark:!bg-dark-700 items-center font-medium text-sm capitalize flex-1 select-none">
-            {manifest.properties.title.const}
-            <span className="text-xs text-gray-400 lowercase">{brick.id}</span>
+            {parentBrick ? (
+              <div className="flex gap-1.5 items-center">
+                <span
+                  className="text-upstart-700 cursor-pointer hover:(text-upstart-800 underline)"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedBrickId(parentBrick.id);
+                  }}
+                >
+                  {parentBrick.type}
+                </span>
+                <span className="text-xs ">&rarr;</span>
+                <span>{manifest.name}</span>
+              </div>
+            ) : (
+              manifest.name
+            )}
+            <span
+              className="text-xs text-gray-500 font-mono lowercase opacity-0 group-hover:opacity-70 transition-opacity delay-1000"
+              onClick={() => {
+                navigator.clipboard.writeText(brick.id);
+              }}
+            >
+              {brick.id}
+            </span>
           </h2>
         </div>
         <div className={tx("p-2 flex flex-col gap-3")}>
@@ -92,22 +129,38 @@ export default function Inspector() {
               further in the <span className="font-semibold">Settings</span> tab.
             </Callout.Text>
           </Callout.Root>
-          <PresetsView
+          {/* <PresetsView
             onChoose={(preset) => {
               console.log("onChoose(%o)", preset);
-              draft.updateBrickProps(brick.id, preset, previewMode === "mobile");
+              updateBrickProps(brick.id, preset, previewMode === "mobile");
             }}
-          />
+          /> */}
+          Old preset view here
         </div>
       </ScrollablePanelTab>
       <ScrollablePanelTab tab="style">
         <div className="flex justify-between pr-0">
           <h2 className="group py-1.5 px-2 flex justify-between bg-gradient-to-t from-gray-200 to-gray-100 dark:!bg-dark-700 items-center font-medium text-sm capitalize flex-1 select-none">
-            {manifest.properties.title.const}
+            {parentBrick ? (
+              <div className="flex gap-1.5 items-center">
+                <span
+                  className="text-upstart-700 cursor-pointer hover:(text-upstart-800 underline)"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedBrickId(parentBrick.id);
+                  }}
+                >
+                  {parentBrick.type}
+                </span>
+                <span className="text-xs ">&rarr;</span>
+                <span>{manifest.name}</span>
+              </div>
+            ) : (
+              manifest.name
+            )}
             <span
               className="text-xs text-gray-500 font-mono lowercase opacity-0 group-hover:opacity-70 transition-opacity delay-1000"
               onClick={() => {
-                // copy to clipboard
                 navigator.clipboard.writeText(brick.id);
               }}
             >
@@ -118,62 +171,60 @@ export default function Inspector() {
         {previewMode === "mobile" && (
           <Callout.Root size="1" className="m-2">
             <Callout.Text size="1">
-              <strong>Warning</strong>: You are editing the mobile settings. Any changes here will only affect
-              how the brick appears on mobile devices. Yellow-highlighted fields are mobile-specific
-              customizations, while other fields inherit their values from the desktop version.
+              <strong>Note</strong>: You are editing mobile-only styles. Any changes here will only affect how
+              the brick appears on mobile devices.
             </Callout.Text>
           </Callout.Root>
         )}
-        <ElementInspector brick={brick} />
+        <StyleTab brick={brick} />
+      </ScrollablePanelTab>
+      <ScrollablePanelTab tab="content">
+        <ContentTab brick={brick} manifest={manifest} />
       </ScrollablePanelTab>
     </Tabs.Root>
   );
 }
 
-function ElementInspector({ brick }: { brick: Brick }) {
-  const draft = useDraft();
-  const getBrick = useGetBrick();
-  // biome-ignore lint/correctness/useExhaustiveDependencies: getBrick is a stable function
-  const brickInfo = useMemo(() => getBrick(brick.id), [brick.id]);
+function StyleTab({ brick }: { brick: Brick }) {
+  return (
+    <form className={tx("px-3 flex flex-col gap-3")}>
+      <BrickSettingsView brick={brick} />
+    </form>
+  );
+}
+
+function ContentTab({ brick, manifest }: { brick: Brick; manifest: BrickManifest }) {
+  const { updateBrickProps } = useDraftHelpers();
   const previewMode = usePreviewMode();
-  // biome-ignore lint/correctness/useExhaustiveDependencies: draft.updateBrickProps is a stable function
+  const getBrickInfo = useGetBrick();
+  const brickInfo = getBrickInfo(brick.id);
+
   const onChange = useCallback(
     (data: Record<string, unknown>, propertyChanged: string) => {
       if (!propertyChanged) {
         // ignore changes unrelated to the brick
         return;
       }
-      draft.updateBrickProps(brick.id, data, previewMode === "mobile");
+      console.log("ContentTab.onChange(%o)", data, propertyChanged);
+      updateBrickProps(brick.id, data, previewMode === "mobile");
     },
-    [brick.id],
+    [brick.id, previewMode, updateBrickProps],
   );
-  const manifest = useMemo(() => manifests[brick.type], [brick.type]);
 
-  if (!brickInfo) {
-    console.log("No brick info found for brick: %s", brick.id);
-    return null;
-  }
-
-  if (!manifest) {
-    console.warn(`No manifest found for brick: ${JSON.stringify(brick)}`);
-    return null;
-  }
-
-  const elements = useMemo(
-    () =>
-      getFormComponents({
-        brickId: brick.id,
-        formSchema: manifest.properties.props as unknown as JSONSchemaType<unknown>,
-        formData: brickInfo.props,
-        mobileFormData: previewMode === "mobile" ? brickInfo.mobileProps : undefined,
-        onChange,
-      }),
-    [manifest, onChange, brick.id, brickInfo, previewMode],
-  );
+  invariant(brickInfo, "Brick info props is missing in ContentTab");
 
   return (
     <form className={tx("px-3 flex flex-col gap-3")}>
-      <FormRenderer components={elements} brickId={brick.id} />
+      <FormRenderer
+        brickId={brick.id}
+        formSchema={manifest.props}
+        formData={brickInfo.props}
+        filter={(prop) => {
+          return prop["ui:inspector-tab"] === "content";
+        }}
+        onChange={onChange}
+        previewMode={previewMode}
+      />
     </form>
   );
 }
