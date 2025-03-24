@@ -256,6 +256,7 @@ export function defineBricks<B extends DefinedBrick[] = DefinedBrick[]>(bricks: 
                 ...defaultProps[childBrick.type],
                 ...childBrick,
                 parentId: id,
+                sectionId: brick.sectionId,
                 ...("position" in childBrick
                   ? {}
                   : {

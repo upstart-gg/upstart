@@ -289,6 +289,12 @@ export interface DraftState extends DraftStateProps {
   canMoveToWithinParent: (brickId: Brick["id"], to: "left" | "right") => boolean;
   getBrickIndex: (id: string) => number;
 
+  isLastBrickOfSection: (brickId: string) => boolean;
+  isFirstBrickOfSection: (brickId: string) => boolean;
+
+  isFirstSection: (sectionId: string) => boolean;
+  isLastSection: (sectionId: string) => boolean;
+
   // Section order management
   moveSectionUp: (sectionId: string) => void;
   moveSectionDown: (sectionId: string) => void;
@@ -338,6 +344,34 @@ export const createDraftStore = (
           immer((set, _get) => ({
             ...DEFAULT_PROPS,
             ...initProps,
+
+            isFirstSection: (sectionId) => {
+              const state = _get();
+              return state.sections.find((s) => s.order === 0)?.id === sectionId;
+            },
+
+            isLastSection: (sectionId) => {
+              const state = _get();
+              return state.sections.find((s) => s.order === state.sections.length - 1)?.id === sectionId;
+            },
+
+            isLastBrickOfSection: (brickId) => {
+              const state = _get();
+              const info = state.getBrick(brickId);
+              invariant(info, "isLastBrickOfSection: Brick not found");
+              const sectionId = info.sectionId;
+              const sectionBricks = state.getBricksForSection(sectionId);
+              return sectionBricks.at(-1)?.id === brickId;
+            },
+
+            isFirstBrickOfSection: (brickId) => {
+              const state = _get();
+              const info = state.getBrick(brickId);
+              invariant(info, "isFirstBrickOfSection: Brick not found");
+              const sectionId = info.sectionId;
+              const sectionBricks = state.getBricksForSection(sectionId);
+              return sectionBricks.at(0)?.id === brickId;
+            },
 
             addSection: (section) =>
               set((state) => {
@@ -953,6 +987,7 @@ export const useSection = (sectionId: string) => {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => {
     const section = state.sections.find((s) => s.id === sectionId);
+    invariant(section, `Section '${sectionId}' not found`);
     return {
       ...section,
       bricks: state.bricks.filter((b) => b.sectionId === sectionId),
@@ -1024,6 +1059,10 @@ export const useDraftHelpers = () => {
     reorderSections: state.reorderSections,
     updateSection: state.updateSection,
     addSection: state.addSection,
+    isLastBrickOfSection: state.isLastBrickOfSection,
+    isFirstBrickOfSection: state.isFirstBrickOfSection,
+    isFirstSection: state.isFirstSection,
+    isLastSection: state.isLastSection,
   }));
 };
 

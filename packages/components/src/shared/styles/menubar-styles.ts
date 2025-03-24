@@ -1,4 +1,4 @@
-export const menuNavBarCls = `h-10 shadow-lg rounded-lg bg-white/70 backdrop-blur-md flex text-base
+export const menuNavBarCls = `h-9 shadow-lg rounded-lg bg-white/70 backdrop-blur-md flex text-base
                               text-gray-500 w-fit justify-start items-stretch divide-x divide-gray-200 border border-gray-200`;
 
 const menuBarBtnBaseCls = `transition-opacity duration-150 bg-gradient-to-t from-white to-white/70`;

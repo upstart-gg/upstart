@@ -50,7 +50,8 @@ export function getGroupInfo(schema: TSchema) {
 }
 
 export function defineProps<P extends TProperties>(props: P) {
-  return Type.Object({ ...commonProps, ...props });
+  const finalProps = { ...commonProps, ...props };
+  return Type.Object(finalProps);
 }
 
 export const optional = Type.Optional;

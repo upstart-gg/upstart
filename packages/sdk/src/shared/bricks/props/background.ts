@@ -1,5 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { prop } from "./helpers";
+import type { ElementColorType } from "~/shared/themes/color-system";
 
 type BackgroundOptions = {
   title?: string;
@@ -9,6 +10,7 @@ type BackgroundOptions = {
     size?: string;
     repeat?: string;
   };
+  colorType?: ElementColorType;
 };
 
 export function background(opts: BackgroundOptions = {}) {
@@ -19,6 +21,7 @@ export function background(opts: BackgroundOptions = {}) {
       repeat: "no-repeat",
       color: "transparent",
     },
+    colorType = "background",
   } = opts;
   return prop({
     $id: "#styles:background",
@@ -68,6 +71,7 @@ export function background(opts: BackgroundOptions = {}) {
         "ui:field": "background",
         "ui:group": "background",
         "ui:group:title": "Background",
+        "ui:color-type": colorType,
         "ui:show-img-search": true,
         "ui:inspector-tab": "style",
         default: {

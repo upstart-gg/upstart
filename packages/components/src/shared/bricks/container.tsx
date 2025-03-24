@@ -14,8 +14,6 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edi
   const { styles: className } = useBrickStyle(brick);
   const ds = useDatasource(props.datasource.ds, manifest.datasource);
 
-  console.log("Container", { props, ds, className });
-
   // If this container is Dynamic
   if (ds.datasourceId && props.$childrenType) {
     console.log("override childrenBricks with data from datasource", ds.data);

@@ -30,7 +30,6 @@ const BackgroundField: React.FC<FieldProps<BackgroundSettings>> = (props) => {
             currentValue={currentValue.color}
             title={undefined}
             onChange={(color) => {
-              console.log("color", color);
               onChange({ ...currentValue, color: color as string });
             }}
             hideColorLabel={true}

@@ -31,18 +31,18 @@ export default function ResizeHandle({
         className={tx(
           "absolute w-[10px] h-[10px] border-upstart-500 bg-white border-2 rounded-sm z-10 shadow-md",
           {
-            "top-1/2 -translate-y-1/2 -left-1": direction === "w",
-            "top-1/2 -translate-y-1/2 -right-1": direction === "e",
-            "left-1/2 -translate-x-1/2 -top-1": direction === "n",
-            "left-1/2 -translate-x-1/2 -bottom-1": direction === "s",
+            "top-1/2 -translate-y-1/2 -left-[5px]": direction === "w",
+            "top-1/2 -translate-y-1/2 -right-[5px]": direction === "e",
+            "left-1/2 -translate-x-1/2 -top-[5px]": direction === "n",
+            "left-1/2 -translate-x-1/2 -bottom-[5px]": direction === "s",
 
             // sw and nw
-            "-bottom-1.5 -left-1.5": direction === "sw",
-            "-top-1.5 -left-1.5": direction === "nw",
+            "-bottom-[5px] -left-[5px]": direction === "sw",
+            "-top-[5px] -left-[5px]": direction === "nw",
 
             // se and ne
-            "-bottom-1.5 -right-1.5": direction === "se",
-            "-top-1.5 -right-1.5": direction === "ne",
+            "-bottom-[5px] -right-[5px]": direction === "se",
+            "-top-[5px] -right-[5px]": direction === "ne",
           },
         )}
       />

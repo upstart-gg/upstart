@@ -17,6 +17,7 @@ import {
   useEditorHelpers,
   useGetBrick,
   usePreviewMode,
+  useSection,
   useSelectedBrickId,
 } from "../hooks/use-editor";
 import {
@@ -33,6 +34,7 @@ import {
   useInteractions,
   safePolygon,
   autoUpdate,
+  type Placement,
 } from "@upstart.gg/style-system/system";
 import BaseBrick from "~/shared/components/BaseBrick";
 import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
@@ -48,12 +50,37 @@ import { BiSolidColor } from "react-icons/bi";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { FiSettings, FiDatabase } from "react-icons/fi";
 import { BrickPopover } from "./BrickPopover";
+import type { ResponsiveMode } from "@upstart.gg/sdk/shared/responsive";
+import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
   isContainerChild?: boolean;
   index: number;
 };
+
+function useBarPlacements(brick: Brick): Placement[] {
+  const previewMode = usePreviewMode();
+  const { isLastSection } = useDraftHelpers();
+  const section = useSection(brick.sectionId);
+  return useMemo(() => {
+    const placements: Placement[] = [];
+    if (brick.parentId) {
+      placements.push(...(["bottom-end", "top-end"] as const));
+    } else {
+      if (!isLastSection(section.id)) {
+        placements.push("bottom");
+      }
+      if (
+        (typeof brick.position[previewMode].y === "number" && brick.position[previewMode].y > 2) ||
+        isLastSection(section.id)
+      ) {
+        placements.push("top");
+      }
+    }
+    return placements;
+  }, [brick, previewMode, section, isLastSection]);
+}
 
 const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
   ({ brick, children, isContainerChild, index }, ref) => {
@@ -63,8 +90,10 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const previewMode = usePreviewMode();
     const { getParentBrick } = useDraftHelpers();
     const manifest = useBrickManifest(brick.type);
+    const parentBrick = getParentBrick(brick.id);
     const [isMenuBarVisible, setMenuBarVisible] = useState(false);
     const position = brick.position[previewMode];
+    const allowedPlacements = useBarPlacements(brick);
 
     const {
       refs: barsRefs,
@@ -75,15 +104,15 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       open: isMenuBarVisible,
       onOpenChange: setMenuBarVisible,
       whileElementsMounted: autoUpdate,
-      // transform: true,
+      transform: true,
       middleware: [
         offset(
           manifest.isContainer
-            ? { mainAxis: 8, crossAxis: 0 }
-            : { mainAxis: position.h > 5 ? -44 : 4, crossAxis: 3 },
+            ? { mainAxis: 10, crossAxis: 0 }
+            : { mainAxis: isContainerChild || position.h > 5 ? -42 : 10, crossAxis: -2 },
         ),
         autoPlacement({
-          allowedPlacements: manifest.isContainer ? ["bottom", "top"] : ["bottom-start", "top-start"],
+          allowedPlacements,
         }),
       ],
     });
@@ -92,7 +121,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       handleClose: safePolygon(),
       delay: {
         open: 0,
-        close: 300,
+        close: 150,
       },
     });
 
@@ -153,7 +182,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
 
       // If has shift key pressed, then we try to select the upper container
       if (e.shiftKey) {
-        const parentBrick = getParentBrick(brick.id);
         if (parentBrick) {
           selectedBrick = parentBrick;
         }
@@ -238,11 +266,10 @@ const BrickMenuBarsContainer = forwardRef<HTMLDivElement, BrickMenuBarProps>(
         data-ui
         role="navigation"
         className={tx(
-          "z-[99999]   flex gap-2 items-center",
-          "transition-opacity duration-150",
+          "z-[99999] text-base flex gap-2 items-center",
+          "transition-opacity duration-150 border rounded-lg",
           visible ? "opacity-100" : "opacity-0",
-          // selectedBrickId !== brick.id && "opacity-0",
-          // "group-hover/brick:(opacity-100)",
+          brick.isContainer ? "border-orange-300" : "border-transparent",
         )}
         style={style}
         {...rest}
@@ -274,7 +301,7 @@ function BrickMainNavBar({ brick }: { brick: Brick }) {
 
   return (
     <nav className={menuNavBarCls}>
-      <span className={tx(menuBarBtnCls, menuBarBtnCommonCls, "capitalize pointer-events-none text-sm")}>
+      <span className={tx(menuBarBtnCls, menuBarBtnCommonCls, "capitalize pointer-events-none")}>
         {manifest.type}
       </span>
       {manifest.presets && (
