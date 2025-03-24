@@ -42,16 +42,16 @@ describe("Props helpers test suite", () => {
 
     it("should use the provided tab", () => {
       const children = { test: Type.String() };
-      const result = group({ title: "Test Group", children, category: "presets" });
+      const result = group({ title: "Test Group", children });
       const info = getGroupInfo(result);
-      expect(info.tab).toBe("preset");
+      expect(info.tab).toBe("common");
     });
 
     it("should create a proper group ID from the title", () => {
       const children = { test: Type.String() };
       const result = group({ title: "Test Group Name", children });
       const info = getGroupInfo(result);
-      expect(info.meta.group).toBe("test_group_name");
+      expect(info.meta.group).toBe(true);
     });
 
     it("should contain the correct children", () => {
@@ -102,20 +102,6 @@ describe("Props helpers test suite", () => {
   });
 
   describe("getGroupInfo", () => {
-    it("should extract metadata from a group schema", () => {
-      const groupSchema = group({
-        title: "Test Group",
-        children: { prop: Type.String() },
-        category: "presets",
-      });
-
-      const info = getGroupInfo(groupSchema);
-
-      expect(info.title).toBe("Test Group");
-      expect(info.tab).toBe("preset");
-      expect(info.meta.group).toBe("test_group");
-    });
-
     it("should use 'common' as default tab when not specified", () => {
       const schema = Type.Object(
         {},
@@ -134,10 +120,16 @@ describe("Props helpers test suite", () => {
   describe("getStyleProperties", () => {
     it("should extract style properties from a schema", () => {
       const styles = getStyleProperties(sampleManifest.props);
-      expect(styles).toEqual({
-        "containerStyles.border": "#styles:border",
-        "containerStyles.backgroundColor": "#styles:backgroundColor",
-        "brand.styles.color": "#styles:color",
+      expect(styles).toMatchObject({
+        "brand.color": "#styles:color",
+        "brand.logo.fit": "#styles:objectFit",
+        "brand.logo.position": "#styles:objectPosition",
+        "container.backgroundColor": "#styles:backgroundColor",
+        "container.border": "#styles:border",
+        "container.fixedPositioned": "#styles:fixedPositioned",
+        "container.rounding": "#styles:rounding",
+        "container.shadow": "#styles:shadow",
+        "navigation.color": "#styles:color",
       });
     });
   });

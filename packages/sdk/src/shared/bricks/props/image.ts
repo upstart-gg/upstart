@@ -9,11 +9,11 @@ type PropImageOptions = {
 };
 
 export function image(title = "Image", options: PropImageOptions = {}) {
-  const { defaultImageUrl = canvasDataURI, showImgSearch = false } = options;
+  const { defaultImageUrl, showImgSearch = false } = options;
   const schema = Type.Object(
     {
       src: Type.String({
-        // default: defaultImageUrl,
+        default: defaultImageUrl,
         title,
       }),
       alt: Type.Optional(
