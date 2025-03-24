@@ -416,11 +416,12 @@ export default defineConfig({
     // ["color-auto", { color: "light-dark(white, black)" }],
     ["color-auto", { color: "var(--up-color-auto)" }],
 
-    ["hero-size-md", { fontSize: "clamp(3rem, 2.5vw + 2.5rem, 4.75rem)", lineHeight: "1.1" }],
-    ["hero-size-lg", { fontSize: "clamp(3.75rem, 3vw + 3rem, 5.75rem)", lineHeight: "1.1" }],
-    ["hero-size-xl", { fontSize: "clamp(4.5rem, 3.5vw + 3.5rem, 6.75rem)", lineHeight: "1.1" }],
-    ["hero-size-2xl", { fontSize: "clamp(5.25rem, 4vw + 4rem, 7.75rem)", lineHeight: "1.1" }],
-    ["hero-size-3xl", { fontSize: "clamp(6rem, 4.5vw + 4.5rem, 8.75rem)", lineHeight: "1.1" }],
+    ["hero", { "&::first-line": { lineHeight: "1", margin: "0" } }],
+    ["hero-size-1", { fontSize: "clamp(2.25rem, 1.467rem + 3.913vw, 4.5rem)", lineHeight: "1.1" }],
+    ["hero-size-2", { fontSize: "clamp(3.5rem, 2.717rem + 3.913vw, 5.75rem)", lineHeight: "1.1" }],
+    ["hero-size-3", { fontSize: "clamp(4.75rem, 3.967rem + 3.913vw, 7rem)", lineHeight: "1.1" }],
+    ["hero-size-4", { fontSize: "clamp(6rem, 5.217rem + 3.913vw, 8.25rem)", lineHeight: "1.1" }],
+    ["hero-size-5", { fontSize: "clamp(7.25rem, 6.467rem + 3.913vw, 9.5rem)", lineHeight: "1.1" }],
 
     ["text-shadow-none", { textShadow: "none" }],
     ["text-shadow-sm", { textShadow: "0 1px 2px rgba(0, 0, 0, 0.15)" }],

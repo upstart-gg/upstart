@@ -132,6 +132,7 @@ export const brickStylesHelpersMap = {
   "#styles:objectPosition": simpleClassHandler,
 
   "#styles:rounding": simpleClassHandler,
+  "#styles:heroSize": simpleClassHandler,
 };
 export const brickWrapperStylesHelpersMap = {
   "#styles:shadow": simpleClassHandler,

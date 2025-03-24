@@ -98,6 +98,9 @@ importers:
       '@tiptap/extension-document':
         specifier: 2.11.2
         version: 2.11.2(@tiptap/core@2.11.5)
+      '@tiptap/extension-heading':
+        specifier: 2.11.5
+        version: 2.11.5(@tiptap/core@2.11.5)
       '@tiptap/extension-highlight':
         specifier: 2.11.5
         version: 2.11.5(@tiptap/core@2.11.5)
@@ -5331,8 +5334,8 @@ packages:
       '@tiptap/core': 2.11.5(@tiptap/pm@2.10.3)
     dev: false
 
-  /@tiptap/extension-heading@2.10.3(@tiptap/core@2.11.5):
-    resolution: {integrity: sha512-AlxXXPCWIvw8hQUDFRskasj32iMNB8Sb19VgyFWqwvntGs2/UffNu8VdsVqxD2HpZ0g5rLYCYtSW4wigs9R3og==}
+  /@tiptap/extension-heading@2.11.5(@tiptap/core@2.11.5):
+    resolution: {integrity: sha512-x/MV53psJ9baRcZ4k4WjnCUBMt8zCX7mPlKVT+9C/o+DEs/j/qxPLs95nHeQv70chZpSwCQCt93xMmuF0kPoAg==}
     peerDependencies:
       '@tiptap/core': ^2.7.0
     dependencies:
@@ -5508,7 +5511,7 @@ packages:
       '@tiptap/extension-dropcursor': 2.11.5(@tiptap/core@2.11.5)(@tiptap/pm@2.10.3)
       '@tiptap/extension-gapcursor': 2.10.3(@tiptap/core@2.11.5)(@tiptap/pm@2.10.3)
       '@tiptap/extension-hard-break': 2.10.3(@tiptap/core@2.11.5)
-      '@tiptap/extension-heading': 2.10.3(@tiptap/core@2.11.5)
+      '@tiptap/extension-heading': 2.11.5(@tiptap/core@2.11.5)
       '@tiptap/extension-history': 2.10.3(@tiptap/core@2.11.5)(@tiptap/pm@2.10.3)
       '@tiptap/extension-horizontal-rule': 2.10.3(@tiptap/core@2.11.5)(@tiptap/pm@2.10.3)
       '@tiptap/extension-italic': 2.10.3(@tiptap/core@2.11.5)

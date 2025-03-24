@@ -16,12 +16,12 @@ const Hero = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
       <TextContent
         as="h1"
         propPath="brand.name"
-        className={tx("hero", ...classes)}
+        className={tx("hero grow flex-wrap text-wrap")}
         brickId={brick.id}
         content={props.content}
+        textSizeMode="hero"
         editable={editable}
         noTextType
-        inline
       />
     </div>
   );
