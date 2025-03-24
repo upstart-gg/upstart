@@ -1,9 +1,11 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, group } from "../props/helpers";
+import { defineProps, group, optional } from "../props/helpers";
 import { background } from "../props/background";
 import { datasourceRef } from "../props/datasource";
-import { makeContainerProps } from "../props/container";
+import { gap, makeContainerProps } from "../props/container";
 import { Type } from "@sinclair/typebox";
+import { border, rounding } from "../props/border";
+import { shadow } from "../props/effects";
 
 export const datasource = Type.Array(Type.Object({}, { additionalProperties: true }));
 
@@ -30,12 +32,18 @@ export const manifest = defineBrickManifest({
         <line x1="3" y1="12" x2="21" y2="12"></line>
         <line x1="12" y1="3" x2="12" y2="21"></line></svg>`,
   props: defineProps({
-    styles: group({
-      title: "Styles",
-      children: {
-        background: background(),
-      },
-    }),
+    // styles: group({
+    //   title: "Styles",
+    //   children: {
+    //     background: background(),
+    //   },
+    // }),
+
+    gap: gap(),
+    background: background(),
+    border: border(),
+    rounding: optional(rounding()),
+    shadow: optional(shadow()),
 
     datasource: group({
       title: "Data",

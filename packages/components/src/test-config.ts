@@ -4,6 +4,7 @@ import { defineAttributes, attr } from "@upstart.gg/sdk/attributes";
 import { defineConfig } from "@upstart.gg/sdk/page";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import { defineBricks, defineSections } from "@upstart.gg/sdk/shared/bricks";
+import { color } from "@upstart.gg/sdk/shared/bricks/props/text";
 
 // define your datasources
 const datasources = defineDataSources({
@@ -140,28 +141,30 @@ const hpBricks = defineBricks([
     type: "container",
     sectionId: "header",
     props: {
-      styles: {
-        background: {
-          color: "#f9f9f9",
-        },
+      background: {
+        color: "#f9f9f9",
+        gap: "gap-4",
       },
       $children: [
         {
           type: "text",
           props: {
             content: "Some text #1",
+            backgroundColor: "bg-green-100",
           },
         },
         {
           type: "text",
           props: {
             content: "Some text #2",
+            backgroundColor: "bg-blue-100",
           },
         },
         {
           type: "text",
           props: {
             content: "Some text #3",
+            backgroundColor: "bg-pink-100",
           },
         },
       ],
@@ -174,9 +177,9 @@ const hpBricks = defineBricks([
         h: 8,
       },
       desktop: {
-        x: 0,
+        x: 6,
         y: 8,
-        w: "full",
+        w: "twoThird",
         h: 8,
       },
     },

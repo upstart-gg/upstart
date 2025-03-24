@@ -3,21 +3,20 @@ import { prop } from "./helpers";
 
 type GapOptions = {
   title?: string;
-  defaultValue?: string;
 };
 
-export function gap({ title = "Gap", defaultValue = "gap-1" }: GapOptions = {}) {
+export function gap(defaultValue = "gap-1", { title = "Gap" }: GapOptions = {}) {
   return prop({
     $id: "#styles:gap",
     title,
     schema: Type.Union(
       [
         Type.Literal("gap-0", { title: "None" }),
-        Type.Literal("gap-1", { title: "S" }),
-        Type.Literal("gap-2", { title: "M" }),
-        Type.Literal("gap-4", { title: "L" }),
-        Type.Literal("gap-8", { title: "XL" }),
-        Type.Literal("gap-16", { title: "XXL" }),
+        Type.Literal("gap-1", { title: "Small" }),
+        Type.Literal("gap-2", { title: "Medium" }),
+        Type.Literal("gap-4", { title: "Large" }),
+        Type.Literal("gap-8", { title: "Extra large" }),
+        Type.Literal("gap-16", { title: "Extra large (2x)" }),
       ],
       {
         default: defaultValue,

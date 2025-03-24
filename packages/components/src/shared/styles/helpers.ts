@@ -123,15 +123,17 @@ export const brickStylesHelpersMap = {
   "#styles:border": getBorderStyles,
 
   "#styles:flex": getFlexStyles,
+  "#styles:gap": simpleClassHandler,
 
   // "#styles:shadow": getShadowStyles,
   "#styles:textShadow": simpleClassHandler,
   "#styles:opacity": getOpacityStyles,
   "#styles:objectFit": simpleClassHandler,
   "#styles:objectPosition": simpleClassHandler,
+
+  "#styles:rounding": simpleClassHandler,
 };
 export const brickWrapperStylesHelpersMap = {
-  "#styles:rounding": simpleClassHandler,
   "#styles:shadow": simpleClassHandler,
   "#styles:fixedPositioned": getFixedPositionedStyles,
 };

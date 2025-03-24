@@ -15,6 +15,7 @@ const heroSize = Type.Union(
     Type.Literal("hero-size-3xl", { title: "3XL" }),
   ],
   {
+    $id: "#styles:heroSize",
     title: "Text size",
     default: "hero-size-lg",
     "ui:display": "button-group",
@@ -33,15 +34,10 @@ export const manifest = defineBrickManifest({
     <rect x="20" y="52" width="40" height="12" rx="2" fill="currentColor"/></svg>`,
   props: defineProps({
     content: textContent("I'm a big text"),
-    styles: group({
-      title: "Styles",
-      children: {
-        border: border(),
-        background: background(),
-        align: basicAlign(),
-        textSize: heroSize,
-      },
-    }),
+    border: border(),
+    background: background(),
+    align: basicAlign(),
+    textSize: heroSize,
   }),
 });
 

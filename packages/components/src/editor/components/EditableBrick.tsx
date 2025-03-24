@@ -1,4 +1,4 @@
-import type { Brick } from "@upstart.gg/sdk/shared/bricks";
+import { brickWithDefaults, type Brick } from "@upstart.gg/sdk/shared/bricks";
 import {
   forwardRef,
   type PropsWithChildren,
@@ -94,6 +94,8 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const [isMenuBarVisible, setMenuBarVisible] = useState(false);
     const position = brick.position[previewMode];
     const allowedPlacements = useBarPlacements(brick);
+
+    brick = brickWithDefaults(brick);
 
     const {
       refs: barsRefs,

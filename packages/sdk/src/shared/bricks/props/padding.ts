@@ -12,7 +12,7 @@ export function padding(defaultValue = "p-0") {
         Type.Literal("p-2", { title: "Medium" }),
         Type.Literal("p-4", { title: "Large" }),
         Type.Literal("p-8", { title: "Extra large" }),
-        Type.Literal("p-16", { title: "Extra large (v2)" }),
+        Type.Literal("p-16", { title: "Extra large (2x)" }),
       ],
       {
         default: defaultValue,

@@ -382,6 +382,7 @@ function getAvailableColorsAndShadesForElement(elementType: ElementColorType) {
       colors: ["primary", "secondary", "accent", "neutral"],
       shades: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
       colorButtons: [
+        { label: "Auto", value: "border-auto" },
         { label: "White", value: "#FFFFFF" },
         { label: "Black", value: "#000000" },
         { label: "Transparent", value: "transparent" },
@@ -439,20 +440,7 @@ export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
             colors={makeCominations(colors, shades)}
             onChange={onChange}
           >
-            {colorButtons && (
-              <div className={tx(`flex gap-3 mt-1`, `col-span-${shades.length}`)}>
-                {colorButtons.map((button) => (
-                  <button
-                    key={button.value}
-                    type="button"
-                    onClick={() => onChange(button.value)}
-                    className="flex-1 h-6 text-xs rounded-lg outline outline-gray-200 hover:outline-gray-300"
-                  >
-                    {button.label}
-                  </button>
-                ))}
-              </div>
-            )}
+            <ButtonsBar colorButtons={colorButtons} onChange={onChange} shadesLen={shades.length} />
           </ColorPillList>
         </Tabs.Content>
         <Tabs.Content value="gradient">
@@ -480,20 +468,7 @@ export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
           colors={makeCominations(colors, shades)}
           onChange={onChange}
         />
-        {colorButtons && (
-          <div className={tx(`flex gap-3 mt-3`, `col-span-${shades.length}`)}>
-            {colorButtons.map((button) => (
-              <button
-                key={button.value}
-                type="button"
-                onClick={() => onChange(button.value)}
-                className="flex-1 h-6 text-xs rounded-lg outline outline-gray-200 hover:outline-gray-300"
-              >
-                {button.label}
-              </button>
-            ))}
-          </div>
-        )}
+        <ButtonsBar colorButtons={colorButtons} onChange={onChange} shadesLen={shades.length} />
       </>
     );
   }
@@ -507,20 +482,7 @@ export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
         colors={makeCominations(colors, shades)}
         onChange={onChange}
       >
-        {colorButtons && (
-          <div className={tx(`flex gap-3 mt-1`, `col-span-${shades.length}`)}>
-            {colorButtons.map((button) => (
-              <button
-                key={button.value}
-                type="button"
-                onClick={() => onChange(button.value)}
-                className="flex-1 h-6 text-xs rounded-lg outline outline-gray-200 hover:outline-gray-300"
-              >
-                {button.label}
-              </button>
-            ))}
-          </div>
-        )}
+        <ButtonsBar colorButtons={colorButtons} onChange={onChange} shadesLen={shades.length} />
       </ColorPillList>
     );
   }
@@ -547,20 +509,7 @@ export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
             colors={makeCominations(colors, shades)}
             onChange={onChange}
           >
-            {colorButtons && (
-              <div className={tx(`flex gap-3 mt-1`, `col-span-${shades.length}`)}>
-                {colorButtons.map((button) => (
-                  <button
-                    key={button.value}
-                    type="button"
-                    onClick={() => onChange(button.value)}
-                    className="flex-1 h-6 text-xs rounded-lg outline outline-gray-200 hover:outline-gray-300"
-                  >
-                    {button.label}
-                  </button>
-                ))}
-              </div>
-            )}
+            <ButtonsBar colorButtons={colorButtons} onChange={onChange} shadesLen={shades.length} />
           </ColorPillList>
         </Tabs.Content>
         <Tabs.Content value="gradient">
@@ -578,3 +527,29 @@ export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
   }
   return null;
 };
+
+function ButtonsBar({
+  colorButtons,
+  onChange,
+  shadesLen,
+}: {
+  colorButtons?: { label: string; value: string }[];
+  onChange: (color: string) => void;
+  shadesLen: number;
+}) {
+  if (!colorButtons) return null;
+  return (
+    <div className={tx(`flex gap-1.5 mt-1`, `col-span-${shadesLen}`)}>
+      {colorButtons.map((button) => (
+        <button
+          key={button.value}
+          type="button"
+          onClick={() => onChange(button.value)}
+          className="grow h-6 text-xs rounded-lg outline outline-gray-200 hover:outline-gray-300"
+        >
+          {button.label}
+        </button>
+      ))}
+    </div>
+  );
+}
