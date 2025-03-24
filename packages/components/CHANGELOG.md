@@ -1,5 +1,15 @@
 # @upstart.gg/components
 
+## 0.0.79
+
+### Patch Changes
+
+- [#276](https://github.com/upstart-gg/upstart/pull/276) [`df4d16c`](https://github.com/upstart-gg/upstart/commit/df4d16c6677ba578d3f9bb8eae1e4401b5d5130a) Thanks [@mattallty](https://github.com/mattallty)! - Various improvements
+
+- Updated dependencies [[`df4d16c`](https://github.com/upstart-gg/upstart/commit/df4d16c6677ba578d3f9bb8eae1e4401b5d5130a)]:
+  - @upstart.gg/style-system@0.0.35
+  - @upstart.gg/sdk@0.0.79
+
 ## 0.0.78
 
 ### Patch Changes
