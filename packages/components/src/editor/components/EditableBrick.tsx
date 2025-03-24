@@ -7,6 +7,7 @@ import {
   type ComponentProps,
   type MouseEvent,
   useEffect,
+  useMemo,
 } from "react";
 import { tx } from "@upstart.gg/style-system/twind";
 import {
@@ -31,6 +32,7 @@ import {
   useHover,
   useInteractions,
   safePolygon,
+  autoUpdate,
 } from "@upstart.gg/style-system/system";
 import BaseBrick from "~/shared/components/BaseBrick";
 import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
@@ -64,7 +66,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const [isMenuBarVisible, setMenuBarVisible] = useState(false);
     const position = brick.position[previewMode];
 
-    // const clientPoint = useClientPoint(context);
     const {
       refs: barsRefs,
       floatingStyles: barsFloatingStyles,
@@ -73,6 +74,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     } = useFloating({
       open: isMenuBarVisible,
       onOpenChange: setMenuBarVisible,
+      whileElementsMounted: autoUpdate,
       // transform: true,
       middleware: [
         offset(
@@ -85,6 +87,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
         }),
       ],
     });
+
     const hover = useHover(barsFloatingContext, {
       handleClose: safePolygon(),
       delay: {
@@ -92,8 +95,8 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
         close: 300,
       },
     });
-    const { getReferenceProps, getFloatingProps } = useInteractions([hover]);
 
+    const { getReferenceProps, getFloatingProps } = useInteractions([hover]);
     const brickRef = useMergeRefs([ref, barsRefs.setReference]);
 
     const wrapperClass = useBrickWrapperStyle({
