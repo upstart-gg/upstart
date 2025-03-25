@@ -5,6 +5,7 @@ import { defineConfig } from "@upstart.gg/sdk/page";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import { defineBricks, defineSections } from "@upstart.gg/sdk/shared/bricks";
 import { color } from "@upstart.gg/sdk/shared/bricks/props/text";
+import { backgroundColor } from "@upstart.gg/sdk/shared/bricks/props/background";
 
 // define your datasources
 const datasources = defineDataSources({
@@ -117,9 +118,12 @@ const hpBricks = defineBricks([
     type: "header",
     sectionId: "header",
     props: {
-      container: {},
+      container: {
+        backgroundColor: "bg-secondary-900",
+      },
       brand: {
         name: "Upstart",
+        color: "color-auto",
       },
     },
     position: {

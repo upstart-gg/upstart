@@ -22,21 +22,17 @@ export function useSectionStyle({ section, editable }: UseSectionStyleProps) {
     section.position.desktop.h === "full" && !editable && "h-dvh", // when in real mode
 
     // entire width of the grid
-    "col-span-full w-full",
+    " w-full px-0 py-0",
     // mobile grid
     `@mobile:(
       grid-cols-${LAYOUT_COLS.mobile}
-      auto-rows-[minmax(${LAYOUT_ROW_HEIGHT}px,_max-content)]
-      px-0
-      py-0
+      grid-rows-[repeat(auto-fill,${LAYOUT_ROW_HEIGHT}px)]
     )`,
     // Desktop grid
     `@desktop:(
-        grid-cols-${LAYOUT_COLS.desktop}
-        auto-rows-[${LAYOUT_ROW_HEIGHT}px]
-        py-0
-        px-0
-      )`,
+      grid-cols-${LAYOUT_COLS.desktop}
+      grid-rows-[repeat(auto-fill,${LAYOUT_ROW_HEIGHT}px)]
+    )`,
 
     // Background
     section.props.background && getBackgroundStyles(section.props.background),

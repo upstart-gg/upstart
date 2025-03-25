@@ -291,6 +291,9 @@ const TextEditor = <T extends ElementType = "div">({
       setFocused(false);
     };
 
+    editor.options.element.addEventListener("resize", () => {
+      console.log("editor resized");
+    });
     editor?.on("focus", onFocus);
     editor?.on("blur", onBlur);
 

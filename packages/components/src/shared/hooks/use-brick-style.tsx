@@ -106,25 +106,26 @@ export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable,
 
     // Position of the wrapper
     //
-    // Note:  for container children, we don't set it as they are not positioned
+    // Note:  for container children, we don't set it as they are NOT positioned
     //        relatively to the page grid but to the container
     //
-    // Warning: those 2 rules blocks are pretty sensible!
+    // Warning: those 2 rules blocks are pretty sensible, especially the height!
     !isContainerChild &&
       `@desktop:(
         col-start-${position.desktop.x + 1}
         col-span-${position.desktop.w}
         row-start-${position.desktop.y + 1}
-        row-span-${position.desktop.h}
-        h-auto
+        h-fit
+        min-h-[${position.desktop.h * LAYOUT_ROW_HEIGHT}px]
       )
       @mobile:(
         col-start-${position.mobile.x + 1}
         col-span-${position.mobile.w}
         row-start-${position.mobile.y + 1}
-        row-span-${position.mobile.manualHeight ?? position.mobile.h}
-        ${position.mobile.manualHeight ? `h-[${position.mobile.manualHeight * LAYOUT_ROW_HEIGHT}px]` : ""}
+        h-fit
+        min-h-[${position.mobile.h * LAYOUT_ROW_HEIGHT}px]
       )`,
+    // ${position.mobile.manualHeight ? `h-[${position.mobile.manualHeight * LAYOUT_ROW_HEIGHT}px]` : ""}
 
     ...Object.values(classes).flat(),
 
