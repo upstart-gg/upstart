@@ -10,6 +10,7 @@ import { IoCloseOutline } from "react-icons/io5";
 import { HelpIcon } from "../HelpIcon";
 import { IoSearch } from "react-icons/io5";
 import { fieldLabel } from "../form-class";
+import { FieldTitle } from "../field-factory";
 
 const BackgroundField: React.FC<FieldProps<BackgroundSettings>> = (props) => {
   const { schema, formData, onChange, required, title, description, currentValue } = props;
@@ -21,8 +22,8 @@ const BackgroundField: React.FC<FieldProps<BackgroundSettings>> = (props) => {
   return (
     <>
       <div className="background-field flex items-center justify-between flex-wrap gap-1 flex-1">
-        <div className="flex items-center justify-between">
-          <label className={fieldLabel}>{title ?? "Color / image"}</label>
+        <div className="flex items-center">
+          <FieldTitle title={title ?? "Color / image"} description={description} />
         </div>
         <div className="flex justify-end gap-1.5">
           <ColorField

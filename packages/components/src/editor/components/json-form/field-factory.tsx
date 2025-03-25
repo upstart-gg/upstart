@@ -25,6 +25,10 @@ import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/
 import type { FlexSettings, GridSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
+import { fieldLabel } from "./form-class";
+import { IconButton, Tooltip } from "@upstart.gg/style-system/system";
+import { IoIosHelpCircleOutline } from "react-icons/io";
+import { tx } from "@upstart.gg/style-system/twind";
 
 export interface FieldFactoryOptions {
   brickId?: string;
@@ -339,4 +343,26 @@ export function processObjectSchemaToFields(
   });
 
   return fields;
+}
+
+export function FieldTitle({ title, description }: { title?: string; description?: string }) {
+  if (!title) return null;
+  return (
+    <div className="flex items-center">
+      {description ? (
+        <Tooltip content={description} className="!z-[10000]" align="start">
+          <label
+            className={tx(
+              fieldLabel,
+              "underline-offset-4 no-underline hover:underline decoration-upstart-300 decoration-dotted cursor-help",
+            )}
+          >
+            {title}
+          </label>
+        </Tooltip>
+      ) : (
+        <label className={fieldLabel}>{title}</label>
+      )}
+    </div>
+  );
 }

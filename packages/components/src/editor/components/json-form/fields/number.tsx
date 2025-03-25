@@ -1,7 +1,9 @@
 import type { FieldProps } from "./types";
-import { Slider } from "@upstart.gg/style-system/system";
+import { IconButton, Slider, Tooltip } from "@upstart.gg/style-system/system";
 import { TextField, Text } from "@upstart.gg/style-system/system";
 import { fieldLabel } from "../form-class";
+import { IoIosHelpCircleOutline } from "react-icons/io";
+import { FieldTitle } from "../field-factory";
 
 export const SliderField: React.FC<FieldProps<number>> = (props) => {
   const { schema, currentValue, onChange, required, title, description } = props;
@@ -11,7 +13,7 @@ export const SliderField: React.FC<FieldProps<number>> = (props) => {
 
   return (
     <div className="slider-field flex-1 flex justify-between gap-10 items-center">
-      {title && <label className={fieldLabel}>{title}</label>}
+      <FieldTitle title={title} description={description} />
       <div className="ml-auto basis-1/2 flex items-center gap-2">
         <Slider
           onValueChange={(value) => onChange(value[0])}
@@ -36,16 +38,7 @@ export const NumberField: React.FC<FieldProps<number>> = (props) => {
 
   return (
     <div className="number-field">
-      {title && (
-        <Text as="label" size="2" weight="medium">
-          {title}
-        </Text>
-      )}
-      {description && (
-        <Text as="p" color="gray" size="1">
-          {description}
-        </Text>
-      )}
+      <FieldTitle title={title} description={description} />
       <TextField.Root
         defaultValue={currentValue}
         type="number"

@@ -8,6 +8,7 @@ type BorderOptions = {
     color?: string;
     width?: string;
     side?: string[];
+    rounding?: string;
   };
 };
 
@@ -17,6 +18,7 @@ export function border({
     style: "border-solid",
     width: "border-0",
     side: [],
+    rounding: "rounded-auto",
   },
 }: BorderOptions = {}) {
   return group({
@@ -26,6 +28,25 @@ export function border({
       default: defaultValue,
     },
     children: {
+      rounding: Type.Union(
+        [
+          Type.Literal("rounded-auto", { title: "Auto" }),
+          Type.Literal("rounded-none", { title: "None" }),
+          Type.Literal("rounded-sm", { title: "Small" }),
+          Type.Literal("rounded-md", { title: "Medium" }),
+          Type.Literal("rounded-lg", { title: "Large" }),
+          Type.Literal("rounded-xl", { title: "Extra large" }),
+          Type.Literal("rounded-2xl", { title: "2xl" }),
+          Type.Literal("rounded-3xl", { title: "3xl" }),
+          Type.Literal("rounded-full", { title: "Full" }),
+        ],
+        {
+          title: "Corner rounding",
+          default: defaultValue.rounding,
+          "ui:field": "enum",
+          "ui:display": "select",
+        },
+      ),
       width: Type.Union(
         [
           Type.Literal("border-0", { title: "None" }),
@@ -47,7 +68,6 @@ export function border({
         "ui:field": "color",
         "ui:color-type": "border",
       }),
-
       side: Type.Optional(
         Type.Array(
           Type.Union([
@@ -83,29 +103,29 @@ export function border({
 
 export type BorderSettings = Static<ReturnType<typeof border>>;
 
-export function rounding(defaultValue = "rounded-auto", title = "Rounding") {
-  return prop({
-    title,
-    $id: "#styles:rounding",
-    schema: Type.Union(
-      [
-        Type.Literal("rounded-auto", { title: "Auto" }),
-        Type.Literal("rounded-none", { title: "None" }),
-        Type.Literal("rounded-sm", { title: "Small" }),
-        Type.Literal("rounded-md", { title: "Medium" }),
-        Type.Literal("rounded-lg", { title: "Large" }),
-        Type.Literal("rounded-xl", { title: "Extra large" }),
-        Type.Literal("rounded-2xl", { title: "2xl" }),
-        Type.Literal("rounded-3xl", { title: "3xl" }),
-        Type.Literal("rounded-full", { title: "Full" }),
-      ],
-      {
-        default: defaultValue,
-        "ui:field": "enum",
-        "ui:display": "select",
-      },
-    ),
-  });
-}
+// export function rounding(defaultValue = "rounded-auto", title = "Rounding") {
+//   return prop({
+//     title,
+//     $id: "#styles:rounding",
+//     schema: Type.Union(
+//       [
+//         Type.Literal("rounded-auto", { title: "Auto" }),
+//         Type.Literal("rounded-none", { title: "None" }),
+//         Type.Literal("rounded-sm", { title: "Small" }),
+//         Type.Literal("rounded-md", { title: "Medium" }),
+//         Type.Literal("rounded-lg", { title: "Large" }),
+//         Type.Literal("rounded-xl", { title: "Extra large" }),
+//         Type.Literal("rounded-2xl", { title: "2xl" }),
+//         Type.Literal("rounded-3xl", { title: "3xl" }),
+//         Type.Literal("rounded-full", { title: "Full" }),
+//       ],
+//       {
+//         default: defaultValue,
+//         "ui:field": "enum",
+//         "ui:display": "select",
+//       },
+//     ),
+//   });
+// }
 
-export type RoundingSettings = Static<ReturnType<typeof rounding>>;
+// export type RoundingSettings = Static<ReturnType<typeof rounding>>;

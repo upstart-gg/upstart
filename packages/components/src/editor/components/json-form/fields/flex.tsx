@@ -5,6 +5,7 @@ import { fieldLabel } from "../form-class";
 import { SegmentedControl, Switch } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import { HelpIcon } from "../HelpIcon";
+import { FieldTitle } from "../field-factory";
 
 export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
   const {
@@ -19,6 +20,7 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
     description,
     formData,
     schema,
+    title,
   } = props;
 
   if (formData.layoutType !== "flex") {
@@ -29,11 +31,7 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
 
   return (
     <div className="flex-field">
-      {description && (
-        <Text as="p" color="gray" size="1">
-          {description}
-        </Text>
-      )}
+      <FieldTitle title={title} description={description} />
       <div className="flex items-start flex-wrap gap-x-4 gap-y-1">
         {/* Direction */}
         <div className="flex flex-col gap-1 basis-2/5">

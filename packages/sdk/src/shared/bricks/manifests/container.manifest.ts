@@ -4,8 +4,8 @@ import { background } from "../props/background";
 import { datasourceRef } from "../props/datasource";
 import { gap, makeContainerProps } from "../props/container";
 import { Type } from "@sinclair/typebox";
-import { border, rounding } from "../props/border";
-import { shadow } from "../props/effects";
+import { border } from "../props/border";
+import { effects, shadow } from "../props/effects";
 import { padding } from "../props/padding";
 
 export const datasource = Type.Array(Type.Object({}, { additionalProperties: true }));
@@ -44,8 +44,7 @@ export const manifest = defineBrickManifest({
     background: optional(background()),
     border: optional(border()),
     padding: optional(padding()),
-    rounding: optional(rounding()),
-    shadow: optional(shadow()),
+    effects: optional(effects()),
 
     datasource: group({
       title: "Data",

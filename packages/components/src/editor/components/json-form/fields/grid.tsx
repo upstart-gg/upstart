@@ -4,6 +4,7 @@ import type { GridSettings } from "@upstart.gg/sdk/shared/bricks/props/container
 import { fieldLabel } from "../form-class";
 import { Slider } from "@upstart.gg/style-system/system";
 import { HelpIcon } from "../HelpIcon";
+import { FieldTitle } from "../field-factory";
 
 export const GridField: React.FC<FieldProps<GridSettings>> = (props) => {
   const {
@@ -15,6 +16,7 @@ export const GridField: React.FC<FieldProps<GridSettings>> = (props) => {
     description,
     schema,
     formData,
+    title,
   } = props;
 
   if (formData.layoutType !== "grid") {
@@ -25,11 +27,7 @@ export const GridField: React.FC<FieldProps<GridSettings>> = (props) => {
 
   return (
     <div className="grid-field">
-      {description && (
-        <Text as="p" color="gray" size="1">
-          {description}
-        </Text>
-      )}
+      <FieldTitle title={title} description={description} />
       <div className="flex items-start flex-wrap gap-x-4 gap-y-1">
         {/* Gap */}
         <div className="flex flex-col gap-1 flex-1">

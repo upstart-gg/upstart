@@ -16,6 +16,7 @@ import {
   MdOutlineBorderBottom,
 } from "react-icons/md";
 import { useEffect, useState } from "react";
+import { FieldTitle } from "../field-factory";
 
 export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
@@ -24,12 +25,7 @@ export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
 
   return (
     <div className="border-field flex flex-col gap-2 flex-1">
-      {title && <label className={fieldLabel}>{title}</label>}
-      {description && (
-        <Text as="p" color="gray" size="1">
-          {description}
-        </Text>
-      )}
+      <FieldTitle title={title} description={description} />
       <div className="flex items-center flex-wrap gap-x-6 gap-y-1.5">
         {/* border width */}
         <div className="flex flex-col gap-1 flex-1">

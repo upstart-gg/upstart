@@ -1,8 +1,8 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, group, optional, prop } from "../props/helpers";
-import { border, rounding } from "../props/border";
-import { string, urlOrPageId } from "../props/string";
+import { border } from "../props/border";
+import { urlOrPageId } from "../props/string";
 import { image } from "../props/image";
 import { backgroundColor } from "../props/background";
 import { color, textContent } from "../props/text";
@@ -150,7 +150,6 @@ export const manifest = defineBrickManifest({
       children: {
         backgroundColor: backgroundColor(),
         border: optional(border()),
-        rounding: optional(rounding()),
         shadow: optional(shadow()),
         fixedPositioned: optional(fixedPositioned()),
         // boredr2: border2(),

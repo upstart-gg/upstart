@@ -3,7 +3,7 @@ import { color, textContent } from "../props/text";
 import { defineProps } from "../props/helpers";
 import { backgroundColor } from "../props/background";
 import { padding } from "../props/padding";
-import { border, rounding } from "../props/border";
+import { border } from "../props/border";
 import { effects } from "../props/effects";
 
 export const manifest = defineBrickManifest({
@@ -38,7 +38,6 @@ export const manifest = defineBrickManifest({
     color: color(),
     padding: padding("p-2"),
     border: border(),
-    rounding: rounding(),
     effects: effects({ enableTextShadow: true }),
   }),
 });

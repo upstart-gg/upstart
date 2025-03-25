@@ -71,7 +71,13 @@ function getBorderStyles(props?: Partial<BorderSettings>) {
   if (!props) {
     return null;
   }
-  const { width = "border-0", side = [], color = "border-transparent", style = "border-solid" } = props;
+  const {
+    width = "border-0",
+    side = [],
+    color = "border-transparent",
+    style = "border-solid",
+    rounding = "",
+  } = props;
   let borderProcessedClass = "";
 
   const originalWith = width.includes("-") ? width.split("-")[1] : null;
@@ -86,7 +92,7 @@ function getBorderStyles(props?: Partial<BorderSettings>) {
     borderProcessedClass = width;
   }
 
-  return [propToStyle(color, "borderColor"), style, borderProcessedClass];
+  return [propToStyle(color, "borderColor"), style, borderProcessedClass, rounding];
 }
 
 export function getBasicAlignmentStyles(props: AlignBasicSettings, mobileProps?: AlignBasicSettings) {
@@ -120,7 +126,6 @@ export function getFlexStyles(props: FlexSettings, mobileProps?: FlexSettings) {
 export const brickStylesHelpersMap = {
   "#styles:color": getColorStyles,
   "#styles:basicAlign": getBasicAlignmentStyles,
-  "#styles:border": getBorderStyles,
 
   "#styles:flex": getFlexStyles,
   "#styles:gap": simpleClassHandler,
@@ -134,10 +139,11 @@ export const brickStylesHelpersMap = {
   "#styles:heroSize": simpleClassHandler,
 };
 export const brickWrapperStylesHelpersMap = {
+  "#styles:border": getBorderStyles,
   "#styles:padding": getPaddingStyles, // test
   "#styles:backgroundColor": getBackgroundColorStyles,
   "#styles:background": getBackgroundStyles,
   "#styles:shadow": simpleClassHandler,
-  "#styles:rounding": simpleClassHandler,
+  // "#styles:rounding": simpleClassHandler,
   "#styles:fixedPositioned": getFixedPositionedStyles,
 };

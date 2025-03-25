@@ -46,8 +46,8 @@ export const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
           <li
             key={item.id}
             className={tx(
-              `select-none p-2.5 flex items-center text-[0.9rem] justify-between border-b last:border-b-0 border-gray-200
-            dark:border-dark-400 transition-colors duration-200 flex-wrap font-medium`,
+              `select-none p-2.5 flex items-center text-[0.9rem] text-gray-600 justify-between border-b last:border-b-0 border-gray-200
+            dark:border-dark-400 transition-colors duration-200 flex-wrap`,
               item.children && "cursor-pointer hover:bg-upstart-50 dark:hover:bg-dark-600",
             )}
             onClick={() => {
@@ -222,7 +222,7 @@ const FormNavigator: FC<FormNavigatorProps> = ({
             <h3 className={tx("flex-1 m-0 text-sm font-semibold text-center select-none")}>
               {currentView.title}
             </h3>
-            {viewStack.length > 1 && <div className={tx("w-10")} />} {/* Spacer for alignment */}
+            <div className={tx("w-10")} />
           </div>
           <div className={tx("flex-1 overflow-auto min-h-max h-fit")}>{currentView.content}</div>
         </div>
