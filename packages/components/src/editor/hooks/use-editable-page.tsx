@@ -16,6 +16,7 @@ import {
 } from "~/shared/utils/layout-utils";
 import { useBricksRefs } from "./use-bricks-refs";
 import type { GridConfig } from "~/shared/hooks/use-grid-config";
+import { min } from "date-fns";
 
 interface DragCallbacks {
   onDragEnd: (
@@ -272,6 +273,7 @@ export const useEditablePage = (
           const newStyle = {
             width: `${event.rect.width}px`,
             height: `${event.rect.height}px`,
+            minHeight: "auto",
             transform: `translate(${tempX}px, ${tempY}px)`,
           };
 
@@ -290,6 +292,7 @@ export const useEditablePage = (
             Object.assign(target.style, {
               width: "",
               height: "",
+              minHeight: "",
               transform: "none",
             });
             target.classList.remove("moving");
