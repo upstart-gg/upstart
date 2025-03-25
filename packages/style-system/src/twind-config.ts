@@ -37,11 +37,23 @@ export default defineConfig({
         borderRadius: "inherit",
       },
     ],
-    // [
-    //   "brick-p-",
-    //   ({ $$ }) => ({ padding: `${$$ === "1" ? "1px" : $$ === "0" ? "0" : `${modularScale(+$$, "1rem")}`}` }),
-    // ],
-    // ["family-", ({ $$ }) => ({ fontFamily: `var(--font-${$$})` })],
+    [
+      "rounded-auto",
+      {
+        borderRadius: "inherit",
+        "&:first-child": {
+          borderTopRightRadius: "0px",
+          borderBottomRightRadius: "0px",
+        },
+        "&:last-child": {
+          borderTopLeftRadius: "0px",
+          borderBottomLeftRadius: "0px",
+        },
+        "&:not(:first-child):not(:last-child)": {
+          borderRadius: "0px",
+        },
+      },
+    ],
     [
       "h-dvh",
       {

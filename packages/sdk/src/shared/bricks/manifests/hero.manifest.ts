@@ -3,7 +3,7 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, group } from "../props/helpers";
 import { basicAlign } from "../props/align";
 import { background } from "../props/background";
-import { border } from "../props/border";
+import { border, rounding } from "../props/border";
 import { color, textContent } from "../props/text";
 import { pad } from "lodash-es";
 import { padding } from "../props/padding";
@@ -40,11 +40,12 @@ export const manifest = defineBrickManifest({
 
   props: defineProps({
     content: textContent("I'm a big text"),
-    border: border(),
     background: background(),
     color: color(),
     align: basicAlign(),
     padding: padding("p-4"),
+    border: border(),
+    rounding: rounding(),
     textSize: heroSize,
   }),
 });

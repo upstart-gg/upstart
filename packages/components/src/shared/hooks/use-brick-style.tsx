@@ -7,8 +7,9 @@ import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { debounce, get } from "lodash-es";
 import { useBrickManifest } from "./use-brick-manifest";
 import { getTextContrastedColor } from "@upstart.gg/sdk/shared/themes/color-system";
-import { useEffect } from "react";
+import { type ForwardedRef, type RefObject, useEffect } from "react";
 import { useGetBrick } from "~/editor/hooks/use-editor";
+import { useMutationObserver } from "~/editor/hooks/use-mutation-observer";
 
 // Return the upper path without the last part (the property name)
 function extractStylePath(path: string) {
@@ -65,7 +66,7 @@ function usePreprocessTextColors<T extends BrickManifest>(
         }
       }
     }
-  }, 50);
+  }, 800);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(onChange, [brickInfo]);

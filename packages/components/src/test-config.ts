@@ -145,10 +145,7 @@ const hpBricks = defineBricks([
     type: "container",
     sectionId: "header",
     props: {
-      background: {
-        color: "#f9f9f9",
-        gap: "gap-4",
-      },
+      gap: "gap-8",
       $children: [
         {
           type: "text",

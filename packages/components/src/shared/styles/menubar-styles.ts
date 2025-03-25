@@ -13,7 +13,7 @@ export const menuBarBtnCommonCls = `${menuBarBtnBaseCls}
 export const menuBarBtnActiveCls = `from-upstart-100 to-transparent text-upstart-800`;
 
 export const menuBarBtnCls = `flex items-center justify-center py-3 gap-x-0.5 px-3 group relative
-  focus-visible:outline-none disabled:hover:cursor-default `;
+  focus-visible:outline-none disabled:hover:cursor-default text-nowrap whitespace-nowrap`;
 
 export const menuBarBtnSquareCls = `aspect-square`;
 

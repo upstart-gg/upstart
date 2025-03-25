@@ -6,6 +6,7 @@ import { gap, makeContainerProps } from "../props/container";
 import { Type } from "@sinclair/typebox";
 import { border, rounding } from "../props/border";
 import { shadow } from "../props/effects";
+import { padding } from "../props/padding";
 
 export const datasource = Type.Array(Type.Object({}, { additionalProperties: true }));
 
@@ -40,8 +41,9 @@ export const manifest = defineBrickManifest({
     // }),
 
     gap: gap(),
-    background: background(),
-    border: border(),
+    background: optional(background()),
+    border: optional(border()),
+    padding: optional(padding()),
     rounding: optional(rounding()),
     shadow: optional(shadow()),
 

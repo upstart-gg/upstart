@@ -35,6 +35,7 @@ import {
   safePolygon,
   autoUpdate,
   type Placement,
+  useDelayGroup,
 } from "@upstart.gg/style-system/system";
 import BaseBrick from "~/shared/components/BaseBrick";
 import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
@@ -50,8 +51,6 @@ import { BiSolidColor } from "react-icons/bi";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { FiSettings, FiDatabase } from "react-icons/fi";
 import { BrickPopover } from "./BrickPopover";
-import type { ResponsiveMode } from "@upstart.gg/sdk/shared/responsive";
-import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -65,17 +64,17 @@ function useBarPlacements(brick: Brick): Placement[] {
   const section = useSection(brick.sectionId);
   return useMemo(() => {
     const placements: Placement[] = [];
-    if (brick.parentId) {
-      placements.push(...(["bottom-end", "top-end"] as const));
+    if (brick.parentId || brick.isContainer) {
+      placements.push(...(["bottom", "top"] as const));
     } else {
       if (!isLastSection(section.id)) {
-        placements.push("bottom");
+        placements.push("bottom-start");
       }
       if (
         (typeof brick.position[previewMode].y === "number" && brick.position[previewMode].y > 2) ||
         isLastSection(section.id)
       ) {
-        placements.push("top");
+        placements.push("top-start");
       }
     }
     return placements;
@@ -108,11 +107,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       whileElementsMounted: autoUpdate,
       transform: true,
       middleware: [
-        offset(
-          manifest.isContainer
-            ? { mainAxis: 10, crossAxis: 0 }
-            : { mainAxis: isContainerChild || position.h > 5 ? -42 : 10, crossAxis: -2 },
-        ),
+        offset(manifest.isContainer ? { mainAxis: 10, crossAxis: 0 } : { mainAxis: 6, crossAxis: 6 }),
         autoPlacement({
           allowedPlacements,
         }),
@@ -216,18 +211,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           className={tx(wrapperClass, `![animation-delay:${0.5 * (index + 1)}s]`)}
           ref={brickRef}
           onClick={onBrickWrapperClick}
-          // onMouseDown={(e) => {
-          //   hasMouseMoved.current = false;
-          // }}
-          // onMouseUp={(e) => {
-          //   updateBarsPlacement();
-          //   setTimeout(() => {
-          //     hasMouseMoved.current = false;
-          //   }, 200);
-          // }}
-          // onMouseMove={(e) => {
-          //   hasMouseMoved.current = true;
-          // }}
           {...getReferenceProps()}
         >
           <BaseBrick brick={brick} selectedBrickId={selectedBrickId} editable />
@@ -260,8 +243,7 @@ type BrickMenuBarProps = ComponentProps<"div"> &
 const BrickMenuBarsContainer = forwardRef<HTMLDivElement, BrickMenuBarProps>(
   ({ brick, style, isContainerChild, show, ...rest }, ref) => {
     const selectedBrickId = useSelectedBrickId();
-    const visible = show || selectedBrickId === brick.id;
-
+    const visible = (show && brick.isContainer && !selectedBrickId) || selectedBrickId === brick.id;
     return (
       <div
         ref={ref}

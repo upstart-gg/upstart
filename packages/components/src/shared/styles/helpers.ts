@@ -12,7 +12,10 @@ import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/ali
 import type { ColorSettings } from "@upstart.gg/sdk/shared/bricks/props/text";
 import type { FlexSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
 
-export function getBackgroundStyles(props: BackgroundSettings) {
+export function getBackgroundStyles(props?: BackgroundSettings) {
+  if (!props) {
+    return null;
+  }
   return [
     props.color && propToStyle(props.color, "backgroundColor"),
     props.image &&
@@ -115,9 +118,6 @@ export function getFlexStyles(props: FlexSettings, mobileProps?: FlexSettings) {
 }
 
 export const brickStylesHelpersMap = {
-  "#styles:backgroundColor": getBackgroundColorStyles,
-  "#styles:background": getBackgroundStyles,
-  "#styles:padding": getPaddingStyles,
   "#styles:color": getColorStyles,
   "#styles:basicAlign": getBasicAlignmentStyles,
   "#styles:border": getBorderStyles,
@@ -131,10 +131,13 @@ export const brickStylesHelpersMap = {
   "#styles:objectFit": simpleClassHandler,
   "#styles:objectPosition": simpleClassHandler,
 
-  "#styles:rounding": simpleClassHandler,
   "#styles:heroSize": simpleClassHandler,
 };
 export const brickWrapperStylesHelpersMap = {
+  "#styles:padding": getPaddingStyles, // test
+  "#styles:backgroundColor": getBackgroundColorStyles,
+  "#styles:background": getBackgroundStyles,
   "#styles:shadow": simpleClassHandler,
+  "#styles:rounding": simpleClassHandler,
   "#styles:fixedPositioned": getFixedPositionedStyles,
 };

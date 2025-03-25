@@ -146,7 +146,7 @@ export const manifest = defineBrickManifest({
 
   props: defineProps({
     container: group({
-      title: "Main Container",
+      title: "Main element",
       children: {
         backgroundColor: backgroundColor(),
         border: optional(border()),

@@ -1,9 +1,10 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { textContent } from "../props/text";
+import { color, textContent } from "../props/text";
 import { defineProps } from "../props/helpers";
 import { backgroundColor } from "../props/background";
 import { padding } from "../props/padding";
 import { border, rounding } from "../props/border";
+import { effects } from "../props/effects";
 
 export const manifest = defineBrickManifest({
   type: "text",
@@ -34,9 +35,11 @@ export const manifest = defineBrickManifest({
   props: defineProps({
     content: textContent(),
     backgroundColor: backgroundColor(),
+    color: color(),
     padding: padding("p-2"),
     border: border(),
     rounding: rounding(),
+    effects: effects({ enableTextShadow: true }),
   }),
 });
 

@@ -75,7 +75,7 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
 
     case "button-group":
       return (
-        <div className="button-group-field flex-1 flex justify-between flex-wrap">
+        <div className="button-group-field flex-1 flex justify-between flex-wrap gap-1">
           {title && (
             <div className="flex gap-1 items-center flex-1">
               <label className={fieldLabel}>{title}</label>
@@ -86,7 +86,7 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
             onValueChange={onChange}
             defaultValue={currentValue as string}
             size="1"
-            radius="large"
+            radius="medium"
           >
             {options
               .filter((o) => !o["ui:hidden-option"])
@@ -94,7 +94,7 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
                 <SegmentedControl.Item
                   key={option.const}
                   value={option.const}
-                  className={tx("[&_.rt-SegmentedControlItemLabel]:px-2")}
+                  className={tx("[&_.rt-SegmentedControlItemLabel]:px-[6px]")}
                 >
                   {option.title}
                 </SegmentedControl.Item>
