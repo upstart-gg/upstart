@@ -1,5 +1,5 @@
-import { Type, type Static } from "@sinclair/typebox";
-import { prop } from "./helpers";
+import { type TObject, Type, type Static } from "@sinclair/typebox";
+import { getStyleProperties, getStyleValueById, group, optional, prop } from "./helpers";
 
 type GapOptions = {
   title?: string;
@@ -56,60 +56,71 @@ export function flex(opts: FlexOptions = {}) {
     title,
     schema: Type.Object(
       {
-        direction: Type.Union(
-          [Type.Literal("flex-row", { title: "Row" }), Type.Literal("flex-col", { title: "Column" })],
-          {
-            title: "Direction",
-            description: "The direction of the container",
-          },
+        direction: Type.Optional(
+          Type.Union(
+            [Type.Literal("flex-row", { title: "Row" }), Type.Literal("flex-col", { title: "Column" })],
+            {
+              title: "Direction",
+              description: "The direction of the container",
+            },
+          ),
         ),
-        wrap: Type.Union(
-          [Type.Literal("flex-wrap", { title: "Wrap" }), Type.Literal("flex-nowrap", { title: "No wrap" })],
-          {
-            title: "Wrap",
-            description: "Wrap items",
-          },
+        gap: Type.Optional(
+          Type.Union(
+            [
+              Type.Literal("gap-0", { title: "None" }),
+              Type.Literal("gap-1", { title: "S" }),
+              Type.Literal("gap-2", { title: "M" }),
+              Type.Literal("gap-4", { title: "L" }),
+              Type.Literal("gap-8", { title: "XL" }),
+              Type.Literal("gap-16", { title: "2XL" }),
+            ],
+            {
+              default: defaultValue,
+              description: "Space between items",
+              "ui:field": "enum",
+            },
+          ),
         ),
-        gap: Type.Union(
-          [
-            Type.Literal("gap-0", { title: "None" }),
-            Type.Literal("gap-1", { title: "S" }),
-            Type.Literal("gap-2", { title: "M" }),
-            Type.Literal("gap-4", { title: "L" }),
-            Type.Literal("gap-8", { title: "XL" }),
-            Type.Literal("gap-16", { title: "XXL" }),
-          ],
-          {
-            title: "Gap",
-            description: "Space between items",
-          },
+        wrap: Type.Optional(
+          Type.Union(
+            [Type.Literal("flex-wrap", { title: "Wrap" }), Type.Literal("flex-nowrap", { title: "No wrap" })],
+            {
+              title: "Wrap",
+              description: "Wrap items",
+            },
+          ),
         ),
-        justifyContent: Type.Union(
-          [
-            Type.Literal("justify-start", { title: "Start" }),
-            Type.Literal("justify-center", { title: "Center" }),
-            Type.Literal("justify-end", { title: "End" }),
-            Type.Literal("justify-between", { title: "Space between" }),
-            Type.Literal("justify-around", { title: "Space around" }),
-            Type.Literal("justify-evenly", { title: "Evenly distributed" }),
-            Type.Literal("justify-stretch", { title: "Stretch" }),
-          ],
-          {
-            title: "Justify",
-            default: "justify-stretch",
-          },
+        justifyContent: Type.Optional(
+          Type.Union(
+            [
+              Type.Literal("justify-start", { title: "Start" }),
+              Type.Literal("justify-center", { title: "Center" }),
+              Type.Literal("justify-end", { title: "End" }),
+              Type.Literal("justify-between", { title: "Space between" }),
+              Type.Literal("justify-around", { title: "Space around" }),
+              Type.Literal("justify-evenly", { title: "Evenly distributed" }),
+              Type.Literal("justify-stretch", { title: "Stretch" }),
+            ],
+            {
+              title: "Justify",
+              default: "justify-stretch",
+            },
+          ),
         ),
-        alignItems: Type.Union(
-          [
-            Type.Literal("items-start", { title: "Start" }),
-            Type.Literal("items-center", { title: "Center" }),
-            Type.Literal("items-end", { title: "End" }),
-            Type.Literal("items-stretch", { title: "Stretch" }),
-          ],
-          {
-            title: "Alignment",
-            default: "items-stretch",
-          },
+        alignItems: Type.Optional(
+          Type.Union(
+            [
+              Type.Literal("items-start", { title: "Start" }),
+              Type.Literal("items-center", { title: "Center" }),
+              Type.Literal("items-end", { title: "End" }),
+              Type.Literal("items-stretch", { title: "Stretch" }),
+            ],
+            {
+              title: "Alignment",
+              default: "items-stretch",
+            },
+          ),
         ),
       },
       {
@@ -144,21 +155,6 @@ export function grid(options: GridOptions = {}) {
     title,
     schema: Type.Object(
       {
-        gap: Type.Union(
-          [
-            Type.Literal("gap-0", { title: "None" }),
-            Type.Literal("gap-1", { title: "S" }),
-            Type.Literal("gap-2", { title: "M" }),
-            Type.Literal("gap-4", { title: "L" }),
-            Type.Literal("gap-8", { title: "XL" }),
-            Type.Literal("gap-16", { title: "XXL" }),
-          ],
-          {
-            title: "Gap",
-            description: "Space between items",
-            "ui:field": "enum",
-          },
-        ),
         columns: Type.Number({
           title: "Columns",
           description: "Number of columns",
@@ -168,6 +164,23 @@ export function grid(options: GridOptions = {}) {
           minimum: 1,
           maximum: 12,
         }),
+        gap: Type.Optional(
+          Type.Union(
+            [
+              Type.Literal("gap-0", { title: "None" }),
+              Type.Literal("gap-1", { title: "S" }),
+              Type.Literal("gap-2", { title: "M" }),
+              Type.Literal("gap-4", { title: "L" }),
+              Type.Literal("gap-8", { title: "XL" }),
+              Type.Literal("gap-16", { title: "2XL" }),
+            ],
+            {
+              default: defaultValue,
+              description: "Space between items",
+              "ui:field": "enum",
+            },
+          ),
+        ),
       },
       {
         "ui:field": "grid",
@@ -186,7 +199,7 @@ type LayoutTypeOptions = {
   description?: string;
 };
 
-export function layoutType({
+function layoutType({
   defaultValue = "flex",
   title = "Layout type",
   description = "Type of the container. Flex layout arranges items in a one-dimensional line. Grid layout arranges items in a two-dimensional grid.",
@@ -205,6 +218,127 @@ export function layoutType({
 
 export type LayoutTypeSettings = Static<ReturnType<typeof layoutType>>;
 
+const isFlexLayoutFilter = (manifestProps: TObject, formData: Record<string, unknown>) => {
+  const stylesProps = getStyleProperties(manifestProps);
+  const currentStyle = getStyleValueById<ContainerLayoutSettings>(
+    stylesProps,
+    formData,
+    "#styles:container-layout",
+  );
+  return currentStyle?.type === "flex";
+};
+
+const isGridLayoutFilter = (manifestProps: TObject, formData: Record<string, unknown>) => {
+  return !isFlexLayoutFilter(manifestProps, formData);
+};
+
+export function containerLayout() {
+  return group({
+    title: "Layout",
+    options: {
+      $id: "#styles:container-layout",
+      "ui:field": "container-layout",
+    },
+    children: Type.Object(
+      {
+        type: Type.Union([Type.Literal("flex", { title: "Flex" }), Type.Literal("grid", { title: "Grid" })], {
+          title: "Layout type",
+          default: "flex",
+          description:
+            "Type of the container. Flex layout arranges items in a one-dimensional line. Grid layout arranges items in a two-dimensional grid.",
+          "ui:field": "enum",
+          "ui:responsive": true,
+        }),
+        gap: optional(gap("gap-2")),
+        direction: Type.Optional(
+          Type.Union(
+            [Type.Literal("flex-row", { title: "Row" }), Type.Literal("flex-col", { title: "Column" })],
+            {
+              title: "Direction",
+              description: "The direction of the container",
+              default: "flex-row",
+              metadata: {
+                filter: isFlexLayoutFilter,
+              },
+            },
+          ),
+        ),
+        columns: optional(
+          Type.Number({
+            title: "Columns",
+            description: "Number of columns",
+            "ui:group": "grid",
+            "ui:field": "slider",
+            default: 2,
+            minimum: 1,
+            maximum: 12,
+            metadata: {
+              filter: isGridLayoutFilter,
+            },
+          }),
+        ),
+        wrap: Type.Optional(
+          Type.Union(
+            [Type.Literal("flex-wrap", { title: "Wrap" }), Type.Literal("flex-nowrap", { title: "No wrap" })],
+            {
+              title: "Wrap",
+              description: "Wrap items",
+              default: "flex-wrap",
+              metadata: {
+                filter: isFlexLayoutFilter,
+              },
+            },
+          ),
+        ),
+        justifyContent: Type.Optional(
+          Type.Union(
+            [
+              Type.Literal("justify-start", { title: "Start" }),
+              Type.Literal("justify-center", { title: "Center" }),
+              Type.Literal("justify-end", { title: "End" }),
+              Type.Literal("justify-between", { title: "Space between" }),
+              Type.Literal("justify-around", { title: "Space around" }),
+              Type.Literal("justify-evenly", { title: "Evenly distributed" }),
+              Type.Literal("justify-stretch", { title: "Stretch" }),
+            ],
+            {
+              title: "Justify",
+              default: "justify-stretch",
+              description: "Justify content along the main axis (horizontal for row, vertical for column)",
+              metadata: {
+                filter: isFlexLayoutFilter,
+              },
+            },
+          ),
+        ),
+        alignItems: Type.Optional(
+          Type.Union(
+            [
+              Type.Literal("items-start", { title: "Start" }),
+              Type.Literal("items-center", { title: "Center" }),
+              Type.Literal("items-end", { title: "End" }),
+              Type.Literal("items-stretch", { title: "Stretch" }),
+            ],
+            {
+              title: "Alignment",
+              default: "items-stretch",
+              description: "Align items along the cross axis (vertical for row, horizontal for column)",
+              metadata: {
+                filter: isFlexLayoutFilter,
+              },
+            },
+          ),
+        ),
+      },
+      {
+        "ui:field": "container-layout",
+      },
+    ),
+  });
+}
+
+export type ContainerLayoutSettings = Static<ReturnType<typeof containerLayout>>;
+
 export function makeContainerProps() {
   return {
     $childrenType: Type.Optional(
@@ -213,6 +347,9 @@ export function makeContainerProps() {
         title: "Dynamic child brick type",
         description: "Type of the child bricks that will be created when container is dynamic.",
         "ui:field": "brick-type",
+        metadata: {
+          category: "content",
+        },
       }),
     ),
     $children: Type.Array(Type.Any(), {

@@ -70,7 +70,8 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
         </div>
       );
 
-    case "button-group":
+    case "button-group": {
+      const discrete = !!schema["ui:discrete"];
       return (
         <div className="button-group-field flex-1 flex justify-between flex-wrap gap-1">
           <FieldTitle title={title} description={description} />
@@ -86,7 +87,7 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
                 <SegmentedControl.Item
                   key={option.const}
                   value={option.const}
-                  className={tx("[&_.rt-SegmentedControlItemLabel]:px-[6px]")}
+                  className={tx(discrete && "[&_.rt-SegmentedControlItemLabel]:px-[6px]")}
                 >
                   {option.title}
                 </SegmentedControl.Item>
@@ -94,6 +95,7 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
           </SegmentedControl.Root>
         </div>
       );
+    }
 
     case "icon-group":
       return (

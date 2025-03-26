@@ -103,7 +103,10 @@ export function getBasicAlignmentStyles(props: AlignBasicSettings, mobileProps?:
  * Flexbox handles alignment using a main axis and a cross axis.
  * We want to map the alignment to the flexbox properties.
  */
-export function getFlexStyles(props: FlexSettings, mobileProps?: FlexSettings) {
+export function getFlexStyles(props?: FlexSettings, mobileProps?: FlexSettings) {
+  if (!props) {
+    return null;
+  }
   if (mobileProps) {
     return `@desktop:(
       ${props.direction ?? ""}

@@ -13,7 +13,7 @@ import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { NavItem, NavItemProperty } from "./types";
 import { processObjectSchemaToFields } from "./field-factory";
-import { Type } from "@sinclair/typebox";
+import { type TObject, Type } from "@sinclair/typebox";
 import { useMutationObserver } from "~/editor/hooks/use-mutation-observer";
 
 type FormNavigatorContextType = {
@@ -21,7 +21,9 @@ type FormNavigatorContextType = {
   navigateBack: () => void;
   onChange: (data: Record<string, unknown>, changedPath: string) => void;
   formData: Record<string, unknown>;
+  formSchema: TObject;
   isRootView: boolean;
+  brickId: string;
 };
 
 // Create context for navigation
@@ -37,7 +39,7 @@ export const useFormNavigation = () => {
 };
 
 // Create List component
-export const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
+export const NavList: FC<{ items: NavItem[]; brickId: string }> = ({ items, brickId }) => {
   const { navigateTo } = useFormNavigation();
   return (
     <ul className={tx("list-none p-0 m-0")}>
@@ -48,6 +50,8 @@ export const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
             className={tx(
               `select-none p-2.5 flex items-center text-[0.9rem] text-gray-600 justify-between border-b last:border-b-0 border-gray-200
             dark:border-dark-400 transition-colors duration-200 flex-wrap`,
+              // if empty, hide
+              "[&:not(:has(*))]:hidden",
               item.children && "cursor-pointer hover:bg-upstart-50 dark:hover:bg-dark-600",
             )}
             onClick={() => {
@@ -65,13 +69,19 @@ export const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
   );
 };
 
-function SchemaField({ item, brickId }: { item: NavItemProperty; brickId?: string }) {
-  const { onChange, formData } = useFormNavigation();
-  const fields = processObjectSchemaToFields(Type.Object({ [item.id]: item.schema }), formData, onChange, {
-    brickId,
-    parents: item.path.split(".").slice(0, -1),
+function SchemaField({ item }: { item: NavItemProperty }) {
+  const { onChange, formData, formSchema, brickId } = useFormNavigation();
+  const fields = processObjectSchemaToFields({
+    schema: Type.Object({ [item.id]: item.schema }, item.schema),
+    formData,
+    formSchema,
+    onChange,
+    options: {
+      brickId,
+      parents: item.path.split(".").slice(0, -1),
+    },
   });
-  return fields.length ? fields : <div className="text-red-500 font-medium">No fields for {item.id} </div>;
+  return fields.length ? fields : null;
 }
 
 // Main navigation component
@@ -80,9 +90,11 @@ type FormNavigatorProps = {
   navItems: NavItem[];
   onChange: (data: Record<string, unknown>, changedPath: string) => void;
   formData: Record<string, unknown>;
+  formSchema: TObject;
   className?: string;
   style?: CSSProperties;
   initialGroup?: string;
+  brickId: string;
 };
 
 const FormNavigator: FC<FormNavigatorProps> = ({
@@ -92,12 +104,14 @@ const FormNavigator: FC<FormNavigatorProps> = ({
   style,
   onChange,
   formData,
+  formSchema,
   initialGroup,
+  brickId,
 }) => {
   // Stack of views (each with content and title)
   const [viewStack, setViewStack] = useState<{ content: ReactNode; title: string }[]>([
     {
-      content: <NavList items={navItems} />,
+      content: <NavList items={navItems} brickId={brickId} />,
       title,
     },
   ]);
@@ -127,19 +141,24 @@ const FormNavigator: FC<FormNavigatorProps> = ({
   );
 
   // Navigate to a new view
-  const navigateTo = useCallback((item: NavItem, direction: typeof animationDirection = "forward") => {
-    setAnimationDirection(direction);
+  const navigateTo = useCallback(
+    (item: NavItem, direction: typeof animationDirection = "forward") => {
+      setAnimationDirection(direction);
 
-    console.log("Navigating to", item);
-
-    const content = item.children ? <NavList items={item.children} /> : <div>content: {item.label}</div>;
-    const title = item.label ?? "Untitled";
-    setViewStack((prev) => [...prev, { content, title }]);
-    // Reset animation direction after animation completes
-    setTimeout(() => {
-      setAnimationDirection(null);
-    }, 300);
-  }, []);
+      const content = item.children ? (
+        <NavList items={item.children} brickId={brickId} />
+      ) : (
+        <div>content: {item.label}</div>
+      );
+      const title = item.label ?? "Untitled";
+      setViewStack((prev) => [...prev, { content, title }]);
+      // Reset animation direction after animation completes
+      setTimeout(() => {
+        setAnimationDirection(null);
+      }, 300);
+    },
+    [brickId],
+  );
 
   // Navigate back to previous view
   const navigateBack = useCallback(() => {
@@ -181,7 +200,9 @@ const FormNavigator: FC<FormNavigatorProps> = ({
         navigateBack,
         onChange,
         formData,
+        formSchema,
         isRootView: viewStack.length === 1,
+        brickId,
       }}
     >
       <div
@@ -229,11 +250,6 @@ const FormNavigator: FC<FormNavigatorProps> = ({
       </div>
     </FormNavigatorContext.Provider>
   );
-};
-
-// Helper function to create a submenu
-export const useSubMenu = (title: string, items: NavItem[]) => {
-  return <NavList items={items} />;
 };
 
 export default FormNavigator;

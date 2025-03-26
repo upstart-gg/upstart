@@ -171,7 +171,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       }
 
       if (hasMouseMoved.current || !brickTarget.matches("[data-brick]")) {
-        console.debug("onBrickWrapperClick: click ignored");
         return;
       }
 

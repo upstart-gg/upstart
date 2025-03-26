@@ -12,7 +12,6 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
     currentValue = {
       direction: "flex-row",
       wrap: "flex-nowrap",
-      gap: "gap-1",
       alignItems: "items-stretch",
       justifyContent: "justify-stretch",
     } satisfies Partial<FlexSettings>,
@@ -22,10 +21,6 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
     schema,
     title,
   } = props;
-
-  if (formData.layoutType !== "flex") {
-    return null;
-  }
 
   const onSettingsChange = (newVal: Partial<FlexSettings>) => onChange({ ...currentValue, ...newVal });
 
@@ -54,31 +49,6 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
               </SegmentedControl.Item>
             ))}
           </SegmentedControl.Root>
-        </div>
-
-        {/* Gap */}
-        <div className="flex flex-col gap-1 flex-1">
-          <div className="flex gap-1 items-center">
-            <label className={fieldLabel}>Gap</label>
-            <HelpIcon help="Gap between elements" />
-          </div>
-          <Select.Root
-            defaultValue={currentValue.gap}
-            size="2"
-            onValueChange={(value) => onSettingsChange({ gap: value as FlexSettings["gap"] })}
-          >
-            <Select.Trigger radius="large" variant="ghost" className="!mt-px" />
-            <Select.Content position="popper">
-              <Select.Group>
-                {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
-                {schema.properties.gap.anyOf.map((item: any) => (
-                  <Select.Item key={item.const} value={item.const}>
-                    {item.title}
-                  </Select.Item>
-                ))}
-              </Select.Group>
-            </Select.Content>
-          </Select.Root>
         </div>
 
         {/* Wrap */}

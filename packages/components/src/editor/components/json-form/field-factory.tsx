@@ -10,6 +10,7 @@ import { BorderField } from "./fields/border";
 import { BorderSideField } from "./fields/border-side";
 import { PathField, StringField } from "./fields/string";
 import { NumberField, SliderField } from "./fields/number";
+import { ContainerLayoutField } from "./fields/container-layout";
 import SwitchField from "./fields/switch";
 import { PagePaddingField, type TempPadding } from "./fields/padding";
 import BackgroundField from "./fields/background";
@@ -22,7 +23,11 @@ import { GridField } from "./fields/grid";
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
 import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
-import type { FlexSettings, GridSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
+import type {
+  ContainerLayoutSettings,
+  FlexSettings,
+  GridSettings,
+} from "@upstart.gg/sdk/shared/bricks/props/container";
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import { fieldLabel } from "./form-class";
@@ -125,6 +130,18 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
           key={`field-${id}`}
           currentValue={currentValue}
           onChange={(value: AlignBasicSettings | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
+    case "container-layout": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as ContainerLayoutSettings;
+      return (
+        <ContainerLayoutField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: ContainerLayoutSettings | null) => onChange({ [id]: value }, id)}
           {...commonProps}
         />
       );
@@ -299,27 +316,48 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
   }
 }
 
-// Process schema to create grouped fields
-export function processObjectSchemaToFields(
-  schema: TObject<TProperties>,
-  formData: Record<string, unknown>,
-  onChange: (data: Record<string, unknown>, propPath: string) => void,
+type ProcessObjectSchemaToFieldsProps = {
+  schema: TObject<TProperties>;
+  formData: Record<string, unknown>;
+  formSchema: TObject<TProperties>;
+  onChange: (data: Record<string, unknown>, propPath: string) => void;
   options: {
     brickId?: string;
     filter?: (field: TSchema) => boolean;
     parents?: string[];
-  },
-): ReactNode[] {
+  };
+};
+
+// Process schema to create grouped fields
+export function processObjectSchemaToFields({
+  schema,
+  formData,
+  formSchema,
+  onChange,
+  options,
+}: ProcessObjectSchemaToFieldsProps): ReactNode[] {
   const { brickId, filter, parents = [] } = options;
   const fields: ReactNode[] = [];
 
   Object.entries(schema.properties).forEach(([fieldName, fieldSchema]) => {
     const field = fieldSchema;
 
-    // Apply filter if provided
+    // Apply global filter if provided
     if (filter && field.type !== "object" && !filter(field)) {
       console.log("processObjectSchemaToFields: filtering field", field);
       return;
+    }
+
+    // Apply per field filter
+    if (field.metadata?.filter) {
+      // field filter should be called with the current formData and the schema
+      const filter = field.metadata.filter as (
+        propsSchema: TObject,
+        formData: Record<string, unknown>,
+      ) => boolean;
+      if (!filter(formSchema, formData)) {
+        return;
+      }
     }
 
     // Build the field ID

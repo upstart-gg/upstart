@@ -2,7 +2,7 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, group, optional } from "../props/helpers";
 import { background } from "../props/background";
 import { datasourceRef } from "../props/datasource";
-import { gap, makeContainerProps } from "../props/container";
+import { containerLayout, gap, makeContainerProps } from "../props/container";
 import { Type } from "@sinclair/typebox";
 import { border } from "../props/border";
 import { effects, shadow } from "../props/effects";
@@ -39,8 +39,7 @@ export const manifest = defineBrickManifest({
     //     background: background(),
     //   },
     // }),
-
-    gap: gap(),
+    layout: containerLayout(),
     background: optional(background()),
     border: optional(border()),
     padding: optional(padding()),

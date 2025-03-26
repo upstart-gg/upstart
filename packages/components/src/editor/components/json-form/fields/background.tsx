@@ -35,7 +35,7 @@ const BackgroundField: React.FC<FieldProps<BackgroundSettings>> = (props) => {
             }}
             hideColorLabel={true}
           />
-          <div>
+          <div className="flex gap-1 items-center">
             <input
               id={id}
               type="file"

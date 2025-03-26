@@ -145,7 +145,6 @@ const hpBricks = defineBricks([
     type: "container",
     sectionId: "header",
     props: {
-      gap: "gap-8",
       $children: [
         {
           type: "text",

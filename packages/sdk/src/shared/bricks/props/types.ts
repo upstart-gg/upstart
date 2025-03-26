@@ -47,7 +47,7 @@ export type Prop<T = TSchema> = {
 export type PropGroup<T extends TProperties = TProperties> = {
   title: string;
   category: BrickPropCategory;
-  children: T;
+  children: T | TObject<T>;
   metadata?: GroupMetadata;
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   options?: Record<string, any>;
