@@ -249,7 +249,7 @@ const BrickMenuBarsContainer = forwardRef<HTMLDivElement, BrickMenuBarProps>(
         data-ui
         role="navigation"
         className={tx(
-          "z-[99999] text-base flex gap-2 items-center",
+          "z-[99999] text-base inline-flex items-center gap-1",
           "transition-opacity duration-150 border rounded-lg",
           visible ? "opacity-100" : "opacity-0",
           brick.isContainer ? "border-orange-300" : "border-transparent",

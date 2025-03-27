@@ -5,8 +5,9 @@ import { ClientOnly } from "~/shared/utils/client-only";
 import Editor from "~/editor/components/Editor";
 import type { PropsWithChildren } from "react";
 
-import "@upstart.gg/components/dist/assets/style.css";
 import "./app.css";
+import "@upstart.gg/style-system/default-theme.css";
+import "@upstart.gg/components/dist/assets/style.css";
 
 export default function App() {
   const siteConfig = getNewSiteConfig(
@@ -18,7 +19,7 @@ export default function App() {
 
   return (
     <ClientOnly>
-      <InnerEditor pageConfig={siteConfig.pages[0]} siteConfig={siteConfig.site} mode="local" disableTours>
+      <InnerEditor pageConfig={siteConfig.pages[0]} siteConfig={siteConfig.site} mode="local">
         <Editor />
       </InnerEditor>
     </ClientOnly>

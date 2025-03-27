@@ -64,6 +64,7 @@ export interface EditorState extends EditorStateProps {
   deselectBrick: (brickId?: Brick["id"]) => void;
   setShouldShowGrid: (show: boolean) => void;
   setColorAdjustment: (colorAdjustment: ColorAdjustment) => void;
+  markTourAsSeen: (tourId: string) => void;
   togglePanelPosition: () => void;
   showModal: (modal: EditorStateProps["modal"]) => void;
   setCollidingBrick: (info: { brick: Brick; side: "top" | "bottom" | "left" | "right" } | null) => void;
@@ -92,6 +93,11 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
           immer((set, _get) => ({
             ...DEFAULT_PROPS,
             ...initProps,
+
+            markTourAsSeen: (tourId) =>
+              set((state) => {
+                state.seenTours = [...state.seenTours, tourId];
+              }),
 
             setCollidingBrick: (info) =>
               set((state) => {
@@ -210,7 +216,6 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                       "shouldShowGrid",
                       "textEditMode",
                       "onShowLogin",
-                      "seenTours",
                       "disableTours",
                       "logoLink",
                       "debugMode",
@@ -940,7 +945,11 @@ export const useEditorMode = () => {
 
 export const useTours = () => {
   const ctx = useEditorStoreContext();
-  return useStore(ctx, (state) => ({ seenTours: state.seenTours, disabled: state.disableTours }));
+  return useStore(ctx, (state) => ({
+    seenTours: state.seenTours,
+    disabled: state.disableTours,
+    markTourAsSeen: state.markTourAsSeen,
+  }));
 };
 
 export const useTextEditMode = () => {
