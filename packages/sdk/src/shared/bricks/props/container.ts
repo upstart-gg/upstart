@@ -167,37 +167,12 @@ export function grid(options: GridOptions = {}) {
 
 export type GridSettings = Static<ReturnType<typeof grid>>;
 
-type LayoutTypeOptions = {
-  defaultValue?: "flex" | "grid";
-  title?: string;
-  description?: string;
-};
-
-function layoutType({
-  defaultValue = "flex",
-  title = "Layout type",
-  description = "Type of the container. Flex layout arranges items in a one-dimensional line. Grid layout arranges items in a two-dimensional grid.",
-}: LayoutTypeOptions = {}) {
-  return prop({
-    $id: "#styles:layoutType",
-    title,
-    schema: Type.Union([Type.Literal("flex", { title: "Flex" }), Type.Literal("grid", { title: "Grid" })], {
-      description,
-      default: defaultValue,
-      "ui:field": "enum",
-      "ui:responsive": true,
-    }),
-  });
-}
-
-export type LayoutTypeSettings = Static<ReturnType<typeof layoutType>>;
-
 const isFlexLayoutFilter = (manifestProps: TObject, formData: Record<string, unknown>) => {
   const stylesProps = getStyleProperties(manifestProps);
   const currentStyle = getStyleValueById<ContainerLayoutSettings>(
     stylesProps,
     formData,
-    "#styles:container-layout",
+    "#styles:containerLayout",
   );
   return currentStyle?.type === "flex";
 };
@@ -226,7 +201,7 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
   return group({
     title,
     options: {
-      $id: "#styles:container-layout",
+      $id: "#styles:containerLayout",
     },
     children: Type.Object(
       {
@@ -238,23 +213,21 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
           "ui:field": "enum",
           "ui:responsive": true,
         }),
-        gap: Type.Optional(
-          Type.Union(
-            [
-              Type.Literal("gap-0", { title: "None" }),
-              Type.Literal("gap-1", { title: "S" }),
-              Type.Literal("gap-2", { title: "M" }),
-              Type.Literal("gap-4", { title: "L" }),
-              Type.Literal("gap-8", { title: "XL" }),
-              Type.Literal("gap-16", { title: "2XL" }),
-            ],
-            {
-              title: "Gap",
-              description: "Space between items",
-              "ui:field": "enum",
-              default: defaults?.gap ?? "gap-1",
-            },
-          ),
+        gap: Type.Union(
+          [
+            Type.Literal("gap-0", { title: "None" }),
+            Type.Literal("gap-1", { title: "Small" }),
+            Type.Literal("gap-2", { title: "Medium" }),
+            Type.Literal("gap-4", { title: "Large" }),
+            Type.Literal("gap-8", { title: "XL" }),
+            Type.Literal("gap-16", { title: "2XL" }),
+          ],
+          {
+            title: "Gap",
+            description: "Space between items",
+            "ui:field": "enum",
+            default: defaults?.gap ?? "gap-1",
+          },
         ),
         direction: Type.Optional(
           Type.Union(
@@ -273,7 +246,6 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
           Type.Number({
             title: "Columns",
             description: "Number of columns",
-            "ui:group": "grid",
             "ui:field": "slider",
             default: defaults?.columns?.default ?? 2,
             minimum: 1,

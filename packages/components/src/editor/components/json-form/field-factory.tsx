@@ -135,18 +135,6 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       );
     }
 
-    case "container-layout": {
-      const currentValue = (get(formData, id) ?? commonProps.schema.default) as ContainerLayoutSettings;
-      return (
-        <ContainerLayoutField
-          key={`field-${id}`}
-          currentValue={currentValue}
-          onChange={(value: ContainerLayoutSettings | null) => onChange({ [id]: value }, id)}
-          {...commonProps}
-        />
-      );
-    }
-
     case "datasource-ref": {
       const currentValue = (get(formData, id) ?? commonProps.schema.default) as DatasourceRefSettings;
       return (
@@ -388,7 +376,11 @@ export function FieldTitle({ title, description }: { title?: string; description
   return (
     <div className="flex items-center">
       {description ? (
-        <Tooltip content={description} className="!z-[10000]" align="start">
+        <Tooltip
+          content={<div className="text-[0.9rem] leading-5 p-1.5">{description}</div>}
+          className="!z-[10000]"
+          align="start"
+        >
           <label
             className={tx(
               fieldLabel,

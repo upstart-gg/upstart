@@ -1,6 +1,6 @@
 import type { FieldProps } from "./types";
 import { Text, Select, Slider } from "@upstart.gg/style-system/system";
-import type { ContainerLayoutSettings, GapSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
+import type { ContainerLayoutSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
 import { fieldLabel } from "../form-class";
 import { SegmentedControl, Switch } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
@@ -26,7 +26,7 @@ export const ContainerLayoutField: React.FC<FieldProps<ContainerLayoutSettings>>
           <Select.Root
             size="2"
             onValueChange={(value) => {
-              onSettingsChange({ gap: value as GapSettings });
+              onSettingsChange({ gap: value as ContainerLayoutSettings["gap"] });
             }}
           >
             <Select.Trigger radius="large" variant="ghost" className="!mt-px" placeholder="Unspecified" />

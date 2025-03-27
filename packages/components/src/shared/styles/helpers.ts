@@ -154,26 +154,23 @@ function getGridStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerL
     return [];
   }
   if (mobileProps) {
+    const mobileCols = mobileProps.columns ?? props.columns;
     return `@desktop:(
       ${props.type}
-      ${props.columns ?? ""}
+      ${props.columns ? `grid-cols-${props.columns}` : ""}
     )
     @mobile:(
       ${mobileProps.type}
-      ${mobileProps.columns ?? props.columns ?? ""}
+      ${mobileCols ? `grid-cols-${mobileCols}` : ""}
     )`;
   }
-  return [props.type, props.columns];
+  return [props.type, props.columns ? `grid-cols-${props.columns}` : "auto-cols-fr grid-flow-col"];
 }
 
 export const brickStylesHelpersMap = {
   "#styles:color": getColorStyles,
   "#styles:basicAlign": getBasicAlignmentStyles,
-
   "#styles:containerLayout": getContainerLayoutStyles,
-  // "#styles:flex": getFlexStyles,
-  // "#styles:gap": simpleClassHandler,
-  // "#styles:shadow": getShadowStyles,
   "#styles:textShadow": simpleClassHandler,
   "#styles:opacity": getOpacityStyles,
   "#styles:objectFit": simpleClassHandler,
