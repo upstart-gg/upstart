@@ -176,7 +176,7 @@ export const useEditablePage = (
           target.dataset.wasDragged = "false";
 
           Object.assign(target.style, {
-            position: "absolute",
+            position: "fixed",
             top: `${initialPos.y}px`,
             left: `${initialPos.x}px`,
             width: `${initialPos.w}px`,
@@ -394,7 +394,6 @@ export const useEditablePage = (
         })
         .on("dropmove", function (event: Interact.DropEvent) {
           const pos = getDropPosition(event, gridConfig);
-          console.log("dropmove", event.relatedTarget, pos);
           const type = event.relatedTarget.dataset.brickType;
           if (type) {
             const constraints: BrickConstraints = defaultProps[type];

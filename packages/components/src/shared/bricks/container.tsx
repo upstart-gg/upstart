@@ -33,9 +33,6 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edi
         : [];
   }
 
-  console.log("container props", props);
-  console.log("container styles", styles);
-
   return (
     // Always apply the "brick" class
     <div className={tx(apply("brick flex-1"), Object.values(styles))} ref={ref}>

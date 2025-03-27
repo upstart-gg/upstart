@@ -65,7 +65,9 @@ const homePageSections = defineSections([
     id: "header",
     label: "Header",
     order: 0,
-    props: {},
+    props: {
+      $paddingHorizontal: 20,
+    },
     position: {
       mobile: {
         h: 3,
@@ -200,6 +202,27 @@ const hpBricks = defineBricks([
       desktop: {
         x: "quarter",
         y: 0,
+        w: "half",
+        h: 3,
+      },
+    },
+  },
+  {
+    type: "text",
+    sectionId: "content",
+    props: {
+      content: "Some specific content 2",
+    },
+    position: {
+      mobile: {
+        x: "quarter",
+        y: 6,
+        w: "half",
+        h: 3,
+      },
+      desktop: {
+        x: "quarter",
+        y: 6,
         w: "half",
         h: 3,
       },

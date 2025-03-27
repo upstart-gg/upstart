@@ -62,6 +62,7 @@ const homePageSections = defineSections([
     id: "header",
     label: "Header",
     order: 0,
+    props: {},
     position: {
       mobile: {
         h: "full",

@@ -1,6 +1,6 @@
 import { tx } from "@upstart.gg/style-system/twind";
 import { Toaster, FloatingDelayGroup } from "@upstart.gg/style-system/system";
-import { useEffect, useRef } from "react";
+import { startTransition, useEffect, useRef } from "react";
 import { generateId, type Brick } from "@upstart.gg/sdk/shared/bricks";
 import {
   useAttributes,
@@ -17,7 +17,6 @@ import { useEditablePage } from "~/editor/hooks/use-editable-page";
 import { defaultProps } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
 import {
-  shouldAdjustBrickHeightBecauseOverflow,
   canDropOnLayout,
   getBrickAtPosition,
   type getDropOverGhostPosition,
@@ -162,22 +161,11 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           // add the new brick to the store
           draft.addBrick(newBrick, position.parent);
 
-          setTimeout(() => {
-            console.log("Checking for overflow");
-            // Check if the brick should adjust its height because of overflow
-            const adjustedHeight = shouldAdjustBrickHeightBecauseOverflow(newBrick.id);
-            if (adjustedHeight) {
-              draft.updateBrickPosition(newBrick.id, previewMode, {
-                h: adjustedHeight,
-              });
-            }
-            // rewrite the mobile layout based on the desktop layout
-            draft.adjustMobileLayout();
-          }, 200);
-
-          // auto select the new brick
-          // editorHelpers.setSelectedBrickId(newBrick.id);
-          // editorHelpers.setPanel("inspector");
+          if (previewMode === "desktop") {
+            startTransition(() => {
+              draft.adjustMobileLayout();
+            });
+          }
         } else {
           console.warn("Can't drop here");
         }
@@ -190,22 +178,15 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         updateDragOverGhostStyle(false);
 
         // Check if the brick should adjust its height because of overflow
-        const adjustedHeight = shouldAdjustBrickHeightBecauseOverflow(brickId);
 
         // Update the brick position (and height if needed)
         draft.updateBrickPosition(brickId, previewMode, {
           ...draft.getBrick(brickId)!.position[previewMode],
           ...gridPos,
-          // Give the priority to the adjusted height if it is bigger than the current height
-          h: adjustedHeight && adjustedHeight > gridPos.h ? adjustedHeight : gridPos.h,
-          // when resizing through the mobile view, set the manual height
+          // wWen resizing through the mobile view, set the manual height
           // so that the system knows that the height is not automatic
           ...(previewMode === "mobile" ? { manualHeight: gridPos.h } : {}),
         });
-
-        // Reorganize all bricks so there is no overlap
-        // const adjustments = getNeededBricksAdjustments(draft.bricks);
-        // console.log("needed adjustments", adjustments);
 
         // try to automatically adjust the mobile layout when resizing from desktop
         if (previewMode === "desktop") {

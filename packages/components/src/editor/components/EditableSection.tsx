@@ -32,7 +32,7 @@ export default function EditableSection({ section, gridConfig }: EditableSection
   useResizableSection(section, gridConfig);
 
   const previewMode = usePreviewMode();
-  const className = useSectionStyle({ section, editable: true });
+  const className = useSectionStyle({ section, editable: true, previewMode });
 
   return (
     <section key={id} id={id} data-element-kind="section" className={className}>

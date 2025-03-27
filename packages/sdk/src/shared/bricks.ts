@@ -156,29 +156,9 @@ const sectionProps = Type.Object(
         "ui:group:title": "Layout",
       }),
     ),
-    $paddingVertical: Type.Optional(
-      attr.enum("Page vertical spacing", "20", {
-        options: [
-          { value: "0", title: "None" },
-          { value: "10", title: "S" },
-          { value: "20", title: "M" },
-          { value: "30", title: "L" },
-          { value: "50", title: "XL" },
-        ],
-        description: "Vertical spacing. Desktop only.",
-        displayAs: "button-group",
-      }),
-    ),
-
     $paddingHorizontal: Type.Optional(
-      attr.enum("Page horizontal spacing", "20", {
-        options: [
-          { value: "0", title: "None" },
-          { value: "10", title: "S" },
-          { value: "20", title: "M" },
-          { value: "30", title: "L" },
-          { value: "50", title: "XL" },
-        ],
+      attr.number("Section horizontal spacing", 0, {
+        min: 0,
         description: "Horizontal spacing. Desktop only.",
         displayAs: "button-group",
       }),
@@ -208,9 +188,8 @@ export const sectionSchema = Type.Object({
 
 export type Section = Static<typeof sectionSchema>;
 export type ResponsivePosition = Brick["position"];
-export type DefinedSection = Omit<Section, "id" | "kind" | "props"> & {
+export type DefinedSection = Omit<Section, "id" | "kind"> & {
   id?: string;
-  props?: Record<string, unknown>;
 };
 
 export type LayoutCols = {

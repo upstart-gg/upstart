@@ -2,6 +2,7 @@ import { tx, apply, css } from "@upstart.gg/style-system/twind";
 import type { Section } from "@upstart.gg/sdk/shared/bricks";
 import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import { getBackgroundStyles } from "../styles/helpers";
+import type { ResponsiveMode } from "@upstart.gg/sdk/shared/responsive";
 
 type UseSectionStyleProps = {
   section: Section;
@@ -10,9 +11,10 @@ type UseSectionStyleProps = {
    * Not used yet
    */
   selected?: boolean;
+  previewMode?: ResponsiveMode;
 };
 
-export function useSectionStyle({ section, editable }: UseSectionStyleProps) {
+export function useSectionStyle({ section, editable, previewMode }: UseSectionStyleProps) {
   return tx(apply("grid group/section overflow-visible"), [
     typeof section.position.desktop.h === "number" &&
       `h-[${LAYOUT_ROW_HEIGHT * section.position.desktop.h}px]`,
@@ -38,7 +40,7 @@ export function useSectionStyle({ section, editable }: UseSectionStyleProps) {
     section.props.background && getBackgroundStyles(section.props.background),
 
     // Section editor styles
-    getSectionEditorStyles(!!editable),
+    getSectionEditorStyles({ editable, previewMode, section }),
 
     // Manage the section order using css "order" (flex) property
     css({
@@ -47,7 +49,7 @@ export function useSectionStyle({ section, editable }: UseSectionStyleProps) {
   ]);
 }
 
-function getSectionEditorStyles(editable: boolean) {
+function getSectionEditorStyles({ section, editable, previewMode }: UseSectionStyleProps) {
   if (!editable) {
     return null;
   }
@@ -55,18 +57,51 @@ function getSectionEditorStyles(editable: boolean) {
     "select-none hover:z-[9999] transition-colors duration-500 relative",
     "outline-dotted outline-4 outline-transparent -outline-offset-2 hover:(outline-upstart-500/60 shadow-upstart-500/20)",
     "self-stretch",
-    css`
-    &:has(.moving) {
-      position: static;
 
-      &>[data-element-kind="brick"]:not(.moving) {
-        outline: 2px dotted #FF9900;
-        outline-offset: 0px;
+    css({
+      // margin
+      paddingInline: `${section.props.$paddingHorizontal ?? 0}px`,
+    }),
+
+    // this is the grid overlay shown when dragging
+    editable &&
+      previewMode &&
+      css`
+      &:has(.moving), &:has(.moving) ~ section {
+        &::before {
+          content: "";
+          position: absolute;
+          opacity: 0.7;
+          inset: 0;
+          left: ${section.props.$paddingHorizontal ?? 0}px;
+          right: ${section.props.$paddingHorizontal ?? 0}px;
+          z-index: 999999;
+          pointer-events: none;
+          background-size:
+            calc(100%/${LAYOUT_COLS[previewMode]}) 100%,
+            100% ${LAYOUT_ROW_HEIGHT}px;
+          background-image:
+            repeating-linear-gradient(to right,
+              rgba(81, 101, 255, 0.4) 0px,
+              rgba(81, 101, 255, 0.4) 1px,
+              transparent 1px,
+              transparent 200px
+            ),
+            repeating-linear-gradient(to bottom,
+              rgba(81, 101, 255, 0.4) 0px,
+              rgba(81, 101, 255, 0.4) 1px,
+              transparent 1px,
+              transparent 80px
+            );
+        }
+        & [data-floating-ui-portal] {
+          display: none;
+        }
+        &>[data-element-kind="brick"]:not(.moving) {
+          outline: 2px dotted #FF9900;
+          outline-offset: 0px;
+        }
       }
-    }
-    &:has(.moving) ~ section {
-      position: static;
-    }
     `,
   ];
 }
