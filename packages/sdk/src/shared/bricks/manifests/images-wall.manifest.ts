@@ -56,10 +56,6 @@ export const manifest = defineBrickManifest({
       title: "Styles",
       children: {
         layout: containerLayout(),
-        columns: number("Columns", 3, {
-          min: 1,
-          max: 8,
-        }),
       },
     }),
   }),

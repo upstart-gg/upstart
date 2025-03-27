@@ -1,5 +1,4 @@
 import { css, tx } from "@upstart.gg/style-system/twind";
-import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import { isStandardColor } from "@upstart.gg/sdk/shared/themes/color-system";
 import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 import type { ResponsiveMode } from "@upstart.gg/sdk/shared/responsive";
@@ -8,7 +7,7 @@ import type { Theme } from "@upstart.gg/sdk/shared/theme";
 type UsePageStyleProps = {
   attributes: Attributes;
   editable?: boolean;
-  previewMode: ResponsiveMode;
+  previewMode?: ResponsiveMode;
   typography: Theme["typography"];
   showIntro?: boolean;
 };
