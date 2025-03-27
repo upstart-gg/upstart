@@ -11,12 +11,10 @@ export default function ResizeHandle({
         "react-resizable-handle absolute z-[9999] transition-opacity duration-300 opacity-0",
         "group-hover/brick:opacity-90 overflow-visible ",
         `react-resizable-handle-${direction}`,
-        // test
-        // direction === "s" && "resize-handle-disabled",
         {
           "-bottom-0 left-0 right-0 h-1 w-[inherit] cursor-s-resize": direction === "s",
-          "top-0 -left-0 bottom-0 w-1 h-[inherit] cursor-w-resize": direction === "w",
-          "top-0 -right-0 bottom-0 w-1 h-[inherit] cursor-e-resize": direction === "e",
+          "top-0 left-0 bottom-0 w-1 cursor-w-resize": direction === "w",
+          "top-0 right-0 bottom-0 w-1 cursor-e-resize": direction === "e",
           "-top-0 left-0 right-0 h-1 w-[inherit] cursor-n-resize": direction === "n",
           // sw and nw
           "bottom-0 left-0 w-1 h-1 cursor-sw-resize": direction === "sw",
