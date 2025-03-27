@@ -89,7 +89,7 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
 
   return (
     <FormNavigator
-      title="Settings"
+      title={`${brick.type} settings`}
       initialGroup={group}
       navItems={navItems}
       formSchema={manifest.props}

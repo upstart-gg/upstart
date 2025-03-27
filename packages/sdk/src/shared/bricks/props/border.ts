@@ -59,7 +59,6 @@ export function border({
           default: defaultValue.width,
           title: "Width",
           "ui:field": "enum",
-          "ui:display": "button-group",
         },
       ),
       color: Type.String({

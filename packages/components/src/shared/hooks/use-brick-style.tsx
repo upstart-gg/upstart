@@ -100,7 +100,7 @@ export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable,
       }),
 
     // container children expand to fill the space
-    isContainerChild && "container-child flex-1",
+    isContainerChild && "container-child",
 
     getBrickWrapperEditorStyles(editable === true, !!brick.isContainer, isContainerChild, selected),
 

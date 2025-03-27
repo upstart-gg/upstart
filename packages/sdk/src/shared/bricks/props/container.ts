@@ -191,7 +191,8 @@ type ContainerLayoutOptions = {
       max?: number;
       default?: number;
     };
-    wrap?: string;
+    wrap?: boolean;
+    fillSpace?: boolean;
     justifyContent?: string;
     alignItems?: string;
   };
@@ -226,7 +227,7 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
             title: "Gap",
             description: "Space between items",
             "ui:field": "enum",
-            default: defaults?.gap ?? "gap-1",
+            default: defaults?.gap ?? "gap-2",
           },
         ),
         direction: Type.Optional(
@@ -255,19 +256,22 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
             },
           }),
         ),
-        wrap: Type.Optional(
-          Type.Union(
-            [Type.Literal("flex-wrap", { title: "Wrap" }), Type.Literal("flex-nowrap", { title: "No wrap" })],
-            {
-              title: "Wrap",
-              description: "Wrap items",
-              default: defaults?.wrap ?? "flex-wrap",
-              metadata: {
-                filter: isFlexLayoutFilter,
-              },
-            },
-          ),
-        ),
+        wrap: Type.Boolean({
+          title: "Wrap",
+          description: "Wrap items",
+          default: defaults?.wrap ?? true,
+          metadata: {
+            filter: isFlexLayoutFilter,
+          },
+        }),
+        fillSpace: Type.Boolean({
+          title: "Fill space",
+          description: "Makes items of the container fill the available space",
+          default: defaults?.fillSpace ?? true,
+          metadata: {
+            filter: isFlexLayoutFilter,
+          },
+        }),
         justifyContent: Type.Optional(
           Type.Union(
             [

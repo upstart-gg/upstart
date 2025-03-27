@@ -131,22 +131,33 @@ function getFlexStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerL
     return [];
   }
   if (mobileProps) {
+    const mobileWrap = mobileProps.wrap ?? props.wrap;
+    const mobileFillSpace = mobileProps.fillSpace ?? props.fillSpace;
     return `@desktop:(
       ${props.type ?? ""}
       ${props.direction ?? ""}
       ${props.justifyContent ?? ""}
       ${props.alignItems ?? ""}
-      ${props.wrap ?? ""}
+      ${props.wrap ? "flex-wrap" : ""}
+      ${props.fillSpace ? "[&>*]:flex-1" : ""}
     )
     @mobile:(
       ${mobileProps.type ?? props.type ?? ""}
       ${mobileProps.direction ?? props.direction ?? ""}
       ${mobileProps.justifyContent ?? props.justifyContent ?? ""}
       ${mobileProps.alignItems ?? props.alignItems ?? ""}
-      ${mobileProps.wrap ?? props.wrap ?? ""}
+      ${mobileWrap ? "flex-wrap" : ""}
+      ${mobileFillSpace ? "[&>*]:flex-1" : ""}
     )`;
   }
-  return [props.type, props.direction, props.justifyContent, props.alignItems, props.wrap];
+  return [
+    props.type,
+    props.direction,
+    props.justifyContent,
+    props.alignItems,
+    props.wrap && "flex-wrap",
+    props.fillSpace && "[&>*]:flex-1",
+  ];
 }
 
 function getGridStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {

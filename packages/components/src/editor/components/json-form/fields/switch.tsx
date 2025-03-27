@@ -18,11 +18,6 @@ const SwitchField: React.FC<FieldProps<boolean>> = (props) => {
           defaultChecked={currentValue}
         />
       </div>
-      {description && (
-        <Text as="p" color="gray" size="1">
-          {description}
-        </Text>
-      )}
     </div>
   );
 };

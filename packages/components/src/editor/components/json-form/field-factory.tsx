@@ -10,7 +10,6 @@ import { BorderField } from "./fields/border";
 import { BorderSideField } from "./fields/border-side";
 import { PathField, StringField } from "./fields/string";
 import { NumberField, SliderField } from "./fields/number";
-import { ContainerLayoutField } from "./fields/container-layout";
 import SwitchField from "./fields/switch";
 import { PagePaddingField, type TempPadding } from "./fields/padding";
 import BackgroundField from "./fields/background";
@@ -23,16 +22,11 @@ import { GridField } from "./fields/grid";
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
 import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
-import type {
-  ContainerLayoutSettings,
-  FlexSettings,
-  GridSettings,
-} from "@upstart.gg/sdk/shared/bricks/props/container";
+import type { FlexSettings, GridSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import { fieldLabel } from "./form-class";
-import { IconButton, Tooltip } from "@upstart.gg/style-system/system";
-import { IoIosHelpCircleOutline } from "react-icons/io";
+import { Tooltip } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 
 export interface FieldFactoryOptions {
@@ -377,7 +371,7 @@ export function FieldTitle({ title, description }: { title?: string; description
     <div className="flex items-center">
       {description ? (
         <Tooltip
-          content={<div className="text-[0.9rem] leading-5 p-1.5">{description}</div>}
+          content={<span className="block text-[0.9rem] leading-5 p-1.5">{description}</span>}
           className="!z-[10000]"
           align="start"
         >

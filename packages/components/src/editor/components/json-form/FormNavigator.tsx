@@ -240,7 +240,11 @@ const FormNavigator: FC<FormNavigatorProps> = ({
             ) : (
               <div className={tx("w-10")} />
             )}
-            <h3 className={tx("flex-1 m-0 text-sm font-semibold text-center select-none")}>
+            <h3
+              className={tx(
+                "flex-1 m-0 text-sm font-semibold text-center select-none first-letter:uppercase",
+              )}
+            >
               {currentView.title}
             </h3>
             <div className={tx("w-10")} />
