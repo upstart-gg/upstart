@@ -156,6 +156,33 @@ const sectionProps = Type.Object(
         "ui:group:title": "Layout",
       }),
     ),
+    $paddingVertical: Type.Optional(
+      attr.enum("Page vertical spacing", "20", {
+        options: [
+          { value: "0", title: "None" },
+          { value: "10", title: "S" },
+          { value: "20", title: "M" },
+          { value: "30", title: "L" },
+          { value: "50", title: "XL" },
+        ],
+        description: "Vertical spacing. Desktop only.",
+        displayAs: "button-group",
+      }),
+    ),
+
+    $paddingHorizontal: Type.Optional(
+      attr.enum("Page horizontal spacing", "20", {
+        options: [
+          { value: "0", title: "None" },
+          { value: "10", title: "S" },
+          { value: "20", title: "M" },
+          { value: "30", title: "L" },
+          { value: "50", title: "XL" },
+        ],
+        description: "Horizontal spacing. Desktop only.",
+        displayAs: "button-group",
+      }),
+    ),
   },
   { additionalProperties: true },
 );
