@@ -1,33 +1,7 @@
 import { type TObject, Type, type Static } from "@sinclair/typebox";
 import { getStyleProperties, getStyleValueById, group, optional, prop } from "./helpers";
-
-type GapOptions = {
-  title?: string;
-};
-
-export function gap(defaultValue = "gap-1", { title = "Gap" }: GapOptions = {}) {
-  return prop({
-    $id: "#styles:gap",
-    title,
-    schema: Type.Union(
-      [
-        Type.Literal("gap-0", { title: "None" }),
-        Type.Literal("gap-1", { title: "S" }),
-        Type.Literal("gap-2", { title: "M" }),
-        Type.Literal("gap-4", { title: "L" }),
-        Type.Literal("gap-8", { title: "XL" }),
-        Type.Literal("gap-16", { title: "2XL" }),
-      ],
-      {
-        default: defaultValue,
-        description: "Space between items",
-        "ui:field": "enum",
-      },
-    ),
-  });
-}
-
-export type GapSettings = Static<ReturnType<typeof gap>>;
+import type { defaults } from "lodash-es";
+import def from "ajv/dist/vocabularies/discriminator";
 
 type FlexOptions = {
   title?: string;
@@ -232,31 +206,63 @@ const isGridLayoutFilter = (manifestProps: TObject, formData: Record<string, unk
   return !isFlexLayoutFilter(manifestProps, formData);
 };
 
-export function containerLayout() {
+type ContainerLayoutOptions = {
+  title?: string;
+  defaults?: {
+    type?: "flex" | "grid";
+    gap?: string;
+    direction?: string;
+    columns?: {
+      max?: number;
+      default?: number;
+    };
+    wrap?: string;
+    justifyContent?: string;
+    alignItems?: string;
+  };
+};
+
+export function containerLayout({ title = "Layout", defaults = {} }: ContainerLayoutOptions = {}) {
   return group({
-    title: "Layout",
+    title,
     options: {
       $id: "#styles:container-layout",
-      "ui:field": "container-layout",
     },
     children: Type.Object(
       {
         type: Type.Union([Type.Literal("flex", { title: "Flex" }), Type.Literal("grid", { title: "Grid" })], {
           title: "Layout type",
-          default: "flex",
+          default: defaults?.type ?? "flex",
           description:
             "Type of the container. Flex layout arranges items in a one-dimensional line. Grid layout arranges items in a two-dimensional grid.",
           "ui:field": "enum",
           "ui:responsive": true,
         }),
-        gap: optional(gap("gap-2")),
+        gap: Type.Optional(
+          Type.Union(
+            [
+              Type.Literal("gap-0", { title: "None" }),
+              Type.Literal("gap-1", { title: "S" }),
+              Type.Literal("gap-2", { title: "M" }),
+              Type.Literal("gap-4", { title: "L" }),
+              Type.Literal("gap-8", { title: "XL" }),
+              Type.Literal("gap-16", { title: "2XL" }),
+            ],
+            {
+              title: "Gap",
+              description: "Space between items",
+              "ui:field": "enum",
+              default: defaults?.gap ?? "gap-1",
+            },
+          ),
+        ),
         direction: Type.Optional(
           Type.Union(
             [Type.Literal("flex-row", { title: "Row" }), Type.Literal("flex-col", { title: "Column" })],
             {
               title: "Direction",
               description: "The direction of the container",
-              default: "flex-row",
+              default: defaults?.direction ?? "flex-row",
               metadata: {
                 filter: isFlexLayoutFilter,
               },
@@ -269,9 +275,9 @@ export function containerLayout() {
             description: "Number of columns",
             "ui:group": "grid",
             "ui:field": "slider",
-            default: 2,
+            default: defaults?.columns?.default ?? 2,
             minimum: 1,
-            maximum: 12,
+            maximum: defaults?.columns?.max ?? 12,
             metadata: {
               filter: isGridLayoutFilter,
             },
@@ -283,7 +289,7 @@ export function containerLayout() {
             {
               title: "Wrap",
               description: "Wrap items",
-              default: "flex-wrap",
+              default: defaults?.wrap ?? "flex-wrap",
               metadata: {
                 filter: isFlexLayoutFilter,
               },
@@ -303,7 +309,7 @@ export function containerLayout() {
             ],
             {
               title: "Justify",
-              default: "justify-stretch",
+              default: defaults?.justifyContent ?? "justify-stretch",
               description: "Justify content along the main axis (horizontal for row, vertical for column)",
               metadata: {
                 filter: isFlexLayoutFilter,
@@ -321,7 +327,7 @@ export function containerLayout() {
             ],
             {
               title: "Alignment",
-              default: "items-stretch",
+              default: defaults?.alignItems ?? "items-stretch",
               description: "Align items along the cross axis (vertical for row, horizontal for column)",
               metadata: {
                 filter: isFlexLayoutFilter,
@@ -331,7 +337,15 @@ export function containerLayout() {
         ),
       },
       {
-        "ui:field": "container-layout",
+        default: {
+          type: defaults?.type ?? "flex",
+          gap: defaults?.gap ?? "gap-1",
+          direction: defaults?.direction ?? "flex-row",
+          columns: defaults?.columns?.default ?? 2,
+          wrap: defaults?.wrap ?? "flex-wrap",
+          justifyContent: defaults?.justifyContent ?? "justify-stretch",
+          alignItems: defaults?.alignItems ?? "items-stretch",
+        },
       },
     ),
   });

@@ -3,7 +3,7 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
 import { datasourceRef } from "../props/datasource";
 import { defineProps, group } from "../props/helpers";
-import { gap, containerLayout } from "../props/container";
+import { containerLayout } from "../props/container";
 import { number } from "../props/number";
 
 export const datasource = Type.Array(
@@ -60,7 +60,6 @@ export const manifest = defineBrickManifest({
           min: 1,
           max: 8,
         }),
-        gap: gap(),
       },
     }),
   }),

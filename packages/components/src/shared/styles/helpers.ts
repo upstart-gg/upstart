@@ -10,7 +10,7 @@ import type { FixedPositionedSettings, PositionSettings } from "@upstart.gg/sdk/
 import type { PaddingSettings } from "@upstart.gg/sdk/shared/bricks/props/padding";
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
 import type { ColorSettings } from "@upstart.gg/sdk/shared/bricks/props/text";
-import type { FlexSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
+import type { ContainerLayoutSettings, FlexSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
 
 export function getBackgroundStyles(props?: BackgroundSettings) {
   if (!props) {
@@ -99,40 +99,80 @@ export function getBasicAlignmentStyles(props: AlignBasicSettings, mobileProps?:
   return [props.vertical, props.horizontal];
 }
 
-/**
- * Flexbox handles alignment using a main axis and a cross axis.
- * We want to map the alignment to the flexbox properties.
- */
-export function getFlexStyles(props?: FlexSettings, mobileProps?: FlexSettings) {
+function getContainerLayoutStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {
+  return [
+    getGapStyles(props, mobileProps),
+    ...getFlexStyles(props, mobileProps),
+    ...getGridStyles(props, mobileProps),
+  ];
+}
+
+function getGapStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {
   if (!props) {
     return null;
   }
   if (mobileProps) {
     return `@desktop:(
+      ${props.gap}
+    )
+    @mobile:(
+      ${mobileProps.gap}
+    )`;
+  }
+  return props.gap;
+}
+
+/**
+ * Flexbox handles alignment using a main axis and a cross axis.
+ * We want to map the alignment to the flexbox properties.
+ */
+function getFlexStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {
+  if (!props) {
+    return [];
+  }
+  if (mobileProps) {
+    return `@desktop:(
+      ${props.type ?? ""}
       ${props.direction ?? ""}
       ${props.justifyContent ?? ""}
       ${props.alignItems ?? ""}
       ${props.wrap ?? ""}
-      ${props.gap ?? ""}
     )
     @mobile:(
+      ${mobileProps.type ?? props.type ?? ""}
       ${mobileProps.direction ?? props.direction ?? ""}
       ${mobileProps.justifyContent ?? props.justifyContent ?? ""}
       ${mobileProps.alignItems ?? props.alignItems ?? ""}
       ${mobileProps.wrap ?? props.wrap ?? ""}
-      ${mobileProps.gap ?? props.gap ?? ""}
     )`;
   }
-  return [props.direction, props.justifyContent, props.alignItems, props.wrap, props.gap];
+  return [props.type, props.direction, props.justifyContent, props.alignItems, props.wrap];
+}
+
+function getGridStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {
+  if (!props || (props.type !== "grid" && mobileProps?.type !== "grid")) {
+    return [];
+  }
+  if (mobileProps) {
+    return `@desktop:(
+      ${props.type}
+      ${props.columns ?? ""}
+    )
+    @mobile:(
+      ${mobileProps.type}
+      ${mobileProps.columns ?? props.columns ?? ""}
+    )`;
+  }
+  return [props.type, props.columns];
 }
 
 export const brickStylesHelpersMap = {
   "#styles:color": getColorStyles,
   "#styles:basicAlign": getBasicAlignmentStyles,
 
-  "#styles:flex": getFlexStyles,
-  "#styles:gap": simpleClassHandler,
-
+  "#styles:containerLayout": getContainerLayoutStyles,
+  // "#styles:flex": getFlexStyles,
+  // "#styles:gap": simpleClassHandler,
   // "#styles:shadow": getShadowStyles,
   "#styles:textShadow": simpleClassHandler,
   "#styles:opacity": getOpacityStyles,
@@ -141,6 +181,7 @@ export const brickStylesHelpersMap = {
 
   "#styles:heroSize": simpleClassHandler,
 };
+
 export const brickWrapperStylesHelpersMap = {
   "#styles:border": getBorderStyles,
   "#styles:padding": getPaddingStyles, // test

@@ -2,10 +2,10 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, group, optional } from "../props/helpers";
 import { background } from "../props/background";
 import { datasourceRef } from "../props/datasource";
-import { containerLayout, gap, makeContainerProps } from "../props/container";
+import { containerLayout, makeContainerProps } from "../props/container";
 import { Type } from "@sinclair/typebox";
 import { border } from "../props/border";
-import { effects, shadow } from "../props/effects";
+import { effects } from "../props/effects";
 import { padding } from "../props/padding";
 
 export const datasource = Type.Array(Type.Object({}, { additionalProperties: true }));
