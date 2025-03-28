@@ -1,4 +1,4 @@
-import { Type, type Static } from "@sinclair/typebox";
+import { Type, type Static, TypeRegistry } from "@sinclair/typebox";
 import { customAlphabet } from "nanoid";
 import { LAYOUT_COLS } from "./layout-constants";
 import { defaultProps } from "./bricks/manifests/all-manifests";
@@ -11,34 +11,37 @@ import { merge } from "lodash-es";
  */
 export const generateId = customAlphabet("1234567890azertyuiopqsdfghjklmwxcvbnAZERTYUIOPQSDFGHJKLMWXCVBN", 7);
 
-const brickPositionSchema = Type.Object({
-  x: Type.Number({
-    title: "X",
-    description: "The column start (0-based) in grid units, not pixels.",
-  }),
-  y: Type.Number({
-    title: "Y",
-    description: "The row start (0-based) in grid units, not pixels.",
-  }),
-  w: Type.Number({
-    title: "Width",
-    description: "The width in columns in grid units, not pixels.",
-  }),
-  h: Type.Number({
-    title: "Height",
-    description: "The height in rows in grid units, not pixels.",
-  }),
-  manualHeight: Type.Optional(
-    Type.Number({
-      description: "Do not use this field. It is used internally by the editor.",
+const brickPositionSchema = Type.Object(
+  {
+    x: Type.Number({
+      title: "X",
+      description: "The column start (0-based) in grid units, not pixels.",
     }),
-  ),
-  hidden: Type.Optional(
-    Type.Boolean({
-      description: "Do not use this field. It is used internally by the editor.",
+    y: Type.Number({
+      title: "Y",
+      description: "The row start (0-based) in grid units, not pixels.",
     }),
-  ),
-});
+    w: Type.Number({
+      title: "Width",
+      description: "The width in columns in grid units, not pixels.",
+    }),
+    h: Type.Number({
+      title: "Height",
+      description: "The height in rows in grid units, not pixels.",
+    }),
+    manualHeight: Type.Optional(
+      Type.Number({
+        description: "Do not use this field. It is used internally by the editor.",
+      }),
+    ),
+    hidden: Type.Optional(
+      Type.Boolean({
+        description: "Do not use this field. It is used internally by the editor.",
+      }),
+    ),
+  },
+  { $id: "brick-position" },
+);
 
 export type BrickPosition = Static<typeof brickPositionSchema>;
 
@@ -93,30 +96,33 @@ const definedBrickPositionSchema = Type.Object({
 
 export type DefinedBrickPosition = Static<typeof definedBrickPositionSchema>;
 
-export const brickSchema = Type.Object({
-  id: Type.String({
-    title: "ID",
-    description: "A unique identifier for the brick.",
-  }),
-  type: Type.String({
-    title: "Type",
-  }),
-  props: Type.Record(Type.String(), Type.Unknown()),
-  mobileProps: Type.Record(Type.String(), Type.Unknown()),
-  isContainer: Type.Optional(Type.Boolean()),
-  parentId: Type.Optional(Type.String()),
-  sectionId: Type.String(),
-  position: Type.Object(
-    {
-      mobile: brickPositionSchema,
-      desktop: brickPositionSchema,
-    },
-    {
-      title: "Position",
-      description: "The position of the brick in the layout.",
-    },
-  ),
-});
+export const brickSchema = Type.Object(
+  {
+    id: Type.String({
+      title: "ID",
+      description: "A unique identifier for the brick.",
+    }),
+    type: Type.String({
+      title: "Type",
+    }),
+    props: Type.Record(Type.String(), Type.Unknown()),
+    mobileProps: Type.Record(Type.String(), Type.Unknown()),
+    isContainer: Type.Optional(Type.Boolean()),
+    parentId: Type.Optional(Type.String()),
+    sectionId: Type.String(),
+    position: Type.Object(
+      {
+        mobile: brickPositionSchema,
+        desktop: brickPositionSchema,
+      },
+      {
+        title: "Position",
+        description: "The position of the brick in the layout.",
+      },
+    ),
+  },
+  { $id: "brick" },
+);
 
 export type Brick = Static<typeof brickSchema>;
 export type BricksLayout = Brick[];
@@ -170,27 +176,30 @@ const sectionProps = Type.Object(
       }),
     ),
   },
-  { additionalProperties: true },
+  { additionalProperties: true, $id: "section-props" },
 );
 
-export const sectionSchema = Type.Object({
-  id: Type.String(),
-  kind: Type.Literal("section"),
-  label: Type.Optional(Type.String()),
-  position: Type.Object({
-    mobile: Type.Object({
-      h: Type.Optional(Type.Union([Type.Number(), Type.Literal("full")])),
+export const sectionSchema = Type.Object(
+  {
+    id: Type.String(),
+    kind: Type.Literal("section"),
+    label: Type.Optional(Type.String()),
+    position: Type.Object({
+      mobile: Type.Object({
+        h: Type.Optional(Type.Union([Type.Number(), Type.Literal("full")])),
+      }),
+      desktop: Type.Object({
+        h: Type.Union([Type.Number(), Type.Literal("full")]),
+      }),
     }),
-    desktop: Type.Object({
-      h: Type.Union([Type.Number(), Type.Literal("full")]),
+    order: Type.Number({
+      description: "Determines section order in the page (lower numbers appear first)",
     }),
-  }),
-  order: Type.Number({
-    description: "Determines section order in the page (lower numbers appear first)",
-  }),
-  props: sectionProps,
-  mobileProps: Type.Optional(Type.Partial(sectionProps)),
-});
+    props: sectionProps,
+    mobileProps: Type.Optional(Type.Partial(sectionProps)),
+  },
+  { $id: "section" },
+);
 
 export type Section = Static<typeof sectionSchema>;
 export type ResponsivePosition = Brick["position"];
@@ -257,7 +266,7 @@ export function defineBricks<B extends DefinedBrick[] = DefinedBrick[]>(bricks: 
     const id = `brick-${generateId()}`;
     return {
       id,
-      ...defaultProps[brick.type],
+      // ...defaultProps[brick.type],
       ...brick,
       props: {
         ...brick.props,

@@ -112,7 +112,8 @@
     "lint": "biome check --write . && tsc --noEmit",
     "ci:lint": "tsc --noEmit",
     "test": "vitest",
-    "prepare": "node ./scripts/prepare.cjs"
+    "prepare": "node ./scripts/prepare.cjs",
+    "gen-ia-docs": "tsx scripts/generate-ia-docs.ts"
   },
   "author": "Matthias Etienne",
   "publishConfig": {

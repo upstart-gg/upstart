@@ -239,7 +239,6 @@ export interface DraftStateProps {
   label: string;
   sections: Section[];
   bricks: Brick[];
-
   data: Record<string, unknown>;
   datasources?: SiteConfig["datasources"];
   datarecords?: SiteConfig["datarecords"];
@@ -269,6 +268,10 @@ export interface DraftState extends DraftStateProps {
   getBrick: (id: string) => Brick | undefined;
   getParentBrick: (id: string) => Brick | undefined;
   deleteBrick: (id: string) => void;
+  getPageDataForDuplication: () => Pick<
+    DraftStateProps,
+    "id" | "label" | "path" | "sections" | "bricks" | "attr" | "attributes" | "datasources" | "datarecords"
+  >;
   duplicateBrick: (id: string) => void;
   duplicateSection: (id: string) => void;
   moveBrickWithin: (id: string, to: "left" | "right") => void;
@@ -355,6 +358,24 @@ export const createDraftStore = (
             isFirstSection: (sectionId) => {
               const state = _get();
               return state.sections.find((s) => s.order === 0)?.id === sectionId;
+            },
+
+            getPageDataForDuplication: () => {
+              const state = _get();
+              const pageCount = state.pagesMap.length + 1;
+              console.log("state.pagesMap", state.pagesMap);
+              const newPage = {
+                id: `page-${generateId()}`,
+                label: `${state.label} (page ${pageCount})`,
+                path: `${state.path}-${pageCount}`,
+                sections: state.sections,
+                bricks: state.bricks,
+                attr: state.attr,
+                attributes: state.attributes,
+                datasources: state.datasources,
+                datarecords: state.datarecords,
+              };
+              return newPage;
             },
 
             isLastSection: (sectionId) => {
@@ -863,9 +884,7 @@ export const createDraftStore = (
           })),
           {
             name: `draft-state-${initProps.id}`,
-            // TODO: change when demo is done
-            // skipHydration: initProps.mode === "remote",
-            skipHydration: true,
+            skipHydration: initProps.mode === "remote",
             // Add this to force storage on initialization
             onRehydrateStorage: () => (state) => {
               if (state) {

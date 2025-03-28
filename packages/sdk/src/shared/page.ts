@@ -4,46 +4,12 @@ import invariant from "./utils/invariant";
 import { themeSchema, type Theme } from "./theme";
 import { Type, type Static, type TObject, type TProperties } from "@sinclair/typebox";
 import { datasourcesMap, type DatasourcesMap, type DatasourcesResolved } from "./datasources/types";
-import { manifestSchema, type TemplateManifest } from "./manifest";
+import { manifestSchema } from "./manifest";
 import { customAlphabet } from "nanoid";
 import type { DatarecordsMap } from "./datarecords/types";
+import type { TemplateConfig } from "./template";
 
 const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 7);
-
-export function defineConfig(config: TemplateConfig): TemplateConfig {
-  return {
-    attributes: config.attributes,
-    attr: config.attr,
-    manifest: config.manifest,
-    pages: config.pages,
-    themes: config.themes,
-    ...(config.datasources ? { datasources: config.datasources } : {}),
-  };
-}
-
-export type TemplateConfig = {
-  /**
-   * The template manifest and settings
-   */
-  manifest?: TemplateManifest;
-  /**
-   * The attributes declared for the template
-   */
-  attributes: TObject<TProperties>;
-  attr?: Partial<Attributes>;
-  /**
-   * The datasources declared for the template
-   */
-  datasources?: DatasourcesMap;
-  /**
-   * The Pages
-   */
-  pages: TemplatePage[];
-  /**
-   * The themes declared by the site.
-   */
-  themes: Theme[];
-};
 
 export type PagesMapEntry = {
   id: string;
@@ -191,6 +157,10 @@ export function getNewSiteConfig(
 }
 
 export type SiteAndPagesConfig = ReturnType<typeof getNewSiteConfig>;
+
+const Module = Type.Module({
+  Section: sectionSchema,
+});
 
 export const templatePageSchema = Type.Object({
   label: Type.String(),

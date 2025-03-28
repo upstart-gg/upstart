@@ -1,11 +1,9 @@
 import { Type } from "@sinclair/typebox";
 import { defineDataSources } from "@upstart.gg/sdk/datasources";
 import { defineAttributes, attr } from "@upstart.gg/sdk/attributes";
-import { defineConfig } from "@upstart.gg/sdk/page";
+import { defineConfig } from "@upstart.gg/sdk/template";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import { defineBricks, defineSections } from "@upstart.gg/sdk/shared/bricks";
-import { color } from "@upstart.gg/sdk/shared/bricks/props/text";
-import { backgroundColor } from "@upstart.gg/sdk/shared/bricks/props/background";
 
 // define your datasources
 const datasources = defineDataSources({

@@ -15,6 +15,7 @@ const vite = await createServer({
   appType: "custom",
   base,
 });
+
 app.use(vite.middlewares);
 
 // Local image search for testing
@@ -31,7 +32,9 @@ app.get("/api/v1/search-images", (req, res) => {
     content_filter: "high",
     ...req.query,
   });
+
   params.set("client_id", process.env.UNSPLASH_ACCESS_KEY);
+
   fetch(`https://api.unsplash.com/search/photos?${params}`, {
     headers: {
       "Accept-Version": "v1",
@@ -57,7 +60,7 @@ app.use("*", async (req, res) => {
     let template = await fs.readFile("./index.html", "utf-8");
     template = await vite.transformIndexHtml(url, template);
     const render = (await vite.ssrLoadModule("/src/editor/demo/entry-server.tsx")).render;
-    const rendered = await render();
+    const rendered = await render(req.originalUrl);
     const html = template.replace(`<!--ssr-outlet-->`, rendered);
     res.status(200).set({ "Content-Type": "text/html" }).send(html);
   } catch (e) {
