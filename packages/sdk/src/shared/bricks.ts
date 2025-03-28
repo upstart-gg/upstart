@@ -138,7 +138,7 @@ const sectionProps = Type.Object(
   {
     background: Type.Optional(background()),
     width: Type.Optional(
-      attr.enum("Section width", "max-w-full", {
+      attr.enum("Width", "max-w-full", {
         options: [
           {
             value: "max-w-screen-lg",
@@ -157,10 +157,16 @@ const sectionProps = Type.Object(
       }),
     ),
     $paddingHorizontal: Type.Optional(
-      attr.number("Section horizontal spacing", 0, {
+      attr.number("Horizontal spacing", 0, {
         min: 0,
         description: "Horizontal spacing. Desktop only.",
         displayAs: "button-group",
+      }),
+    ),
+    lastTouched: Type.Optional(
+      Type.Number({
+        description: "Do not use this field. It is used internally by the editor.",
+        "ui:field": "hidden",
       }),
     ),
   },

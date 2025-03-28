@@ -1,25 +1,24 @@
 import FormNavigator from "./json-form/FormNavigator";
-import type { Brick } from "@upstart.gg/sdk/shared/bricks";
+import { Brick, type Section, sectionSchema } from "@upstart.gg/sdk/shared/bricks";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import type { TArray, TObject, TSchema } from "@sinclair/typebox";
 import type { NavItem } from "./json-form/types";
 import { useCallback, useMemo } from "react";
 import { merge, set } from "lodash-es";
-import { useDraftHelpers, useGetBrick, usePreviewMode } from "~/editor/hooks/use-editor";
-import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
+import { useDraftHelpers, useGetBrick, usePreviewMode, useSection } from "~/editor/hooks/use-editor";
 import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
+import { Value } from "@sinclair/typebox/value";
 
-type BrickSettingsViewProps = {
-  brick: Brick;
+type SectionSettingsViewProps = {
+  section: Section;
   group?: string;
 };
 
-export default function BrickSettingsView({ brick, group }: BrickSettingsViewProps) {
-  const { updateBrickProps } = useDraftHelpers();
-  const manifest = useBrickManifest(brick.type);
+export default function SectionSettingsView({ section, group }: SectionSettingsViewProps) {
+  const { updateSectionProps } = useDraftHelpers();
   const previewMode = usePreviewMode();
-  const getBrickInfo = useGetBrick();
-  const brickInfo = getBrickInfo(brick.id);
+  const sectionInfo = useSection(section.id);
+
   const filter: SchemaFilter = (prop) => {
     return (
       (typeof prop.metadata?.["ui:responsive"] === "undefined" ||
@@ -31,14 +30,14 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
     );
   };
 
-  const navItems = getNavItemsFromManifest(manifest.props, filter);
+  const navItems = getNavItemsFromManifest(sectionSchema.properties.props, filter);
 
   const formData = useMemo(() => {
-    const defProps = defaultProps[brick.type].props;
+    const defProps = Value.Create(sectionSchema.properties.props);
     return previewMode === "mobile"
-      ? merge({}, defProps, brick.props, brick.mobileProps)
-      : merge({}, defProps, brick.props ?? {});
-  }, [brick, previewMode]);
+      ? merge({}, defProps, sectionInfo.props, sectionInfo.mobileProps)
+      : merge({}, defProps, sectionInfo.props ?? {});
+  }, [sectionInfo, previewMode]);
 
   const onChange = useCallback(
     (data: Record<string, unknown>, propertyChangedPath: string) => {
@@ -48,25 +47,25 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
         return;
       }
       // Note: this is a weird way to update the brick props, but it'it allows us to deal with frozen trees
-      const props = JSON.parse(JSON.stringify(brickInfo?.props ?? {}));
+      const props = JSON.parse(JSON.stringify(sectionInfo?.props ?? {}));
       // `propertyChangedPath` can take the form of `a.b.c` which means we need to update `props.a.b.c`
       // For this we use lodash.set
       set(props, propertyChangedPath, data[propertyChangedPath]);
       // Update the brick props in the store
-      updateBrickProps(brick.id, props, previewMode === "mobile");
+      updateSectionProps(section.id, props, previewMode === "mobile");
     },
-    [brick.id, previewMode, updateBrickProps, brickInfo],
+    [section.id, previewMode, updateSectionProps, sectionInfo],
   );
 
   return (
     <FormNavigator
-      title={`${brick.type} settings`}
+      title={`Section settings`}
       initialGroup={group}
       navItems={navItems}
-      formSchema={manifest.props}
+      formSchema={sectionSchema.properties.props}
       formData={formData}
       onChange={onChange}
-      brickId={brick.id}
+      brickId={section.id}
     />
   );
 }

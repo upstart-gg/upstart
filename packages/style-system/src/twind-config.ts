@@ -18,7 +18,10 @@ export default defineConfig({
     presetForms(),
     presetTypo(),
   ],
-  variants: [["hasChildMenudHover", "&:has(.container-menu-wrapper:hover)"]],
+  variants: [
+    ["hasChildMenudHover", "&:has(.container-menu-wrapper:hover)"],
+    ["empty", "&:not(:has(*))"],
+  ],
   rules: [
     [
       "brick-container",

@@ -271,7 +271,8 @@ function BrickTextNavBar({ brick }: { brick: Brick }) {
     <div
       id={`text-editor-menu-${brick.id}`}
       // Hide the menu if it doesn't have any children so that the border doesn't show up
-      className={tx("contents", menuNavBarCls, "[&:not(:has(*))]:hidden")}
+      className={tx("contents")}
+      // className={tx("contents", menuNavBarCls, "!empty:hidden")}
     />
   );
 }
@@ -364,14 +365,13 @@ type BrickContextMenuProps = PropsWithChildren<{
 const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
   ({ brick, isContainerChild, children }, ref) => {
     // const [open, setOpen] = useState(false);
-    const draft = useDraft();
     const draftHelpers = useDraftHelpers();
     const editorHelpers = useEditorHelpers();
     const debugMode = useDebugMode();
     const manifest = useBrickManifest(brick.type);
     const canMoveLeft = isContainerChild ? draftHelpers.canMoveToWithinParent(brick.id, "left") : null;
     const canMoveRight = isContainerChild ? draftHelpers.canMoveToWithinParent(brick.id, "right") : null;
-    const parentContainer = draft.getParentBrick(brick.id);
+    const parentContainer = draftHelpers.getParentBrick(brick.id);
 
     return (
       <ContextMenu.Root modal={false}>
@@ -391,7 +391,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                 shortcut="⌘D"
                 onClick={(e) => {
                   e.stopPropagation();
-                  draft.duplicateBrick(brick.id);
+                  draftHelpers.duplicateBrick(brick.id);
                 }}
               >
                 Duplicate
@@ -412,7 +412,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                 shortcut="⌘&larr;"
                 onClick={(e) => {
                   e.stopPropagation();
-                  draft.moveBrickWithin(brick.id, "left");
+                  draftHelpers.moveBrickWithin(brick.id, "left");
                 }}
               >
                 Move left
@@ -423,7 +423,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                 shortcut="⌘&rarr;"
                 onClick={(e) => {
                   e.stopPropagation();
-                  draft.moveBrickWithin(brick.id, "right");
+                  draftHelpers.moveBrickWithin(brick.id, "right");
                 }}
               >
                 Move right
@@ -435,7 +435,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                 <ContextMenu.CheckboxItem
                   checked={!brick.position.mobile?.hidden}
                   onClick={(e) => e.stopPropagation()}
-                  onCheckedChange={() => draft.toggleBrickVisibilityPerBreakpoint(brick.id, "mobile")}
+                  onCheckedChange={() => draftHelpers.toggleBrickVisibilityPerBreakpoint(brick.id, "mobile")}
                 >
                   Mobile
                 </ContextMenu.CheckboxItem>
@@ -443,7 +443,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                 <ContextMenu.CheckboxItem
                   checked={!brick.position.desktop?.hidden}
                   onClick={(e) => e.stopPropagation()}
-                  onCheckedChange={() => draft.toggleBrickVisibilityPerBreakpoint(brick.id, "desktop")}
+                  onCheckedChange={() => draftHelpers.toggleBrickVisibilityPerBreakpoint(brick.id, "desktop")}
                 >
                   Desktop
                 </ContextMenu.CheckboxItem>
@@ -458,7 +458,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                     <ContextMenu.Item
                       onClick={(e) => {
                         e.stopPropagation();
-                        draft.duplicateBrick(parentContainer.id);
+                        draftHelpers.duplicateBrick(parentContainer.id);
                       }}
                     >
                       Duplicate container
@@ -486,7 +486,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                       color="red"
                       onClick={(e) => {
                         e.stopPropagation();
-                        draft.deleteBrick(parentContainer.id);
+                        draftHelpers.deleteBrick(parentContainer.id);
                         editorHelpers.deselectBrick(parentContainer.id);
                         editorHelpers.hidePanel("inspector");
                       }}
@@ -504,7 +504,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
               color="red"
               onClick={(e) => {
                 e.stopPropagation();
-                draft.deleteBrick(brick.id);
+                draftHelpers.deleteBrick(brick.id);
                 editorHelpers.deselectBrick(brick.id);
                 editorHelpers.hidePanel("inspector");
               }}

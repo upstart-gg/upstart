@@ -40,7 +40,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const editorHelpers = useEditorHelpers();
   const draftHelpers = useDraftHelpers();
   const selectedBrickId = useSelectedBrickId();
-  // const draftStore = useDraftStoreContext();
   const draft = useDraft();
   const pageRef = useRef<HTMLDivElement>(null);
   const attributes = useAttributes();
@@ -180,8 +179,8 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         // Check if the brick should adjust its height because of overflow
 
         // Update the brick position (and height if needed)
-        draft.updateBrickPosition(brickId, previewMode, {
-          ...draft.getBrick(brickId)!.position[previewMode],
+        draftHelpers.updateBrickPosition(brickId, previewMode, {
+          ...draftHelpers.getBrick(brickId)!.position[previewMode],
           ...gridPos,
           // wWen resizing through the mobile view, set the manual height
           // so that the system knows that the height is not automatic
@@ -190,7 +189,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
 
         // try to automatically adjust the mobile layout when resizing from desktop
         if (previewMode === "desktop") {
-          draft.adjustMobileLayout();
+          draftHelpers.adjustMobileLayout();
         }
       },
     },
@@ -249,7 +248,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   useHotkeys(["backspace", "del"], (e) => {
     if (selectedBrickId) {
       e.preventDefault();
-      draft.deleteBrick(selectedBrickId);
+      draftHelpers.deleteBrick(selectedBrickId);
       editorHelpers.deselectBrick(selectedBrickId);
       editorHelpers.hidePanel("inspector");
     }
@@ -301,7 +300,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   useHotkeys("mod+d", (e) => {
     e.preventDefault();
     if (selectedBrickId) {
-      draft.duplicateBrick(selectedBrickId);
+      draftHelpers.duplicateBrick(selectedBrickId);
     }
   });
 

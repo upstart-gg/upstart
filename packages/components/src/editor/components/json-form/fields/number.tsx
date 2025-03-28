@@ -37,7 +37,7 @@ export const NumberField: React.FC<FieldProps<number>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder } = props;
 
   return (
-    <div className="number-field">
+    <div className="number-field flex-1 flex justify-between gap-10 items-center">
       <FieldTitle title={title} description={description} />
       <TextField.Root
         defaultValue={currentValue}

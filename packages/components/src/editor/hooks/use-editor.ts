@@ -270,6 +270,7 @@ export interface DraftState extends DraftStateProps {
   getParentBrick: (id: string) => Brick | undefined;
   deleteBrick: (id: string) => void;
   duplicateBrick: (id: string) => void;
+  duplicateSection: (id: string) => void;
   moveBrickWithin: (id: string, to: "left" | "right") => void;
   moveBrickToParent: (id: string, parentId: string) => void;
   addBrick: (brick: Brick, parentContainer?: Brick) => void;
@@ -308,6 +309,7 @@ export interface DraftState extends DraftStateProps {
   // New section methods
   addSection: (section: Section) => void;
   updateSection: (id: string, sectionData: Partial<Section>) => void;
+  updateSectionProps: (id: string, props: Partial<Section["props"]>, isMobileProps?: boolean) => void;
   deleteSection: (id: string) => void;
   getSection: (id: string) => Section | undefined;
 
@@ -392,6 +394,22 @@ export const createDraftStore = (
                     ...sectionData,
                   };
                 }
+              }),
+
+            duplicateSection: (id) =>
+              set((state) => {
+                const section = state.sections.find((s) => s.id === id);
+                if (!section) {
+                  console.error("Cannot duplicate section %s, it does not exist", id);
+                  return;
+                }
+                const newSection = {
+                  ...section,
+                  id: `section-${generateId()}`,
+                  order: state.sections.length,
+                  label: `${section.label} (copy)`,
+                };
+                state.sections.push(newSection);
               }),
 
             deleteSection: (id) =>
@@ -623,6 +641,22 @@ export const createDraftStore = (
                     });
                   } else {
                     brick.props = mergeIgnoringArrays({}, brick.props, props, { lastTouched: Date.now() });
+                  }
+                }
+              }),
+
+            updateSectionProps: (id, props, isMobileProps) =>
+              set((state) => {
+                const section = state.sections.find((s) => s.id === id);
+                if (section) {
+                  if (isMobileProps) {
+                    section.mobileProps = mergeIgnoringArrays({}, section.mobileProps, props, {
+                      lastTouched: Date.now(),
+                    });
+                  } else {
+                    section.props = mergeIgnoringArrays({}, section.props, props, {
+                      lastTouched: Date.now(),
+                    });
                   }
                 }
               }),
@@ -1054,6 +1088,12 @@ export const useDraftHelpers = () => {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => ({
     deleteBrick: state.deleteBrick,
+    duplicateBrick: state.duplicateBrick,
+    getBrick: state.getBrick,
+    updateBrickPosition: state.updateBrickPosition,
+    adjustMobileLayout: state.adjustMobileLayout,
+    duplicateSection: state.duplicateSection,
+    toggleBrickVisibilityPerBreakpoint: state.toggleBrickVisibilityPerBreakpoint,
     getParentBrick: state.getParentBrick,
     updateBrick: state.updateBrick,
     updateBrickProps: state.updateBrickProps,
@@ -1067,6 +1107,7 @@ export const useDraftHelpers = () => {
     moveSectionDown: state.moveSectionDown,
     reorderSections: state.reorderSections,
     updateSection: state.updateSection,
+    updateSectionProps: state.updateSectionProps,
     addSection: state.addSection,
     isLastBrickOfSection: state.isLastBrickOfSection,
     isFirstBrickOfSection: state.isFirstBrickOfSection,

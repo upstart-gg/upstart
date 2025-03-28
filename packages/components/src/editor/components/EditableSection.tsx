@@ -1,8 +1,9 @@
 import interact from "interactjs";
 import type { Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
 import { useDraftHelpers, usePreviewMode, useSection, useSections } from "../hooks/use-editor";
-import { DropdownMenu, Popover, Tooltip } from "@upstart.gg/style-system/system";
+import { DropdownMenu, Inset, Popover, Tooltip } from "@upstart.gg/style-system/system";
 import EditableBrickWrapper from "./EditableBrick";
+import SectionPopover from "./SectionPopover";
 import ResizeHandle from "./ResizeHandle";
 import { useSectionStyle } from "~/shared/hooks/use-section-style";
 import {
@@ -20,7 +21,8 @@ import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import type { GridConfig } from "~/shared/hooks/use-grid-config";
 import { getBrickResizeOptions, getGridPosition } from "~/shared/utils/layout-utils";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
-import { brickWithDefaults } from "@upstart.gg/sdk/shared/bricks";
+import SectionSettingsView from "./SectionSettingsView";
+import { IoCopyOutline } from "react-icons/io5";
 
 type EditableSectionProps = {
   section: SectionType;
@@ -162,8 +164,10 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
     <>
       <Popover.Root onOpenChange={setModalOpen}>
         {/* Don't put height on Popover otherwise it bugs and disapears just after appearing */}
-        <Popover.Content width="390px" className="!p-0">
-          Foo
+        <Popover.Content width="390px" maxWidth="100%">
+          <Inset>
+            <SectionSettingsView section={section} />
+          </Inset>
         </Popover.Content>
         <div
           className={tx(
@@ -245,10 +249,14 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
               </DropdownMenu.Group>
               <DropdownMenu.Separator />
               <DropdownMenu.Group>
+                <DropdownMenu.Item onClick={() => draftHelpers.moveSectionDown(section.id)}>
+                  <div className="flex items-center justify-start gap-2">
+                    <span>Duplicate section</span>
+                  </div>
+                </DropdownMenu.Item>
                 <Popover.Trigger>
                   <DropdownMenu.Item>
                     <div className="flex items-center justify-start gap-2.5">
-                      <VscSettings className="w-4 h-4" />
                       <span>Settings</span>
                     </div>
                   </DropdownMenu.Item>
@@ -257,7 +265,6 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
               <DropdownMenu.Separator />
               <DropdownMenu.Item color="red" onClick={() => draftHelpers.deleteSection(section.id)}>
                 <div className="flex items-center justify-start gap-2.5">
-                  <TbTrash className="w-4 h-4" />
                   <span>Delete</span>
                 </div>
               </DropdownMenu.Item>
