@@ -47,7 +47,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const dragOverRef = useRef<HTMLDivElement>(null);
   const typography = useFontWatcher();
   const pageClassName = usePageStyle({ attributes, typography, editable: true, previewMode, showIntro });
-  const gridConfig = useGridConfig(pageRef);
 
   // on page load, set last loaded property so that the store is saved to local storage
   useEffect(draft.setLastLoaded, []);
@@ -56,20 +55,22 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
    *  Update the ghost style based on the drop position
    */
   function updateDragOverGhostStyle(
-    info: ReturnType<typeof canDropOnLayout | typeof getDropOverGhostPosition>,
+    info: {
+      x: number;
+      y: number;
+      w: number;
+      h: number;
+    } | null,
   ) {
     if (info) {
-      dragOverRef.current?.style.setProperty("opacity", "0.2");
-      dragOverRef.current?.style.setProperty("grid-column", `${info.x + 1} / span ${info.w}`);
-      dragOverRef.current?.style.setProperty("grid-row", `${info.y + 1} / span ${info.h}`);
+      dragOverRef.current?.style.setProperty("opacity", "0.4");
+      dragOverRef.current?.style.setProperty("left", `${info.x}px`);
+      dragOverRef.current?.style.setProperty("top", `${info.y}px`);
+      dragOverRef.current?.style.setProperty("width", `${info.w}px`);
+      dragOverRef.current?.style.setProperty("height", `${info.h}px`);
       dragOverRef.current?.style.setProperty("display", "block");
-      if (info.forbidden) {
-        dragOverRef.current?.classList.toggle(ghostInvalid, true);
-        dragOverRef.current?.classList.toggle(ghostValid, false);
-      } else {
-        dragOverRef.current?.classList.toggle(ghostInvalid, false);
-        dragOverRef.current?.classList.toggle(ghostValid, true);
-      }
+      dragOverRef.current?.classList.toggle(ghostInvalid, false);
+      dragOverRef.current?.classList.toggle(ghostValid, true);
     } else {
       dragOverRef.current?.style.setProperty("opacity", "0");
       dragOverRef.current?.style.setProperty("display", "none");
@@ -80,10 +81,9 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     dragOptions: {
       // enabled: previewMode === "desktop",
     },
-    gridConfig,
     dragCallbacks: {
       onDragEnd: (updatedPositions, event) => {
-        updateDragOverGhostStyle(false);
+        updateDragOverGhostStyle(null);
 
         const firstPos = updatedPositions[0];
         const dropOverBrick = getBrickAtPosition(
@@ -125,40 +125,36 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       },
     },
     dropCallbacks: {
-      onDropMove(event, gridPosition, brick) {
-        const canDrop = canDropOnLayout(draft.bricks, previewMode, gridPosition, brick.constraints);
-        updateDragOverGhostStyle(canDrop);
+      onDropMove(event, rect, brickType) {
+        updateDragOverGhostStyle(rect);
       },
       onDropDeactivate() {
-        updateDragOverGhostStyle(false);
+        updateDragOverGhostStyle(null);
       },
-      onDrop(event, gridPosition, brick) {
-        console.debug("onDrop (%s)", previewMode, gridPosition, brick);
+      onDrop(event, position, section, brickType) {
+        console.debug("onDrop (%s)", previewMode, position, brickType);
 
-        updateDragOverGhostStyle(false);
-
-        const position = canDropOnLayout(draft.bricks, previewMode, gridPosition, brick.constraints);
-        const section = getSectionAtPosition(event.dragEvent.client.x, event.dragEvent.client.y);
-
-        invariant(section, "No section found for drop event");
+        updateDragOverGhostStyle(null);
 
         if (position) {
-          console.debug("New brick dropped at", position);
-          const bricksDefaults = defaultProps[brick.type];
+          console.debug("New brick dropped at", position, section);
+          const bricksDefaults = defaultProps[brickType];
           const newBrick: Brick = {
             id: `brick-${generateId()}`,
             ...bricksDefaults,
             sectionId: section.id,
-            type: brick.type,
+            type: brickType,
             position: {
               desktop: position,
               mobile: position,
-              [previewMode]: position,
             },
           };
 
-          // add the new brick to the store
-          draft.addBrick(newBrick, position.parent);
+          const dropOverBrick = getBrickAtPosition(position.x, position.y, draft.bricks, previewMode);
+
+          // Add the new brick to the store
+          // Specify the parent if we dropped on a container
+          draft.addBrick(newBrick, dropOverBrick?.isContainer ? dropOverBrick.id : null);
 
           if (previewMode === "desktop") {
             startTransition(() => {
@@ -174,7 +170,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       onResizeEnd: (brickId, gridPos) => {
         console.debug("onResizeEnd (%s)", previewMode, brickId, gridPos);
 
-        updateDragOverGhostStyle(false);
+        updateDragOverGhostStyle(null);
 
         // Check if the brick should adjust its height because of overflow
 
@@ -308,11 +304,13 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     <>
       <div id="page-container" ref={pageRef} className={pageClassName}>
         {sections.map((section) => (
-          <Section key={section.id} section={section} gridConfig={gridConfig} />
+          <Section key={section.id} section={section} />
         ))}
         <div
           ref={dragOverRef}
-          className={tx("drop-indicator bg-upstart-50 rounded transition-all duration-200 opacity-0 hidden")}
+          className={tx(
+            "fixed z-[99999] isolate pointer-events-none drop-indicator bg-upstart-50 rounded opacity-0 hidden",
+          )}
         />
       </div>
       <Selecto

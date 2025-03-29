@@ -271,7 +271,7 @@ function BrickTextNavBar({ brick }: { brick: Brick }) {
     <div
       id={`text-editor-menu-${brick.id}`}
       // Hide the menu if it doesn't have any children so that the border doesn't show up
-      className={tx("contents")}
+      className={tx("contents", menuNavBarCls, "!empty:hidden")}
       // className={tx("contents", menuNavBarCls, "!empty:hidden")}
     />
   );

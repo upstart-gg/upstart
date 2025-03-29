@@ -276,7 +276,7 @@ export interface DraftState extends DraftStateProps {
   duplicateSection: (id: string) => void;
   moveBrickWithin: (id: string, to: "left" | "right") => void;
   moveBrickToParent: (id: string, parentId: string) => void;
-  addBrick: (brick: Brick, parentContainer?: Brick) => void;
+  addBrick: (brick: Brick, parentContainerId: Brick["id"] | null) => void;
   updateBrick: (id: string, brick: Partial<Brick>) => void;
   updateBrickProps: (id: string, props: Record<string, unknown>, isMobileProps?: boolean) => void;
   updateBrickPosition: (id: string, bp: keyof Brick["position"], position: Partial<BrickPosition>) => void;
@@ -842,17 +842,17 @@ export const createDraftStore = (
                 }
               }),
 
-            addBrick: (brick, parentContainer) =>
+            addBrick: (brick, parentContainerId) =>
               set((state) => {
-                if (!parentContainer) {
+                if (!parentContainerId) {
                   state.bricks.push(brick);
                 } else {
-                  const parentBrick = state.bricks.find((b) => b.id === parentContainer.id);
+                  const parentBrick = state.bricks.find((b) => b.id === parentContainerId);
                   invariant(parentBrick, "Parent brick not found");
                   invariant("$children" in parentBrick.props, "Parent brick must be a container");
                   (parentBrick.props.$children as Brick[] | undefined)?.push({
                     ...brick,
-                    parentId: parentContainer.id,
+                    parentId: parentContainerId,
                   });
                 }
               }),

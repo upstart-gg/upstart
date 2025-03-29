@@ -3,17 +3,16 @@ import { useEffect, useState } from "react";
 import { usePreviewMode } from "~/editor/hooks/use-editor";
 import { debounce } from "lodash-es";
 
-export function useGridConfig(pageRef: React.RefObject<HTMLDivElement>) {
+export function useGridConfig(elementRef: React.RefObject<HTMLElement>) {
   const [colWidth, setColWidth] = useState(0);
   const previewMode = usePreviewMode();
 
   useEffect(() => {
     // Calculate cell width on mount and window resize
     const updateCellWidth = debounce(() => {
-      if (pageRef.current) {
-        const containerWidth = pageRef.current.offsetWidth;
-        const availableWidth = containerWidth;
-        setColWidth(availableWidth / LAYOUT_COLS[previewMode]);
+      if (elementRef.current) {
+        const containerWidth = elementRef.current.clientWidth;
+        setColWidth(containerWidth / LAYOUT_COLS[previewMode]);
       }
     }, 250);
 
@@ -21,18 +20,18 @@ export function useGridConfig(pageRef: React.RefObject<HTMLDivElement>) {
 
     // mutation oberver for the page container styles
     const observer = new MutationObserver(updateCellWidth);
-    observer.observe(pageRef.current as Node, {
+    observer.observe(elementRef.current as Node, {
       attributes: true,
       attributeFilter: ["style", "class"],
     });
 
-    window.addEventListener("resize", updateCellWidth, { passive: true });
+    window.addEventListener("resize", updateCellWidth, true);
 
     return () => {
-      window.removeEventListener("resize", updateCellWidth);
+      window.removeEventListener("resize", updateCellWidth, true);
       observer.disconnect();
     };
-  }, [previewMode, pageRef]);
+  }, [previewMode, elementRef]);
 
   return {
     colWidth,

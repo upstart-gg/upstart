@@ -3,6 +3,7 @@ import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import type { ResponsiveMode } from "@upstart.gg/sdk/shared/responsive";
 import type { BrickConstraints, BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import type { GridConfig } from "../hooks/use-grid-config";
+import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
 const defaultsPreferred = {
   mobile: {
@@ -15,20 +16,21 @@ const defaultsPreferred = {
   },
 };
 
-function getGridSize(element: HTMLElement, config: GridConfig) {
-  const rect = element.getBoundingClientRect();
-  return {
-    w: Math.round(rect.width / config.colWidth),
-    h: Math.round(rect.height / config.rowHeight),
-  };
+export function getClosestSection(element: Element) {
+  return element.closest<HTMLElement>('[data-element-kind="section"]')!;
 }
 
-export function getGridPosition(element: HTMLElement, config: GridConfig, relatedContainer?: HTMLElement) {
+export function getBrickPosition(
+  element: HTMLElement,
+  previewMode: ResponsiveMode,
+  relatedContainer?: HTMLElement,
+) {
   // Get element's initial position (getBoundingClientRect gives position relative to viewport)
   const rect = element.getBoundingClientRect();
-  // const container = document.querySelector(".page-container")!.getBoundingClientRect();
-  // relative to upper section
-  relatedContainer ??= element.closest("section")!;
+  relatedContainer ??= getClosestSection(element);
+
+  invariant(relatedContainer, "No related container found");
+
   const container = relatedContainer.getBoundingClientRect();
 
   // Calculate actual position relative to container
@@ -37,6 +39,7 @@ export function getGridPosition(element: HTMLElement, config: GridConfig, relate
 
   // get horizontal padding of the section
   const padX = parseFloat(window.getComputedStyle(relatedContainer).paddingLeft);
+  const config = getGridConfig(relatedContainer, previewMode);
 
   // Calculate grid position
   const gridX = Math.round((actualX - padX) / config.colWidth);
@@ -45,7 +48,28 @@ export function getGridPosition(element: HTMLElement, config: GridConfig, relate
   return {
     x: Math.max(0, gridX),
     y: Math.max(0, gridY),
-    ...getGridSize(element, config),
+    w: Math.round(rect.width / config.colWidth),
+    h: Math.round(rect.height / config.rowHeight),
+  };
+}
+
+export function getDropPosition(event: Interact.DropEvent, gridConfig: GridConfig) {
+  const grid = event.target as HTMLElement;
+  const gridRect = grid.getBoundingClientRect();
+
+  // Calculate position relative to grid
+  const rect = {
+    left: event.dragEvent.clientX - gridRect.left,
+    top: event.dragEvent.clientY - gridRect.top,
+  };
+
+  // Calculate grid position
+  const col = Math.round((rect.left - gridConfig.colWidth / 2) / gridConfig.colWidth);
+  const row = Math.round((rect.top - gridConfig.rowHeight / 2) / gridConfig.rowHeight);
+
+  return {
+    x: Math.max(1, col),
+    y: Math.max(1, row),
   };
 }
 
@@ -143,6 +167,20 @@ export function getSectionAtPosition(x: number, y: number) {
   return elements.find((el) => el.tagName === "SECTION" && el.dataset.elementKind === "section") as
     | HTMLElement
     | undefined;
+}
+
+export function getElementCenterPoint(element: HTMLElement) {
+  const rect = element.getBoundingClientRect();
+  return {
+    x: rect.left + rect.width / 2,
+    y: rect.top + rect.height / 2,
+  };
+}
+
+export function getGridConfig(sectionElement: HTMLElement, previewMode: ResponsiveMode) {
+  const colWidth = sectionElement.clientWidth / LAYOUT_COLS[previewMode];
+  const rowHeight = LAYOUT_ROW_HEIGHT;
+  return { colWidth, rowHeight };
 }
 
 /**
@@ -293,41 +331,13 @@ export function detectCollisions({
 /**
  * Returns the coords of an element relative to the #page-container
  */
-export function getBrickCoordsInPage(element: HTMLElement, relativeTo: HTMLElement) {
+export function getBrickCoordsInPage(element: HTMLElement) {
   const rect = element.getBoundingClientRect();
-  const containerBox = relativeTo.getBoundingClientRect();
-
   return {
     x: rect.left,
     y: rect.top,
     w: rect.width,
     h: rect.height,
-  };
-}
-
-export function getDropPosition(event: Interact.DropEvent, gridConfig: GridConfig) {
-  const grid = event.target as HTMLElement;
-  const gridRect = grid.getBoundingClientRect();
-
-  // Calculate position relative to grid
-  const rect = {
-    left: event.dragEvent.clientX - gridRect.left,
-    top: event.dragEvent.clientY - gridRect.top,
-  };
-
-  // Calculate grid position
-  const col = Math.round((rect.left - gridConfig.colWidth / 2) / gridConfig.colWidth);
-  const row = Math.round((rect.top - gridConfig.rowHeight / 2) / gridConfig.rowHeight);
-
-  return {
-    absolute: {
-      left: rect.left - gridConfig.colWidth / 2,
-      top: rect.top - gridConfig.rowHeight / 2,
-    },
-    grid: {
-      x: Math.max(1, col),
-      y: Math.max(1, row),
-    },
   };
 }
 

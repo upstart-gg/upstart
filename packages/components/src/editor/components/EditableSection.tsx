@@ -18,26 +18,37 @@ import { VscSettings } from "react-icons/vsc";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useEffect, useRef, useState } from "react";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
-import type { GridConfig } from "~/shared/hooks/use-grid-config";
-import { getBrickResizeOptions, getGridPosition } from "~/shared/utils/layout-utils";
+import { useGridConfig, type GridConfig } from "~/shared/hooks/use-grid-config";
+import { getBrickResizeOptions, getBrickPosition } from "~/shared/utils/layout-utils";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import SectionSettingsView from "./SectionSettingsView";
 import { IoCopyOutline } from "react-icons/io5";
 
 type EditableSectionProps = {
   section: SectionType;
-  gridConfig: GridConfig;
 };
 
-export default function EditableSection({ section, gridConfig }: EditableSectionProps) {
+export default function EditableSection({ section }: EditableSectionProps) {
   const { bricks, id } = useSection(section.id);
+  const ref = useRef<HTMLDivElement>(null);
+
+  const gridConfig = useGridConfig(ref);
+
   useResizableSection(section, gridConfig);
 
   const previewMode = usePreviewMode();
+  const responsiveProps = section[previewMode === "desktop" ? "props" : "mobileProps"];
   const className = useSectionStyle({ section, editable: true, previewMode });
 
   return (
-    <section key={id} id={id} data-element-kind="section" className={className}>
+    <section
+      key={id}
+      id={id}
+      ref={ref}
+      data-element-kind="section"
+      data-section-h-padding={responsiveProps?.$paddingHorizontal ?? 0}
+      className={className}
+    >
       <SectionOptionsButtons section={section} />
       {bricks
         .filter((b) => !b.position[previewMode]?.hidden && !b.parentId)
@@ -122,7 +133,7 @@ function useResizableSection(section: SectionType, gridConfig: GridConfig) {
           Object.assign(sectionEl.dataset, { h: newHeight });
         },
         end: (event) => {
-          const size = getGridPosition(sectionEl, gridConfig);
+          const size = getBrickPosition(sectionEl, previewMode);
           sectionEl.style.height = "";
           sectionEl.style.maxHeight = "";
           sectionEl.style.flex = "";
