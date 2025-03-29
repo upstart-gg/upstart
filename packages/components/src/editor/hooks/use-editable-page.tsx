@@ -148,25 +148,28 @@ export const useEditablePage = (
         start: (event: Interact.InteractEvent) => {
           console.debug("useEditablePage:listeners:start()", event);
           const target = event.target as HTMLElement;
+          const elements = selectedGroup ? selectedGroup.map((id) => document.getElementById(id)!) : [target];
 
-          // Get initial position relative to container
-          const initialPos = getBrickCoordsInPage(target);
+          elements.forEach((target) => {
+            // Get initial position relative to container
+            const initialPos = getBrickCoordsInPage(target);
 
-          // Now set up the element for dragging
-          target.dataset.tempX = initialPos.x.toString();
-          target.dataset.tempY = initialPos.y.toString();
-          target.dataset.originalStylePos =
-            target.style.position && target.style.position !== "" ? target.style.position : "relative";
-          target.dataset.originalStyleZIndex = target.style.zIndex;
-          target.dataset.wasDragged = "false";
+            // Now set up the element for dragging
+            target.dataset.tempX = initialPos.x.toString();
+            target.dataset.tempY = initialPos.y.toString();
+            target.dataset.originalStylePos =
+              target.style.position && target.style.position !== "" ? target.style.position : "relative";
+            target.dataset.originalStyleZIndex = target.style.zIndex;
+            target.dataset.wasDragged = "false";
 
-          Object.assign(target.style, {
-            position: "fixed",
-            top: `${initialPos.y}px`,
-            left: `${initialPos.x}px`,
-            width: `${initialPos.w}px`,
-            height: `${initialPos.h}px`,
-            zIndex: "999999",
+            Object.assign(target.style, {
+              position: "fixed",
+              top: `${initialPos.y}px`,
+              left: `${initialPos.x}px`,
+              width: `${initialPos.w}px`,
+              height: `${initialPos.h}px`,
+              zIndex: "999999",
+            });
           });
         },
 
