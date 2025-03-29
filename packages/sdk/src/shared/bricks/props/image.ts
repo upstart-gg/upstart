@@ -1,6 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { prop } from "./helpers";
-import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
+// import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
 
 type PropImageOptions = {
   defaultImageUrl?: string;

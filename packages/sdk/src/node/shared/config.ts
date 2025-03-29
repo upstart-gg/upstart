@@ -5,7 +5,7 @@ import fg from "fast-glob";
 import { type Logger, logger as defaultLogger } from "./logger";
 import { fromError } from "zod-validation-error";
 import { basename, dirname, extname } from "node:path";
-import type { TemplateConfig } from "~/shared/page";
+import type { TemplateConfig } from "~/shared/template";
 
 export async function loadConfigFromJsFile(
   configPath: string,

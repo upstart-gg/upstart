@@ -1,5 +1,8 @@
+import { IoIosHelpCircleOutline } from "react-icons/io";
 import type { FieldProps } from "./types";
-import { Switch, Text } from "@upstart.gg/style-system/system";
+import { IconButton, Switch, Text, Tooltip } from "@upstart.gg/style-system/system";
+import { fieldLabel } from "../form-class";
+import { FieldTitle } from "../field-factory";
 
 const SwitchField: React.FC<FieldProps<boolean>> = (props) => {
   const { onChange, required, title, description, currentValue } = props;
@@ -7,11 +10,7 @@ const SwitchField: React.FC<FieldProps<boolean>> = (props) => {
   return (
     <div className="switch-field flex flex-col gap-2 flex-1">
       <div className="flex items-center justify-between">
-        {title && (
-          <Text as="label" size="2" weight="medium" className="flex-1">
-            {title}
-          </Text>
-        )}
+        <FieldTitle title={title} description={description} />
         <Switch
           onCheckedChange={(value) => onChange(value)}
           size="2"
@@ -19,11 +18,6 @@ const SwitchField: React.FC<FieldProps<boolean>> = (props) => {
           defaultChecked={currentValue}
         />
       </div>
-      {description && (
-        <Text as="p" color="gray" size="1">
-          {description}
-        </Text>
-      )}
     </div>
   );
 };

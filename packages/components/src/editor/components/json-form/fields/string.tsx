@@ -5,6 +5,7 @@ import { fieldLabel } from "../form-class";
 import { Text } from "@upstart.gg/style-system/system";
 import { HelpIcon } from "../HelpIcon";
 import { useDebounceCallback } from "usehooks-ts";
+import { FieldTitle } from "../field-factory";
 
 export const StringField: React.FC<FieldProps<string>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
@@ -13,12 +14,7 @@ export const StringField: React.FC<FieldProps<string>> = (props) => {
 
   return (
     <div className="field field-string basis-full">
-      {title && (
-        <div className="flex items-center justify-between">
-          <label className={fieldLabel}>{title}</label>
-          {description && <HelpIcon help={description} />}
-        </div>
-      )}
+      <FieldTitle title={title} description={description} />
       {schema["ui:multiline"] ? (
         <TextArea
           defaultValue={currentValue}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { flex, grid, layoutType, makeContainerProps } from "../container";
+import { flex, grid, makeContainerProps } from "../container";
 
 describe("Container props test suite", () => {
   describe("flex", () => {
@@ -79,23 +79,6 @@ describe("Container props test suite", () => {
         expect(columns.maximum).toBe(12);
         expect(columns.default).toBe(2);
       });
-    });
-  });
-
-  describe("layoutType", () => {
-    it("should have the correct title", () => {
-      expect(layoutType().title).toBe("Layout type");
-    });
-
-    it("should have correct UI metadata", () => {
-      const schema = layoutType();
-      expect(schema["ui:field"]).toBe("enum");
-      expect(schema["ui:responsive"]).toBe(true);
-    });
-
-    it("should have correct default value", () => {
-      expect(layoutType().default).toBe("flex");
-      expect(layoutType({ defaultValue: "grid" }).default).toBe("grid");
     });
   });
 

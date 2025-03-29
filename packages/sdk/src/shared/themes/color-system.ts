@@ -196,8 +196,6 @@ export function getTextContrastedColor(element: HTMLElement) {
   const blackContrast = chroma.contrast(resolved, "#000000");
   const whiteContrast = chroma.contrast(resolved, "#FFFFFF");
 
-  console.log({ blackContrast, whiteContrast });
-
   if (
     whiteContrast >= textContrastRequirements.minContrast ||
     blackContrast >= textContrastRequirements.minContrast

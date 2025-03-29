@@ -2,6 +2,7 @@ import type { FieldProps } from "./types";
 import { Text, Select } from "@upstart.gg/style-system/system";
 import { fieldLabel } from "../form-class";
 import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
+import { FieldTitle } from "../field-factory";
 
 export type TempPadding = {
   horizontal: string;
@@ -14,11 +15,7 @@ export const PagePaddingField: React.FC<FieldProps<TempPadding>> = (props) => {
 
   return (
     <div className="border-field">
-      {description && (
-        <Text as="p" color="gray" size="1">
-          {description}
-        </Text>
-      )}
+      <FieldTitle title={title} description={description} />
       <div className="flex items-start flex-wrap gap-x-4 gap-y-1">
         {/* Padding */}
         <div className="flex flex-col gap-1 flex-1">

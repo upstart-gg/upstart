@@ -1,5 +1,4 @@
 import { css, tx } from "@upstart.gg/style-system/twind";
-import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import { isStandardColor } from "@upstart.gg/sdk/shared/themes/color-system";
 import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 import type { ResponsiveMode } from "@upstart.gg/sdk/shared/responsive";
@@ -68,44 +67,6 @@ export function usePageStyle({
 
     // Animate all bricks when the page is loading
     editable && showIntro && "[&>.brick-wrapper]:(opacity-0 animate-elastic-pop)",
-
-    // this is the grid overlay shown when dragging
-    editable &&
-      previewMode &&
-      css`
-      &:has(.moving) {
-        &::before {
-          content: "";
-          position: absolute;
-          opacity: 0.7;
-          inset: 0;
-          z-index: 999999;
-          pointer-events: none;
-          background-size:
-            calc(100%/${LAYOUT_COLS[previewMode]}) 100%,
-            100% ${LAYOUT_ROW_HEIGHT}px;
-          background-image:
-            repeating-linear-gradient(to right,
-              rgba(81, 101, 255, 0.4) 0px,
-              rgba(81, 101, 255, 0.4) 1px,
-              transparent 1px,
-              transparent 200px
-            ),
-            repeating-linear-gradient(to bottom,
-              rgba(81, 101, 255, 0.4) 0px,
-              rgba(81, 101, 255, 0.4) 1px,
-              transparent 1px,
-              transparent 80px
-            );
-        }
-        &>div:not(.moving) {
-          outline: 2px dotted #d3daf250 !important;
-        }
-        & [data-floating-ui-portal] {
-          display: none;
-        }
-      }
-    `,
   );
 }
 //

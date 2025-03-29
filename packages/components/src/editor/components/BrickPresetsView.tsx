@@ -7,7 +7,6 @@ import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { useDraftHelpers } from "../hooks/use-editor";
 import { getTextContrastedColor } from "@upstart.gg/sdk/shared/themes/color-system";
-import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
 // type PresetsViewProps = {
 //   onChoose: (presetStyles: StyleProperties) => void;

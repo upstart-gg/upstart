@@ -2,8 +2,8 @@
  * The grid on mobile is 18 columns wide, on desktop it's 36 columns wide.
  */
 export const LAYOUT_COLS = {
-  desktop: 36,
-  mobile: 18,
+  desktop: 48,
+  mobile: 24,
 };
 
 export const LAYOUT_BREAKPOINTS = {

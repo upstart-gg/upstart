@@ -5,10 +5,11 @@ import { ClientOnly } from "~/shared/utils/client-only";
 import Editor from "~/editor/components/Editor";
 import type { PropsWithChildren } from "react";
 
-import "@upstart.gg/components/dist/assets/style.css";
 import "./app.css";
+import "@upstart.gg/style-system/default-theme.css";
+import "@upstart.gg/components/dist/assets/style.css";
 
-export default function App() {
+export default function App({ path }: { path: string }) {
   const siteConfig = getNewSiteConfig(
     testEnpageConfig,
     { label: "New site" },
@@ -16,9 +17,13 @@ export default function App() {
     true,
   );
 
+  const searchParams = new URL(`http://localhost${path}`).searchParams;
+  const p = searchParams.get("p");
+  const page = siteConfig.pages.find((page) => page.id === p) ?? siteConfig.pages[0];
+
   return (
     <ClientOnly>
-      <InnerEditor pageConfig={siteConfig.pages[0]} siteConfig={siteConfig.site} mode="local" disableTours>
+      <InnerEditor pageConfig={page} siteConfig={siteConfig.site} mode="local">
         <Editor />
       </InnerEditor>
     </ClientOnly>

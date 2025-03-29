@@ -12,29 +12,21 @@ import { useBrickStyle } from "../hooks/use-brick-style";
  */
 const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, ref) => {
   const { props } = brick;
-  const className = useBrickStyle<Manifest>(brick);
+  const styles = useBrickStyle<Manifest>(brick);
   const { datasourceId, data, isSample } = useDatasource(props.content, manifest.datasource);
   // const children = props.childrenBricks;
-  const gapInt = parseInt(props.styles.gap.replace("gap-", "")) / 4;
   return (
     <div
       ref={ref}
       className={tx(
-        className,
+        ...Object.values(styles),
         "transition-all relative",
-        props.styles.layoutType === "flex" && "flex flex-wrap justify-stretch items-center",
-        props.styles.layoutType === "flex" &&
-          css`
-          &>div {
-            flex-basis: calc(100% / ${props.styles.columns} - ${gapInt}rem / ${props.styles.columns} * (${props.styles.columns} - 1));
-          }
-        `,
-        props.styles.layoutType === "grid" &&
-          css({
-            display: "grid",
-            gridTemplateColumns: `repeat(${props.styles.columns}, 1fr)`,
-          }),
-        props.styles.gap,
+        // props.styles.layoutType === "flex" &&
+        //   css`
+        //   &>div {
+        //     flex-basis: calc(100% / ${props.styles.columns} - ${gapInt}rem / ${props.styles.columns} * (${props.styles.columns} - 1));
+        //   }
+        // `,
       )}
     >
       {props.editable && isSample && (

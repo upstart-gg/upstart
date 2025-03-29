@@ -41,7 +41,7 @@ export function defineAttributes(attrs: TProperties) {
       );
     }
   }
-  return Type.Object({ ...defaultAttributes, ...attrs });
+  return Type.Object(attrs);
 }
 
 export type { JSONSchemaType };
@@ -327,10 +327,11 @@ export const defaultAttributesSchema = Type.Object(defaultAttributes);
 export type Attributes = Static<typeof defaultAttributesSchema> & Record<string, unknown>;
 
 export function resolveAttributes(
-  attributesSchema: TObject<TProperties>,
+  customAttrsSchema: TObject,
   initialData: Record<string, unknown> = {},
 ): Attributes {
-  const validate = ajv.compile(attributesSchema);
+  const attributesSchemaWithDefaults = Type.Composite([customAttrsSchema, defaultAttributesSchema]);
+  const validate = ajv.compile(attributesSchemaWithDefaults);
   const data = { ...initialData };
   const valid = validate(data);
   if (!valid) {

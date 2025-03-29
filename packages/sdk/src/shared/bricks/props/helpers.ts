@@ -4,6 +4,11 @@
 import { type TProperties, Type, type TSchema, type TObject } from "@sinclair/typebox";
 import { commonProps } from "./common";
 import type { PartialBy, Prop, PropGroup, GroupMetadata } from "./types";
+import { get } from "lodash-es";
+
+function isTObject(schema: TSchema | TProperties): schema is TObject {
+  return schema.type === "object";
+}
 
 export function group<T extends TProperties>({
   title,
@@ -11,9 +16,22 @@ export function group<T extends TProperties>({
   category = "settings",
   metadata,
   options,
-}: PartialBy<PropGroup<T>, "category">): TObject<T> {
-  // Create the TypeBox schema with title as a standard property
-  // and group-specific info in metadata
+}: PartialBy<PropGroup<T>, "category">) {
+  // check if children is already a TObject
+  if (isTObject(children)) {
+    const generated = Type.Composite([Type.Object({}), children], {
+      title,
+      metadata: {
+        category,
+        group: true,
+        ...metadata,
+      },
+      ...options,
+    });
+    return generated;
+  }
+
+  // Create the TypeBox schema with title as a standard property and group-specific info in metadata
   return Type.Object(children, {
     title,
     ...options,
@@ -77,4 +95,16 @@ export function getStyleProperties(schema: TSchema, path = "", styles: Record<Pr
     getStyleProperties(schema.items, `${path}[].`, styles);
   }
   return styles;
+}
+
+export function getStyleValueById<T>(
+  stylePos: ReturnType<typeof getStyleProperties>,
+  formData: Record<string, unknown>,
+  id: string,
+) {
+  for (const [stylePath, styleId] of Object.entries(stylePos)) {
+    if (styleId === id) {
+      return get(formData, stylePath) as T;
+    }
+  }
 }

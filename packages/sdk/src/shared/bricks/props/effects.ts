@@ -1,5 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
-import { prop } from "./helpers";
+import { group, prop } from "./helpers";
 
 type ShadowOptions = {
   title?: string;
@@ -52,7 +52,6 @@ export function textShadow({
       {
         default: defaultValue,
         "ui:field": "enum",
-        "ui:display": "button-group",
       },
     ),
   });
@@ -74,8 +73,45 @@ export function opacity({ defaultValue = 1, title = "Opacity" }: OpacityOptions 
       default: defaultValue,
       multipleOf: 0.1,
       "ui:field": "slider",
+      "ui:unit": "%",
+      "ui:multiplier": 100,
     }),
   });
 }
 
 export type OpacitySettings = Static<ReturnType<typeof opacity>>;
+
+type EffectsOptions = {
+  title?: string;
+  defaultValue?: {
+    opacity?: number;
+    shadow?: string;
+    textShadow?: string;
+  };
+  enableTextShadow?: boolean;
+};
+
+export function effects({ title = "Effects", defaultValue = {}, enableTextShadow }: EffectsOptions = {}) {
+  return group({
+    title,
+    options: {
+      default: defaultValue,
+    },
+    children: {
+      opacity: opacity({
+        title: "Opacity",
+        defaultValue: defaultValue.opacity,
+      }),
+      shadow: shadow({
+        title: "Shadow",
+        defaultValue: defaultValue.shadow,
+      }),
+      ...(enableTextShadow && {
+        textShadow: textShadow({
+          title: "Text shadow",
+          defaultValue: defaultValue.textShadow,
+        }),
+      }),
+    },
+  });
+}

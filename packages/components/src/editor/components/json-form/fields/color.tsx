@@ -11,6 +11,7 @@ import BaseColorPicker, { ElementColorPicker } from "~/editor/components/ColorPi
 import type { FieldProps } from "./types";
 import { IoCloseOutline } from "react-icons/io5";
 import { fieldLabel } from "../form-class";
+import { FieldTitle } from "../field-factory";
 
 const ColorField: React.FC<FieldProps<string | undefined> & { hideColorLabel?: boolean }> = (props) => {
   const { schema, onChange, formSchema: formContext, currentValue, title, description } = props;
@@ -77,16 +78,7 @@ export function ColorFieldRow({
 }: ColorFieldRowProps) {
   return (
     <div className="color-field flex-1 flex items-center justify-between">
-      {name && (
-        <div className="flex-1">
-          <label className={fieldLabel}>{name}</label>
-          {description && (
-            <Text as="p" color="gray">
-              {description}
-            </Text>
-          )}
-        </div>
-      )}
+      <FieldTitle title={name} description={description} />
       {colorType && (
         <ColorBasePreviewPill
           onChange={onChange}

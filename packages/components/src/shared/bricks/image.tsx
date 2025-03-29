@@ -34,7 +34,7 @@ const Image = forwardRef<HTMLImageElement, BrickProps<Manifest>>(({ brick, edita
         <div
           className={tx(
             apply(
-              "rounded-inherit transition-opacity duration-300 group-hover/image:opacity-100 flex absolute inset-2 bg-black/30 items-center justify-center text-xl text-white font-semibold",
+              "rounded-inherit transition-opacity duration-300 group-hover/image:opacity-100 flex absolute inset-0 bg-black/30 items-center justify-center text-xl text-white font-semibold",
               src && "opacity-0",
             ),
           )}

@@ -11,7 +11,7 @@ import BaseBrick from "../components/BaseBrick";
 const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const props = brick.props;
 
-  const { styles: className } = useBrickStyle(brick);
+  const styles = useBrickStyle<Manifest>(brick);
   const ds = useDatasource(props.datasource.ds, manifest.datasource);
 
   // If this container is Dynamic
@@ -34,7 +34,8 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edi
   }
 
   return (
-    <div className={tx(apply("flex relative flex-1"), className)} ref={ref}>
+    // Always apply the "brick" class
+    <div className={tx(apply("brick flex-1"), Object.values(styles))} ref={ref}>
       {props.$children?.length > 0 ? (
         props.$children.map((brick, index) => {
           return editable ? (

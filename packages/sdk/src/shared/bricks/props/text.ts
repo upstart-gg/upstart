@@ -13,12 +13,12 @@ export function fontSize(defaultValue = "inherit", title = "Font size") {
         Type.Literal("text-base", { title: "Base size" }),
         Type.Literal("text-lg", { title: "Large" }),
         Type.Literal("text-xl", { title: "Extra large" }),
-        Type.Literal("text-2xl", { title: "Extra large (x2)" }),
-        Type.Literal("text-3xl", { title: "Extra large (x3)" }),
-        Type.Literal("text-4xl", { title: "Extra large (x4)" }),
-        Type.Literal("text-5xl", { title: "Extra large (x5)" }),
-        Type.Literal("text-6xl", { title: "Extra large (x6)" }),
-        Type.Literal("text-7xl", { title: "Extra large (x7)" }),
+        Type.Literal("text-2xl", { title: "Extra large (2x)" }),
+        Type.Literal("text-3xl", { title: "Extra large (3x)" }),
+        Type.Literal("text-4xl", { title: "Extra large (4x)" }),
+        Type.Literal("text-5xl", { title: "Extra large (5x)" }),
+        Type.Literal("text-6xl", { title: "Extra large (6x)" }),
+        Type.Literal("text-7xl", { title: "Extra large (7x)" }),
       ],
       {
         default: defaultValue,
@@ -48,7 +48,6 @@ export function color(defaultValue: string | "color-auto" = "color-auto", title 
 export type ColorSettings = Static<ReturnType<typeof color>>;
 
 type TextContentOptions = {
-  paragraphMode?: "auto" | "hero";
   showInSettings?: boolean;
   disableSizing?: boolean;
   disableAlignment?: boolean;
@@ -57,19 +56,13 @@ type TextContentOptions = {
 export function textContent(
   title = "Text",
   defaultContent = "some text here",
-  {
-    paragraphMode = "auto",
-    showInSettings,
-    disableSizing = false,
-    disableAlignment = false,
-  }: TextContentOptions = {},
+  { showInSettings, disableSizing = false, disableAlignment = false }: TextContentOptions = {},
 ) {
   return prop({
     title,
     $id: "#content:text",
     schema: Type.String({
       default: defaultContent,
-      "ui:paragraph-mode": paragraphMode,
       "ui:disable-sizing": disableSizing,
       "ui:disable-alignment": disableAlignment,
       "ui:field": showInSettings ? "string" : "hidden",

@@ -1,9 +1,11 @@
-import { SegmentedControl } from "@upstart.gg/style-system/system";
+import { IconButton, SegmentedControl, Tooltip } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { FieldProps } from "./types";
 import { fieldLabel } from "../form-class";
 import { Select } from "@upstart.gg/style-system/system";
 import { HelpIcon } from "../HelpIcon";
+import { IoIosHelpCircleOutline } from "react-icons/io";
+import { FieldTitle } from "../field-factory";
 
 interface EnumOption {
   const: string;
@@ -42,12 +44,7 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
     case "radio":
       return (
         <div className="radio-field">
-          {title && (
-            <div className="flex gap-1 items-center">
-              <label className={fieldLabel}>{title}</label>
-              {description && <HelpIcon help={description} />}
-            </div>
-          )}
+          <FieldTitle title={title} description={description} />
           <div className="flex flex-col gap-2 mt-1.5">
             {options
               .filter((o) => !o["ui:hidden-option"])
@@ -73,20 +70,16 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
         </div>
       );
 
-    case "button-group":
+    case "button-group": {
+      const discrete = !!schema["ui:discrete"];
       return (
-        <div className="button-group-field flex-1 flex justify-between flex-wrap">
-          {title && (
-            <div className="flex gap-1 items-center flex-1">
-              <label className={fieldLabel}>{title}</label>
-              {/* {description && <HelpIcon help={description} />} */}
-            </div>
-          )}
+        <div className="button-group-field flex-1 flex justify-between flex-wrap gap-1">
+          <FieldTitle title={title} description={description} />
           <SegmentedControl.Root
             onValueChange={onChange}
             defaultValue={currentValue as string}
             size="1"
-            radius="large"
+            radius="medium"
           >
             {options
               .filter((o) => !o["ui:hidden-option"])
@@ -94,7 +87,7 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
                 <SegmentedControl.Item
                   key={option.const}
                   value={option.const}
-                  className={tx("[&_.rt-SegmentedControlItemLabel]:px-2")}
+                  className={tx(discrete && "[&_.rt-SegmentedControlItemLabel]:px-[6px]")}
                 >
                   {option.title}
                 </SegmentedControl.Item>
@@ -102,16 +95,12 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
           </SegmentedControl.Root>
         </div>
       );
+    }
 
     case "icon-group":
       return (
         <div className="icon-group-field">
-          {title && (
-            <div className="flex gap-1 items-center">
-              <label className={fieldLabel}>{title}</label>
-              {description && <HelpIcon help={description} />}
-            </div>
-          )}
+          <FieldTitle title={title} description={description} />
           <div className="flex divide-x divide-white dark:divide-dark-500">
             {options
               .filter((o) => !o["ui:hidden-option"])
@@ -143,7 +132,7 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
     default:
       return (
         <div className="flex justify-between flex-1 pr-1 gap-1">
-          <label className={fieldLabel}>{title}</label>
+          <FieldTitle title={title} description={description} />
           <Select.Root defaultValue={currentValue} size="2" onValueChange={(value) => onChange(value)}>
             <Select.Trigger radius="large" variant="ghost" />
             <Select.Content position="popper">
