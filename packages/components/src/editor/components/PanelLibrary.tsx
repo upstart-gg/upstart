@@ -97,7 +97,7 @@ export default function PanelLibrary() {
           >
             <BlockTitle title="Base bricks" />
             <div
-              className={tx("grid gap-1 p-1.5")}
+              className={tx("grid gap-1.5 p-1.5")}
               style={{
                 gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
               }}
@@ -121,7 +121,7 @@ export default function PanelLibrary() {
           >
             <BlockTitle title="Widgets" />
             <div
-              className={tx("grid gap-1 p-1.5")}
+              className={tx("grid gap-1.5 p-1.5")}
               style={{
                 gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
               }}
@@ -175,7 +175,7 @@ function BlockTitle({ title }: { title: string }) {
   return (
     <h3
       className={tx(
-        "text-[0.9rem] font-medium bg-upstart-100 dark:bg-dark-600 px-2 py-1.5 sticky top-0 z-[999]",
+        "text-[0.9rem] font-medium bg-upstart-100 dark:bg-dark-600 px-2 py-1.5 sticky top-0 z-[999] border-b border-upstart-200 dark:border-dark-500",
       )}
     >
       {title}
@@ -212,7 +212,7 @@ const DraggableBrick = forwardRef<HTMLButtonElement, DraggableBrickProps>(({ bri
       data-brick-default-h={brick.defaultHeight}
       type="button"
       className={tx(
-        `rounded border border-transparent hover:(border-upstart-600 bg-upstart-50) bg-white dark:bg-dark-700 cursor-grab
+        `rounded border border-upstart-100 hover:(border-upstart-600 bg-upstart-50) bg-white dark:bg-dark-700 cursor-grab
         active:cursor-grabbing touch-none select-none pointer-events-auto transition draggable-brick group
         z-[99999]
         [&:is(.clone)]:(opacity-80 !bg-white)`,
@@ -221,7 +221,7 @@ const DraggableBrick = forwardRef<HTMLButtonElement, DraggableBrickProps>(({ bri
     >
       <div
         className={tx(
-          "h-full w-full flex flex-col px-1 py-2 text-upstart-700 dark:text-upstart-400 items-center gap-0.5 rounded-[inherit] select-none",
+          "h-full w-full flex flex-col px-1 py-2 text-upstart-700 dark:text-upstart-400 items-center gap-1 rounded-[inherit] select-none",
         )}
       >
         {icon}
