@@ -5,8 +5,9 @@ import { basicAlign } from "../props/align";
 import { background } from "../props/background";
 import { border } from "../props/border";
 import { color, textContent } from "../props/text";
-import { pad } from "lodash-es";
 import { padding } from "../props/padding";
+import { BsAlphabetUppercase } from "react-icons/bs";
+import { effects } from "../props/effects";
 
 const heroSize = Type.Union(
   [
@@ -30,10 +31,11 @@ export const manifest = defineBrickManifest({
   name: "Hero",
   kind: "brick",
   description: "A big textual element for home pages",
-  icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-    <rect x="10" y="10" width="80" height="80" rx="4" fill="none" stroke="currentColor" stroke-width="3"/>
-    <rect x="20" y="35" width="60" height="12" rx="2" fill="currentColor"/>
-    <rect x="20" y="52" width="40" height="12" rx="2" fill="currentColor"/></svg>`,
+  icon: BsAlphabetUppercase,
+  // icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  //   <rect x="10" y="10" width="80" height="80" rx="4" fill="none" stroke="currentColor" stroke-width="3"/>
+  //   <rect x="20" y="35" width="60" height="12" rx="2" fill="currentColor"/>
+  //   <rect x="20" y="52" width="40" height="12" rx="2" fill="currentColor"/></svg>`,
 
   defaultHeight: { desktop: 5, mobile: 5 },
   defaultWidth: { desktop: 12, mobile: 12 },
@@ -42,10 +44,11 @@ export const manifest = defineBrickManifest({
     content: textContent("I'm a big text"),
     background: background(),
     color: color(),
+    effects: effects({ enableTextShadow: true }),
     align: basicAlign(),
     padding: padding("p-4"),
     border: border(),
-    textSize: heroSize,
+    // textSize: heroSize,
   }),
 });
 

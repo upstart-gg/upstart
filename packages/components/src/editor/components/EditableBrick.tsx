@@ -9,6 +9,9 @@ import {
   useEffect,
   useMemo,
 } from "react";
+import { RiDragMove2Fill } from "react-icons/ri";
+import { IoTrashBinOutline } from "react-icons/io5";
+
 import { tx } from "@upstart.gg/style-system/twind";
 import {
   useDebugMode,
@@ -49,7 +52,7 @@ import {
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { BiSolidColor } from "react-icons/bi";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
-import { FiSettings, FiDatabase } from "react-icons/fi";
+import { FiSettings, FiDatabase, FiTrash, FiTrash2 } from "react-icons/fi";
 import { BrickPopover } from "./BrickPopover";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
@@ -91,7 +94,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const manifest = useBrickManifest(brick.type);
     const parentBrick = getParentBrick(brick.id);
     const [isMenuBarVisible, setMenuBarVisible] = useState(false);
-    const position = brick.position[previewMode];
     const allowedPlacements = useBarPlacements(brick);
 
     brick = brickWithDefaults(brick);
@@ -107,7 +109,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       whileElementsMounted: autoUpdate,
       transform: true,
       middleware: [
-        offset(manifest.isContainer ? { mainAxis: 10, crossAxis: 0 } : { mainAxis: 6, crossAxis: 6 }),
+        offset(manifest.isContainer ? { mainAxis: 10, crossAxis: 0 } : { mainAxis: 3, crossAxis: 0 }),
         autoPlacement({
           allowedPlacements,
         }),
@@ -117,8 +119,8 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const hover = useHover(barsFloatingContext, {
       handleClose: safePolygon(),
       delay: {
-        open: 0,
-        close: 150,
+        open: 50,
+        close: 200,
       },
     });
 
@@ -206,6 +208,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           data-brick-type={brick.type}
           data-element-kind={manifest.kind}
           data-last-touched={brick.props.lastTouched ?? "0"}
+          data-dropzone={brick.isContainer}
           {...(manifest.movable ? {} : { "data-no-drag": "true" })}
           className={tx(wrapperClass, `![animation-delay:${0.5 * (index + 1)}s]`)}
           ref={brickRef}
@@ -242,11 +245,16 @@ type BrickMenuBarProps = ComponentProps<"div"> &
 const BrickMenuBarsContainer = forwardRef<HTMLDivElement, BrickMenuBarProps>(
   ({ brick, style, isContainerChild, show, ...rest }, ref) => {
     const selectedBrickId = useSelectedBrickId();
-    const visible = (show && brick.isContainer && !selectedBrickId) || selectedBrickId === brick.id;
+    const visible = (show && brick.isContainer && !selectedBrickId) || (show && !brick.isContainer);
+    // const visible = (show && brick.isContainer && !selectedBrickId) || selectedBrickId === brick.id;
+    if (!visible && brick.isContainer) {
+      return null;
+    }
     return (
       <div
         ref={ref}
         data-ui
+        data-ui-menu-bars-container
         role="navigation"
         className={tx(
           "z-[99999] text-base inline-flex items-center gap-1",
@@ -278,20 +286,21 @@ function BrickTextNavBar({ brick }: { brick: Brick }) {
 }
 
 function BrickMainNavBar({ brick }: { brick: Brick }) {
+  const { deleteBrick } = useDraftHelpers();
   const manifest = manifests[brick.type];
   if (!manifest) {
     return null;
   }
 
   return (
-    <nav className={menuNavBarCls}>
-      <span className={tx(menuBarBtnCls, menuBarBtnCommonCls, "capitalize pointer-events-none")}>
+    <nav className={menuNavBarCls} data-ui data-ui-options-bar>
+      <span className={tx(menuBarBtnCls, menuBarBtnCommonCls, "block capitalize pointer-events-none")}>
         {manifest.type}
       </span>
       {manifest.presets && (
         <BrickPopover brick={brick} view="presets">
           <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-            <BiSolidColor className={tx("w-5 h-5")} />
+            <BiSolidColor className={tx("w-4 h-4")} />
             {/* <span className={tx(menuBarTooltipCls)}>Presets</span> */}
           </button>
         </BrickPopover>
@@ -308,50 +317,15 @@ function BrickMainNavBar({ brick }: { brick: Brick }) {
         <FiDatabase className={tx("w-5 h-5")} />
         {/* <span className={tx(menuBarTooltipCls)}>Dynamic content</span> */}
       </button>
-      {/* Todo: data source / content */}
-    </nav>
-  );
-}
-
-function BrickEditLabel({ brick, isContainerChild }: { brick: Brick; isContainerChild?: boolean }) {
-  const debugMode = useDebugMode();
-  const manifest = useBrickManifest(brick.type);
-  if (brick.isContainer) {
-    return (
-      <div
-        data-ui
-        className="absolute top-[calc(100%+54px)] left-1/2 -translate-x-1/2 bg-orange-300/40 text-black opacity-0
-                    text-xs font-semibold py-0.5 px-1.5 rounded hover:bg-white/90 translate-y-1
-                     group-hover/brick:(opacity-100 translate-y-0) transition-all duration-150
-                    "
+      <button
+        type="button"
+        className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}
+        onClick={() => deleteBrick(brick.id)}
       >
-        {manifest.name}
-        {debugMode && <span className="font-mono pl-4">{brick.id}</span>}
-      </div>
-    );
-  }
-  return (
-    <div
-      data-ui
-      className={tx(
-        `absolute transition-all -z-10 duration-150 opacity-0
-        group-hover/brick:(opacity-100 translate-y-0)
-        translate-y-1  bg-black/50 backdrop-blur-md shadow-md
-      text-white text-xs font-normal py-0.5 px-2 rounded`,
-        isContainerChild ? "bottom-1 left-1" : "-bottom-6 right-1",
-      )}
-    >
-      {manifest.name}
-      {debugMode && (
-        <span className="font-mono pl-4">
-          {brick.id}{" "}
-          {isContainerChild
-            ? ""
-            : ` · x: ${brick.position.desktop.x} · y: ${brick.position.desktop.y} ·
-            ${brick.position.desktop.w}/${brick.position.desktop.h}`}
-        </span>
-      )}
-    </div>
+        <FiTrash className={tx("w-5 h-5 hover:text-red-500/70 group-hover:text-red-500/70")} />
+        {/* <span className={tx(menuBarTooltipCls)}>Dynamic content</span> */}
+      </button>
+    </nav>
   );
 }
 
@@ -401,8 +375,20 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
             <ContextMenu.Item
               shortcut="⌘C"
               onClick={(e) => {
+                navigator.clipboard
+                  .writeText(JSON.stringify(brick))
+                  .then(() => {
+                    toast("Brick copied to clipboard. You can paste it to another page.", {
+                      duration: 4000,
+                    });
+                  })
+                  .catch((err) => {
+                    console.error("Failed to copy: ", err);
+                    toast.error("Failed to copy brick to clipboard.", {
+                      duration: 4000,
+                    });
+                  });
                 e.stopPropagation();
-                navigator.clipboard.writeText(JSON.stringify(brick));
               }}
             >
               Copy

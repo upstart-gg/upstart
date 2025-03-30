@@ -7,6 +7,7 @@ import { Type } from "@sinclair/typebox";
 import { border } from "../props/border";
 import { effects } from "../props/effects";
 import { padding } from "../props/padding";
+import { RxGrid } from "react-icons/rx";
 
 export const datasource = Type.Array(Type.Object({}, { additionalProperties: true }));
 
@@ -26,12 +27,12 @@ export const manifest = defineBrickManifest({
     mobile: 12,
   },
   datasource,
-  // svg icon for the "container" brick
-  icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-        <line x1="3" y1="12" x2="21" y2="12"></line>
-        <line x1="12" y1="3" x2="12" y2="21"></line></svg>`,
+  icon: RxGrid,
+  // icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+  //       stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+  //       <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+  //       <line x1="3" y1="12" x2="21" y2="12"></line>
+  //       <line x1="12" y1="3" x2="12" y2="21"></line></svg>`,
   props: defineProps({
     // styles: group({
     //   title: "Styles",

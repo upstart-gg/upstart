@@ -18,6 +18,7 @@ const Text = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
         ref={ref}
         propPath="content"
         // className={tx("flex-1", ...styles)}
+        className="first-child:first-line:leading-[100%]"
         brickId={brick.id}
         content={props.content}
         editable={editable}

@@ -10,6 +10,7 @@ import { shadow } from "../props/effects";
 import { datasourceRef } from "../props/datasource";
 import { fixedPositioned, position } from "../props/position";
 import { boolean } from "../props/boolean";
+import { VscLayoutPanelOff } from "react-icons/vsc";
 
 export const datasource = Type.Array(
   Type.Object({
@@ -131,12 +132,14 @@ export const manifest = defineBrickManifest({
     desktop: 3,
     mobile: 3,
   },
-  icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="3" y="11" width="18" height="8" rx="2" ry="2"></rect>
-    <rect x="5" y="13" width="6" height="3" rx="1"></rect>
-    <line x1="13" y1="14" x2="15" y2="14"></line>
-    <line x1="17" y1="14" x2="19" y2="14"></line></svg>`,
+  icon: VscLayoutPanelOff,
+  iconClassName: "rotate-180",
+  // icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+  //   stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+  //   <rect x="3" y="11" width="18" height="8" rx="2" ry="2"></rect>
+  //   <rect x="5" y="13" width="6" height="3" rx="1"></rect>
+  //   <line x1="13" y1="14" x2="15" y2="14"></line>
+  //   <line x1="17" y1="14" x2="19" y2="14"></line></svg>`,
 
   presets: {
     ...softBorderedPresets,

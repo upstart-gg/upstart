@@ -9,10 +9,11 @@ import {
   type NodeViewProps,
   mergeAttributes,
   nodeInputRule,
+  type Extension,
 } from "@tiptap/react";
 import Placeholder from "@tiptap/extension-placeholder";
+import { RiArrowDownSLine, RiBracesLine } from "react-icons/ri";
 
-import { RiArrowDownSLine } from "react-icons/ri";
 import StarterKit from "@tiptap/starter-kit"; // define your extension array
 import TextAlign from "@tiptap/extension-text-align";
 import Heading from "@tiptap/extension-heading";
@@ -228,7 +229,7 @@ const TextEditor = <T extends ElementType = "div">({
         return `${options.suggestion.char}${field}}}`;
       },
     }),
-  ];
+  ] as Extension[];
 
   const editor = useTextEditor(
     {
@@ -409,7 +410,7 @@ function DatasourceFieldPickerModal(props: DatasourceFieldPickerModalProps) {
       <h3 className="text-base font-medium">Data sources fields</h3>
       <Callout.Root>
         <Callout.Icon>
-          <VscDatabase />
+          <RiBracesLine />
         </Callout.Icon>
         <Callout.Text>
           Use dynamic data thanks to data sources! Choose a data source field you'd like to display.
@@ -497,7 +498,7 @@ function DatasourceItemButton({ editor }: { editor: Editor }) {
     <Popover.Root>
       <Popover.Trigger>
         <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
-          <VscDatabase className="w-5 h-5" />
+          <RiBracesLine className="w-5 h-5" />
         </button>
       </Popover.Trigger>
       <Popover.Content width="460px" side="right" align="start" size="2" maxHeight="50vh" sideOffset={10}>
@@ -537,6 +538,7 @@ function TextStyleButtonGroup({ editor, noTextStrike, textSizeMode }: TextStyleB
           isBold && menuBarBtnActiveCls,
         )}
         value="bold"
+        // @ts-ignore
         onClick={() => editor.chain().focus().toggleBold().run()}
       >
         <MdFormatBold className="w-5 h-5" />
@@ -544,6 +546,7 @@ function TextStyleButtonGroup({ editor, noTextStrike, textSizeMode }: TextStyleB
       <ToggleGroup.Item
         className={tx(menuBarBtnCls, menuBarBtnCommonCls, isItalic && menuBarBtnActiveCls)}
         value="italic"
+        // @ts-ignore
         onClick={() => editor.chain().focus().toggleItalic().run()}
       >
         <MdOutlineFormatItalic className="w-5 h-5" />
@@ -552,6 +555,7 @@ function TextStyleButtonGroup({ editor, noTextStrike, textSizeMode }: TextStyleB
         <ToggleGroup.Item
           className={tx(menuBarBtnCls, menuBarBtnCommonCls, "!rounded-none", isStrike && menuBarBtnActiveCls)}
           value="strike"
+          // @ts-ignore
           onClick={() => editor.chain().focus().toggleStrike().run()}
         >
           <MdStrikethroughS className="w-5 h-5" />
@@ -627,6 +631,7 @@ function TextSizeClassicDropdown({ editor }: TextSizeClassicDropdownProps) {
         {
           label: "Paragraph",
           onClick: () => {
+            // @ts-ignore
             editor.chain().focus().setParagraph().run();
             setValue("paragraph");
           },
@@ -639,6 +644,7 @@ function TextSizeClassicDropdown({ editor }: TextSizeClassicDropdownProps) {
         {
           label: "Code",
           onClick: () => {
+            // @ts-ignore
             editor.chain().focus().toggleCode().run();
             setValue("code");
           },
@@ -648,7 +654,7 @@ function TextSizeClassicDropdown({ editor }: TextSizeClassicDropdownProps) {
       ]}
     >
       <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
-        <span className="text-base font-medium">
+        <span className="text-[0.8rem] font-medium">
           {value === "code" ? "Code" : value === "paragraph" ? "Paragraph" : `Title ${value}`}
         </span>
         <RiArrowDownSLine className={tx(arrowClass)} />
@@ -695,7 +701,7 @@ function TextSizeHeroDropdown({ editor }: TextSizeHeroDropdownProps) {
       }))}
     >
       <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
-        <span className="text-base font-medium capitalize">Hero {map[value]}</span>
+        <span className="text-[0.94rem] font-medium capitalize">Hero {map[value]}</span>
         <RiArrowDownSLine className={tx(arrowClass)} />
       </button>
     </DropMenu>

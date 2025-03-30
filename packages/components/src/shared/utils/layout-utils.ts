@@ -45,12 +45,39 @@ export function getBrickPosition(
   const gridX = Math.round((actualX - padX) / config.colWidth);
   const gridY = Math.round(actualY / config.rowHeight);
 
+  const w = Math.min(Math.ceil(rect.width / config.colWidth), LAYOUT_COLS[previewMode]);
+  const h = Math.ceil(rect.height / config.rowHeight);
+
+  const x = Math.max(0, gridX);
+  const y = Math.max(0, gridY);
+
+  console.log("getBrickPosition", {
+    gridX,
+    gridY,
+    rect,
+    w,
+    h,
+    x,
+    y,
+    actualX,
+    actualY,
+    padX,
+    colWidth: config.colWidth,
+    rowHeight: config.rowHeight,
+  });
+
   return {
-    x: Math.max(0, gridX),
-    y: Math.max(0, gridY),
-    w: Math.round(rect.width / config.colWidth),
-    h: Math.round(rect.height / config.rowHeight),
+    x,
+    y,
+    w,
+    h,
   };
+}
+
+export function getGridConfig(sectionElement: HTMLElement, previewMode: ResponsiveMode) {
+  const colWidth = Math.round(sectionElement.clientWidth / LAYOUT_COLS[previewMode]);
+  const rowHeight = LAYOUT_ROW_HEIGHT;
+  return { colWidth, rowHeight };
 }
 
 export function getDropPosition(event: Interact.DropEvent, gridConfig: GridConfig) {
@@ -175,12 +202,6 @@ export function getElementCenterPoint(element: HTMLElement) {
     x: rect.left + rect.width / 2,
     y: rect.top + rect.height / 2,
   };
-}
-
-export function getGridConfig(sectionElement: HTMLElement, previewMode: ResponsiveMode) {
-  const colWidth = sectionElement.clientWidth / LAYOUT_COLS[previewMode];
-  const rowHeight = LAYOUT_ROW_HEIGHT;
-  return { colWidth, rowHeight };
 }
 
 /**

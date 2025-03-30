@@ -93,7 +93,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           previewMode,
         );
 
-        if (dropOverBrick?.isContainer && event.shiftKey) {
+        if (dropOverBrick?.isContainer /* && event.shiftKey*/) {
           console.debug("Moving element(s) to parent %s", dropOverBrick.id);
           updatedPositions.forEach(({ brick }) => {
             draftHelpers.moveBrickToParent(brick.id, dropOverBrick.id);
@@ -111,7 +111,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
             );
             draft.updateBrick(brick.id, { sectionId });
             draft.updateBrickPosition(brick.id, previewMode, {
-              // ...draft.getBrick(brick.id)!.position[previewMode],
               x: gridPosition.x,
               y: gridPosition.y,
               w: gridPosition.w,
@@ -169,11 +168,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     resizeCallbacks: {
       onResizeEnd: (brickId, gridPos) => {
         console.debug("onResizeEnd (%s)", previewMode, brickId, gridPos);
-
         updateDragOverGhostStyle(null);
-
-        // Check if the brick should adjust its height because of overflow
-
         // Update the brick position (and height if needed)
         draftHelpers.updateBrickPosition(brickId, previewMode, {
           ...draftHelpers.getBrick(brickId)!.position[previewMode],

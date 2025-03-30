@@ -142,6 +142,7 @@ export const useEditablePage = (
         }),
         interact.modifiers.restrict({
           restriction: "#page-container",
+          endOnly: true,
         }),
       ],
       listeners: {
@@ -242,7 +243,7 @@ export const useEditablePage = (
 
     interactable.current.resizable({
       // inertia: true,
-      ignoreFrom: ".resize-handle-disabled",
+      ignoreFrom: ".resize-handle-disabled, [data-ui-options-bar], [data-ui-drag-handle]",
       listeners: {
         start: (event) => {
           const target = event.target as HTMLElement;
@@ -365,9 +366,12 @@ export const useEditablePage = (
     snapSizeToGrid,
   ]);
 
+  const dropzoneOverElement = useRef<HTMLElement | null>(null);
+
   useEffect(() => {
     if (pageRef.current) {
-      dropzone.current = interact("section");
+      dropzone.current = interact('[data-dropzone="true"]');
+      // dropzone.current = interact("section");
       // dropzone.current = interact(pageRef.current);
       dropzone.current
         .dropzone({
@@ -380,32 +384,39 @@ export const useEditablePage = (
 
               const gridConfig = getGridConfig(section, previewMode);
               const dropPosition = getDropPosition(event, gridConfig);
-
-              const constraints: BrickConstraints = defaultProps[type];
-
-              const w = constraints.defaultWidth?.[previewMode] ?? 20;
-              const h = constraints.defaultHeight?.[previewMode] ?? 10;
-              const x = Math.max(Math.ceil(dropPosition.x - w / 2), 1);
-              const y = Math.max(Math.ceil(dropPosition.y - h / 2), 1);
-
+              const { defaultWidth, defaultHeight } = defaultProps[type];
+              const w = defaultWidth?.[previewMode] ?? 20;
+              const h = defaultHeight?.[previewMode] ?? 10;
+              const x = Math.max(Math.round(dropPosition.x - w / 2), 1);
+              const y = Math.max(Math.round(dropPosition.y - h / 2), 1);
               const position = { x, y, w, h };
 
               dropCallbacks.onDrop(event, position, section, type);
             }
           },
         })
+        .on("dragenter", (event: Interact.DropEvent) => {
+          console.log("dragenter", event.target.id);
+        })
+        .on("dragleave", (event: Interact.DropEvent) => {
+          console.log("dragleave", event.target.id);
+        })
         .on("dropactivate", function (event: Interact.DropEvent) {
-          console.log("dropactivate", event);
+          console.log("dropactivate", event.target.id);
           event.relatedTarget.setPointerCapture(1);
           dropCallbacks.onDropActivate?.(event);
         })
         .on("dropdeactivate", function (event: Interact.DropEvent) {
-          console.debug("dropdeactivate", event);
+          console.log("dropdeactivate", event.target?.id);
           event.relatedTarget.releasePointerCapture(1);
           dropCallbacks.onDropDeactivate?.(event);
         })
         .on("dropmove", function (event: Interact.DropEvent) {
           const type = event.relatedTarget.dataset.brickType as Brick["type"] | undefined;
+          const overElement = event.target as HTMLElement;
+
+          // console.log("dropmove", event, type, overElement.id);
+
           if (type) {
             const section = getSectionAtPosition(event.dragEvent.clientX, event.dragEvent.clientY);
             invariant(section, "Section not found");

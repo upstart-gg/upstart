@@ -8,7 +8,7 @@ export default function ResizeHandle({
   return (
     <div
       className={tx(
-        "react-resizable-handle absolute z-[9999] transition-opacity duration-300 opacity-0",
+        "react-resizable-handle absolute z-[9999] transition-opacity duration-300 delay-100 opacity-0",
         "group-hover/brick:opacity-90 overflow-visible ",
         `react-resizable-handle-${direction}`,
         {

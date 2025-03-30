@@ -34,9 +34,12 @@ export default function PanelLibrary() {
      * Initialize interactjs for draggable bricks from the library.
      * The drop logic is handled in `use-draggable.ts`, not here.
      */
-    interactable.current = interact(".draggable-brick");
+    interactable.current = interact(".draggable-brick", {
+      styleCursor: false,
+    });
     interactable.current.draggable({
       inertia: true,
+
       autoScroll: {
         enabled: false,
       },
@@ -85,65 +88,54 @@ export default function PanelLibrary() {
             <Callout.Text>Drag and drop blocks to add them to your page.</Callout.Text>
           </Callout.Root>
         )}
-
-        <div
-          className={tx(
-            "flex flex-col max-h-[calc(100dvh/2-99px)] overflow-y-auto",
-            panelTabContentScrollClass,
-          )}
-        >
-          <h3
+        <div className="flex flex-col gap-8">
+          <div
             className={tx(
-              "text-sm font-medium bg-upstart-100 dark:bg-dark-600 px-2 py-1 sticky top-0 z-[999]",
+              "flex flex-col max-h-[calc(100dvh/2-99px)] overflow-y-auto",
+              panelTabContentScrollClass,
             )}
           >
-            Base bricks
-          </h3>
-          <div
-            className={tx("grid gap-1 p-1.5")}
-            style={{
-              gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
-            }}
-          >
-            {Object.values(manifests)
-              .filter((m) => m.kind === "brick" && !m.hideInLibrary)
-              .map((brickImport) => {
-                return (
-                  <Tooltip content={brickImport.description} key={brickImport.type}>
-                    <DraggableBrick brick={defaultProps[brickImport.type]} />
-                  </Tooltip>
-                );
-              })}
+            <BlockTitle title="Base bricks" />
+            <div
+              className={tx("grid gap-1 p-1.5")}
+              style={{
+                gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
+              }}
+            >
+              {Object.values(manifests)
+                .filter((m) => m.kind === "brick" && !m.hideInLibrary)
+                .map((brickImport) => {
+                  return (
+                    <Tooltip content={brickImport.description} key={brickImport.type}>
+                      <DraggableBrick brick={defaultProps[brickImport.type]} />
+                    </Tooltip>
+                  );
+                })}
+            </div>
           </div>
-        </div>
-        <div
-          className={tx(
-            "flex flex-col max-h-[calc(100dvh/2-99px)] overflow-y-auto",
-            panelTabContentScrollClass,
-          )}
-        >
-          <h3
+          <div
             className={tx(
-              "text-sm font-medium bg-upstart-100 dark:bg-dark-600 px-2 py-1 sticky top-0 z-[999]",
+              "flex flex-col max-h-[calc(100dvh/2-99px)] overflow-y-auto",
+              panelTabContentScrollClass,
             )}
           >
-            Widgets
-          </h3>
-          <div
-            className={tx("grid gap-1 p-1.5")}
-            style={{
-              gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
-            }}
-          >
-            {Object.values(manifests)
-              .filter((m) => m.kind === "widget" && !m.hideInLibrary)
-              .map((brickImport) => {
-                return (
-                  <Tooltip content={brickImport.description} key={brickImport.type} delayDuration={850}>
-                    <DraggableBrick brick={defaultProps[brickImport.type]} />
-                  </Tooltip>
-                );
-              })}
+            <BlockTitle title="Widgets" />
+            <div
+              className={tx("grid gap-1 p-1.5")}
+              style={{
+                gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
+              }}
+            >
+              {Object.values(manifests)
+                .filter((m) => m.kind === "widget" && !m.hideInLibrary)
+                .map((brickImport) => {
+                  return (
+                    <Tooltip content={brickImport.description} key={brickImport.type} delayDuration={850}>
+                      <DraggableBrick brick={defaultProps[brickImport.type]} />
+                    </Tooltip>
+                  );
+                })}
+            </div>
           </div>
         </div>
       </Tabs.Content>
@@ -179,11 +171,37 @@ export default function PanelLibrary() {
   );
 }
 
+function BlockTitle({ title }: { title: string }) {
+  return (
+    <h3
+      className={tx(
+        "text-[0.9rem] font-medium bg-upstart-100 dark:bg-dark-600 px-2 py-1.5 sticky top-0 z-[999]",
+      )}
+    >
+      {title}
+    </h3>
+  );
+}
+
 type DraggableBrickProps = {
   brick: BrickDefaults;
 };
 
 const DraggableBrick = forwardRef<HTMLButtonElement, DraggableBrickProps>(({ brick, ...props }, ref) => {
+  const icon =
+    typeof brick.icon === "string" ? (
+      <span
+        className={tx(
+          "w-7 h-7 text-upstart-600 dark:text-upstart-400 [&>svg]:w-auto [&>svg]:h-7 inline-block",
+        )}
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+        dangerouslySetInnerHTML={{ __html: brick.icon }}
+      />
+    ) : (
+      <brick.icon
+        className={tx("w-6 h-6 text-upstart-600/90 group-hover:text-upstart-700", brick.iconClassName)}
+      />
+    );
   return (
     <button
       ref={ref}
@@ -194,8 +212,8 @@ const DraggableBrick = forwardRef<HTMLButtonElement, DraggableBrickProps>(({ bri
       data-brick-default-h={brick.defaultHeight}
       type="button"
       className={tx(
-        `rounded border border-transparent hover:border-upstart-600 bg-white dark:bg-dark-700 cursor-grab
-        active:cursor-grabbing touch-none select-none pointer-events-auto transition draggable-brick
+        `rounded border border-transparent hover:(border-upstart-600 bg-upstart-50) bg-white dark:bg-dark-700 cursor-grab
+        active:cursor-grabbing touch-none select-none pointer-events-auto transition draggable-brick group
         z-[99999]
         [&:is(.clone)]:(opacity-80 !bg-white)`,
       )}
@@ -203,16 +221,10 @@ const DraggableBrick = forwardRef<HTMLButtonElement, DraggableBrickProps>(({ bri
     >
       <div
         className={tx(
-          "h-full w-full flex flex-col px-1 py-2 items-center gap-0.5 rounded-[inherit] select-none",
+          "h-full w-full flex flex-col px-1 py-2 text-upstart-700 dark:text-upstart-400 items-center gap-0.5 rounded-[inherit] select-none",
         )}
       >
-        <span
-          className={tx(
-            "w-7 h-7 text-upstart-600 dark:text-upstart-400 [&>svg]:w-auto [&>svg]:h-7 inline-block",
-          )}
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-          dangerouslySetInnerHTML={{ __html: brick.icon }}
-        />
+        {icon}
         <span className={tx("whitespace-nowrap text-xs")}>{brick.name}</span>
       </div>
     </button>

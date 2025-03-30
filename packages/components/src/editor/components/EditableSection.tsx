@@ -46,6 +46,7 @@ export default function EditableSection({ section }: EditableSectionProps) {
       id={id}
       ref={ref}
       data-element-kind="section"
+      data-dropzone
       data-section-h-padding={responsiveProps?.$paddingHorizontal ?? 0}
       className={className}
     >
@@ -244,7 +245,6 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
                 {!isFirstSection && (
                   <DropdownMenu.Item onClick={() => draftHelpers.moveSectionUp(section.id)}>
                     <div className="flex items-center justify-start gap-2">
-                      <TbArrowUp className="w-4 h-4" />
                       <span>Reorder up</span>
                     </div>
                   </DropdownMenu.Item>
@@ -252,7 +252,6 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
                 {!isLastSection && (
                   <DropdownMenu.Item onClick={() => draftHelpers.moveSectionDown(section.id)}>
                     <div className="flex items-center justify-start gap-2">
-                      <TbArrowDown className="w-4 h-4" />
                       <span>Reorder down</span>
                     </div>
                   </DropdownMenu.Item>
@@ -262,7 +261,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
               <DropdownMenu.Group>
                 <DropdownMenu.Item onClick={() => draftHelpers.moveSectionDown(section.id)}>
                   <div className="flex items-center justify-start gap-2">
-                    <span>Duplicate section</span>
+                    <span>Duplicate</span>
                   </div>
                 </DropdownMenu.Item>
                 <Popover.Trigger>
