@@ -21,7 +21,7 @@ import { FieldTitle } from "../field-factory";
 export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
   const onSettingsChange = (newVal: Partial<BorderSettings>) => onChange({ ...currentValue, ...newVal });
-  const [currentSide, setSide] = useState<string[]>(currentValue.side ?? ["all"]);
+  const [currentSide, setSide] = useState<string[]>(currentValue.sides ?? ["all"]);
 
   return (
     <div className="border-field flex flex-col gap-2 flex-1">
@@ -91,12 +91,12 @@ export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
                 type="button"
                 key={option.const}
                 onClick={() => {
-                  const side = currentSide.includes(option.const)
+                  const sides = currentSide.includes(option.const)
                     ? currentSide.filter((s) => s !== option.const)
                     : [...currentSide, option.const];
-                  setSide(side);
+                  setSide(sides);
                   onSettingsChange({
-                    side,
+                    sides,
                   });
                 }}
                 className={tx(

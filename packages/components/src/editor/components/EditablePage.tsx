@@ -14,10 +14,9 @@ import {
 import { useHotkeys } from "react-hotkeys-hook";
 import Selecto from "react-selecto";
 import { useEditablePage } from "~/editor/hooks/use-editable-page";
-import { defaultProps } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
+import { defaultProps, manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
 import {
-  canDropOnLayout,
   getBrickAtPosition,
   type getDropOverGhostPosition,
   getSectionAtPosition,
@@ -85,21 +84,15 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       onDragEnd: (updatedPositions, event) => {
         updateDragOverGhostStyle(null);
 
-        const firstPos = updatedPositions[0];
-        const dropOverBrick = getBrickAtPosition(
-          firstPos.gridPosition.x,
-          firstPos.gridPosition.y,
-          draft.bricks,
-          previewMode,
-        );
+        updatedPositions.forEach(({ brick, gridPosition, sectionId }) => {
+          const hoveredBrick = getBrickAtPosition(gridPosition.x, gridPosition.y, draft.bricks, previewMode);
+          const hoveredBrickManifest = hoveredBrick ? manifests[hoveredBrick.type] : null;
 
-        if (dropOverBrick?.isContainer /* && event.shiftKey*/) {
-          console.debug("Moving element(s) to parent %s", dropOverBrick.id);
-          updatedPositions.forEach(({ brick }) => {
-            draftHelpers.moveBrickToParent(brick.id, dropOverBrick.id);
-          });
-        } else {
-          updatedPositions.forEach(({ brick, gridPosition, sectionId }) => {
+          if (hoveredBrick && hoveredBrickManifest?.isContainer /* && event.shiftKey*/) {
+            console.debug("Moving element(s) to parent %s", hoveredBrick.id);
+            console.log("Brick has moved", brick);
+            draftHelpers.moveBrickToParent(brick.id, hoveredBrick.id);
+          } else {
             console.debug(
               "Updating position of %s to x = %s, y = %s, w = %s, h = %s in section %s",
               brick.id,
@@ -116,8 +109,8 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
               w: gridPosition.w,
               h: gridPosition.h,
             });
-          });
-        }
+          }
+        });
 
         // reset the selected group
         editorHelpers.setSelectedGroup();
@@ -149,11 +142,15 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
             },
           };
 
-          const dropOverBrick = getBrickAtPosition(position.x, position.y, draft.bricks, previewMode);
+          const hoveredBrick = getBrickAtPosition(position.x, position.y, draft.bricks, previewMode);
+          const hoveredBrickManifest = hoveredBrick ? manifests[hoveredBrick.type] : null;
 
           // Add the new brick to the store
           // Specify the parent if we dropped on a container
-          draft.addBrick(newBrick, dropOverBrick?.isContainer ? dropOverBrick.id : null);
+          draft.addBrick(
+            newBrick,
+            hoveredBrick && hoveredBrickManifest?.isContainer ? hoveredBrick.id : null,
+          );
 
           if (previewMode === "desktop") {
             startTransition(() => {

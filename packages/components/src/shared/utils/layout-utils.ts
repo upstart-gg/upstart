@@ -142,51 +142,6 @@ export function adjustMobileLayout(layout: Brick[]): Brick[] {
   });
 }
 
-export function canDropOnLayout(
-  bricks: Brick[],
-  currentBp: ResponsiveMode,
-  dropPosition: { y: number; x: number },
-  constraints: BrickConstraints,
-): { y: number; x: number; w: number; h: number; forbidden?: boolean; parent?: Brick } | false {
-  // Helper function to check if a position is valid
-  function isPositionValid(x: number, y: number, width: number): boolean {
-    // Check if position is within grid bounds
-    if (x < 0 || x + width > LAYOUT_COLS[currentBp] || y < 0) {
-      console.log("out of bounds, x = %d, y = %d, width = %d, max = %d", x, y, width, LAYOUT_COLS[currentBp]);
-      return false;
-    }
-
-    return true;
-  }
-
-  // Ensure minimum width respects breakpoint constraints
-  const effectiveMinWidth = Math.max(constraints.minWidth?.[currentBp] ?? 0, 1);
-
-  // Possible width depending on x position
-  const possibleMaxWidth = LAYOUT_COLS[currentBp] - dropPosition.x;
-
-  // Calculate the width to use - try preferred first, fall back to minimum
-  const width = Math.min(constraints.defaultWidth?.[currentBp] ?? effectiveMinWidth, possibleMaxWidth);
-
-  // Calculate the height to use
-  const height = constraints.defaultHeight?.[currentBp] || defaultsPreferred[currentBp].height;
-
-  // Check if the drop position is valid
-  if (isPositionValid(dropPosition.x, dropPosition.y, width)) {
-    const brickAtPos = getBrickAtPosition(dropPosition.x, dropPosition.y, bricks, currentBp);
-    return {
-      x: dropPosition.x,
-      y: dropPosition.y,
-      w: width,
-      h: height,
-      parent: brickAtPos?.isContainer ? brickAtPos : undefined,
-    };
-  }
-
-  // If the position is invalid, return false
-  return false;
-}
-
 /**
  */
 export function getSectionAtPosition(x: number, y: number) {

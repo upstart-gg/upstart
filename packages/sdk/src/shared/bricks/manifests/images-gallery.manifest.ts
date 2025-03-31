@@ -29,9 +29,9 @@ export const datasource = Type.Array(
 export type Datasource = typeof datasource;
 
 export const manifest = defineBrickManifest({
-  type: "images-wall",
+  type: "images-gallery",
   kind: "widget",
-  name: "Images wall",
+  name: "Gallery",
   description: "An image collection",
   defaultInspectorTab: "content",
   isContainer: true,

@@ -5,6 +5,7 @@ import { defaultProps } from "./bricks/manifests/all-manifests";
 import { attr } from "./attributes";
 import { background } from "./bricks/props/background";
 import { merge } from "lodash-es";
+import def from "ajv/dist/vocabularies/discriminator";
 
 /**
  * Generates a unique identifier for bricks.
@@ -107,9 +108,9 @@ export const brickSchema = Type.Object(
     }),
     props: Type.Record(Type.String(), Type.Unknown()),
     mobileProps: Type.Record(Type.String(), Type.Unknown()),
-    isContainer: Type.Optional(Type.Boolean()),
     parentId: Type.Optional(Type.String()),
     sectionId: Type.String(),
+    $children: Type.Optional(Type.Array(Type.Ref("brick"))),
     position: Type.Object(
       {
         mobile: brickPositionSchema,
@@ -127,9 +128,10 @@ export const brickSchema = Type.Object(
 export type Brick = Static<typeof brickSchema>;
 export type BricksLayout = Brick[];
 
-const definedBrickSchema = Type.Composite([
-  Type.Omit(brickSchema, ["id", "position", "mobileProps"]),
+export const definedBrickSchema = Type.Composite([
+  Type.Pick(brickSchema, ["type", "props", "sectionId", "parentId", "$children"]),
   Type.Object({
+    id: Type.Optional(Type.String()),
     mobileProps: Type.Optional(brickSchema.properties.props),
     position: Type.Object({
       mobile: definedBrickPositionSchema,
@@ -155,7 +157,7 @@ const sectionProps = Type.Object(
           { value: "max-w-screen-2xl", title: "Extra large", description: "Common width" },
           { value: "max-w-full", title: "Full width", description: "Takes the entire space" },
         ],
-        description: "The maximum width of the page. Desktop only.",
+        description: "The maximum width of the page. Desktop only",
         displayAs: "select",
         "ui:group": "layout",
         "ui:group:order": 3,
@@ -165,7 +167,7 @@ const sectionProps = Type.Object(
     $paddingHorizontal: Type.Optional(
       attr.number("Horizontal spacing", 0, {
         min: 0,
-        description: "Horizontal spacing. Desktop only.",
+        description: "Horizontal spacing. Desktop only",
         displayAs: "button-group",
       }),
     ),
@@ -176,7 +178,7 @@ const sectionProps = Type.Object(
       }),
     ),
   },
-  { additionalProperties: true, $id: "section-props" },
+  { additionalProperties: true },
 );
 
 export const sectionSchema = Type.Object(
@@ -203,9 +205,9 @@ export const sectionSchema = Type.Object(
 
 export type Section = Static<typeof sectionSchema>;
 export type ResponsivePosition = Brick["position"];
-export type DefinedSection = Omit<Section, "id" | "kind"> & {
-  id?: string;
-};
+
+export const definedSectionSchema = Type.Omit(sectionSchema, ["kind"]);
+export type DefinedSection = Omit<Section, "kind">;
 
 export type LayoutCols = {
   mobile: number;
@@ -254,7 +256,6 @@ export function defineSections(sections: DefinedSection[]): Section[] {
   return sections.map((section) => {
     return {
       ...section,
-      id: section.id ?? `section-${generateId()}`,
       props: section.props ?? {},
       kind: "section",
     } as const;
@@ -262,48 +263,61 @@ export function defineSections(sections: DefinedSection[]): Section[] {
 }
 
 export function defineBricks<B extends DefinedBrick[] = DefinedBrick[]>(bricks: B): Brick[] {
-  return bricks.map((brick) => {
-    const id = `brick-${generateId()}`;
-    return {
-      id,
-      // ...defaultProps[brick.type],
-      ...brick,
-      props: {
-        ...brick.props,
-        ...("$children" in brick.props
-          ? {
-              $children: (brick.props.$children as DefinedBrick[]).map((childBrick) => ({
-                id: `brick-${generateId()}`,
-                ...defaultProps[childBrick.type],
-                ...childBrick,
-                parentId: id,
-                sectionId: brick.sectionId,
-                ...("position" in childBrick
-                  ? {}
-                  : {
-                      position: {
-                        mobile: {},
-                        desktop: {},
-                      },
-                    }),
-              })),
-            }
-          : {}),
-      },
-      mobileProps: (brick.mobileProps ?? {}) as Brick["mobileProps"],
-      position: {
-        mobile: mapPosition(brick.position.mobile, "mobile"),
-        desktop: mapPosition(brick.position.desktop, "desktop"),
-      },
-    };
-  });
+  return bricks.map(defineBrick);
 }
 
-export function brickWithDefaults<B extends Brick>(brick: B): B {
-  const defProps = defaultProps[brick.type];
+export function getPositionDefaults() {
   return {
-    ...brick,
-    props: merge({}, defProps.props, brick.props),
-    mobileProps: merge({}, defProps.mobileProps, brick.mobileProps),
+    desktop: {
+      w: 0,
+      h: 0,
+      x: 0,
+      y: 0,
+    },
+    mobile: {
+      w: 0,
+      h: 0,
+      x: 0,
+      y: 0,
+    },
   };
 }
+
+export function defineBrick(brick: DefinedBrick): Brick {
+  const id = brick.id ?? `brick-${generateId()}`;
+  return {
+    id,
+    ...brick,
+    props: {
+      ...merge({}, defaultProps[brick.type].props, brick.props),
+      ...("$children" in brick.props
+        ? {
+            $children: (brick.props.$children as DefinedBrick[]).map((childBrick) => ({
+              ...childBrick,
+              id: childBrick.id ?? `brick-${generateId()}`,
+              parentId: id,
+              sectionId: brick.sectionId,
+              position: getPositionDefaults(),
+              props: merge({}, defaultProps[childBrick.type].props, childBrick.props),
+            })),
+          }
+        : {}),
+    },
+    mobileProps: (brick.mobileProps ?? {}) as Brick["mobileProps"],
+    position: brick.position
+      ? {
+          mobile: mapPosition(brick.position.mobile, "mobile"),
+          desktop: mapPosition(brick.position.desktop, "desktop"),
+        }
+      : getPositionDefaults(),
+  };
+}
+
+// export function brickWithDefaults<B extends Brick>(brick: B): B {
+//   const defProps = defaultProps[brick.type];
+//   return {
+//     ...brick,
+//     props: merge({}, defProps.props, brick.props),
+//     mobileProps: merge({}, defProps.mobileProps, brick.mobileProps),
+//   };
+// }

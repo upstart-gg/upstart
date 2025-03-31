@@ -64,10 +64,12 @@ export function border({
       color: Type.String({
         default: defaultValue?.color,
         title: "Color",
+        description:
+          "Can be set to transparent, hex/rgb/rgba color, or even classes like `border-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900",
         "ui:field": "color",
         "ui:color-type": "border",
       }),
-      side: Type.Optional(
+      sides: Type.Optional(
         Type.Array(
           Type.Union([
             Type.Literal("border-l", { title: "Left" }),
@@ -78,6 +80,8 @@ export function border({
           {
             default: defaultValue.side,
             title: "Sides",
+            description:
+              "The specific sides where to apply the border. Can contain border-(l|t|r|b). Not specifying sides will apply the border to all sides.",
             "ui:field": "border-side",
           },
         ),

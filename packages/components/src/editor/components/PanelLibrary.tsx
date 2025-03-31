@@ -80,14 +80,6 @@ export default function PanelLibrary() {
         </IconButton>
       </Tabs.List>
       <Tabs.Content value="library">
-        {shouldDisplayLibraryCallout && (
-          <Callout.Root size="1">
-            <Callout.Icon>
-              <TbDragDrop className={tx("w-8 h-8 mt-3 stroke-1")} />
-            </Callout.Icon>
-            <Callout.Text>Drag and drop blocks to add them to your page.</Callout.Text>
-          </Callout.Root>
-        )}
         <div className="flex flex-col gap-8">
           <div
             className={tx(
@@ -96,8 +88,14 @@ export default function PanelLibrary() {
             )}
           >
             <BlockTitle title="Base bricks" />
+            {shouldDisplayLibraryCallout && (
+              <Callout.Root size="1" color="violet" className="!rounded-none">
+                <Callout.Text size="1">Simply drag and drop those base bricks to your page.</Callout.Text>
+              </Callout.Root>
+            )}
+
             <div
-              className={tx("grid gap-1.5 p-1.5")}
+              className={tx("grid gap-1 p-1.5")}
               style={{
                 gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
               }}
@@ -120,8 +118,16 @@ export default function PanelLibrary() {
             )}
           >
             <BlockTitle title="Widgets" />
+            {shouldDisplayLibraryCallout && (
+              <Callout.Root size="1" color="violet" className="!rounded-none">
+                <Callout.Text size="1">
+                  Widgets are reusable components that can be added to your page.
+                </Callout.Text>
+              </Callout.Root>
+            )}
+
             <div
-              className={tx("grid gap-1.5 p-1.5")}
+              className={tx("grid gap-1 p-1.5")}
               style={{
                 gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
               }}
@@ -142,9 +148,9 @@ export default function PanelLibrary() {
       <ScrollablePanelTab tab="ai" className={tx("p-2")}>
         <Callout.Root size="1">
           <Callout.Icon>
-            <WiStars className={tx("w-8 h-8 mt-3")} />
+            <WiStars className={tx("w-7 h-7 mt-3")} />
           </Callout.Icon>
-          <Callout.Text>Tell AI what you want and it will generate a brick for you!</Callout.Text>
+          <Callout.Text size="1">Tell AI what you want and it will generate a brick for you!</Callout.Text>
         </Callout.Root>
         <TextArea
           onInput={(e) => {
@@ -212,16 +218,16 @@ const DraggableBrick = forwardRef<HTMLButtonElement, DraggableBrickProps>(({ bri
       data-brick-default-h={brick.defaultHeight}
       type="button"
       className={tx(
-        `rounded border border-upstart-100 hover:(border-upstart-600 bg-upstart-50) bg-white dark:bg-dark-700 cursor-grab
-        active:cursor-grabbing touch-none select-none pointer-events-auto transition draggable-brick group
-        z-[99999]
+        `rounded border border-upstart-100 hover:(border-upstart-600 bg-upstart-50 scale-110) bg-white dark:bg-dark-700 cursor-grab
+        active:cursor-grabbing touch-none select-none pointer-events-auto transition draggable-brick group aspect-square
+        z-[99999] flex flex-col items-center justify-center
         [&:is(.clone)]:(opacity-80 !bg-white)`,
       )}
       {...props}
     >
       <div
         className={tx(
-          "h-full w-full flex flex-col px-1 py-2 text-upstart-700 dark:text-upstart-400 items-center gap-1 rounded-[inherit] select-none",
+          "flex-1 flex flex-col justify-center text-upstart-700 dark:text-upstart-400 items-center gap-1 rounded-[inherit]",
         )}
       >
         {icon}

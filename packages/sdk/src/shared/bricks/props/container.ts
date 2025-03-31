@@ -210,7 +210,7 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
           title: "Layout type",
           default: defaults?.type ?? "flex",
           description:
-            "Type of the container. Flex layout arranges items in a one-dimensional line. Grid layout arranges items in a two-dimensional grid.",
+            "Type of the container. Flex layout arranges items in a one-dimensional line. Grid layout arranges items in a two-dimensional grid",
           "ui:field": "enum",
           "ui:responsive": true,
         }),
@@ -235,7 +235,7 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
             [Type.Literal("flex-row", { title: "Row" }), Type.Literal("flex-col", { title: "Column" })],
             {
               title: "Direction",
-              description: "The direction of the container",
+              description: "The direction of the container. Only applies to flex layout",
               default: defaults?.direction ?? "flex-row",
               metadata: {
                 filter: isFlexLayoutFilter,
@@ -246,7 +246,7 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
         columns: optional(
           Type.Number({
             title: "Columns",
-            description: "Number of columns",
+            description: "Number of columns. Only applies to grid layout.",
             "ui:field": "slider",
             default: defaults?.columns?.default ?? 2,
             minimum: 1,
@@ -258,7 +258,7 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
         ),
         wrap: Type.Boolean({
           title: "Wrap",
-          description: "Wrap items",
+          description: "Wrap items. Only applies to flex layout.",
           default: defaults?.wrap ?? true,
           metadata: {
             filter: isFlexLayoutFilter,
@@ -266,7 +266,7 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
         }),
         fillSpace: Type.Boolean({
           title: "Fill space",
-          description: "Makes items of the container fill the available space",
+          description: "Makes items of the container fill the available space. Only applies to flex layout.",
           default: defaults?.fillSpace ?? true,
           metadata: {
             filter: isFlexLayoutFilter,
@@ -286,7 +286,8 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
             {
               title: "Justify",
               default: defaults?.justifyContent ?? "justify-stretch",
-              description: "Justify content along the main axis (horizontal for row, vertical for column)",
+              description:
+                "Justify content along the main axis (horizontal for row, vertical for column). Only applies to flex layout",
               metadata: {
                 filter: isFlexLayoutFilter,
               },
@@ -304,7 +305,8 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
             {
               title: "Alignment",
               default: defaults?.alignItems ?? "items-stretch",
-              description: "Align items along the cross axis (vertical for row, horizontal for column)",
+              description:
+                "Align items along the cross axis (vertical for row, horizontal for column). Only applies to flex layout",
               metadata: {
                 filter: isFlexLayoutFilter,
               },

@@ -1,5 +1,9 @@
 import { forwardRef } from "react";
-import { type Manifest, datasource, manifest } from "@upstart.gg/sdk/bricks/manifests/images-wall.manifest";
+import {
+  type Manifest,
+  datasource,
+  manifest,
+} from "@upstart.gg/sdk/shared/bricks/manifests/images-gallery.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { useDatasource } from "../hooks/use-datasource";

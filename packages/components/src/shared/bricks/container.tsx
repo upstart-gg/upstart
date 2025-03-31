@@ -5,7 +5,7 @@ import { type Manifest, manifest } from "@upstart.gg/sdk/bricks/manifests/contai
 import EditableBrickWrapper from "~/editor/components/EditableBrick";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useDatasource } from "../hooks/use-datasource";
-import type { Brick } from "@upstart.gg/sdk/shared/bricks";
+import { defineBrick, getPositionDefaults, type Brick } from "@upstart.gg/sdk/shared/bricks";
 import BaseBrick from "../components/BaseBrick";
 
 const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
@@ -23,12 +23,13 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edi
     props.$children =
       template && ds.data !== null
         ? ds.data.map((data, index) => {
-            return {
+            return defineBrick({
               ...template,
               id: `${brick.id}-${index}`,
               parentId: brick.id,
+              sectionId: brick.sectionId,
               props: { ...template.props, datasourceRef: props.datasource, ...data },
-            };
+            }) satisfies Brick;
           })
         : [];
   }

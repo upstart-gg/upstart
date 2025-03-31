@@ -15,6 +15,7 @@ export function image(title = "Image", options: PropImageOptions = {}) {
       src: Type.String({
         default: defaultImageUrl,
         title,
+        description: "Image URL. Can be a link to an image or a data URI.",
       }),
       alt: Type.Optional(
         Type.String({

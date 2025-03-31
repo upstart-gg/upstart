@@ -106,12 +106,12 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
     }
 
     case "border-side": {
-      const currentValue = (get(formData, id) ?? commonProps.schema.default) as BorderSettings["side"];
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as BorderSettings["sides"];
       return (
         <BorderSideField
           key={`field-${id}`}
           currentValue={currentValue}
-          onChange={(value: BorderSettings["side"] | null) => onChange({ [id]: value }, id)}
+          onChange={(value: BorderSettings["sides"] | null) => onChange({ [id]: value }, id)}
           {...commonProps}
         />
       );

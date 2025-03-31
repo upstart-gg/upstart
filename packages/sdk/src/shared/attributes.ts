@@ -237,20 +237,20 @@ const defaultAttributes = {
   $pageTitle: attr.string("Title", "Untitled", {
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
-    description: "The title of the page. Appears in the browser tab and search results.",
+    description: "The title of the page. Appears in the browser tab and search results",
   }),
 
   $pageDescription: attr.string("Description", "", {
     "ui:widget": "textarea",
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
-    description: "A short description of the page. Used by search engines.",
+    description: "A short description of the page. Used by search engines",
   }),
 
   $pageKeywords: attr.string("Keywords", "", {
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
-    description: "Keywords related to the page. Used by search engines.",
+    description: "Keywords related to the page. Used by search engines",
   }),
 
   $pageLastUpdated: attr.datetime("Last updated", undefined, { "ui:hidden": true }),
@@ -262,6 +262,8 @@ const defaultAttributes = {
       color: "#ffffff",
     },
     title: "Body Background",
+    description:
+      "Applies to the body element of the page (while $pageBackground applies to the page container)",
     "ui:field": "background",
     "ui:show-img-search": true,
     "ui:group": "layout",

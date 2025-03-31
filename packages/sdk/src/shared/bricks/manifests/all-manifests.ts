@@ -6,7 +6,7 @@ import { manifest as containerManifest } from "./container.manifest";
 import { manifest as cardManifest } from "./card.manifest";
 import { manifest as mapManifest } from "./map.manifest";
 import { manifest as formManifest } from "./form.manifest";
-import { manifest as imagesWallManifest } from "./images-wall.manifest";
+import { manifest as imagesWallManifest } from "./images-gallery.manifest";
 import { manifest as carouselManifest } from "./carousel.manifest";
 import { manifest as headerManifest } from "./header.manifest";
 import { manifest as footerManifest } from "./footer.manifest";
@@ -15,17 +15,19 @@ import { manifest as iconManifest } from "./icon.manifest";
 import { manifest as socialLinksManifest } from "./social-links.manifest";
 import { manifest as countdownManifest } from "./countdown.manifest";
 import { manifest as genericComponentManifest } from "./generic-component.manifest";
+import { manifest as sidebarManifest } from "./sidebar.manifest";
 
 import { getBrickManifestDefaults, type BrickDefaults, type BrickManifest } from "../../brick-manifest";
 
 export const manifests: Record<string, BrickManifest> = {
+  [textManifest.type]: textManifest,
   [heroManifest.type]: heroManifest,
   [imageManifest.type]: imageManifest,
-  [textManifest.type]: textManifest,
   [videoManifest.type]: videoManifest,
   [cardManifest.type]: cardManifest,
   [mapManifest.type]: mapManifest,
   [formManifest.type]: formManifest,
+  [sidebarManifest.type]: sidebarManifest,
   [imagesWallManifest.type]: imagesWallManifest,
   [carouselManifest.type]: carouselManifest,
   [headerManifest.type]: headerManifest,
@@ -39,11 +41,12 @@ export const manifests: Record<string, BrickManifest> = {
 };
 
 export const defaultProps: Record<string, BrickDefaults> = {
+  [textManifest.type]: getBrickManifestDefaults(textManifest),
   [heroManifest.type]: getBrickManifestDefaults(heroManifest),
   [imageManifest.type]: getBrickManifestDefaults(imageManifest),
-  [textManifest.type]: getBrickManifestDefaults(textManifest),
   [videoManifest.type]: getBrickManifestDefaults(videoManifest),
   [cardManifest.type]: getBrickManifestDefaults(cardManifest),
+  [sidebarManifest.type]: getBrickManifestDefaults(sidebarManifest),
   [mapManifest.type]: getBrickManifestDefaults(mapManifest),
   [formManifest.type]: getBrickManifestDefaults(formManifest),
   [imagesWallManifest.type]: getBrickManifestDefaults(imagesWallManifest),

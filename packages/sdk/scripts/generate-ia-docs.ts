@@ -1,12 +1,13 @@
-import { Type } from "@sinclair/typebox";
+import { Type, type TObject, type TSchema } from "@sinclair/typebox";
 import { defaultAttributesSchema, type Attributes } from "../src/shared/attributes";
 import { manifests } from "../src/shared/bricks/manifests/all-manifests";
 import { themeSchema } from "../src/shared/theme";
-import { templatePageSchema } from "../src/shared/page";
+import { definedTemplatePage, templatePageSchema } from "../src/shared/page";
+import { commonStyleForDocsOnly } from "../src/shared/bricks/props/_docs-common-styles";
 import testConfig from "../src/shared/tests/test-config";
-
 import fs from "node:fs";
 import path from "node:path";
+import { definedBrickSchema, definedSectionSchema } from "../src/shared/bricks";
 
 const __dirname = import.meta.dirname;
 
@@ -27,31 +28,134 @@ const refinedAttributesSchema = Type.Omit(defaultAttributesSchema, [
   "$pageTitle",
 ]);
 
+/**
+ * Generate a markdown list for documentation from a TypeBox schema for props.
+ * The generated doc should include the title, description, type, as well as possible values.
+ * It should call itself recursively for nested objects.
+ */
+function objectSchemaToString(objSchema: TObject, mode: "common-styles" | "default" = "default", level = 0) {
+  if (!objSchema.properties && !objSchema.items) {
+    return "";
+  }
+
+  const props = objSchema.properties ?? objSchema.items?.properties;
+  let result = "";
+  const indent = "  ".repeat(level);
+
+  for (const [propName, propSchema] of Object.entries(objSchema.properties)) {
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    const schema = propSchema as any;
+
+    if (schema["ui:field"] === "hidden") {
+      continue;
+    }
+
+    const required = objSchema.required?.includes(propName) ? "**Required**" : "";
+    const description = schema.description ? `${schema.description}.` : "";
+    const typeStr = schema["doc:type"]
+      ? schema["doc:type"]
+      : schema.type
+        ? schema.items
+          ? `\`${schema.items.type}[]\``
+          : `\`${schema.type}\``
+        : schema.anyOf
+          ? `\`enum\``
+          : `\`unknown\``;
+
+    // if (schema.$id?.startsWith("#styles:")) {
+    //   stylesSchema.set(schema.$id, schemaToString(schema));
+    //   result += `${indent}- **${propName}**: ${required}. `;
+    //   result += `See common style \`${schema.$id}\`\n`;
+    //   continue;
+    // }
+
+    result += `${indent}- **\`${propName}${mode === "common-styles" && schema.$id ? ` ($id: ${schema.$id})` : ""}\`**: ${required} ${typeStr}. ${description} `;
+
+    if (mode === "default" && schema.$id?.startsWith("#styles:")) {
+      result += `See common style \`${schema.$id}\`\n`;
+      continue;
+    }
+
+    if (schema["doc:type"]) {
+    } else if (schema.anyOf) {
+      result += `Possible values: ${schema.anyOf.map((v: any) => `\`${v.const}\``).join(", ")}. `;
+    } else if (schema.items) {
+      if (schema.items.type === "object") {
+        result += objectSchemaToString(schema.items, mode, level + 1);
+      } else {
+        // result += `Items type: \`${schema.items.type}\`[]`;
+      }
+    }
+
+    if (schema.default !== undefined) {
+      result += `Default: \`${JSON.stringify(schema.default)}\``;
+    }
+
+    result += "\n";
+
+    if (schema.type === "object" && schema.properties) {
+      result += objectSchemaToString(schema as TObject, mode, level + 1);
+    }
+  }
+
+  return result;
+}
+
+// function schemaToString(schema: TSchema) {
+//   const description = schema.description ? `${schema.description} ` : "";
+//   const typeStr = schema.type ? `\`${schema.type}\`` : schema.anyOf ? `\`enum\`` : `\`unknown\``;
+
+//   if (schema.type === "object") {
+//     return `${description}\n${Object.entries(schema.properties ?? {})
+//       .map(([key, value]) => {
+//         const str = schemaToString(value as TSchema);
+//         return `${key} \`${typeStr}\`\n\n${str}`;
+//       })
+//       .join("\n")}`;
+//   }
+
+//   if (schema.type === "array") {
+//     return `\`${schema.items?.type}\`[]`;
+//   }
+
+//   if (schema.anyOf) {
+//     return `Type: \`${typeStr}\`\nValues: ${schema.anyOf.map((v: any) => `\`${v.const}\``).join(", ")}`;
+//   }
+
+//   return `\`${typeStr}\``;
+// }
 // Build bricks descriptions
 
 let brickDescriptions = "";
 for (const [name, manifest] of Object.entries(manifests)) {
   const { name, type } = manifest;
-  const schemaString = JSON.stringify(manifest.props);
 
   brickDescriptions += `
-### ${name} (type=${type})
+### ${name} (\`${type}\`)
 
 ${manifest.description}
 
-#### Props JSON Schema
-
-\`\`\`json
-${schemaString}
-\`\`\`
+#### Props
+${objectSchemaToString(manifest.props)}
 
 `;
 }
 
-template = template.replace("{{THEME_JSON_SCHEMA}}", JSON.stringify(refinedThemeSchema));
-template = template.replace("{{ATTRIBUTES_JSON_SCHEMA}}", JSON.stringify(refinedAttributesSchema));
-template = template.replace("{{PAGE_JSON_SCHEMA}}", JSON.stringify(templatePageSchema));
+template = template.replace("{{THEME_JSON_SCHEMA}}", objectSchemaToString(refinedThemeSchema));
+template = template.replace("{{ATTRIBUTES_JSON_SCHEMA}}", objectSchemaToString(refinedAttributesSchema));
+template = template.replace("{{PAGE_JSON_SCHEMA}}", objectSchemaToString(definedTemplatePage));
+template = template.replace("{{SECTION_JSON_SCHEMA}}", objectSchemaToString(definedSectionSchema));
 template = template.replace("{{AVAILABLE_BRICKS}}", brickDescriptions);
+template = template.replace(
+  "{{BRICK_POSITION_JSON_SCHEMA}}",
+  objectSchemaToString(definedBrickSchema.properties.position),
+);
+// template = template.replace("{{COMMON_BRICK_STYLES}}", commonBrickStyles);
+
 template = template.replace("{{TEMPLATE_EXAMPLE}}", JSON.stringify(testConfig));
+template = template.replace(
+  "{{COMMON_STYLES}}",
+  objectSchemaToString(commonStyleForDocsOnly, "common-styles"),
+);
 
 console.log(template);

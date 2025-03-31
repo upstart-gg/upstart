@@ -73,7 +73,7 @@ function getBorderStyles(props?: Partial<BorderSettings>) {
   }
   const {
     width = "border-0",
-    side = [],
+    sides = [],
     color = "border-transparent",
     style = "border-solid",
     rounding = "",
@@ -82,8 +82,8 @@ function getBorderStyles(props?: Partial<BorderSettings>) {
 
   const originalWith = width.includes("-") ? width.split("-")[1] : null;
 
-  if (side?.length) {
-    borderProcessedClass = side
+  if (sides?.length) {
+    borderProcessedClass = sides
       .map((side) => {
         return `${side}${originalWith ? `-${originalWith}` : ""}`;
       })

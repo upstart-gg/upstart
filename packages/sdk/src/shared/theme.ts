@@ -31,7 +31,7 @@ const headingFont = Type.Object(
   },
   {
     title: "Headings font",
-    description: "Used for titles and headings.",
+    description: "Used for titles and headings",
     default: {
       type: "stack",
       family: "system-ui",
@@ -52,7 +52,7 @@ const bodyFont = Type.Object(
   },
   {
     title: "Body font",
-    description: "Used for paragraphs and body text.",
+    description: "Used for paragraphs and body text",
     default: {
       type: "stack",
       family: "system-ui",
@@ -93,7 +93,7 @@ export const themeSchema = Type.Object(
       },
       {
         title: "Theme base colors",
-        description: "The base colors of the theme. Each theme must declare all these colors.",
+        description: "The base colors of the theme. Each theme must declare all these colors",
       },
     ),
 
@@ -101,7 +101,7 @@ export const themeSchema = Type.Object(
     typography: Type.Object({
       base: Type.Number({
         title: "Base font size",
-        description: "The base font size in pixels. It is safe to keep it as is.",
+        description: "The base font size in pixels. It is safe to keep it as is",
         default: 16,
       }),
       heading: headingFont,
@@ -113,7 +113,8 @@ export const themeSchema = Type.Object(
             heading: headingFont,
           }),
           {
-            title: "Alternative fonts that can be suggested to the user",
+            title: "Alternative fonts",
+            description: "Alternative fonts that can be suggested to the user. Takes the same shape",
           },
         ),
       ),

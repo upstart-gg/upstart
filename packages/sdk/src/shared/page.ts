@@ -1,5 +1,5 @@
 import { type Attributes, resolveAttributes, defaultAttributesSchema } from "./attributes";
-import { brickSchema, type Section, sectionSchema, type Brick } from "./bricks";
+import { brickSchema, type Section, sectionSchema, type Brick, definedSectionSchema } from "./bricks";
 import invariant from "./utils/invariant";
 import { themeSchema, type Theme } from "./theme";
 import { Type, type Static, type TObject, type TProperties } from "@sinclair/typebox";
@@ -158,16 +158,20 @@ export function getNewSiteConfig(
 
 export type SiteAndPagesConfig = ReturnType<typeof getNewSiteConfig>;
 
-const Module = Type.Module({
-  Section: sectionSchema,
-});
-
 export const templatePageSchema = Type.Object({
-  label: Type.String(),
-  path: Type.String(),
-  sections: Type.Array(sectionSchema),
-  bricks: Type.Array(brickSchema),
-  tags: Type.Array(Type.String()),
+  label: Type.String({ description: "The label (name) of the page" }),
+  path: Type.String({ description: "The path of the page in the URL. Should be unique" }),
+  sections: Type.Array(sectionSchema, {
+    description: "The sections of the page. See the Section schema",
+    "doc:type": "Array of `Section` objects",
+  }),
+  bricks: Type.Array(brickSchema, {
+    description: "The bricks of the page. See the various bricks available below",
+    "doc:type": "Array of `Brick` objects",
+  }),
+  tags: Type.Array(Type.String(), {
+    description: "The tags of the page, used for organizating and filtering pages",
+  }),
 });
 
 export type TemplatePage = Static<typeof templatePageSchema> & {

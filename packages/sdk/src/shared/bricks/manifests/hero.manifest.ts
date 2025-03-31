@@ -1,6 +1,6 @@
 import { Type } from "@sinclair/typebox";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, group } from "../props/helpers";
+import { defineProps, group, optional } from "../props/helpers";
 import { basicAlign } from "../props/align";
 import { background } from "../props/background";
 import { border } from "../props/border";
@@ -42,12 +42,12 @@ export const manifest = defineBrickManifest({
 
   props: defineProps({
     content: textContent("I'm a big text"),
-    background: background(),
+    background: optional(background()),
     color: color(),
-    effects: effects({ enableTextShadow: true }),
+    effects: optional(effects({ enableTextShadow: true })),
     align: basicAlign(),
     padding: padding("p-4"),
-    border: border(),
+    border: optional(border()),
     // textSize: heroSize,
   }),
 });

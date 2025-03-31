@@ -1,4 +1,4 @@
-import { brickWithDefaults, type Brick } from "@upstart.gg/sdk/shared/bricks";
+import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import {
   forwardRef,
   type PropsWithChildren,
@@ -65,9 +65,10 @@ function useBarPlacements(brick: Brick): Placement[] {
   const previewMode = usePreviewMode();
   const { isLastSection } = useDraftHelpers();
   const section = useSection(brick.sectionId);
+  const manifest = useBrickManifest(brick.type);
   return useMemo(() => {
     const placements: Placement[] = [];
-    if (brick.parentId || brick.isContainer) {
+    if (brick.parentId || manifest.isContainer) {
       placements.push(...(["bottom", "top"] as const));
     } else {
       if (!isLastSection(section.id)) {
@@ -81,7 +82,7 @@ function useBarPlacements(brick: Brick): Placement[] {
       }
     }
     return placements;
-  }, [brick, previewMode, section, isLastSection]);
+  }, [brick, previewMode, manifest.isContainer, section, isLastSection]);
 }
 
 const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
@@ -96,7 +97,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const [isMenuBarVisible, setMenuBarVisible] = useState(false);
     const allowedPlacements = useBarPlacements(brick);
 
-    brick = brickWithDefaults(brick);
+    // brick = brickWithDefaults(brick);
 
     const {
       refs: barsRefs,
@@ -109,7 +110,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       whileElementsMounted: autoUpdate,
       transform: true,
       middleware: [
-        offset(manifest.isContainer ? { mainAxis: 10, crossAxis: 0 } : { mainAxis: 3, crossAxis: 0 }),
+        offset(manifest.isContainer ? { mainAxis: 8, crossAxis: 0 } : { mainAxis: 6, crossAxis: 0 }),
         autoPlacement({
           allowedPlacements,
         }),
@@ -208,7 +209,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           data-brick-type={brick.type}
           data-element-kind={manifest.kind}
           data-last-touched={brick.props.lastTouched ?? "0"}
-          data-dropzone={brick.isContainer}
+          data-dropzone={manifest.isContainer}
           {...(manifest.movable ? {} : { "data-no-drag": "true" })}
           className={tx(wrapperClass, `![animation-delay:${0.5 * (index + 1)}s]`)}
           ref={brickRef}
@@ -245,9 +246,13 @@ type BrickMenuBarProps = ComponentProps<"div"> &
 const BrickMenuBarsContainer = forwardRef<HTMLDivElement, BrickMenuBarProps>(
   ({ brick, style, isContainerChild, show, ...rest }, ref) => {
     const selectedBrickId = useSelectedBrickId();
-    const visible = (show && brick.isContainer && !selectedBrickId) || (show && !brick.isContainer);
+    const manifest = useBrickManifest(brick.type);
+    const visible =
+      (show && manifest.isContainer && !selectedBrickId) ||
+      (show && !manifest.isContainer && !isContainerChild) ||
+      selectedBrickId === brick.id;
     // const visible = (show && brick.isContainer && !selectedBrickId) || selectedBrickId === brick.id;
-    if (!visible && brick.isContainer) {
+    if (!visible && manifest.isContainer) {
       return null;
     }
     return (
@@ -257,10 +262,10 @@ const BrickMenuBarsContainer = forwardRef<HTMLDivElement, BrickMenuBarProps>(
         data-ui-menu-bars-container
         role="navigation"
         className={tx(
-          "z-[99999] text-base inline-flex items-center gap-1",
+          "z-[99999] isolate text-base items-center gap-1",
           "transition-opacity duration-150 border rounded-lg",
-          visible ? "opacity-100" : "opacity-0",
-          brick.isContainer ? "border-orange-300" : "border-transparent",
+          visible ? "opacity-100 flex" : "opacity-0 hidden",
+          manifest.isContainer ? "border-orange-300" : "border-transparent",
         )}
         style={style}
         {...rest}
@@ -293,14 +298,14 @@ function BrickMainNavBar({ brick }: { brick: Brick }) {
   }
 
   return (
-    <nav className={menuNavBarCls} data-ui data-ui-options-bar>
+    <nav className={tx(menuNavBarCls)} data-ui data-ui-options-bar>
       <span className={tx(menuBarBtnCls, menuBarBtnCommonCls, "block capitalize pointer-events-none")}>
         {manifest.type}
       </span>
       {manifest.presets && (
         <BrickPopover brick={brick} view="presets">
           <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-            <BiSolidColor className={tx("w-4 h-4")} />
+            <BiSolidColor className={tx("w-5 h-5")} />
             {/* <span className={tx(menuBarTooltipCls)}>Presets</span> */}
           </button>
         </BrickPopover>
