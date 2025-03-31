@@ -69,7 +69,7 @@ function objectSchemaToString(objSchema: TObject, mode: "common-styles" | "defau
     //   continue;
     // }
 
-    result += `${indent}- **\`${propName}${mode === "common-styles" && schema.$id ? ` ($id: ${schema.$id})` : ""}\`**: ${required} ${typeStr}. ${description} `;
+    result += `${indent}- **\`${mode === "common-styles" && schema.$id ? `$id: ${schema.$id}` : propName}\`**: ${required} ${typeStr}. ${description} `;
 
     if (mode === "default" && schema.$id?.startsWith("#styles:")) {
       result += `See common style \`${schema.$id}\`\n`;
