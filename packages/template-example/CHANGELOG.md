@@ -1,5 +1,15 @@
 # @upstart.gg/template-example
 
+## 0.0.80
+
+### Patch Changes
+
+- [#278](https://github.com/upstart-gg/upstart/pull/278) [`86dec08`](https://github.com/upstart-gg/upstart/commit/86dec08eb97bb7ba61b6cfa77f8748c4489fc038) Thanks [@mattallty](https://github.com/mattallty)! - Various improvements
+
+- Updated dependencies [[`86dec08`](https://github.com/upstart-gg/upstart/commit/86dec08eb97bb7ba61b6cfa77f8748c4489fc038)]:
+  - @upstart.gg/style-system@0.0.36
+  - @upstart.gg/sdk@0.0.80
+
 ## 0.0.79
 
 ### Patch Changes
