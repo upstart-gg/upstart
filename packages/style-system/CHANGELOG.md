@@ -1,5 +1,11 @@
 # @upstart.gg/style-system
 
+## 0.0.81
+
+### Patch Changes
+
+- [#280](https://github.com/upstart-gg/upstart/pull/280) [`dbfffaf`](https://github.com/upstart-gg/upstart/commit/dbfffaf74b08255c78a93d820a53c37331e268a4) Thanks [@mattallty](https://github.com/mattallty)! - Make @upstart.gg/style-system in sync with main packages
+
 ## 0.0.36
 
 ### Patch Changes
