@@ -21,21 +21,13 @@ const pagesMapSchema = Type.Array(
 
 export type PagesMap = Static<typeof pagesMapSchema>;
 
-export type PageInfo = {
-  /**
-   * The page id.
-   */
-  id: string;
-  /**
-   * Pathname to the page
-   */
-  path: string;
-  /**
-   * Label of the page
-   */
-  label: string;
-};
+const pageInfoSchema = Type.Object({
+  id: Type.String(),
+  label: Type.String(),
+  path: Type.String(),
+});
 
+export type PageInfo = Static<typeof pageInfoSchema>;
 /**
  * The Page config represents the page configuration (datasources, attributes, etc)
  */
@@ -107,7 +99,9 @@ export const siteSchema = Type.Object({
 /**
  * Site config has always attributes and attr.
  */
-export type Site = Omit<Static<typeof siteSchema>, "attributes"> & { attributes: TObject };
+export type Site = Omit<Static<typeof siteSchema>, "attributes"> & {
+  attributes: typeof defaultAttributesSchema;
+};
 
 /**
  * Page context has attr but not attributes declaration, as they are not needed to render the page.
@@ -176,7 +170,7 @@ export const templatePageSchema = Type.Object({
     description: "The tags of the page, used for organizating and filtering pages",
     default: [],
   }),
-  attributes: Type.Optional(Type.Object({}, { additionalProperties: true })),
+  attributes: Type.Optional(defaultAttributesSchema),
   attr: Type.Optional(Type.Record(Type.String(), Type.Any())),
 });
 
@@ -184,7 +178,7 @@ export type TemplatePage = Static<typeof templatePageSchema>;
 
 const siteAndPagesSchema = Type.Object({
   site: siteSchema,
-  pages: Type.Array(templatePageSchema),
+  pages: Type.Array(Type.Composite([templatePageSchema, pageInfoSchema])),
 });
 
 export type SiteAndPagesConfig = Static<typeof siteAndPagesSchema>;
