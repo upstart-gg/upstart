@@ -7,7 +7,7 @@
       "cache": false
     },
     "lint": {
-      "cache": true
+      "cache": false
     },
     "dev": {
       "dependsOn": ["^dev"],
