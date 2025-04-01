@@ -40,7 +40,7 @@ export type EditorWrapperProps = {
    * Callback when a tour is completed.
    */
   onTourComplete?: (tourId: string) => void;
-  onShowLogin?: () => void;
+  onShowLogin: () => void;
 };
 
 /**

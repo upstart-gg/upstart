@@ -50,8 +50,19 @@ export default function TopBar({ showIntro }: TopBarProps) {
   );
 
   const duplicatePage = () => {
+    if (editorMode === "local") {
+      return editorHelpers.onShowLogin();
+    }
     const data = draft.getPageDataForDuplication();
     console.log("duplicatePage", data);
+    // todo...
+  };
+
+  const createPage = () => {
+    if (editorMode === "local") {
+      return editorHelpers.onShowLogin();
+    }
+    // todo...
   };
 
   const switchPreviewMode = useCallback(
@@ -194,7 +205,7 @@ export default function TopBar({ showIntro }: TopBarProps) {
           <TopbarMenu
             id="switch-page-menu-btn"
             items={[
-              { label: "New page" },
+              { label: "New page", onClick: createPage },
               { label: "Duplicate page", onClick: duplicatePage },
               { type: "separator" as const },
 

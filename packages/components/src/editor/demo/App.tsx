@@ -30,13 +30,16 @@ export default function App({ path }: { path: string }) {
   );
 }
 
-function InnerEditor(props: PropsWithChildren<Omit<EditorWrapperProps, "onImageUpload">>) {
+function InnerEditor(props: PropsWithChildren<Omit<EditorWrapperProps, "onImageUpload" | "onShowLogin">>) {
   const onImageUpload = async (file: File) => {
     console.log("Image upload callback called with", file);
     return "https://via.placeholder.com/150";
   };
+  const onShowLogin = () => {
+    alert("Out of the demo, the 'login' modal should be displayed at this time.");
+  };
   return (
-    <EditorWrapper {...props} onImageUpload={onImageUpload}>
+    <EditorWrapper {...props} onShowLogin={onShowLogin} onImageUpload={onImageUpload}>
       <Editor />
     </EditorWrapper>
   );

@@ -71,7 +71,10 @@ function objectSchemaToString(objSchema: TObject, mode: "common-styles" | "defau
 
     if (schema["doc:type"]) {
     } else if (schema.anyOf) {
-      result += `Possible values: ${schema.anyOf.map((v: any) => `\`${v.const}\``).join(", ")}. `;
+      result += `Possible values: ${schema.anyOf
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        .map((v: any) => `\`${v.const}\``)
+        .join(", ")}. `;
     } else if (schema.items) {
       if (schema.items.type === "object") {
         result += objectSchemaToString(schema.items, mode, level + 1);

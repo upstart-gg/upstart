@@ -1,13 +1,13 @@
-import { Type, type TObject, type TProperties } from "@sinclair/typebox";
-import { defaultAttributesSchema, type Attributes } from "./attributes";
+import type { TObject, TProperties } from "@sinclair/typebox";
+import { processAttributesSchema, type Attributes } from "./attributes";
 import type { DatasourcesMap } from "./datasources/types";
-import { type TemplateManifest, manifestSchema } from "./manifest";
+import type { TemplateManifest } from "./manifest";
 import type { TemplatePage } from "./page";
 import type { Theme } from "./theme";
 
 export function defineConfig(config: TemplateConfig): TemplateConfig {
   return {
-    attributes: config.attributes,
+    attributes: processAttributesSchema(config.attributes),
     attr: config.attr,
     manifest: config.manifest,
     pages: config.pages,

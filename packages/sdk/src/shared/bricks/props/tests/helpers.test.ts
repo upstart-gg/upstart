@@ -127,7 +127,6 @@ describe("Props helpers test suite", () => {
         "container.backgroundColor": "#styles:backgroundColor",
         "container.border": "#styles:border",
         "container.fixedPositioned": "#styles:fixedPositioned",
-        "container.rounding": "#styles:rounding",
         "container.shadow": "#styles:shadow",
         "navigation.color": "#styles:color",
       });

@@ -14,8 +14,9 @@ describe("Border prop test suite", () => {
     it("should have correct default values", () => {
       expect(borderSchema.default).toEqual({
         style: "border-solid",
-        side: [],
+        sides: [],
         width: "border-0",
+        rounding: "rounded-auto",
       });
     });
 

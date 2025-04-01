@@ -12,6 +12,7 @@ import type { ElementColor } from "./themes/color-system";
 import type { JSONSchemaType } from "ajv";
 import { ajv } from "./ajv";
 import { background } from "./bricks/props/background";
+import { Value } from "@sinclair/typebox/value";
 
 type EnumOption = {
   title?: string;
@@ -42,6 +43,13 @@ export function defineAttributes(attrs: TProperties) {
     }
   }
   return Type.Object(attrs);
+}
+
+/**
+ * Retuns the custom attributes schema merged with the default attributes schema
+ */
+export function processAttributesSchema(customAttributes: TObject): TObject {
+  return Type.Composite([customAttributes, defaultAttributesSchema]);
 }
 
 export type { JSONSchemaType };
@@ -326,19 +334,20 @@ const defaultAttributes = {
 };
 
 export const defaultAttributesSchema = Type.Object(defaultAttributes);
-export type Attributes = Static<typeof defaultAttributesSchema> & Record<string, unknown>;
+export type Attributes<T extends Record<string, unknown> = Record<string, unknown>> = Static<
+  typeof defaultAttributesSchema
+> &
+  T;
 
-export function resolveAttributes(
-  customAttrsSchema: TObject,
-  initialData: Record<string, unknown> = {},
-): Attributes {
-  const attributesSchemaWithDefaults = Type.Composite([customAttrsSchema, defaultAttributesSchema]);
+export function resolveAttributes(customAttrsSchema: TObject, initialData: Record<string, unknown> = {}) {
+  const attributesSchemaWithDefaults = processAttributesSchema(customAttrsSchema);
   const validate = ajv.compile(attributesSchemaWithDefaults);
-  const data = { ...initialData };
+  const defaultValues = Value.Create(attributesSchemaWithDefaults);
+  const data = { ...defaultValues, ...initialData };
   const valid = validate(data);
   if (!valid) {
     console.log("invalid data attributes", data, validate.errors);
     throw new Error(`Invalid attributes: ${validate.errors}`);
   }
-  return data as Attributes;
+  return data as Attributes<Static<typeof customAttrsSchema>>;
 }

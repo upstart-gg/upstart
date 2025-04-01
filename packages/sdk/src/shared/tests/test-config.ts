@@ -18,9 +18,9 @@ const datasources = defineDataSources({
       }),
     ),
     sampleData: [
-      { title: "Enpage", url: "https://enpage.co" },
+      { title: "Upstart", url: "https://upstart.gg" },
       { title: "Github", url: "https://github.com/upstart-gg/upstart" },
-      { title: "Developers docs", url: "https://developers.enpage.co" },
+      { title: "Developers docs", url: "https://developers.upstart.gg" },
     ],
   },
   tasks: {

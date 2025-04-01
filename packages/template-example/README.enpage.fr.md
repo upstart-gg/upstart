@@ -1,6 +1,6 @@
 ## Description
 
-This is the example template for Enpage. It is SEO optimized and allows you
+This is the example template for Upstart. It is SEO optimized and allows you
 to create a link-in-bio page easily!
 
 Ceci est le template d'exemple Enpafe. Il est optimisé pour le SEO

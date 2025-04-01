@@ -1,12 +1,11 @@
 import type { FieldProps } from "./types";
 import { Text } from "@upstart.gg/style-system/system";
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
-import { fieldLabel } from "../form-class";
 import { tx } from "@upstart.gg/style-system/twind";
 import { MdBorderBottom, MdBorderLeft, MdBorderRight, MdBorderTop } from "react-icons/md";
 import { FieldTitle } from "../field-factory";
 
-export const BorderSideField: React.FC<FieldProps<BorderSettings["side"]>> = (props) => {
+export const BorderSideField: React.FC<FieldProps<BorderSettings["sides"]>> = (props) => {
   const { currentValue = [], onChange, title, description, schema } = props;
 
   console.log("init with currentValue", currentValue);

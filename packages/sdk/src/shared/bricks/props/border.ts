@@ -7,7 +7,7 @@ type BorderOptions = {
     style?: string;
     color?: string;
     width?: string;
-    side?: string[];
+    sides?: string[];
     rounding?: string;
   };
 };
@@ -17,7 +17,7 @@ export function border({
   defaultValue = {
     style: "border-solid",
     width: "border-0",
-    side: [],
+    sides: [],
     rounding: "rounded-auto",
   },
 }: BorderOptions = {}) {
@@ -78,7 +78,7 @@ export function border({
             Type.Literal("border-b", { title: "Bottom" }),
           ]),
           {
-            default: defaultValue.side,
+            default: defaultValue.sides,
             title: "Sides",
             description:
               "The specific sides where to apply the border. Can contain border-(l|t|r|b). Not specifying sides will apply the border to all sides.",

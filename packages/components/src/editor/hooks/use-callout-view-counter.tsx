@@ -16,7 +16,7 @@ export const useCalloutViewCounter = (name: string, threshold = 5) => {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    increment();
+    if (viewCount <= threshold) increment();
   }, []);
 
   return {
