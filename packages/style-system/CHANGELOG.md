@@ -1,5 +1,7 @@
 # @upstart.gg/style-system
 
+## 0.0.82
+
 ## 0.0.81
 
 ### Patch Changes
