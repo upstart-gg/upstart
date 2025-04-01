@@ -6,7 +6,7 @@ import {
   type EditorState,
 } from "../hooks/use-editor";
 import { useEffect, useRef, type PropsWithChildren } from "react";
-import type { GenericPageConfig, SiteConfig } from "@upstart.gg/sdk/shared/page";
+import type { GenericPageConfig, Site } from "@upstart.gg/sdk/shared/page";
 import { Theme } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useDarkMode } from "usehooks-ts";
@@ -22,7 +22,7 @@ import { DatasourceProvider } from "~/shared/hooks/use-datasource";
 export type EditorWrapperProps = {
   mode?: "local" | "remote";
   pageConfig: GenericPageConfig;
-  siteConfig: SiteConfig;
+  siteConfig: Site;
   /**
    * Callback when an image is uploaded through the editor.
    * The callback should return the URL of the uploaded image.

@@ -333,7 +333,7 @@ const defaultAttributes = {
   ),
 };
 
-export const defaultAttributesSchema = Type.Object(defaultAttributes);
+export const defaultAttributesSchema = Type.Object(defaultAttributes, { additionalProperties: true });
 export type Attributes<T extends Record<string, unknown> = Record<string, unknown>> = Static<
   typeof defaultAttributesSchema
 > &
