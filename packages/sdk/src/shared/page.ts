@@ -45,7 +45,7 @@ export type PageConfig<D extends DatasourcesMap> = PageInfo & {
   /**
    * Page attributes. (can override site attributes)
    */
-  attributes?: TObject<TProperties>;
+  attributes?: typeof defaultAttributesSchema;
   /**
    * Resolved attributes for the page.
    */
@@ -88,7 +88,7 @@ export const siteSchema = Type.Object({
   label: Type.String(),
   hostname: Type.String(),
   attributes: defaultAttributesSchema,
-  attr: Type.Record(Type.String(), Type.Any()),
+  attr: defaultAttributesSchema,
   datasources: Type.Optional(datasourcesMap),
   datarecords: Type.Optional(datarecordsMap),
   themes: Type.Array(themeSchema),
@@ -171,14 +171,25 @@ export const templatePageSchema = Type.Object({
     default: [],
   }),
   attributes: Type.Optional(defaultAttributesSchema),
-  attr: Type.Optional(Type.Record(Type.String(), Type.Any())),
+  attr: Type.Optional(defaultAttributesSchema),
 });
 
 export type TemplatePage = Static<typeof templatePageSchema>;
 
-const siteAndPagesSchema = Type.Object({
-  site: siteSchema,
-  pages: Type.Array(Type.Composite([templatePageSchema, pageInfoSchema])),
+const partialSiteAndPagesSchema = Type.Object({
+  site: Type.Omit(siteSchema, ["attributes"]),
+  pages: Type.Array(Type.Composite([Type.Omit(templatePageSchema, ["attributes"]), pageInfoSchema])),
 });
 
-export type SiteAndPagesConfig = Static<typeof siteAndPagesSchema>;
+type PartialSiteAndPagesSchema = Static<typeof partialSiteAndPagesSchema>;
+
+export type SiteAndPagesConfig = {
+  site: PartialSiteAndPagesSchema["site"] & {
+    attributes: typeof defaultAttributesSchema;
+  };
+  pages: Array<
+    Omit<PartialSiteAndPagesSchema["pages"][number], "attributes"> & {
+      attributes?: typeof defaultAttributesSchema;
+    }
+  >;
+};
