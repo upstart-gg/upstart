@@ -137,8 +137,8 @@ async function performUpload(
       method: "POST",
       headers: {
         authorization: `Bearer ${token}`,
-        "x-enpage-template-file-path": relativePath,
-        "x-enpage-template-id": templateId,
+        "x-upstart-template-file-path": relativePath,
+        "x-upstart-template-id": templateId,
         ...form.getHeaders(),
       },
     };

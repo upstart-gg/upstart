@@ -7,19 +7,25 @@ import { useBrickStyle } from "../hooks/use-brick-style";
 import { TextContent } from "../components/TextContent";
 
 const Hero = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
-  const className = useBrickStyle<Manifest>(brick);
+  const styles = useBrickStyle<Manifest>(brick);
   const props = brick.props;
+  const classes = Object.values(styles);
+
+  console.log("hero props", props);
 
   return (
-    <TextContent
-      as="h1"
-      propPath="brand.name"
-      className={tx("hero", className)}
-      brickId={brick.id}
-      content={props.content}
-      editable={editable}
-      inline
-    />
+    <div className={tx("flex-1", ...classes)}>
+      <TextContent
+        as="h1"
+        propPath="content"
+        className={tx("hero grow flex-wrap text-wrap")}
+        brickId={brick.id}
+        content={props.content}
+        textSizeMode="hero"
+        editable={editable}
+        noTextType
+      />
+    </div>
   );
 });
 

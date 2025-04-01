@@ -10,7 +10,7 @@ const hydrate = () =>
     hydrateRoot(
       document.getElementById("root") as HTMLElement,
       <StrictMode>
-        <App />
+        <App path={window.location.pathname + window.location.search} />
       </StrictMode>,
     );
   });

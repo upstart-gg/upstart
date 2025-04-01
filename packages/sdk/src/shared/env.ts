@@ -1,11 +1,11 @@
 import type { D1Database, R2Bucket, KVNamespace } from "@cloudflare/workers-types";
 
-export type EnpageEnv = {
-  PUBLIC_ENPAGE_SITE_ID: string;
-  PUBLIC_ENPAGE_API_BASE_URL: string;
-  PUBLIC_ENPAGE_SITE_HOST: string;
-  PUBLIC_ENPAGE_ASSETS_BASE_URL?: string;
-  ENPAGE_API_TOKEN: string;
+export type UpstartEnv = {
+  PUBLIC_UPSTART_SITE_ID: string;
+  PUBLIC_UPSTART_API_BASE_URL: string;
+  PUBLIC_UPSTART_SITE_HOST: string;
+  PUBLIC_UPSTART_ASSETS_BASE_URL?: string;
+  UPSTART_API_TOKEN: string;
   SITES_DB: D1Database;
   SITES_CACHE: KVNamespace;
   R2_SITES_BUCKET: R2Bucket;

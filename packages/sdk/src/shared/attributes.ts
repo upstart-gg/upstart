@@ -12,6 +12,7 @@ import type { ElementColor } from "./themes/color-system";
 import type { JSONSchemaType } from "ajv";
 import { ajv } from "./ajv";
 import { background } from "./bricks/props/background";
+import { Value } from "@sinclair/typebox/value";
 
 type EnumOption = {
   title?: string;
@@ -41,7 +42,14 @@ export function defineAttributes(attrs: TProperties) {
       );
     }
   }
-  return Type.Object({ ...defaultAttributes, ...attrs });
+  return Type.Object(attrs);
+}
+
+/**
+ * Retuns the custom attributes schema merged with the default attributes schema
+ */
+export function processAttributesSchema(customAttributes: TObject): TObject {
+  return Type.Composite([customAttributes, defaultAttributesSchema]);
 }
 
 export type { JSONSchemaType };
@@ -237,20 +245,20 @@ const defaultAttributes = {
   $pageTitle: attr.string("Title", "Untitled", {
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
-    description: "The title of the page. Appears in the browser tab and search results.",
+    description: "The title of the page. Appears in the browser tab and search results",
   }),
 
   $pageDescription: attr.string("Description", "", {
     "ui:widget": "textarea",
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
-    description: "A short description of the page. Used by search engines.",
+    description: "A short description of the page. Used by search engines",
   }),
 
   $pageKeywords: attr.string("Keywords", "", {
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
-    description: "Keywords related to the page. Used by search engines.",
+    description: "Keywords related to the page. Used by search engines",
   }),
 
   $pageLastUpdated: attr.datetime("Last updated", undefined, { "ui:hidden": true }),
@@ -262,6 +270,8 @@ const defaultAttributes = {
       color: "#ffffff",
     },
     title: "Body Background",
+    description:
+      "Applies to the body element of the page (while $pageBackground applies to the page container)",
     "ui:field": "background",
     "ui:show-img-search": true,
     "ui:group": "layout",
@@ -324,18 +334,19 @@ const defaultAttributes = {
 };
 
 export const defaultAttributesSchema = Type.Object(defaultAttributes);
-export type Attributes = Static<typeof defaultAttributesSchema> & Record<string, unknown>;
+export type Attributes<T extends Record<string, unknown> = Record<string, unknown>> = Static<
+  typeof defaultAttributesSchema
+> &
+  T;
 
-export function resolveAttributes(
-  attributesSchema: TObject<TProperties>,
-  initialData: Record<string, unknown> = {},
-): Attributes {
-  const validate = ajv.compile(attributesSchema);
-  const data = { ...initialData };
-  const valid = validate(data);
+export function resolveAttributes(customAttrsSchema: TObject, initialData: Record<string, unknown> = {}) {
+  const validateCustom = ajv.compile(customAttrsSchema);
+  const valid = validateCustom(initialData);
   if (!valid) {
-    console.log("invalid data attributes", data, validate.errors);
-    throw new Error(`Invalid attributes: ${validate.errors}`);
+    console.log("invalid custom attributes values", initialData, validateCustom.errors);
+    throw new Error(`Invalid custom attributes values: ${validateCustom.errors}`);
   }
-  return data as Attributes;
+  const defaultAttrValues = Value.Create(defaultAttributesSchema);
+  const data = { ...defaultAttrValues, ...initialData };
+  return data as Attributes<Static<typeof customAttrsSchema>>;
 }

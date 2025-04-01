@@ -49,6 +49,22 @@ export default function TopBar({ showIntro }: TopBarProps) {
     [draft.siteId, draft.id, pageVersion],
   );
 
+  const duplicatePage = () => {
+    if (editorMode === "local") {
+      return editorHelpers.onShowLogin();
+    }
+    const data = draft.getPageDataForDuplication();
+    console.log("duplicatePage", data);
+    // todo...
+  };
+
+  const createPage = () => {
+    if (editorMode === "local") {
+      return editorHelpers.onShowLogin();
+    }
+    // todo...
+  };
+
   const switchPreviewMode = useCallback(
     (e: MouseEvent) => {
       e.stopPropagation();
@@ -189,11 +205,11 @@ export default function TopBar({ showIntro }: TopBarProps) {
           <TopbarMenu
             id="switch-page-menu-btn"
             items={[
-              ...(editorMode === "remote"
-                ? [{ label: "New page" }, { label: "Duplicate page" }, { type: "separator" as const }]
-                : []),
+              { label: "New page", onClick: createPage },
+              { label: "Duplicate page", onClick: duplicatePage },
+              { type: "separator" as const },
 
-              ...(pages.length > 1 ? [{ type: "label", label: "Switch page" } as const] : []),
+              ...(pages.length > 1 ? [{ type: "label", label: "Switch to page" } as const] : []),
               ...(pages.length > 1
                 ? pages.map((page) => ({
                     label: page.label,
@@ -201,11 +217,12 @@ export default function TopBar({ showIntro }: TopBarProps) {
                     checked: draft.id === page.id || draft.path === page.path,
                     onClick: () => {
                       if (editorMode === "remote") {
-                        window.location.href = `/editor/sites/${draft.siteId}/pages/${page.id}/edit`;
+                        window.location.href = `/editor/sites/${draft.siteId}/edit?p=${page.id}&r=${Date.now()}`;
                       } else {
                         const currentURL = new URL(window.location.href);
                         currentURL.searchParams.set("p", page.id);
-                        window.location.href = currentURL.href;
+                        currentURL.searchParams.set("r", `${Date.now()}`);
+                        window.location.replace(currentURL.href);
                       }
                     },
                   }))

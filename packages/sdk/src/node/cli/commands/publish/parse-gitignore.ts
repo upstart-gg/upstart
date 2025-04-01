@@ -3,7 +3,7 @@
  * Copyright (c) 2015-present, Jon Schlinkert.
  * Released under the MIT License.
  *
- * Converted to typescript by Matthias E. <matthias@enpage.co>
+ * Converted to typescript by Matthias E. <matthias@upstart.gg>
  */
 
 import * as fs from "node:fs";

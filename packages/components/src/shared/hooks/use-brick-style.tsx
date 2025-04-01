@@ -65,7 +65,7 @@ function usePreprocessTextColors<T extends BrickManifest>(
         }
       }
     }
-  }, 50);
+  }, 800);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(onChange, [brickInfo]);
@@ -100,31 +100,32 @@ export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable,
       }),
 
     // container children expand to fill the space
-    isContainerChild && "container-child flex-1",
+    isContainerChild && "container-child",
 
     getBrickWrapperEditorStyles(editable === true, !!brick.isContainer, isContainerChild, selected),
 
     // Position of the wrapper
     //
-    // Note:  for container children, we don't set it as they are not positioned
+    // Note:  for container children, we don't set it as they are NOT positioned
     //        relatively to the page grid but to the container
     //
-    // Warning: those 2 rules blocks are pretty sensible!
+    // Warning: those 2 rules blocks are pretty sensible, especially the height!
     !isContainerChild &&
       `@desktop:(
         col-start-${position.desktop.x + 1}
         col-span-${position.desktop.w}
         row-start-${position.desktop.y + 1}
-        row-span-${position.desktop.h}
-        h-auto
+        h-fit
+        min-h-[${position.desktop.h * LAYOUT_ROW_HEIGHT}px]
       )
       @mobile:(
         col-start-${position.mobile.x + 1}
         col-span-${position.mobile.w}
         row-start-${position.mobile.y + 1}
-        row-span-${position.mobile.manualHeight ?? position.mobile.h}
-        ${position.mobile.manualHeight ? `h-[${position.mobile.manualHeight * LAYOUT_ROW_HEIGHT}px]` : ""}
+        h-fit
+        min-h-[${position.mobile.h * LAYOUT_ROW_HEIGHT}px]
       )`,
+    // ${position.mobile.manualHeight ? `h-[${position.mobile.manualHeight * LAYOUT_ROW_HEIGHT}px]` : ""}
 
     ...Object.values(classes).flat(),
 
@@ -143,7 +144,7 @@ function getBrickWrapperEditorStyles(
     return null;
   }
   return [
-    "select-none hover:z-[9999] transition-colors delay-300 duration-300",
+    "select-none transition-colors delay-300 duration-300",
     "outline outline-2 outline-transparent -outline-offset-1",
     selected && !isContainer && "!outline-upstart-500 shadow-lg shadow-upstart-500/20",
     selected && isContainer && "!outline-orange-300 shadow-lg shadow-orange-300/20",

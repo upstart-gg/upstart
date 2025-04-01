@@ -73,7 +73,7 @@
     "usehooks-ts": "3.1.0",
     "zod": "3.23.8",
     "zod-validation-error": "3.3.1",
-    "zundo": "2.1.0",
+    "zundo": "2.3.0",
     "zustand": "4.5.5"
   },
   "peerDependencies": {
@@ -112,7 +112,8 @@
     "lint": "biome check --write . && tsc --noEmit",
     "ci:lint": "tsc --noEmit",
     "test": "vitest",
-    "prepare": "node ./scripts/prepare.cjs"
+    "prepare": "node ./scripts/prepare.cjs",
+    "gen-ia-docs": "tsx scripts/generate-ia-docs.ts"
   },
   "author": "Matthias Etienne",
   "publishConfig": {

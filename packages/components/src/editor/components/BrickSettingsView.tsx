@@ -6,36 +6,8 @@ import type { NavItem } from "./json-form/types";
 import { useCallback, useMemo } from "react";
 import { merge, set } from "lodash-es";
 import { useDraftHelpers, useGetBrick, usePreviewMode } from "~/editor/hooks/use-editor";
-
-type SchemaFilter = (prop: TSchema, key: string) => boolean;
-
-const defaultFilter: SchemaFilter = () => true;
-
-function getNavItemsFromManifest(
-  manifest: TObject | TArray,
-  filter = defaultFilter,
-  pathsParts: string[] = [],
-): NavItem[] {
-  const items = Object.entries<TSchema>(manifest.properties)
-    .filter(([, prop]) => prop["ui:field"] !== "hidden")
-    .filter(([key, prop]) => filter(prop, key))
-    .map(([key, prop]) => {
-      const nextPathParts = [...pathsParts, key];
-      return {
-        id: key,
-        label: prop.title!,
-        path: nextPathParts.join("."),
-        ...(prop.metadata && { metadata: prop.metadata }),
-        ...(prop.description ? { description: prop.description } : {}),
-        ...(prop.metadata?.group
-          ? {
-              children: getNavItemsFromManifest(prop as TObject, filter, nextPathParts),
-            }
-          : { schema: prop as TSchema }),
-      };
-    });
-  return items;
-}
+import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
+import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
 
 type BrickSettingsViewProps = {
   brick: Brick;
@@ -62,7 +34,10 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
   const navItems = getNavItemsFromManifest(manifest.props, filter);
 
   const formData = useMemo(() => {
-    return previewMode === "mobile" ? merge({}, brick.props, brick.mobileProps) : brick.props ?? {};
+    const defProps = defaultProps[brick.type].props;
+    return previewMode === "mobile"
+      ? merge({}, defProps, brick.props, brick.mobileProps)
+      : merge({}, defProps, brick.props ?? {});
   }, [brick, previewMode]);
 
   const onChange = useCallback(
@@ -85,11 +60,13 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
 
   return (
     <FormNavigator
-      title="Settings"
+      title={`${brick.type} settings`}
       initialGroup={group}
       navItems={navItems}
+      formSchema={manifest.props}
       formData={formData}
       onChange={onChange}
+      brickId={brick.id}
     />
   );
 }

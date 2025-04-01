@@ -32,11 +32,14 @@ export function background(opts: BackgroundOptions = {}) {
           Type.String({
             default: defaultValue.color ?? "transparent",
             title: "Color",
+            description:
+              "Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900",
           }),
         ),
         image: Type.Optional(
           Type.String({
             title: "Image",
+            description: "The background image. Can be a URL or a data URI",
           }),
         ),
         size: Type.Optional(
@@ -89,6 +92,8 @@ export type BackgroundSettings = Static<ReturnType<typeof background>>;
 export function backgroundColor(defaultValue = "transparent", title = "Background color") {
   return prop({
     title,
+    description:
+      "Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900",
     $id: "#styles:backgroundColor",
     schema: Type.String({
       default: defaultValue,

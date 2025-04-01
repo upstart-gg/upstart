@@ -1,11 +1,11 @@
 import type { FieldProps } from "./types";
 import { Text } from "@upstart.gg/style-system/system";
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
-import { fieldLabel } from "../form-class";
 import { tx } from "@upstart.gg/style-system/twind";
 import { MdBorderBottom, MdBorderLeft, MdBorderRight, MdBorderTop } from "react-icons/md";
+import { FieldTitle } from "../field-factory";
 
-export const BorderSideField: React.FC<FieldProps<BorderSettings["side"]>> = (props) => {
+export const BorderSideField: React.FC<FieldProps<BorderSettings["sides"]>> = (props) => {
   const { currentValue = [], onChange, title, description, schema } = props;
 
   console.log("init with currentValue", currentValue);
@@ -13,7 +13,7 @@ export const BorderSideField: React.FC<FieldProps<BorderSettings["side"]>> = (pr
   return (
     <div className="border-side-field flex flex-1">
       <div className="flex justify-between items-center flex-1">
-        <label className={fieldLabel}>{schema.title ?? "Sides"}</label>
+        <FieldTitle title={title ?? "Sides"} description={description} />
         <div className="inline-flex divide-x divide-gray-300 dark:divide-dark-500 rounded bg-gray-100 border grow-0 border-gray-300 max-w-min">
           {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
           {schema.items.anyOf.map((option: any) => (

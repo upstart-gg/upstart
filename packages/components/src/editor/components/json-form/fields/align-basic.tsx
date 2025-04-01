@@ -35,7 +35,7 @@ export const AlignBasicField: React.FC<FieldProps<AlignBasicSettings>> = (props)
     <div className="layout-field basis-full">
       <div className="flex items-start flex-wrap gap-x-4 gap-y-1">
         <div className="flex flex-col gap-1 flex-1">
-          <label className={fieldLabel}>Horizontal</label>
+          <label className={fieldLabel}>Horizontal align</label>
           <SegmentedControl.Root
             onValueChange={(value) =>
               onSettingsChange({ horizontal: value as AlignBasicSettings["horizontal"] })
@@ -61,7 +61,7 @@ export const AlignBasicField: React.FC<FieldProps<AlignBasicSettings>> = (props)
         </div>
 
         <div className="flex flex-col gap-1 flex-1">
-          <label className={fieldLabel}>Vertical</label>
+          <label className={fieldLabel}>Vertical align</label>
           <SegmentedControl.Root
             onValueChange={(value) => onSettingsChange({ vertical: value as AlignBasicSettings["vertical"] })}
             defaultValue={currentValue.vertical}

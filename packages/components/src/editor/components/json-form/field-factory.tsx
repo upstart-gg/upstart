@@ -25,6 +25,9 @@ import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/
 import type { FlexSettings, GridSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
+import { fieldLabel } from "./form-class";
+import { Tooltip } from "@upstart.gg/style-system/system";
+import { tx } from "@upstart.gg/style-system/twind";
 
 export interface FieldFactoryOptions {
   brickId?: string;
@@ -103,12 +106,12 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
     }
 
     case "border-side": {
-      const currentValue = (get(formData, id) ?? commonProps.schema.default) as BorderSettings["side"];
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as BorderSettings["sides"];
       return (
         <BorderSideField
           key={`field-${id}`}
           currentValue={currentValue}
-          onChange={(value: BorderSettings["side"] | null) => onChange({ [id]: value }, id)}
+          onChange={(value: BorderSettings["sides"] | null) => onChange({ [id]: value }, id)}
           {...commonProps}
         />
       );
@@ -295,27 +298,48 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
   }
 }
 
-// Process schema to create grouped fields
-export function processObjectSchemaToFields(
-  schema: TObject<TProperties>,
-  formData: Record<string, unknown>,
-  onChange: (data: Record<string, unknown>, propPath: string) => void,
+type ProcessObjectSchemaToFieldsProps = {
+  schema: TObject<TProperties>;
+  formData: Record<string, unknown>;
+  formSchema: TObject<TProperties>;
+  onChange: (data: Record<string, unknown>, propPath: string) => void;
   options: {
     brickId?: string;
     filter?: (field: TSchema) => boolean;
     parents?: string[];
-  },
-): ReactNode[] {
+  };
+};
+
+// Process schema to create grouped fields
+export function processObjectSchemaToFields({
+  schema,
+  formData,
+  formSchema,
+  onChange,
+  options,
+}: ProcessObjectSchemaToFieldsProps): ReactNode[] {
   const { brickId, filter, parents = [] } = options;
   const fields: ReactNode[] = [];
 
   Object.entries(schema.properties).forEach(([fieldName, fieldSchema]) => {
     const field = fieldSchema;
 
-    // Apply filter if provided
+    // Apply global filter if provided
     if (filter && field.type !== "object" && !filter(field)) {
       console.log("processObjectSchemaToFields: filtering field", field);
       return;
+    }
+
+    // Apply per field filter
+    if (field.metadata?.filter) {
+      // field filter should be called with the current formData and the schema
+      const filter = field.metadata.filter as (
+        propsSchema: TObject,
+        formData: Record<string, unknown>,
+      ) => boolean;
+      if (!filter(formSchema, formData)) {
+        return;
+      }
     }
 
     // Build the field ID
@@ -339,4 +363,30 @@ export function processObjectSchemaToFields(
   });
 
   return fields;
+}
+
+export function FieldTitle({ title, description }: { title?: string; description?: string }) {
+  if (!title) return null;
+  return (
+    <div className="flex items-center">
+      {description ? (
+        <Tooltip
+          content={<span className="block text-[0.9rem] leading-5 p-1.5">{description}</span>}
+          className="!z-[10000]"
+          align="start"
+        >
+          <label
+            className={tx(
+              fieldLabel,
+              "underline-offset-4 no-underline hover:underline decoration-upstart-300 decoration-dotted cursor-help",
+            )}
+          >
+            {title}
+          </label>
+        </Tooltip>
+      ) : (
+        <label className={fieldLabel}>{title}</label>
+      )}
+    </div>
+  );
 }

@@ -1,5 +1,7 @@
 import type { TObject, TProperties, TArray, Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
+import type { ReactNode, FC, Component, ComponentType } from "react";
+import type { IconBaseProps } from "react-icons/lib";
 
 type BrickKind = "brick" | "widget" | "container";
 
@@ -7,7 +9,8 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
   type: string;
   kind?: BrickKind;
   name: string;
-  icon: string;
+  icon: string | FC<IconBaseProps>;
+  iconClassName?: string;
   description?: string;
   minWidth?: {
     mobile: number;

@@ -12,6 +12,7 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 import { AiOutlineCloseSquare } from "react-icons/ai";
 import { CgCloseR } from "react-icons/cg";
 import { IoMdClose } from "react-icons/io";
+import { FieldTitle } from "../field-factory";
 
 const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
   const { schema, formData, onChange, required, title, description, currentValue } = props;
@@ -28,11 +29,7 @@ const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
   return (
     <>
       <div className="file-field flex items-center gap-1 flex-1">
-        {title && (
-          <div className="flex items-center justify-between">
-            <label className={fieldLabel}>{title}</label>
-          </div>
-        )}
+        <FieldTitle title={title} description={description} />
         <div className="flex gap-1 flex-1">
           <input
             id={id}
@@ -65,13 +62,6 @@ const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
             </Button>
           )}
         </div>
-        {description && (
-          <Tooltip content={description} className="!z-[10000]" align="end">
-            <IconButton variant="ghost" size="1" radius="full" className="!p-0.5 group !cursor-help" disabled>
-              <IoIosHelpCircleOutline className="text-upstart-400 w-5 h-5 group-hover:text-upstart-600" />
-            </IconButton>
-          </Tooltip>
-        )}
       </div>
       {currentValue.src && (
         <>

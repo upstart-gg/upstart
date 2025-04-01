@@ -1,6 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { prop } from "./helpers";
-import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
+// import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
 
 type PropImageOptions = {
   defaultImageUrl?: string;
@@ -15,6 +15,7 @@ export function image(title = "Image", options: PropImageOptions = {}) {
       src: Type.String({
         default: defaultImageUrl,
         title,
+        description: "Image URL. Can be a link to an image or a data URI.",
       }),
       alt: Type.Optional(
         Type.String({

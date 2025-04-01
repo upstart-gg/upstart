@@ -1,7 +1,7 @@
 import { Type } from "@sinclair/typebox";
 import { defineDataSources } from "@upstart.gg/sdk/datasources";
 import { defineAttributes, attr } from "@upstart.gg/sdk/attributes";
-import { defineConfig } from "@upstart.gg/sdk/page";
+import { defineConfig } from "@upstart.gg/sdk/template";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import { defineBricks, defineSections } from "@upstart.gg/sdk/shared/bricks";
 
@@ -63,7 +63,9 @@ const homePageSections = defineSections([
     id: "header",
     label: "Header",
     order: 0,
-    props: {},
+    props: {
+      $paddingHorizontal: 20,
+    },
     position: {
       mobile: {
         h: 3,
@@ -116,9 +118,12 @@ const hpBricks = defineBricks([
     type: "header",
     sectionId: "header",
     props: {
-      container: {},
+      container: {
+        backgroundColor: "bg-secondary-900",
+      },
       brand: {
         name: "Upstart",
+        color: "color-auto",
       },
     },
     position: {
@@ -140,28 +145,26 @@ const hpBricks = defineBricks([
     type: "container",
     sectionId: "header",
     props: {
-      styles: {
-        background: {
-          color: "#f9f9f9",
-        },
-      },
       $children: [
         {
           type: "text",
           props: {
             content: "Some text #1",
+            backgroundColor: "bg-green-100",
           },
         },
         {
           type: "text",
           props: {
             content: "Some text #2",
+            backgroundColor: "bg-blue-100",
           },
         },
         {
           type: "text",
           props: {
             content: "Some text #3",
+            backgroundColor: "bg-pink-100",
           },
         },
       ],
@@ -174,9 +177,9 @@ const hpBricks = defineBricks([
         h: 8,
       },
       desktop: {
-        x: 0,
+        x: 6,
         y: 8,
-        w: "full",
+        w: "twoThird",
         h: 8,
       },
     },
@@ -197,6 +200,27 @@ const hpBricks = defineBricks([
       desktop: {
         x: "quarter",
         y: 0,
+        w: "half",
+        h: 3,
+      },
+    },
+  },
+  {
+    type: "text",
+    sectionId: "content",
+    props: {
+      content: "Some specific content 2",
+    },
+    position: {
+      mobile: {
+        x: "quarter",
+        y: 6,
+        w: "half",
+        h: 3,
+      },
+      desktop: {
+        x: "quarter",
+        y: 6,
         w: "half",
         h: 3,
       },

@@ -4,7 +4,7 @@ import { typeboxSchemaToJSONSchema } from "../utils/schema";
 
 describe("Attributes test suite", () => {
   describe("defineAttributes", () => {
-    it("should define default attributes", () => {
+    it("should define custom attributes", () => {
       const attributes = defineAttributes({
         name: attr.string("Name"),
         age: attr.number("Age"),
@@ -13,11 +13,6 @@ describe("Attributes test suite", () => {
       });
       expect(attributes.type).toBe("object");
       expect(attributes.properties).toBeTypeOf("object");
-      expect(attributes.properties).toHaveProperty("$pageLanguage");
-      expect(attributes.properties).toHaveProperty("$pageTitle");
-      expect(attributes.properties).toHaveProperty("$pageDescription");
-      expect(attributes.properties).toHaveProperty("$pageKeywords");
-      expect(attributes.properties).toHaveProperty("$pageLastUpdated");
       expect(attributes.properties).toHaveProperty("name");
       expect(attributes.properties).toHaveProperty("age");
       expect(attributes.properties).toHaveProperty("isStudent");
@@ -30,7 +25,7 @@ describe("Attributes test suite", () => {
         mainButtonUrl: attr.url("Main Button URL", "https://facebook.com"),
         testBoolTrue: attr.boolean("Test Bool True", true),
         customerId: attr.string("Customer ID"),
-        testUrl: attr.url("Test URL", "https://enpage.co"),
+        testUrl: attr.url("Test URL", "https://upstart.gg"),
       });
       expect(resolveAttributes(attributes)).toBeTruthy();
     });

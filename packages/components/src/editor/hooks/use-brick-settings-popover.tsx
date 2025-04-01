@@ -78,7 +78,6 @@ export const useBrickSettingsPopover = ({
 
   // Helper for closing the popover
   function closePopover() {
-    console.debug("close popover");
     setState((prev) => ({ ...prev, isOpen: false }));
     setSelectedBrickId();
   }

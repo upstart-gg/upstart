@@ -9,12 +9,14 @@ import {
   type NodeViewProps,
   mergeAttributes,
   nodeInputRule,
+  type Extension,
 } from "@tiptap/react";
 import Placeholder from "@tiptap/extension-placeholder";
+import { RiArrowDownSLine, RiBracesLine } from "react-icons/ri";
 
-import { RiArrowDownSLine } from "react-icons/ri";
 import StarterKit from "@tiptap/starter-kit"; // define your extension array
 import TextAlign from "@tiptap/extension-text-align";
+import Heading from "@tiptap/extension-heading";
 import {
   Callout,
   IconButton,
@@ -47,20 +49,12 @@ import { MdStrikethroughS } from "react-icons/md";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { useDatasourcesSchemas, useEditor } from "~/editor/hooks/use-editor";
 import { VscDatabase } from "react-icons/vsc";
-import { BiFullscreen, BiExitFullscreen } from "react-icons/bi";
 import { JSONSchemaView } from "~/editor/components/json-form/SchemaView";
 import Mention from "@tiptap/extension-mention";
 import datasourceFieldSuggestions from "./datasourceFieldSuggestions";
-import { CgCloseR } from "react-icons/cg";
 import { getJSONSchemaFieldsList } from "../utils/json-field-list";
 import Highlight from "@tiptap/extension-highlight";
-import {
-  menuBarBtnActiveCls,
-  menuBarBtnCls,
-  menuBarBtnCommonCls,
-  menuBarBtnSquareCls,
-  menuNavBarCls,
-} from "../styles/menubar-styles";
+import { menuBarBtnActiveCls, menuBarBtnCls, menuBarBtnCommonCls } from "../styles/menubar-styles";
 import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
@@ -76,6 +70,24 @@ function DatasourceFieldNode(props: NodeViewProps) {
 }
 
 const fieldsRegex = /(\{\{([^}]+)\}\})/;
+
+const HeroHeading = Heading.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      heroSize: {
+        default: "hero-size-1",
+        parseHTML: (element) => element.getAttribute("class") || "",
+        renderHTML: (attributes) => {
+          if (!attributes.heroSize) {
+            return {};
+          }
+          return { class: attributes.heroSize };
+        },
+      },
+    };
+  },
+});
 
 const DatasourceFieldExtension = Node.create({
   // configuration
@@ -126,11 +138,10 @@ export type TextEditorProps<E extends ElementType> = PolymorphicProps<E> & {
   content: string;
   className?: string;
   brickId: Brick["id"];
-  paragraphMode?: string;
   propPath: string;
   noTextAlign?: boolean;
   noTextStrike?: boolean;
-  noTextType?: boolean;
+  textSizeMode?: "hero" | "classic" | false;
   /**
    * Whether the editor is inlined in the page or appears in the panel
    */
@@ -141,12 +152,11 @@ const TextEditor = <T extends ElementType = "div">({
   content,
   className,
   brickId,
-  paragraphMode,
   inline,
   propPath,
   noTextAlign,
-  noTextType,
   noTextStrike,
+  textSizeMode = "classic",
 }: TextEditorProps<T>) => {
   const onUpdate = useTextEditorUpdateHandler(brickId, propPath);
   const mainEditor = useEditor();
@@ -161,27 +171,27 @@ const TextEditor = <T extends ElementType = "div">({
 
   const extensions = [
     StarterKit.configure({
-      ...(inline && {
+      ...((inline || textSizeMode === "hero") && {
         document: false,
       }),
       dropcursor: {
         class: "drop-cursor",
         color: "#FF9900",
       },
+      heading: textSizeMode === "hero" ? false : {},
     }),
     Placeholder.configure({
-      // Use a placeholder:
       placeholder: "Write something …",
-      // Use different placeholders depending on the node type:
-      // placeholder: ({ node }) => {
-      //   if (node.type.name === 'heading') {
-      //     return 'What’s the title?'
-      //   }
-
-      //   return 'Can you add some further context?'
-      // },
     }),
     ...(inline ? [Document.extend({ content: "paragraph" })] : []),
+    ...(textSizeMode === "hero"
+      ? [
+          HeroHeading,
+          Document.extend({
+            content: "heading*",
+          }),
+        ]
+      : []),
     ...(!noTextAlign
       ? [
           TextAlign.configure({
@@ -219,7 +229,7 @@ const TextEditor = <T extends ElementType = "div">({
         return `${options.suggestion.char}${field}}}`;
       },
     }),
-  ];
+  ] as Extension[];
 
   const editor = useTextEditor(
     {
@@ -251,7 +261,6 @@ const TextEditor = <T extends ElementType = "div">({
     };
 
     const onBlur = (e: EditorEvents["blur"]) => {
-      console.log("BLURRR");
       // For whatever reason, the editor content is not updated when the blur event is triggered the first time
       // So we need to manually update the content here
       setContent(e.editor.getHTML());
@@ -283,6 +292,9 @@ const TextEditor = <T extends ElementType = "div">({
       setFocused(false);
     };
 
+    editor.options.element.addEventListener("resize", () => {
+      console.log("editor resized");
+    });
     editor?.on("focus", onFocus);
     editor?.on("blur", onBlur);
 
@@ -304,10 +316,9 @@ const TextEditor = <T extends ElementType = "div">({
         <Portal container={menuBarContainer} asChild>
           <TextEditorMenuBar
             editor={editor}
-            paragraphMode={paragraphMode}
             noTextAlign={noTextAlign}
-            noTextType={noTextType}
             noTextStrike={noTextStrike}
+            textSizeMode={textSizeMode}
           />
         </Portal>
       )}
@@ -317,22 +328,19 @@ const TextEditor = <T extends ElementType = "div">({
 
 const TextEditorMenuBar = ({
   editor,
-  paragraphMode,
+  textSizeMode,
   noTextAlign,
-  noTextType,
   noTextStrike,
 }: {
   editor: Editor;
-  paragraphMode?: string;
-  noTextAlign?: boolean;
-  noTextType?: boolean;
-  noTextStrike?: boolean;
-}) => {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+} & Omit<TextEditorProps<any>, "content" | "brickId" | "propPath">) => {
   return (
     <>
-      {paragraphMode !== "hero" && !noTextType && <TextSizeDropdown editor={editor} />}
+      {textSizeMode === "classic" && <TextSizeClassicDropdown editor={editor} />}
+      {textSizeMode === "hero" && <TextSizeHeroDropdown editor={editor} />}
       {!noTextAlign && <TextAlignButtonGroup editor={editor} />}
-      <TextStyleButtonGroup editor={editor} noTextStrike={noTextStrike} noTextType={noTextType} />
+      <TextStyleButtonGroup editor={editor} noTextStrike={noTextStrike} textSizeMode={textSizeMode} />
       <DatasourceItemButton editor={editor} />
     </>
   );
@@ -402,7 +410,7 @@ function DatasourceFieldPickerModal(props: DatasourceFieldPickerModalProps) {
       <h3 className="text-base font-medium">Data sources fields</h3>
       <Callout.Root>
         <Callout.Icon>
-          <VscDatabase />
+          <RiBracesLine />
         </Callout.Icon>
         <Callout.Text>
           Use dynamic data thanks to data sources! Choose a data source field you'd like to display.
@@ -453,6 +461,250 @@ function DatasourceFieldPickerModal(props: DatasourceFieldPickerModalProps) {
         )}
       </div>
     </div>
+  );
+}
+
+function DatasourceItemButton({ editor }: { editor: Editor }) {
+  const sources = useDatasourcesSchemas();
+  const mainEditor = useEditor();
+  // const end = editor.state.
+
+  const onFieldSelect = (field: string) => {
+    const content = [
+      {
+        type: "mention",
+        attrs: { "data-field": field, label: field },
+      },
+      {
+        type: "text",
+        text: ` `,
+      },
+    ];
+
+    const { size } = editor.view.state.doc.content;
+
+    editor
+      .chain()
+      .focus()
+      .insertContentAt(mainEditor.lastTextEditPosition ?? size, content, {
+        parseOptions: {
+          preserveWhitespace: "full",
+        },
+      })
+      .run();
+  };
+
+  return (
+    <Popover.Root>
+      <Popover.Trigger>
+        <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
+          <RiBracesLine className="w-5 h-5" />
+        </button>
+      </Popover.Trigger>
+      <Popover.Content width="460px" side="right" align="start" size="2" maxHeight="50vh" sideOffset={10}>
+        <DatasourceFieldPickerModal onFieldSelect={onFieldSelect} />
+      </Popover.Content>
+    </Popover.Root>
+  );
+}
+
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+type TextStyleButtonGroupProps = Pick<TextEditorProps<any>, "noTextStrike" | "textSizeMode"> & {
+  editor: Editor;
+};
+
+function TextStyleButtonGroup({ editor, noTextStrike, textSizeMode }: TextStyleButtonGroupProps) {
+  const isBold = editor.isActive("bold");
+  const isItalic = editor.isActive("italic");
+  const isStrike = editor.isActive("strike");
+  return (
+    <ToggleGroup.Root
+      className={tx("flex !shadow-none divide-x", !textSizeMode && "!rounded-l-none")}
+      type="multiple"
+      value={
+        [
+          isBold ? "bold" : undefined,
+          isItalic ? "italic" : undefined,
+          isStrike ? "strike" : undefined,
+        ].filter(Boolean) as string[]
+      }
+      aria-label="Text style"
+    >
+      <ToggleGroup.Item
+        className={tx(
+          menuBarBtnCls,
+          menuBarBtnCommonCls,
+          !textSizeMode && "!rounded-l-none",
+          isBold && menuBarBtnActiveCls,
+        )}
+        value="bold"
+        // @ts-ignore
+        onClick={() => editor.chain().focus().toggleBold().run()}
+      >
+        <MdFormatBold className="w-5 h-5" />
+      </ToggleGroup.Item>
+      <ToggleGroup.Item
+        className={tx(menuBarBtnCls, menuBarBtnCommonCls, isItalic && menuBarBtnActiveCls)}
+        value="italic"
+        // @ts-ignore
+        onClick={() => editor.chain().focus().toggleItalic().run()}
+      >
+        <MdOutlineFormatItalic className="w-5 h-5" />
+      </ToggleGroup.Item>
+      {!noTextStrike && (
+        <ToggleGroup.Item
+          className={tx(menuBarBtnCls, menuBarBtnCommonCls, "!rounded-none", isStrike && menuBarBtnActiveCls)}
+          value="strike"
+          // @ts-ignore
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+        >
+          <MdStrikethroughS className="w-5 h-5" />
+        </ToggleGroup.Item>
+      )}
+    </ToggleGroup.Root>
+  );
+}
+
+type TextSizeClassicDropdownProps = {
+  editor: Editor;
+};
+
+function TextSizeClassicDropdown({ editor }: TextSizeClassicDropdownProps) {
+  const [value, setValue] = useState(
+    editor.isActive("heading")
+      ? editor.getAttributes("heading").level?.toString()
+      : editor.isActive("code")
+        ? "code"
+        : "paragraph",
+  );
+  return (
+    <DropMenu
+      items={[
+        {
+          label: "Title 1",
+          onClick: () => {
+            editor.chain().focus().toggleHeading({ level: 1 }).run();
+            setValue("1");
+          },
+          type: "checkbox",
+          checked: value === "1",
+        },
+        {
+          label: "Title 2",
+          onClick: () => {
+            editor.chain().focus().toggleHeading({ level: 2 }).run();
+            setValue("2");
+          },
+          type: "checkbox",
+          checked: value === "2",
+        },
+        {
+          label: "Title 3",
+          onClick: () => {
+            editor.chain().focus().toggleHeading({ level: 3 }).run();
+            setValue("3");
+          },
+          type: "checkbox",
+          checked: value === "3",
+        },
+        {
+          label: "Title 4",
+          onClick: () => {
+            editor.chain().focus().toggleHeading({ level: 4 }).run();
+            setValue("4");
+          },
+          type: "checkbox",
+          checked: value === "4",
+        },
+        {
+          label: "Title 5",
+          onClick: () => {
+            editor.chain().focus().toggleHeading({ level: 5 }).run();
+            setValue("5");
+          },
+          type: "checkbox",
+          checked: value === "5",
+        },
+        {
+          type: "separator",
+        },
+        {
+          label: "Paragraph",
+          onClick: () => {
+            // @ts-ignore
+            editor.chain().focus().setParagraph().run();
+            setValue("paragraph");
+          },
+          type: "checkbox",
+          checked: value === "paragraph",
+        },
+        {
+          type: "separator",
+        },
+        {
+          label: "Code",
+          onClick: () => {
+            // @ts-ignore
+            editor.chain().focus().toggleCode().run();
+            setValue("code");
+          },
+          type: "checkbox",
+          checked: value === "code",
+        },
+      ]}
+    >
+      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
+        <span className="text-[0.8rem] font-medium">
+          {value === "code" ? "Code" : value === "paragraph" ? "Paragraph" : `Title ${value}`}
+        </span>
+        <RiArrowDownSLine className={tx(arrowClass)} />
+      </button>
+    </DropMenu>
+  );
+}
+
+type TextSizeHeroDropdownProps = {
+  editor: Editor;
+};
+
+function TextSizeHeroDropdown({ editor }: TextSizeHeroDropdownProps) {
+  console.log("heading attrs", editor.getAttributes("heading"));
+  const [value, setValue] = useState(editor.getAttributes("heading").class?.toString() ?? "hero-size-1");
+  const sizes = [1, 2, 3, 4, 5];
+  const labels = ["M", "L", "XL", "2XL", "3XL"];
+  const map: Record<string, string> = {
+    "hero-size-1": "M",
+    "hero-size-2": "L",
+    "hero-size-3": "XL",
+    "hero-size-4": "2XL",
+    "hero-size-5": "3XL",
+  };
+  return (
+    <DropMenu
+      items={sizes.map((size, index) => ({
+        label: `Hero ${labels[index]}`,
+        onClick: () => {
+          const isH1 = editor.isActive("heading", { level: 1 });
+
+          if (isH1) {
+            // If it's already an h1, just update the style
+            editor
+              .chain()
+              .focus()
+              .updateAttributes("heading", { heroSize: `hero-size-${size}` })
+              .run();
+          }
+          setValue(`hero-size-${size}`);
+        },
+        type: "checkbox",
+        checked: value === `hero-size-${size}`,
+      }))}
+    >
+      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
+        <span className="text-[0.94rem] font-medium capitalize">Hero {map[value]}</span>
+        <RiArrowDownSLine className={tx(arrowClass)} />
+      </button>
+    </DropMenu>
   );
 }
 
@@ -539,199 +791,6 @@ function DropMenu(props: PropsWithChildren<{ items: TopbarMenuItems; id?: string
         )}
       </DropdownMenu.Content>
     </DropdownMenu.Root>
-  );
-}
-
-function DatasourceItemButton({ editor }: { editor: Editor }) {
-  const sources = useDatasourcesSchemas();
-  const mainEditor = useEditor();
-  // const end = editor.state.
-
-  const onFieldSelect = (field: string) => {
-    const content = [
-      {
-        type: "mention",
-        attrs: { "data-field": field, label: field },
-      },
-      {
-        type: "text",
-        text: ` `,
-      },
-    ];
-
-    const { size } = editor.view.state.doc.content;
-
-    editor
-      .chain()
-      .focus()
-      .insertContentAt(mainEditor.lastTextEditPosition ?? size, content, {
-        parseOptions: {
-          preserveWhitespace: "full",
-        },
-      })
-      .run();
-  };
-
-  return (
-    <Popover.Root>
-      <Popover.Trigger>
-        <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
-          <VscDatabase className="w-5 h-5" />
-        </button>
-      </Popover.Trigger>
-      <Popover.Content width="460px" side="right" align="start" size="2" maxHeight="50vh" sideOffset={10}>
-        <DatasourceFieldPickerModal onFieldSelect={onFieldSelect} />
-      </Popover.Content>
-    </Popover.Root>
-  );
-}
-
-function TextStyleButtonGroup({
-  editor,
-  noTextStrike,
-  noTextType,
-}: { editor: Editor; noTextStrike?: boolean; noTextType?: boolean }) {
-  const isBold = editor.isActive("bold");
-  const isItalic = editor.isActive("italic");
-  const isStrike = editor.isActive("strike");
-  return (
-    <ToggleGroup.Root
-      className={tx("flex !shadow-none divide-x", !noTextType && "!rounded-l-none")}
-      type="multiple"
-      value={
-        [
-          isBold ? "bold" : undefined,
-          isItalic ? "italic" : undefined,
-          isStrike ? "strike" : undefined,
-        ].filter(Boolean) as string[]
-      }
-      aria-label="Text style"
-    >
-      <ToggleGroup.Item
-        className={tx(
-          menuBarBtnCls,
-          menuBarBtnCommonCls,
-          !noTextType && "!rounded-l-none",
-          isBold && menuBarBtnActiveCls,
-        )}
-        value="bold"
-        onClick={() => editor.chain().focus().toggleBold().run()}
-      >
-        <MdFormatBold className="w-5 h-5" />
-      </ToggleGroup.Item>
-      <ToggleGroup.Item
-        className={tx(menuBarBtnCls, menuBarBtnCommonCls, isItalic && menuBarBtnActiveCls)}
-        value="italic"
-        onClick={() => editor.chain().focus().toggleItalic().run()}
-      >
-        <MdOutlineFormatItalic className="w-5 h-5" />
-      </ToggleGroup.Item>
-      {!noTextStrike && (
-        <ToggleGroup.Item
-          className={tx(menuBarBtnCls, menuBarBtnCommonCls, "!rounded-none", isStrike && menuBarBtnActiveCls)}
-          value="strike"
-          onClick={() => editor.chain().focus().toggleStrike().run()}
-        >
-          <MdStrikethroughS className="w-5 h-5" />
-        </ToggleGroup.Item>
-      )}
-    </ToggleGroup.Root>
-  );
-}
-
-type TextSizeSelectProps = {
-  editor: Editor;
-};
-
-function TextSizeDropdown({ editor }: TextSizeSelectProps) {
-  const [value, setValue] = useState(
-    editor.isActive("heading")
-      ? editor.getAttributes("heading").level?.toString()
-      : editor.isActive("code")
-        ? "code"
-        : "paragraph",
-  );
-  return (
-    <DropMenu
-      items={[
-        {
-          label: "Title 1",
-          onClick: () => {
-            editor.chain().focus().toggleHeading({ level: 1 }).run();
-            setValue("1");
-          },
-          type: "checkbox",
-          checked: value === "1",
-        },
-        {
-          label: "Title 2",
-          onClick: () => {
-            editor.chain().focus().toggleHeading({ level: 2 }).run();
-            setValue("2");
-          },
-          type: "checkbox",
-          checked: value === "2",
-        },
-        {
-          label: "Title 3",
-          onClick: () => {
-            editor.chain().focus().toggleHeading({ level: 3 }).run();
-            setValue("3");
-          },
-          type: "checkbox",
-          checked: value === "3",
-        },
-        {
-          label: "Title 4",
-          onClick: () => {
-            editor.chain().focus().toggleHeading({ level: 4 }).run();
-            setValue("4");
-          },
-          type: "checkbox",
-          checked: value === "4",
-        },
-        {
-          label: "Title 5",
-          onClick: () => {
-            editor.chain().focus().toggleHeading({ level: 5 }).run();
-            setValue("5");
-          },
-          type: "checkbox",
-          checked: value === "5",
-        },
-        {
-          type: "separator",
-        },
-        {
-          label: "Paragraph",
-          onClick: () => {
-            editor.chain().focus().setParagraph().run();
-            setValue("paragraph");
-          },
-          type: "checkbox",
-          checked: value === "paragraph",
-        },
-        {
-          type: "separator",
-        },
-        {
-          label: "Code",
-          onClick: () => {
-            editor.chain().focus().toggleCode().run();
-            setValue("code");
-          },
-          type: "checkbox",
-          checked: value === "code",
-        },
-      ]}
-    >
-      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
-        <span className="text-base font-medium">
-          {value === "code" ? "Code" : value === "paragraph" ? "Paragraph" : `Title ${value}`}
-        </span>
-        <RiArrowDownSLine className={tx(arrowClass)} />
-      </button>
-    </DropMenu>
   );
 }
 

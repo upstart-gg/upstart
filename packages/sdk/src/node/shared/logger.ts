@@ -7,17 +7,17 @@ import {
 import { version } from "../../../package.json";
 import chalk from "chalk";
 
-type EnpageLoggerLevel = LogLevel | "debug";
+type UpstartLoggerLevel = LogLevel | "debug";
 
-export function createLogger(level?: EnpageLoggerLevel, allowClearScreen?: boolean, showVersion = false) {
+export function createLogger(level?: UpstartLoggerLevel, allowClearScreen?: boolean, showVersion = false) {
   // vite logger does not support "debug" level
   const logger = createLoggerBase(level === "debug" ? "info" : level, {
-    prefix: "[enpage]",
+    prefix: "[upstart]",
     allowClearScreen,
   });
 
   if (showVersion) {
-    logger.info(chalk.hex("#7270c6").bold(`🚀 Enpage v${version}\n`));
+    logger.info(chalk.hex("#7270c6").bold(`🚀 Upstart v${version}\n`));
   }
 
   return {

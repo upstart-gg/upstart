@@ -308,6 +308,7 @@
 .selecto-selection {
   background-color: var(--violet-a3) !important;
   border-color: var(--violet-8) !important;
+  z-index: 99999 !important;
 }
 
 

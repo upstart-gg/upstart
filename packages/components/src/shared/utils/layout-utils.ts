@@ -3,8 +3,7 @@ import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import type { ResponsiveMode } from "@upstart.gg/sdk/shared/responsive";
 import type { BrickConstraints, BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import type { GridConfig } from "../hooks/use-grid-config";
-
-const OVERFLOWING_TOLREANCE = LAYOUT_ROW_HEIGHT;
+import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
 const defaultsPreferred = {
   mobile: {
@@ -17,154 +16,87 @@ const defaultsPreferred = {
   },
 };
 
-function isOverflowing(element: HTMLElement) {
-  const overflowing = element.scrollHeight - OVERFLOWING_TOLREANCE > element.clientHeight;
-  return overflowing;
+export function getClosestSection(element: Element) {
+  return element.closest<HTMLElement>('[data-element-kind="section"]')!;
 }
 
-function getIdealHeight(element: HTMLElement) {
-  return Math.ceil(element.scrollHeight / LAYOUT_ROW_HEIGHT);
-}
-
-/**
- * Returns the new height (in rows unit) of the brick based on if it's overflowing
- * or false if it should not be adjusted
- */
-export function shouldAdjustBrickHeightBecauseOverflow(brickId: string) {
-  const element = document.getElementById(brickId);
-  if (!element) {
-    console.warn("shouldAdjustBrickHeightBecauseOverflow: Element not found!");
-    return false;
-  }
-
-  // Temporary hide the label to get the correct scrollHeight
-  const uiElements = element.querySelectorAll<HTMLDivElement>("[data-ui]");
-  uiElements.forEach((el) => {
-    el.dataset.display = el.style.display;
-    el.style.display = "none";
-  });
-
-  const hasOverflow = isOverflowing(element);
-  const idealHeight = hasOverflow ? getIdealHeight(element) : null;
-
-  if (hasOverflow) {
-    console.debug(
-      "Brick %s is overflowing. Scrollheight = %d, clientHeight = %d, tolerance = %d",
-      brickId,
-      element.scrollHeight,
-      element.clientHeight,
-      OVERFLOWING_TOLREANCE,
-    );
-  }
-
-  // Restore the label visibility
-  uiElements.forEach((el) => {
-    el.style.display = el.dataset.display as string;
-  });
-
-  return idealHeight ?? false;
-}
-/**
- * Represents position adjustments needed for a brick
- */
-type BrickAdjustment = {
-  id: string;
-  h?: number;
-  y?: number;
-  fromH?: number;
-  fromY?: number;
-};
-
-/**
- * This will adjust the height of all bricks that are overflowing
- * and also adjust the position (brick.position.desktop.y) so that the bricks do not overlap.
- *
- * @param bricks - Array of bricks to check for adjustments
- * @returns An object with brick IDs as keys and their needed adjustments as values
- */
-export function getNeededBricksAdjustments(bricks: Brick[]): Record<string, BrickAdjustment> {
-  let minRow = 0;
-  // Use an object to collect adjustments by brick ID
-  const adjustmentsByBrickId: Record<string, BrickAdjustment> = {};
-
-  bricks.forEach((brick) => {
-    let needsAdjustment = false;
-
-    // Initialize adjustment object if needed
-    if (!adjustmentsByBrickId[brick.id]) {
-      adjustmentsByBrickId[brick.id] = { id: brick.id };
-    }
-
-    // Check for height adjustment
-    const newHeight = shouldAdjustBrickHeightBecauseOverflow(brick.id);
-    if (newHeight) {
-      console.debug(
-        "Brick %s (%s) needs height adjustment from %d to %d",
-        brick.id,
-        brick.type,
-        brick.position.desktop.h,
-        newHeight,
-      );
-      adjustmentsByBrickId[brick.id].h = newHeight;
-      adjustmentsByBrickId[brick.id].fromH = brick.position.desktop.h;
-      needsAdjustment = true;
-    }
-
-    // Check for position adjustment
-    if (brick.position.desktop.y < minRow && detectCollisions({ brick, bricks }).length > 0) {
-      console.debug(
-        "Brick %s (%s) needs position adjustment from %d to %d (%d < %d)",
-        brick.id,
-        brick.type,
-        brick.position.desktop.y,
-        minRow,
-        brick.position.desktop.y,
-        minRow,
-      );
-      adjustmentsByBrickId[brick.id].y = minRow;
-      adjustmentsByBrickId[brick.id].fromY = brick.position.desktop.y;
-      needsAdjustment = true;
-    }
-
-    // Update minimum row for next brick
-    minRow = Math.max(brick.position.desktop.y + brick.position.desktop.h, minRow);
-
-    // Remove this brick if no adjustments are needed
-    if (!needsAdjustment) {
-      delete adjustmentsByBrickId[brick.id];
-    }
-  });
-
-  return adjustmentsByBrickId;
-}
-
-function getGridSize(element: HTMLElement, config: GridConfig) {
-  const rect = element.getBoundingClientRect();
-  return {
-    w: Math.round(rect.width / config.colWidth),
-    h: Math.round(rect.height / config.rowHeight),
-  };
-}
-
-export function getGridPosition(element: HTMLElement, config: GridConfig, relatedContainer?: HTMLElement) {
+export function getBrickPosition(
+  element: HTMLElement,
+  previewMode: ResponsiveMode,
+  relatedContainer?: HTMLElement,
+) {
   // Get element's initial position (getBoundingClientRect gives position relative to viewport)
   const rect = element.getBoundingClientRect();
-  // const container = document.querySelector(".page-container")!.getBoundingClientRect();
-  // relative to upper section
-  const container = (relatedContainer ?? element.closest("section")!).getBoundingClientRect();
+  relatedContainer ??= getClosestSection(element);
+
+  invariant(relatedContainer, "No related container found");
+
+  const container = relatedContainer.getBoundingClientRect();
 
   // Calculate actual position relative to container
   const actualX = rect.left - container.left;
   const actualY = rect.top - container.top;
 
+  // get horizontal padding of the section
+  const padX = parseFloat(window.getComputedStyle(relatedContainer).paddingLeft);
+  const config = getGridConfig(relatedContainer, previewMode);
+
   // Calculate grid position
-  const gridX = Math.round(actualX / config.colWidth);
+  const gridX = Math.round((actualX - padX) / config.colWidth);
   const gridY = Math.round(actualY / config.rowHeight);
 
+  const w = Math.min(Math.ceil(rect.width / config.colWidth), LAYOUT_COLS[previewMode]);
+  const h = Math.ceil(rect.height / config.rowHeight);
+
+  const x = Math.max(0, gridX);
+  const y = Math.max(0, gridY);
+
+  console.log("getBrickPosition", {
+    gridX,
+    gridY,
+    rect,
+    w,
+    h,
+    x,
+    y,
+    actualX,
+    actualY,
+    padX,
+    colWidth: config.colWidth,
+    rowHeight: config.rowHeight,
+  });
+
   return {
-    x: Math.max(0, gridX),
-    y: Math.max(0, gridY),
-    ...getGridSize(element, config),
+    x,
+    y,
+    w,
+    h,
+  };
+}
+
+export function getGridConfig(sectionElement: HTMLElement, previewMode: ResponsiveMode) {
+  const colWidth = Math.round(sectionElement.clientWidth / LAYOUT_COLS[previewMode]);
+  const rowHeight = LAYOUT_ROW_HEIGHT;
+  return { colWidth, rowHeight };
+}
+
+export function getDropPosition(event: Interact.DropEvent, gridConfig: GridConfig) {
+  const grid = event.target as HTMLElement;
+  const gridRect = grid.getBoundingClientRect();
+
+  // Calculate position relative to grid
+  const rect = {
+    left: event.dragEvent.clientX - gridRect.left,
+    top: event.dragEvent.clientY - gridRect.top,
+  };
+
+  // Calculate grid position
+  const col = Math.round((rect.left - gridConfig.colWidth / 2) / gridConfig.colWidth);
+  const row = Math.round((rect.top - gridConfig.rowHeight / 2) / gridConfig.rowHeight);
+
+  return {
+    x: Math.max(1, col),
+    y: Math.max(1, row),
   };
 }
 
@@ -210,51 +142,6 @@ export function adjustMobileLayout(layout: Brick[]): Brick[] {
   });
 }
 
-export function canDropOnLayout(
-  bricks: Brick[],
-  currentBp: ResponsiveMode,
-  dropPosition: { y: number; x: number },
-  constraints: BrickConstraints,
-): { y: number; x: number; w: number; h: number; forbidden?: boolean; parent?: Brick } | false {
-  // Helper function to check if a position is valid
-  function isPositionValid(x: number, y: number, width: number): boolean {
-    // Check if position is within grid bounds
-    if (x < 0 || x + width > LAYOUT_COLS[currentBp] || y < 0) {
-      console.log("out of bounds, x = %d, y = %d, width = %d, max = %d", x, y, width, LAYOUT_COLS[currentBp]);
-      return false;
-    }
-
-    return true;
-  }
-
-  // Ensure minimum width respects breakpoint constraints
-  const effectiveMinWidth = Math.max(constraints.minWidth?.[currentBp] ?? 0, 1);
-
-  // Possible width depending on x position
-  const possibleMaxWidth = LAYOUT_COLS[currentBp] - dropPosition.x;
-
-  // Calculate the width to use - try preferred first, fall back to minimum
-  const width = Math.min(constraints.defaultWidth?.[currentBp] ?? effectiveMinWidth, possibleMaxWidth);
-
-  // Calculate the height to use
-  const height = constraints.defaultHeight?.[currentBp] || defaultsPreferred[currentBp].height;
-
-  // Check if the drop position is valid
-  if (isPositionValid(dropPosition.x, dropPosition.y, width)) {
-    const brickAtPos = getBrickAtPosition(dropPosition.x, dropPosition.y, bricks, currentBp);
-    return {
-      x: dropPosition.x,
-      y: dropPosition.y,
-      w: width,
-      h: height,
-      parent: brickAtPos?.isContainer ? brickAtPos : undefined,
-    };
-  }
-
-  // If the position is invalid, return false
-  return false;
-}
-
 /**
  */
 export function getSectionAtPosition(x: number, y: number) {
@@ -262,6 +149,14 @@ export function getSectionAtPosition(x: number, y: number) {
   return elements.find((el) => el.tagName === "SECTION" && el.dataset.elementKind === "section") as
     | HTMLElement
     | undefined;
+}
+
+export function getElementCenterPoint(element: HTMLElement) {
+  const rect = element.getBoundingClientRect();
+  return {
+    x: rect.left + rect.width / 2,
+    y: rect.top + rect.height / 2,
+  };
 }
 
 /**
@@ -277,46 +172,6 @@ export function getBrickAtPosition(
     const pos = brick.position[currentBp];
     return x >= pos.x && x < pos.x + pos.w && y >= pos.y && y < pos.y + pos.h;
   });
-}
-
-export function getBricksOverlap(
-  draggingBrick: Brick,
-  draggingNewPos: { x: number; y: number },
-  dropOverBrick: Brick,
-  bp: ResponsiveMode = "desktop",
-) {
-  // Extract and convert coordinates to numbers
-  const drag = draggingBrick.position[bp];
-  const drop = dropOverBrick.position[bp];
-
-  const dragX = Number(draggingNewPos.x);
-  const dragY = Number(draggingNewPos.y);
-  const dragW = Number(drag.w);
-  const dragH = Number(drag.h);
-
-  const dropX = Number(drop.x);
-  const dropY = Number(drop.y);
-  const dropW = Number(drop.w);
-  const dropH = Number(drop.h);
-
-  // Guard against a drop brick with zero area
-  if (dropW === 0 || dropH === 0) return 0;
-
-  // Calculate right and bottom edges
-  const dragRight = dragX + dragW;
-  const dragBottom = dragY + dragH;
-  const dropRight = dropX + dropW;
-  const dropBottom = dropY + dropH;
-
-  // Calculate the overlap dimensions
-  const xOverlap = Math.max(0, Math.min(dragRight, dropRight) - Math.max(dragX, dropX));
-  const yOverlap = Math.max(0, Math.min(dragBottom, dropBottom) - Math.max(dragY, dropY));
-
-  // Calculate areas
-  const overlapArea = xOverlap * yOverlap;
-  const dropOverArea = dropW * dropH;
-
-  return overlapArea / dropOverArea;
 }
 
 type CollisionSide = "left" | "right" | "top" | "bottom";
@@ -452,40 +307,13 @@ export function detectCollisions({
 /**
  * Returns the coords of an element relative to the #page-container
  */
-export function getBrickCoordsInPage(element: HTMLElement, relativeTo: HTMLElement) {
+export function getBrickCoordsInPage(element: HTMLElement) {
   const rect = element.getBoundingClientRect();
-  const containerBox = relativeTo.getBoundingClientRect();
   return {
-    x: rect.left - containerBox.left,
-    y: rect.top - containerBox.top,
+    x: rect.left,
+    y: rect.top,
     w: rect.width,
     h: rect.height,
-  };
-}
-
-export function getDropPosition(event: Interact.DropEvent, gridConfig: GridConfig) {
-  const grid = event.target as HTMLElement;
-  const gridRect = grid.getBoundingClientRect();
-
-  // Calculate position relative to grid
-  const rect = {
-    left: event.dragEvent.clientX - gridRect.left,
-    top: event.dragEvent.clientY - gridRect.top,
-  };
-
-  // Calculate grid position
-  const col = Math.round((rect.left - gridConfig.colWidth / 2) / gridConfig.colWidth);
-  const row = Math.round((rect.top - gridConfig.rowHeight / 2) / gridConfig.rowHeight);
-
-  return {
-    absolute: {
-      left: rect.left - gridConfig.colWidth / 2,
-      top: rect.top - gridConfig.rowHeight / 2,
-    },
-    grid: {
-      x: Math.max(1, col),
-      y: Math.max(1, row),
-    },
   };
 }
 

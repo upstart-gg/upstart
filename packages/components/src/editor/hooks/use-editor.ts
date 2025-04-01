@@ -64,6 +64,7 @@ export interface EditorState extends EditorStateProps {
   deselectBrick: (brickId?: Brick["id"]) => void;
   setShouldShowGrid: (show: boolean) => void;
   setColorAdjustment: (colorAdjustment: ColorAdjustment) => void;
+  markTourAsSeen: (tourId: string) => void;
   togglePanelPosition: () => void;
   showModal: (modal: EditorStateProps["modal"]) => void;
   setCollidingBrick: (info: { brick: Brick; side: "top" | "bottom" | "left" | "right" } | null) => void;
@@ -92,6 +93,11 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
           immer((set, _get) => ({
             ...DEFAULT_PROPS,
             ...initProps,
+
+            markTourAsSeen: (tourId) =>
+              set((state) => {
+                state.seenTours = [...state.seenTours, tourId];
+              }),
 
             setCollidingBrick: (info) =>
               set((state) => {
@@ -210,7 +216,6 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                       "shouldShowGrid",
                       "textEditMode",
                       "onShowLogin",
-                      "seenTours",
                       "disableTours",
                       "logoLink",
                       "debugMode",
@@ -234,7 +239,6 @@ export interface DraftStateProps {
   label: string;
   sections: Section[];
   bricks: Brick[];
-
   data: Record<string, unknown>;
   datasources?: SiteConfig["datasources"];
   datarecords?: SiteConfig["datarecords"];
@@ -264,10 +268,15 @@ export interface DraftState extends DraftStateProps {
   getBrick: (id: string) => Brick | undefined;
   getParentBrick: (id: string) => Brick | undefined;
   deleteBrick: (id: string) => void;
+  getPageDataForDuplication: () => Pick<
+    DraftStateProps,
+    "id" | "label" | "path" | "sections" | "bricks" | "attr" | "attributes" | "datasources" | "datarecords"
+  >;
   duplicateBrick: (id: string) => void;
+  duplicateSection: (id: string) => void;
   moveBrickWithin: (id: string, to: "left" | "right") => void;
   moveBrickToParent: (id: string, parentId: string) => void;
-  addBrick: (brick: Brick, parentContainer?: Brick) => void;
+  addBrick: (brick: Brick, parentContainerId: Brick["id"] | null) => void;
   updateBrick: (id: string, brick: Partial<Brick>) => void;
   updateBrickProps: (id: string, props: Record<string, unknown>, isMobileProps?: boolean) => void;
   updateBrickPosition: (id: string, bp: keyof Brick["position"], position: Partial<BrickPosition>) => void;
@@ -303,6 +312,7 @@ export interface DraftState extends DraftStateProps {
   // New section methods
   addSection: (section: Section) => void;
   updateSection: (id: string, sectionData: Partial<Section>) => void;
+  updateSectionProps: (id: string, props: Partial<Section["props"]>, isMobileProps?: boolean) => void;
   deleteSection: (id: string) => void;
   getSection: (id: string) => Section | undefined;
 
@@ -350,6 +360,24 @@ export const createDraftStore = (
               return state.sections.find((s) => s.order === 0)?.id === sectionId;
             },
 
+            getPageDataForDuplication: () => {
+              const state = _get();
+              const pageCount = state.pagesMap.length + 1;
+              console.log("state.pagesMap", state.pagesMap);
+              const newPage = {
+                id: `page-${generateId()}`,
+                label: `${state.label} (page ${pageCount})`,
+                path: `${state.path}-${pageCount}`,
+                sections: state.sections,
+                bricks: state.bricks,
+                attr: state.attr,
+                attributes: state.attributes,
+                datasources: state.datasources,
+                datarecords: state.datarecords,
+              };
+              return newPage;
+            },
+
             isLastSection: (sectionId) => {
               const state = _get();
               return state.sections.find((s) => s.order === state.sections.length - 1)?.id === sectionId;
@@ -387,6 +415,22 @@ export const createDraftStore = (
                     ...sectionData,
                   };
                 }
+              }),
+
+            duplicateSection: (id) =>
+              set((state) => {
+                const section = state.sections.find((s) => s.id === id);
+                if (!section) {
+                  console.error("Cannot duplicate section %s, it does not exist", id);
+                  return;
+                }
+                const newSection = {
+                  ...section,
+                  id: `section-${generateId()}`,
+                  order: state.sections.length,
+                  label: `${section.label} (copy)`,
+                };
+                state.sections.push(newSection);
               }),
 
             deleteSection: (id) =>
@@ -622,6 +666,22 @@ export const createDraftStore = (
                 }
               }),
 
+            updateSectionProps: (id, props, isMobileProps) =>
+              set((state) => {
+                const section = state.sections.find((s) => s.id === id);
+                if (section) {
+                  if (isMobileProps) {
+                    section.mobileProps = mergeIgnoringArrays({}, section.mobileProps, props, {
+                      lastTouched: Date.now(),
+                    });
+                  } else {
+                    section.props = mergeIgnoringArrays({}, section.props, props, {
+                      lastTouched: Date.now(),
+                    });
+                  }
+                }
+              }),
+
             /**
              * Move abrick inside its container.
              * If the brick does not belong to a container, does nothing
@@ -782,17 +842,17 @@ export const createDraftStore = (
                 }
               }),
 
-            addBrick: (brick, parentContainer) =>
+            addBrick: (brick, parentContainerId) =>
               set((state) => {
-                if (!parentContainer) {
+                if (!parentContainerId) {
                   state.bricks.push(brick);
                 } else {
-                  const parentBrick = state.bricks.find((b) => b.id === parentContainer.id);
+                  const parentBrick = state.bricks.find((b) => b.id === parentContainerId);
                   invariant(parentBrick, "Parent brick not found");
                   invariant("$children" in parentBrick.props, "Parent brick must be a container");
                   (parentBrick.props.$children as Brick[] | undefined)?.push({
                     ...brick,
-                    parentId: parentContainer.id,
+                    parentId: parentContainerId,
                   });
                 }
               }),
@@ -824,9 +884,7 @@ export const createDraftStore = (
           })),
           {
             name: `draft-state-${initProps.id}`,
-            // TODO: change when demo is done
-            // skipHydration: initProps.mode === "remote",
-            skipHydration: true,
+            skipHydration: initProps.mode === "remote",
             // Add this to force storage on initialization
             onRehydrateStorage: () => (state) => {
               if (state) {
@@ -940,7 +998,11 @@ export const useEditorMode = () => {
 
 export const useTours = () => {
   const ctx = useEditorStoreContext();
-  return useStore(ctx, (state) => ({ seenTours: state.seenTours, disabled: state.disableTours }));
+  return useStore(ctx, (state) => ({
+    seenTours: state.seenTours,
+    disabled: state.disableTours,
+    markTourAsSeen: state.markTourAsSeen,
+  }));
 };
 
 export const useTextEditMode = () => {
@@ -1045,6 +1107,12 @@ export const useDraftHelpers = () => {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => ({
     deleteBrick: state.deleteBrick,
+    duplicateBrick: state.duplicateBrick,
+    getBrick: state.getBrick,
+    updateBrickPosition: state.updateBrickPosition,
+    adjustMobileLayout: state.adjustMobileLayout,
+    duplicateSection: state.duplicateSection,
+    toggleBrickVisibilityPerBreakpoint: state.toggleBrickVisibilityPerBreakpoint,
     getParentBrick: state.getParentBrick,
     updateBrick: state.updateBrick,
     updateBrickProps: state.updateBrickProps,
@@ -1058,6 +1126,7 @@ export const useDraftHelpers = () => {
     moveSectionDown: state.moveSectionDown,
     reorderSections: state.reorderSections,
     updateSection: state.updateSection,
+    updateSectionProps: state.updateSectionProps,
     addSection: state.addSection,
     isLastBrickOfSection: state.isLastBrickOfSection,
     isFirstBrickOfSection: state.isFirstBrickOfSection,

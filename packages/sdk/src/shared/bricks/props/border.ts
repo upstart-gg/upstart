@@ -7,90 +7,18 @@ type BorderOptions = {
     style?: string;
     color?: string;
     width?: string;
-    side?: string[];
+    sides?: string[];
+    rounding?: string;
   };
 };
-
-export function borderDeprecated({
-  title = "Border",
-  defaultValue = {
-    color: "#000",
-    style: "border-solid",
-    width: "border-0",
-    side: [],
-  },
-}: BorderOptions = {}) {
-  return prop({
-    title,
-    $id: "#styles:border",
-    schema: Type.Object(
-      {
-        style: Type.Union(
-          [
-            Type.Literal("border-solid", { title: "Solid" }),
-            Type.Literal("border-dashed", { title: "Dashed" }),
-            Type.Literal("border-dotted", { title: "Dotted" }),
-          ],
-          {
-            default: "border-solid",
-            title: "Border style",
-            description: "The brick border style",
-            "ui:field": "enum",
-            "ui:display": "button-group",
-          },
-        ),
-        color: Type.String({
-          default: "transparent",
-          title: "Border color",
-          "ui:field": "color",
-          "ui:color-type": "border",
-        }),
-        width: Type.Union(
-          [
-            Type.Literal("border-0", { title: "None" }),
-            Type.Literal("border", { title: "Small" }),
-            Type.Literal("border-2", { title: "Medium" }),
-            Type.Literal("border-4", { title: "Large" }),
-            Type.Literal("border-8", { title: "Extra large" }),
-          ],
-          {
-            default: "border-0",
-            title: "Border width",
-            "ui:field": "enum",
-            "ui:display": "button-group",
-          },
-        ),
-        side: Type.Optional(
-          Type.Array(
-            Type.Union([
-              Type.Literal("border-l", { title: "Left" }),
-              Type.Literal("border-t", { title: "Top" }),
-              Type.Literal("border-r", { title: "Right" }),
-              Type.Literal("border-b", { title: "Bottom" }),
-            ]),
-            {
-              default: [],
-              title: "Border side",
-              "ui:field": "border-side",
-            },
-          ),
-        ),
-      },
-      {
-        "ui:field": "border",
-        "ui:inspector-tab": "style",
-        default: defaultValue,
-      },
-    ),
-  });
-}
 
 export function border({
   title = "Border",
   defaultValue = {
     style: "border-solid",
     width: "border-0",
-    side: [],
+    sides: [],
+    rounding: "rounded-auto",
   },
 }: BorderOptions = {}) {
   return group({
@@ -100,6 +28,64 @@ export function border({
       default: defaultValue,
     },
     children: {
+      rounding: Type.Union(
+        [
+          Type.Literal("rounded-auto", { title: "Auto" }),
+          Type.Literal("rounded-none", { title: "None" }),
+          Type.Literal("rounded-sm", { title: "Small" }),
+          Type.Literal("rounded-md", { title: "Medium" }),
+          Type.Literal("rounded-lg", { title: "Large" }),
+          Type.Literal("rounded-xl", { title: "Extra large" }),
+          Type.Literal("rounded-2xl", { title: "2xl" }),
+          Type.Literal("rounded-3xl", { title: "3xl" }),
+          Type.Literal("rounded-full", { title: "Full" }),
+        ],
+        {
+          title: "Corner rounding",
+          default: defaultValue.rounding,
+          "ui:field": "enum",
+          "ui:display": "select",
+        },
+      ),
+      width: Type.Union(
+        [
+          Type.Literal("border-0", { title: "None" }),
+          Type.Literal("border", { title: "S" }),
+          Type.Literal("border-2", { title: "M" }),
+          Type.Literal("border-4", { title: "L" }),
+          Type.Literal("border-8", { title: "XL" }),
+        ],
+        {
+          default: defaultValue.width,
+          title: "Width",
+          "ui:field": "enum",
+        },
+      ),
+      color: Type.String({
+        default: defaultValue?.color,
+        title: "Color",
+        description:
+          "Can be set to transparent, hex/rgb/rgba color, or even classes like `border-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900",
+        "ui:field": "color",
+        "ui:color-type": "border",
+      }),
+      sides: Type.Optional(
+        Type.Array(
+          Type.Union([
+            Type.Literal("border-l", { title: "Left" }),
+            Type.Literal("border-t", { title: "Top" }),
+            Type.Literal("border-r", { title: "Right" }),
+            Type.Literal("border-b", { title: "Bottom" }),
+          ]),
+          {
+            default: defaultValue.sides,
+            title: "Sides",
+            description:
+              "The specific sides where to apply the border. Can contain border-(l|t|r|b). Not specifying sides will apply the border to all sides.",
+            "ui:field": "border-side",
+          },
+        ),
+      ),
       style: Type.Union(
         [
           Type.Literal("border-solid", { title: "Solid" }),
@@ -114,67 +100,35 @@ export function border({
           "ui:display": "button-group",
         },
       ),
-      width: Type.Union(
-        [
-          Type.Literal("border-0", { title: "None" }),
-          Type.Literal("border", { title: "Small" }),
-          Type.Literal("border-2", { title: "Medium" }),
-          Type.Literal("border-4", { title: "Large" }),
-          Type.Literal("border-8", { title: "Extra large" }),
-        ],
-        {
-          default: defaultValue.width,
-          title: "Width",
-          "ui:field": "enum",
-        },
-      ),
-      color: Type.String({
-        default: defaultValue?.color,
-        title: "Color",
-        "ui:field": "color",
-        "ui:color-type": "border",
-      }),
-      side: Type.Optional(
-        Type.Array(
-          Type.Union([
-            Type.Literal("border-l", { title: "Left" }),
-            Type.Literal("border-t", { title: "Top" }),
-            Type.Literal("border-r", { title: "Right" }),
-            Type.Literal("border-b", { title: "Bottom" }),
-          ]),
-          {
-            default: defaultValue.side,
-            title: "Sides",
-            "ui:field": "border-side",
-          },
-        ),
-      ),
     },
   });
 }
 
 export type BorderSettings = Static<ReturnType<typeof border>>;
 
-export function rounding(defaultValue = "rounded-none", title = "Rounding") {
-  return prop({
-    title,
-    $id: "#styles:rounding",
-    schema: Type.Union(
-      [
-        Type.Literal("rounded-none", { title: "None" }),
-        Type.Literal("rounded-sm", { title: "Small" }),
-        Type.Literal("rounded-md", { title: "Medium" }),
-        Type.Literal("rounded-lg", { title: "Large" }),
-        Type.Literal("rounded-xl", { title: "Extra large" }),
-        Type.Literal("rounded-full", { title: "Full" }),
-      ],
-      {
-        default: defaultValue,
-        "ui:field": "enum",
-        "ui:display": "select",
-      },
-    ),
-  });
-}
+// export function rounding(defaultValue = "rounded-auto", title = "Rounding") {
+//   return prop({
+//     title,
+//     $id: "#styles:rounding",
+//     schema: Type.Union(
+//       [
+//         Type.Literal("rounded-auto", { title: "Auto" }),
+//         Type.Literal("rounded-none", { title: "None" }),
+//         Type.Literal("rounded-sm", { title: "Small" }),
+//         Type.Literal("rounded-md", { title: "Medium" }),
+//         Type.Literal("rounded-lg", { title: "Large" }),
+//         Type.Literal("rounded-xl", { title: "Extra large" }),
+//         Type.Literal("rounded-2xl", { title: "2xl" }),
+//         Type.Literal("rounded-3xl", { title: "3xl" }),
+//         Type.Literal("rounded-full", { title: "Full" }),
+//       ],
+//       {
+//         default: defaultValue,
+//         "ui:field": "enum",
+//         "ui:display": "select",
+//       },
+//     ),
+//   });
+// }
 
-export type RoundingSettings = Static<ReturnType<typeof rounding>>;
+// export type RoundingSettings = Static<ReturnType<typeof rounding>>;

@@ -45,6 +45,7 @@
     "@sinclair/typebox": "0.34.6",
     "@tiptap/extension-code": "2.10.3",
     "@tiptap/extension-document": "2.11.2",
+    "@tiptap/extension-heading": "2.11.5",
     "@tiptap/extension-highlight": "2.11.5",
     "@tiptap/extension-mention": "2.11.2",
     "@tiptap/extension-paragraph": "2.11.2",

@@ -61,10 +61,16 @@ export function FormRenderer({
 
   // Generate field components in a structured way
   const formStructure = useMemo(() => {
-    const fields = processObjectSchemaToFields(sortedSchema, formData, onChange, {
-      brickId,
-      filter,
-      parents,
+    const fields = processObjectSchemaToFields({
+      schema: sortedSchema,
+      formData,
+      formSchema,
+      onChange,
+      options: {
+        brickId,
+        filter,
+        parents,
+      },
     });
 
     // Handle nested object fields (we need to add recursive FormRenderer components)
@@ -98,7 +104,18 @@ export function FormRenderer({
     });
 
     return fields;
-  }, [sortedSchema, brickId, formData, filter, onChange, onSubmit, submitButtonLabel, parents, previewMode]);
+  }, [
+    sortedSchema,
+    formSchema,
+    brickId,
+    formData,
+    filter,
+    onChange,
+    onSubmit,
+    submitButtonLabel,
+    parents,
+    previewMode,
+  ]);
 
   console.log({ formStructure });
 

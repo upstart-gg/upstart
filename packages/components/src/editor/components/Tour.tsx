@@ -1,9 +1,9 @@
-import Joyride from "react-joyride";
+import Joyride, { STATUS, type CallBackProps } from "react-joyride";
 import { tours } from "../tours";
 import { useTours } from "../hooks/use-editor";
 
 export default function Tour() {
-  const { seenTours, disabled } = useTours();
+  const { seenTours, disabled, markTourAsSeen } = useTours();
 
   if (disabled) {
     return null;
@@ -12,12 +12,21 @@ export default function Tour() {
   const selectedTour = Object.entries(tours).find(([tourId]) => !seenTours.includes(tourId));
   const [tourId, steps] = selectedTour || [];
 
+  const handleJoyrideCallback = (data: CallBackProps) => {
+    const { status } = data;
+    if (tourId && (status === STATUS.FINISHED || status === STATUS.SKIPPED)) {
+      markTourAsSeen(tourId);
+    }
+  };
+
   if (tourId && steps) {
     return (
       <Joyride
         steps={steps}
+        callback={handleJoyrideCallback}
         continuous
         showSkipButton={true}
+        hideCloseButton={true}
         locale={{
           back: "Back",
           close: "Close",
@@ -59,20 +68,21 @@ export default function Tour() {
             padding: "0.5rem",
             backgroundColor: "#f9f9f9",
             borderTop: "1px solid #e5e5e5",
-            borderRadius: "0.5rem",
+            borderBottomLeftRadius: "0.5rem",
+            borderBottomRightRadius: "0.5rem",
           },
           tooltipTitle: {
             textAlign: "left",
             fontWeight: "500",
-            fontSize: "1.1rem",
-            padding: "0.7rem 0.7rem 0 0.7rem",
+            fontSize: "1rem",
+            padding: "1rem 1rem 0 1rem",
             fontFamily: "inherit",
           },
           tooltipContent: {
             textAlign: "left",
-            padding: "0.8rem",
+            padding: "1rem",
             fontFamily: "inherit",
-            fontSize: "1rem",
+            fontSize: "0.9rem",
           },
         }}
       />

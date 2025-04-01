@@ -8,15 +8,13 @@ export default function ResizeHandle({
   return (
     <div
       className={tx(
-        "react-resizable-handle absolute z-10 transition-opacity duration-300 opacity-0",
+        "react-resizable-handle absolute z-auto transition-opacity duration-300 delay-100 opacity-0",
         "group-hover/brick:opacity-90 overflow-visible ",
         `react-resizable-handle-${direction}`,
-        // test
-        // direction === "s" && "resize-handle-disabled",
         {
           "-bottom-0 left-0 right-0 h-1 w-[inherit] cursor-s-resize": direction === "s",
-          "top-0 -left-0 bottom-0 w-1 h-[inherit] cursor-w-resize": direction === "w",
-          "top-0 -right-0 bottom-0 w-1 h-[inherit] cursor-e-resize": direction === "e",
+          "top-0 left-0 bottom-0 w-1 cursor-w-resize": direction === "w",
+          "top-0 right-0 bottom-0 w-1 cursor-e-resize": direction === "e",
           "-top-0 left-0 right-0 h-1 w-[inherit] cursor-n-resize": direction === "n",
           // sw and nw
           "bottom-0 left-0 w-1 h-1 cursor-sw-resize": direction === "sw",
@@ -29,7 +27,7 @@ export default function ResizeHandle({
     >
       <div
         className={tx(
-          "absolute w-[10px] h-[10px] border-upstart-500 bg-white border-2 rounded-sm z-10 shadow-md",
+          "absolute w-[10px] h-[10px] border-upstart-500 bg-white border-2 rounded-sm z-auto shadow-md",
           {
             "top-1/2 -translate-y-1/2 -left-[5px]": direction === "w",
             "top-1/2 -translate-y-1/2 -right-[5px]": direction === "e",
