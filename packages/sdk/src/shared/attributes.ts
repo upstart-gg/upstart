@@ -340,14 +340,13 @@ export type Attributes<T extends Record<string, unknown> = Record<string, unknow
   T;
 
 export function resolveAttributes(customAttrsSchema: TObject, initialData: Record<string, unknown> = {}) {
-  const attributesSchemaWithDefaults = processAttributesSchema(customAttrsSchema);
-  const validate = ajv.compile(attributesSchemaWithDefaults);
-  const defaultValues = Value.Create(attributesSchemaWithDefaults);
-  const data = { ...defaultValues, ...initialData };
-  const valid = validate(data);
+  const validateCustom = ajv.compile(customAttrsSchema);
+  const valid = validateCustom(initialData);
   if (!valid) {
-    console.log("invalid data attributes", data, validate.errors);
-    throw new Error(`Invalid attributes: ${validate.errors}`);
+    console.log("invalid custom attributes values", initialData, validateCustom.errors);
+    throw new Error(`Invalid custom attributes values: ${validateCustom.errors}`);
   }
+  const defaultAttrValues = Value.Create(defaultAttributesSchema);
+  const data = { ...defaultAttrValues, ...initialData };
   return data as Attributes<Static<typeof customAttrsSchema>>;
 }
