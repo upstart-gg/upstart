@@ -50,7 +50,7 @@ function objectSchemaToString(objSchema: TObject, mode: "common-styles" | "defau
       continue;
     }
 
-    const required = objSchema.required?.includes(propName) ? "**Required**" : "";
+    const required = objSchema.required?.includes(propName) ? "Required" : "Optional";
     const description = schema.description ? `${schema.description}.` : "";
     const typeStr = schema["doc:type"]
       ? schema["doc:type"]
@@ -62,14 +62,7 @@ function objectSchemaToString(objSchema: TObject, mode: "common-styles" | "defau
           ? `\`enum\``
           : `\`unknown\``;
 
-    // if (schema.$id?.startsWith("#styles:")) {
-    //   stylesSchema.set(schema.$id, schemaToString(schema));
-    //   result += `${indent}- **${propName}**: ${required}. `;
-    //   result += `See common style \`${schema.$id}\`\n`;
-    //   continue;
-    // }
-
-    result += `${indent}- **\`${mode === "common-styles" && schema.$id ? `$id: ${schema.$id}` : propName}\`**: ${required} ${typeStr}. ${description} `;
+    result += `${indent}- **\`${mode === "common-styles" && schema.$id ? `${schema.$id}` : propName}\`**: ${required} ${typeStr}. ${description} `;
 
     if (mode === "default" && schema.$id?.startsWith("#styles:")) {
       result += `See common style \`${schema.$id}\`\n`;
@@ -101,29 +94,6 @@ function objectSchemaToString(objSchema: TObject, mode: "common-styles" | "defau
   return result;
 }
 
-// function schemaToString(schema: TSchema) {
-//   const description = schema.description ? `${schema.description} ` : "";
-//   const typeStr = schema.type ? `\`${schema.type}\`` : schema.anyOf ? `\`enum\`` : `\`unknown\``;
-
-//   if (schema.type === "object") {
-//     return `${description}\n${Object.entries(schema.properties ?? {})
-//       .map(([key, value]) => {
-//         const str = schemaToString(value as TSchema);
-//         return `${key} \`${typeStr}\`\n\n${str}`;
-//       })
-//       .join("\n")}`;
-//   }
-
-//   if (schema.type === "array") {
-//     return `\`${schema.items?.type}\`[]`;
-//   }
-
-//   if (schema.anyOf) {
-//     return `Type: \`${typeStr}\`\nValues: ${schema.anyOf.map((v: any) => `\`${v.const}\``).join(", ")}`;
-//   }
-
-//   return `\`${typeStr}\``;
-// }
 // Build bricks descriptions
 
 let brickDescriptions = "";
