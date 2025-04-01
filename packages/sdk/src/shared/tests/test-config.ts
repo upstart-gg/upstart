@@ -295,6 +295,9 @@ const siteAttributes = defineAttributes({
 });
 
 export default defineConfig({
+  manifest: {
+    name: "Upstart SDK Test",
+  },
   attributes: siteAttributes,
   attr: {
     $textColor: "#222",

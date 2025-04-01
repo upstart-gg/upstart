@@ -48,8 +48,8 @@ export function defineAttributes(attrs: TProperties) {
 /**
  * Retuns the custom attributes schema merged with the default attributes schema
  */
-export function processAttributesSchema(customAttributes: TObject): TObject {
-  return Type.Composite([customAttributes, defaultAttributesSchema]);
+export function processAttributesSchema(customAttributes: TObject) {
+  return Type.Composite([customAttributes, defaultAttributesSchema]) as typeof defaultAttributesSchema;
 }
 
 export type { JSONSchemaType };
@@ -333,7 +333,7 @@ const defaultAttributes = {
   ),
 };
 
-export const defaultAttributesSchema = Type.Object(defaultAttributes);
+export const defaultAttributesSchema = Type.Object(defaultAttributes, { additionalProperties: true });
 export type Attributes<T extends Record<string, unknown> = Record<string, unknown>> = Static<
   typeof defaultAttributesSchema
 > &

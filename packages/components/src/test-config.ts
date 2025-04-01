@@ -295,6 +295,9 @@ const siteAttributes = defineAttributes({
 });
 
 export default defineConfig({
+  manifest: {
+    name: "Test site",
+  },
   attributes: siteAttributes,
   attr: {
     $textColor: "#222",

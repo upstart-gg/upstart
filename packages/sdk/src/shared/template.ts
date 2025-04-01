@@ -1,11 +1,15 @@
-import type { TObject, TProperties } from "@sinclair/typebox";
-import { processAttributesSchema, type Attributes } from "./attributes";
-import type { DatasourcesMap } from "./datasources/types";
-import type { TemplateManifest } from "./manifest";
-import type { TemplatePage } from "./page";
-import type { Theme } from "./theme";
+import { type TObject, Type, type Static } from "@sinclair/typebox";
+import { processAttributesSchema, defaultAttributesSchema } from "./attributes";
+import { datasourcesMap } from "./datasources/types";
+import { templatePageSchema } from "./page";
+import { manifestSchema } from "./manifest";
+import { themeSchema } from "./theme";
 
-export function defineConfig(config: TemplateConfig): TemplateConfig {
+type TemplateDefinedConfig = Omit<TemplateConfig, "attributes"> & {
+  attributes: TObject;
+};
+
+export function defineConfig(config: TemplateDefinedConfig): TemplateConfig {
   return {
     attributes: processAttributesSchema(config.attributes),
     attr: config.attr,
@@ -16,26 +20,29 @@ export function defineConfig(config: TemplateConfig): TemplateConfig {
   };
 }
 
-export type TemplateConfig = {
-  /**
-   * The template manifest and settings
-   */
-  manifest?: TemplateManifest;
-  /**
-   * The attributes declared for the template
-   */
-  attributes: TObject<TProperties>;
-  attr?: Partial<Attributes>;
-  /**
-   * The datasources declared for the template
-   */
-  datasources?: DatasourcesMap;
-  /**
-   * The Pages
-   */
-  pages: TemplatePage[];
-  /**
-   * The themes declared by the site.
-   */
-  themes: Theme[];
+export const templateSchema = Type.Object(
+  {
+    manifest: manifestSchema,
+    themes: Type.Array(themeSchema),
+    datasources: Type.Optional(datasourcesMap),
+    // Those are site-level attributes
+    attributes: defaultAttributesSchema,
+    attr: Type.Record(Type.String(), Type.Any()),
+    pages: Type.Array(templatePageSchema),
+  },
+  {
+    title: "Template schema",
+    description: "The template configuration schema",
+  },
+);
+
+type StaticTemplate = Static<typeof templateSchema>;
+
+export type TemplateConfig = Omit<StaticTemplate, "attributes" | "pages"> & {
+  attributes: typeof defaultAttributesSchema;
+  pages: Array<
+    Omit<StaticTemplate["pages"][number], "attributes"> & {
+      attributes?: typeof defaultAttributesSchema;
+    }
+  >;
 };

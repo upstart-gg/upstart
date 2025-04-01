@@ -4,35 +4,30 @@ import invariant from "./utils/invariant";
 import { themeSchema, type Theme } from "./theme";
 import { Type, type Static, type TObject, type TProperties } from "@sinclair/typebox";
 import { datasourcesMap, type DatasourcesMap, type DatasourcesResolved } from "./datasources/types";
-import { manifestSchema } from "./manifest";
 import { customAlphabet } from "nanoid";
-import type { DatarecordsMap } from "./datarecords/types";
+import { datarecordsMap } from "./datarecords/types";
 import type { TemplateConfig } from "./template";
 
 const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 7);
 
-export type PagesMapEntry = {
-  id: string;
-  label: string;
-  path: string;
-  tags: string[];
-};
+const pagesMapSchema = Type.Array(
+  Type.Object({
+    id: Type.String(),
+    label: Type.String(),
+    path: Type.String(),
+    tags: Type.Array(Type.String(), { default: [] }),
+  }),
+);
 
-export type PageInfo = {
-  /**
-   * The page id.
-   */
-  id: string;
-  /**
-   * Pathname to the page
-   */
-  path: string;
-  /**
-   * Label of the page
-   */
-  label: string;
-};
+export type PagesMap = Static<typeof pagesMapSchema>;
 
+const pageInfoSchema = Type.Object({
+  id: Type.String(),
+  label: Type.String(),
+  path: Type.String(),
+});
+
+export type PageInfo = Static<typeof pageInfoSchema>;
 /**
  * The Page config represents the page configuration (datasources, attributes, etc)
  */
@@ -50,7 +45,7 @@ export type PageConfig<D extends DatasourcesMap> = PageInfo & {
   /**
    * Page attributes. (can override site attributes)
    */
-  attributes?: TObject<TProperties>;
+  attributes?: typeof defaultAttributesSchema;
   /**
    * Resolved attributes for the page.
    */
@@ -75,7 +70,7 @@ export function getNewPageConfig(
   return {
     id: typeof useFixedId === "boolean" ? crypto.randomUUID() : useFixedId,
     label: pageConfig.label,
-    tags: pageConfig.tags,
+    tags: pageConfig.tags ?? [],
     path,
     sections: pageConfig.sections,
     bricks: pageConfig.bricks,
@@ -88,30 +83,34 @@ export function getNewPageConfig(
   } satisfies GenericPageConfig;
 }
 
+export const siteSchema = Type.Object({
+  id: Type.String(),
+  label: Type.String(),
+  hostname: Type.String(),
+  attributes: defaultAttributesSchema,
+  attr: defaultAttributesSchema,
+  datasources: Type.Optional(datasourcesMap),
+  datarecords: Type.Optional(datarecordsMap),
+  themes: Type.Array(themeSchema),
+  theme: themeSchema,
+  pagesMap: pagesMapSchema,
+});
+
 /**
  * Site config has always attributes and attr.
  */
-export type SiteConfig = {
-  id: string;
-  label: string;
-  hostname: string;
-  attributes: TObject<TProperties>;
-  attr: Attributes;
-  datasources?: DatasourcesMap;
-  datarecords?: DatarecordsMap;
-  themes: Theme[];
-  theme: Theme;
-  pagesMap: PagesMapEntry[];
+export type Site = Omit<Static<typeof siteSchema>, "attributes"> & {
+  attributes: typeof defaultAttributesSchema;
 };
 
 /**
  * Page context has attr but not attributes declaration, as they are not needed to render the page.
  */
 export type GenericPageContext = Omit<GenericPageConfig, "attr" | "attributes"> & {
-  siteId: SiteConfig["id"];
-  hostname: SiteConfig["hostname"];
-  theme: SiteConfig["theme"];
-  pagesMap: SiteConfig["pagesMap"];
+  siteId: Site["id"];
+  hostname: Site["hostname"];
+  theme: Site["theme"];
+  pagesMap: Site["pagesMap"];
   attr: Attributes;
 };
 
@@ -128,7 +127,7 @@ export function getNewSiteConfig(
 ) {
   const id = useFixedIds ? "00000000-0000-0000-0000-000000000001" : crypto.randomUUID();
   const hostname = `${nanoid()}.upstart.do`;
-  const pages = templateConfig.pages.map((p, index) =>
+  const pages: GenericPageConfig[] = templateConfig.pages.map((p, index) =>
     getNewPageConfig(
       templateConfig,
       p.path,
@@ -151,12 +150,10 @@ export function getNewSiteConfig(
       path: p.path,
       tags: p.tags,
     })),
-  } satisfies SiteConfig;
+  } satisfies Site;
 
   return { site, pages };
 }
-
-export type SiteAndPagesConfig = ReturnType<typeof getNewSiteConfig>;
 
 export const templatePageSchema = Type.Object({
   label: Type.String({ description: "The label (name) of the page" }),
@@ -171,36 +168,28 @@ export const templatePageSchema = Type.Object({
   }),
   tags: Type.Array(Type.String(), {
     description: "The tags of the page, used for organizating and filtering pages",
+    default: [],
   }),
+  attributes: Type.Optional(defaultAttributesSchema),
+  attr: Type.Optional(defaultAttributesSchema),
 });
 
-export type TemplatePage = Static<typeof templatePageSchema> & {
-  attributes?: TObject<TProperties>;
-  attr?: Partial<Attributes>;
+export type TemplatePage = Static<typeof templatePageSchema>;
+
+const partialSiteAndPagesSchema = Type.Object({
+  site: Type.Omit(siteSchema, ["attributes"]),
+  pages: Type.Array(Type.Composite([Type.Omit(templatePageSchema, ["attributes"]), pageInfoSchema])),
+});
+
+type PartialSiteAndPagesSchema = Static<typeof partialSiteAndPagesSchema>;
+
+export type SiteAndPagesConfig = {
+  site: PartialSiteAndPagesSchema["site"] & {
+    attributes: typeof defaultAttributesSchema;
+  };
+  pages: Array<
+    Omit<PartialSiteAndPagesSchema["pages"][number], "attributes"> & {
+      attributes?: typeof defaultAttributesSchema;
+    }
+  >;
 };
-
-export const definedTemplatePage = Type.Composite([
-  Type.Omit(templatePageSchema, ["tags"]),
-  Type.Object({
-    tags: Type.Optional(Type.Array(Type.String())),
-  }),
-]);
-
-export type DefinedTemplatePage = Static<typeof definedTemplatePage>;
-
-export const templateSchema = Type.Object(
-  {
-    manifest: manifestSchema,
-    themes: Type.Array(themeSchema),
-    datasources: Type.Optional(datasourcesMap),
-    // Those are site-level attributes
-    attributes: Type.Optional(defaultAttributesSchema),
-    pages: Type.Array(definedTemplatePage),
-  },
-  {
-    title: "Template schema",
-    description: "The template configuration schema",
-  },
-);
-
-export type Template = Static<typeof templateSchema>;
