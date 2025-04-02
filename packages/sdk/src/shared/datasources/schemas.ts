@@ -1,10 +1,10 @@
 export { facebookPostSchema } from "./external/facebook/posts/schema";
 export { instagramFeedSchema } from "./external/instagram/feed/schema";
-export { mastodonStatusArraySchema } from "./external/mastodon/status/schema";
+export { mastodonStatusArraySchema, mastodonStatusSchema } from "./external/mastodon/status/schema";
 export { mastodonAccountSchema } from "./external/mastodon/account/schema";
 export { rssSchema } from "./external/rss/schema";
 export { threadsMediaSchema } from "./external/threads/media/schema";
-export { tiktokVideoResponseSchema } from "./external/tiktok/video/schema";
+export { tiktokVideoListSchema } from "./external/tiktok/video/schema";
 export { youtubeListSchema } from "./external/youtube/list/schema";
 
 // internal

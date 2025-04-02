@@ -10,13 +10,6 @@ const datasources = defineDataSources({
   links: {
     provider: "internal-links",
     name: "Links",
-    schema: Type.Array(
-      Type.Object({
-        title: Type.String(),
-        url: Type.String({ format: "uri", pattern: "^https?://" }),
-        icon: Type.Optional(Type.String()),
-      }),
-    ),
     sampleData: [
       { title: "Enpage", url: "https://enpage.co" },
       { title: "Github", url: "https://github.com/upstart-gg/upstart" },
