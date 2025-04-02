@@ -65,7 +65,7 @@ const mastodonPollSchema = Type.Object({
   emojis: Type.Array(mastodonEmojiSchema),
 });
 
-const mastodonStatusSchema = Type.Object(
+export const mastodonStatusSchema = Type.Object(
   {
     id: Type.String(),
     uri: Type.String(),

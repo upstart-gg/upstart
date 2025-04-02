@@ -1,12 +1,12 @@
 import type { TiktokVideoOptions } from "./options";
-import { type TiktokVideoResponseSchema, tiktokVideoResponseSchema } from "./schema";
+import { type TiktokVideoListSchema, tiktokVideoListSchema } from "./schema";
 import { UnauthorizedError } from "~/shared/errors";
 import { ajv, serializeAjvErrors } from "~/shared/ajv";
 import type { TiktokFullOAuthConfig } from "../oauth/config";
 import type { DatasourceFetcher } from "~/shared/datasources/fetcher";
 
 const fetchTiktokVideoDatasource: DatasourceFetcher<
-  TiktokVideoResponseSchema,
+  TiktokVideoListSchema,
   TiktokFullOAuthConfig,
   TiktokVideoOptions
 > = async ({ options, oauth }) => {
@@ -32,9 +32,9 @@ const fetchTiktokVideoDatasource: DatasourceFetcher<
     }
     throw new Error(`Response status: ${response.status}`);
   }
-  const data = (await response.json()) as TiktokVideoResponseSchema;
+  const data = (await response.json()) as TiktokVideoListSchema;
 
-  const validate = ajv.compile<TiktokVideoResponseSchema>(tiktokVideoResponseSchema);
+  const validate = ajv.compile<TiktokVideoListSchema>(tiktokVideoListSchema);
   const isValid = validate(data);
 
   if (!isValid) {

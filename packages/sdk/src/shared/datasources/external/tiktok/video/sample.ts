@@ -1,4 +1,4 @@
-import type { TiktokVideoResponseSchema } from "./schema";
+import type { TiktokVideoListSchema } from "./schema";
 
 export const sample = {
   data: {
@@ -23,4 +23,4 @@ export const sample = {
       },
     ],
   },
-} satisfies TiktokVideoResponseSchema;
+} satisfies TiktokVideoListSchema;

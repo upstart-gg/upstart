@@ -1,6 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 
-export const tiktokVideoResponseSchema = Type.Object({
+export const tiktokVideoListSchema = Type.Object({
   data: Type.Object({
     has_more: Type.Boolean(),
     cursor: Type.Number(),
@@ -24,4 +24,4 @@ export const tiktokVideoResponseSchema = Type.Object({
   ),
 });
 
-export type TiktokVideoResponseSchema = Static<typeof tiktokVideoResponseSchema>;
+export type TiktokVideoListSchema = Static<typeof tiktokVideoListSchema>;

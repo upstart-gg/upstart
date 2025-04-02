@@ -16,11 +16,20 @@ export const providersSchema = Type.Union([
   Type.Literal("facebook-posts"),
   Type.Literal("instagram-feed"),
   Type.Literal("mastodon-status"),
+  Type.Literal("mastodon-status-list"),
   Type.Literal("rss"),
   Type.Literal("threads-media"),
   Type.Literal("tiktok-video"),
   Type.Literal("youtube-list"),
   Type.Literal("json"),
+  Type.Literal("internal-blog"),
+  Type.Literal("internal-changelog"),
+  Type.Literal("internal-contact-info"),
+  Type.Literal("internal-faq"),
+  Type.Literal("internal-links"),
+  Type.Literal("internal-recipes"),
+  Type.Literal("internal-restaurant"),
+  Type.Literal("internal-cv"),
 ]);
 
 export type DatasourceProvider = Static<typeof providersSchema>;
@@ -35,7 +44,7 @@ const providersChoices = Type.Union([
     options: metaOptions,
   }),
   Type.Object({
-    provider: Type.Literal("instragram-feed"),
+    provider: Type.Literal("instagram-feed"),
     options: metaOptions,
   }),
   Type.Object({
@@ -47,6 +56,10 @@ const providersChoices = Type.Union([
     options: mastodonCommonOptions,
   }),
   Type.Object({
+    provider: Type.Literal("mastodon-status-list"),
+    options: mastodonCommonOptions,
+  }),
+  Type.Object({
     provider: Type.Literal("rss"),
     options: rssOptions,
   }),
@@ -55,42 +68,36 @@ const providersChoices = Type.Union([
     options: tiktokVideoOptions,
   }),
   Type.Object({
-    provider: Type.Literal("json"),
-    options: httpJsonOptions,
-    schema: Type.Union([
-      Type.Array(Type.Object({}, { additionalProperties: true })),
-      Type.Object({}, { additionalProperties: true }),
-    ]),
-  }),
-  Type.Object({
     provider: Type.Literal("internal-blog"),
     options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-    schema: blogSchema,
   }),
   Type.Object({
     provider: Type.Literal("internal-changelog"),
     options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-    schema: changelogSchema,
   }),
   Type.Object({
     provider: Type.Literal("internal-contact-info"),
     options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-    schema: contactInfoSchema,
   }),
   Type.Object({
     provider: Type.Literal("internal-faq"),
     options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-    schema: faqSchema,
   }),
   Type.Object({
     provider: Type.Literal("internal-links"),
     options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-    schema: linksSchema,
   }),
   Type.Object({
     provider: Type.Literal("internal-recipes"),
     options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-    schema: recipesSchema,
+  }),
+  Type.Object({
+    provider: Type.Literal("internal-restaurant"),
+    options: Type.Optional(Type.Object({}, { additionalProperties: true })),
+  }),
+  Type.Object({
+    provider: Type.Literal("internal-cv"),
+    options: Type.Optional(Type.Object({}, { additionalProperties: true })),
   }),
 ]);
 
@@ -146,9 +153,31 @@ const datasourceCustomManifest = Type.Object({
 
 export type DatasourceCustomManifest = Static<typeof datasourceCustomManifest>;
 
+const datasourceJsonManifest = Type.Object({
+  provider: Type.Literal("json", {
+    title: "JSON",
+    description: "JSON datasource.",
+  }),
+  options: httpJsonOptions,
+  schema: Type.Union([
+    Type.Array(Type.Object({}, { additionalProperties: true })),
+    Type.Object({}, { additionalProperties: true }),
+  ]),
+  name: Type.String({ title: "Name of the datasource", comment: "For example, 'My data'" }),
+  description: Type.Optional(Type.String({ title: "Description of the datasource" })),
+  sampleData: Type.Optional(
+    Type.Any({
+      title: "Sample data",
+      description: "Sample data for the datasource. Should match the declared schema.",
+    }),
+  ),
+});
+
+export type DatasourceJsonManifest = Static<typeof datasourceJsonManifest>;
+
 export const datasourcesMap = Type.Record(
   Type.String(),
-  Type.Union([datasourceCustomManifest, datasourceProviderManifest]),
+  Type.Union([datasourceCustomManifest, datasourceJsonManifest, datasourceProviderManifest]),
   { title: "Datasources map", description: "The map of datasources available in the system" },
 );
 
