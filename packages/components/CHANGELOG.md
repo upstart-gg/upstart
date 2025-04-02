@@ -1,5 +1,15 @@
 # @upstart.gg/components
 
+## 0.0.83
+
+### Patch Changes
+
+- [#284](https://github.com/upstart-gg/upstart/pull/284) [`8c698a6`](https://github.com/upstart-gg/upstart/commit/8c698a695d940a5948a12e38f545c342ed2bed54) Thanks [@mattallty](https://github.com/mattallty)! - refine types
+
+- Updated dependencies [[`8c698a6`](https://github.com/upstart-gg/upstart/commit/8c698a695d940a5948a12e38f545c342ed2bed54)]:
+  - @upstart.gg/sdk@0.0.83
+  - @upstart.gg/style-system@0.0.83
+
 ## 0.0.82
 
 ### Patch Changes
