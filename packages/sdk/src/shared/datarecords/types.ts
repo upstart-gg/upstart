@@ -40,7 +40,7 @@ const connectorsChoices = Type.Union([
 const datarecordManifest = Type.Composite([
   connectorsChoices,
   Type.Object({
-    name: Type.String({
+    label: Type.String({
       title: "Name of the datarecord",
       comment: "For example, 'Newsletter Subscriptions'",
     }),

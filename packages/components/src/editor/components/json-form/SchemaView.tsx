@@ -102,7 +102,7 @@ function SchemaObject({
     return (
       <ul className="list-disc">
         <li className={tx({ hidden: !name })}>
-          <span>{name} my name</span>
+          <span>{name}</span>
         </li>
         {Object.entries(renderProperties).map(([name, value], i) => (
           <SchemaEntry

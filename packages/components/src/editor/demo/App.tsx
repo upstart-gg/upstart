@@ -12,6 +12,7 @@ import "@upstart.gg/components/dist/assets/style.css";
 export default function App({ path }: { path: string }) {
   const siteConfig = getNewSiteConfig(
     testEnpageConfig,
+    "site1.upstart.test",
     { label: "New site" },
     // use a fixed site id to avoid changing the site id on every reload
     true,
