@@ -1,5 +1,14 @@
 # @upstart.gg/sdk
 
+## 0.0.84
+
+### Patch Changes
+
+- [#286](https://github.com/upstart-gg/upstart/pull/286) [`4af96cc`](https://github.com/upstart-gg/upstart/commit/4af96cc05b6f1c8cf42fcbad7bec0910c3d3454c) Thanks [@mattallty](https://github.com/mattallty)! - Site config changes
+
+- Updated dependencies []:
+  - @upstart.gg/style-system@0.0.84
+
 ## 0.0.83
 
 ### Patch Changes
