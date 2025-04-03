@@ -87,8 +87,11 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         updatedPositions.forEach(({ brick, gridPosition, sectionId }) => {
           const hoveredBrick = getBrickAtPosition(gridPosition.x, gridPosition.y, draft.bricks, previewMode);
           const hoveredBrickManifest = hoveredBrick ? manifests[hoveredBrick.type] : null;
-
-          if (hoveredBrick && hoveredBrickManifest?.isContainer /* && event.shiftKey*/) {
+          if (
+            hoveredBrick &&
+            hoveredBrickManifest?.isContainer /* && event.shiftKey*/ &&
+            hoveredBrick.id !== brick.id
+          ) {
             console.debug("Moving element(s) to parent %s", hoveredBrick.id);
             console.log("Brick has moved", brick);
             draftHelpers.moveBrickToParent(brick.id, hoveredBrick.id);

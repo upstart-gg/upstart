@@ -96,6 +96,7 @@ export default defineConfig((options) => {
         "src/shared/theme.ts",
         "src/shared/responsive.ts",
         "src/shared/analytics",
+        "src/shared/utils",
         "src/shared/datasources/external/meta/oauth/config.ts",
         "src/shared/datasources/external/tiktok/oauth/config.ts",
         "src/shared/datasources/external/youtube/oauth/config.ts",

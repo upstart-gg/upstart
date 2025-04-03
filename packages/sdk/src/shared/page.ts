@@ -121,17 +121,17 @@ export type GenericPageContext = Omit<GenericPageConfig, "attr" | "attributes"> 
  */
 export function getNewSiteConfig(
   templateConfig: TemplateConfig,
+  hostname: string,
   options: { label: string } = { label: "New site" },
   // used for testing to avoid changing the site id on every reload
   useFixedIds = false,
 ) {
-  const id = useFixedIds ? "00000000-0000-0000-0000-000000000001" : crypto.randomUUID();
-  const hostname = `${nanoid()}.upstart.do`;
+  const id = useFixedIds ? "50000000-0000-0000-0000-000000000001" : crypto.randomUUID();
   const pages: GenericPageConfig[] = templateConfig.pages.map((p, index) =>
     getNewPageConfig(
       templateConfig,
       p.path,
-      useFixedIds ? `00000000-0000-0000-0000-00000000000${index}` : false,
+      useFixedIds ? `60000000-0000-0000-0000-00000000000${index}` : false,
     ),
   );
 

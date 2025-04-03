@@ -6,7 +6,7 @@ describe("Page test suite", () => {
   describe("getNewSiteConfig", () => {
     it("should return a new site config", () => {
       const testConfigJson = { ...testConfig };
-      const siteConfig = getNewSiteConfig(testConfigJson);
+      const siteConfig = getNewSiteConfig(testConfigJson, "test-xyz.upstart.gg");
       expect(siteConfig).toBeTruthy();
     });
   });

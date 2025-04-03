@@ -5,6 +5,8 @@ import { templatePageSchema } from "./page";
 import { manifestSchema } from "./manifest";
 import { themeSchema } from "./theme";
 
+export * from "@sinclair/typebox";
+
 type TemplateDefinedConfig = Omit<TemplateConfig, "attributes"> & {
   attributes: TObject;
 };
@@ -36,7 +38,7 @@ export const templateSchema = Type.Object(
   },
 );
 
-type StaticTemplate = Static<typeof templateSchema>;
+export type StaticTemplate = Static<typeof templateSchema>;
 
 export type TemplateConfig = Omit<StaticTemplate, "attributes" | "pages"> & {
   attributes: typeof defaultAttributesSchema;
