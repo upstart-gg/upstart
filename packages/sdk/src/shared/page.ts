@@ -4,11 +4,8 @@ import invariant from "./utils/invariant";
 import { themeSchema, type Theme } from "./theme";
 import { Type, type Static, type TObject, type TProperties } from "@sinclair/typebox";
 import { datasourcesMap, type DatasourcesMap, type DatasourcesResolved } from "./datasources/types";
-import { customAlphabet } from "nanoid";
 import { datarecordsMap } from "./datarecords/types";
 import type { TemplateConfig } from "./template";
-
-const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 7);
 
 const pagesMapSchema = Type.Array(
   Type.Object({
@@ -16,6 +13,7 @@ const pagesMapSchema = Type.Array(
     label: Type.String(),
     path: Type.String(),
     tags: Type.Array(Type.String(), { default: [] }),
+    status: Type.Union([Type.Literal("draft"), Type.Literal("published")]),
   }),
 );
 
@@ -149,6 +147,7 @@ export function getNewSiteConfig(
       label: p.label,
       path: p.path,
       tags: p.tags,
+      status: "draft",
     })),
   } satisfies Site;
 

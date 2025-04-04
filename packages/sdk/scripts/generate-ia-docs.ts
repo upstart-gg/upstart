@@ -2,7 +2,7 @@ import { Type, type TObject, type TSchema } from "@sinclair/typebox";
 import { defaultAttributesSchema, type Attributes } from "../src/shared/attributes";
 import { manifests } from "../src/shared/bricks/manifests/all-manifests";
 import { themeSchema } from "../src/shared/theme";
-import { definedTemplatePage, templatePageSchema } from "../src/shared/page";
+import { templatePageSchema } from "../src/shared/page";
 import { commonStyleForDocsOnly } from "../src/shared/bricks/props/_docs-common-styles";
 import testConfig from "../src/shared/tests/test-config";
 import fs from "node:fs";
@@ -116,7 +116,7 @@ ${objectSchemaToString(manifest.props)}
 
 template = template.replace("{{THEME_JSON_SCHEMA}}", objectSchemaToString(refinedThemeSchema));
 template = template.replace("{{ATTRIBUTES_JSON_SCHEMA}}", objectSchemaToString(refinedAttributesSchema));
-template = template.replace("{{PAGE_JSON_SCHEMA}}", objectSchemaToString(definedTemplatePage));
+template = template.replace("{{PAGE_JSON_SCHEMA}}", objectSchemaToString(templatePageSchema));
 template = template.replace("{{SECTION_JSON_SCHEMA}}", objectSchemaToString(definedSectionSchema));
 template = template.replace("{{AVAILABLE_BRICKS}}", brickDescriptions);
 template = template.replace(
