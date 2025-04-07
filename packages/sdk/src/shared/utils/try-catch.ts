@@ -7,6 +7,6 @@ export async function tryCatch<T, E extends Error = Error>(promise: Promise<T>):
   try {
     return [null, await promise];
   } catch (e) {
-    return [e instanceof Error ? e : new Error(`Error in tryCatch`), null] as Result<T, E>;
+    return [e instanceof Error ? e : new Error(`Error in tryCatch: ${e}`), null] as Result<T, E>;
   }
 }
