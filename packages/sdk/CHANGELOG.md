@@ -1,5 +1,14 @@
 # @upstart.gg/sdk
 
+## 0.0.87
+
+### Patch Changes
+
+- [#292](https://github.com/upstart-gg/upstart/pull/292) [`48457ac`](https://github.com/upstart-gg/upstart/commit/48457ac497279ee292f01196e9531b8f5ae04203) Thanks [@mattallty](https://github.com/mattallty)! - Use AttributesSchema type
+
+- Updated dependencies []:
+  - @upstart.gg/style-system@0.0.87
+
 ## 0.0.86
 
 ### Patch Changes
