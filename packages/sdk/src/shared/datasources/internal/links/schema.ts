@@ -4,7 +4,7 @@ export const linksSchema = Type.Array(
   Type.Object({
     url: Type.String({ format: "uri", description: "URL" }),
     title: Type.String({ description: "Title" }),
-    description: Type.Optional(Type.String({ description: "Description" })),
+    description: Type.Optional(Type.String({ description: "Description", format: "markdown" })),
     icon: Type.Optional(Type.String({ description: "Icon" })),
   }),
   {

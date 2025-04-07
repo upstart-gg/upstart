@@ -7,6 +7,7 @@ export const blogSchema = Type.Array(
     }),
     content: Type.String({
       description: "Blog post content",
+      format: "markdown",
     }),
     author: Type.Object({
       name: Type.String({

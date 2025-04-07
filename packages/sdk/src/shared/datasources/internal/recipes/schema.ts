@@ -7,6 +7,7 @@ export const recipesSchema = Type.Array(
     }),
     description: Type.String({
       description: "Description of the recipe",
+      format: "markdown",
     }),
     time: Type.String({
       description: "Time to prepare the recipe",
