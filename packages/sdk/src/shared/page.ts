@@ -1,4 +1,9 @@
-import { type Attributes, resolveAttributes, defaultAttributesSchema } from "./attributes";
+import {
+  type Attributes,
+  resolveAttributes,
+  defaultAttributesSchema,
+  type AttributesSchema,
+} from "./attributes";
 import { brickSchema, type Section, sectionSchema, type Brick, definedSectionSchema } from "./bricks";
 import invariant from "./utils/invariant";
 import { themeSchema, type Theme } from "./theme";
@@ -43,7 +48,7 @@ export type PageConfig<D extends DatasourcesMap> = PageInfo & {
   /**
    * Page attributes. (can override site attributes)
    */
-  attributes?: typeof defaultAttributesSchema;
+  attributes?: AttributesSchema;
   /**
    * Resolved attributes for the page.
    */
@@ -98,7 +103,7 @@ export const siteSchema = Type.Object({
  * Site config has always attributes and attr.
  */
 export type Site = Omit<Static<typeof siteSchema>, "attributes"> & {
-  attributes: typeof defaultAttributesSchema;
+  attributes: AttributesSchema;
 };
 
 /**
@@ -184,11 +189,11 @@ type PartialSiteAndPagesSchema = Static<typeof partialSiteAndPagesSchema>;
 
 export type SiteAndPagesConfig = {
   site: PartialSiteAndPagesSchema["site"] & {
-    attributes: typeof defaultAttributesSchema;
+    attributes: AttributesSchema;
   };
   pages: Array<
     Omit<PartialSiteAndPagesSchema["pages"][number], "attributes"> & {
-      attributes?: typeof defaultAttributesSchema;
+      attributes?: AttributesSchema;
     }
   >;
 };

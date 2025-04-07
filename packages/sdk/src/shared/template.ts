@@ -1,5 +1,5 @@
 import { type TObject, Type, type Static } from "@sinclair/typebox";
-import { processAttributesSchema, defaultAttributesSchema } from "./attributes";
+import { processAttributesSchema, defaultAttributesSchema, type AttributesSchema } from "./attributes";
 import { datasourcesMap } from "./datasources/types";
 import { templatePageSchema } from "./page";
 import { manifestSchema } from "./manifest";
@@ -41,10 +41,10 @@ export const templateSchema = Type.Object(
 export type StaticTemplate = Static<typeof templateSchema>;
 
 export type TemplateConfig = Omit<StaticTemplate, "attributes" | "pages"> & {
-  attributes: typeof defaultAttributesSchema;
+  attributes: AttributesSchema;
   pages: Array<
     Omit<StaticTemplate["pages"][number], "attributes"> & {
-      attributes?: typeof defaultAttributesSchema;
+      attributes?: AttributesSchema;
     }
   >;
 };
