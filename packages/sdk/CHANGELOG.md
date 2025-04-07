@@ -1,5 +1,14 @@
 # @upstart.gg/sdk
 
+## 0.0.89
+
+### Patch Changes
+
+- [#296](https://github.com/upstart-gg/upstart/pull/296) [`d00079b`](https://github.com/upstart-gg/upstart/commit/d00079b44ada64bd22de61f22837ef91c190a96a) Thanks [@mattallty](https://github.com/mattallty)! - fix tryCatch() method
+
+- Updated dependencies []:
+  - @upstart.gg/style-system@0.0.89
+
 ## 0.0.88
 
 ### Patch Changes
