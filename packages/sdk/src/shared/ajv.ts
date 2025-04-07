@@ -34,6 +34,16 @@ ajv.addFormat("date-object", {
   async: false,
 });
 
+ajv.addFormat("richtext", {
+  validate: (data: string) => typeof data === "string",
+  async: false,
+});
+
+ajv.addFormat("markdown", {
+  validate: (data: string) => typeof data === "string",
+  async: false,
+});
+
 export function serializeAjvErrors(errors: ErrorObject[] | null | undefined): string {
   if (!errors || errors.length === 0) {
     return "Unknown validation error";

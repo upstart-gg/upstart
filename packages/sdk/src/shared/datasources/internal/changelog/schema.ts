@@ -31,6 +31,7 @@ export const changelogSchema = Type.Array(
         ),
         description: Type.String({
           description: "Description of the change",
+          format: "markdown",
         }),
       }),
     ),

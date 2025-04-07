@@ -68,6 +68,7 @@ export const cvSchema = Type.Object(
         description: Type.String({
           title: "Description",
           description: "Description of responsibilities and achievements",
+          format: "markdown",
         }),
         achievements: Type.Optional(
           Type.Array(

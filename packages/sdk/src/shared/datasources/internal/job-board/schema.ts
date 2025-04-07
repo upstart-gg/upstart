@@ -33,6 +33,7 @@ export const jobBoardSchema = Type.Object(
           title: "Company Description",
           minLength: 1,
           maxLength: 5000,
+          format: "markdown",
         }),
       }),
 

@@ -4,9 +4,11 @@ export const faqSchema = Type.Array(
   Type.Object({
     question: Type.String({
       description: "Question",
+      format: "markdown",
     }),
     answer: Type.String({
       description: "Answer",
+      format: "markdown",
     }),
     category: Type.Optional(
       Type.String({
