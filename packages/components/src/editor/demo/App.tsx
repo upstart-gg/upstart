@@ -5,14 +5,13 @@ import { ClientOnly } from "~/shared/utils/client-only";
 import Editor from "~/editor/components/Editor";
 import type { PropsWithChildren } from "react";
 
-import "./app.css";
 import "@upstart.gg/style-system/default-theme.css";
 import "@upstart.gg/components/dist/assets/style.css";
 
 export default function App({ path }: { path: string }) {
   const siteConfig = getNewSiteConfig(
     testEnpageConfig,
-    "site1.upstart.test",
+    "localhost:8080",
     { label: "New site" },
     // use a fixed site id to avoid changing the site id on every reload
     true,

@@ -1,5 +1,5 @@
 import { tx } from "@upstart.gg/style-system/twind";
-import { Toaster, FloatingDelayGroup } from "@upstart.gg/style-system/system";
+import { Toaster } from "@upstart.gg/style-system/system";
 import { startTransition, useEffect, useRef } from "react";
 import { generateId, type Brick } from "@upstart.gg/sdk/shared/bricks";
 import {
@@ -16,16 +16,11 @@ import Selecto from "react-selecto";
 import { useEditablePage } from "~/editor/hooks/use-editable-page";
 import { defaultProps, manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
-import {
-  getBrickAtPosition,
-  type getDropOverGhostPosition,
-  getSectionAtPosition,
-} from "~/shared/utils/layout-utils";
+import { getBrickAtPosition } from "~/shared/utils/layout-utils";
 import { useFontWatcher } from "../hooks/use-font-watcher";
 import Section from "./EditableSection";
-import { useGridConfig } from "~/shared/hooks/use-grid-config";
-import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import BrickSettingsPopover from "./BrickPopover";
+import { useEditorHotKeys } from "../hooks/use-editor-hot-keys";
 
 const ghostValid = tx("bg-upstart-100");
 const ghostInvalid = tx("bg-red-100");
@@ -38,7 +33,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const previewMode = usePreviewMode();
   const editorHelpers = useEditorHelpers();
   const draftHelpers = useDraftHelpers();
-  const selectedBrickId = useSelectedBrickId();
   const draft = useDraft();
   const pageRef = useRef<HTMLDivElement>(null);
   const attributes = useAttributes();
@@ -222,78 +216,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       document.removeEventListener("click", listener, true);
     };
   }, []);
-
-  useHotkeys("esc", () => {
-    editorHelpers.deselectBrick();
-    editorHelpers.hidePanel();
-  });
-
-  useHotkeys("mod+c", () => {
-    // let the browser handle the copy event
-    const sel = window.getSelection();
-    if (!sel?.rangeCount) {
-      console.debug("mod+c pressed");
-    }
-  });
-
-  useHotkeys(["backspace", "del"], (e) => {
-    if (selectedBrickId) {
-      e.preventDefault();
-      draftHelpers.deleteBrick(selectedBrickId);
-      editorHelpers.deselectBrick(selectedBrickId);
-      editorHelpers.hidePanel("inspector");
-    }
-  });
-
-  useHotkeys("s", (e) => {
-    e.preventDefault();
-    editorHelpers.togglePanel("settings");
-  });
-  useHotkeys("l", (e) => {
-    e.preventDefault();
-    editorHelpers.togglePanel("library");
-  });
-  useHotkeys("t", (e) => {
-    e.preventDefault();
-    editorHelpers.togglePanel("theme");
-  });
-  useHotkeys("p", (e) => {
-    e.preventDefault();
-    editorHelpers.togglePanel();
-  });
-
-  /**
-   * Move brick left within a container
-   * @todo
-   */
-  useHotkeys("mod+left", (e) => {
-    e.preventDefault();
-    if (selectedBrickId) {
-      // console
-      console.log("Moving %s to left", selectedBrickId);
-      draftHelpers.moveBrickWithin(selectedBrickId, "left");
-    }
-  });
-  /**
-   * Move brick right within a container
-   * @todo
-   */
-  useHotkeys("mod+right", (e) => {
-    e.preventDefault();
-    if (selectedBrickId) {
-      // console
-      console.log("Moving %s to right", selectedBrickId);
-      draftHelpers.moveBrickWithin(selectedBrickId, "right");
-    }
-  });
-
-  // mod+d to duplicate the selected brick
-  useHotkeys("mod+d", (e) => {
-    e.preventDefault();
-    if (selectedBrickId) {
-      draftHelpers.duplicateBrick(selectedBrickId);
-    }
-  });
 
   return (
     <>

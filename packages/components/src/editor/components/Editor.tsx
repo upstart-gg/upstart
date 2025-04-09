@@ -1,6 +1,6 @@
 import {
   useDraft,
-  useEditor,
+  useEditorEnabled,
   usePanel,
   usePreviewMode,
   type DraftState,
@@ -13,8 +13,7 @@ import { useDebounceCallback } from "usehooks-ts";
 import { DeviceFrame } from "./Preview";
 import EditablePage from "./EditablePage";
 import { tx, injectGlobal, css } from "@upstart.gg/style-system/twind";
-import { Button, Spinner } from "@upstart.gg/style-system/system";
-import { generateColorsVars } from "@upstart.gg/sdk/shared/themes/color-system";
+import { Button, Spinner, toast } from "@upstart.gg/style-system/system";
 import { usePageAutoSave, useOnDraftChange } from "~/editor/hooks/use-page-autosave";
 import DataPanel from "./PanelData";
 import PanelSettings from "./PanelSettings";
@@ -22,6 +21,9 @@ import PanelTheme from "./PanelTheme";
 import PanelInspector from "./PanelInspector";
 import PanelLibrary from "./PanelLibrary";
 import Tour from "./Tour";
+import { getThemeCss } from "~/shared/utils/get-theme-css";
+import Page from "~/shared/components/Page";
+import { useEditorHotKeys } from "../hooks/use-editor-hot-keys";
 
 type EditorProps = ComponentProps<"div"> & {
   mode?: "local" | "live";
@@ -32,6 +34,7 @@ export default function Editor({ mode = "local", onDraftChange, ...props }: Edit
   const rootRef = useRef<HTMLDivElement>(null);
   const draft = useDraft();
   const previewMode = usePreviewMode();
+  const editorEnabled = useEditorEnabled();
 
   // intro is a state when the site has just been created.
   // It is used for animating the editor.
@@ -54,25 +57,25 @@ export default function Editor({ mode = "local", onDraftChange, ...props }: Edit
 
   usePageAutoSave();
   useOnDraftChange(onDraftChange);
+  useEditorHotKeys();
 
   useEffect(() => {
     const themeUsed = draft.previewTheme ?? draft.theme;
-    const shades = generateColorsVars(themeUsed);
-
-    const injected = `
-     @layer upstart-theme {
-        :root {
-          ${Object.entries(shades)
-            .map(([key, value]) => `--${key}: ${value};`)
-            .join("\n")}
-
-          --color-link: var(--color-primary);
-        }
-      }
-    `;
-
-    injectGlobal(injected);
+    injectGlobal(getThemeCss(themeUsed));
   }, [draft.previewTheme, draft.theme]);
+
+  if (!editorEnabled) {
+    return (
+      <div className="@container">
+        <Page
+          page={{
+            ...draft,
+            tags: [],
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -80,20 +83,14 @@ export default function Editor({ mode = "local", onDraftChange, ...props }: Edit
       className={tx(
         "min-h-[100dvh] max-h-[100dvh] grid relative overscroll-none overflow-hidden",
         getEditorCss(showIntro, panelPosition),
-        // css({
-        //   gridTemplateAreas:
-        //     panelPosition === "left" ? `"topbar topbar" "toolbar main"` : `"topbar topbar" "main toolbar"`,
-        //   gridTemplateRows: "3.7rem 1fr",
-        //   gridTemplateColumns: panelPosition === "left" ? "3.7rem 1fr" : "1fr 3.7rem",
-        // }),
       )}
       {...props}
       ref={rootRef}
     >
       {showIntro === false && <Tour />}
-      <Topbar showIntro={showIntro} />
+      {editorEnabled && <Topbar showIntro={showIntro} />}
       <Panel />
-      <Toolbar showIntro={showIntro} />
+      {editorEnabled && <Toolbar showIntro={showIntro} />}
       {draft.previewTheme && <ThemePreviewConfirmButton />}
       <main
         className={tx(
@@ -115,7 +112,16 @@ export default function Editor({ mode = "local", onDraftChange, ...props }: Edit
         )}
       >
         <DeviceFrame>
-          <EditablePage showIntro={showIntro} />
+          {editorEnabled ? (
+            <EditablePage showIntro={showIntro} />
+          ) : (
+            <Page
+              page={{
+                ...draft,
+                tags: [],
+              }}
+            />
+          )}
         </DeviceFrame>
       </main>
     </div>

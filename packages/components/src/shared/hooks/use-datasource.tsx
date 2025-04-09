@@ -2,7 +2,6 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 import type { Static, TArray, TObject } from "@sinclair/typebox";
 import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import { Value } from "@sinclair/typebox/value";
-import { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 
 type DatasourceSchema = TObject | TArray<TObject>;
 type DatasourceMap = Map<string, unknown>;

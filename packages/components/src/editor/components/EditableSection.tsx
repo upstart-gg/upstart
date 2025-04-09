@@ -3,18 +3,9 @@ import type { Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
 import { useDraftHelpers, usePreviewMode, useSection, useSections } from "../hooks/use-editor";
 import { DropdownMenu, Inset, Popover, Tooltip } from "@upstart.gg/style-system/system";
 import EditableBrickWrapper from "./EditableBrick";
-import SectionPopover from "./SectionPopover";
 import ResizeHandle from "./ResizeHandle";
 import { useSectionStyle } from "~/shared/hooks/use-section-style";
-import {
-  TbArrowAutofitHeight,
-  TbBorderCorners,
-  TbArrowUp,
-  TbArrowDown,
-  TbDots,
-  TbTrash,
-} from "react-icons/tb";
-import { VscSettings } from "react-icons/vsc";
+import { TbArrowAutofitHeight, TbBorderCorners, TbDots } from "react-icons/tb";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useEffect, useRef, useState } from "react";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
@@ -22,7 +13,6 @@ import { useGridConfig, type GridConfig } from "~/shared/hooks/use-grid-config";
 import { getBrickResizeOptions, getBrickPosition } from "~/shared/utils/layout-utils";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import SectionSettingsView from "./SectionSettingsView";
-import { IoCopyOutline } from "react-icons/io5";
 
 type EditableSectionProps = {
   section: SectionType;

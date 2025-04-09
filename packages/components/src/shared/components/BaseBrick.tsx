@@ -1,12 +1,5 @@
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
-import {
-  lazy,
-  Suspense,
-  type ComponentProps,
-  type ComponentType,
-  type LazyExoticComponent,
-  type Component,
-} from "react";
+import { lazy, Suspense, type ComponentProps, type ComponentType, type LazyExoticComponent } from "react";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 

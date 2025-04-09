@@ -1,5 +1,5 @@
 import type { Brick, Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
-import BrickWrapper from "./Brick";
+import BrickWrapper from "./BrickWrapper";
 import { useSectionStyle } from "~/shared/hooks/use-section-style";
 
 type EditableSectionProps = {

@@ -24,15 +24,6 @@ export default defineConfig({
   ],
   rules: [
     [
-      "brick-container",
-      {
-        display: "grid",
-        gridTemplateColumns: "subgrid",
-        gridTemplateRows: "subgrid",
-        gridColumn: "1 / span 12",
-      },
-    ],
-    [
       "brick",
       {
         borderRadius: "inherit",
@@ -558,12 +549,10 @@ export default defineConfig({
           900: "var(--color-neutral-900)",
         },
       },
-
       containers: {
         mobile: "1px",
         desktop: "1024px",
       },
-
       animation: {
         "fade-in": "fade-in 0.5s",
         "elastic-pop": "elastic-pop 1s cubic-bezier(0.22, 1, 0.36, 1) forwards",

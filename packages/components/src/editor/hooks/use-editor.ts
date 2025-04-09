@@ -22,8 +22,15 @@ export interface EditorStateProps {
    * It is used when the user is not logged in yet or does not have an account yet
    */
   mode: "local" | "remote";
+  /**
+   * When debugMode is enabled, context menu are disabled so that inspecting using devtools is easier
+   */
   debugMode?: boolean;
-  // pageConfig: GenericPageConfig;
+  /**
+   * When true, disable the editor and renders the page as it would be rendered in production using non-editable components
+   */
+  disabled?: boolean;
+
   previewMode: ResponsiveMode;
   textEditMode?: "default" | "large";
   lastTextEditPosition?: number;
@@ -33,7 +40,6 @@ export interface EditorStateProps {
   selectedGroup?: Brick["id"][];
 
   isEditingTextForBrickId?: string;
-  shouldShowGrid?: boolean;
   panel?: "library" | "inspector" | "theme" | "settings" | "data";
   modal?: "image-search" | "datasources";
   panelPosition: "left" | "right";
@@ -53,6 +59,7 @@ export interface EditorState extends EditorStateProps {
   setSettingsVisible: (visible: boolean) => void;
   toggleSettings: () => void;
   toggleTextEditMode: () => void;
+  toggleEditorEnabled: () => void;
   setTextEditMode: (mode: EditorStateProps["textEditMode"]) => void;
   setIsEditingText: (forBrickId: string | false) => void;
   setlastTextEditPosition: (position?: number) => void;
@@ -62,7 +69,6 @@ export interface EditorState extends EditorStateProps {
   setSelectedGroup: (group?: Brick["id"][]) => void;
   setSelectedBrickId: (brickId?: Brick["id"]) => void;
   deselectBrick: (brickId?: Brick["id"]) => void;
-  setShouldShowGrid: (show: boolean) => void;
   setColorAdjustment: (colorAdjustment: ColorAdjustment) => void;
   markTourAsSeen: (tourId: string) => void;
   togglePanelPosition: () => void;
@@ -93,7 +99,10 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
           immer((set, _get) => ({
             ...DEFAULT_PROPS,
             ...initProps,
-
+            toggleEditorEnabled: () =>
+              set((state) => {
+                state.disabled = !state.disabled;
+              }),
             markTourAsSeen: (tourId) =>
               set((state) => {
                 state.seenTours = [...state.seenTours, tourId];
@@ -174,11 +183,6 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                 }
               }),
 
-            setShouldShowGrid: (show) =>
-              set((state) => {
-                state.shouldShowGrid = show;
-              }),
-
             setColorAdjustment: (colorAdjustment) =>
               set((state) => {
                 state.colorAdjustment = colorAdjustment;
@@ -213,12 +217,12 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                       "collidingBrick",
                       "panel",
                       "isEditingTextForBrickId",
-                      "shouldShowGrid",
                       "textEditMode",
                       "onShowLogin",
                       "disableTours",
                       "logoLink",
                       "debugMode",
+                      "disabled",
                     ].includes(key),
                 ),
               ),
@@ -961,6 +965,12 @@ export const usePreviewMode = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => state.previewMode);
 };
+
+export const useEditorEnabled = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => !state.disabled);
+};
+
 export const useLogoLink = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => state.logoLink);
@@ -1093,13 +1103,13 @@ export const useEditorHelpers = () => {
     setSelectedGroup: state.setSelectedGroup,
     setSelectedBrickId: state.setSelectedBrickId,
     deselectBrick: state.deselectBrick,
-    setShouldShowGrid: state.setShouldShowGrid,
     setColorAdjustment: state.setColorAdjustment,
     togglePanelPosition: state.togglePanelPosition,
     showModal: state.showModal,
     hideModal: state.hideModal,
     setCollidingBrick: state.setCollidingBrick,
     onShowLogin: state.onShowLogin,
+    toggleEditorEnabled: state.toggleEditorEnabled,
   }));
 };
 
