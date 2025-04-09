@@ -1,4 +1,4 @@
-import z from "zod";
+import { Type, type Static } from "@sinclair/typebox";
 
-export const responsiveMode = z.enum(["mobile", "desktop"]);
-export type ResponsiveMode = z.infer<typeof responsiveMode>;
+export const responsiveMode = Type.Union([Type.Literal("mobile"), Type.Literal("desktop")]);
+export type ResponsiveMode = Static<typeof responsiveMode>;
