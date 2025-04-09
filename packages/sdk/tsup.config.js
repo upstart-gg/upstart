@@ -13,7 +13,6 @@ const loader = {
 };
 
 const external = [
-  // "zod",
   // "tailwindcss",
   // "jsdom",
   "vite",

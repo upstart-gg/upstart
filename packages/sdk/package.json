@@ -69,8 +69,6 @@
     "react-selecto": "1.26.3",
     "rollup-plugin-strip-banner": "3.1.0",
     "usehooks-ts": "3.1.0",
-    "zod": "3.23.8",
-    "zod-validation-error": "3.3.1",
     "zundo": "2.3.0",
     "zustand": "4.5.5"
   },

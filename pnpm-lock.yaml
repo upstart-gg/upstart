@@ -409,12 +409,6 @@ importers:
       usehooks-ts:
         specifier: 3.1.0
         version: 3.1.0(react@18.3.0-canary-3d9b20132-20240124)
-      zod:
-        specifier: 3.23.8
-        version: 3.23.8
-      zod-validation-error:
-        specifier: 3.3.1
-        version: 3.3.1(zod@3.23.8)
       zundo:
         specifier: 2.3.0
         version: 2.3.0(zustand@4.5.5(@types/react@18.3.3)(immer@10.1.1)(react@18.3.0-canary-3d9b20132-20240124))
@@ -7048,15 +7042,6 @@ packages:
   yoctocolors-cjs@2.1.2:
     resolution: {integrity: sha512-cYVsTjKl8b+FrnidjibDWskAv7UKOfcwaVZdp/it9n1s9fU3IkgDbhdIRKCW4JDsAlECJY0ytoVPT3sK6kideA==}
     engines: {node: '>=18'}
-
-  zod-validation-error@3.3.1:
-    resolution: {integrity: sha512-uFzCZz7FQis256dqw4AhPQgD6f3pzNca/Zh62RNELavlumQB3nDIUFbF5JQfFLcMbO1s02Q7Xg/gpcOBlEnYZA==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      zod: ^3.18.0
-
-  zod@3.23.8:
-    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
   zundo@2.3.0:
     resolution: {integrity: sha512-4GXYxXA17SIKYhVbWHdSEU04P697IMyVGXrC2TnzoyohEAWytFNOKqOp5gTGvaW93F/PM5Y0evbGtOPF0PWQwQ==}
@@ -14303,12 +14288,6 @@ snapshots:
       yargs-parser: 21.1.1
 
   yoctocolors-cjs@2.1.2: {}
-
-  zod-validation-error@3.3.1(zod@3.23.8):
-    dependencies:
-      zod: 3.23.8
-
-  zod@3.23.8: {}
 
   zundo@2.3.0(zustand@4.5.5(@types/react@18.3.3)(immer@10.1.1)(react@18.3.0-canary-3d9b20132-20240124)):
     dependencies:

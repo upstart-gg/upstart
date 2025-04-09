@@ -3,7 +3,6 @@ import fs from "node:fs";
 import { readFile } from "node:fs/promises";
 import fg from "fast-glob";
 import { type Logger, logger as defaultLogger } from "./logger";
-import { fromError } from "zod-validation-error";
 import { basename, dirname, extname } from "node:path";
 import type { TemplateConfig } from "~/shared/template";
 
@@ -62,13 +61,14 @@ export function validateTemplateConfig(config: TemplateConfig, logger: Logger) {
     }
   }
 
-  const validated = manifestSchema.safeParse(config.manifest);
-  if (!validated.success) {
-    logger.error(`🔴 Error: template manifest is invalid. Check your call to defineManifest().\n`);
-    const err = fromError(validated.error);
-    logger.error(`Hint: ${err.toString()}\n\n`);
-    process.exit(1);
-  }
+  // Todo: replace validation from zod to ajv
+  // const validated = manifestSchema.safeParse(config.manifest);
+  // if (!validated.success) {
+  //   logger.error(`🔴 Error: template manifest is invalid. Check your call to defineManifest().\n`);
+  //   const err = fromError(validated.error);
+  //   logger.error(`Hint: ${err.toString()}\n\n`);
+  //   process.exit(1);
+  // }
 
   return config;
 }
