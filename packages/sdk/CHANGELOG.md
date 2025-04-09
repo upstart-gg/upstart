@@ -1,5 +1,14 @@
 # @upstart.gg/sdk
 
+## 0.0.91
+
+### Patch Changes
+
+- [#300](https://github.com/upstart-gg/upstart/pull/300) [`2dd6710`](https://github.com/upstart-gg/upstart/commit/2dd67108987b38cbfd463605e158b1cd5688492b) Thanks [@mattallty](https://github.com/mattallty)! - Remove zod, will use typebox everywhere
+
+- Updated dependencies []:
+  - @upstart.gg/style-system@0.0.91
+
 ## 0.0.90
 
 ### Patch Changes
