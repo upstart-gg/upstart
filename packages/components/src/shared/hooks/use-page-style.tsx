@@ -27,13 +27,7 @@ export function useBodyStyle({ attributes }: { attributes: Attributes }) {
   );
 }
 
-export function usePageStyle({
-  attributes,
-  editable,
-  previewMode,
-  typography,
-  showIntro,
-}: UsePageStyleProps) {
+export function usePageStyle({ attributes, editable, typography, showIntro }: UsePageStyleProps) {
   return tx(
     "flex flex-col group/page mx-auto relative overflow-hidden max-w-full w-full p-0 antialiased",
     isStandardColor(attributes.$pageBackground.color) &&

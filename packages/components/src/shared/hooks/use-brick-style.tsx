@@ -45,6 +45,7 @@ function usePreprocessTextColors<T extends BrickManifest>(
   brick: BrickProps<T>["brick"],
   stylesProps: ReturnType<typeof getStyleProperties>,
 ) {
+  console.log("usePreprocessTextColors", brick.id, stylesProps);
   const getBrickInfo = useGetBrick();
   const brickInfo = getBrickInfo(brick.id);
   const onChange = debounce(function process() {
@@ -80,12 +81,17 @@ export function useBrickStyle<T extends BrickManifest>(brick: BrickProps<T>["bri
   return getClassesFromStyleProps(stylesProps, brick, "brick");
 }
 
+export function useColorsPreprocessing<T extends BrickManifest>({ brick }: BrickProps<T>) {
+  const manifest = useBrickManifest(brick.type);
+  const stylesProps = getStyleProperties(manifest.props);
+  usePreprocessTextColors(brick, stylesProps);
+}
+
 export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable, selected }: BrickProps<T>) {
   const { props, position } = brick;
   const isContainerChild = brick.parentId !== undefined;
   const manifest = useBrickManifest(brick.type);
   const stylesProps = getStyleProperties(manifest.props);
-  usePreprocessTextColors(brick, stylesProps);
   const styleIds = Object.values(stylesProps);
   const classes = getClassesFromStyleProps(stylesProps, brick, "wrapper");
 
@@ -97,6 +103,7 @@ export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable,
     styleIds.includes("#styles:fixedPositioned") &&
       css({
         height: `${position.desktop.h * LAYOUT_ROW_HEIGHT}px`,
+        maxHeight: `${position.desktop.h * LAYOUT_ROW_HEIGHT}px`,
       }),
 
     // container children expand to fill the space
@@ -117,6 +124,7 @@ export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable,
         row-start-${position.desktop.y + 1}
         h-fit
         min-h-[${position.desktop.h * LAYOUT_ROW_HEIGHT}px]
+        max-h-fit
       )
       @mobile:(
         col-start-${position.mobile.x + 1}
@@ -124,6 +132,7 @@ export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable,
         row-start-${position.mobile.y + 1}
         h-fit
         min-h-[${position.mobile.h * LAYOUT_ROW_HEIGHT}px]
+        max-h-fit
       )`,
     // ${position.mobile.manualHeight ? `h-[${position.mobile.manualHeight * LAYOUT_ROW_HEIGHT}px]` : ""}
 

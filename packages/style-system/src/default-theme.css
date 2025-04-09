@@ -16,19 +16,6 @@
 
   }
 
-  :root {
-
-    [data-upstart-theme="clarity"] {
-      /* Base Colors */
-      --color-primary: #FF5733;    /* Coral Pink */
-      --color-secondary: #4ECDC4;  /* Turquoise */
-      --color-accent: #FFC300;     /* Golden Yellow */
-      --color-neutral: #95A5A6;       /* Cool Gray */
-
-      /* Link Colors */
-      --color-link: var(--color-primary);
-    }
-  }
 }
 
 @layer upstart-generated {

@@ -12,7 +12,6 @@ import {
   observe as observe$,
 } from "@twind/core";
 import config from "./twind-config.js";
-
 export { getSheet, parse, parseValue } from "@twind/core";
 export { default as inline } from "@twind/with-react/inline";
 

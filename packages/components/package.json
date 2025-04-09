@@ -3,10 +3,7 @@
   "version": "0.0.89",
   "type": "module",
   "exports": {
-    "./shared/*": {
-      "import": "./dist/*.js",
-      "types": "./dist/types/shared/components/*.d.ts"
-    },
+
     "./editor/components/*": {
       "import": "./dist/*.js",
       "types": "./dist/types/editor/components/*.d.ts"
@@ -14,6 +11,18 @@
     "./editor/hooks/*": {
       "import": "./dist/*.js",
       "types": "./dist/types/editor/hooks/*.d.ts"
+    },
+    "./shared/hooks/*": {
+      "import": "./dist/*.js",
+      "types": "./dist/types/shared/hooks/*.d.ts"
+    },
+    "./shared/utils/*": {
+      "import": "./dist/*.js",
+      "types": "./dist/types/shared/utils/*.d.ts"
+    },
+    "./shared/*": {
+      "import": "./dist/*.js",
+      "types": "./dist/types/shared/components/*.d.ts"
     },
     "./test-config": {
       "import": "./dist/test-config.js",
@@ -65,8 +74,6 @@
     "json-schema-merge-allof": "0.8.1",
     "lodash-es": "4.17.21",
     "nanoid": "5.0.8",
-    "react": "18.3.0-canary-3d9b20132-20240124",
-    "react-dom": "18.3.0-canary-3d9b20132-20240124",
     "react-hotkeys-hook": "4.6.1",
     "react-icons": "5.3.0",
     "react-joyride": "2.9.3",
@@ -113,8 +120,8 @@
     "@upstart.gg/sdk": "workspace:*",
     "@upstart.gg/style-system": "workspace:*",
     "lodash-es": "4.17.21",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": "18.3.0-canary-3d9b20132-20240124",
+    "react-dom": "18.3.0-canary-3d9b20132-20240124",
     "react-icons": "5.3.0"
   },
   "peerDependenciesMeta": {

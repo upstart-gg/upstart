@@ -1,5 +1,5 @@
 import { tx } from "@upstart.gg/style-system/twind";
-import { Toaster, FloatingDelayGroup } from "@upstart.gg/style-system/system";
+import { Toaster } from "@upstart.gg/style-system/system";
 import { startTransition, useEffect, useRef } from "react";
 import { generateId, type Brick } from "@upstart.gg/sdk/shared/bricks";
 import {
@@ -16,15 +16,9 @@ import Selecto from "react-selecto";
 import { useEditablePage } from "~/editor/hooks/use-editable-page";
 import { defaultProps, manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
-import {
-  getBrickAtPosition,
-  type getDropOverGhostPosition,
-  getSectionAtPosition,
-} from "~/shared/utils/layout-utils";
+import { getBrickAtPosition } from "~/shared/utils/layout-utils";
 import { useFontWatcher } from "../hooks/use-font-watcher";
 import Section from "./EditableSection";
-import { useGridConfig } from "~/shared/hooks/use-grid-config";
-import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import BrickSettingsPopover from "./BrickPopover";
 
 const ghostValid = tx("bg-upstart-100");

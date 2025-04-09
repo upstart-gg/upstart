@@ -41,7 +41,7 @@ import {
   useDelayGroup,
 } from "@upstart.gg/style-system/system";
 import BaseBrick from "~/shared/components/BaseBrick";
-import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
+import { useBrickWrapperStyle, useColorsPreprocessing } from "~/shared/hooks/use-brick-style";
 import {
   menuBarBtnCls,
   menuBarBtnCommonCls,
@@ -133,6 +133,8 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       editable: true,
       selected: selectedBrickId === brick.id,
     });
+
+    useColorsPreprocessing({ brick });
 
     useEffect(() => {
       if (barsRefs.reference.current) {

@@ -1,11 +1,4 @@
-import {
-  useDraft,
-  useEditor,
-  usePanel,
-  usePreviewMode,
-  type DraftState,
-  type usePageInfo,
-} from "../hooks/use-editor";
+import { useDraft, usePanel, usePreviewMode, type DraftState, type usePageInfo } from "../hooks/use-editor";
 import Toolbar from "./Toolbar";
 import Topbar from "./Topbar";
 import { lazy, Suspense, useEffect, useRef, useState, type ComponentProps } from "react";
@@ -14,7 +7,6 @@ import { DeviceFrame } from "./Preview";
 import EditablePage from "./EditablePage";
 import { tx, injectGlobal, css } from "@upstart.gg/style-system/twind";
 import { Button, Spinner } from "@upstart.gg/style-system/system";
-import { generateColorsVars } from "@upstart.gg/sdk/shared/themes/color-system";
 import { usePageAutoSave, useOnDraftChange } from "~/editor/hooks/use-page-autosave";
 import DataPanel from "./PanelData";
 import PanelSettings from "./PanelSettings";
@@ -22,6 +14,7 @@ import PanelTheme from "./PanelTheme";
 import PanelInspector from "./PanelInspector";
 import PanelLibrary from "./PanelLibrary";
 import Tour from "./Tour";
+import { getThemeCss } from "~/shared/utils/get-theme-css";
 
 type EditorProps = ComponentProps<"div"> & {
   mode?: "local" | "live";
@@ -57,21 +50,7 @@ export default function Editor({ mode = "local", onDraftChange, ...props }: Edit
 
   useEffect(() => {
     const themeUsed = draft.previewTheme ?? draft.theme;
-    const shades = generateColorsVars(themeUsed);
-
-    const injected = `
-     @layer upstart-theme {
-        :root {
-          ${Object.entries(shades)
-            .map(([key, value]) => `--${key}: ${value};`)
-            .join("\n")}
-
-          --color-link: var(--color-primary);
-        }
-      }
-    `;
-
-    injectGlobal(injected);
+    injectGlobal(getThemeCss(themeUsed));
   }, [draft.previewTheme, draft.theme]);
 
   return (
@@ -80,12 +59,6 @@ export default function Editor({ mode = "local", onDraftChange, ...props }: Edit
       className={tx(
         "min-h-[100dvh] max-h-[100dvh] grid relative overscroll-none overflow-hidden",
         getEditorCss(showIntro, panelPosition),
-        // css({
-        //   gridTemplateAreas:
-        //     panelPosition === "left" ? `"topbar topbar" "toolbar main"` : `"topbar topbar" "main toolbar"`,
-        //   gridTemplateRows: "3.7rem 1fr",
-        //   gridTemplateColumns: panelPosition === "left" ? "3.7rem 1fr" : "1fr 3.7rem",
-        // }),
       )}
       {...props}
       ref={rootRef}
