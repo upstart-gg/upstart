@@ -3,32 +3,32 @@ import { Type, type Static } from "@sinclair/typebox";
 export const recipesSchema = Type.Array(
   Type.Object({
     title: Type.String({
-      description: "Title of the recipe",
+      title: "Title",
     }),
     description: Type.String({
-      description: "Description of the recipe",
+      title: "Description",
       format: "markdown",
     }),
     time: Type.String({
-      description: "Time to prepare the recipe",
+      title: "Time to prepare the recipe",
     }),
     ingredients: Type.Array(
       Type.Object({
         name: Type.String({
-          description: "Name of the ingredient",
+          title: "Name of the ingredient",
         }),
         quantity: Type.String({
-          description: "Quantity of the ingredient",
+          title: "Quantity of the ingredient",
         }),
       }),
     ),
     steps: Type.Array(
       Type.Object({
         title: Type.String({
-          description: "Step title",
+          title: "Step title",
         }),
         description: Type.String({
-          description: "Step description",
+          title: "Step description",
         }),
       }),
     ),

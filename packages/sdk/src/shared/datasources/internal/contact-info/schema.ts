@@ -3,13 +3,13 @@ import { linksSchema } from "../links/schema";
 
 export const contactInfoSchema = Type.Object(
   {
-    email: Type.String({ format: "email" }),
-    phone: Type.Optional(Type.String()),
-    companyName: Type.Optional(Type.String()),
-    firstName: Type.Optional(Type.String()),
-    lastName: Type.Optional(Type.String()),
-    url: Type.Optional(Type.String({ format: "uri" })),
-    address: Type.Optional(Type.String()),
+    email: Type.String({ format: "email", title: "Email" }),
+    phone: Type.Optional(Type.String({ title: "Phone" })),
+    companyName: Type.Optional(Type.String({ title: "Company Name" })),
+    firstName: Type.Optional(Type.String({ title: "First Name" })),
+    lastName: Type.Optional(Type.String({ title: "Last Name" })),
+    url: Type.Optional(Type.String({ format: "uri", title: "Website URL" })),
+    address: Type.Optional(Type.String({ title: "Address" })),
     socialLinks: linksSchema,
   },
   {

@@ -3,14 +3,17 @@ import { Type, type Static } from "@sinclair/typebox";
 export const changelogSchema = Type.Array(
   Type.Object({
     title: Type.String({
+      title: "Release Title",
       description: "Title of the release",
     }),
     version: Type.Optional(
       Type.String({
+        title: "Version",
         description: "Version number",
       }),
     ),
     date: Type.String({
+      title: "Release Date",
       format: "date",
       description: "Release date in ISO format",
     }),
@@ -26,11 +29,11 @@ export const changelogSchema = Type.Array(
             Type.Literal("removed"),
           ],
           {
-            description: "Type of change",
+            title: "Change Type",
           },
         ),
         description: Type.String({
-          description: "Description of the change",
+          title: "Description",
           format: "markdown",
         }),
       }),
