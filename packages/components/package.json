@@ -1,9 +1,8 @@
 {
   "name": "@upstart.gg/components",
-  "version": "0.0.89",
+  "version": "0.0.90",
   "type": "module",
   "exports": {
-
     "./editor/components/*": {
       "import": "./dist/*.js",
       "types": "./dist/types/editor/components/*.d.ts"
