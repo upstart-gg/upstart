@@ -20,7 +20,7 @@
       "import": "./dist/*.js",
       "types": "./dist/types/shared/utils/*.d.ts"
     },
-    "./shared/*": {
+    "./shared/components/*": {
       "import": "./dist/*.js",
       "types": "./dist/types/shared/components/*.d.ts"
     },

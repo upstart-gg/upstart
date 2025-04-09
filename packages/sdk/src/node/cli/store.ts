@@ -54,7 +54,7 @@ function getKey() {
   const keyPath = path.join(tmpSecureStoreDir, ".enpage-key");
   if (!fs.existsSync(keyPath)) {
     const key = crypto.randomBytes(32).toString("hex");
-    fs.writeFileSync(keyPath, key, { mode: 0o600, flush: true });
+    fs.writeFileSync(keyPath, key, { mode: 0o600 });
     return key;
   }
   const key = fs.readFileSync(keyPath, "utf8");
