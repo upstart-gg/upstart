@@ -45,7 +45,6 @@ function usePreprocessTextColors<T extends BrickManifest>(
   brick: BrickProps<T>["brick"],
   stylesProps: ReturnType<typeof getStyleProperties>,
 ) {
-  console.log("usePreprocessTextColors", brick.id, stylesProps);
   const getBrickInfo = useGetBrick();
   const brickInfo = getBrickInfo(brick.id);
   const onChange = debounce(function process() {

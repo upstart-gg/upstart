@@ -1,4 +1,11 @@
-import { useDraft, usePanel, usePreviewMode, type DraftState, type usePageInfo } from "../hooks/use-editor";
+import {
+  useDraft,
+  useEditorEnabled,
+  usePanel,
+  usePreviewMode,
+  type DraftState,
+  type usePageInfo,
+} from "../hooks/use-editor";
 import Toolbar from "./Toolbar";
 import Topbar from "./Topbar";
 import { lazy, Suspense, useEffect, useRef, useState, type ComponentProps } from "react";
@@ -6,7 +13,7 @@ import { useDebounceCallback } from "usehooks-ts";
 import { DeviceFrame } from "./Preview";
 import EditablePage from "./EditablePage";
 import { tx, injectGlobal, css } from "@upstart.gg/style-system/twind";
-import { Button, Spinner } from "@upstart.gg/style-system/system";
+import { Button, Spinner, toast } from "@upstart.gg/style-system/system";
 import { usePageAutoSave, useOnDraftChange } from "~/editor/hooks/use-page-autosave";
 import DataPanel from "./PanelData";
 import PanelSettings from "./PanelSettings";
@@ -15,6 +22,8 @@ import PanelInspector from "./PanelInspector";
 import PanelLibrary from "./PanelLibrary";
 import Tour from "./Tour";
 import { getThemeCss } from "~/shared/utils/get-theme-css";
+import Page from "~/shared/components/Page";
+import { useEditorHotKeys } from "../hooks/use-editor-hot-keys";
 
 type EditorProps = ComponentProps<"div"> & {
   mode?: "local" | "live";
@@ -25,6 +34,7 @@ export default function Editor({ mode = "local", onDraftChange, ...props }: Edit
   const rootRef = useRef<HTMLDivElement>(null);
   const draft = useDraft();
   const previewMode = usePreviewMode();
+  const editorEnabled = useEditorEnabled();
 
   // intro is a state when the site has just been created.
   // It is used for animating the editor.
@@ -47,11 +57,25 @@ export default function Editor({ mode = "local", onDraftChange, ...props }: Edit
 
   usePageAutoSave();
   useOnDraftChange(onDraftChange);
+  useEditorHotKeys();
 
   useEffect(() => {
     const themeUsed = draft.previewTheme ?? draft.theme;
     injectGlobal(getThemeCss(themeUsed));
   }, [draft.previewTheme, draft.theme]);
+
+  if (!editorEnabled) {
+    return (
+      <div className="@container">
+        <Page
+          page={{
+            ...draft,
+            tags: [],
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -64,9 +88,9 @@ export default function Editor({ mode = "local", onDraftChange, ...props }: Edit
       ref={rootRef}
     >
       {showIntro === false && <Tour />}
-      <Topbar showIntro={showIntro} />
+      {editorEnabled && <Topbar showIntro={showIntro} />}
       <Panel />
-      <Toolbar showIntro={showIntro} />
+      {editorEnabled && <Toolbar showIntro={showIntro} />}
       {draft.previewTheme && <ThemePreviewConfirmButton />}
       <main
         className={tx(
@@ -88,7 +112,16 @@ export default function Editor({ mode = "local", onDraftChange, ...props }: Edit
         )}
       >
         <DeviceFrame>
-          <EditablePage showIntro={showIntro} />
+          {editorEnabled ? (
+            <EditablePage showIntro={showIntro} />
+          ) : (
+            <Page
+              page={{
+                ...draft,
+                tags: [],
+              }}
+            />
+          )}
         </DeviceFrame>
       </main>
     </div>

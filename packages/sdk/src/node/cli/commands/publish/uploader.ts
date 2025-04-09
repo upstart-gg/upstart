@@ -122,7 +122,7 @@ async function performUpload(
     const fileStream = fs.createReadStream(filePath);
     let totalUploaded = 0;
 
-    const updateProgress = (chunk: Buffer) => {
+    const updateProgress = (chunk: Buffer | string) => {
       totalUploaded += chunk.length;
     };
 

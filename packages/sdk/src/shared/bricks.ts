@@ -297,7 +297,7 @@ export function defineBrick(brick: DefinedBrick): Brick {
               id: childBrick.id ?? `brick-${generateId()}`,
               parentId: id,
               sectionId: brick.sectionId,
-              position: getPositionDefaults(),
+              position: { mobile: {}, desktop: {} },
               props: merge({}, defaultProps[childBrick.type].props, childBrick.props),
             })),
           }
@@ -312,12 +312,3 @@ export function defineBrick(brick: DefinedBrick): Brick {
       : getPositionDefaults(),
   };
 }
-
-// export function brickWithDefaults<B extends Brick>(brick: B): B {
-//   const defProps = defaultProps[brick.type];
-//   return {
-//     ...brick,
-//     props: merge({}, defProps.props, brick.props),
-//     mobileProps: merge({}, defProps.mobileProps, brick.mobileProps),
-//   };
-// }

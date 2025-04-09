@@ -9,9 +9,6 @@ import {
   useEffect,
   useMemo,
 } from "react";
-import { RiDragMove2Fill } from "react-icons/ri";
-import { IoTrashBinOutline } from "react-icons/io5";
-
 import { tx } from "@upstart.gg/style-system/twind";
 import {
   useDebugMode,
@@ -204,10 +201,10 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           id={brick.id}
           data-brick
           data-brick-id={brick.id}
-          data-x={brick.position[previewMode].x}
-          data-y={brick.position[previewMode].y}
-          data-w={brick.position[previewMode].w}
-          data-h={brick.position[previewMode].h}
+          data-x={brick.position[previewMode].x ?? 0}
+          data-y={brick.position[previewMode].y ?? 0}
+          data-w={brick.position[previewMode].w ?? 0}
+          data-h={brick.position[previewMode].h ?? 0}
           data-brick-type={brick.type}
           data-element-kind={manifest.kind}
           data-last-touched={brick.props.lastTouched ?? "0"}

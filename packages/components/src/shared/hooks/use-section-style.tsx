@@ -15,7 +15,10 @@ type UseSectionStyleProps = {
 };
 
 export function useSectionStyle({ section, editable, previewMode }: UseSectionStyleProps) {
-  return tx("grid group/section overflow-visible", [
+  if (section.label === "Header") {
+    console.log(section);
+  }
+  return tx("grid group/section overflow-visible relative", [
     typeof section.position.desktop.h === "number" &&
       `h-[${LAYOUT_ROW_HEIGHT * section.position.desktop.h}px]`,
 
@@ -24,7 +27,7 @@ export function useSectionStyle({ section, editable, previewMode }: UseSectionSt
     section.position.desktop.h === "full" && !editable && "h-dvh", // when in real mode
 
     // entire width of the grid
-    " w-full px-0 py-0",
+    " w-full py-0",
     // mobile grid
     `@mobile:(
       grid-cols-${LAYOUT_COLS.mobile}
@@ -42,6 +45,10 @@ export function useSectionStyle({ section, editable, previewMode }: UseSectionSt
     // Section editor styles
     getSectionEditorStyles({ editable, previewMode, section }),
 
+    css({
+      paddingInline: `${section.props.$paddingHorizontal ?? 0}px`,
+    }),
+
     // Manage the section order using css "order" (flex) property
     css({
       order: section.order,
@@ -57,11 +64,6 @@ function getSectionEditorStyles({ section, editable, previewMode }: UseSectionSt
     "select-none hover:z-[9999] transition-colors duration-500 relative",
     "outline-dotted outline-4 outline-transparent -outline-offset-2 hover:(outline-upstart-500/60 shadow-upstart-500/20)",
     "self-stretch",
-
-    css({
-      // margin
-      paddingInline: `${section.props.$paddingHorizontal ?? 0}px`,
-    }),
 
     // this is the grid overlay shown when dragging
     editable &&

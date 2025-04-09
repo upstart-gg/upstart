@@ -6,7 +6,7 @@ import EditableBrickWrapper from "~/editor/components/EditableBrick";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useDatasource } from "../hooks/use-datasource";
 import { defineBrick, getPositionDefaults, type Brick } from "@upstart.gg/sdk/shared/bricks";
-import BaseBrick from "../components/BaseBrick";
+import BrickWrapper from "../components/BrickWrapper";
 
 const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const props = brick.props;
@@ -42,7 +42,7 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edi
           return editable ? (
             <EditableBrickWrapper key={`${brick.id}`} brick={brick} isContainerChild index={index} />
           ) : (
-            <BaseBrick key={brick.id} brick={brick} />
+            <BrickWrapper key={brick.id} brick={brick} />
           );
         })
       ) : ds.datasourceId ? (

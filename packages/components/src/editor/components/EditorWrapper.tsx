@@ -99,11 +99,7 @@ export function EditorWrapper({
       <UploaderProvider onImageUpload={onImageUpload}>
         <EditorStoreContext.Provider value={editorStore} key="EditorStoreContext">
           <DraftStoreContext.Provider value={draftStore} key="DraftStoreContext">
-            <Theme
-              accentColor="violet"
-              className={tx("w-[100dvw] overflow-hidden")}
-              appearance={isDarkMode ? "dark" : "light"}
-            >
+            <Theme accentColor="violet" className={tx("w-full")} appearance={isDarkMode ? "dark" : "light"}>
               {children}
             </Theme>
           </DraftStoreContext.Provider>

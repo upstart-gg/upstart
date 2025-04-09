@@ -3,9 +3,6 @@ import { generateColorsVars } from "@upstart.gg/sdk/shared/themes/color-system";
 
 export function getThemeCss(theme: Theme) {
   const shades = generateColorsVars(theme);
-
-  console.log("shades", shades);
-
   const injected = `
     @layer upstart-theme {
       :root {

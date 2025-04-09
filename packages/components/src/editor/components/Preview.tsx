@@ -23,7 +23,8 @@ export function DeviceFrame({ children, ...props }: ComponentProps<"div">) {
     <div
       ref={ref}
       className={tx(
-        "device-frame opacity-20 transition-all duration-200 mx-auto @container overscroll-contain",
+        // The container class is important because it simulate the device frame viewport
+        "device-frame @container opacity-20 transition-all duration-200 mx-auto  overscroll-contain",
         styles[previewMode],
         {
           [styles.handled]: previewMode === "mobile",
