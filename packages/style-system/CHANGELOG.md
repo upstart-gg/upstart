@@ -1,5 +1,11 @@
 # @upstart.gg/style-system
 
+## 0.0.90
+
+### Patch Changes
+
+- [#298](https://github.com/upstart-gg/upstart/pull/298) [`47e8a07`](https://github.com/upstart-gg/upstart/commit/47e8a0766d5b333a71c3ffc27b7e06129a936854) Thanks [@mattallty](https://github.com/mattallty)! - Fix rendering
+
 ## 0.0.89
 
 ## 0.0.88
