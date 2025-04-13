@@ -1,5 +1,11 @@
 # @upstart.gg/style-system
 
+## 0.0.92
+
+### Patch Changes
+
+- [#302](https://github.com/upstart-gg/upstart/pull/302) [`7b3bf58`](https://github.com/upstart-gg/upstart/commit/7b3bf585b9d6dc3fd957d1e362c73b5f1e25b439) Thanks [@mattallty](https://github.com/mattallty)! - Update TS config
+
 ## 0.0.91
 
 ## 0.0.90
