@@ -22,6 +22,7 @@ import { DatasourceProvider } from "~/shared/hooks/use-datasource";
 export type EditorWrapperProps = {
   mode?: "local" | "remote";
   pageConfig: GenericPageConfig;
+  pageVersion?: string;
   siteConfig: Site;
   /**
    * Callback when an image is uploaded through the editor.
@@ -49,6 +50,7 @@ export type EditorWrapperProps = {
  */
 export function EditorWrapper({
   pageConfig,
+  pageVersion,
   siteConfig,
   mode,
   onImageUpload,
@@ -76,6 +78,7 @@ export function EditorWrapper({
       pagesMap: siteConfig.pagesMap,
       siteLabel: siteConfig.label,
       id: pageConfig.id,
+      version: pageVersion,
       path: pageConfig.path,
       label: pageConfig.label,
       sections: pageConfig.sections,

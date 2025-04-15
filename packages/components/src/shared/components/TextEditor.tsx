@@ -57,6 +57,7 @@ import Highlight from "@tiptap/extension-highlight";
 import { menuBarBtnActiveCls, menuBarBtnCls, menuBarBtnCommonCls } from "../styles/menubar-styles";
 import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
+import type { TSchema } from "@sinclair/typebox";
 
 function DatasourceFieldNode(props: NodeViewProps) {
   return (
@@ -166,8 +167,7 @@ const TextEditor = <T extends ElementType = "div">({
 
   // const [editable, setEditable] = useState(/*enabled*/ false);
   const [focused, setFocused] = useState(false);
-  // @ts-ignore
-  const fields = getJSONSchemaFieldsList({ schemas: datasources });
+  const fields = getJSONSchemaFieldsList(datasources);
 
   const extensions = [
     StarterKit.configure({
@@ -401,7 +401,6 @@ function DatasourceFieldPickerModal(props: DatasourceFieldPickerModalProps) {
   const datasources = useDatasourcesSchemas();
   const selectedSchema = useMemo(() => {
     if (!datasources || !currentDatasourceId) return null;
-    // @ts-ignore
     return datasources[currentDatasourceId].schema;
   }, [currentDatasourceId, datasources]);
 
@@ -452,7 +451,7 @@ function DatasourceFieldPickerModal(props: DatasourceFieldPickerModalProps) {
             </div>
             <div className="flex items-center justify-between flex-1">
               <JSONSchemaView
-                schema={selectedSchema}
+                schema={selectedSchema as TSchema}
                 rootName={currentDatasourceId}
                 onFieldSelect={props.onFieldSelect}
               />

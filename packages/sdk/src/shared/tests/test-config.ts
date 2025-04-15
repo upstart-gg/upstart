@@ -18,7 +18,7 @@ const datasources = defineDataSources({
   },
   tasks: {
     name: "Tasks",
-    provider: "json",
+    provider: "json-array",
     options: {
       url: "https://jsonplaceholder.typicode.com/todos?userId=1",
     },
