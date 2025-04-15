@@ -49,7 +49,6 @@ function getSchemaEntry({
 }
 
 export function getJSONSchemaFieldsList(schemasMap?: Site["datasources"]) {
-  console.log("getJSONSchemaFieldsList", { schemasMap });
   if (!schemasMap) return [];
   return Object.entries(schemasMap)
     .filter(([, ds]) => !!ds.schema)

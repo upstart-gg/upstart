@@ -331,6 +331,7 @@ export interface DraftState extends DraftStateProps {
 export const createDraftStore = (
   initProps: Partial<DraftStateProps> & {
     id: DraftStateProps["id"];
+    version: DraftStateProps["version"];
     path: DraftStateProps["path"];
     label: DraftStateProps["label"];
     attr: DraftStateProps["attr"];
@@ -899,7 +900,8 @@ export const createDraftStore = (
             partialize: (state) =>
               Object.fromEntries(
                 Object.entries(state).filter(
-                  ([key]) => !["previewTheme", "attributes", "lastSaved"].includes(key),
+                  ([key]) =>
+                    !["previewTheme", "attributes", "lastSaved", "pagesMap", "datasources"].includes(key),
                 ),
               ),
           },
@@ -911,7 +913,8 @@ export const createDraftStore = (
           partialize: (state) =>
             Object.fromEntries(
               Object.entries(state).filter(
-                ([key]) => !["previewTheme", "attributes", "lastSaved"].includes(key),
+                ([key]) =>
+                  !["previewTheme", "attributes", "lastSaved", "pagesMap", "datasources"].includes(key),
               ),
             ) as DraftState,
           // handleSet: (handleSet) =>
