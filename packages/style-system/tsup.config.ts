@@ -9,7 +9,7 @@ export default defineConfig((options) => {
     metafile: !!(process.env.CI || process.env.ANALYSE_BUNDLE),
     clean: !options.watch,
     minify: !options.watch,
-    sourcemap: options.watch ? "inline" : false,
+    sourcemap: !options.watch,
     splitting: false,
     external: ["react", "react-dom"],
   };

@@ -61,7 +61,7 @@ export default defineConfig((options) => {
       clean: false,
       minify: !options.watch,
       metafile: !!process.env.ANALYSE_BUNDLE,
-      sourcemap: options.watch ? "inline" : false,
+      sourcemap: !options.watch,
       // Important: force splitting to false to avoid issues with dynamic imports and __dirname resolutions
       splitting: false,
       external,

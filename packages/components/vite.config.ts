@@ -42,7 +42,7 @@ export default defineConfig({
   },
   build: {
     copyPublicDir: false,
-    sourcemap: !process.env.NODE_ENV || process.env.NODE_ENV === "development" ? true : "hidden",
+    sourcemap: true,
     lib: {
       entry: {
         Editor: "src/editor/components/Editor.tsx",

@@ -1,18 +1,44 @@
-export { facebookPostSchema } from "./external/facebook/posts/schema";
-export { instagramFeedSchema } from "./external/instagram/feed/schema";
-export { mastodonStatusArraySchema, mastodonStatusSchema } from "./external/mastodon/status/schema";
-export { mastodonAccountSchema } from "./external/mastodon/account/schema";
-export { rssSchema } from "./external/rss/schema";
-export { threadsMediaSchema } from "./external/threads/media/schema";
-export { tiktokVideoListSchema } from "./external/tiktok/video/schema";
-export { youtubeListSchema } from "./external/youtube/list/schema";
+import type { TArray, TObject } from "@sinclair/typebox";
+import type { DatasourceProvider } from "./types";
+
+import { facebookPostSchema } from "./external/facebook/posts/schema";
+import { instagramFeedSchema } from "./external/instagram/feed/schema";
+import { mastodonStatusArraySchema, mastodonStatusSchema } from "./external/mastodon/status/schema";
+import { mastodonAccountSchema } from "./external/mastodon/account/schema";
+import { rssSchema } from "./external/rss/schema";
+import { threadsMediaSchema } from "./external/threads/media/schema";
+import { tiktokVideoListSchema } from "./external/tiktok/video/schema";
+import { youtubeListSchema } from "./external/youtube/list/schema";
+import { jsonArraySchema, jsonObjectSchema } from "./external/json/schema";
 
 // internal
-export { blogSchema } from "./internal/blog/schema";
-export { changelogSchema } from "./internal/changelog/schema";
-export { contactInfoSchema } from "./internal/contact-info/schema";
-export { cvSchema } from "./internal/cv/schema";
-export { faqSchema } from "./internal/faq/schema";
-export { linksSchema } from "./internal/links/schema";
-export { recipesSchema } from "./internal/recipes/schema";
-export { restaurantSchema } from "./internal/restaurant/schema";
+import { blogSchema } from "./internal/blog/schema";
+import { changelogSchema } from "./internal/changelog/schema";
+import { contactInfoSchema } from "./internal/contact-info/schema";
+import { cvSchema } from "./internal/cv/schema";
+import { faqSchema } from "./internal/faq/schema";
+import { linksSchema } from "./internal/links/schema";
+import { recipesSchema } from "./internal/recipes/schema";
+import { restaurantSchema } from "./internal/restaurant/schema";
+
+export const schemasMap = {
+  "facebook-posts": facebookPostSchema,
+  "instagram-feed": instagramFeedSchema,
+  "mastodon-account": mastodonAccountSchema,
+  "mastodon-status": mastodonStatusSchema,
+  "mastodon-status-list": mastodonStatusArraySchema,
+  rss: rssSchema,
+  "threads-media": threadsMediaSchema,
+  "tiktok-video": tiktokVideoListSchema,
+  "youtube-list": youtubeListSchema,
+  "internal-blog": blogSchema,
+  "internal-changelog": changelogSchema,
+  "internal-contact-info": contactInfoSchema,
+  "internal-faq": faqSchema,
+  "internal-links": linksSchema,
+  "internal-recipes": recipesSchema,
+  "internal-restaurant": restaurantSchema,
+  "internal-cv": cvSchema,
+  "json-array": jsonArraySchema,
+  "json-object": jsonObjectSchema,
+} as const satisfies Record<DatasourceProvider, TObject | TArray>;
