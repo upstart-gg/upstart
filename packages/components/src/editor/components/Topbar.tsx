@@ -46,7 +46,7 @@ export default function TopBar({ showIntro }: TopBarProps) {
 
   const publish = useCallback(
     (wholeSite = false) => {
-      post(`/sites/${draft.siteId}/pages/${draft.id}/versions/${pageVersion}/publish`, {});
+      post(`/api/sites/${draft.siteId}/pages/${draft.id}/versions/${pageVersion}/publish`, {});
     },
     [draft.siteId, draft.id, pageVersion],
   );
@@ -260,7 +260,7 @@ export default function TopBar({ showIntro }: TopBarProps) {
           <div className={tx(btnClass, baseCls, "border-x border-l-upstart-400 border-r-upstart-700 px-8")}>
             {lastSaved ? (
               <div className={tx("text-sm")}>
-                Last saved {formatDistance(lastSaved, new Date(), { addSuffix: true })}
+                Saved {formatDistance(lastSaved, new Date(), { addSuffix: true })}
               </div>
             ) : (
               <div className={tx("text-sm")}>Not saved yet</div>
@@ -273,8 +273,8 @@ export default function TopBar({ showIntro }: TopBarProps) {
             id="publish-menu-btn"
             items={[
               { label: "Publish this page", onClick: () => publish() },
-              { label: "Publish the whole site", onClick: () => publish(true) },
-              { label: "Schedule publish", shortcut: "⌘⇧D" },
+              { label: "Publish all pages", onClick: () => publish(true) },
+              { label: "Schedule publish" },
             ]}
           >
             <button type="button" className={tx(btnClass, rocketBtn, btnWithArrow, "px-4")}>

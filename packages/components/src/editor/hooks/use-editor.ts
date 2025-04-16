@@ -16,6 +16,14 @@ export { type Immer } from "immer";
 import type { ColorAdjustment } from "@upstart.gg/sdk/shared/themes/color-system";
 import { adjustMobileLayout } from "~/shared/utils/layout-utils";
 
+export type PagePublishPayload = { siteId: string; pageId: string; pageVersionId: string };
+export type PageSavePayload = {
+  siteId: string;
+  pageId: string;
+  pageVersionId: string;
+  data: GenericPageConfig;
+};
+
 export interface EditorStateProps {
   /**
    * When local, the editor does not fetch data from the server or save data to the server
@@ -52,6 +60,13 @@ export interface EditorStateProps {
   colorAdjustment: ColorAdjustment;
   collidingBrick?: { brick: Brick; side: "top" | "bottom" | "left" | "right" };
   onShowLogin: () => void;
+  onPublish: (pages: PagePublishPayload[]) => void;
+  /**
+   * Returns the updated version id
+   */
+  onSave?: (page: PageSavePayload) => {
+    pageVersionId: string;
+  };
 }
 
 export interface EditorState extends EditorStateProps {
@@ -75,7 +90,6 @@ export interface EditorState extends EditorStateProps {
   showModal: (modal: EditorStateProps["modal"]) => void;
   setCollidingBrick: (info: { brick: Brick; side: "top" | "bottom" | "left" | "right" } | null) => void;
   hideModal: () => void;
-  onShowLogin: () => void;
 }
 
 export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
@@ -88,6 +102,9 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
     logoLink: "/dashboard",
     onShowLogin: () => {
       console.warn("onShowLogin is not implemented");
+    },
+    onPublish: () => {
+      console.warn("onPublish is not implemented");
     },
     debugMode: false,
   };
