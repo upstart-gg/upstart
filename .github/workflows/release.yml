@@ -25,6 +25,7 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
         with:
+          submodules: true
           fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
