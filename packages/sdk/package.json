@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
-    "@headlessui/react": "2.1.2",
+    "@headlessui/react": "2.2.1",
     "@inquirer/prompts": "5.3.8",
     "@radix-ui/react-context-menu": "2.2.2",
     "@radix-ui/react-toggle-group": "1.1.0",

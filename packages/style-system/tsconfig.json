@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
-    "types": ["node"],
+    // "types": ["node"],
     "lib": ["dom", "dom.iterable", "esnext"],
     "experimentalDecorators": true,
     "useDefineForClassFields": false,
