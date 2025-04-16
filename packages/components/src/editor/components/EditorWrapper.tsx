@@ -44,7 +44,8 @@ export type EditorWrapperProps = {
   onTourComplete?: (tourId: string) => void;
   onShowLogin: () => void;
   onPublish: EditorStateProps["onPublish"];
-  onSave: EditorStateProps["onSavePage"];
+  onSavePage: EditorStateProps["onSavePage"];
+  onSaveSite: EditorStateProps["onSaveSite"];
 };
 
 /**
@@ -61,7 +62,8 @@ export function EditorWrapper({
   seenTours = [],
   disableTours,
   onShowLogin,
-  onSave,
+  onSaveSite,
+  onSavePage,
   onPublish,
   onReady = () => {},
 }: PropsWithChildren<EditorWrapperProps>) {
@@ -72,7 +74,8 @@ export function EditorWrapper({
       seenTours,
       onShowLogin,
       onPublish,
-      onSavePage: onSave,
+      onSaveSite,
+      onSavePage,
       disableTours,
       debugMode,
       panel: (new URL(self.location.href).searchParams.get("panel") as EditorState["panel"]) ?? undefined,

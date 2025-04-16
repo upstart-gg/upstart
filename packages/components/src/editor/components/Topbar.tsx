@@ -269,6 +269,7 @@ export default function TopBar({ showIntro }: TopBarProps) {
             {lastSaved ? (
               <div className={tx("text-sm")}>
                 Saved {formatDistance(lastSaved, new Date(), { addSuffix: true })}
+                Saved {formatDistance(lastSaved, new Date(), { addSuffix: true })}
               </div>
             ) : (
               <div className={tx("text-sm")}>Not saved yet</div>
@@ -281,6 +282,8 @@ export default function TopBar({ showIntro }: TopBarProps) {
             id="publish-menu-btn"
             items={[
               { label: "Publish this page", onClick: () => publish() },
+              { label: "Publish all pages", onClick: () => publish(true) },
+              { label: "Schedule publish" },
               { label: "Publish all pages", onClick: () => publish(true) },
               { label: "Schedule publish" },
             ]}
