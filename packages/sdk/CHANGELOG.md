@@ -1,5 +1,12 @@
 # @upstart.gg/sdk
 
+## 0.0.94
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @upstart.gg/style-system@0.0.94
+
 ## 0.0.93
 
 ### Patch Changes
