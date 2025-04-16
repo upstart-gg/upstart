@@ -16,6 +16,22 @@ export { type Immer } from "immer";
 import type { ColorAdjustment } from "@upstart.gg/sdk/shared/themes/color-system";
 import { adjustMobileLayout } from "~/shared/utils/layout-utils";
 
+export type PagePublishPayload =
+  | { siteId: string; mode: "publish-page"; pageId: string; pageVersionId: string }
+  | { siteId: string; mode: "publish-site" };
+
+export type PageSavePayload = {
+  siteId: string;
+  pageId: string;
+  pageVersionId: string;
+  data: Partial<GenericPageConfig>;
+};
+
+export type SiteSavePayload = {
+  siteId: string;
+  data: Partial<Site>;
+};
+
 export interface EditorStateProps {
   /**
    * When local, the editor does not fetch data from the server or save data to the server
@@ -52,6 +68,14 @@ export interface EditorStateProps {
   colorAdjustment: ColorAdjustment;
   collidingBrick?: { brick: Brick; side: "top" | "bottom" | "left" | "right" };
   onShowLogin: () => void;
+  onPublish: (data: PagePublishPayload) => void;
+  /**
+   * Returns the updated version id
+   */
+  onSavePage?: (page: PageSavePayload) => Promise<{
+    pageVersionId: string;
+  }>;
+  onSaveSite?: (site: SiteSavePayload) => Promise<void>;
 }
 
 export interface EditorState extends EditorStateProps {
@@ -75,7 +99,6 @@ export interface EditorState extends EditorStateProps {
   showModal: (modal: EditorStateProps["modal"]) => void;
   setCollidingBrick: (info: { brick: Brick; side: "top" | "bottom" | "left" | "right" } | null) => void;
   hideModal: () => void;
-  onShowLogin: () => void;
 }
 
 export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
@@ -88,6 +111,9 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
     logoLink: "/dashboard",
     onShowLogin: () => {
       console.warn("onShowLogin is not implemented");
+    },
+    onPublish: () => {
+      console.warn("onPublish is not implemented");
     },
     debugMode: false,
   };
@@ -1111,8 +1137,11 @@ export const useEditorHelpers = () => {
     showModal: state.showModal,
     hideModal: state.hideModal,
     setCollidingBrick: state.setCollidingBrick,
-    onShowLogin: state.onShowLogin,
     toggleEditorEnabled: state.toggleEditorEnabled,
+    onShowLogin: state.onShowLogin,
+    onPublish: state.onPublish,
+    onSavePage: state.onSavePage,
+    onSaveSite: state.onSaveSite,
   }));
 };
 

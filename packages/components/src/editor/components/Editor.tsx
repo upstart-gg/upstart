@@ -14,7 +14,7 @@ import { DeviceFrame } from "./Preview";
 import EditablePage from "./EditablePage";
 import { tx, injectGlobal, css } from "@upstart.gg/style-system/twind";
 import { Button, Spinner, toast } from "@upstart.gg/style-system/system";
-import { usePageAutoSave, useOnDraftChange } from "~/editor/hooks/use-page-autosave";
+import { usePageAutoSave } from "~/editor/hooks/use-page-autosave";
 import DataPanel from "./PanelData";
 import PanelSettings from "./PanelSettings";
 import PanelTheme from "./PanelTheme";
@@ -27,10 +27,9 @@ import { useEditorHotKeys } from "../hooks/use-editor-hot-keys";
 
 type EditorProps = ComponentProps<"div"> & {
   mode?: "local" | "live";
-  onDraftChange?: (state: DraftState, pageInfo: ReturnType<typeof usePageInfo>) => void;
 };
 
-export default function Editor({ mode = "local", onDraftChange, ...props }: EditorProps) {
+export default function Editor({ mode = "local", ...props }: EditorProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const draft = useDraft();
   const previewMode = usePreviewMode();
@@ -56,7 +55,6 @@ export default function Editor({ mode = "local", onDraftChange, ...props }: Edit
   }, [showIntro, setShowIntroDebounced]);
 
   usePageAutoSave();
-  useOnDraftChange(onDraftChange);
   useEditorHotKeys();
 
   useEffect(() => {

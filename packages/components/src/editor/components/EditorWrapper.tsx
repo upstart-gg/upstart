@@ -4,6 +4,7 @@ import {
   createDraftStore,
   createEditorStore,
   type EditorState,
+  type EditorStateProps,
 } from "../hooks/use-editor";
 import { useEffect, useRef, type PropsWithChildren } from "react";
 import type { GenericPageConfig, Site } from "@upstart.gg/sdk/shared/page";
@@ -42,6 +43,9 @@ export type EditorWrapperProps = {
    */
   onTourComplete?: (tourId: string) => void;
   onShowLogin: () => void;
+  onPublish: EditorStateProps["onPublish"];
+  onSavePage: EditorStateProps["onSavePage"];
+  onSaveSite: EditorStateProps["onSaveSite"];
 };
 
 /**
@@ -58,6 +62,9 @@ export function EditorWrapper({
   seenTours = [],
   disableTours,
   onShowLogin,
+  onSaveSite,
+  onSavePage,
+  onPublish,
   onReady = () => {},
 }: PropsWithChildren<EditorWrapperProps>) {
   const debugMode = new URLSearchParams(window.location.search).has("debug");
@@ -66,6 +73,9 @@ export function EditorWrapper({
       mode,
       seenTours,
       onShowLogin,
+      onPublish,
+      onSaveSite,
+      onSavePage,
       disableTours,
       debugMode,
       panel: (new URL(self.location.href).searchParams.get("panel") as EditorState["panel"]) ?? undefined,
