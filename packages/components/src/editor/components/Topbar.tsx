@@ -20,8 +20,7 @@ import { tx, css } from "@upstart.gg/style-system/twind";
 import { RxRocket } from "react-icons/rx";
 import logo from "../../../../../creatives/upstart-dark.svg";
 import { RiArrowDownSLine } from "react-icons/ri";
-import { DropdownMenu, Popover, TextField } from "@upstart.gg/style-system/system";
-import { post } from "~/editor/utils/api/base-api";
+import { DropdownMenu } from "@upstart.gg/style-system/system";
 import { IoIosSave } from "react-icons/io";
 import { LuExternalLink } from "react-icons/lu";
 import { formatDistance } from "date-fns";
@@ -46,9 +45,18 @@ export default function TopBar({ showIntro }: TopBarProps) {
 
   const publish = useCallback(
     (wholeSite = false) => {
-      post(`/sites/${draft.siteId}/pages/${draft.id}/versions/${pageVersion}/publish`, {});
+      if (wholeSite) {
+        editorHelpers.onPublish({ mode: "publish-site", siteId: draft.siteId });
+      } else {
+        editorHelpers.onPublish({
+          mode: "publish-page",
+          pageId: draft.id,
+          siteId: draft.siteId,
+          pageVersionId: pageVersion ?? "latest",
+        });
+      }
     },
-    [draft.siteId, draft.id, pageVersion],
+    [draft.siteId, draft.id, pageVersion, editorHelpers.onPublish],
   );
 
   const duplicatePage = () => {
@@ -82,7 +90,7 @@ export default function TopBar({ showIntro }: TopBarProps) {
   );
 
   const commonCls = `${baseCls}
-  border-x border-l-upstart-400 border-r-upstart-700
+    border-x border-l-upstart-400 border-r-upstart-700
     disabled:hover:from-transparent disabled:hover:to-[rgba(255,255,255,0.15)]
     hover:from-upstart-700 hover:to-white/10
     active:from-upstart-800 active:to-transparent
@@ -260,7 +268,7 @@ export default function TopBar({ showIntro }: TopBarProps) {
           <div className={tx(btnClass, baseCls, "border-x border-l-upstart-400 border-r-upstart-700 px-8")}>
             {lastSaved ? (
               <div className={tx("text-sm")}>
-                Last saved {formatDistance(lastSaved, new Date(), { addSuffix: true })}
+                Saved {formatDistance(lastSaved, new Date(), { addSuffix: true })}
               </div>
             ) : (
               <div className={tx("text-sm")}>Not saved yet</div>
@@ -273,8 +281,8 @@ export default function TopBar({ showIntro }: TopBarProps) {
             id="publish-menu-btn"
             items={[
               { label: "Publish this page", onClick: () => publish() },
-              { label: "Publish the whole site", onClick: () => publish(true) },
-              { label: "Schedule publish", shortcut: "⌘⇧D" },
+              { label: "Publish all pages", onClick: () => publish(true) },
+              { label: "Schedule publish" },
             ]}
           >
             <button type="button" className={tx(btnClass, rocketBtn, btnWithArrow, "px-4")}>
