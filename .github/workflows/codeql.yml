@@ -17,6 +17,7 @@ on:
     paths:
       - "!.changeset/**"
       - "!.vscode/**"
+      - "!.github/workflows/**"
       - '**/*.html'
       - '**/*.js'
       - '**/*.ts'
@@ -34,6 +35,7 @@ on:
     paths:
       - "!.changeset/**"
       - "!.vscode/**"
+      - "!.github/workflows/**"
       - '**/*.html'
       - '**/*.js'
       - '**/*.ts'
@@ -56,7 +58,7 @@ jobs:
     if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
     name: Analyze (${{ matrix.language }})
     runs-on: 'ubuntu-latest'
-    timeout-minutes: 5
+    timeout-minutes: 10
     permissions:
       # required for all workflows
       security-events: write
