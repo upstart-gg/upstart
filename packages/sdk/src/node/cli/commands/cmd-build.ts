@@ -2,7 +2,7 @@ import { build } from "vite";
 import path, { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { sync as rmSync } from "rimraf";
-import type { CommandArgOpts, BuildOptions, CommonOptions } from "../../types";
+import type { CommandArgOpts, BuildOptions, CommonOptions } from "../types";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const configFile = resolve(__dirname, "../builder/vite-config.js");

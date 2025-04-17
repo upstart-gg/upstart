@@ -3,7 +3,7 @@ import { program, type Command, type OptionValues } from "commander";
 import type { BuildOptions, CommonOptions } from "./types";
 import { publish } from "./commands/publish/cmd-publish";
 import { login } from "./commands/login/cmd-login";
-import { buildTemplate } from "./commands/build/cmd-build";
+import { buildTemplate } from "./commands/cmd-build";
 import { createLogger, type Logger } from "../shared/logger";
 import { logout } from "./commands/logout/cmd-logout";
 
