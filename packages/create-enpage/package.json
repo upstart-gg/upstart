@@ -8,7 +8,6 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsup",
     "lint": "biome check --write . && tsc --noEmit",
     "ci:lint": "tsc --noEmit",
     "pack:test": "pnpm build && node scripts/pack-test.mjs"
