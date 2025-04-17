@@ -5,7 +5,7 @@ export default {
     "postcss-preset-env": {},
     ...(process.env.NODE_ENV === "production"
       ? {
-          // cssnano: {},
+          // cssnano: {}, // remove this line to disable cssnano
         }
       : {}),
   },
