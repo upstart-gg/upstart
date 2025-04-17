@@ -32,9 +32,6 @@
       "import": "./dist/shared/*.js"
     }
   },
-  "bin": {
-    "enpage": "dist/node/cli/program.js"
-  },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
     "@headlessui/react": "2.2.1",
@@ -108,7 +105,6 @@
     "lint": "biome check --write . && tsc --noEmit",
     "ci:lint": "tsc --noEmit",
     "test": "vitest",
-    "prepare": "node ./scripts/prepare.cjs",
     "gen-ia-docs": "tsx scripts/generate-ia-docs.ts"
   },
   "author": "Matthias Etienne",

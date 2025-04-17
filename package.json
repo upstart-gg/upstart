@@ -7,6 +7,7 @@
     "test": "vitest",
     "dev": "pnpm build && pnpm --reporter-hide-prefix --parallel --filter=!@upstart.gg/template-example -r dev ",
     "build": "nx run-many --no-cloud -t build --maxParallel=3 --exclude=@upstart.gg/template-example --output-style stream",
+    "build:docker": "pnpm --dir packages/style-system run build && pnpm --dir packages/sdk run build && pnpm --dir packages/components run build",
     "lint": "pnpm --parallel --recursive lint",
     "ci:lint": "biome ci --changed --no-errors-on-unmatched --since=head --reporter=github --colors=off packages && pnpm --parallel --recursive ci:lint",
     "test-create-enpage": "rimraf testing/my-template && pnpm create enpage@latest testing/my-template",

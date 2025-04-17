@@ -16,7 +16,6 @@
   "engines": {
     "node": ">=18.14.1"
   },
-  "bin": "./dist/cli.js",
   "keywords": [],
   "author": "Matthias Etienne",
   "license": "AGPL-3.0-only",
