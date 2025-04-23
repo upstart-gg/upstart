@@ -1,5 +1,14 @@
 # @upstart.gg/sdk
 
+## 0.0.96
+
+### Patch Changes
+
+- [#310](https://github.com/upstart-gg/upstart/pull/310) [`a8097d2`](https://github.com/upstart-gg/upstart/commit/a8097d2e9b5842363126d8914821e37665cc6456) Thanks [@mattallty](https://github.com/mattallty)! - Update docs
+
+- Updated dependencies []:
+  - @upstart.gg/style-system@0.0.96
+
 ## 0.0.95
 
 ### Patch Changes
