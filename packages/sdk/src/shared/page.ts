@@ -11,26 +11,38 @@ import { Type, type Static, type TObject, type TProperties } from "@sinclair/typ
 import { datasourcesMap, type DatasourcesMap, type DatasourcesResolved } from "./datasources/types";
 import { datarecordsMap } from "./datarecords/types";
 import type { TemplateConfig } from "./template";
-
-const pagesMapSchema = Type.Array(
-  Type.Object({
-    id: Type.String(),
-    label: Type.String(),
-    path: Type.String(),
-    tags: Type.Array(Type.String(), { default: [] }),
-    status: Type.Union([Type.Literal("draft"), Type.Literal("published")]),
-  }),
-);
-
-export type PagesMap = Static<typeof pagesMapSchema>;
+import { StringEnum } from "./utils/schema";
 
 const pageInfoSchema = Type.Object({
-  id: Type.String(),
+  id: Type.String({ title: "Page UUID" }),
   label: Type.String(),
   path: Type.String(),
 });
 
 export type PageInfo = Static<typeof pageInfoSchema>;
+
+export const pagesMapSchema = Type.Array(
+  Type.Composite([
+    pageInfoSchema,
+    Type.Object({
+      tags: Type.Array(Type.String(), {
+        default: [],
+        description:
+          "Tags for the page. Use the tag 'main-nav' for pages that should appear in the main navbar",
+      }),
+      status: Type.Optional(
+        StringEnum(["draft", "published"], {
+          title: "Page status",
+          description:
+            "The status of the page. Can be draft or published. [AI instructions: Dont generate this.]",
+        }),
+      ),
+    }),
+  ]),
+);
+
+export type PagesMap = Static<typeof pagesMapSchema>;
+
 /**
  * The Page config represents the page configuration (datasources, attributes, etc)
  */

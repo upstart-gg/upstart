@@ -21,10 +21,12 @@ export function datasourceRef() {
           "ui:group:title": "Dynamic / Static Mode",
         }),
       ),
-      useExistingDatasource: Type.Boolean({
-        title: "Use Existing data source",
-        default: false,
-      }),
+      useExistingDatasource: Type.Optional(
+        Type.Boolean({
+          title: "Use Existing data source",
+          default: false,
+        }),
+      ),
       datasource: Type.Optional(
         Type.Object(
           {

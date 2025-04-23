@@ -14,10 +14,10 @@ type UsePageStyleProps = {
 
 export function useBodyStyle({ attributes }: { attributes: Attributes }) {
   return tx(
-    isStandardColor(attributes.$bodyBackground.color) &&
-      css({ backgroundColor: attributes.$bodyBackground.color as string }),
-    !isStandardColor(attributes.$bodyBackground.color) && (attributes.$bodyBackground.color as string),
-    typeof attributes.$bodyBackground.image === "string" &&
+    isStandardColor(attributes.$bodyBackground?.color) &&
+      css({ backgroundColor: attributes.$bodyBackground?.color as string }),
+    !isStandardColor(attributes.$bodyBackground?.color) && (attributes.$bodyBackground?.color as string),
+    typeof attributes.$bodyBackground?.image === "string" &&
       css({
         backgroundImage: `url(${attributes.$bodyBackground.image})`,
         backgroundRepeat: "no-repeat",
@@ -31,12 +31,12 @@ export function usePageStyle({ attributes, editable, typography, showIntro }: Us
   return tx(
     "flex flex-col group/page mx-auto relative max-w-full w-full p-0 antialiased",
     editable && "overflow-hidden",
-    isStandardColor(attributes.$pageBackground.color) &&
-      css({ backgroundColor: attributes.$pageBackground.color as string }),
-    !isStandardColor(attributes.$pageBackground.color) && (attributes.$pageBackground.color as string),
+    isStandardColor(attributes.$pageBackground?.color) &&
+      css({ backgroundColor: attributes.$pageBackground?.color as string }),
+    !isStandardColor(attributes.$pageBackground?.color) && (attributes.$pageBackground?.color as string),
     isStandardColor(attributes.$textColor) && css({ color: attributes.$textColor as string }),
     !isStandardColor(attributes.$textColor) && (attributes.$textColor as string),
-    typeof attributes.$pageBackground.image === "string" &&
+    typeof attributes.$pageBackground?.image === "string" &&
       css({
         backgroundImage: `url(${attributes.$pageBackground.image})`,
         //todo: make it dynamic, by using attributes
