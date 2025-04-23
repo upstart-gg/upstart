@@ -1,32 +1,43 @@
 import { Type, type TObject, type TSchema } from "@sinclair/typebox";
-import { defaultAttributesSchema, type Attributes } from "../src/shared/attributes";
+import {
+  defaultAttributesSchema,
+  type Attributes,
+  siteAttributesSchemaForLLM,
+  pageAttributesSchemaForLLM,
+} from "../src/shared/attributes";
 import { manifests } from "../src/shared/bricks/manifests/all-manifests";
 import { themeSchema } from "../src/shared/theme";
-import { templatePageSchema } from "../src/shared/page";
+import { templatePageSchema, pagesMapSchema } from "../src/shared/page";
 import { commonStyleForDocsOnly } from "../src/shared/bricks/props/_docs-common-styles";
 import testConfig from "../src/shared/tests/test-config";
 import fs from "node:fs";
 import path from "node:path";
 import { definedBrickSchema, definedSectionSchema } from "../src/shared/bricks";
+import { parseArgs } from "node:util";
 
 const __dirname = import.meta.dirname;
 
 let template = fs.readFileSync(path.join(__dirname, "ia-docs", "template.md"), "utf-8");
+const {
+  values: { outfile },
+} = parseArgs({
+  options: {
+    outfile: {
+      type: "string",
+      short: "o",
+      default: path.join(process.cwd(), "generated-docs.md"),
+      description: "Output file for the generated documentation",
+    },
+  },
+});
+
+if (!outfile) {
+  console.error("Please provide an output file with --outfile or -o");
+  process.exit(1);
+}
 
 // Only keep name and tags for IA generated themes
 const refinedThemeSchema = Type.Omit(themeSchema, ["description"]);
-const refinedAttributesSchema = Type.Omit(defaultAttributesSchema, [
-  "$siteHeadTags",
-  "siteBodyTags",
-  "$pageLastUpdated",
-  "$pageKeywords",
-  "$pageDescription",
-  "$siteOgImage",
-  "$robotsIndexing",
-  "$pageOgImage",
-  "$pageLanguage",
-  "$pageTitle",
-]);
 
 /**
  * Generate a markdown list for documentation from a TypeBox schema for props.
@@ -108,16 +119,19 @@ for (const [name, manifest] of Object.entries(manifests)) {
 
 ${manifest.description}
 
-#### Props
-${objectSchemaToString(manifest.props)}
+#### Props Schema
+${JSON.stringify(manifest.props)}
 
 `;
 }
 
 template = template.replace("{{THEME_JSON_SCHEMA}}", objectSchemaToString(refinedThemeSchema));
-template = template.replace("{{ATTRIBUTES_JSON_SCHEMA}}", objectSchemaToString(refinedAttributesSchema));
-template = template.replace("{{PAGE_JSON_SCHEMA}}", objectSchemaToString(templatePageSchema));
-template = template.replace("{{SECTION_JSON_SCHEMA}}", objectSchemaToString(definedSectionSchema));
+template = template.replace(
+  "{{SITE_ATTRIBUTES_JSON_SCHEMA}}",
+  objectSchemaToString(siteAttributesSchemaForLLM),
+);
+template = template.replace("{{PAGES_MAP_JSON_SCHEMA}}", JSON.stringify(pagesMapSchema));
+template = template.replace("{{PAGE_JSON_SCHEMA}}", JSON.stringify(templatePageSchema));
 template = template.replace("{{AVAILABLE_BRICKS}}", brickDescriptions);
 template = template.replace(
   "{{BRICK_POSITION_JSON_SCHEMA}}",
@@ -125,10 +139,13 @@ template = template.replace(
 );
 // template = template.replace("{{COMMON_BRICK_STYLES}}", commonBrickStyles);
 
-template = template.replace("{{TEMPLATE_EXAMPLE}}", JSON.stringify(testConfig));
+// template = template.replace("{{TEMPLATE_EXAMPLE}}", JSON.stringify(testConfig));
 template = template.replace(
   "{{COMMON_STYLES}}",
   objectSchemaToString(commonStyleForDocsOnly, "common-styles"),
 );
 
-console.log(template);
+console.log("Writing to %s", outfile);
+fs.writeFileSync(outfile, template, "utf-8");
+console.log("Done.");
+process.exit(0);

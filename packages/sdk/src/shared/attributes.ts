@@ -13,6 +13,7 @@ import type { JSONSchemaType } from "ajv";
 import { ajv } from "./ajv";
 import { background } from "./bricks/props/background";
 import { Value } from "@sinclair/typebox/value";
+import def from "ajv/dist/vocabularies/discriminator";
 
 type EnumOption = {
   title?: string;
@@ -211,29 +212,40 @@ const defaultAttributes = {
       { value: "tr", title: "Turkish" },
       { value: "vi", title: "Vietnamese" },
     ],
+    "ai:guidelines":
+      "Choose a value based on the site description. If the site is in multiple languages, use 'en'.",
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
   }),
 
-  $pageOgImage: attr.string("Social share image", "", {
-    description: "Image shown when page is shared on social media",
-    "ui:group": "meta",
-  }),
+  $pageOgImage: Type.Optional(
+    attr.string("Social share image", "", {
+      description: "Image shown when page is shared on social media",
+      "ai:guidelines": "Don't generate this property/image, it is automatically generated.",
+      "ui:group": "meta",
+    }),
+  ),
 
-  $robotsIndexing: attr.boolean("Allow search engines to index this site", true, {
-    description: "Disabling this will prevent search engines from indexing this site",
-    "ui:group": "seo",
-    "ui:group:title": "SEO",
-    "ui:scope": "site",
-  }),
+  $robotsIndexing: Type.Optional(
+    attr.boolean("Allow search engines to index this site", true, {
+      description: "Disabling this will prevent search engines from indexing this site",
+      "ai:guidelines": "Don't generate this property/image, it is automatically generated.",
+      "ui:group": "seo",
+      "ui:group:title": "SEO",
+      "ui:scope": "site",
+    }),
+  ),
 
-  $siteOgImage: attr.string("Social share image", "", {
-    description: "Image shown when this site is shared on social media",
-    "ui:field": "image",
-    "ui:group": "meta",
-    "ui:group:title": "Meta tags",
-    "ui:scope": "site",
-  }),
+  $siteOgImage: Type.Optional(
+    attr.string("Social share image", "", {
+      description: "Image shown when this site is shared on social media",
+      "ai:guidelines": "Don't generate this image, it is automatically generated.",
+      "ui:field": "image",
+      "ui:group": "meta",
+      "ui:group:title": "Meta tags",
+      "ui:scope": "site",
+    }),
+  ),
 
   $pagePath: attr.string("Page path", "/", {
     description: "The URL path of the page",
@@ -260,45 +272,54 @@ const defaultAttributes = {
     description: "Keywords related to the page. Used by search engines",
   }),
 
-  $pageLastUpdated: attr.datetime("Last updated", undefined, { "ui:hidden": true }),
+  $pageLastUpdated: Type.Optional(
+    attr.datetime("Last updated", undefined, {
+      "ui:hidden": true,
+      "ai:guidelines": "Don't generate this property.",
+    }),
+  ),
 
   // --- layout attributes ---
 
-  $bodyBackground: Type.Composite([background()], {
-    default: {
-      color: "#ffffff",
-    },
-    title: "Body Background",
-    description:
-      "Applies to the body element of the page (while $pageBackground applies to the page container)",
-    "ui:field": "background",
-    "ui:show-img-search": true,
-    "ui:group": "layout",
-    "ui:group:title": "Page Layout",
-    "ui:group:order": 3,
-  }),
-
-  $pageBackground: Type.Composite(
-    [
-      background(),
-      Type.Object(
-        {},
-        {
-          title: "Page Background",
-        },
-      ),
-    ],
-    {
+  $bodyBackground: Type.Optional(
+    Type.Composite([background()], {
       default: {
         color: "#ffffff",
       },
-      title: "Page Background",
+      title: "Body Background",
+      description:
+        "Applies to the body element of the page (while $pageBackground applies to the page container)",
       "ui:field": "background",
       "ui:show-img-search": true,
-      "ui:group": "background",
-      "ui:group:title": "Page Background",
-      "ui:group:order": 4,
-    },
+      "ui:group": "layout",
+      "ui:group:title": "Page Layout",
+      "ui:group:order": 3,
+    }),
+  ),
+
+  $pageBackground: Type.Optional(
+    Type.Composite(
+      [
+        background(),
+        Type.Object(
+          {},
+          {
+            title: "Page Background",
+          },
+        ),
+      ],
+      {
+        default: {
+          color: "#ffffff",
+        },
+        title: "Page Background",
+        "ui:field": "background",
+        "ui:show-img-search": true,
+        "ui:group": "background",
+        "ui:group:title": "Page Background",
+        "ui:group:order": 4,
+      },
+    ),
   ),
 
   $textColor: attr.color("Text color", "#222222", {
@@ -313,6 +334,7 @@ const defaultAttributes = {
       title: "Head tags",
       description:
         "Add custom tags to the <head> of your site. Useful for analytics tags, custom scripts, etc.",
+      "ai:guidelines": "Don't include meta tags here, they are automatically generated.",
       "ui:multiline": true,
       "ui:scope": "site",
       "ui:group": "external-scripts",
@@ -333,6 +355,21 @@ const defaultAttributes = {
 };
 
 export const defaultAttributesSchema = Type.Object(defaultAttributes, { additionalProperties: true });
+export const siteAttributesSchemaForLLM = Type.Pick(defaultAttributesSchema, [
+  "$textColor",
+  "$bodyBackground",
+  "$pageBackground",
+]);
+export const pageAttributesSchemaForLLM = Type.Pick(defaultAttributesSchema, [
+  "$pageTitle",
+  "$pageDescription",
+  "$pageKeywords",
+  "$pageLanguage",
+  "$pagePath",
+  "$textColor",
+  "$bodyBackground",
+  "$pageBackground",
+]);
 
 export type AttributesSchema = typeof defaultAttributesSchema & Record<string, unknown>;
 

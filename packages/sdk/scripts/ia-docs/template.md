@@ -15,50 +15,58 @@ This document describes how to generate websites using the Upstart SDK.
 
 A theme is a set of available colors and fonts. It can be used to customize the look and feel of the website. Each template can provide one or more themes. The first theme is the default theme.
 
+### Instructions:
+- Theme names should be creative and related to the site description.
+- Use google fonts as much as possible
+
 ### Schema of a theme
 
 {{THEME_JSON_SCHEMA}}
 
-## Template
-
-### Properties
-
-- `manifest`: template manifest object
-    - `name`: template name (`string`)
-    - `tags`: template tags (`string[]`)
-- `themes`: available themes for the website (`array`). See [Theme](#theme) for more details.
-- `attributes`: Attributes schema of all available attributes. Those contains the default attributes. See [Attributes](#attributes) for more details.
-- `attr`: Attributes default *values* (key/value map) to set for the template.
-- `pages`: Pages schema of all available pages. Those contains the default pages. See [Page](#page) for more details.
-
-
 ## Attributes
 
-Both `site` and `page` have attributes. Some attributes are shared between `site` and `page`, while others are specific to one of them. Pages can override site attributes, but not the other way around. The attributes are defined in the template manifest.
+We distinguish 2 types of attributes: *Site* attributes and *page* attributes.
+Some attributes are shared between them, while others are specific to one of them. Pages can override site attributes, but not the other way around. Attributes prefixed with `$` are considered as "predefined" attributes and reserved for the SDK. The others are considered as "custom" attributes defined by the template designer or developer.
 
-Attributes prefixed with `$` are considered as "predefined" attributes and reserved for the SDK. The others are considered as "custom" attributes defined by the template designer or developer.
+### Site attributes
+
+{{SITE_ATTRIBUTES_JSON_SCHEMA}}
 
 
-### Schema of predefined attributes
+### PagesMap
 
-{{ATTRIBUTES_JSON_SCHEMA}}
+The `pagesMap` is a simple map referencing all pages from the site.
+
+#### Instructions
+- Don't generate 404, errors pages, or legal pages, they are auto-generated.
+- Don't generate optional properties
+
+#### PagesMap JSON Schema
+
+```json
+// JSON Schema for pagesMap
+{{PAGES_MAP_JSON_SCHEMA}}
+```
 
 
 ## Page
 
 A page is made of sections. Each section can contain bricks. The page is described by a set of attributes, which are defined in the template manifest.
 
-### Props
+### Instructions
+- Do not generate undefined or null values
+- Generate substancial pages content with textual content using writting style that fits the page/site
+- Do not generate empty image values
+- Use brick of type "container" to arrange bricks as well as "position" to position them.
+- Bricks inside a container do not need a "position" property, they are arranged by the container.
+- A section is a part of a page. A page is organized vertically in sections. A page has one or more sections. Each section can contain bricks. Generate pages with at least 3 sections.
+- Use beautiful colors for backgrounds and modern design
+- Only use images URLs that I will provide you with
+
+
+### Page Schema
 
 {{PAGE_JSON_SCHEMA}}
-
-## Sections
-
-A section is a part of a page. A page is organized vertically in sections. A page has one or more sections. Each section can contain bricks.
-
-### Section properties
-
-{{SECTION_JSON_SCHEMA}}
 
 
 ## Bricks & widgets
@@ -101,8 +109,3 @@ The following props are commonly used in most bricks.
 {{AVAILABLE_BRICKS}}
 
 
-## Template examples:
-
-```json
-{{TEMPLATE_EXAMPLE}}
-```
