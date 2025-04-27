@@ -9,7 +9,6 @@ import { manifests } from "../src/shared/bricks/manifests/all-manifests";
 import { themeSchema } from "../src/shared/theme";
 import { templatePageSchema, pagesMapSchema } from "../src/shared/page";
 import { commonStyleForDocsOnly } from "../src/shared/bricks/props/_docs-common-styles";
-import testConfig from "../src/shared/tests/test-config";
 import fs from "node:fs";
 import path from "node:path";
 import { definedBrickSchema, definedSectionSchema } from "../src/shared/bricks";
@@ -118,24 +117,24 @@ for (const [name, manifest] of Object.entries(manifests)) {
 ### ${name} (\`${type}\`)
 
 ${manifest.description}
+${manifest["ai:instructions"] ?? ""}
 
-#### Props Schema
+#### ${name}  (\`${type}\`) Props Schema
+
+\`\`\`json
 ${JSON.stringify(manifest.props)}
-
+\`\`\`
 `;
 }
 
-template = template.replace("{{THEME_JSON_SCHEMA}}", objectSchemaToString(refinedThemeSchema));
-template = template.replace(
-  "{{SITE_ATTRIBUTES_JSON_SCHEMA}}",
-  objectSchemaToString(siteAttributesSchemaForLLM),
-);
+template = template.replace("{{THEME_JSON_SCHEMA}}", JSON.stringify(refinedThemeSchema));
+template = template.replace("{{SITE_ATTRIBUTES_JSON_SCHEMA}}", JSON.stringify(siteAttributesSchemaForLLM));
 template = template.replace("{{PAGES_MAP_JSON_SCHEMA}}", JSON.stringify(pagesMapSchema));
 template = template.replace("{{PAGE_JSON_SCHEMA}}", JSON.stringify(templatePageSchema));
 template = template.replace("{{AVAILABLE_BRICKS}}", brickDescriptions);
 template = template.replace(
   "{{BRICK_POSITION_JSON_SCHEMA}}",
-  objectSchemaToString(definedBrickSchema.properties.position),
+  JSON.stringify(definedBrickSchema.properties.position),
 );
 // template = template.replace("{{COMMON_BRICK_STYLES}}", commonBrickStyles);
 

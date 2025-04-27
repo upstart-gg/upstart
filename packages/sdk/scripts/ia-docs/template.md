@@ -21,7 +21,10 @@ A theme is a set of available colors and fonts. It can be used to customize the 
 
 ### Schema of a theme
 
+```json
+// JSON Schema for themes
 {{THEME_JSON_SCHEMA}}
+```
 
 ## Attributes
 
@@ -30,7 +33,10 @@ Some attributes are shared between them, while others are specific to one of the
 
 ### Site attributes
 
+```json
+// JSON Schema for site attributes
 {{SITE_ATTRIBUTES_JSON_SCHEMA}}
+```
 
 
 ### PagesMap
@@ -66,7 +72,10 @@ A page is made of sections. Each section can contain bricks. The page is describ
 
 ### Page Schema
 
+```json
+// JSON Schema for a page
 {{PAGE_JSON_SCHEMA}}
+```
 
 
 ## Bricks & widgets
@@ -94,18 +103,20 @@ The position of a brick in a section is defined by the `position` property.
 
 #### Brick `position` object
 
+```json
+// JSON Schema for brick position
 {{BRICK_POSITION_JSON_SCHEMA}}
+```
 
 
 #### Common style props
 
 The following props are commonly used in most bricks.
 
+```json
 {{COMMON_STYLES}}
-
+```
 
 ### Available bricks & widgets
 
 {{AVAILABLE_BRICKS}}
-
-

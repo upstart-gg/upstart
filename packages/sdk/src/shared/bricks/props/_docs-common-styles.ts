@@ -6,14 +6,13 @@ import { image } from "./image";
 import { padding } from "./padding";
 import { color } from "./text";
 import { containerLayout } from "./container";
+import { optional } from "./helpers";
 
 export const commonStyleForDocsOnly = Type.Object({
-  effects: effects(),
-  background: background(),
-  backgroundColor: backgroundColor(),
-  color: color(),
-  border: border(),
-  image: image(),
-  padding: padding(),
-  layout: containerLayout(),
+  effects: optional(effects()),
+  background: optional(background()),
+  backgroundColor: optional(backgroundColor()),
+  color: optional(color()),
+  border: optional(border()),
+  padding: optional(padding()),
 });

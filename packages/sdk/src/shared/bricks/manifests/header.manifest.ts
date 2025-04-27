@@ -185,7 +185,7 @@ export const manifest = defineBrickManifest({
           ),
         }),
         color: color(),
-        items: datasourceRef(),
+        datasource: optional(datasourceRef()),
         navItems: prop({
           title: "Nav items",
           schema: Type.Array(

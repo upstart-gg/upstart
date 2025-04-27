@@ -1,7 +1,7 @@
 /**
  * Helper functions for defining and working with props and groups of props
  */
-import { type TProperties, Type, type TSchema, type TObject } from "@sinclair/typebox";
+import { type TProperties, Type, type TSchema, type TObject, type ObjectOptions } from "@sinclair/typebox";
 import { commonProps } from "./common";
 import type { PartialBy, Prop, PropGroup, GroupMetadata } from "./types";
 import { get } from "lodash-es";
@@ -67,9 +67,9 @@ export function getGroupInfo(schema: TSchema) {
   };
 }
 
-export function defineProps<P extends TProperties>(props: P) {
+export function defineProps<P extends TProperties>(props: P, options?: ObjectOptions) {
   const finalProps = { ...commonProps, ...props };
-  return Type.Object(finalProps);
+  return Type.Object(finalProps, options);
 }
 
 export const optional = Type.Optional;

@@ -1,5 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
-import { group, prop } from "./helpers";
+import { group, optional, prop } from "./helpers";
 
 type BorderOptions = {
   title?: string;
@@ -15,10 +15,10 @@ type BorderOptions = {
 export function border({
   title = "Border",
   defaultValue = {
-    style: "border-solid",
-    width: "border-0",
-    sides: [],
-    rounding: "rounded-auto",
+    // style: "border-solid",
+    // width: "border-0",
+    // sides: [],
+    // rounding: "rounded-auto",
   },
 }: BorderOptions = {}) {
   return group({
@@ -28,38 +28,43 @@ export function border({
       default: defaultValue,
     },
     children: {
-      rounding: Type.Union(
-        [
-          Type.Literal("rounded-auto", { title: "Auto" }),
-          Type.Literal("rounded-none", { title: "None" }),
-          Type.Literal("rounded-sm", { title: "Small" }),
-          Type.Literal("rounded-md", { title: "Medium" }),
-          Type.Literal("rounded-lg", { title: "Large" }),
-          Type.Literal("rounded-xl", { title: "Extra large" }),
-          Type.Literal("rounded-2xl", { title: "2xl" }),
-          Type.Literal("rounded-3xl", { title: "3xl" }),
-          Type.Literal("rounded-full", { title: "Full" }),
-        ],
-        {
-          title: "Corner rounding",
-          default: defaultValue.rounding,
-          "ui:field": "enum",
-          "ui:display": "select",
-        },
+      rounding: optional(
+        Type.Union(
+          [
+            Type.Literal("rounded-auto", { title: "Auto" }),
+            Type.Literal("rounded-none", { title: "None" }),
+            Type.Literal("rounded-sm", { title: "Small" }),
+            Type.Literal("rounded-md", { title: "Medium" }),
+            Type.Literal("rounded-lg", { title: "Large" }),
+            Type.Literal("rounded-xl", { title: "Extra large" }),
+            Type.Literal("rounded-2xl", { title: "2xl" }),
+            Type.Literal("rounded-3xl", { title: "3xl" }),
+            Type.Literal("rounded-full", { title: "Full" }),
+          ],
+          {
+            title: "Corner rounding",
+            default: defaultValue.rounding,
+            "ui:field": "enum",
+            "ui:display": "select",
+          },
+        ),
       ),
-      width: Type.Union(
-        [
-          Type.Literal("border-0", { title: "None" }),
-          Type.Literal("border", { title: "S" }),
-          Type.Literal("border-2", { title: "M" }),
-          Type.Literal("border-4", { title: "L" }),
-          Type.Literal("border-8", { title: "XL" }),
-        ],
-        {
-          default: defaultValue.width,
-          title: "Width",
-          "ui:field": "enum",
-        },
+      width: optional(
+        Type.Union(
+          [
+            Type.Literal("border-0", { title: "None" }),
+            Type.Literal("border", { title: "S" }),
+            Type.Literal("border-2", { title: "M" }),
+            Type.Literal("border-4", { title: "L" }),
+            Type.Literal("border-8", { title: "XL" }),
+          ],
+          {
+            default: defaultValue.width,
+            title: "Width",
+            "ai:instructions": "Don't specify width if you want no border.",
+            "ui:field": "enum",
+          },
+        ),
       ),
       color: Type.String({
         default: defaultValue?.color,
@@ -83,22 +88,27 @@ export function border({
             description:
               "The specific sides where to apply the border. Can contain border-(l|t|r|b). Not specifying sides will apply the border to all sides.",
             "ui:field": "border-side",
+            "ai:instructions":
+              "Use this to apply the border to specific sides. Not specifying sides will apply the border to all sides.",
           },
         ),
       ),
-      style: Type.Union(
-        [
-          Type.Literal("border-solid", { title: "Solid" }),
-          Type.Literal("border-dashed", { title: "Dashed" }),
-          Type.Literal("border-dotted", { title: "Dotted" }),
-        ],
-        {
-          default: defaultValue.style,
-          title: "Style",
-          description: "The brick border style",
-          "ui:field": "enum",
-          "ui:display": "button-group",
-        },
+      style: optional(
+        Type.Union(
+          [
+            Type.Literal("border-solid", { title: "Solid" }),
+            Type.Literal("border-dashed", { title: "Dashed" }),
+            Type.Literal("border-dotted", { title: "Dotted" }),
+          ],
+          {
+            default: defaultValue.style,
+            title: "Style",
+            description: "The brick border style",
+            "ai:instructions": "Use only when width is different than border-0.",
+            "ui:field": "enum",
+            "ui:display": "button-group",
+          },
+        ),
       ),
     },
   });

@@ -1,7 +1,14 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps } from "../props/helpers";
-import { textContent } from "../props/text";
+import { defineProps, optional, prop } from "../props/helpers";
+import { color, textContent } from "../props/text";
 import { RxButton } from "react-icons/rx";
+import { StringEnum } from "~/shared/utils/schema";
+import { urlOrPageId } from "../props/string";
+import { Type } from "@sinclair/typebox";
+import { backgroundColor } from "../props/background";
+import { padding } from "../props/padding";
+import { border } from "../props/border";
+import { effects } from "../props/effects";
 
 export const manifest = defineBrickManifest({
   type: "button",
@@ -9,13 +16,29 @@ export const manifest = defineBrickManifest({
   repeatable: true,
   description: "A button with text and optional icon",
   icon: RxButton,
-  //   icon2: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-  //     <rect x="4" y="11" width="16" height="6" rx="2"></rect>
-  //     <line x1="9" y1="14" x2="15" y2="14"></line>
-  // </svg>
-  //   `,
   props: defineProps({
-    label: textContent("Click here", "hero"),
+    label: textContent("Label", "My button"),
+    type: prop({
+      title: "Type",
+      schema: Type.Union(
+        [
+          Type.Literal("button", { title: "Button" }),
+          Type.Literal("submit", { title: "Submit" }),
+          Type.Literal("reset", { title: "Reset" }),
+        ],
+        {
+          title: "Type",
+          description: "The type of the button",
+          default: "button",
+        },
+      ),
+    }),
+    linkToUrlOrPageId: optional(urlOrPageId("Link")),
+    backgroundColor: backgroundColor("bg-primary-70"),
+    color: color(),
+    padding: optional(padding("p-2")),
+    border: optional(border()),
+    effects: optional(effects({ enableTextShadow: true })),
   }),
 });
 

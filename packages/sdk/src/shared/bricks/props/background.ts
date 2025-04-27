@@ -17,9 +17,9 @@ export function background(opts: BackgroundOptions = {}) {
   const {
     title = "Background",
     defaultValue = {
-      size: "auto",
-      repeat: "no-repeat",
-      color: "transparent",
+      // size: "auto",
+      // repeat: "no-repeat",
+      // color: "transparent",
     },
     colorType = "background",
   } = opts;
@@ -30,10 +30,11 @@ export function background(opts: BackgroundOptions = {}) {
       {
         color: Type.Optional(
           Type.String({
-            default: defaultValue.color ?? "transparent",
+            default: defaultValue.color,
             title: "Color",
             description:
-              "Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900",
+              "Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900.",
+            "ai:instructions": "Use bg-<variant>-<shade> classes as much as possible.",
           }),
         ),
         image: Type.Optional(
@@ -51,6 +52,7 @@ export function background(opts: BackgroundOptions = {}) {
             ],
             {
               default: defaultValue.size ?? "auto",
+              "ai:instructions": "Only use this when the image is set.",
             },
           ),
         ),
@@ -66,6 +68,7 @@ export function background(opts: BackgroundOptions = {}) {
             ],
             {
               default: defaultValue.repeat ?? "no-repeat",
+              "ai:instructions": "Only use this when the image is set.",
             },
           ),
         ),
@@ -78,9 +81,9 @@ export function background(opts: BackgroundOptions = {}) {
         "ui:show-img-search": true,
         "ui:inspector-tab": "style",
         default: {
-          color: defaultValue.color ?? "transparent",
-          size: defaultValue.size ?? "auto",
-          repeat: defaultValue.repeat ?? "no-repeat",
+          color: defaultValue.color,
+          size: defaultValue.size,
+          repeat: defaultValue.repeat,
         },
       },
     ),
@@ -96,6 +99,7 @@ export function backgroundColor(defaultValue = "transparent", title = "Backgroun
       "Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900",
     $id: "#styles:backgroundColor",
     schema: Type.String({
+      "ai:instructions": "Use bg-<variant>-<shade> classes as much as possible.",
       default: defaultValue,
       "ui:field": "color",
       "ui:color-type": "background",

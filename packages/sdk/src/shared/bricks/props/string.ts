@@ -34,6 +34,10 @@ export function url(title = "URL") {
 export function urlOrPageId(title = "URL or Page ID") {
   return prop({
     title,
-    schema: Type.Union([urlSchema, pageIdSchema], { title: "URL or Page ID" }),
+    schema: Type.Union([urlSchema, pageIdSchema], {
+      title: "URL or Page ID",
+      "ai:instructions":
+        "This field can be a URL or a page ID. Use the page ID when linking to a internal page, and a URL for external links.",
+    }),
   });
 }

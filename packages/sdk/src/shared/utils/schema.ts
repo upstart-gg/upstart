@@ -6,7 +6,11 @@ export function typeboxSchemaToJSONSchema<T extends Record<string, any>>(schema:
   return JSON.parse(JSON.stringify(schema));
 }
 
-export const StringEnum = <T extends string[]>(values: [...T], options: Partial<UnsafeOptions> = {}) =>
+type StringEnumOptions = Partial<UnsafeOptions> & {
+  enumNames?: string[];
+};
+
+export const StringEnum = <T extends string[]>(values: [...T], options: StringEnumOptions = {}) =>
   Type.Unsafe<T[number]>({
     type: "string",
     enum: values,

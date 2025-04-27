@@ -2,7 +2,7 @@ import { Type } from "@sinclair/typebox";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
 import { datasourceRef } from "../props/datasource";
-import { defineProps, group } from "../props/helpers";
+import { defineProps, group, optional } from "../props/helpers";
 import { containerLayout } from "../props/container";
 import { IoGridOutline } from "react-icons/io5";
 
@@ -52,7 +52,7 @@ export const manifest = defineBrickManifest({
   //     <rect x="13" y="14" width="6" height="5" rx="1"></rect>
   // </svg>`,
   props: defineProps({
-    content: datasourceRef(),
+    content: optional(datasourceRef()),
     styles: group({
       title: "Styles",
       children: {

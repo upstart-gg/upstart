@@ -13,7 +13,6 @@ import { manifest as footerManifest } from "./footer.manifest";
 import { manifest as buttonManifest } from "./button.manifest";
 import { manifest as iconManifest } from "./icon.manifest";
 import { manifest as socialLinksManifest } from "./social-links.manifest";
-import { manifest as countdownManifest } from "./countdown.manifest";
 import { manifest as genericComponentManifest } from "./generic-component.manifest";
 import { manifest as sidebarManifest } from "./sidebar.manifest";
 
@@ -35,7 +34,6 @@ export const manifests: Record<string, BrickManifest> = {
   [buttonManifest.type]: buttonManifest,
   [iconManifest.type]: iconManifest,
   [socialLinksManifest.type]: socialLinksManifest,
-  [countdownManifest.type]: countdownManifest,
   [genericComponentManifest.type]: genericComponentManifest,
   [containerManifest.type]: containerManifest,
 };
@@ -56,7 +54,6 @@ export const defaultProps: Record<string, BrickDefaults> = {
   [buttonManifest.type]: getBrickManifestDefaults(buttonManifest),
   [iconManifest.type]: getBrickManifestDefaults(iconManifest),
   [socialLinksManifest.type]: getBrickManifestDefaults(socialLinksManifest),
-  [countdownManifest.type]: getBrickManifestDefaults(countdownManifest),
   [genericComponentManifest.type]: getBrickManifestDefaults(genericComponentManifest),
   [containerManifest.type]: getBrickManifestDefaults(containerManifest),
 };
