@@ -22,23 +22,7 @@ import { preset } from "../src/shared/bricks/props/preset";
 const __dirname = import.meta.dirname;
 
 let template = fs.readFileSync(path.join(__dirname, "ia-docs", "template.md"), "utf-8");
-const {
-  values: { outfile },
-} = parseArgs({
-  options: {
-    outfile: {
-      type: "string",
-      short: "o",
-      default: path.join(process.cwd(), "generated-docs.md"),
-      description: "Output file for the generated documentation",
-    },
-  },
-});
 
-if (!outfile) {
-  console.error("Please provide an output file with --outfile or -o");
-  process.exit(1);
-}
 const {
   values: { outfile },
 } = parseArgs({
