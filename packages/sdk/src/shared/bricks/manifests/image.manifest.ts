@@ -7,6 +7,8 @@ import { shadow } from "../props/effects";
 import { padding } from "../props/padding";
 import { RxImage } from "react-icons/rx";
 import { string } from "../props/string";
+import { str } from "ajv";
+import { Type } from "@sinclair/typebox";
 
 export const manifest = defineBrickManifest({
   type: "image",
@@ -23,8 +25,30 @@ export const manifest = defineBrickManifest({
     border: optional(border()),
     padding: optional(padding()),
     shadow: optional(shadow()),
-    blurHash: optional(string("Blur Hash", undefined, { "ui:fied": "hidden" })),
-    credits: optional(string("Image Credits")),
+    blurHash: optional(
+      string("Blur Hash", undefined, {
+        "ui:fied": "hidden",
+        description: "A placeholder for the image while it is loading. Use a blur hash string.",
+      }),
+    ),
+    author: optional(
+      Type.Object({
+        name: string("Image Author", undefined, {
+          "ui:field": "hidden",
+          description: "Image author. Use this to give credit to the author of the image.",
+        }),
+        url: string("Image Author URL", undefined, {
+          "ui:field": "hidden",
+          description: "Image author URL. Use this to give credit to the author of the image.",
+        }),
+      }),
+    ),
+    provider: optional(
+      string("Image Provider", undefined, {
+        "ui:field": "hidden",
+        description: "Image provider. Use this to give credit to the author of the image.",
+      }),
+    ),
   }),
 });
 

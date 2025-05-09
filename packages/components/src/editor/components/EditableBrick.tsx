@@ -61,11 +61,12 @@ type BrickWrapperProps = ComponentProps<"div"> & {
 function useBarPlacements(brick: Brick): Placement[] {
   const previewMode = usePreviewMode();
   const { isLastSection } = useDraftHelpers();
+  console.debug("BrickWrapper: useBarPlacements", brick);
   const section = useSection(brick.sectionId);
   const manifest = useBrickManifest(brick.type);
   return useMemo(() => {
     const placements: Placement[] = [];
-    if (brick.parentId || manifest.isContainer) {
+    if (brick.parentId || manifest.isContainer || !section) {
       placements.push(...(["bottom", "top"] as const));
     } else {
       if (!isLastSection(section.id)) {
@@ -84,6 +85,7 @@ function useBarPlacements(brick: Brick): Placement[] {
 
 const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
   ({ brick, children, isContainerChild, index }, ref) => {
+    console.debug("EditableBrickWrapper", brick);
     const hasMouseMoved = useRef(false);
     const selectedBrickId = useSelectedBrickId();
     const { setSelectedBrickId } = useEditorHelpers();
@@ -201,10 +203,10 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           id={brick.id}
           data-brick
           data-brick-id={brick.id}
-          data-x={brick.position[previewMode].x ?? 0}
-          data-y={brick.position[previewMode].y ?? 0}
-          data-w={brick.position[previewMode].w ?? 0}
-          data-h={brick.position[previewMode].h ?? 0}
+          data-x={brick.position?.[previewMode]?.x ?? 0}
+          data-y={brick.position?.[previewMode]?.y ?? 0}
+          data-w={brick.position?.[previewMode]?.w ?? 0}
+          data-h={brick.position?.[previewMode]?.h ?? 0}
           data-brick-type={brick.type}
           data-element-kind={manifest.kind}
           data-last-touched={brick.props.lastTouched ?? "0"}

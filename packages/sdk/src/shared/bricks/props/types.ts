@@ -7,7 +7,7 @@ export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export type BrickProps<T extends BrickManifest> = {
   brick: Omit<Brick, "props" | "mobileProps"> & {
     props: Static<T["props"]>;
-    mobileProps: Partial<Static<T["props"]>>;
+    mobileProps?: Partial<Static<T["props"]>>;
   };
   editable?: boolean;
   selected?: boolean;
@@ -39,9 +39,9 @@ export interface PropSchema extends TSchema {
 
 export type Prop<T = TSchema> = {
   title: string;
-  $id?: string;
   description?: string;
   schema: T;
+  [key: string]: unknown;
 };
 
 export type PropGroup<T extends TProperties = TProperties> = {

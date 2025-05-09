@@ -232,7 +232,7 @@ export default function TopBar({ showIntro }: TopBarProps) {
                         const currentURL = new URL(window.location.href);
                         currentURL.searchParams.set("p", page.id);
                         currentURL.searchParams.set("r", `${Date.now()}`);
-                        window.location.replace(currentURL.href);
+                        window.location.href = currentURL.href;
                       }
                     },
                   }))

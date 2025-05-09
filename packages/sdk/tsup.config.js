@@ -47,7 +47,7 @@ const external = [
   "__STATIC_CONTENT_MANIFEST",
 ];
 
-const ignored = ["!**/*.md", "!**/tests/**/*", "!**/sample.ts"];
+const ignored = ["!**/*.md", "!**/tests/**/*", "!**/*.test.ts", "!**/sample.ts"];
 
 export default defineConfig((options) => {
   return [

@@ -1084,11 +1084,13 @@ export const useSections = () => {
   return useStore(ctx, (state) => state.sections);
 };
 
-export const useSection = (sectionId: string) => {
+export const useSection = (sectionId?: string) => {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => {
-    const section = state.sections.find((s) => s.id === sectionId);
-    invariant(section, `Section '${sectionId}' not found`);
+    const section = state.sections.find((s) => sectionId && s.id === sectionId);
+    if (!section) {
+      return null;
+    }
     return {
       ...section,
       bricks: state.bricks.filter((b) => b.sectionId === sectionId),

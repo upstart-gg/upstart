@@ -24,7 +24,6 @@ export function background(opts: BackgroundOptions = {}) {
     colorType = "background",
   } = opts;
   return prop({
-    $id: "#styles:background",
     title,
     schema: Type.Object(
       {
@@ -33,14 +32,18 @@ export function background(opts: BackgroundOptions = {}) {
             default: defaultValue.color,
             title: "Color",
             description:
-              "Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900.",
-            "ai:instructions": "Use bg-<variant>-<shade> classes as much as possible.",
+              "Use `bg-<variant>-<shade>`, variants being 'primary', 'secondary', 'accent' and 'neutral', and shades between 50 and 900.",
+            "ai:examples": ["bg-primary-50", "bg-primary-500", "bg-accent-900"],
           }),
         ),
         image: Type.Optional(
           Type.String({
             title: "Image",
             description: "The background image. Can be a URL or a data URI",
+            "ai:examples": [
+              "https://example.com/image.png",
+              "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...",
+            ],
           }),
         ),
         size: Type.Optional(
@@ -74,6 +77,7 @@ export function background(opts: BackgroundOptions = {}) {
         ),
       },
       {
+        "ui:styleId": "#styles:background",
         "ui:field": "background",
         "ui:group": "background",
         "ui:group:title": "Background",
@@ -97,12 +101,12 @@ export function backgroundColor(defaultValue = "transparent", title = "Backgroun
     title,
     description:
       "Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900",
-    $id: "#styles:backgroundColor",
     schema: Type.String({
       "ai:instructions": "Use bg-<variant>-<shade> classes as much as possible.",
       default: defaultValue,
       "ui:field": "color",
       "ui:color-type": "background",
+      "ui:styleId": "#styles:backgroundColor",
     }),
   });
 }

@@ -24,7 +24,7 @@ export function border({
   return group({
     title,
     options: {
-      $id: "#styles:border",
+      "ui:styleId": "#styles:border",
       default: defaultValue,
     },
     children: {
@@ -86,7 +86,7 @@ export function border({
             default: defaultValue.sides,
             title: "Sides",
             description:
-              "The specific sides where to apply the border. Can contain border-(l|t|r|b). Not specifying sides will apply the border to all sides.",
+              "The specific sides where to apply the border. Not specifying sides will apply the border to all sides.",
             "ui:field": "border-side",
             "ai:instructions":
               "Use this to apply the border to specific sides. Not specifying sides will apply the border to all sides.",
@@ -119,7 +119,6 @@ export type BorderSettings = Static<ReturnType<typeof border>>;
 // export function rounding(defaultValue = "rounded-auto", title = "Rounding") {
 //   return prop({
 //     title,
-//     $id: "#styles:rounding",
 //     schema: Type.Union(
 //       [
 //         Type.Literal("rounded-auto", { title: "Auto" }),

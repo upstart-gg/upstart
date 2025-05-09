@@ -41,3 +41,13 @@ export function urlOrPageId(title = "URL or Page ID") {
     }),
   });
 }
+
+export function date(title = "Date") {
+  return prop({
+    title,
+    schema: Type.String({
+      format: "date",
+      "ui:field": "date",
+    }),
+  });
+}

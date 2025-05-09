@@ -12,6 +12,9 @@ export const manifest = defineBrickManifest({
   kind: "brick",
   name: "Text",
   description: "Text with formatting options",
+  aiInstructions: `Text "content" can contain minimal HTML tags like <strong>, <em>, <br> and <a> as well as <p> and <span> and lists.
+Only 'align' is supported as an inline style, so don't use other inline styles like 'font-size' or 'color' in the content prop.
+`,
   minHeight: {
     desktop: 2,
     mobile: 2,
@@ -35,7 +38,7 @@ export const manifest = defineBrickManifest({
       content: textContent(),
       backgroundColor: optional(backgroundColor()),
       color: optional(color()),
-      padding: optional(padding()),
+      padding: padding(),
       border: optional(border()),
       effects: optional(effects({ enableTextShadow: true })),
     },

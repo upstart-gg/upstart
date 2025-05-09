@@ -8,6 +8,7 @@ import { merge, set } from "lodash-es";
 import { useDraftHelpers, useGetBrick, usePreviewMode, useSection } from "~/editor/hooks/use-editor";
 import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
 import { Value } from "@sinclair/typebox/value";
+import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
 type SectionSettingsViewProps = {
   section: Section;
@@ -17,7 +18,10 @@ type SectionSettingsViewProps = {
 export default function SectionSettingsView({ section, group }: SectionSettingsViewProps) {
   const { updateSectionProps } = useDraftHelpers();
   const previewMode = usePreviewMode();
+  console.debug("SectionSettingsView", section);
   const sectionInfo = useSection(section.id);
+
+  invariant(sectionInfo, `SectionSettingsView: sectionInfo is undefined for section ${section.id}`);
 
   const filter: SchemaFilter = (prop) => {
     return (

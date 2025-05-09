@@ -12,7 +12,7 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edi
   const props = brick.props;
 
   const styles = useBrickStyle<Manifest>(brick);
-  const ds = useDatasource(props.datasource.ds, manifest.datasource);
+  const ds = useDatasource(props.datasource, manifest.datasource);
 
   // If this container is Dynamic
   if (ds.datasourceId && props.$childrenType) {

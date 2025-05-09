@@ -4,7 +4,14 @@ import {
   defaultAttributesSchema,
   type AttributesSchema,
 } from "./attributes";
-import { brickSchema, type Section, sectionSchema, type Brick, definedSectionSchema } from "./bricks";
+import {
+  brickSchema,
+  type Section,
+  sectionSchema,
+  type Brick,
+  definedSectionSchema,
+  definedBrickSchema,
+} from "./bricks";
 import invariant from "./utils/invariant";
 import { themeSchema, type Theme } from "./theme";
 import { Type, type Static, type TObject, type TProperties } from "@sinclair/typebox";
@@ -33,9 +40,31 @@ export const pagesMapSchema = Type.Array(
       status: Type.Optional(
         StringEnum(["draft", "published"], {
           title: "Page status",
+          enumNames: ["Draft", "Published"],
           description:
             "The status of the page. Can be draft or published. [AI instructions: Dont generate this.]",
+          "ai:instructions": "Do not generate this.",
         }),
+      ),
+      sectionsPlan: Type.Array(
+        Type.Object({
+          id: Type.String({ title: "Section ID (slug format)" }),
+          name: Type.String({ title: "Section name" }),
+          description: Type.String({
+            title: "A long description of the section",
+            description: `You must elaborate a clear and detailled plan that describes:
+- the section purpose in the page, in detail
+- the section structure, look & feel, and structural/design organization, in detail
+- the types of bricks (e.g. "container", "text", "video", "carousel", etc) and count that will be used and their purpose, in detail
+
+All these information will be used in a later prompt to generate the section content`,
+            minLength: 300,
+          }),
+        }),
+        {
+          minItems: 3,
+          maxItems: 6,
+        },
       ),
     }),
   ]),
@@ -67,7 +96,7 @@ export type PageConfig<D extends DatasourcesMap> = PageInfo & {
   attr?: Attributes;
 
   sections: Section[];
-  bricks: Brick[];
+  // bricks: TemplatePage["bricks"];
 
   tags: string[];
 };
@@ -88,7 +117,7 @@ export function getNewPageConfig(
     tags: pageConfig.tags ?? [],
     path,
     sections: pageConfig.sections,
-    bricks: pageConfig.bricks,
+    // bricks: pageConfig.bricks,
     ...(pageConfig.attributes
       ? {
           attributes: pageConfig.attributes,
@@ -165,30 +194,32 @@ export function getNewSiteConfig(
       path: p.path,
       tags: p.tags,
       status: "draft",
+      sectionsPlan: [],
     })),
   } satisfies Site;
 
   return { site, pages };
 }
 
-export const templatePageSchema = Type.Object({
-  label: Type.String({ description: "The label (name) of the page" }),
-  path: Type.String({ description: "The path of the page in the URL. Should be unique" }),
-  sections: Type.Array(sectionSchema, {
-    description: "The sections of the page. See the Section schema",
-    "doc:type": "Array of `Section` objects",
-  }),
-  bricks: Type.Array(brickSchema, {
-    description: "The bricks of the page. See the various bricks available below",
-    "doc:type": "Array of `Brick` objects",
-  }),
-  tags: Type.Array(Type.String(), {
-    description: "The tags of the page, used for organizating and filtering pages",
-    default: [],
-  }),
-  attributes: Type.Optional(defaultAttributesSchema),
-  attr: Type.Optional(defaultAttributesSchema),
-});
+export const templatePageSchema = Type.Object(
+  {
+    label: Type.String({ description: "The label (name) of the page" }),
+    path: Type.String({ description: "The path of the page in the URL. Should be unique" }),
+    sections: Type.Array(sectionSchema, {
+      description: "The sections of the page. See the Section schema",
+    }),
+    // bricks: Type.Array(definedBrickSchema, {
+    //   description: "The bricks of the page. See the various bricks available below",
+    // }),
+    tags: Type.Array(Type.String(), {
+      description: "The tags of the page, used for organizating and filtering pages",
+      default: [],
+    }),
+    // attributes: Type.Optional(defaultAttributesSchema),
+    attr: Type.Optional(defaultAttributesSchema),
+  },
+  { additionalProperties: false },
+);
 
 export type TemplatePage = Static<typeof templatePageSchema>;
 

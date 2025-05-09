@@ -1,4 +1,3 @@
-import { manifestSchema } from "~/shared/manifest";
 import fs from "node:fs";
 import { readFile } from "node:fs/promises";
 import fg from "fast-glob";
@@ -53,11 +52,7 @@ export function loadConfigFromManifestFile(manifestPath: string, logger: Logger)
 
 export function validateTemplateConfig(config: TemplateConfig, logger: Logger) {
   for (const key in config.datasources) {
-    if (
-      (config.datasources[key].provider === "json-object" ||
-        config.datasources[key].provider === "json-array") &&
-      !config.datasources[key].sampleData
-    ) {
+    if (config.datasources[key].provider === "http-json" && !config.datasources[key].sampleData) {
       logger.error(
         `🔴 Error: Datasource "${key}" is missing sample data - nothing will be rendered during development! Please check your enpage.config.js file and add a "sampleData" key to your ${key} datasource.`,
       );

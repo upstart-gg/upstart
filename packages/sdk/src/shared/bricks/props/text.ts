@@ -4,7 +4,6 @@ import { prop } from "./helpers";
 export function fontSize(defaultValue = "inherit", title = "Font size") {
   return prop({
     title,
-    $id: "#styles:fontSize",
     schema: Type.Union(
       [
         Type.Literal("inherit", { title: "Inherit from parent" }),
@@ -22,6 +21,7 @@ export function fontSize(defaultValue = "inherit", title = "Font size") {
       ],
       {
         default: defaultValue,
+        "ui:styleId": "#styles:fontSize",
         "ui:field": "enum",
         "ui:display": "select",
         "ui:inspector-tab": "style",
@@ -37,9 +37,9 @@ export function color(defaultValue: string | "color-auto" = "color-auto", title 
     title,
     description:
       "Can be set to `transparent`, hex/rgb/rgba color, `color-auto` to automatically contrast with background, or even classes like `text-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900",
-    $id: "#styles:color",
     schema: Type.String({
       default: defaultValue,
+      "ui:styleId": "#styles:color",
       "ui:field": "color",
       "ui:color-type": "text",
       "ui:inspector-tab": "style",
@@ -57,14 +57,13 @@ type TextContentOptions = {
 
 export function textContent(
   title = "Text",
-  defaultContent = "some text here",
+  defaultContent?: string,
   { showInSettings, disableSizing = false, disableAlignment = false }: TextContentOptions = {},
 ) {
   return prop({
     title,
     description:
-      "The text content of the element. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists.",
-    $id: "#content:text",
+      "Text content. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists <ul> <ol> <li>.",
     schema: Type.String({
       default: defaultContent,
       "ui:disable-sizing": disableSizing,

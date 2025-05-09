@@ -1,326 +1,481 @@
 # Upstart SDK
 
-This document describes how to generate websites using the Upstart SDK.
+The Upstart SDK allows users to create and manage websites using a structured JSON format.
+It is later converted into a website.
+It provides various *bricks* (predefined components) that can be used to build a website. It also
+allows users to define themes, site & pages attributes, and other configurations in a structured way.
 
 ## Terms
-
-- *Theme*: a set of available colors and fonts.
-- *Template*: a ready to use website that can be customized.
-- *Page*: a web page, described by a set of attributes.
-- *Section*: a part of a page, a page being organized vertically in sections. A page has one or more sections.
-- *Brick*: an element within a section, such as a text block, image, video, etc. Also called *widgets* for some specific types of complex bricks.
-- *Container*: a specific brick that can contain other bricks within theur `$children` prop.
+- *Theme*: a set of available colors and fonts
+- *Page*: a web page, described by a set of attributes and organized vertically into sections
+- *Section*: a logical or aesthetic part of a page
+- *Brick*: an element within a section, such as a text block, image, video, etc. Also called *widgets* for some specific types of complex bricks
+- *Container*: a specific brick that can contain other bricks within their `$children` prop
+- *Datasource*: a defined source of dynamic data that can be consumed by pages.
+- *Datarecord*: a defined destination of user submitted data through forms.
 
 ## Theme
-
-A theme is a set of available colors and fonts. It can be used to customize the look and feel of the website. Each template can provide one or more themes. The first theme is the default theme.
-
-### Instructions:
-- Theme names should be creative and related to the site description.
-- Use google fonts as much as possible
-
-### Schema of a theme
-
-```json
-// JSON Schema for themes
-{"type":"object","properties":{"id":{"title":"ID","description":"The unique identifier of the theme","type":"string"},"name":{"title":"Name","description":"The name of the theme","type":"string"},"tags":{"title":"Tags","description":"The tags of the theme","type":"array","items":{"title":"Tag","type":"string"}},"colors":{"title":"Theme base colors","description":"The base colors of the theme. Each theme must declare all these colors","type":"object","properties":{"primary":{"title":"Primary color","description":"The brand's primary color","type":"string"},"secondary":{"title":"Secondary color","description":"The brand's second most used color","type":"string"},"accent":{"title":"Accent color","description":"The brand's least used color","type":"string"},"neutral":{"title":"Neutral color","description":"The base neutral color","type":"string"}},"required":["primary","secondary","accent","neutral"]},"typography":{"type":"object","properties":{"base":{"title":"Base font size","description":"The base font size in pixels. It is safe to keep it as is","default":16,"type":"number"},"heading":{"title":"Headings font","description":"Used for titles and headings","default":{"type":"stack","family":"system-ui"},"type":"object","properties":{"type":{"type":"string","enum":["stack","theme","google"],"title":"Type of font","description":"The type of font. Can be a font stack, a theme font or a Google font"},"family":{"title":"Family","description":"The font family (eg. the name of the font)","type":"string"}},"required":["type","family"]},"body":{"title":"Body font","description":"Used for paragraphs and body text","default":{"type":"stack","family":"system-ui"},"type":"object","properties":{"type":{"type":"string","enum":["stack","theme","google"],"title":"Type of font","description":"The type of font. Can be a font stack, a theme font or a Google font"},"family":{"title":"Family","description":"The font family (eg. the name of the font)","type":"string"}},"required":["type","family"]},"alternatives":{"title":"Alternative fonts","description":"Alternative fonts that can be suggested to the user. Takes the same shape","type":"array","items":{"type":"object","properties":{"body":{"title":"Body font","description":"Used for paragraphs and body text","default":{"type":"stack","family":"system-ui"},"type":"object","properties":{"type":{"type":"string","enum":["stack","theme","google"],"title":"Type of font","description":"The type of font. Can be a font stack, a theme font or a Google font"},"family":{"title":"Family","description":"The font family (eg. the name of the font)","type":"string"}},"required":["type","family"]},"heading":{"title":"Headings font","description":"Used for titles and headings","default":{"type":"stack","family":"system-ui"},"type":"object","properties":{"type":{"type":"string","enum":["stack","theme","google"],"title":"Type of font","description":"The type of font. Can be a font stack, a theme font or a Google font"},"family":{"title":"Family","description":"The font family (eg. the name of the font)","type":"string"}},"required":["type","family"]}},"required":["body","heading"]}}},"required":["base","heading","body"]}},"required":["id","name","colors","typography"]}
-```
+A theme is a set of available colors and fonts. It can be used to customize the look and feel of the website.
+The first theme is the default theme.
 
 ## Attributes
-
 We distinguish 2 types of attributes: *Site* attributes and *page* attributes.
-Some attributes are shared between them, while others are specific to one of them. Pages can override site attributes, but not the other way around. Attributes prefixed with `$` are considered as "predefined" attributes and reserved for the SDK. The others are considered as "custom" attributes defined by the template designer or developer.
+Some attributes are shared between them, while others are specific to one of them. Pages can override site attributes, but not the other way around. Attributes prefixed with `$` are considered as "predefined" attributes and reserved for the SDK. The others are considered as "custom" attributes defined by the designer/developer.
 
-### Site attributes
+## Datasources (for dynamic content)
+Datasources are used to define a source of dynamic data that can be consumed by pages. They are defined in the `datasources` array of the site attributes.
+We distinguish 2 types of datasources: *internal* (data is stored in the Upstart platform) and *external* (data is stored in an external service, and accessed through an API).
+Upstart provides ready-to-use datasources for common use cases, for both internal and external types, such as a blog, a portfolio, or a Youtube playlist. You can also define your own datasources using JSON schemas.
 
-```json
-// JSON Schema for site attributes
-{"additionalProperties":true,"type":"object","properties":{"$textColor":{"title":"Text color","default":"#222222","ui:field":"color","ui:group":"layout","ui:group:title":"Page Layout","ui:color-type":"text","type":"string"},"$bodyBackground":{"default":{"color":"#ffffff"},"title":"Body Background","description":"Applies to the body element of the page (while $pageBackground applies to the page container)","ui:field":"background","ui:show-img-search":true,"ui:group":"layout","ui:group:title":"Page Layout","ui:group:order":3,"type":"object","properties":{"color":{"title":"Color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900.","ai:instructions":"Use bg-<variant>-<shade> classes as much as possible.","type":"string"},"image":{"title":"Image","description":"The background image. Can be a URL or a data URI","type":"string"},"size":{"default":"auto","ai:instructions":"Only use this when the image is set.","anyOf":[{"title":"Auto","const":"auto","type":"string"},{"title":"Cover","const":"cover","type":"string"},{"title":"Contain","const":"contain","type":"string"}]},"repeat":{"default":"no-repeat","ai:instructions":"Only use this when the image is set.","anyOf":[{"title":"No repeat","const":"no-repeat","type":"string"},{"title":"Repeat","const":"repeat","type":"string"},{"title":"Repeat horizontally","const":"repeat-x","type":"string"},{"title":"Repeat vertically","const":"repeat-y","type":"string"},{"title":"Space","const":"space","type":"string"},{"title":"Round","const":"round","type":"string"}]}}},"$pageBackground":{"default":{"color":"#ffffff"},"title":"Page Background","ui:field":"background","ui:show-img-search":true,"ui:group":"background","ui:group:title":"Page Background","ui:group:order":4,"type":"object","properties":{"color":{"title":"Color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900.","ai:instructions":"Use bg-<variant>-<shade> classes as much as possible.","type":"string"},"image":{"title":"Image","description":"The background image. Can be a URL or a data URI","type":"string"},"size":{"default":"auto","ai:instructions":"Only use this when the image is set.","anyOf":[{"title":"Auto","const":"auto","type":"string"},{"title":"Cover","const":"cover","type":"string"},{"title":"Contain","const":"contain","type":"string"}]},"repeat":{"default":"no-repeat","ai:instructions":"Only use this when the image is set.","anyOf":[{"title":"No repeat","const":"no-repeat","type":"string"},{"title":"Repeat","const":"repeat","type":"string"},{"title":"Repeat horizontally","const":"repeat-x","type":"string"},{"title":"Repeat vertically","const":"repeat-y","type":"string"},{"title":"Space","const":"space","type":"string"},{"title":"Round","const":"round","type":"string"}]}}}},"required":["$textColor"]}
-```
+### Datasources Providers
+Here are the built-in providers with their schemas:
+{{DATASOURCES_PROVIDERS}}
 
-
-### PagesMap
-
+## PagesMap
 The `pagesMap` is a simple map referencing all pages from the site.
-
-#### Instructions
-- Don't generate 404, errors pages, or legal pages, they are auto-generated.
-- Don't generate optional properties
-
-#### PagesMap JSON Schema
-
-```json
-// JSON Schema for pagesMap
-{"type":"array","items":{"type":"object","properties":{"id":{"title":"Page UUID","type":"string"},"label":{"type":"string"},"path":{"type":"string"},"tags":{"default":[],"description":"Tags for the page. Use the tag 'main-nav' for pages that should appear in the main navbar","type":"array","items":{"type":"string"}},"status":{"type":"string","enum":["draft","published"],"title":"Page status","description":"The status of the page. Can be draft or published. [AI instructions: Dont generate this.]"}},"required":["id","label","path","tags"]}}
-```
-
+The pagesMap does not contain error pages or legal pages, those being auto-generated.
 
 ## Page
+A page is made of sections. Each section can contain bricks. The page is described by a set of attributes, a list of `sections`, and a list of `bricks`.
 
-A page is made of sections. Each section can contain bricks. The page is described by a set of attributes, which are defined in the template manifest.
-
-### Instructions
-- Do not generate undefined or null values
-- Generate substancial pages content with textual content using writting style that fits the page/site
-- Do not generate empty image values
-- Use brick of type "container" to arrange bricks as well as "position" to position them.
-- Bricks inside a container do not need a "position" property, they are arranged by the container.
-- A section is a part of a page. A page is organized vertically in sections. A page has one or more sections. Each section can contain bricks. Generate pages with at least 3 sections.
-- Use beautiful colors for backgrounds and modern design
-- Only use images URLs that I will provide you with
-
-
-### Page Schema
-
-```json
-// JSON Schema for a page
-{"type":"object","properties":{"label":{"description":"The label (name) of the page","type":"string"},"path":{"description":"The path of the page in the URL. Should be unique","type":"string"},"sections":{"description":"The sections of the page. See the Section schema","doc:type":"Array of `Section` objects","type":"array","items":{"$id":"section","type":"object","properties":{"id":{"type":"string"},"kind":{"const":"section","type":"string"},"label":{"type":"string"},"position":{"type":"object","properties":{"mobile":{"type":"object","properties":{"h":{"anyOf":[{"type":"number"},{"const":"full","type":"string"}]}}},"desktop":{"type":"object","properties":{"h":{"anyOf":[{"type":"number"},{"const":"full","type":"string"}]}},"required":["h"]}},"required":["mobile","desktop"]},"order":{"description":"Determines section order in the page (lower numbers appear first)","type":"number"},"props":{"additionalProperties":true,"type":"object","properties":{"background":{"ui:field":"background","ui:group":"background","ui:group:title":"Background","ui:color-type":"background","ui:show-img-search":true,"ui:inspector-tab":"style","default":{},"type":"object","properties":{"color":{"title":"Color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900.","ai:instructions":"Use bg-<variant>-<shade> classes as much as possible.","type":"string"},"image":{"title":"Image","description":"The background image. Can be a URL or a data URI","type":"string"},"size":{"default":"auto","ai:instructions":"Only use this when the image is set.","anyOf":[{"title":"Auto","const":"auto","type":"string"},{"title":"Cover","const":"cover","type":"string"},{"title":"Contain","const":"contain","type":"string"}]},"repeat":{"default":"no-repeat","ai:instructions":"Only use this when the image is set.","anyOf":[{"title":"No repeat","const":"no-repeat","type":"string"},{"title":"Repeat","const":"repeat","type":"string"},{"title":"Repeat horizontally","const":"repeat-x","type":"string"},{"title":"Repeat vertically","const":"repeat-y","type":"string"},{"title":"Space","const":"space","type":"string"},{"title":"Round","const":"round","type":"string"}]}},"title":"Background","$id":"#styles:background"},"width":{"title":"Width","default":"max-w-full","ui:field":"enum","ui:display":"select","description":"The maximum width of the page. Desktop only","ui:group":"layout","ui:group:order":3,"ui:group:title":"Layout","anyOf":[{"title":"Medium","const":"max-w-screen-lg","type":"string"},{"title":"Large","const":"max-w-screen-xl","type":"string"},{"title":"Extra large","const":"max-w-screen-2xl","type":"string"},{"title":"Full width","const":"max-w-full","type":"string"}]},"$paddingHorizontal":{"title":"Horizontal spacing","default":0,"min":0,"description":"Horizontal spacing. Desktop only","displayAs":"button-group","type":"number"},"lastTouched":{"description":"Do not use this field. It is used internally by the editor.","ui:field":"hidden","type":"number"}}},"mobileProps":{"additionalProperties":true,"type":"object","properties":{"background":{"ui:field":"background","ui:group":"background","ui:group:title":"Background","ui:color-type":"background","ui:show-img-search":true,"ui:inspector-tab":"style","default":{},"type":"object","properties":{"color":{"title":"Color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900.","ai:instructions":"Use bg-<variant>-<shade> classes as much as possible.","type":"string"},"image":{"title":"Image","description":"The background image. Can be a URL or a data URI","type":"string"},"size":{"default":"auto","ai:instructions":"Only use this when the image is set.","anyOf":[{"title":"Auto","const":"auto","type":"string"},{"title":"Cover","const":"cover","type":"string"},{"title":"Contain","const":"contain","type":"string"}]},"repeat":{"default":"no-repeat","ai:instructions":"Only use this when the image is set.","anyOf":[{"title":"No repeat","const":"no-repeat","type":"string"},{"title":"Repeat","const":"repeat","type":"string"},{"title":"Repeat horizontally","const":"repeat-x","type":"string"},{"title":"Repeat vertically","const":"repeat-y","type":"string"},{"title":"Space","const":"space","type":"string"},{"title":"Round","const":"round","type":"string"}]}},"title":"Background","$id":"#styles:background"},"width":{"title":"Width","default":"max-w-full","ui:field":"enum","ui:display":"select","description":"The maximum width of the page. Desktop only","ui:group":"layout","ui:group:order":3,"ui:group:title":"Layout","anyOf":[{"title":"Medium","const":"max-w-screen-lg","type":"string"},{"title":"Large","const":"max-w-screen-xl","type":"string"},{"title":"Extra large","const":"max-w-screen-2xl","type":"string"},{"title":"Full width","const":"max-w-full","type":"string"}]},"$paddingHorizontal":{"title":"Horizontal spacing","default":0,"min":0,"description":"Horizontal spacing. Desktop only","displayAs":"button-group","type":"number"},"lastTouched":{"description":"Do not use this field. It is used internally by the editor.","ui:field":"hidden","type":"number"}}}},"required":["id","kind","position","order","props"]}},"bricks":{"description":"The bricks of the page. See the various bricks available below","doc:type":"Array of `Brick` objects","type":"array","items":{"$id":"brick","type":"object","properties":{"id":{"title":"ID","description":"A unique identifier for the brick.","type":"string"},"type":{"title":"Type","type":"string"},"props":{"type":"object","patternProperties":{"^(.*)$":{}}},"mobileProps":{"type":"object","patternProperties":{"^(.*)$":{}}},"parentId":{"type":"string"},"sectionId":{"type":"string"},"$children":{"type":"array","items":{"$ref":"brick"}},"position":{"title":"Position","description":"The position of the brick in the layout.","type":"object","properties":{"mobile":{"$id":"brick-position","type":"object","properties":{"x":{"title":"X","description":"The column start (0-based) in grid units, not pixels.","type":"number"},"y":{"title":"Y","description":"The row start (0-based) in grid units, not pixels.","type":"number"},"w":{"title":"Width","description":"The width in columns in grid units, not pixels.","type":"number"},"h":{"title":"Height","description":"The height in rows in grid units, not pixels.","type":"number"},"manualHeight":{"description":"Do not use this field. It is used internally by the editor.","type":"number"},"hidden":{"description":"Do not use this field. It is used internally by the editor.","type":"boolean"}},"required":["x","y","w","h"]},"desktop":{"$id":"brick-position","type":"object","properties":{"x":{"title":"X","description":"The column start (0-based) in grid units, not pixels.","type":"number"},"y":{"title":"Y","description":"The row start (0-based) in grid units, not pixels.","type":"number"},"w":{"title":"Width","description":"The width in columns in grid units, not pixels.","type":"number"},"h":{"title":"Height","description":"The height in rows in grid units, not pixels.","type":"number"},"manualHeight":{"description":"Do not use this field. It is used internally by the editor.","type":"number"},"hidden":{"description":"Do not use this field. It is used internally by the editor.","type":"boolean"}},"required":["x","y","w","h"]}},"required":["mobile","desktop"]}},"required":["id","type","props","mobileProps","sectionId","position"]}},"tags":{"description":"The tags of the page, used for organizating and filtering pages","default":[],"type":"array","items":{"type":"string"}},"attributes":{"additionalProperties":true,"type":"object","properties":{"$pageLanguage":{"title":"Language","default":"en","ui:field":"enum","ui:display":"select","ai:guidelines":"Choose a value based on the site description. If the site is in multiple languages, use 'en'.","ui:group":"meta","ui:group:title":"Meta tags","anyOf":[{"title":"Arabic","const":"ar","type":"string"},{"title":"Chinese","const":"zh","type":"string"},{"title":"Czech","const":"cs","type":"string"},{"title":"Dutch","const":"nl","type":"string"},{"title":"English","const":"en","type":"string"},{"title":"French","const":"fr","type":"string"},{"title":"German","const":"de","type":"string"},{"title":"Hebrew","const":"he","type":"string"},{"title":"Hindi","const":"hi","type":"string"},{"title":"Italian","const":"it","type":"string"},{"title":"Japanese","const":"ja","type":"string"},{"title":"Korean","const":"ko","type":"string"},{"title":"Persian","const":"fa","type":"string"},{"title":"Polish","const":"pl","type":"string"},{"title":"Portuguese","const":"pt","type":"string"},{"title":"Russian","const":"ru","type":"string"},{"title":"Spanish","const":"es","type":"string"},{"title":"Turkish","const":"tr","type":"string"},{"title":"Vietnamese","const":"vi","type":"string"}]},"$pageOgImage":{"title":"Social share image","default":"","description":"Image shown when page is shared on social media","ai:guidelines":"Don't generate this property/image, it is automatically generated.","ui:group":"meta","type":"string"},"$robotsIndexing":{"title":"Allow search engines to index this site","default":true,"ui:field":"switch","description":"Disabling this will prevent search engines from indexing this site","ai:guidelines":"Don't generate this property/image, it is automatically generated.","ui:group":"seo","ui:group:title":"SEO","ui:scope":"site","type":"boolean"},"$siteOgImage":{"title":"Social share image","default":"","description":"Image shown when this site is shared on social media","ai:guidelines":"Don't generate this image, it is automatically generated.","ui:field":"image","ui:group":"meta","ui:group:title":"Meta tags","ui:scope":"site","type":"string"},"$pagePath":{"title":"Page path","default":"/","description":"The URL path of the page","ui:group":"location","ui:group:title":"Location","type":"string"},"$pageTitle":{"title":"Title","default":"Untitled","ui:group":"meta","ui:group:title":"Meta tags","description":"The title of the page. Appears in the browser tab and search results","type":"string"},"$pageDescription":{"title":"Description","default":"","ui:widget":"textarea","ui:group":"meta","ui:group:title":"Meta tags","description":"A short description of the page. Used by search engines","type":"string"},"$pageKeywords":{"title":"Keywords","default":"","ui:group":"meta","ui:group:title":"Meta tags","description":"Keywords related to the page. Used by search engines","type":"string"},"$pageLastUpdated":{"title":"Last updated","default":"2025-04-27T17:35:40.519Z","ui:hidden":true,"ai:guidelines":"Don't generate this property.","format":"date-time","type":"string"},"$bodyBackground":{"default":{"color":"#ffffff"},"title":"Body Background","description":"Applies to the body element of the page (while $pageBackground applies to the page container)","ui:field":"background","ui:show-img-search":true,"ui:group":"layout","ui:group:title":"Page Layout","ui:group:order":3,"type":"object","properties":{"color":{"title":"Color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900.","ai:instructions":"Use bg-<variant>-<shade> classes as much as possible.","type":"string"},"image":{"title":"Image","description":"The background image. Can be a URL or a data URI","type":"string"},"size":{"default":"auto","ai:instructions":"Only use this when the image is set.","anyOf":[{"title":"Auto","const":"auto","type":"string"},{"title":"Cover","const":"cover","type":"string"},{"title":"Contain","const":"contain","type":"string"}]},"repeat":{"default":"no-repeat","ai:instructions":"Only use this when the image is set.","anyOf":[{"title":"No repeat","const":"no-repeat","type":"string"},{"title":"Repeat","const":"repeat","type":"string"},{"title":"Repeat horizontally","const":"repeat-x","type":"string"},{"title":"Repeat vertically","const":"repeat-y","type":"string"},{"title":"Space","const":"space","type":"string"},{"title":"Round","const":"round","type":"string"}]}}},"$pageBackground":{"default":{"color":"#ffffff"},"title":"Page Background","ui:field":"background","ui:show-img-search":true,"ui:group":"background","ui:group:title":"Page Background","ui:group:order":4,"type":"object","properties":{"color":{"title":"Color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900.","ai:instructions":"Use bg-<variant>-<shade> classes as much as possible.","type":"string"},"image":{"title":"Image","description":"The background image. Can be a URL or a data URI","type":"string"},"size":{"default":"auto","ai:instructions":"Only use this when the image is set.","anyOf":[{"title":"Auto","const":"auto","type":"string"},{"title":"Cover","const":"cover","type":"string"},{"title":"Contain","const":"contain","type":"string"}]},"repeat":{"default":"no-repeat","ai:instructions":"Only use this when the image is set.","anyOf":[{"title":"No repeat","const":"no-repeat","type":"string"},{"title":"Repeat","const":"repeat","type":"string"},{"title":"Repeat horizontally","const":"repeat-x","type":"string"},{"title":"Repeat vertically","const":"repeat-y","type":"string"},{"title":"Space","const":"space","type":"string"},{"title":"Round","const":"round","type":"string"}]}}},"$textColor":{"title":"Text color","default":"#222222","ui:field":"color","ui:group":"layout","ui:group:title":"Page Layout","ui:color-type":"text","type":"string"},"$siteHeadTags":{"title":"Head tags","description":"Add custom tags to the <head> of your site. Useful for analytics tags, custom scripts, etc.","ai:guidelines":"Don't include meta tags here, they are automatically generated.","ui:multiline":true,"ui:scope":"site","ui:group":"external-scripts","ui:group:title":"External scripts","type":"string"},"$siteBodyTags":{"title":"Body tags","description":"Add custom tags to the <body> of your site. Useful for analytics tags, custom scripts, etc.","ui:multiline":true,"ui:scope":"site","ui:group":"external-scripts","ui:group:title":"External scripts","type":"string"}},"required":["$pageLanguage","$pagePath","$pageTitle","$pageDescription","$pageKeywords","$textColor"]},"attr":{"additionalProperties":true,"type":"object","properties":{"$pageLanguage":{"title":"Language","default":"en","ui:field":"enum","ui:display":"select","ai:guidelines":"Choose a value based on the site description. If the site is in multiple languages, use 'en'.","ui:group":"meta","ui:group:title":"Meta tags","anyOf":[{"title":"Arabic","const":"ar","type":"string"},{"title":"Chinese","const":"zh","type":"string"},{"title":"Czech","const":"cs","type":"string"},{"title":"Dutch","const":"nl","type":"string"},{"title":"English","const":"en","type":"string"},{"title":"French","const":"fr","type":"string"},{"title":"German","const":"de","type":"string"},{"title":"Hebrew","const":"he","type":"string"},{"title":"Hindi","const":"hi","type":"string"},{"title":"Italian","const":"it","type":"string"},{"title":"Japanese","const":"ja","type":"string"},{"title":"Korean","const":"ko","type":"string"},{"title":"Persian","const":"fa","type":"string"},{"title":"Polish","const":"pl","type":"string"},{"title":"Portuguese","const":"pt","type":"string"},{"title":"Russian","const":"ru","type":"string"},{"title":"Spanish","const":"es","type":"string"},{"title":"Turkish","const":"tr","type":"string"},{"title":"Vietnamese","const":"vi","type":"string"}]},"$pageOgImage":{"title":"Social share image","default":"","description":"Image shown when page is shared on social media","ai:guidelines":"Don't generate this property/image, it is automatically generated.","ui:group":"meta","type":"string"},"$robotsIndexing":{"title":"Allow search engines to index this site","default":true,"ui:field":"switch","description":"Disabling this will prevent search engines from indexing this site","ai:guidelines":"Don't generate this property/image, it is automatically generated.","ui:group":"seo","ui:group:title":"SEO","ui:scope":"site","type":"boolean"},"$siteOgImage":{"title":"Social share image","default":"","description":"Image shown when this site is shared on social media","ai:guidelines":"Don't generate this image, it is automatically generated.","ui:field":"image","ui:group":"meta","ui:group:title":"Meta tags","ui:scope":"site","type":"string"},"$pagePath":{"title":"Page path","default":"/","description":"The URL path of the page","ui:group":"location","ui:group:title":"Location","type":"string"},"$pageTitle":{"title":"Title","default":"Untitled","ui:group":"meta","ui:group:title":"Meta tags","description":"The title of the page. Appears in the browser tab and search results","type":"string"},"$pageDescription":{"title":"Description","default":"","ui:widget":"textarea","ui:group":"meta","ui:group:title":"Meta tags","description":"A short description of the page. Used by search engines","type":"string"},"$pageKeywords":{"title":"Keywords","default":"","ui:group":"meta","ui:group:title":"Meta tags","description":"Keywords related to the page. Used by search engines","type":"string"},"$pageLastUpdated":{"title":"Last updated","default":"2025-04-27T17:35:40.519Z","ui:hidden":true,"ai:guidelines":"Don't generate this property.","format":"date-time","type":"string"},"$bodyBackground":{"default":{"color":"#ffffff"},"title":"Body Background","description":"Applies to the body element of the page (while $pageBackground applies to the page container)","ui:field":"background","ui:show-img-search":true,"ui:group":"layout","ui:group:title":"Page Layout","ui:group:order":3,"type":"object","properties":{"color":{"title":"Color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900.","ai:instructions":"Use bg-<variant>-<shade> classes as much as possible.","type":"string"},"image":{"title":"Image","description":"The background image. Can be a URL or a data URI","type":"string"},"size":{"default":"auto","ai:instructions":"Only use this when the image is set.","anyOf":[{"title":"Auto","const":"auto","type":"string"},{"title":"Cover","const":"cover","type":"string"},{"title":"Contain","const":"contain","type":"string"}]},"repeat":{"default":"no-repeat","ai:instructions":"Only use this when the image is set.","anyOf":[{"title":"No repeat","const":"no-repeat","type":"string"},{"title":"Repeat","const":"repeat","type":"string"},{"title":"Repeat horizontally","const":"repeat-x","type":"string"},{"title":"Repeat vertically","const":"repeat-y","type":"string"},{"title":"Space","const":"space","type":"string"},{"title":"Round","const":"round","type":"string"}]}}},"$pageBackground":{"default":{"color":"#ffffff"},"title":"Page Background","ui:field":"background","ui:show-img-search":true,"ui:group":"background","ui:group:title":"Page Background","ui:group:order":4,"type":"object","properties":{"color":{"title":"Color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900.","ai:instructions":"Use bg-<variant>-<shade> classes as much as possible.","type":"string"},"image":{"title":"Image","description":"The background image. Can be a URL or a data URI","type":"string"},"size":{"default":"auto","ai:instructions":"Only use this when the image is set.","anyOf":[{"title":"Auto","const":"auto","type":"string"},{"title":"Cover","const":"cover","type":"string"},{"title":"Contain","const":"contain","type":"string"}]},"repeat":{"default":"no-repeat","ai:instructions":"Only use this when the image is set.","anyOf":[{"title":"No repeat","const":"no-repeat","type":"string"},{"title":"Repeat","const":"repeat","type":"string"},{"title":"Repeat horizontally","const":"repeat-x","type":"string"},{"title":"Repeat vertically","const":"repeat-y","type":"string"},{"title":"Space","const":"space","type":"string"},{"title":"Round","const":"round","type":"string"}]}}},"$textColor":{"title":"Text color","default":"#222222","ui:field":"color","ui:group":"layout","ui:group:title":"Page Layout","ui:color-type":"text","type":"string"},"$siteHeadTags":{"title":"Head tags","description":"Add custom tags to the <head> of your site. Useful for analytics tags, custom scripts, etc.","ai:guidelines":"Don't include meta tags here, they are automatically generated.","ui:multiline":true,"ui:scope":"site","ui:group":"external-scripts","ui:group:title":"External scripts","type":"string"},"$siteBodyTags":{"title":"Body tags","description":"Add custom tags to the <body> of your site. Useful for analytics tags, custom scripts, etc.","ui:multiline":true,"ui:scope":"site","ui:group":"external-scripts","ui:group:title":"External scripts","type":"string"}},"required":["$pageLanguage","$pagePath","$pageTitle","$pageDescription","$pageKeywords","$textColor"]}},"required":["label","path","sections","bricks","tags"]}
-```
-
-
-## Bricks & widgets
-
-There is a large number of available bricks. Each brick has its own set of attributes. The attributes are defined in the template manifest.
-
+## Bricks
+There is a large number of available bricks. Each brick has its own set of attributes.
 Bellow is a list of available bricks with their properties (aka props). Bricks can share common styles properties but not necessarily with the same names. Also note that several properties are required but have a default value. This means that the default value will be used if the property is not set.
-
 Widgets are spcific types of bricks used to create more complex layouts and interactions. Widgets can be used to create navigation elements, galleries, carousels, etc.
 
-Some bricks or widgets have `presets` that can be used to quickly apply a set of styles.
-
 The brick array of a page is composed of brick objects containing the following properties:
-
 - `type`: the type of the brick (e.g. `text`, `image`, `video`, etc.)
-- `position`: the position of the brick in the section. See below for the available positions.
+- `position`: the brick position (`desktop` and `mobile`) within its section.
 - `props`: the properties of the brick (e.g. `text`, `image`, `video`, etc.). See below for the available props per brick type.
 - `mobileProps`: the properties of the brick for mobile devices. Merged with the `props` object. This is useful for bricks that have different properties for mobile devices.
 - `$children`: For container-bricks only. An array of child bricks. Bricks inside a container do not have a position property.
 
+### Presets
+Most of the bricks have a `preset` prop that will help you style it. When present, you MUST use it.
+List of presets:
+
+- `bold-primary`: Bold Primary. Bold display on primary-700 background
+- `bold-primary-gradient`: Bold Primary Gradient. Bold display on primary-700 to primary-600 background gradient
+- `bold-secondary`: Bold Secondary. Bold display on secondary-700 background
+- `bold-secondary-gradient`: Bold Secondary Gradient. Bold display on secondary-700 to secondary-600 background gradient
+- `bold-accent`: Bold Accent. Bold display on accent-700 background
+- `bold-accent-gradient`: Bold Accent Gradient. Bold display on accent-700 to accent-600 background gradient
+- `medium-primary`: Medium Primary. Filled display on primary-200 background
+- `medium-primary-gradient`: Medium Primary Gradient. Filled display on primary-200 to primary-100 background gradient
+- `medium-secondary`: Medium Secondary. Medium display on secondary-200 background
+- `medium-secondary-gradient`: Medium Secondary Gradient. Medium display on secondary-200 to secondary-100 background gradient
+- `medium-accent`: Medium Accent. Medium display on accent-200 background
+- `medium-accent-gradient`: Medium Accent Gradient. Medium display on accent-200 to accent-100 background gradient
+- `medium-base`: Medium Base. Medium display on base-200
+- `medium-base-gradient`: Medium Base Gradient. Medium display on base-200 to base-100 background gradient
+- `subtle-base`: Subtle. Subtle display on base-100 background and 1px border
+- `subtle-base-gradient`: Subtle Gradient. Subtle display on base-200 to base-100 background gradient and 1px border
+- `subtle-primary`: Subtle Primary. Subtle display on primary-100 background and 1px border
+- `subtle-primary-gradient`: Subtle Primary Gradient. Subtle display on primary-200 to primary-100 background gradient and 1px border
+- `subtle-secondary`: Subtle Secondary. Subtle display on secondary-100 background and 1px border
+- `subtle-secondary-gradient`: Subtle Secondary Gradient. Subtle display on secondary-200 to secondary-100 background gradient and 1px border
+- `subtle-accent`: Subtle Accent. Subtle display on accent-100 background and 1px border
+- `subtle-accent-gradient`: Subtle Accent Gradient. Subtle display on accent-200 to accent-100 background gradient and 1px border
+- `ghost`: Ghost. No background and no border. This is useful for bricks inside a card or a container that already have a surface/background.
+
+
+## Variants
+Some bricks have `variants` that can be used to change the look and/or layout of the brick.
+You can specify multiple variants if they don't share the same prefix.
+For example, you can use `variants: ["with-logo-left", "align-h"]` to apply both variants to the brick.
 
 ### Positioning a brick
+All bricks are positioned relatively to their section grid.
+- The position of a brick relative to its section is defined by the `position` prop.
+- Sections grid are:
+  * 48 columns wide on desktop
+  * 24 columns wide on mobile
+- The row height is a fixed 20px on both mobile and desktop
+- `x` and `w` properties are specified using grid (columns) units, not pixels! You can also use aliases like `half`, `third`,  `twoThird`, `quarter`, `threeQuarter`, and `full`.
+- `y` and  `h` are specifiew in rows, given that a row is always 20px. So `h=2` equals `40px` and `h=30` equals `600px` height. So you should not have bricks higher than `h=30` (600px) for most cases except long texts.
+- Children (`$children`) of a `container` are positionned automatically, they don't need the `position` property.
+- It's important to compute precisely bricks position so they don't overlap with each other.
+- Default values:
+  * `x` is `0`
+  * `y` is `0`
+  * `w` is `full`
+  * `h` has no default value so it should always be set
+- You can partially set the position of a brick. For example, you can set `h` and `y` only, and the other properties will be set to their default values.
 
-The position of a brick in a section is defined by the `position` property.
-
-#### Brick `position` object
-
-```json
-// JSON Schema for brick position
-{"type":"object","properties":{"mobile":{"type":"object","properties":{"x":{"title":"X","description":"The column start (0-based) in grid units, not pixels. Can use aliases like 'half' to represent half of the grid.","anyOf":[{"type":"number"},{"const":"half","type":"string"},{"const":"third","type":"string"},{"const":"twoThird","type":"string"},{"const":"quarter","type":"string"},{"const":"threeQuarter","type":"string"}]},"y":{"title":"Y","description":"The row start (0-based) in grid units, not pixels.","type":"number"},"w":{"title":"Width","description":"The width in columns in grid units, not pixels. Can use aliases like 'half' to represent half of the grid.","anyOf":[{"type":"number"},{"const":"full","type":"string"},{"const":"half","type":"string"},{"const":"third","type":"string"},{"const":"twoThird","type":"string"},{"const":"quarter","type":"string"},{"const":"threeQuarter","type":"string"}]},"h":{"title":"Height","description":"The height in rows in grid units, not pixels.","type":"number"},"hidden":{"description":"Do not use this field. It is used internally by the editor.","type":"boolean"}},"required":["x","y","w","h"]},"desktop":{"type":"object","properties":{"x":{"title":"X","description":"The column start (0-based) in grid units, not pixels. Can use aliases like 'half' to represent half of the grid.","anyOf":[{"type":"number"},{"const":"half","type":"string"},{"const":"third","type":"string"},{"const":"twoThird","type":"string"},{"const":"quarter","type":"string"},{"const":"threeQuarter","type":"string"}]},"y":{"title":"Y","description":"The row start (0-based) in grid units, not pixels.","type":"number"},"w":{"title":"Width","description":"The width in columns in grid units, not pixels. Can use aliases like 'half' to represent half of the grid.","anyOf":[{"type":"number"},{"const":"full","type":"string"},{"const":"half","type":"string"},{"const":"third","type":"string"},{"const":"twoThird","type":"string"},{"const":"quarter","type":"string"},{"const":"threeQuarter","type":"string"}]},"h":{"title":"Height","description":"The height in rows in grid units, not pixels.","type":"number"},"hidden":{"description":"Do not use this field. It is used internally by the editor.","type":"boolean"}},"required":["x","y","w","h"]}},"required":["mobile","desktop"]}
-```
-
-
-#### Common style props
-
-The following props are commonly used in most bricks.
-
-```json
-- **`effects`**: Optional `object`.  Default: `{}`
-  - **`opacity`**: Required `number`.  Default: `1`
-  - **`#styles:shadow`**: Required `enum`.  Possible values: `shadow-none`, `shadow-sm`, `shadow-md`, `shadow-lg`, `shadow-xl`, `shadow-2xl`. Default: `"shadow-none"`
-- **`#styles:background`**: Optional `object`.  Default: `{}`
-  - **`color`**: Optional `string`. Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900.. 
-  - **`image`**: Optional `string`. The background image. Can be a URL or a data URI. 
-  - **`size`**: Optional `enum`.  Possible values: `auto`, `cover`, `contain`. Default: `"auto"`
-  - **`repeat`**: Optional `enum`.  Possible values: `no-repeat`, `repeat`, `repeat-x`, `repeat-y`, `space`, `round`. Default: `"no-repeat"`
-- **`#styles:backgroundColor`**: Optional `string`. Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900. Default: `"transparent"`
-- **`#styles:color`**: Optional `string`. Can be set to `transparent`, hex/rgb/rgba color, `color-auto` to automatically contrast with background, or even classes like `text-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900. Default: `"color-auto"`
-- **`#styles:border`**: Optional `object`.  Default: `{}`
-  - **`rounding`**: Optional `enum`.  Possible values: `rounded-auto`, `rounded-none`, `rounded-sm`, `rounded-md`, `rounded-lg`, `rounded-xl`, `rounded-2xl`, `rounded-3xl`, `rounded-full`. 
-  - **`width`**: Optional `enum`.  Possible values: `border-0`, `border`, `border-2`, `border-4`, `border-8`. 
-  - **`color`**: Required `string`. Can be set to transparent, hex/rgb/rgba color, or even classes like `border-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900. 
-  - **`sides`**: Optional `undefined[]`. The specific sides where to apply the border. Can contain border-(l|t|r|b). Not specifying sides will apply the border to all sides.. 
-  - **`style`**: Optional `enum`. The brick border style. Possible values: `border-solid`, `border-dashed`, `border-dotted`. 
-- **`#styles:padding`**: Optional `enum`. Space between the content and the border. Possible values: `p-0`, `p-1`, `p-2`, `p-4`, `p-8`, `p-16`. Default: `"p-0"`
-
-```
-
-### Available bricks & widgets
-
+## Available bricks
+- Text (`text`): Text with formatting options
+- Hero (`hero`): A big textual element for home pages
+- Image (`image`): An image brick
+- Video (`video`): Youtube video
+- Card (`card`): A multi-purpose card that can have a title, subtitle, image, and content
+- Map (`map`): A map element showing a location
+- Form (`form`): A form element
+- Sidebar (`sidebar`): A sidebard element
+- Gallery (`images-gallery`): An image collection
+- Carousel (`carousel`): A carousel element
+- Header (`header`): A header with logo and navigation
+- Footer (`footer`): A footer with links and an optional logo
+- Button (`button`): A button with text and optional icon
+- Icon (`icon`): An icon with optional text
+- Social links (`social-links`): A list of social media links
+- Container (`container`): A container that can hold other bricks and align them horizontally or vertically
+- Divider (`divider`): A horizontal or vertical divider
+- Testimonials (`testimonials`): Display testimonials from users
+- Timeline (`timeline`): A timeline element for showing chronological events
+- Accordion (`accordion`): An accordion/collapse element for expandable content
 
 ### Text (`text`)
-
 Text with formatting options
+Text "content" can contain minimal HTML tags like <strong>, <em>, <br> and <a> as well as <p> and <span> and lists.
+Only 'align' is supported as an inline style, so don't use other inline styles like 'font-size' or 'color' in the content prop.
 
 
-#### Text  (`text`) Props Schema
-
-```json
-{"default":{"padding":"p-2"},"type":"object","properties":{"className":{"default":"","ui:field":"hidden","type":"string"},"lastTouched":{"default":0,"ui:field":"hidden","type":"number"},"editable":{"description":"Allow editing. It is automatically set by the editor, so no need to specify it manually.","default":false,"ui:field":"hidden","type":"boolean"},"content":{"default":"some text here","ui:disable-sizing":false,"ui:disable-alignment":false,"ui:field":"hidden-in-ui","type":"string","title":"Text","description":"The text content of the element. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists.","$id":"#content:text"},"backgroundColor":{"ai:instructions":"Use bg-<variant>-<shade> classes as much as possible.","default":"transparent","ui:field":"color","ui:color-type":"background","type":"string","title":"Background color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900","$id":"#styles:backgroundColor"},"color":{"default":"color-auto","ui:field":"color","ui:color-type":"text","ui:inspector-tab":"style","type":"string","title":"Text color","description":"Can be set to `transparent`, hex/rgb/rgba color, `color-auto` to automatically contrast with background, or even classes like `text-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900","$id":"#styles:color"},"padding":{"default":"p-0","description":"Space between the content and the border","ui:field":"enum","ui:responsive":true,"anyOf":[{"title":"None","const":"p-0","type":"string"},{"title":"S","const":"p-1","type":"string"},{"title":"M","const":"p-2","type":"string"},{"title":"L","const":"p-4","type":"string"},{"title":"XL","const":"p-8","type":"string"},{"title":"2XL","const":"p-16","type":"string"}],"title":"Padding","$id":"#styles:padding"},"border":{"title":"Border","$id":"#styles:border","default":{},"metadata":{"category":"settings","group":true},"type":"object","properties":{"rounding":{"title":"Corner rounding","ui:field":"enum","ui:display":"select","anyOf":[{"title":"Auto","const":"rounded-auto","type":"string"},{"title":"None","const":"rounded-none","type":"string"},{"title":"Small","const":"rounded-sm","type":"string"},{"title":"Medium","const":"rounded-md","type":"string"},{"title":"Large","const":"rounded-lg","type":"string"},{"title":"Extra large","const":"rounded-xl","type":"string"},{"title":"2xl","const":"rounded-2xl","type":"string"},{"title":"3xl","const":"rounded-3xl","type":"string"},{"title":"Full","const":"rounded-full","type":"string"}]},"width":{"title":"Width","ai:instructions":"Don't specify width if you want no border.","ui:field":"enum","anyOf":[{"title":"None","const":"border-0","type":"string"},{"title":"S","const":"border","type":"string"},{"title":"M","const":"border-2","type":"string"},{"title":"L","const":"border-4","type":"string"},{"title":"XL","const":"border-8","type":"string"}]},"color":{"title":"Color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `border-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900","ui:field":"color","ui:color-type":"border","type":"string"},"sides":{"title":"Sides","description":"The specific sides where to apply the border. Can contain border-(l|t|r|b). Not specifying sides will apply the border to all sides.","ui:field":"border-side","ai:instructions":"Use this to apply the border to specific sides. Not specifying sides will apply the border to all sides.","type":"array","items":{"anyOf":[{"title":"Left","const":"border-l","type":"string"},{"title":"Top","const":"border-t","type":"string"},{"title":"Right","const":"border-r","type":"string"},{"title":"Bottom","const":"border-b","type":"string"}]}},"style":{"title":"Style","description":"The brick border style","ai:instructions":"Use only when width is different than border-0.","ui:field":"enum","ui:display":"button-group","anyOf":[{"title":"Solid","const":"border-solid","type":"string"},{"title":"Dashed","const":"border-dashed","type":"string"},{"title":"Dotted","const":"border-dotted","type":"string"}]}},"required":["color"]},"effects":{"title":"Effects","default":{},"metadata":{"category":"settings","group":true},"type":"object","properties":{"opacity":{"minimum":0.1,"maximum":1,"default":1,"multipleOf":0.1,"ui:field":"slider","ui:unit":"%","ui:multiplier":100,"type":"number","title":"Opacity"},"shadow":{"default":"shadow-none","ui:field":"enum","ui:display":"select","anyOf":[{"title":"None","const":"shadow-none","type":"string"},{"title":"Small","const":"shadow-sm","type":"string"},{"title":"Medium","const":"shadow-md","type":"string"},{"title":"Large","const":"shadow-lg","type":"string"},{"title":"Extra large","const":"shadow-xl","type":"string"},{"title":"Extra large (2x)","const":"shadow-2xl","type":"string"}],"title":"Shadow","$id":"#styles:shadow"},"textShadow":{"default":"text-shadow-none","ui:field":"enum","anyOf":[{"title":"None","const":"text-shadow-none","type":"string"},{"title":"S","const":"text-shadow-sm","type":"string"},{"title":"M","const":"text-shadow-md","type":"string"},{"title":"L","const":"text-shadow-lg","type":"string"},{"title":"XL","const":"text-shadow-xl","type":"string"}],"title":"Text shadow"}},"required":["opacity","shadow","textShadow"]}},"required":["content"]}
-```
+Props:
+- `preset`: optional `enum` (see docs)
+- `content`: required `string`. Text content. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists <ul> <ol> <li>.. 
 
 ### Hero (`hero`)
-
 A big textual element for home pages
+This hero element is a large text element that can be used to display a title and an optional tagline.
+      It is typically used on home pages to grab the user's attention.
 
-
-#### Hero  (`hero`) Props Schema
-
-```json
-{"default":{"padding":"p-4","color":"color-auto"},"type":"object","properties":{"className":{"default":"","ui:field":"hidden","type":"string"},"lastTouched":{"default":0,"ui:field":"hidden","type":"number"},"editable":{"description":"Allow editing. It is automatically set by the editor, so no need to specify it manually.","default":false,"ui:field":"hidden","type":"boolean"},"content":{"default":"some text here","ui:disable-sizing":false,"ui:disable-alignment":false,"ui:field":"hidden-in-ui","type":"string","title":"I'm a big text","description":"The text content of the element. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists.","$id":"#content:text"},"background":{"ui:field":"background","ui:group":"background","ui:group:title":"Background","ui:color-type":"background","ui:show-img-search":true,"ui:inspector-tab":"style","default":{},"type":"object","properties":{"color":{"title":"Color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900.","ai:instructions":"Use bg-<variant>-<shade> classes as much as possible.","type":"string"},"image":{"title":"Image","description":"The background image. Can be a URL or a data URI","type":"string"},"size":{"default":"auto","ai:instructions":"Only use this when the image is set.","anyOf":[{"title":"Auto","const":"auto","type":"string"},{"title":"Cover","const":"cover","type":"string"},{"title":"Contain","const":"contain","type":"string"}]},"repeat":{"default":"no-repeat","ai:instructions":"Only use this when the image is set.","anyOf":[{"title":"No repeat","const":"no-repeat","type":"string"},{"title":"Repeat","const":"repeat","type":"string"},{"title":"Repeat horizontally","const":"repeat-x","type":"string"},{"title":"Repeat vertically","const":"repeat-y","type":"string"},{"title":"Space","const":"space","type":"string"},{"title":"Round","const":"round","type":"string"}]}},"title":"Background","$id":"#styles:background"},"color":{"default":"color-auto","ui:field":"color","ui:color-type":"text","ui:inspector-tab":"style","type":"string","title":"Text color","description":"Can be set to `transparent`, hex/rgb/rgba color, `color-auto` to automatically contrast with background, or even classes like `text-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900","$id":"#styles:color"},"effects":{"title":"Effects","default":{},"metadata":{"category":"settings","group":true},"type":"object","properties":{"opacity":{"minimum":0.1,"maximum":1,"default":1,"multipleOf":0.1,"ui:field":"slider","ui:unit":"%","ui:multiplier":100,"type":"number","title":"Opacity"},"shadow":{"default":"shadow-none","ui:field":"enum","ui:display":"select","anyOf":[{"title":"None","const":"shadow-none","type":"string"},{"title":"Small","const":"shadow-sm","type":"string"},{"title":"Medium","const":"shadow-md","type":"string"},{"title":"Large","const":"shadow-lg","type":"string"},{"title":"Extra large","const":"shadow-xl","type":"string"},{"title":"Extra large (2x)","const":"shadow-2xl","type":"string"}],"title":"Shadow","$id":"#styles:shadow"},"textShadow":{"default":"text-shadow-none","ui:field":"enum","anyOf":[{"title":"None","const":"text-shadow-none","type":"string"},{"title":"S","const":"text-shadow-sm","type":"string"},{"title":"M","const":"text-shadow-md","type":"string"},{"title":"L","const":"text-shadow-lg","type":"string"},{"title":"XL","const":"text-shadow-xl","type":"string"}],"title":"Text shadow"}},"required":["opacity","shadow","textShadow"]},"align":{"ui:responsive":true,"ui:field":"align-basic","default":{"horizontal":"justify-start","vertical":"items-center"},"type":"object","properties":{"horizontal":{"title":"Horizontal","anyOf":[{"title":"Left","const":"justify-start","type":"string"},{"title":"Center","const":"justify-center","type":"string"},{"title":"Right","const":"justify-end","type":"string"}]},"vertical":{"title":"Vertical","anyOf":[{"title":"Top","const":"items-start","type":"string"},{"title":"Center","const":"items-center","type":"string"},{"title":"Bottom","const":"items-end","type":"string"}]}},"required":["horizontal","vertical"],"title":"Align","$id":"#styles:basicAlign"},"padding":{"default":"p-4","description":"Space between the content and the border","ui:field":"enum","ui:responsive":true,"anyOf":[{"title":"None","const":"p-0","type":"string"},{"title":"S","const":"p-1","type":"string"},{"title":"M","const":"p-2","type":"string"},{"title":"L","const":"p-4","type":"string"},{"title":"XL","const":"p-8","type":"string"},{"title":"2XL","const":"p-16","type":"string"}],"title":"Padding","$id":"#styles:padding"},"border":{"title":"Border","$id":"#styles:border","default":{},"metadata":{"category":"settings","group":true},"type":"object","properties":{"rounding":{"title":"Corner rounding","ui:field":"enum","ui:display":"select","anyOf":[{"title":"Auto","const":"rounded-auto","type":"string"},{"title":"None","const":"rounded-none","type":"string"},{"title":"Small","const":"rounded-sm","type":"string"},{"title":"Medium","const":"rounded-md","type":"string"},{"title":"Large","const":"rounded-lg","type":"string"},{"title":"Extra large","const":"rounded-xl","type":"string"},{"title":"2xl","const":"rounded-2xl","type":"string"},{"title":"3xl","const":"rounded-3xl","type":"string"},{"title":"Full","const":"rounded-full","type":"string"}]},"width":{"title":"Width","ai:instructions":"Don't specify width if you want no border.","ui:field":"enum","anyOf":[{"title":"None","const":"border-0","type":"string"},{"title":"S","const":"border","type":"string"},{"title":"M","const":"border-2","type":"string"},{"title":"L","const":"border-4","type":"string"},{"title":"XL","const":"border-8","type":"string"}]},"color":{"title":"Color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `border-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900","ui:field":"color","ui:color-type":"border","type":"string"},"sides":{"title":"Sides","description":"The specific sides where to apply the border. Can contain border-(l|t|r|b). Not specifying sides will apply the border to all sides.","ui:field":"border-side","ai:instructions":"Use this to apply the border to specific sides. Not specifying sides will apply the border to all sides.","type":"array","items":{"anyOf":[{"title":"Left","const":"border-l","type":"string"},{"title":"Top","const":"border-t","type":"string"},{"title":"Right","const":"border-r","type":"string"},{"title":"Bottom","const":"border-b","type":"string"}]}},"style":{"title":"Style","description":"The brick border style","ai:instructions":"Use only when width is different than border-0.","ui:field":"enum","ui:display":"button-group","anyOf":[{"title":"Solid","const":"border-solid","type":"string"},{"title":"Dashed","const":"border-dashed","type":"string"},{"title":"Dotted","const":"border-dotted","type":"string"}]}},"required":["color"]}},"required":["content"]}
-```
+Props:
+- `preset`: optional `enum` (see docs)
+- `content`: required `string`. Text content. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists <ul> <ol> <li>.. Default: `"I'm a big text"`. 
+- `tagline`: optional `string`. Text content. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists <ul> <ol> <li>.. Default: `"I'm a tagline"`. 
+- `align`: optional `object`.  Default: `{"horizontal":"justify-start","vertical":"items-center"}`. 
+  - `horizontal`: required `enum`.  Values: `justify-start`, `justify-center`, `justify-end` 
+  - `vertical`: required `enum`.  Values: `items-start`, `items-center`, `items-end` 
 
 ### Image (`image`)
-
 An image brick
 
-
-#### Image  (`image`) Props Schema
-
-```json
-{"type":"object","properties":{"className":{"default":"","ui:field":"hidden","type":"string"},"lastTouched":{"default":0,"ui:field":"hidden","type":"number"},"editable":{"description":"Allow editing. It is automatically set by the editor, so no need to specify it manually.","default":false,"ui:field":"hidden","type":"boolean"},"image":{"ui:field":"image","ui:accept":"image/*","ui:show-img-search":false,"ui:no-object-options":false,"default":{"alt":"Image","fit":"object-cover","position":"object-center"},"type":"object","properties":{"src":{"title":"Image","description":"Image URL. Can be a link to an image or a data URI.","type":"string"},"alt":{"title":"Alternate Text","description":"Alternative text for the image. Recommended for screen readers and SEO.","ui:placeholder":"Your image description","type":"string"},"fit":{"$id":"#styles:objectFit","title":"Fit","description":"How the image should be resized to fit its container.","ui:field":"enum","anyOf":[{"title":"None","const":"object-none","type":"string"},{"title":"Contain","const":"object-contain","type":"string"},{"title":"Cover","const":"object-cover","type":"string"},{"title":"Fill","const":"object-fill","type":"string"},{"title":"Scale down","const":"object-scale-down","type":"string"}]},"position":{"$id":"#styles:objectPosition","title":"Position","description":"The position of the image inside its container.","ui:field":"enum","anyOf":[{"title":"Top","const":"object-top","type":"string"},{"title":"Center","const":"object-center","type":"string"},{"title":"Bottom","const":"object-bottom","type":"string"},{"title":"Left","const":"object-left","type":"string"},{"title":"Right","const":"object-right","type":"string"},{"title":"Top left","const":"object-left-top","type":"string"},{"title":"Top right","const":"object-right-top","type":"string"},{"title":"Bottom left","const":"object-left-bottom","type":"string"},{"title":"Bottom right","const":"object-right-bottom","type":"string"}]}},"required":["src"],"title":"Image"},"backgroundColor":{"ai:instructions":"Use bg-<variant>-<shade> classes as much as possible.","default":"transparent","ui:field":"color","ui:color-type":"background","type":"string","title":"Background color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900","$id":"#styles:backgroundColor"},"border":{"title":"Border","$id":"#styles:border","default":{},"metadata":{"category":"settings","group":true},"type":"object","properties":{"rounding":{"title":"Corner rounding","ui:field":"enum","ui:display":"select","anyOf":[{"title":"Auto","const":"rounded-auto","type":"string"},{"title":"None","const":"rounded-none","type":"string"},{"title":"Small","const":"rounded-sm","type":"string"},{"title":"Medium","const":"rounded-md","type":"string"},{"title":"Large","const":"rounded-lg","type":"string"},{"title":"Extra large","const":"rounded-xl","type":"string"},{"title":"2xl","const":"rounded-2xl","type":"string"},{"title":"3xl","const":"rounded-3xl","type":"string"},{"title":"Full","const":"rounded-full","type":"string"}]},"width":{"title":"Width","ai:instructions":"Don't specify width if you want no border.","ui:field":"enum","anyOf":[{"title":"None","const":"border-0","type":"string"},{"title":"S","const":"border","type":"string"},{"title":"M","const":"border-2","type":"string"},{"title":"L","const":"border-4","type":"string"},{"title":"XL","const":"border-8","type":"string"}]},"color":{"title":"Color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `border-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900","ui:field":"color","ui:color-type":"border","type":"string"},"sides":{"title":"Sides","description":"The specific sides where to apply the border. Can contain border-(l|t|r|b). Not specifying sides will apply the border to all sides.","ui:field":"border-side","ai:instructions":"Use this to apply the border to specific sides. Not specifying sides will apply the border to all sides.","type":"array","items":{"anyOf":[{"title":"Left","const":"border-l","type":"string"},{"title":"Top","const":"border-t","type":"string"},{"title":"Right","const":"border-r","type":"string"},{"title":"Bottom","const":"border-b","type":"string"}]}},"style":{"title":"Style","description":"The brick border style","ai:instructions":"Use only when width is different than border-0.","ui:field":"enum","ui:display":"button-group","anyOf":[{"title":"Solid","const":"border-solid","type":"string"},{"title":"Dashed","const":"border-dashed","type":"string"},{"title":"Dotted","const":"border-dotted","type":"string"}]}},"required":["color"]},"padding":{"default":"p-0","description":"Space between the content and the border","ui:field":"enum","ui:responsive":true,"anyOf":[{"title":"None","const":"p-0","type":"string"},{"title":"S","const":"p-1","type":"string"},{"title":"M","const":"p-2","type":"string"},{"title":"L","const":"p-4","type":"string"},{"title":"XL","const":"p-8","type":"string"},{"title":"2XL","const":"p-16","type":"string"}],"title":"Padding","$id":"#styles:padding"},"shadow":{"default":"shadow-none","ui:field":"enum","ui:display":"select","anyOf":[{"title":"None","const":"shadow-none","type":"string"},{"title":"Small","const":"shadow-sm","type":"string"},{"title":"Medium","const":"shadow-md","type":"string"},{"title":"Large","const":"shadow-lg","type":"string"},{"title":"Extra large","const":"shadow-xl","type":"string"},{"title":"Extra large (2x)","const":"shadow-2xl","type":"string"}],"title":"Shadow","$id":"#styles:shadow"},"blurHash":{"ui:fied":"hidden","type":"string","title":"Blur Hash"},"credits":{"type":"string","title":"Image Credits"}},"required":["image"]}
-```
+Props:
+- `preset`: optional `enum` (see docs)
+- `image`: required `object`.  Default: `{"alt":"Image","fit":"object-cover","position":"object-center"}`. 
+  - `src`: required `string`. Image URL. Can be a link to an image or a data URI. 
+  - `alt`: optional `string`. Alternative text for the image. Recommended for screen readers and SEO. 
+  - `fit`: optional `enum`. How the image should be resized to fit its container. Values: `object-none`, `object-contain`, `object-cover`, `object-fill`, `object-scale-down` 
+  - `position`: optional `enum`. The position of the image inside its container. Values: `object-top`, `object-center`, `object-bottom`, `object-left`, `object-right`, `object-left-top`, `object-right-top`, `object-left-bottom`, `object-right-bottom` 
+- `blurHash`: optional `string`. A placeholder for the image while it is loading. Use a blur hash string.. 
+- `author`: optional `object`.  
+  - `name`: required `string`. Image author. Use this to give credit to the author of the image.. 
+  - `url`: required `string`. Image author URL. Use this to give credit to the author of the image.. 
+- `provider`: optional `string`. Image provider. Use this to give credit to the author of the image.. 
 
 ### Video (`video`)
-
 Youtube video
 
-
-#### Video  (`video`) Props Schema
-
-```json
-{"type":"object","properties":{"className":{"default":"","ui:field":"hidden","type":"string"},"lastTouched":{"default":0,"ui:field":"hidden","type":"number"},"editable":{"description":"Allow editing. It is automatically set by the editor, so no need to specify it manually.","default":false,"ui:field":"hidden","type":"boolean"}}}
-```
+Props:
+- `preset`: optional `enum` (see docs)
+- `youtubeUrl`: required `string`.  
 
 ### Card (`card`)
-
 A multi-purpose card that can have a title, subtitle, image, and content
 
-
-#### Card  (`card`) Props Schema
-
-```json
-{"type":"object","properties":{"className":{"default":"","ui:field":"hidden","type":"string"},"lastTouched":{"default":0,"ui:field":"hidden","type":"number"},"editable":{"description":"Allow editing. It is automatically set by the editor, so no need to specify it manually.","default":false,"ui:field":"hidden","type":"boolean"},"cardTitle":{"title":"Title","metadata":{"category":"settings","group":true},"type":"object","properties":{"content":{"default":"some text here","ui:disable-sizing":false,"ui:disable-alignment":false,"ui:field":"hidden-in-ui","type":"string","title":"Text","description":"The text content of the element. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists.","$id":"#content:text"},"padding":{"default":"p-0","description":"Space between the content and the border","ui:field":"enum","ui:responsive":true,"anyOf":[{"title":"None","const":"p-0","type":"string"},{"title":"S","const":"p-1","type":"string"},{"title":"M","const":"p-2","type":"string"},{"title":"L","const":"p-4","type":"string"},{"title":"XL","const":"p-8","type":"string"},{"title":"2XL","const":"p-16","type":"string"}],"title":"Padding","$id":"#styles:padding"},"backgroundColor":{"ai:instructions":"Use bg-<variant>-<shade> classes as much as possible.","default":"transparent","ui:field":"color","ui:color-type":"background","type":"string","title":"Background color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900","$id":"#styles:backgroundColor"}},"required":["content"]},"cardImage":{"title":"Image","metadata":{"category":"settings","group":true},"type":"object","properties":{"image":{"ui:field":"image","ui:accept":"image/*","ui:show-img-search":false,"ui:no-object-options":false,"default":{"alt":"Image","fit":"object-cover","position":"object-center"},"type":"object","properties":{"src":{"title":"Image","description":"Image URL. Can be a link to an image or a data URI.","type":"string"},"alt":{"title":"Alternate Text","description":"Alternative text for the image. Recommended for screen readers and SEO.","ui:placeholder":"Your image description","type":"string"},"fit":{"$id":"#styles:objectFit","title":"Fit","description":"How the image should be resized to fit its container.","ui:field":"enum","anyOf":[{"title":"None","const":"object-none","type":"string"},{"title":"Contain","const":"object-contain","type":"string"},{"title":"Cover","const":"object-cover","type":"string"},{"title":"Fill","const":"object-fill","type":"string"},{"title":"Scale down","const":"object-scale-down","type":"string"}]},"position":{"$id":"#styles:objectPosition","title":"Position","description":"The position of the image inside its container.","ui:field":"enum","anyOf":[{"title":"Top","const":"object-top","type":"string"},{"title":"Center","const":"object-center","type":"string"},{"title":"Bottom","const":"object-bottom","type":"string"},{"title":"Left","const":"object-left","type":"string"},{"title":"Right","const":"object-right","type":"string"},{"title":"Top left","const":"object-left-top","type":"string"},{"title":"Top right","const":"object-right-top","type":"string"},{"title":"Bottom left","const":"object-left-bottom","type":"string"},{"title":"Bottom right","const":"object-right-bottom","type":"string"}]}},"required":["src"],"title":"Image"}},"required":["image"]},"cardBody":{"title":"Body","metadata":{"category":"settings","group":true},"type":"object","properties":{"content":{"default":"some text here","ui:disable-sizing":false,"ui:disable-alignment":false,"ui:field":"hidden-in-ui","type":"string","title":"Text","description":"The text content of the element. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists.","$id":"#content:text"},"padding":{"default":"p-0","description":"Space between the content and the border","ui:field":"enum","ui:responsive":true,"anyOf":[{"title":"None","const":"p-0","type":"string"},{"title":"S","const":"p-1","type":"string"},{"title":"M","const":"p-2","type":"string"},{"title":"L","const":"p-4","type":"string"},{"title":"XL","const":"p-8","type":"string"},{"title":"2XL","const":"p-16","type":"string"}],"title":"Padding","$id":"#styles:padding"},"backgroundColor":{"ai:instructions":"Use bg-<variant>-<shade> classes as much as possible.","default":"transparent","ui:field":"color","ui:color-type":"background","type":"string","title":"Background color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900","$id":"#styles:backgroundColor"}},"required":["content","padding","backgroundColor"]}},"required":["cardTitle"]}
-```
+Props:
+- `preset`: optional `enum` (see docs)
+- `variants`: required `array`.  Values: `image-first`, `image-last`, `image-overlay`, `image-left-side`, `image-right-side`, `centered`, `large-padding` 
+- `cardTitle`: optional `object`.  
+  - `content`: required `string`. Text content. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists <ul> <ol> <li>.. 
+- `cardImage`: optional `object`.  
+  - `image`: required `object`.  Default: `{"alt":"Image","fit":"object-cover","position":"object-center"}`. 
+    - `src`: required `string`. Image URL. Can be a link to an image or a data URI. 
+    - `alt`: optional `string`. Alternative text for the image. Recommended for screen readers and SEO. 
+    - `fit`: optional `enum`. How the image should be resized to fit its container. Values: `object-none`, `object-contain`, `object-cover`, `object-fill`, `object-scale-down` 
+    - `position`: optional `enum`. The position of the image inside its container. Values: `object-top`, `object-center`, `object-bottom`, `object-left`, `object-right`, `object-left-top`, `object-right-top`, `object-left-bottom`, `object-right-bottom` 
+- `cardBody`: optional `object`.  
+  - `content`: required `string`. Text content. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists <ul> <ol> <li>.. 
 
 ### Map (`map`)
+A map element showing a location
+This brick can be used to show a location on a map. Use the 'location' prop to set the coordinates and an optional tooltip.
 
-A map element with a location
-
-
-#### Map  (`map`) Props Schema
-
-```json
-{"type":"object","properties":{"className":{"default":"","ui:field":"hidden","type":"string"},"lastTouched":{"default":0,"ui:field":"hidden","type":"number"},"editable":{"description":"Allow editing. It is automatically set by the editor, so no need to specify it manually.","default":false,"ui:field":"hidden","type":"boolean"},"location":{"type":"object","properties":{"lat":{"type":"number","title":"Latitude"},"lng":{"type":"number","title":"Longitude"},"tooltip":{"type":"string","title":"Tooltip"}},"required":["lat","lng"],"title":"Location","description":"The location to display on the map"}},"required":["location"]}
-```
+Props:
+- `preset`: optional `enum` (see docs)
+- `location`: required `object`. The location to display on the map. 
+  - `lat`: required `number`.  
+  - `lng`: required `number`.  
+  - `tooltip`: optional `string`.  
 
 ### Form (`form`)
-
 A form element
+The form brick takes a JSON schema as input and generates a form based on it.
+The schema should define the fields using string, number, and boolean types.
+The available string formats are:
+- date-time
+- time
+- date
+- email
+- uri
+- uuid
+- regex
+- password
+- multiline (for textarea)
+The form will be rendered with the specified fields and will handle user input accordingly.
 
-
-#### Form  (`form`) Props Schema
-
-```json
-{"type":"object","properties":{"className":{"default":"","ui:field":"hidden","type":"string"},"lastTouched":{"default":0,"ui:field":"hidden","type":"number"},"editable":{"description":"Allow editing. It is automatically set by the editor, so no need to specify it manually.","default":false,"ui:field":"hidden","type":"boolean"},"title":{"default":"My form","type":"string","title":"Title"},"intro":{"default":"Please fill out the form below","type":"string","title":"Intro"},"fields":{"type":"array","items":{"type":"object","properties":{"name":{"title":"Name","type":"string"},"type":{"title":"Type","enum":["text","email","password","number","checkbox","radio","select","textarea"],"type":"string"},"label":{"title":"Label","type":"string"},"placeholder":{"title":"Placeholder","type":"string"}},"required":["name","type","label"]},"title":"Fields","description":"The fields of the form"}},"required":["title","intro","fields"]}
-```
+Props:
+- `preset`: optional `enum` (see docs)
+- `title`: optional `string`.  The title of the form. Default: `"My form"`. 
+- `intro`: optional `string`.  The intro text of the form. 
+- `fields`: required `object`. The JSON schema of the form fields. 
+- `align`: optional `enum`. The alignment of the form fields. Default is vertical. Only use horizotal for very short forms.. Default: `"vertical"`. Values: `vertical`, `horizontal` 
 
 ### Sidebar (`sidebar`)
-
 A sidebard element
+This brick should be used on most sites/pages for navigation. By deault, it will display links
+    to the main pages of the site. You can customize the links by using the 'navigation.navItems' prop.
 
+Props:
+- `preset`: optional `enum` (see docs)
+- `container`: required `object`.  
+  - `fixedPositioned`: optional `boolean`.  Default: `false`. 
+- `navigation`: required `object`.  
+  - `datasource`: optional `object`. Reference to a data source. Only used for dynamic websites.. 
+    - `mapping`: required `object`. Mapping of data source fields to brick props. 
+    - `filters`: optional `object`. Filter data source records. 
+    - `sort`: optional `object`. Sort data source records. 
+    - `limit`: optional `number`. Limit the number of records to fetch. 
+    - `offset`: optional `number`. Offset the records to fetch. 
+  - `navItems`: optional `object[]`.  Default: `[]`. 
+    - `urlOrPageId`: required `enum`.  Values: `undefined`, `undefined` 
 
-#### Sidebar  (`sidebar`) Props Schema
-
-```json
-{"type":"object","properties":{"className":{"default":"","ui:field":"hidden","type":"string"},"lastTouched":{"default":0,"ui:field":"hidden","type":"number"},"editable":{"description":"Allow editing. It is automatically set by the editor, so no need to specify it manually.","default":false,"ui:field":"hidden","type":"boolean"}}}
-```
 
 ### Gallery (`images-gallery`)
-
 An image collection
+This brick should mostly be used for image galleries and collections.
 
-
-#### Gallery  (`images-gallery`) Props Schema
-
-```json
-{"type":"object","properties":{"className":{"default":"","ui:field":"hidden","type":"string"},"lastTouched":{"default":0,"ui:field":"hidden","type":"number"},"editable":{"description":"Allow editing. It is automatically set by the editor, so no need to specify it manually.","default":false,"ui:field":"hidden","type":"boolean"},"content":{"type":"object","properties":{"isDynamic":{"title":"Use dynamic content","description":"Content can be managed in two ways: Static or Dynamic. Static content is set in the editor. Dynamic content is fetched from a database and can be managed through our CMS.","default":false,"ui:field":"dynamic-content-switch","ui:inspector-tab":"content","ui:order":0,"ui:group:order":0,"ui:group":"content","ui:group:title":"Dynamic / Static Mode","type":"boolean"},"useExistingDatasource":{"title":"Use Existing data source","default":false,"type":"boolean"},"datasource":{"ui:field":"datasource-ref","ui:inspector-tab":"content","description":"Datasource reference. Only used for dynamic websites. Do not use for static websites.","type":"object","properties":{"id":{"title":"Data Source ID","type":"string"},"mapping":{"description":"Mapping of data source fields to brick props","type":"object","patternProperties":{"^(.*)$":{"type":"string"}}},"filters":{"description":"Filter data source records","type":"object","patternProperties":{"^(.*)$":{"type":"object","properties":{"op":{"anyOf":[{"const":"eq","type":"string"},{"const":"ne","type":"string"},{"const":"lt","type":"string"},{"const":"lte","type":"string"},{"const":"gt","type":"string"},{"const":"gte","type":"string"},{"const":"in","type":"string"},{"const":"nin","type":"string"},{"const":"contains","type":"string"},{"const":"startsWith","type":"string"},{"const":"endsWith","type":"string"}]},"value":{"type":"string"}},"required":["op","value"]}}},"sort":{"description":"Sort data source records","type":"object","patternProperties":{"^(.*)$":{"anyOf":[{"title":"Ascending","const":"asc","type":"string"},{"title":"Descending","const":"desc","type":"string"}]}}},"limit":{"description":"Limit the number of records to fetch","type":"number"},"offset":{"description":"Offset the records to fetch","type":"number"}},"required":["id","mapping"]}},"title":"Database","description":"Reference to a data source. Only used for dynamic websites.","$id":"#datasource"},"styles":{"title":"Styles","metadata":{"category":"settings","group":true},"type":"object","properties":{"layout":{"title":"Layout","metadata":{"category":"settings","group":true},"$id":"#styles:containerLayout","type":"object","properties":{"type":{"title":"Layout type","default":"flex","description":"Type of the container. Flex layout arranges items in a one-dimensional line. Grid layout arranges items in a two-dimensional grid","ui:field":"enum","ui:responsive":true,"anyOf":[{"title":"Flex","const":"flex","type":"string"},{"title":"Grid","const":"grid","type":"string"}]},"gap":{"title":"Gap","description":"Space between items","ui:field":"enum","default":"gap-2","anyOf":[{"title":"None","const":"gap-0","type":"string"},{"title":"Small","const":"gap-1","type":"string"},{"title":"Medium","const":"gap-2","type":"string"},{"title":"Large","const":"gap-4","type":"string"},{"title":"XL","const":"gap-8","type":"string"},{"title":"2XL","const":"gap-16","type":"string"}]},"direction":{"title":"Direction","description":"The direction of the container. Only applies to flex layout","default":"flex-row","metadata":{},"anyOf":[{"title":"Row","const":"flex-row","type":"string"},{"title":"Column","const":"flex-col","type":"string"}]},"columns":{"title":"Columns","description":"Number of columns. Only applies to grid layout.","ui:field":"slider","default":2,"minimum":1,"maximum":12,"metadata":{},"type":"number"},"wrap":{"title":"Wrap","description":"Wrap items. Only applies to flex layout.","default":true,"metadata":{},"type":"boolean"},"fillSpace":{"title":"Fill space","description":"Makes items of the container fill the available space. Only applies to flex layout.","default":true,"metadata":{},"type":"boolean"},"justifyContent":{"title":"Justify","default":"justify-stretch","description":"Justify content along the main axis (horizontal for row, vertical for column). Only applies to flex layout","metadata":{},"anyOf":[{"title":"Start","const":"justify-start","type":"string"},{"title":"Center","const":"justify-center","type":"string"},{"title":"End","const":"justify-end","type":"string"},{"title":"Space between","const":"justify-between","type":"string"},{"title":"Space around","const":"justify-around","type":"string"},{"title":"Evenly distributed","const":"justify-evenly","type":"string"},{"title":"Stretch","const":"justify-stretch","type":"string"}]},"alignItems":{"title":"Alignment","default":"items-stretch","description":"Align items along the cross axis (vertical for row, horizontal for column). Only applies to flex layout","metadata":{},"anyOf":[{"title":"Start","const":"items-start","type":"string"},{"title":"Center","const":"items-center","type":"string"},{"title":"End","const":"items-end","type":"string"},{"title":"Stretch","const":"items-stretch","type":"string"}]}},"required":["type","gap","wrap","fillSpace"]}},"required":["layout"]}},"required":["styles"]}
-```
+Props:
+- `preset`: optional `enum` (see docs)
+- `content`: optional `object`. Reference to a data source. Only used for dynamic websites.. 
+  - `mapping`: required `object`. Mapping of data source fields to brick props. 
+  - `filters`: optional `object`. Filter data source records. 
+  - `sort`: optional `object`. Sort data source records. 
+  - `limit`: optional `number`. Limit the number of records to fetch. 
+  - `offset`: optional `number`. Offset the records to fetch. 
+- `styles`: required `object`.  
+  - `layout`: required `object`.  
+    - `type`: required `enum`. Type of the container. Flex layout arranges items in a one-dimensional line. Grid layout arranges items in a two-dimensional grid. Default: `"flex"`. Values: `flex`, `grid` 
+    - `gap`: required `enum`. Space between items. Default: `"gap-2"`. Values: `gap-0`, `gap-1`, `gap-2`, `gap-4`, `gap-8`, `gap-16` 
+    - `direction`: optional `enum`. The direction of the container. Only applies to flex layout. Default: `"flex-row"`. Values: `flex-row`, `flex-col` 
+    - `columns`: optional `number`. Number of columns. Only applies to grid layout.. Default: `2`. 
+    - `wrap`: required `boolean`. Wrap items. Only applies to flex layout.. Default: `true`. 
+    - `fillSpace`: required `boolean`. Makes items of the container fill the available space. Only applies to flex layout.. Default: `true`. 
+    - `justifyContent`: optional `enum`. Justify content along the main axis (horizontal for row, vertical for column). Only applies to flex layout. Default: `"justify-stretch"`. Values: `justify-start`, `justify-center`, `justify-end`, `justify-between`, `justify-around`, `justify-evenly`, `justify-stretch` 
+    - `alignItems`: optional `enum`. Align items along the cross axis (vertical for row, horizontal for column). Only applies to flex layout. Default: `"items-stretch"`. Values: `items-start`, `items-center`, `items-end`, `items-stretch` 
 
 ### Carousel (`carousel`)
-
 A carousel element
 
-
-#### Carousel  (`carousel`) Props Schema
-
-```json
-{"type":"object","properties":{"className":{"default":"","ui:field":"hidden","type":"string"},"lastTouched":{"default":0,"ui:field":"hidden","type":"number"},"editable":{"description":"Allow editing. It is automatically set by the editor, so no need to specify it manually.","default":false,"ui:field":"hidden","type":"boolean"}}}
-```
+Props:
+- `preset`: optional `enum` (see docs)
+- `variants`: required `array`.  Values: `pager-arrows`, `pager-numbers`, `pager-dots` 
 
 ### Header (`header`)
-
 A header with logo and navigation
+This brick should be used on most sites/pages.
 
+Props:
+- `preset`: optional `enum` (see docs)
+- `container`: required `object`.  
+  - `fixedPositioned`: optional `boolean`.  Default: `false`. 
+- `brand`: required `object`.  
+  - `name`: optional `string`. Text content. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists <ul> <ol> <li>.. Default: `"Acme Inc."`. 
+  - `logo`: optional `object`.  Default: `{"alt":"Image","fit":"object-cover","position":"object-center"}`. 
+    - `src`: required `string`. Image URL. Can be a link to an image or a data URI. 
+    - `alt`: optional `string`. Alternative text for the image. Recommended for screen readers and SEO. 
+    - `fit`: optional `enum`. How the image should be resized to fit its container. Values: `object-none`, `object-contain`, `object-cover`, `object-fill`, `object-scale-down` 
+    - `position`: optional `enum`. The position of the image inside its container. Values: `object-top`, `object-center`, `object-bottom`, `object-left`, `object-right`, `object-left-top`, `object-right-top`, `object-left-bottom`, `object-right-bottom` 
+  - `hideText`: optional `boolean`.  Default: `false`. 
+- `navigation`: required `object`.  
+  - `position`: required `enum`.  Default: `"right"`. Values: `left`, `center`, `right` 
+  - `datasource`: optional `object`. Reference to a data source. Only used for dynamic websites.. 
+    - `mapping`: required `object`. Mapping of data source fields to brick props. 
+    - `filters`: optional `object`. Filter data source records. 
+    - `sort`: optional `object`. Sort data source records. 
+    - `limit`: optional `number`. Limit the number of records to fetch. 
+    - `offset`: optional `number`. Offset the records to fetch. 
+  - `navItems`: required `object[]`.  Default: `[]`. 
+    - `urlOrPageId`: required `enum`.  Values: `undefined`, `undefined` 
 
-#### Header  (`header`) Props Schema
-
-```json
-{"type":"object","properties":{"className":{"default":"","ui:field":"hidden","type":"string"},"lastTouched":{"default":0,"ui:field":"hidden","type":"number"},"editable":{"description":"Allow editing. It is automatically set by the editor, so no need to specify it manually.","default":false,"ui:field":"hidden","type":"boolean"},"container":{"title":"Main element","metadata":{"category":"settings","group":true,"ui:responsive":true},"type":"object","properties":{"backgroundColor":{"ai:instructions":"Use bg-<variant>-<shade> classes as much as possible.","default":"transparent","ui:field":"color","ui:color-type":"background","type":"string","title":"Background color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900","$id":"#styles:backgroundColor"},"border":{"title":"Border","$id":"#styles:border","default":{},"metadata":{"category":"settings","group":true},"type":"object","properties":{"rounding":{"title":"Corner rounding","ui:field":"enum","ui:display":"select","anyOf":[{"title":"Auto","const":"rounded-auto","type":"string"},{"title":"None","const":"rounded-none","type":"string"},{"title":"Small","const":"rounded-sm","type":"string"},{"title":"Medium","const":"rounded-md","type":"string"},{"title":"Large","const":"rounded-lg","type":"string"},{"title":"Extra large","const":"rounded-xl","type":"string"},{"title":"2xl","const":"rounded-2xl","type":"string"},{"title":"3xl","const":"rounded-3xl","type":"string"},{"title":"Full","const":"rounded-full","type":"string"}]},"width":{"title":"Width","ai:instructions":"Don't specify width if you want no border.","ui:field":"enum","anyOf":[{"title":"None","const":"border-0","type":"string"},{"title":"S","const":"border","type":"string"},{"title":"M","const":"border-2","type":"string"},{"title":"L","const":"border-4","type":"string"},{"title":"XL","const":"border-8","type":"string"}]},"color":{"title":"Color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `border-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900","ui:field":"color","ui:color-type":"border","type":"string"},"sides":{"title":"Sides","description":"The specific sides where to apply the border. Can contain border-(l|t|r|b). Not specifying sides will apply the border to all sides.","ui:field":"border-side","ai:instructions":"Use this to apply the border to specific sides. Not specifying sides will apply the border to all sides.","type":"array","items":{"anyOf":[{"title":"Left","const":"border-l","type":"string"},{"title":"Top","const":"border-t","type":"string"},{"title":"Right","const":"border-r","type":"string"},{"title":"Bottom","const":"border-b","type":"string"}]}},"style":{"title":"Style","description":"The brick border style","ai:instructions":"Use only when width is different than border-0.","ui:field":"enum","ui:display":"button-group","anyOf":[{"title":"Solid","const":"border-solid","type":"string"},{"title":"Dashed","const":"border-dashed","type":"string"},{"title":"Dotted","const":"border-dotted","type":"string"}]}},"required":["color"]},"shadow":{"default":"shadow-none","ui:field":"enum","ui:display":"select","anyOf":[{"title":"None","const":"shadow-none","type":"string"},{"title":"Small","const":"shadow-sm","type":"string"},{"title":"Medium","const":"shadow-md","type":"string"},{"title":"Large","const":"shadow-lg","type":"string"},{"title":"Extra large","const":"shadow-xl","type":"string"},{"title":"Extra large (2x)","const":"shadow-2xl","type":"string"}],"title":"Shadow","$id":"#styles:shadow"},"fixedPositioned":{"default":false,"type":"boolean","title":"Fixed position","$id":"#styles:fixedPositioned"}},"required":["backgroundColor"]},"brand":{"title":"Brand","metadata":{"category":"settings","group":true},"type":"object","properties":{"name":{"default":"Acme Inc.","ui:disable-sizing":true,"ui:disable-alignment":false,"ui:field":"hidden-in-ui","type":"string","title":"Brand name","description":"The text content of the element. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists.","$id":"#content:text"},"logo":{"ui:field":"image","ui:accept":"image/*","ui:show-img-search":false,"ui:no-object-options":true,"default":{"alt":"Image","fit":"object-cover","position":"object-center"},"type":"object","properties":{"src":{"title":"Logo","description":"Image URL. Can be a link to an image or a data URI.","type":"string"},"alt":{"title":"Alternate Text","description":"Alternative text for the image. Recommended for screen readers and SEO.","ui:placeholder":"Your image description","type":"string"},"fit":{"$id":"#styles:objectFit","title":"Fit","description":"How the image should be resized to fit its container.","ui:field":"enum","anyOf":[{"title":"None","const":"object-none","type":"string"},{"title":"Contain","const":"object-contain","type":"string"},{"title":"Cover","const":"object-cover","type":"string"},{"title":"Fill","const":"object-fill","type":"string"},{"title":"Scale down","const":"object-scale-down","type":"string"}]},"position":{"$id":"#styles:objectPosition","title":"Position","description":"The position of the image inside its container.","ui:field":"enum","anyOf":[{"title":"Top","const":"object-top","type":"string"},{"title":"Center","const":"object-center","type":"string"},{"title":"Bottom","const":"object-bottom","type":"string"},{"title":"Left","const":"object-left","type":"string"},{"title":"Right","const":"object-right","type":"string"},{"title":"Top left","const":"object-left-top","type":"string"},{"title":"Top right","const":"object-right-top","type":"string"},{"title":"Bottom left","const":"object-left-bottom","type":"string"},{"title":"Bottom right","const":"object-right-bottom","type":"string"}]}},"required":["src"],"title":"Logo"},"hideText":{"default":false,"type":"boolean","title":"Hide text"},"color":{"default":"color-auto","ui:field":"color","ui:color-type":"text","ui:inspector-tab":"style","type":"string","title":"Text color","description":"Can be set to `transparent`, hex/rgb/rgba color, `color-auto` to automatically contrast with background, or even classes like `text-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900","$id":"#styles:color"}},"required":["color"]},"navigation":{"title":"Links","metadata":{"category":"settings","group":true},"type":"object","properties":{"position":{"default":"right","anyOf":[{"title":"Left","const":"left","type":"string"},{"title":"Center","const":"center","type":"string"},{"title":"Right","const":"right","type":"string"}],"title":"Position"},"color":{"default":"color-auto","ui:field":"color","ui:color-type":"text","ui:inspector-tab":"style","type":"string","title":"Text color","description":"Can be set to `transparent`, hex/rgb/rgba color, `color-auto` to automatically contrast with background, or even classes like `text-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900","$id":"#styles:color"},"datasource":{"type":"object","properties":{"isDynamic":{"title":"Use dynamic content","description":"Content can be managed in two ways: Static or Dynamic. Static content is set in the editor. Dynamic content is fetched from a database and can be managed through our CMS.","default":false,"ui:field":"dynamic-content-switch","ui:inspector-tab":"content","ui:order":0,"ui:group:order":0,"ui:group":"content","ui:group:title":"Dynamic / Static Mode","type":"boolean"},"useExistingDatasource":{"title":"Use Existing data source","default":false,"type":"boolean"},"datasource":{"ui:field":"datasource-ref","ui:inspector-tab":"content","description":"Datasource reference. Only used for dynamic websites. Do not use for static websites.","type":"object","properties":{"id":{"title":"Data Source ID","type":"string"},"mapping":{"description":"Mapping of data source fields to brick props","type":"object","patternProperties":{"^(.*)$":{"type":"string"}}},"filters":{"description":"Filter data source records","type":"object","patternProperties":{"^(.*)$":{"type":"object","properties":{"op":{"anyOf":[{"const":"eq","type":"string"},{"const":"ne","type":"string"},{"const":"lt","type":"string"},{"const":"lte","type":"string"},{"const":"gt","type":"string"},{"const":"gte","type":"string"},{"const":"in","type":"string"},{"const":"nin","type":"string"},{"const":"contains","type":"string"},{"const":"startsWith","type":"string"},{"const":"endsWith","type":"string"}]},"value":{"type":"string"}},"required":["op","value"]}}},"sort":{"description":"Sort data source records","type":"object","patternProperties":{"^(.*)$":{"anyOf":[{"title":"Ascending","const":"asc","type":"string"},{"title":"Descending","const":"desc","type":"string"}]}}},"limit":{"description":"Limit the number of records to fetch","type":"number"},"offset":{"description":"Offset the records to fetch","type":"number"}},"required":["id","mapping"]}},"title":"Database","description":"Reference to a data source. Only used for dynamic websites.","$id":"#datasource"},"navItems":{"title":"Nav items","default":[],"type":"array","items":{"type":"object","properties":{"urlOrPageId":{"title":"URL or Page ID","ai:instructions":"This field can be a URL or a page ID. Use the page ID when linking to a internal page, and a URL for external links.","anyOf":[{"format":"uri","ui:field":"url","type":"string"},{"ui:field":"page-id","type":"string"}]}},"required":["urlOrPageId"]}}},"required":["position","color","navItems"]}},"required":["container","brand","navigation"]}
-```
 
 ### Footer (`footer`)
+A footer with links and an optional logo
 
-A footer with links and social media icons
+Props:
+- `preset`: optional `enum` (see docs)
+- `variants`: required `array`.  Values: `logo-left` (Logo on the left), `logo-right` (Logo on the right), `logo-center` (Logo at center), `multiple-rows` (Span on multiple rows. Use when there a a lot of links sections) 
+- `logo`: optional `object`.  Default: `{"alt":"Image","fit":"object-cover","position":"object-center"}`. 
+  - `src`: required `string`. Image URL. Can be a link to an image or a data URI. 
+  - `alt`: optional `string`. Alternative text for the image. Recommended for screen readers and SEO. 
+  - `fit`: optional `enum`. How the image should be resized to fit its container. Values: `object-none`, `object-contain`, `object-cover`, `object-fill`, `object-scale-down` 
+  - `position`: optional `enum`. The position of the image inside its container. Values: `object-top`, `object-center`, `object-bottom`, `object-left`, `object-right`, `object-left-top`, `object-right-top`, `object-left-bottom`, `object-right-bottom` 
+- `linksSections`: required `object[]`.  
+  - `sectionTitle`: required `string`.  
+  - `row`: optional `number`. Row number of the section. Default: `0`. 
+  - `links`: required `object[]`.  
+    - `title`: required `string`.  
+    - `url`: required `enum`.  Values: `undefined`, `undefined` 
+    - `column`: optional `number`.  Default: `1`. 
 
 
-#### Footer  (`footer`) Props Schema
-
-```json
-{"type":"object","properties":{"className":{"default":"","ui:field":"hidden","type":"string"},"lastTouched":{"default":0,"ui:field":"hidden","type":"number"},"editable":{"description":"Allow editing. It is automatically set by the editor, so no need to specify it manually.","default":false,"ui:field":"hidden","type":"boolean"},"styles":{"title":"Styles","metadata":{"category":"settings","group":true},"type":"object","properties":{"backgroundColor":{"type":"string","title":"Background color"},"columns":{"default":3,"type":"number","title":"Columns"}},"required":["backgroundColor","columns"]},"links":{"type":"array","items":{"type":"object","properties":{"title":{"type":"string","title":"Title"},"url":{"title":"URL or Page ID","ai:instructions":"This field can be a URL or a page ID. Use the page ID when linking to a internal page, and a URL for external links.","anyOf":[{"format":"uri","ui:field":"url","type":"string"},{"ui:field":"page-id","type":"string"}]},"column":{"default":1,"type":"number","title":"Column"}},"required":["title","url"]}}},"required":["styles","links"]}
-```
 
 ### Button (`button`)
-
 A button with text and optional icon
 
-
-#### Button  (`button`) Props Schema
-
-```json
-{"type":"object","properties":{"className":{"default":"","ui:field":"hidden","type":"string"},"lastTouched":{"default":0,"ui:field":"hidden","type":"number"},"editable":{"description":"Allow editing. It is automatically set by the editor, so no need to specify it manually.","default":false,"ui:field":"hidden","type":"boolean"},"label":{"default":"My button","ui:disable-sizing":false,"ui:disable-alignment":false,"ui:field":"hidden-in-ui","type":"string","title":"Label","description":"The text content of the element. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists.","$id":"#content:text"},"type":{"title":"Type","description":"The type of the button","default":"button","anyOf":[{"title":"Button","const":"button","type":"string"},{"title":"Submit","const":"submit","type":"string"},{"title":"Reset","const":"reset","type":"string"}]},"linkToUrlOrPageId":{"title":"Link","ai:instructions":"This field can be a URL or a page ID. Use the page ID when linking to a internal page, and a URL for external links.","anyOf":[{"format":"uri","ui:field":"url","type":"string"},{"ui:field":"page-id","type":"string"}]},"backgroundColor":{"ai:instructions":"Use bg-<variant>-<shade> classes as much as possible.","default":"bg-primary-70","ui:field":"color","ui:color-type":"background","type":"string","title":"Background color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900","$id":"#styles:backgroundColor"},"color":{"default":"color-auto","ui:field":"color","ui:color-type":"text","ui:inspector-tab":"style","type":"string","title":"Text color","description":"Can be set to `transparent`, hex/rgb/rgba color, `color-auto` to automatically contrast with background, or even classes like `text-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900","$id":"#styles:color"},"padding":{"default":"p-2","description":"Space between the content and the border","ui:field":"enum","ui:responsive":true,"anyOf":[{"title":"None","const":"p-0","type":"string"},{"title":"S","const":"p-1","type":"string"},{"title":"M","const":"p-2","type":"string"},{"title":"L","const":"p-4","type":"string"},{"title":"XL","const":"p-8","type":"string"},{"title":"2XL","const":"p-16","type":"string"}],"title":"Padding","$id":"#styles:padding"},"border":{"title":"Border","$id":"#styles:border","default":{},"metadata":{"category":"settings","group":true},"type":"object","properties":{"rounding":{"title":"Corner rounding","ui:field":"enum","ui:display":"select","anyOf":[{"title":"Auto","const":"rounded-auto","type":"string"},{"title":"None","const":"rounded-none","type":"string"},{"title":"Small","const":"rounded-sm","type":"string"},{"title":"Medium","const":"rounded-md","type":"string"},{"title":"Large","const":"rounded-lg","type":"string"},{"title":"Extra large","const":"rounded-xl","type":"string"},{"title":"2xl","const":"rounded-2xl","type":"string"},{"title":"3xl","const":"rounded-3xl","type":"string"},{"title":"Full","const":"rounded-full","type":"string"}]},"width":{"title":"Width","ai:instructions":"Don't specify width if you want no border.","ui:field":"enum","anyOf":[{"title":"None","const":"border-0","type":"string"},{"title":"S","const":"border","type":"string"},{"title":"M","const":"border-2","type":"string"},{"title":"L","const":"border-4","type":"string"},{"title":"XL","const":"border-8","type":"string"}]},"color":{"title":"Color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `border-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900","ui:field":"color","ui:color-type":"border","type":"string"},"sides":{"title":"Sides","description":"The specific sides where to apply the border. Can contain border-(l|t|r|b). Not specifying sides will apply the border to all sides.","ui:field":"border-side","ai:instructions":"Use this to apply the border to specific sides. Not specifying sides will apply the border to all sides.","type":"array","items":{"anyOf":[{"title":"Left","const":"border-l","type":"string"},{"title":"Top","const":"border-t","type":"string"},{"title":"Right","const":"border-r","type":"string"},{"title":"Bottom","const":"border-b","type":"string"}]}},"style":{"title":"Style","description":"The brick border style","ai:instructions":"Use only when width is different than border-0.","ui:field":"enum","ui:display":"button-group","anyOf":[{"title":"Solid","const":"border-solid","type":"string"},{"title":"Dashed","const":"border-dashed","type":"string"},{"title":"Dotted","const":"border-dotted","type":"string"}]}},"required":["color"]},"effects":{"title":"Effects","default":{},"metadata":{"category":"settings","group":true},"type":"object","properties":{"opacity":{"minimum":0.1,"maximum":1,"default":1,"multipleOf":0.1,"ui:field":"slider","ui:unit":"%","ui:multiplier":100,"type":"number","title":"Opacity"},"shadow":{"default":"shadow-none","ui:field":"enum","ui:display":"select","anyOf":[{"title":"None","const":"shadow-none","type":"string"},{"title":"Small","const":"shadow-sm","type":"string"},{"title":"Medium","const":"shadow-md","type":"string"},{"title":"Large","const":"shadow-lg","type":"string"},{"title":"Extra large","const":"shadow-xl","type":"string"},{"title":"Extra large (2x)","const":"shadow-2xl","type":"string"}],"title":"Shadow","$id":"#styles:shadow"},"textShadow":{"default":"text-shadow-none","ui:field":"enum","anyOf":[{"title":"None","const":"text-shadow-none","type":"string"},{"title":"S","const":"text-shadow-sm","type":"string"},{"title":"M","const":"text-shadow-md","type":"string"},{"title":"L","const":"text-shadow-lg","type":"string"},{"title":"XL","const":"text-shadow-xl","type":"string"}],"title":"Text shadow"}},"required":["opacity","shadow","textShadow"]}},"required":["label","type","backgroundColor","color"]}
-```
+Props:
+- `preset`: optional `enum` (see docs)
+- `variants`: required `array`.  Values: `centered`, `uppercase` 
+- `label`: required `string`. Text content. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists <ul> <ol> <li>.. Default: `"My button"`. 
+- `type`: required `enum`. The type of the button. Default: `"button"`. Values: `button`, `submit`, `reset` 
+- `linkToUrlOrPageId`: optional `enum`.  Values: `undefined`, `undefined` 
 
 ### Icon (`icon`)
-
 An icon with optional text
 
-
-#### Icon  (`icon`) Props Schema
-
-```json
-{"type":"object","properties":{"className":{"default":"","ui:field":"hidden","type":"string"},"lastTouched":{"default":0,"ui:field":"hidden","type":"number"},"editable":{"description":"Allow editing. It is automatically set by the editor, so no need to specify it manually.","default":false,"ui:field":"hidden","type":"boolean"}}}
-```
+Props:
+- `preset`: optional `enum` (see docs)
+- `icon`: required `string`. Icon to display (iconify reference). 
+- `size`: required `string`. Size of the icon. Default: `"1em"`. 
 
 ### Social links (`social-links`)
-
 A list of social media links
 
+Props:
+- `preset`: optional `enum` (see docs)
+- `links`: required `object[]`.  
+  - `href`: required `string`.  
+  - `label`: optional `string`.  
+  - `icon`: optional `string`. Icon to display (iconify reference). 
 
-#### Social links  (`social-links`) Props Schema
-
-```json
-{"type":"object","properties":{"className":{"default":"","ui:field":"hidden","type":"string"},"lastTouched":{"default":0,"ui:field":"hidden","type":"number"},"editable":{"description":"Allow editing. It is automatically set by the editor, so no need to specify it manually.","default":false,"ui:field":"hidden","type":"boolean"}}}
-```
-
-### Generic component (`generic-component`)
-
-A generic component
-
-
-#### Generic component  (`generic-component`) Props Schema
-
-```json
-{"type":"object","properties":{"className":{"default":"","ui:field":"hidden","type":"string"},"lastTouched":{"default":0,"ui:field":"hidden","type":"number"},"editable":{"description":"Allow editing. It is automatically set by the editor, so no need to specify it manually.","default":false,"ui:field":"hidden","type":"boolean"},"render":{"title":"React component","type":"Function","parameters":[{"additionalProperties":true,"type":"object","properties":{}}],"returns":{}},"componentProps":{"additionalProperties":true,"type":"object","properties":{}}},"required":["render"]}
-```
+- `variants`: required `array`.  Values: `icon-only` (Display only icons), `display-inline` (Display links inline), `display-block` (Display links as block elements) 
 
 ### Container (`container`)
-
 A container that can hold other bricks and align them horizontally or vertically
-
-
-#### Container  (`container`) Props Schema
+A container acts as a flexbox (default) or a grid and allows you to align bricks horizontally, vertically, or in a grid.
+Here is an example of a container with a background image and padding, displaying a text and a image horizontaly:
 
 ```json
-{"type":"object","properties":{"className":{"default":"","ui:field":"hidden","type":"string"},"lastTouched":{"default":0,"ui:field":"hidden","type":"number"},"editable":{"description":"Allow editing. It is automatically set by the editor, so no need to specify it manually.","default":false,"ui:field":"hidden","type":"boolean"},"layout":{"title":"Layout","metadata":{"category":"settings","group":true},"$id":"#styles:containerLayout","type":"object","properties":{"type":{"title":"Layout type","default":"flex","description":"Type of the container. Flex layout arranges items in a one-dimensional line. Grid layout arranges items in a two-dimensional grid","ui:field":"enum","ui:responsive":true,"anyOf":[{"title":"Flex","const":"flex","type":"string"},{"title":"Grid","const":"grid","type":"string"}]},"gap":{"title":"Gap","description":"Space between items","ui:field":"enum","default":"gap-2","anyOf":[{"title":"None","const":"gap-0","type":"string"},{"title":"Small","const":"gap-1","type":"string"},{"title":"Medium","const":"gap-2","type":"string"},{"title":"Large","const":"gap-4","type":"string"},{"title":"XL","const":"gap-8","type":"string"},{"title":"2XL","const":"gap-16","type":"string"}]},"direction":{"title":"Direction","description":"The direction of the container. Only applies to flex layout","default":"flex-row","metadata":{},"anyOf":[{"title":"Row","const":"flex-row","type":"string"},{"title":"Column","const":"flex-col","type":"string"}]},"columns":{"title":"Columns","description":"Number of columns. Only applies to grid layout.","ui:field":"slider","default":2,"minimum":1,"maximum":12,"metadata":{},"type":"number"},"wrap":{"title":"Wrap","description":"Wrap items. Only applies to flex layout.","default":true,"metadata":{},"type":"boolean"},"fillSpace":{"title":"Fill space","description":"Makes items of the container fill the available space. Only applies to flex layout.","default":true,"metadata":{},"type":"boolean"},"justifyContent":{"title":"Justify","default":"justify-stretch","description":"Justify content along the main axis (horizontal for row, vertical for column). Only applies to flex layout","metadata":{},"anyOf":[{"title":"Start","const":"justify-start","type":"string"},{"title":"Center","const":"justify-center","type":"string"},{"title":"End","const":"justify-end","type":"string"},{"title":"Space between","const":"justify-between","type":"string"},{"title":"Space around","const":"justify-around","type":"string"},{"title":"Evenly distributed","const":"justify-evenly","type":"string"},{"title":"Stretch","const":"justify-stretch","type":"string"}]},"alignItems":{"title":"Alignment","default":"items-stretch","description":"Align items along the cross axis (vertical for row, horizontal for column). Only applies to flex layout","metadata":{},"anyOf":[{"title":"Start","const":"items-start","type":"string"},{"title":"Center","const":"items-center","type":"string"},{"title":"End","const":"items-end","type":"string"},{"title":"Stretch","const":"items-stretch","type":"string"}]}},"required":["type","gap","wrap","fillSpace"]},"background":{"ui:field":"background","ui:group":"background","ui:group:title":"Background","ui:color-type":"background","ui:show-img-search":true,"ui:inspector-tab":"style","default":{},"type":"object","properties":{"color":{"title":"Color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900.","ai:instructions":"Use bg-<variant>-<shade> classes as much as possible.","type":"string"},"image":{"title":"Image","description":"The background image. Can be a URL or a data URI","type":"string"},"size":{"default":"auto","ai:instructions":"Only use this when the image is set.","anyOf":[{"title":"Auto","const":"auto","type":"string"},{"title":"Cover","const":"cover","type":"string"},{"title":"Contain","const":"contain","type":"string"}]},"repeat":{"default":"no-repeat","ai:instructions":"Only use this when the image is set.","anyOf":[{"title":"No repeat","const":"no-repeat","type":"string"},{"title":"Repeat","const":"repeat","type":"string"},{"title":"Repeat horizontally","const":"repeat-x","type":"string"},{"title":"Repeat vertically","const":"repeat-y","type":"string"},{"title":"Space","const":"space","type":"string"},{"title":"Round","const":"round","type":"string"}]}},"title":"Background","$id":"#styles:background"},"border":{"title":"Border","$id":"#styles:border","default":{},"metadata":{"category":"settings","group":true},"type":"object","properties":{"rounding":{"title":"Corner rounding","ui:field":"enum","ui:display":"select","anyOf":[{"title":"Auto","const":"rounded-auto","type":"string"},{"title":"None","const":"rounded-none","type":"string"},{"title":"Small","const":"rounded-sm","type":"string"},{"title":"Medium","const":"rounded-md","type":"string"},{"title":"Large","const":"rounded-lg","type":"string"},{"title":"Extra large","const":"rounded-xl","type":"string"},{"title":"2xl","const":"rounded-2xl","type":"string"},{"title":"3xl","const":"rounded-3xl","type":"string"},{"title":"Full","const":"rounded-full","type":"string"}]},"width":{"title":"Width","ai:instructions":"Don't specify width if you want no border.","ui:field":"enum","anyOf":[{"title":"None","const":"border-0","type":"string"},{"title":"S","const":"border","type":"string"},{"title":"M","const":"border-2","type":"string"},{"title":"L","const":"border-4","type":"string"},{"title":"XL","const":"border-8","type":"string"}]},"color":{"title":"Color","description":"Can be set to transparent, hex/rgb/rgba color, or even classes like `border-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900","ui:field":"color","ui:color-type":"border","type":"string"},"sides":{"title":"Sides","description":"The specific sides where to apply the border. Can contain border-(l|t|r|b). Not specifying sides will apply the border to all sides.","ui:field":"border-side","ai:instructions":"Use this to apply the border to specific sides. Not specifying sides will apply the border to all sides.","type":"array","items":{"anyOf":[{"title":"Left","const":"border-l","type":"string"},{"title":"Top","const":"border-t","type":"string"},{"title":"Right","const":"border-r","type":"string"},{"title":"Bottom","const":"border-b","type":"string"}]}},"style":{"title":"Style","description":"The brick border style","ai:instructions":"Use only when width is different than border-0.","ui:field":"enum","ui:display":"button-group","anyOf":[{"title":"Solid","const":"border-solid","type":"string"},{"title":"Dashed","const":"border-dashed","type":"string"},{"title":"Dotted","const":"border-dotted","type":"string"}]}},"required":["color"]},"padding":{"default":"p-0","description":"Space between the content and the border","ui:field":"enum","ui:responsive":true,"anyOf":[{"title":"None","const":"p-0","type":"string"},{"title":"S","const":"p-1","type":"string"},{"title":"M","const":"p-2","type":"string"},{"title":"L","const":"p-4","type":"string"},{"title":"XL","const":"p-8","type":"string"},{"title":"2XL","const":"p-16","type":"string"}],"title":"Padding","$id":"#styles:padding"},"effects":{"title":"Effects","default":{},"metadata":{"category":"settings","group":true},"type":"object","properties":{"opacity":{"minimum":0.1,"maximum":1,"default":1,"multipleOf":0.1,"ui:field":"slider","ui:unit":"%","ui:multiplier":100,"type":"number","title":"Opacity"},"shadow":{"default":"shadow-none","ui:field":"enum","ui:display":"select","anyOf":[{"title":"None","const":"shadow-none","type":"string"},{"title":"Small","const":"shadow-sm","type":"string"},{"title":"Medium","const":"shadow-md","type":"string"},{"title":"Large","const":"shadow-lg","type":"string"},{"title":"Extra large","const":"shadow-xl","type":"string"},{"title":"Extra large (2x)","const":"shadow-2xl","type":"string"}],"title":"Shadow","$id":"#styles:shadow"}},"required":["opacity","shadow"]},"datasource":{"type":"object","properties":{"isDynamic":{"title":"Use dynamic content","description":"Content can be managed in two ways: Static or Dynamic. Static content is set in the editor. Dynamic content is fetched from a database and can be managed through our CMS.","default":false,"ui:field":"dynamic-content-switch","ui:inspector-tab":"content","ui:order":0,"ui:group:order":0,"ui:group":"content","ui:group:title":"Dynamic / Static Mode","type":"boolean"},"useExistingDatasource":{"title":"Use Existing data source","default":false,"type":"boolean"},"datasource":{"ui:field":"datasource-ref","ui:inspector-tab":"content","description":"Datasource reference. Only used for dynamic websites. Do not use for static websites.","type":"object","properties":{"id":{"title":"Data Source ID","type":"string"},"mapping":{"description":"Mapping of data source fields to brick props","type":"object","patternProperties":{"^(.*)$":{"type":"string"}}},"filters":{"description":"Filter data source records","type":"object","patternProperties":{"^(.*)$":{"type":"object","properties":{"op":{"anyOf":[{"const":"eq","type":"string"},{"const":"ne","type":"string"},{"const":"lt","type":"string"},{"const":"lte","type":"string"},{"const":"gt","type":"string"},{"const":"gte","type":"string"},{"const":"in","type":"string"},{"const":"nin","type":"string"},{"const":"contains","type":"string"},{"const":"startsWith","type":"string"},{"const":"endsWith","type":"string"}]},"value":{"type":"string"}},"required":["op","value"]}}},"sort":{"description":"Sort data source records","type":"object","patternProperties":{"^(.*)$":{"anyOf":[{"title":"Ascending","const":"asc","type":"string"},{"title":"Descending","const":"desc","type":"string"}]}}},"limit":{"description":"Limit the number of records to fetch","type":"number"},"offset":{"description":"Offset the records to fetch","type":"number"}},"required":["id","mapping"]}},"title":"Database","description":"Reference to a data source. Only used for dynamic websites.","$id":"#datasource"},"$childrenType":{"$id":"#container:childrenType","title":"Dynamic child brick type","description":"Type of the child bricks that will be created when container is dynamic.","ui:field":"brick-type","metadata":{"category":"content"},"type":"string"},"$children":{"$id":"#container:childrenBricks","ui:field":"hidden","description":"List of nested bricks","default":[],"type":"array","items":{}}},"required":["layout","$children"]}
+{
+"type": "container",
+"props": {
+  "preset": "bold-primary",
+  "layout": {
+    "direction": "row",
+    "alignItems": "center",
+    "justifyContent": "space-between"
+  },
+  "$children": [
+    {
+      "type": "text",
+      "preset": "ghost",
+      "props": {
+        "content": "Hello World"
+      }
+    },
+    {
+      "type": "image",
+      "props": {
+        "src": "https://example.com/image.png",
+        // [...]
+      }
+    }
+  ]
+}
 ```
+  
 
+Props:
+- `preset`: optional `enum` (see docs)
+- `layout`: required `object`.  
+  - `type`: required `enum`. Type of the container. Flex layout arranges items in a one-dimensional line. Grid layout arranges items in a two-dimensional grid. Default: `"flex"`. Values: `flex`, `grid` 
+  - `gap`: required `enum`. Space between items. Default: `"gap-2"`. Values: `gap-0`, `gap-1`, `gap-2`, `gap-4`, `gap-8`, `gap-16` 
+  - `direction`: optional `enum`. The direction of the container. Only applies to flex layout. Default: `"flex-row"`. Values: `flex-row`, `flex-col` 
+  - `columns`: optional `number`. Number of columns. Only applies to grid layout.. Default: `2`. 
+  - `wrap`: required `boolean`. Wrap items. Only applies to flex layout.. Default: `true`. 
+  - `fillSpace`: required `boolean`. Makes items of the container fill the available space. Only applies to flex layout.. Default: `true`. 
+  - `justifyContent`: optional `enum`. Justify content along the main axis (horizontal for row, vertical for column). Only applies to flex layout. Default: `"justify-stretch"`. Values: `justify-start`, `justify-center`, `justify-end`, `justify-between`, `justify-around`, `justify-evenly`, `justify-stretch` 
+  - `alignItems`: optional `enum`. Align items along the cross axis (vertical for row, horizontal for column). Only applies to flex layout. Default: `"items-stretch"`. Values: `items-start`, `items-center`, `items-end`, `items-stretch` 
+- `datasource`: optional `object`. Reference to a data source. Only used for dynamic websites.. 
+  - `mapping`: required `object`. Mapping of data source fields to brick props. 
+  - `filters`: optional `object`. Filter data source records. 
+  - `sort`: optional `object`. Sort data source records. 
+  - `limit`: optional `number`. Limit the number of records to fetch. 
+  - `offset`: optional `number`. Offset the records to fetch. 
+- `$childrenType`: optional `string`. Type of the child bricks that will be created when container is dynamic.. 
+- `$children`: required `array`. List of nested bricks. Default: `[]`. 
+
+### Divider (`divider`)
+A horizontal or vertical divider
+
+Props:
+- `preset`: optional `enum` (see docs)
+- `orientation`: optional `enum`. Orientation of the divider. Default: `"horizontal"`. Values: `horizontal`, `vertical` 
+- `size`: optional `string`. Size of the divider. Default: `"100%"`. 
+
+### Testimonials (`testimonials`)
+Display testimonials from users
+
+Props:
+- `preset`: optional `enum` (see docs)
+- `orientation`: optional `enum`.  Default: `"horizontal"`. Values: `horizontal`, `vertical` 
+- `testimonials`: required `object[]`.  
+  - `author`: required `string`.  Default: `"John Doe"`. 
+  - `company`: optional `string`.  
+  - `text`: required `string`. Text content. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists <ul> <ol> <li>.. Default: `"Amazing product!"`. 
+  - `avatar`: optional `object`.  Default: `{"alt":"Image","fit":"object-cover","position":"object-center"}`. 
+    - `src`: required `string`. Image URL. Can be a link to an image or a data URI. 
+    - `alt`: optional `string`. Alternative text for the image. Recommended for screen readers and SEO. 
+    - `fit`: optional `enum`. How the image should be resized to fit its container. Values: `object-none`, `object-contain`, `object-cover`, `object-fill`, `object-scale-down` 
+    - `position`: optional `enum`. The position of the image inside its container. Values: `object-top`, `object-center`, `object-bottom`, `object-left`, `object-right`, `object-left-top`, `object-right-top`, `object-left-bottom`, `object-right-bottom` 
+  - `socialIcon`: optional `string`. Iconify reference for the social icon. 
+
+
+### Timeline (`timeline`)
+A timeline element for showing chronological events
+This timeline element displays a series of chronological events, milestones, or processes.
+    It can be used for company history, project roadmaps, or any sequential information.
+    Each item has a date/time, title, description, and optional icon.
+
+Props:
+- `preset`: optional `enum` (see docs)
+- `container`: optional `object`.  
+- `items`: required `object[]`.  
+  - `date`: required `string`. Date or time period for this event. Default: `"2024"`. 
+  - `title`: required `string`. Text content. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists <ul> <ol> <li>.. Default: `"Event title"`. 
+  - `description`: required `string`. Text content. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists <ul> <ol> <li>.. Default: `"Event description"`. 
+  - `icon`: optional `string`. Icon to display (iconify reference). 
+
+- `variants`: required `array`.  Default: `["vertical","with-connectors"]`. Values: `vertical` (Display timeline vertically), `horizontal` (Display timeline horizontally), `alternating` (Alternate items left and right (vertical only)), `with-connectors` (Show connecting lines between items), `minimal` (Simple design with less visual elements), `card-style` (Display each item as a card) 
+- `appearance`: optional `object`.  
+  - `lineColor`: optional `string`. Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900. Default: `"bg-base-300"`. 
+  - `lineWidth`: optional `enum`.  Default: `"border-2"`. Values: `border-2`, `border-4`, `border-8` 
+  - `dotSize`: optional `enum`.  Default: `"w-4 h-4"`. Values: `w-3 h-3`, `w-4 h-4`, `w-6 h-6` 
+  - `datePosition`: optional `enum`.  Default: `"above"`. Values: `above`, `below`, `inline` 
+- `textStyles`: optional `object`.  
+  - `dateColor`: optional `string`. Can be set to `transparent`, hex/rgb/rgba color, `color-auto` to automatically contrast with background, or even classes like `text-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900. Default: `"text-base-content/70"`. 
+  - `titleColor`: optional `string`. Can be set to `transparent`, hex/rgb/rgba color, `color-auto` to automatically contrast with background, or even classes like `text-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900. Default: `"text-base-content"`. 
+  - `descriptionColor`: optional `string`. Can be set to `transparent`, hex/rgb/rgba color, `color-auto` to automatically contrast with background, or even classes like `text-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900. Default: `"text-base-content/80"`. 
+
+### Accordion (`accordion`)
+An accordion/collapse element for expandable content
+This accordion element displays content in collapsible panels.
+    It is typically used for FAQ sections, organized documentation, or to save space.
+    Each item has a title and expandable content area.
+    Multiple panels can be open simultaneously or limited to one at a time.
+
+Props:
+- `preset`: optional `enum` (see docs)
+- `container`: optional `object`.  
+- `items`: required `object[]`.  
+  - `title`: required `string`. Text content. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists <ul> <ol> <li>.. Default: `"Section title"`. 
+  - `content`: required `string`. Text content. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists <ul> <ol> <li>.. Default: `"Expandable content goes here"`. 
+  - `defaultOpen`: optional `boolean`.  Default: `false`. 
+  - `icon`: optional `string`. Icon to display (iconify reference). 
+  - `disabled`: optional `boolean`.  Default: `false`. 
+
+- `behavior`: optional `object`.  
+  - `allowMultiple`: optional `boolean`. Allow multiple accordion items to be open at the same time. Default: `true`. 
+  - `collapsible`: optional `boolean`. Allow opened items to be collapsed. Default: `true`. 
+  - `animation`: optional `enum`.  Default: `"slide"`. Values: `none`, `slide`, `fade` 
+- `variants`: required `array`.  Default: `["bordered","with-icon"]`. Values: `bordered` (Add borders around accordion items), `separated` (Add space between accordion items), `minimal` (Simple design with minimal styling), `card-style` (Display each item as a card), `with-icon` (Show expand/collapse icon), `icon-left` (Position expand icon on the left), `flush` (Remove outer borders and padding)

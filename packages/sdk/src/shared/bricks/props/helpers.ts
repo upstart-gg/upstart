@@ -43,17 +43,8 @@ export function group<T extends TProperties>({
   });
 }
 
-export function prop<T extends TSchema>({ title, schema, description, $id }: Prop<T>): T {
-  // add the title
-  schema.title = title;
-  // add the description
-  if (description) {
-    schema.description = description;
-  }
-  // add the id
-  if ($id) {
-    schema.$id = $id;
-  }
+export function prop<T extends TSchema>({ schema, ...rest }: Prop<T>): T {
+  Object.assign(schema, rest);
   return schema;
 }
 
@@ -79,15 +70,15 @@ export type PropertyPath = string;
 export type StyleId = string;
 
 // Helper function to traverse a schema and filter to get style properties
-// (properties whose $id starts with "#styles:") and return them as an object with the path to the property
+// (properties whose "ui:styleId" starts with "#styles:") and return them as an object with the path to the property
 // as the key and the $id as the value. Paths should be dot-separated.
 // The initial schema is a TObject, but nested schemas can be any type and arrays.
 export function getStyleProperties(schema: TSchema, path = "", styles: Record<PropertyPath, StyleId> = {}) {
   if (schema.type === "object") {
     for (const key in schema.properties) {
       const prop = schema.properties[key];
-      if (prop.$id?.startsWith("#styles:")) {
-        styles[`${path}${key}`] = prop.$id;
+      if (prop["ui:styleId"]?.startsWith("#styles:")) {
+        styles[`${path}${key}`] = prop["ui:styleId"];
       }
       getStyleProperties(prop, `${path}${key}.`, styles);
     }

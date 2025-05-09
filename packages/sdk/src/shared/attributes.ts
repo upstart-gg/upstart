@@ -310,7 +310,7 @@ const defaultAttributes = {
       ],
       {
         default: {
-          color: "#ffffff",
+          color: "base-100",
         },
         title: "Page Background",
         "ui:field": "background",
@@ -321,13 +321,6 @@ const defaultAttributes = {
       },
     ),
   ),
-
-  $textColor: attr.color("Text color", "#222222", {
-    "ui:field": "color",
-    "ui:group": "layout",
-    "ui:group:title": "Page Layout",
-    "ui:color-type": "text",
-  }),
 
   $siteHeadTags: Type.Optional(
     Type.String({
@@ -356,7 +349,6 @@ const defaultAttributes = {
 
 export const defaultAttributesSchema = Type.Object(defaultAttributes, { additionalProperties: true });
 export const siteAttributesSchemaForLLM = Type.Pick(defaultAttributesSchema, [
-  "$textColor",
   "$bodyBackground",
   "$pageBackground",
 ]);
@@ -366,7 +358,6 @@ export const pageAttributesSchemaForLLM = Type.Pick(defaultAttributesSchema, [
   "$pageKeywords",
   "$pageLanguage",
   "$pagePath",
-  "$textColor",
   "$bodyBackground",
   "$pageBackground",
 ]);

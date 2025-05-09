@@ -11,7 +11,7 @@ import { RxHamburgerMenu } from "react-icons/rx";
 const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
   const props = brick.props;
-  const ds = useDatasource(props.navigation.items, manifest.datasource);
+  const ds = useDatasource(props.navigation.datasource, manifest.datasource);
 
   return (
     <header

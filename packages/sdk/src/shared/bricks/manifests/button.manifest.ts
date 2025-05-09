@@ -9,6 +9,7 @@ import { backgroundColor } from "../props/background";
 import { padding } from "../props/padding";
 import { border } from "../props/border";
 import { effects } from "../props/effects";
+import { preset } from "../props/preset";
 
 export const manifest = defineBrickManifest({
   type: "button",
@@ -17,6 +18,16 @@ export const manifest = defineBrickManifest({
   description: "A button with text and optional icon",
   icon: RxButton,
   props: defineProps({
+    // preset: optional(preset()),
+    variants: Type.Array(
+      Type.Union(
+        [Type.Literal("centered", { title: "Centered" }), Type.Literal("uppercase", { title: "Uppercase" })],
+        {
+          title: "Variant",
+          description: "Button variants.",
+        },
+      ),
+    ),
     label: textContent("Label", "My button"),
     type: prop({
       title: "Type",
@@ -35,7 +46,7 @@ export const manifest = defineBrickManifest({
     }),
     linkToUrlOrPageId: optional(urlOrPageId("Link")),
     backgroundColor: backgroundColor("bg-primary-70"),
-    color: color(),
+    color: optional(color()),
     padding: optional(padding("p-2")),
     border: optional(border()),
     effects: optional(effects({ enableTextShadow: true })),

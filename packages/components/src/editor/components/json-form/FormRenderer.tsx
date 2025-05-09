@@ -60,7 +60,6 @@ export function FormRenderer({
   const sortedSchema = useMemo(() => sortJsonSchemaProperties(formSchema), [formSchema]);
 
   // Generate field components in a structured way
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const formStructure = useMemo(() => {
     const fields = processObjectSchemaToFields({
       schema: sortedSchema,

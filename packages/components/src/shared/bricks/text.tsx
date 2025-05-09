@@ -12,6 +12,8 @@ const Text = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
   const { props } = brick;
   const styles = useBrickStyle<Manifest>(brick);
   const classes = Object.values(styles);
+
+  console.log("text blick init with props", props);
   return (
     <div className={tx("flex-1", ...classes)}>
       <TextContent

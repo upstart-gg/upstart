@@ -87,6 +87,7 @@ export function useColorsPreprocessing<T extends BrickManifest>({ brick }: Brick
 }
 
 export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable, selected }: BrickProps<T>) {
+  console.debug("useBrickWrapperStyle", brick);
   const { props, position } = brick;
   const isContainerChild = brick.parentId !== undefined;
   const manifest = useBrickManifest(brick.type);

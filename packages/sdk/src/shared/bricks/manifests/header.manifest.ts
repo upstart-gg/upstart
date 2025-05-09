@@ -1,4 +1,4 @@
-import { Type, type Static } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, group, optional, prop } from "../props/helpers";
 import { border } from "../props/border";
@@ -8,7 +8,7 @@ import { backgroundColor } from "../props/background";
 import { color, textContent } from "../props/text";
 import { shadow } from "../props/effects";
 import { datasourceRef } from "../props/datasource";
-import { fixedPositioned, position } from "../props/position";
+import { fixedPositioned } from "../props/position";
 import { boolean } from "../props/boolean";
 import { VscLayoutPanelOff } from "react-icons/vsc";
 
@@ -118,6 +118,7 @@ export const manifest = defineBrickManifest({
   kind: "widget",
   name: "Header",
   description: "A header with logo and navigation",
+  aiInstructions: "This brick should be used on most sites/pages.",
   datasource,
   duplicatable: false,
   defaultHeight: {
@@ -134,19 +135,11 @@ export const manifest = defineBrickManifest({
   },
   icon: VscLayoutPanelOff,
   iconClassName: "rotate-180",
-  // icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-  //   stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-  //   <rect x="3" y="11" width="18" height="8" rx="2" ry="2"></rect>
-  //   <rect x="5" y="13" width="6" height="3" rx="1"></rect>
-  //   <line x1="13" y1="14" x2="15" y2="14"></line>
-  //   <line x1="17" y1="14" x2="19" y2="14"></line></svg>`,
-
   presets: {
     ...softBorderedPresets,
     ...solidPresets,
     ...gradientPresets,
   },
-
   props: defineProps({
     container: group({
       title: "Main element",
@@ -155,7 +148,6 @@ export const manifest = defineBrickManifest({
         border: optional(border()),
         shadow: optional(shadow()),
         fixedPositioned: optional(fixedPositioned()),
-        // boredr2: border2(),
       },
       metadata: {
         "ui:responsive": true,

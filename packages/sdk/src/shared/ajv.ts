@@ -6,6 +6,10 @@ export type { JSONSchemaType, AnySchemaObject, SchemaObject, JSONType } from "aj
 export const ajv = new Ajv({
   useDefaults: true,
   strictSchema: false,
+  validateSchema: false,
+  coerceTypes: true,
+  allErrors: true,
+  inlineRefs: false,
 });
 
 export const jsonStringsSupportedFormats = [
@@ -40,6 +44,16 @@ ajv.addFormat("richtext", {
 });
 
 ajv.addFormat("markdown", {
+  validate: (data: string) => typeof data === "string",
+  async: false,
+});
+
+ajv.addFormat("multiline", {
+  validate: (data: string) => typeof data === "string",
+  async: false,
+});
+
+ajv.addFormat("password", {
   validate: (data: string) => typeof data === "string",
   async: false,
 });

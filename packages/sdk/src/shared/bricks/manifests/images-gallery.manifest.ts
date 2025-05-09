@@ -5,6 +5,7 @@ import { datasourceRef } from "../props/datasource";
 import { defineProps, group, optional } from "../props/helpers";
 import { containerLayout } from "../props/container";
 import { IoGridOutline } from "react-icons/io5";
+import { preset } from "../props/preset";
 
 export const datasource = Type.Array(
   Type.Object({
@@ -33,6 +34,7 @@ export const manifest = defineBrickManifest({
   kind: "widget",
   name: "Gallery",
   description: "An image collection",
+  aiInstructions: "This brick should mostly be used for image galleries and collections.",
   defaultInspectorTab: "content",
   isContainer: true,
   minWidth: {
@@ -44,14 +46,8 @@ export const manifest = defineBrickManifest({
     desktop: 10,
   },
   icon: IoGridOutline,
-  //   icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-  //     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-  //     <rect x="5" y="5" width="6" height="5" rx="1"></rect>
-  //     <rect x="13" y="5" width="6" height="7" rx="1"></rect>
-  //     <rect x="5" y="12" width="6" height="7" rx="1"></rect>
-  //     <rect x="13" y="14" width="6" height="5" rx="1"></rect>
-  // </svg>`,
   props: defineProps({
+    // preset: optional(preset()),
     content: optional(datasourceRef()),
     styles: group({
       title: "Styles",

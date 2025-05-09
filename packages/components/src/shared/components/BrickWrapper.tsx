@@ -15,7 +15,7 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(({ brick }, r
     brick,
   });
   return (
-    <div id={brick.id} className={tx(wrapperClass)} ref={ref} data-foo="joe">
+    <div id={brick.id} className={tx(wrapperClass)} ref={ref} data-wrapper-type={brick.type}>
       <MemoBrickComponent brick={brick} />
     </div>
   );

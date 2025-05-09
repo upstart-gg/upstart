@@ -74,21 +74,59 @@ export const themeSchema = Type.Object({
   // Define the theme colors
   colors: Type.Object(
     {
+      browserColorScheme: Type.String({
+        title: "Browser scheme",
+        description: "Color of browser-provided UI. Can be 'light' or 'dark'",
+      }),
       primary: Type.String({
         title: "Primary color",
-        description: "The brand's primary color",
+        description: "The brand's primary color.",
+      }),
+      primaryContent: Type.String({
+        title: "Primary content",
+        description: "Text color on primary background",
       }),
       secondary: Type.String({
         title: "Secondary color",
         description: "The brand's second most used color",
       }),
+      secondaryContent: Type.String({
+        title: "Secondary content",
+        description: "Text color on secondary background",
+      }),
       accent: Type.String({
         title: "Accent color",
         description: "The brand's least used color",
       }),
+      accentContent: Type.String({
+        title: "Accent content",
+        description: "Text color on accent background",
+      }),
       neutral: Type.String({
         title: "Neutral color",
         description: "The base neutral color",
+      }),
+      neutralContent: Type.String({
+        title: "Neutral content",
+        description: "Text color on neutral background",
+      }),
+      base100: Type.String({
+        title: "Base color",
+        description: "Base surface color of page, used for blank backgrounds. Should be very light.",
+      }),
+      base200: Type.String({
+        title: "Base color 2",
+        description:
+          "Base color, darker shade, to create elevations. Should be darker than base100 but still light.",
+      }),
+      base300: Type.String({
+        title: "Base color 3",
+        description:
+          "Base color, even more darker shade, to create elevations. Should be darker than base200 but still light.",
+      }),
+      baseContent: Type.String({
+        title: "Base content",
+        description: "Foreground content color to use on base colors",
       }),
     },
     {

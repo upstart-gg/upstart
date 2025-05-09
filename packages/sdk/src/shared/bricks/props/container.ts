@@ -1,7 +1,5 @@
 import { type TObject, Type, type Static } from "@sinclair/typebox";
 import { getStyleProperties, getStyleValueById, group, optional, prop } from "./helpers";
-import type { defaults } from "lodash-es";
-import def from "ajv/dist/vocabularies/discriminator";
 
 type FlexOptions = {
   title?: string;
@@ -26,7 +24,6 @@ export function flex(opts: FlexOptions = {}) {
     },
   } = opts;
   return prop({
-    $id: "#styles:flex",
     title,
     schema: Type.Object(
       {
@@ -98,6 +95,7 @@ export function flex(opts: FlexOptions = {}) {
         ),
       },
       {
+        "ui:styleId": "#styles:flex",
         "ui:field": "flex",
         "ui:responsive": true,
         default: {
@@ -125,7 +123,6 @@ type GridOptions = {
 export function grid(options: GridOptions = {}) {
   const { title = "Layout", defaultValue = { gap: "gap-1", columns: 2 } } = options;
   return prop({
-    $id: "#styles:grid",
     title,
     schema: Type.Object(
       {
@@ -157,6 +154,7 @@ export function grid(options: GridOptions = {}) {
         ),
       },
       {
+        "ui:styleId": "#styles:grid",
         "ui:field": "grid",
         "ui:responsive": true,
         default: defaultValue,
@@ -202,7 +200,7 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
   return group({
     title,
     options: {
-      $id: "#styles:containerLayout",
+      "ui:styleId": "#styles:containerLayout",
     },
     children: Type.Object(
       {
@@ -335,7 +333,6 @@ export function makeContainerProps() {
   return {
     $childrenType: Type.Optional(
       Type.String({
-        $id: "#container:childrenType",
         title: "Dynamic child brick type",
         description: "Type of the child bricks that will be created when container is dynamic.",
         "ui:field": "brick-type",
@@ -345,7 +342,6 @@ export function makeContainerProps() {
       }),
     ),
     $children: Type.Array(Type.Any(), {
-      $id: "#container:childrenBricks",
       "ui:field": "hidden",
       description: "List of nested bricks",
       default: [],

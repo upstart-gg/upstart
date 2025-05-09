@@ -13,8 +13,11 @@ import { manifest as footerManifest } from "./footer.manifest";
 import { manifest as buttonManifest } from "./button.manifest";
 import { manifest as iconManifest } from "./icon.manifest";
 import { manifest as socialLinksManifest } from "./social-links.manifest";
-import { manifest as genericComponentManifest } from "./generic-component.manifest";
 import { manifest as sidebarManifest } from "./sidebar.manifest";
+import { manifest as dividerManifest } from "./divider.manifest";
+import { manifest as testimonialsManifest } from "./testimonials.manifest";
+import { manifest as timelineManifest } from "./timeline.manifest";
+import { manifest as accordionManifest } from "./accordion.manifest";
 
 import { getBrickManifestDefaults, type BrickDefaults, type BrickManifest } from "../../brick-manifest";
 
@@ -34,8 +37,11 @@ export const manifests: Record<string, BrickManifest> = {
   [buttonManifest.type]: buttonManifest,
   [iconManifest.type]: iconManifest,
   [socialLinksManifest.type]: socialLinksManifest,
-  [genericComponentManifest.type]: genericComponentManifest,
   [containerManifest.type]: containerManifest,
+  [dividerManifest.type]: dividerManifest,
+  [testimonialsManifest.type]: testimonialsManifest,
+  [timelineManifest.type]: timelineManifest,
+  [accordionManifest.type]: accordionManifest,
 };
 
 export const defaultProps: Record<string, BrickDefaults> = {
@@ -54,6 +60,9 @@ export const defaultProps: Record<string, BrickDefaults> = {
   [buttonManifest.type]: getBrickManifestDefaults(buttonManifest),
   [iconManifest.type]: getBrickManifestDefaults(iconManifest),
   [socialLinksManifest.type]: getBrickManifestDefaults(socialLinksManifest),
-  [genericComponentManifest.type]: getBrickManifestDefaults(genericComponentManifest),
   [containerManifest.type]: getBrickManifestDefaults(containerManifest),
+  [dividerManifest.type]: getBrickManifestDefaults(dividerManifest),
+  [testimonialsManifest.type]: getBrickManifestDefaults(testimonialsManifest),
+  [timelineManifest.type]: getBrickManifestDefaults(timelineManifest),
+  [accordionManifest.type]: getBrickManifestDefaults(accordionManifest),
 };

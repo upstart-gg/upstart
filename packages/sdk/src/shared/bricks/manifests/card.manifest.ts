@@ -5,6 +5,7 @@ import { defineProps, group, optional } from "../props/helpers";
 import { textContent } from "../props/text";
 import { BsCardText } from "react-icons/bs";
 import { image } from "../props/image";
+import { Type } from "@sinclair/typebox";
 
 export const manifest = defineBrickManifest({
   type: "card",
@@ -13,14 +14,34 @@ export const manifest = defineBrickManifest({
   repeatable: true,
   icon: BsCardText,
   props: defineProps({
-    cardTitle: group({
-      title: "Title",
-      children: {
-        content: textContent(),
-        padding: optional(padding()),
-        backgroundColor: optional(backgroundColor()),
-      },
-    }),
+    variants: Type.Array(
+      Type.Union(
+        [
+          Type.Literal("image-first", { title: "Image First" }),
+          Type.Literal("image-last", { title: "Image Last" }),
+          Type.Literal("image-overlay", { title: "Image Overlay" }),
+          Type.Literal("image-left-side", { title: "Image Left Side" }),
+          Type.Literal("image-right-side", { title: "Image Right Side" }),
+          Type.Literal("centered", { title: "Centered" }),
+          Type.Literal("large-padding", { title: "Large padding" }),
+        ],
+        {
+          title: "Variant",
+          description:
+            "The variants of the card. You can select multiple, for example: `image-first` and `centered`.",
+        },
+      ),
+    ),
+    cardTitle: optional(
+      group({
+        title: "Title",
+        children: {
+          content: textContent(),
+          padding: optional(padding()),
+          backgroundColor: optional(backgroundColor()),
+        },
+      }),
+    ),
     cardImage: optional(
       group({
         title: "Image",

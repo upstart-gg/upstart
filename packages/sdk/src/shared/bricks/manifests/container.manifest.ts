@@ -17,6 +17,38 @@ export const manifest = defineBrickManifest({
   kind: "brick",
   name: "Container",
   description: "A container that can hold other bricks and align them horizontally or vertically",
+  aiInstructions: `A container acts as a flexbox (default) or a grid and allows you to align bricks horizontally, vertically, or in a grid.
+Here is an example of a container with a background image and padding, displaying a text and a image horizontaly:
+
+\`\`\`json
+{
+"type": "container",
+"props": {
+  "preset": "bold-primary",
+  "layout": {
+    "direction": "row",
+    "alignItems": "center",
+    "justifyContent": "space-between"
+  },
+  "$children": [
+    {
+      "type": "text",
+      "preset": "ghost",
+      "props": {
+        "content": "Hello World"
+      }
+    },
+    {
+      "type": "image",
+      "props": {
+        "src": "https://example.com/image.png",
+        // [...]
+      }
+    }
+  ]
+}
+\`\`\`
+  `,
   isContainer: true,
   defaultHeight: {
     desktop: 6,

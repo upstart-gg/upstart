@@ -2,6 +2,7 @@ import type { TObject, TProperties, TArray, Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import type { ReactNode, FC, Component, ComponentType } from "react";
 import type { IconBaseProps } from "react-icons/lib";
+import { TypeCompiler } from "@sinclair/typebox/compiler";
 
 type BrickKind = "brick" | "widget" | "container";
 
@@ -50,6 +51,7 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
   resizable?: boolean;
   duplicatable?: boolean;
   isContainer?: boolean;
+  aiInstructions?: string;
 };
 
 export function defineBrickManifest<BProps extends TProperties, DSSchema extends TObject | TArray<TObject>>({
@@ -100,7 +102,7 @@ export function getBrickManifestDefaults<M extends BrickManifest>(manifest: M) {
   return {
     ...manifest,
     props: Value.Create(manifest.props),
-    mobileProps: {},
+    // mobileProps: {},
     ...(manifest.datasource ? { datasource: Value.Create(manifest.datasource) } : {}),
     // ...(manifest.datarecord ? { datarecord: Value.Create(manifest.datarecord) } : {}),
   };

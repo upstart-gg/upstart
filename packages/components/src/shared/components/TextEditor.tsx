@@ -13,6 +13,7 @@ import {
 } from "@tiptap/react";
 import Placeholder from "@tiptap/extension-placeholder";
 import { RiArrowDownSLine, RiBracesLine } from "react-icons/ri";
+import TextStyle from "@tiptap/extension-text-style";
 
 import StarterKit from "@tiptap/starter-kit"; // define your extension array
 import TextAlign from "@tiptap/extension-text-align";
@@ -165,6 +166,8 @@ const TextEditor = <T extends ElementType = "div">({
   const [menuBarContainer, setMenuBarContainer] = useState<HTMLDivElement | null>(null);
   const [currentContent, setContent] = useState(content);
 
+  console.log("Texteditor current content", currentContent);
+
   // const [editable, setEditable] = useState(/*enabled*/ false);
   const [focused, setFocused] = useState(false);
   const fields = getJSONSchemaFieldsList(datasources);
@@ -179,6 +182,9 @@ const TextEditor = <T extends ElementType = "div">({
         color: "#FF9900",
       },
       heading: textSizeMode === "hero" ? false : {},
+    }),
+    TextStyle.configure({
+      mergeNestedSpanStyles: false,
     }),
     Placeholder.configure({
       placeholder: "Write something …",

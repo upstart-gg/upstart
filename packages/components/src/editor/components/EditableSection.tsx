@@ -19,9 +19,14 @@ type EditableSectionProps = {
 };
 
 export default function EditableSection({ section }: EditableSectionProps) {
-  const { bricks, id } = useSection(section.id);
-  const ref = useRef<HTMLDivElement>(null);
+  console.debug("EditableSection", section);
+  const sectionObj = useSection(section.id);
+  invariant(sectionObj, "Section not found in EditableSection");
+  const { bricks, id } = sectionObj;
 
+  console.debug("EditableSection bricks", bricks);
+
+  const ref = useRef<HTMLDivElement>(null);
   const gridConfig = useGridConfig(ref);
 
   useResizableSection(section, gridConfig);

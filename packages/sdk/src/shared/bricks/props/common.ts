@@ -1,4 +1,6 @@
 import { Type } from "@sinclair/typebox";
+import { StringEnum } from "~/shared/utils/schema";
+import { preset } from "./preset";
 
 export const commonProps = {
   className: Type.Optional(
@@ -20,4 +22,5 @@ export const commonProps = {
       "ui:field": "hidden",
     }),
   ),
+  preset: Type.Optional(preset()),
 };

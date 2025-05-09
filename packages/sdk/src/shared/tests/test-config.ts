@@ -18,7 +18,7 @@ const datasources = defineDataSources({
   },
   tasks: {
     name: "Tasks",
-    provider: "json-array",
+    provider: "http-json",
     options: {
       url: "https://jsonplaceholder.typicode.com/todos?userId=1",
     },
@@ -31,14 +31,6 @@ const datasources = defineDataSources({
         completed: Type.Boolean(),
       }),
     ),
-  },
-  posts: {
-    name: "Posts",
-    provider: "facebook-posts",
-    options: {
-      limit: 5,
-      refreshInterval: 60 * 60 * 1000,
-    },
   },
   videos: {
     provider: "youtube-list",
@@ -57,6 +49,7 @@ const homePageSections = defineSections([
     label: "Header",
     order: 0,
     props: {
+      preset: "bold-accent",
       $paddingHorizontal: 20,
     },
     position: {
@@ -67,6 +60,76 @@ const homePageSections = defineSections([
         h: "full",
       },
     },
+    bricks: [
+      {
+        type: "header",
+        props: {
+          container: {
+            backgroundColor: "bg-secondary-900",
+          },
+          brand: {
+            name: "Upstart",
+            color: "color-auto",
+          },
+        },
+        position: {
+          mobile: {
+            x: 0,
+            y: 0,
+            w: "full",
+            h: 3,
+          },
+          desktop: {
+            x: 0,
+            y: 0,
+            w: "full",
+            h: 3,
+          },
+        },
+      },
+      {
+        type: "container",
+        props: {
+          $children: [
+            {
+              type: "text",
+              props: {
+                content: "Some text #1",
+                backgroundColor: "bg-green-100",
+              },
+            },
+            {
+              type: "text",
+              props: {
+                content: "Some text #2",
+                backgroundColor: "bg-blue-100",
+              },
+            },
+            {
+              type: "text",
+              props: {
+                content: "Some text #3",
+                backgroundColor: "bg-pink-100",
+              },
+            },
+          ],
+        },
+        position: {
+          mobile: {
+            x: 0,
+            y: 8,
+            w: "full",
+            h: 8,
+          },
+          desktop: {
+            x: 6,
+            y: 8,
+            w: "twoThird",
+            h: 8,
+          },
+        },
+      },
+    ],
   },
   {
     id: "content",
@@ -76,6 +139,7 @@ const homePageSections = defineSections([
       background: {
         color: "#FFDD55",
       },
+      preset: "bold-accent",
     },
     position: {
       mobile: {
@@ -85,12 +149,55 @@ const homePageSections = defineSections([
         h: "full",
       },
     },
+    bricks: [
+      {
+        type: "text",
+        props: {
+          content: "Some specific content",
+        },
+        position: {
+          mobile: {
+            x: "quarter",
+            y: 0,
+            w: "half",
+            h: 3,
+          },
+          desktop: {
+            x: "quarter",
+            y: 0,
+            w: "half",
+            h: 3,
+          },
+        },
+      },
+      {
+        type: "text",
+        props: {
+          content: "Some specific content 2",
+        },
+        position: {
+          mobile: {
+            x: "quarter",
+            y: 6,
+            w: "half",
+            h: 3,
+          },
+          desktop: {
+            x: "quarter",
+            y: 6,
+            w: "half",
+            h: 3,
+          },
+        },
+      },
+    ],
   },
   {
     id: "footer",
     label: "Footer",
     order: 2,
     props: {
+      preset: "bold-accent",
       background: {
         color: "#CCCCCC",
       },
@@ -103,142 +210,28 @@ const homePageSections = defineSections([
         h: 3,
       },
     },
-  },
-]);
-
-const hpBricks = defineBricks([
-  {
-    type: "header",
-    sectionId: "header",
-    props: {
-      container: {
-        backgroundColor: "bg-secondary-900",
-      },
-      brand: {
-        name: "Upstart",
-        color: "color-auto",
-      },
-    },
-    position: {
-      mobile: {
-        x: 0,
-        y: 0,
-        w: "full",
-        h: 3,
-      },
-      desktop: {
-        x: 0,
-        y: 0,
-        w: "full",
-        h: 3,
-      },
-    },
-  },
-  {
-    type: "container",
-    sectionId: "header",
-    props: {
-      $children: [
-        {
-          type: "text",
-          props: {
-            content: "Some text #1",
-            backgroundColor: "bg-green-100",
+    bricks: [
+      {
+        type: "text",
+        props: {
+          textContent: "Footer text",
+        },
+        position: {
+          mobile: {
+            x: 0,
+            y: 0,
+            w: "full",
+            h: 3,
+          },
+          desktop: {
+            x: 0,
+            y: 0,
+            w: "full",
+            h: 3,
           },
         },
-        {
-          type: "text",
-          props: {
-            content: "Some text #2",
-            backgroundColor: "bg-blue-100",
-          },
-        },
-        {
-          type: "text",
-          props: {
-            content: "Some text #3",
-            backgroundColor: "bg-pink-100",
-          },
-        },
-      ],
-    },
-    position: {
-      mobile: {
-        x: 0,
-        y: 8,
-        w: "full",
-        h: 8,
       },
-      desktop: {
-        x: 6,
-        y: 8,
-        w: "twoThird",
-        h: 8,
-      },
-    },
-  },
-  {
-    type: "text",
-    sectionId: "content",
-    props: {
-      content: "Some specific content",
-    },
-    position: {
-      mobile: {
-        x: "quarter",
-        y: 0,
-        w: "half",
-        h: 3,
-      },
-      desktop: {
-        x: "quarter",
-        y: 0,
-        w: "half",
-        h: 3,
-      },
-    },
-  },
-  {
-    type: "text",
-    sectionId: "content",
-    props: {
-      content: "Some specific content 2",
-    },
-    position: {
-      mobile: {
-        x: "quarter",
-        y: 6,
-        w: "half",
-        h: 3,
-      },
-      desktop: {
-        x: "quarter",
-        y: 6,
-        w: "half",
-        h: 3,
-      },
-    },
-  },
-  {
-    type: "text",
-    sectionId: "footer",
-    props: {
-      textContent: "Footer text",
-    },
-    position: {
-      mobile: {
-        x: 0,
-        y: 0,
-        w: "full",
-        h: 3,
-      },
-      desktop: {
-        x: 0,
-        y: 0,
-        w: "full",
-        h: 3,
-      },
-    },
+    ],
   },
 ]);
 
@@ -249,10 +242,19 @@ const themes: Theme[] = [
     description: "Vibrant gradients with ethereal color transitions",
     tags: ["gradient", "vibrant", "modern", "creative", "dynamic", "artistic", "bold"],
     colors: {
+      browserColorScheme: "light",
       primary: "#2F5ABF",
       secondary: "#50C5B7",
       accent: "#533A71",
       neutral: "#4b5563", // Grey
+      neutralContent: "#F3F4F6", //
+      base100: "#FFFFFF", // White
+      base200: "#F3F4F6", // Grey
+      base300: "#E5E7EB", // Grey
+      primaryContent: "#FFFFFF", // White
+      secondaryContent: "#FFFFFF", // White
+      accentContent: "#FFFFFF", // White
+      baseContent: "#111827", // Grey
     },
     typography: {
       base: 16,
@@ -293,7 +295,6 @@ export default defineConfig({
   },
   attributes: siteAttributes,
   attr: {
-    $textColor: "#222",
     $pageBackground: {
       color: "#FFFFFF",
     },
@@ -303,14 +304,12 @@ export default defineConfig({
       label: "Home",
       path: "/",
       sections: homePageSections,
-      bricks: hpBricks,
       tags: ["nav"],
     },
     {
       label: "About",
       path: "/about",
       sections: homePageSections,
-      bricks: hpBricks,
       tags: ["nav"],
     },
   ],

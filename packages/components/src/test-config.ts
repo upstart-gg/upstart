@@ -18,7 +18,7 @@ const datasources = defineDataSources({
   },
   tasks: {
     name: "Tasks",
-    provider: "json-array",
+    provider: "http-json",
     options: {
       url: "https://jsonplaceholder.typicode.com/todos?userId=1",
     },
@@ -32,14 +32,7 @@ const datasources = defineDataSources({
       }),
     ),
   },
-  posts: {
-    name: "Posts",
-    provider: "facebook-posts",
-    options: {
-      limit: 5,
-      refreshInterval: 60 * 60 * 1000,
-    },
-  },
+
   videos: {
     provider: "youtube-list",
     options: {
@@ -249,10 +242,19 @@ const themes: Theme[] = [
     description: "Vibrant gradients with ethereal color transitions",
     tags: ["gradient", "vibrant", "modern", "creative", "dynamic", "artistic", "bold"],
     colors: {
+      browserColorScheme: "light",
+      baseContent: "#000000", // Black
       primary: "#2F5ABF",
       secondary: "#50C5B7",
       accent: "#533A71",
       neutral: "#4b5563", // Grey
+      base100: "#FFFFFF", // White
+      base200: "#F3F4F6", // Light Grey
+      base300: "#E5E7EB", // Grey
+      accentContent: "#FFFFFF", // White
+      primaryContent: "#FFFFFF", // White
+      secondaryContent: "#FFFFFF", // White
+      neutralContent: "#FFFFFF", // White
     },
     typography: {
       base: 16,
@@ -293,7 +295,6 @@ export default defineConfig({
   },
   attributes: siteAttributes,
   attr: {
-    $textColor: "#222",
     $pageBackground: {
       color: "#FFFFFF",
     },
