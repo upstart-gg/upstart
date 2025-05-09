@@ -39,6 +39,23 @@ if (!outfile) {
   console.error("Please provide an output file with --outfile or -o");
   process.exit(1);
 }
+const {
+  values: { outfile },
+} = parseArgs({
+  options: {
+    outfile: {
+      type: "string",
+      short: "o",
+      default: path.join(process.cwd(), "generated-docs.md"),
+      description: "Output file for the generated documentation",
+    },
+  },
+});
+
+if (!outfile) {
+  console.error("Please provide an output file with --outfile or -o");
+  process.exit(1);
+}
 
 // Only keep name and tags for IA generated themes
 const refinedThemeSchema = Type.Omit(themeSchema, ["description"]);

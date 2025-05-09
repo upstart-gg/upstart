@@ -14,6 +14,7 @@ import { ajv } from "./ajv";
 import { background } from "./bricks/props/background";
 import { Value } from "@sinclair/typebox/value";
 import def from "ajv/dist/vocabularies/discriminator";
+import def from "ajv/dist/vocabularies/discriminator";
 
 type EnumOption = {
   title?: string;
@@ -214,10 +215,19 @@ const defaultAttributes = {
     ],
     "ai:guidelines":
       "Choose a value based on the site description. If the site is in multiple languages, use 'en'.",
+    "ai:guidelines":
+      "Choose a value based on the site description. If the site is in multiple languages, use 'en'.",
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
   }),
 
+  $pageOgImage: Type.Optional(
+    attr.string("Social share image", "", {
+      description: "Image shown when page is shared on social media",
+      "ai:guidelines": "Don't generate this property/image, it is automatically generated.",
+      "ui:group": "meta",
+    }),
+  ),
   $pageOgImage: Type.Optional(
     attr.string("Social share image", "", {
       description: "Image shown when page is shared on social media",
@@ -235,7 +245,26 @@ const defaultAttributes = {
       "ui:scope": "site",
     }),
   ),
+  $robotsIndexing: Type.Optional(
+    attr.boolean("Allow search engines to index this site", true, {
+      description: "Disabling this will prevent search engines from indexing this site",
+      "ai:guidelines": "Don't generate this property/image, it is automatically generated.",
+      "ui:group": "seo",
+      "ui:group:title": "SEO",
+      "ui:scope": "site",
+    }),
+  ),
 
+  $siteOgImage: Type.Optional(
+    attr.string("Social share image", "", {
+      description: "Image shown when this site is shared on social media",
+      "ai:guidelines": "Don't generate this image, it is automatically generated.",
+      "ui:field": "image",
+      "ui:group": "meta",
+      "ui:group:title": "Meta tags",
+      "ui:scope": "site",
+    }),
+  ),
   $siteOgImage: Type.Optional(
     attr.string("Social share image", "", {
       description: "Image shown when this site is shared on social media",
@@ -278,9 +307,30 @@ const defaultAttributes = {
       "ai:guidelines": "Don't generate this property.",
     }),
   ),
+  $pageLastUpdated: Type.Optional(
+    attr.datetime("Last updated", undefined, {
+      "ui:hidden": true,
+      "ai:guidelines": "Don't generate this property.",
+    }),
+  ),
 
   // --- layout attributes ---
 
+  $bodyBackground: Type.Optional(
+    Type.Composite([background()], {
+      default: {
+        color: "#ffffff",
+      },
+      title: "Body Background",
+      description:
+        "Applies to the body element of the page (while $pageBackground applies to the page container)",
+      "ui:field": "background",
+      "ui:show-img-search": true,
+      "ui:group": "layout",
+      "ui:group:title": "Page Layout",
+      "ui:group:order": 3,
+    }),
+  ),
   $bodyBackground: Type.Optional(
     Type.Composite([background()], {
       default: {
@@ -327,6 +377,7 @@ const defaultAttributes = {
       title: "Head tags",
       description:
         "Add custom tags to the <head> of your site. Useful for analytics tags, custom scripts, etc.",
+      "ai:guidelines": "Don't include meta tags here, they are automatically generated.",
       "ai:guidelines": "Don't include meta tags here, they are automatically generated.",
       "ui:multiline": true,
       "ui:scope": "site",
