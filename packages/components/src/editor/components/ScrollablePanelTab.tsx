@@ -1,6 +1,7 @@
 import { Tabs } from "@upstart.gg/style-system/system";
 import type { ComponentProps } from "react";
-import { tx, css } from "@upstart.gg/style-system/twind";
+import { css } from "@emotion/css";
+import clsx from "clsx";
 
 const tabContentScrollClass = css({
   scrollbarColor: "var(--violet-4) var(--violet-2)",
@@ -15,7 +16,7 @@ export function ScrollablePanelTab({ children, tab, className }: ComponentProps<
   return (
     <Tabs.Content
       value={tab}
-      className={tx("h-[calc(100dvh-99px)] overflow-y-auto", tabContentScrollClass, className)}
+      className={clsx("h-[calc(100dvh-99px)] overflow-y-auto", tabContentScrollClass, className)}
     >
       {children}
     </Tabs.Content>

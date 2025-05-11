@@ -1,11 +1,11 @@
 import { IconButton, SegmentedControl, Tooltip } from "@upstart.gg/style-system/system";
-import { tx } from "@upstart.gg/style-system/twind";
 import type { FieldProps } from "./types";
 import { fieldLabel } from "../form-class";
 import { Select } from "@upstart.gg/style-system/system";
 import { HelpIcon } from "../HelpIcon";
 import { IoIosHelpCircleOutline } from "react-icons/io";
 import { FieldTitle } from "../field-factory";
+import clsx from "clsx";
 
 interface EnumOption {
   const: string;
@@ -87,7 +87,7 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
                 <SegmentedControl.Item
                   key={option.const}
                   value={option.const}
-                  className={tx(discrete && "[&_.rt-SegmentedControlItemLabel]:px-[6px]")}
+                  className={clsx(discrete && "[&_.rt-SegmentedControlItemLabel]:px-[6px]")}
                 >
                   {option.title}
                 </SegmentedControl.Item>
@@ -108,7 +108,7 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
                 <button
                   key={option.const}
                   type="button"
-                  className={tx(
+                  className={clsx(
                     `text-sm first:rounded-l last:rounded-r py-0.5 flex-1 flex items-center justify-center`,
                     {
                       "bg-upstart-600 text-white": currentValue === option.const,

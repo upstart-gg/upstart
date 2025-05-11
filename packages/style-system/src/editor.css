@@ -4,4 +4,7 @@ html, body {
   font-family: "system-ui", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   /* gray background */
   background-color: #f5f5f5;
+  overscroll-behavior: none;
+  scrollbar-width: none;
 }
+

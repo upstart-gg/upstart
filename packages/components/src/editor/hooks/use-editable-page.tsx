@@ -15,7 +15,6 @@ import {
   getDropPosition,
   getGridConfig,
   getClosestSection,
-  getBrickAtPosition,
 } from "~/shared/utils/layout-utils";
 
 interface DragCallbacks {

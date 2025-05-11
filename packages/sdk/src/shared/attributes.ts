@@ -185,6 +185,19 @@ export const attr = {
       { title: name, default: defaultValue, ...opts },
     );
   },
+  cssLength(
+    name: string,
+    defaultValue = "px",
+    opts: AttributeOptions<Omit<SchemaOptions, "title" | "default">> = {},
+  ) {
+    return Type.String({
+      title: name,
+      default: defaultValue,
+      ...opts,
+      pattern: "^[0-9.]+(px|em|rem|%|dvh|vh|vw|dvw)$",
+      "ui:field": "csslength",
+    });
+  },
 };
 
 // Default attributes

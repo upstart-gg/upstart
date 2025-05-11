@@ -14,7 +14,6 @@ import { LuArrowRightCircle } from "react-icons/lu";
 import { WiStars } from "react-icons/wi";
 import { nanoid } from "nanoid";
 import { BsStars } from "react-icons/bs";
-import { tx } from "@upstart.gg/style-system/twind";
 import { type Theme, themeSchema, type FontType } from "@upstart.gg/sdk/shared/theme";
 import { useDraft, useEditorHelpers } from "~/editor/hooks/use-editor";
 import { ColorFieldRow } from "./json-form/fields/color";
@@ -22,6 +21,8 @@ import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import type { ColorType } from "@upstart.gg/sdk/shared/themes/color-system";
 import FontPicker from "./json-form/fields/font";
 import { IoCloseOutline } from "react-icons/io5";
+import clsx from "clsx";
+import { PanelBlockTitle } from "./PanelBlockTitle";
 
 export default function ThemePanel() {
   const draft = useDraft();
@@ -57,29 +58,17 @@ export default function ThemePanel() {
 
   return (
     <Tabs.Root defaultValue="current">
-      <div className={tx("bg-white dark:bg-dark-800")}>
-        <Tabs.List className="sticky top-0 z-50">
-          <Tabs.Trigger value="current" className="!flex-1">
-            Theme
-          </Tabs.Trigger>
-          <Tabs.Trigger value="list" className="!flex-1">
-            All themes
-          </Tabs.Trigger>
-          <Tabs.Trigger value="ai" className="!flex-1 text-gray-400 group">
-            AI creator <BsStars className="ml-1 w-4 h-4 text-upstart-500" />
-          </Tabs.Trigger>
-          <IconButton
-            title="Close"
-            className="self-center items-center justify-center inline-flex !mr-1 !mt-2"
-            size="1"
-            variant="ghost"
-            color="gray"
-            onClick={() => hidePanel()}
-          >
-            <IoCloseOutline className="w-4 h-4 text-gray-400 hover:text-gray-700" />
-          </IconButton>
-        </Tabs.List>
-      </div>
+      <Tabs.List className="sticky top-0 z-50">
+        <Tabs.Trigger value="current" className="!flex-1">
+          Theme
+        </Tabs.Trigger>
+        <Tabs.Trigger value="list" className="!flex-1">
+          All themes
+        </Tabs.Trigger>
+        <Tabs.Trigger value="ai" className="!flex-1 text-gray-400 group">
+          AI creator <BsStars className="ml-1 w-4 h-4 text-upstart-500" />
+        </Tabs.Trigger>
+      </Tabs.List>
       <ScrollablePanelTab tab="ai" className="p-2">
         <Callout.Root size="1">
           <Callout.Icon>
@@ -118,15 +107,13 @@ export default function ThemePanel() {
       </ScrollablePanelTab>
       <ScrollablePanelTab tab="current" className="p-2">
         <Callout.Root size="1">
-          <Callout.Text size="1" className={tx("text-balance")}>
+          <Callout.Text size="1" className={clsx("text-balance")}>
             Customize your theme colors and typography to match your brand. Please note that the theme will be
             applied to your entire site, not just the current page.
           </Callout.Text>
         </Callout.Root>
         <div className="flex flex-col">
-          <div className="font-medium text-sm my-2 bg-upstart-100 dark:bg-dark-600 py-1 -mx-2 px-2">
-            Colors
-          </div>
+          <PanelBlockTitle className="-mx-2 my-2">Colors</PanelBlockTitle>
           <div className="flex text-sm flex-col gap-y-4 px-1 pb-2">
             {Object.entries(draft.theme.colors).map(([colorType, color]) => (
               <ColorFieldRow
@@ -139,7 +126,6 @@ export default function ThemePanel() {
                 labelClassName="font-medium"
                 colorType={colorType as ColorType}
                 onChange={(newColor: string) => {
-                  console.log("updating theme color %s with %s", colorType, newColor);
                   draft.setTheme({
                     ...draft.theme,
                     colors: {
@@ -151,9 +137,8 @@ export default function ThemePanel() {
               />
             ))}
           </div>
-          <div className="font-medium text-sm my-2 bg-upstart-100 dark:bg-dark-600 py-1 -mx-2 px-2">
-            Typography
-          </div>
+
+          <PanelBlockTitle className="-mx-2 my-2">Typography</PanelBlockTitle>
           <div className="text-sm flex flex-col gap-y-3 px-1">
             {Object.entries(draft.theme.typography)
               .filter((obj) => obj[0] === "body" || obj[0] === "heading")
@@ -203,7 +188,7 @@ const ThemeListWrapper = forwardRef<HTMLDivElement, ComponentProps<"div">>(funct
   return (
     <div
       ref={ref}
-      className={tx("flex flex-col divide-y divide-upstart-100 dark:divide-dark-600", className)}
+      className={clsx("flex flex-col divide-y divide-upstart-100 dark:divide-dark-600", className)}
     >
       {children}
     </div>

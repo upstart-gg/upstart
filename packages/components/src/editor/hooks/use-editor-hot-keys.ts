@@ -91,20 +91,6 @@ export function useEditorHotKeys() {
   useHotkeys("mod+g", (e) => {
     e.preventDefault();
     console.log("Debugging draft:");
-    console.log({
-      bricks: draft.bricks,
-      sections: draft.sections,
-      attributes: draft.attributes,
-      data: draft.data,
-      datasources: draft.datasources,
-      datarecords: draft.datarecords,
-      siteAttributes: draft.siteAttributes,
-      attr: draft.attr,
-      siteId: draft.siteId,
-      pageId: draft.id,
-      pageVersion: draft.version,
-      pagePath: draft.path,
-      pageLabel: draft.label,
-    });
+    console.log(draft);
   });
 }

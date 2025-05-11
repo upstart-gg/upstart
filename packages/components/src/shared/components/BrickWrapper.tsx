@@ -2,7 +2,6 @@ import { forwardRef, memo } from "react";
 import BaseBrick from "./BaseBrick";
 import { useBrickWrapperStyle } from "../hooks/use-brick-style";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
-import { tx } from "@upstart.gg/style-system/twind";
 
 const MemoBrickComponent = memo(BaseBrick);
 
@@ -15,7 +14,7 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(({ brick }, r
     brick,
   });
   return (
-    <div id={brick.id} className={tx(wrapperClass)} ref={ref} data-wrapper-type={brick.type}>
+    <div id={brick.id} className={wrapperClass} ref={ref} data-wrapper-type={brick.type}>
       <MemoBrickComponent brick={brick} />
     </div>
   );

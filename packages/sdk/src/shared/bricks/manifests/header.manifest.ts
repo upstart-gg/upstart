@@ -178,15 +178,17 @@ export const manifest = defineBrickManifest({
         }),
         color: color(),
         datasource: optional(datasourceRef()),
-        navItems: prop({
-          title: "Nav items",
-          schema: Type.Array(
-            Type.Object({
-              urlOrPageId: urlOrPageId(),
-            }),
-            { title: "Navigation items", default: [] },
-          ),
-        }),
+        staticItems: optional(
+          prop({
+            title: "Nav items",
+            schema: Type.Array(
+              Type.Object({
+                urlOrPageId: urlOrPageId(),
+              }),
+              { title: "Navigation items", default: [] },
+            ),
+          }),
+        ),
       },
     }),
   }),

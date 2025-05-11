@@ -1,18 +1,20 @@
 import {
   useDraft,
   useEditorEnabled,
+  useGetBrick,
   usePanel,
   usePreviewMode,
+  useSelectedBrickId,
   type DraftState,
   type usePageInfo,
 } from "../hooks/use-editor";
 import Toolbar from "./Toolbar";
-import Topbar from "./Topbar";
+import Topbar from "./NavBar";
 import { lazy, Suspense, useEffect, useRef, useState, type ComponentProps } from "react";
 import { useDebounceCallback } from "usehooks-ts";
 import { DeviceFrame } from "./Preview";
 import EditablePage from "./EditablePage";
-import { tx, injectGlobal, css } from "@upstart.gg/style-system/twind";
+import { injectGlobal, css } from "@emotion/css";
 import { Button, Spinner, toast } from "@upstart.gg/style-system/system";
 import { usePageAutoSave } from "~/editor/hooks/use-page-autosave";
 import DataPanel from "./PanelData";
@@ -24,6 +26,7 @@ import Tour from "./Tour";
 import { getThemeCss } from "~/shared/utils/get-theme-css";
 import Page from "~/shared/components/Page";
 import { useEditorHotKeys } from "../hooks/use-editor-hot-keys";
+import clsx from "clsx";
 
 type EditorProps = ComponentProps<"div"> & {
   mode?: "local" | "live";
@@ -78,10 +81,7 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
   return (
     <div
       id="editor"
-      className={tx(
-        "min-h-[100dvh] max-h-[100dvh] grid relative overscroll-none overflow-hidden",
-        getEditorCss(showIntro, panelPosition),
-      )}
+      className={clsx("min-h-[100dvh] max-h-[100dvh] grid relative", getEditorCss(showIntro, panelPosition))}
       {...props}
       ref={rootRef}
     >
@@ -91,12 +91,11 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
       {editorEnabled && <Toolbar showIntro={showIntro} />}
       {draft.previewTheme && <ThemePreviewConfirmButton />}
       <main
-        className={tx(
-          "editor-main flex-1 flex place-content-center z-40 overscroll-none transition-colors duration-300",
+        className={clsx(
+          "editor-main flex-1 flex place-content-center z-40 overscroll-none ",
           showIntro
             ? "overflow-x-hidden overflow-y-hidden pointer-events-none"
             : "overflow-x-auto overflow-y-visible ",
-          previewMode === "mobile" && "bg-gray-300",
           css({
             gridArea: "main",
             scrollbarColor: "var(--violet-4) var(--violet-2)",
@@ -130,8 +129,8 @@ function getEditorCss(showIntro: boolean, panelPosition: "left" | "right") {
   return css({
     gridTemplateAreas:
       panelPosition === "left" ? `"topbar topbar" "toolbar main"` : `"topbar topbar" "main toolbar"`,
-    gridTemplateRows: "3.7rem 1fr",
-    gridTemplateColumns: panelPosition === "left" ? "3.7rem 1fr" : "1fr 3.7rem",
+    gridTemplateRows: "50px 1fr",
+    gridTemplateColumns: panelPosition === "left" ? "60px 1fr" : "1fr 60px",
   });
 }
 
@@ -148,6 +147,9 @@ const TEMP_PANEL_DISABLED = false;
 function Panel({ className, ...props }: PanelProps) {
   const { panel, panelPosition } = usePanel();
   const previewMode = usePreviewMode();
+  const selectedBrickId = useSelectedBrickId();
+  const getBrickInfo = useGetBrick();
+  const selectedBrick = selectedBrickId ? getBrickInfo(selectedBrickId) : null;
 
   if (TEMP_PANEL_DISABLED) {
     return null;
@@ -156,13 +158,13 @@ function Panel({ className, ...props }: PanelProps) {
   return (
     <aside
       id="floating-panel"
-      className={tx(
-        `z-[9999] fixed top-[3.7rem] bottom-0 flex shadow-2xl flex-col overscroll-none \
-        min-w-[300px] w-[320px] transition-all duration-200 ease-in-out opacity-100
-        bg-gray-50 dark:bg-dark-700 border-r border-upstart-200 dark:border-dark-700 overflow-visible`,
+      className={clsx(
+        `z-[9999] fixed top-[58px] bottom-0 flex shadow-2xl flex-col overscroll-none \
+        min-w-[360px] w-[360px] opacity-100 transition-transform duration-150
+        bg-gray-50 dark:bg-dark-700  border-t border-upstart-200 dark:border-dark-700 overflow-visible`,
         {
-          "left-[3.7rem]": panelPosition === "left",
-          "right-[3.7rem]": panelPosition === "right",
+          "left-[calc(70px-15px)] pl-1 border-r rounded-r-xl": panelPosition === "left",
+          "right-[calc(70px-15px)] pr-1 border-l rounded-l-xl": panelPosition === "right",
           "-translate-x-full opacity-0": !panel && panelPosition === "left",
           "translate-x-full": !panel && panelPosition === "right",
         },
@@ -170,7 +172,7 @@ function Panel({ className, ...props }: PanelProps) {
       {...props}
     >
       {previewMode === "desktop" && panel === "library" && <PanelLibrary />}
-      {panel === "inspector" && <PanelInspector />}
+      {panel === "inspector" && selectedBrick && <PanelInspector brick={selectedBrick} />}
       {panel === "theme" && <PanelTheme />}
       {panel === "settings" && <PanelSettings />}
       {panel === "data" && <DataPanel />}

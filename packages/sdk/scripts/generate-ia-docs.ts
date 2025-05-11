@@ -1,23 +1,18 @@
-import { type TArray, Type, type TObject, type TSchema } from "@sinclair/typebox";
-import {
-  defaultAttributesSchema,
-  type Attributes,
-  siteAttributesSchemaForLLM,
-  pageAttributesSchemaForLLM,
-} from "../src/shared/attributes";
+import { type TArray, Type, type TObject } from "@sinclair/typebox";
+import { siteAttributesSchemaForLLM } from "../src/shared/attributes";
 import { manifests } from "../src/shared/bricks/manifests/all-manifests";
 import { schemasMap as providersSchemasMap } from "../src/shared/datasources/schemas";
 import { themeSchema } from "../src/shared/theme";
-import { templatePageSchema, pagesMapSchema } from "../src/shared/page";
+import { templatePageSchema } from "../src/shared/page";
 import {
   commonStyleForDocsOnly,
   shortDocumentedForDocsOnly,
 } from "../src/shared/bricks/props/_docs-common-styles";
 import fs from "node:fs";
 import path from "node:path";
-import { definedBrickSchema, definedSectionSchema } from "../src/shared/bricks";
 import { parseArgs } from "node:util";
 import { preset } from "../src/shared/bricks/props/preset";
+import { pagesMapSchema } from "../src/shared/pages-map";
 
 const __dirname = import.meta.dirname;
 
@@ -92,9 +87,6 @@ function schemaToString(
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const schema = propSchema as any;
 
-    // if (schema["ui:field"] === "hidden") {
-    //   continue;
-    // }
     if (ignoredProps.includes(propName)) {
       console.log(`Ignoring ${propName} prop`);
       continue;
@@ -207,10 +199,10 @@ template = template.replace("{{PAGE_JSON_SCHEMA}}", JSON.stringify(templatePageS
 template = template.replace("{{AVAILABLE_BRICKS}}", brickDescriptions.trim());
 template = template.replace("{{AVAILABLE_BRICKS_SUMMARY}}", bricksSummary.trim());
 // template = template.replace("{{DATASOURCES_PROVIDERS}}", getDatasourcesProviders().trim());
-template = template.replace(
-  "{{BRICK_POSITION_JSON_SCHEMA}}",
-  JSON.stringify(definedBrickSchema.properties.position),
-);
+// template = template.replace(
+//   "{{BRICK_POSITION_JSON_SCHEMA}}",
+//   JSON.stringify(brickSchema.properties.position),
+// );
 
 console.log("Writing to %s", outfile);
 fs.writeFileSync(outfile, template, "utf-8");

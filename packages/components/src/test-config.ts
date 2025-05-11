@@ -3,7 +3,7 @@ import { defineDataSources } from "@upstart.gg/sdk/datasources";
 import { defineAttributes, attr } from "@upstart.gg/sdk/attributes";
 import { defineConfig } from "@upstart.gg/sdk/template";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
-import { defineBricks, defineSections } from "@upstart.gg/sdk/shared/bricks";
+import { type Brick, processBrick, processSections } from "@upstart.gg/sdk/shared/bricks";
 
 // define your datasources
 const datasources = defineDataSources({
@@ -44,194 +44,116 @@ const datasources = defineDataSources({
   },
 });
 
-const homePageSections = defineSections([
+const contentBricks: Brick[] = [
+  {
+    id: "b-hero",
+    type: "container",
+    props: {
+      $children: [
+        {
+          id: "b-hero-1",
+          type: "text",
+          props: {
+            content: "Some text #1",
+            backgroundColor: "bg-primary",
+            color: "text-primary-content",
+          },
+        },
+        {
+          id: "b-hero-2",
+          type: "text",
+          props: {
+            content: "Some text #2",
+            backgroundColor: "bg-secondary",
+            color: "text-secondary-content",
+          },
+        },
+        {
+          id: "b-hero-3",
+          type: "button",
+          props: {
+            variants: ["btn-primary", "btn-soft"],
+            label: "My button",
+          },
+        },
+      ] satisfies Brick[],
+    },
+  },
+  {
+    id: "b-hero-2",
+    type: "text",
+    props: {
+      content: "Some specific content",
+    },
+  },
+  {
+    id: "b-hero-3",
+    type: "text",
+    props: {
+      content: "Some specific content 2",
+    },
+  },
+  {
+    id: "b-hero-4",
+    type: "text",
+    props: {
+      textContent: "Footer text",
+    },
+  },
+];
+
+const homePageSections = processSections([
   {
     id: "header",
     label: "Header",
     order: 0,
     props: {
-      $paddingHorizontal: 20,
+      preset: "bold-primary",
+      horizontalPadding: "10px",
     },
-    position: {
-      mobile: {
-        h: 3,
+    bricks: [
+      {
+        id: "b-header",
+        type: "header",
+        props: {
+          container: {
+            backgroundColor: "bg-secondary-900",
+          },
+          navigation: {},
+          brand: {
+            name: "Upstart",
+            color: "color-auto",
+          },
+        },
       },
-      desktop: {
-        h: "full",
-      },
-    },
+    ],
   },
   {
     id: "content",
     label: "Content",
     order: 1,
     props: {
+      horizontalPadding: "20px",
+      verticalPadding: "20px",
+      minHeight: "500px",
+      preset: "bold-primary",
       background: {
-        color: "#FFDD55",
+        color: "bg-secondary/20",
       },
     },
-    position: {
-      mobile: {
-        h: "full",
-      },
-      desktop: {
-        h: "full",
-      },
-    },
+    bricks: contentBricks,
   },
   {
     id: "footer",
     label: "Footer",
     order: 2,
     props: {
+      preset: "bold-primary",
       background: {
         color: "#CCCCCC",
       },
     },
-    position: {
-      mobile: {
-        h: 3,
-      },
-      desktop: {
-        h: 3,
-      },
-    },
-  },
-]);
-
-const hpBricks = defineBricks([
-  {
-    type: "header",
-    sectionId: "header",
-    props: {
-      container: {
-        backgroundColor: "bg-secondary-900",
-      },
-      brand: {
-        name: "Upstart",
-        color: "color-auto",
-      },
-    },
-    position: {
-      mobile: {
-        x: 0,
-        y: 0,
-        w: "full",
-        h: 3,
-      },
-      desktop: {
-        x: 0,
-        y: 0,
-        w: "full",
-        h: 3,
-      },
-    },
-  },
-  {
-    type: "container",
-    sectionId: "header",
-    props: {
-      $children: [
-        {
-          type: "text",
-          props: {
-            content: "Some text #1",
-            backgroundColor: "bg-green-100",
-          },
-        },
-        {
-          type: "text",
-          props: {
-            content: "Some text #2",
-            backgroundColor: "bg-blue-100",
-          },
-        },
-        {
-          type: "text",
-          props: {
-            content: "Some text #3",
-            backgroundColor: "bg-pink-100",
-          },
-        },
-      ],
-    },
-    position: {
-      mobile: {
-        x: 0,
-        y: 8,
-        w: "full",
-        h: 8,
-      },
-      desktop: {
-        x: 6,
-        y: 8,
-        w: "twoThird",
-        h: 8,
-      },
-    },
-  },
-  {
-    type: "text",
-    sectionId: "content",
-    props: {
-      content: "Some specific content",
-    },
-    position: {
-      mobile: {
-        x: "quarter",
-        y: 0,
-        w: "half",
-        h: 3,
-      },
-      desktop: {
-        x: "quarter",
-        y: 0,
-        w: "half",
-        h: 3,
-      },
-    },
-  },
-  {
-    type: "text",
-    sectionId: "content",
-    props: {
-      content: "Some specific content 2",
-    },
-    position: {
-      mobile: {
-        x: "quarter",
-        y: 6,
-        w: "half",
-        h: 3,
-      },
-      desktop: {
-        x: "quarter",
-        y: 6,
-        w: "half",
-        h: 3,
-      },
-    },
-  },
-  {
-    type: "text",
-    sectionId: "footer",
-    props: {
-      textContent: "Footer text",
-    },
-    position: {
-      mobile: {
-        x: 0,
-        y: 0,
-        w: "full",
-        h: 3,
-      },
-      desktop: {
-        x: 0,
-        y: 0,
-        w: "full",
-        h: 3,
-      },
-    },
+    bricks: [],
   },
 ]);
 
@@ -241,20 +163,32 @@ const themes: Theme[] = [
     name: "Aurora",
     description: "Vibrant gradients with ethereal color transitions",
     tags: ["gradient", "vibrant", "modern", "creative", "dynamic", "artistic", "bold"],
+    browserColorScheme: "light",
+    // use oklch for all colors
     colors: {
-      browserColorScheme: "light",
-      baseContent: "#000000", // Black
-      primary: "#2F5ABF",
-      secondary: "#50C5B7",
-      accent: "#533A71",
-      neutral: "#4b5563", // Grey
-      base100: "#FFFFFF", // White
-      base200: "#F3F4F6", // Light Grey
-      base300: "#E5E7EB", // Grey
-      accentContent: "#FFFFFF", // White
-      primaryContent: "#FFFFFF", // White
-      secondaryContent: "#FFFFFF", // White
-      neutralContent: "#FFFFFF", // White
+      // Base colors (light backgrounds with subtle warmth)
+      base100: "oklch(0.99 0.005 85)", // Warm white background
+      base200: "oklch(0.97 0.008 85)", // Soft cream
+      base300: "oklch(0.94 0.01 85)", // Light warm gray
+
+      // Content colors (dark text)
+      baseContent: "oklch(0.18 0.025 80)", // Rich dark brown-gray
+
+      // Primary colors (vibrant pink/magenta)
+      primary: "oklch(0.68 0.28 340)",
+      primaryContent: "oklch(0.99 0.005 340)", // White text on primary
+
+      // Secondary colors (electric teal)
+      secondary: "oklch(0.65 0.22 185)",
+      secondaryContent: "oklch(0.98 0.005 185)", // White text on secondary
+
+      // Accent colors (sunny yellow-orange)
+      accent: "oklch(0.82 0.18 85)",
+      accentContent: "oklch(0.18 0.02 85)", // Dark text on accent
+
+      // Neutral colors (cool violet-gray)
+      neutral: "oklch(0.38 0.08 280)",
+      neutralContent: "oklch(0.96 0.005 280)", // Light text on neutral
     },
     typography: {
       base: 16,
@@ -278,15 +212,15 @@ const themes: Theme[] = [
 
 // define your attributes
 const siteAttributes = defineAttributes({
-  mainButtonUrl: attr.url("Main Button URL", "https://facebook.com", {
-    "ui:group": "other",
-    "ui:group:title": "Other",
-  }),
-  customerId: attr.string("Customer ID", "", {
-    "ui:group": "other",
-    "ui:group:title": "Other",
-  }),
-  testUrl: attr.url("Test URL", "https://upstart.gg"),
+  // mainButtonUrl: attr.url("Main Button URL", "https://facebook.com", {
+  //   "ui:group": "other",
+  //   "ui:group:title": "Other",
+  // }),
+  // customerId: attr.string("Customer ID", "", {
+  //   "ui:group": "other",
+  //   "ui:group:title": "Other",
+  // }),
+  // testUrl: attr.url("Test URL", "https://upstart.gg"),
 });
 
 export default defineConfig({
@@ -296,7 +230,7 @@ export default defineConfig({
   attributes: siteAttributes,
   attr: {
     $pageBackground: {
-      color: "#FFFFFF",
+      color: "bg-base-200",
     },
   },
   pages: [
@@ -304,14 +238,12 @@ export default defineConfig({
       label: "Home",
       path: "/",
       sections: homePageSections,
-      bricks: hpBricks,
       tags: ["nav"],
     },
     {
       label: "About",
       path: "/about",
       sections: homePageSections,
-      bricks: hpBricks,
       tags: ["nav"],
     },
   ],

@@ -2,20 +2,18 @@ import type React from "react";
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type PropsWithChildren } from "react";
 import {
   chroma,
-  colorAdjustmentBaseValues,
   getColorsSuggestions,
   colorAdjustmentsLuminous,
   colorAdjustmentsSubdued,
   type ColorAdjustment,
   type ColorType,
   type ElementColorType,
-  generateVariantClasses,
   type ElementColor,
 } from "@upstart.gg/sdk/themes/color-system";
-import { tx } from "@upstart.gg/style-system/twind";
 import { Button, TextField, Text, Select, Tabs, Inset } from "@upstart.gg/style-system/system";
 import { useColorAdjustment, useEditor, useTheme } from "~/editor/hooks/use-editor";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
+import clsx from "clsx";
 
 const gradientMixs = [
   ["50", "200"],
@@ -45,30 +43,26 @@ const BaseColorPicker: React.FC<BaseColorPickerProps> = ({
   const editor = useEditor();
   const colorAdjustment = useColorAdjustment();
 
-  const { lightness, saturation } = useMemo(
-    () => colorAdjustmentBaseValues[colorAdjustment][colorType],
-    [colorAdjustment, colorType],
-  );
+  // todo fix this
+  const lightness = 0.5;
+  const saturation = 0.5;
 
-  const generateColor = useCallback(
-    (hue: number) => {
-      try {
-        const color = chroma.hsl(hue, saturation / 100, lightness / 100);
-        const oklabValues = color.oklab();
-        return {
-          color: color.hex(),
-          oklabValues,
-        };
-      } catch (error) {
-        console.error(`Error generating color for hue: ${hue}`, error);
-        return {
-          color: "#000000",
-          oklabValues: [lightness / 100, 0, 0],
-        };
-      }
-    },
-    [lightness, saturation],
-  );
+  const generateColor = useCallback((hue: number) => {
+    try {
+      const color = chroma.hsl(hue, saturation / 100, lightness / 100);
+      const oklabValues = color.oklch();
+      return {
+        color: color.hex(),
+        oklabValues,
+      };
+    } catch (error) {
+      console.error(`Error generating color for hue: ${hue}`, error);
+      return {
+        color: "#000000",
+        oklabValues: [lightness / 100, 0, 0],
+      };
+    }
+  }, []);
 
   const initialColor = generateColor(
     typeof initialValue === "string" ? chroma(initialValue).hsl()[0] : initialValue,
@@ -155,7 +149,7 @@ const BaseColorPicker: React.FC<BaseColorPickerProps> = ({
           handleColorSelect(color, chroma(color).oklab());
         }}
       >
-        <div className={tx("flex text-sm gap-x-1")}>
+        <div className={clsx("flex text-sm gap-x-1")}>
           {colorType !== "primary" && (
             <div className="flex flex-col items-start justify-start gap-y-1 flex-shrink basis-1/2">
               <Text color="gray">Suggestions:</Text>
@@ -263,7 +257,7 @@ function ColorPillList({
             <button
               type="button"
               key={color}
-              className={tx(
+              className={clsx(
                 "mx-auto h-7 w-7 rounded-full shadow-sm shadow-upstart-300 transition-transform",
                 `bg-${color} hover:outline-gray-300 hover:scale-110`,
               )}
@@ -319,7 +313,7 @@ function ColorPillList({
                 <button
                   type="button"
                   key={`${color.from}-${color.to}`}
-                  className={tx(
+                  className={clsx(
                     "mx-auto h-7 w-7 rounded-full shadow-sm shadow-upstart-300 transition-transform",
                     `bg-gradient-to-${gradientDir} from-${color.from} to-${color.to} hover:scale-110`,
                   )}
@@ -542,7 +536,7 @@ function ButtonsBar({
 }) {
   if (!colorButtons) return null;
   return (
-    <div className={tx(`flex gap-1.5 mt-1 w-full`, `col-span-${shadesLen}`)}>
+    <div className={clsx(`flex gap-1.5 mt-1 w-full`, `col-span-${shadesLen}`)}>
       {colorButtons.map((button) => (
         <button
           key={button.value}

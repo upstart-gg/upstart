@@ -2,7 +2,8 @@ import { Dialog, TextField, Select, Button, Callout } from "@upstart.gg/style-sy
 import { useEditor } from "~/editor/hooks/use-editor";
 import { PiMagnifyingGlass } from "react-icons/pi";
 import { useState } from "react";
-import { css, tx } from "@upstart.gg/style-system/twind";
+import { css } from "@emotion/css";
+import clsx from "clsx";
 
 type Results = {
   total_pages: number;
@@ -139,7 +140,7 @@ export default function ModalSearchImage({ onChoose, onClose, open }: ModalSearc
           </Callout.Root>
         )}
         <div
-          className={tx(
+          className={clsx(
             "py-2 mt-3 px-2 transition-all duration-300",
             css({
               columnCount: 5,

@@ -1,14 +1,16 @@
-import { tx, apply, css } from "@upstart.gg/style-system/twind";
+import { css } from "@emotion/css";
 import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import { getStyleProperties } from "@upstart.gg/sdk/shared/bricks/props/helpers";
 import { brickStylesHelpersMap, brickWrapperStylesHelpersMap } from "../styles/helpers";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { debounce, get } from "lodash-es";
+import { debounce, get, merge } from "lodash-es";
 import { useBrickManifest } from "./use-brick-manifest";
 import { getTextContrastedColor } from "@upstart.gg/sdk/shared/themes/color-system";
 import { useEffect } from "react";
 import { useGetBrick } from "~/editor/hooks/use-editor";
+import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
+import clsx from "clsx";
 
 // Return the upper path without the last part (the property name)
 function extractStylePath(path: string) {
@@ -24,6 +26,7 @@ function getClassesFromStyleProps<T extends BrickManifest>(
   type: "brick" | "wrapper",
 ) {
   const { props, mobileProps } = brick;
+  const mergedProps = merge({}, props, defaultProps[brick.type].props);
   const helpers = type === "brick" ? brickStylesHelpersMap : brickWrapperStylesHelpersMap;
   const classes = Object.entries(stylesProps).reduce(
     (acc, [path, styleId]) => {
@@ -32,12 +35,16 @@ function getClassesFromStyleProps<T extends BrickManifest>(
       acc[part] = acc[part] ?? [];
       acc[part].push(
         // @ts-expect-error
-        tx(helper?.(get(props, path), get(mobileProps, path))),
+        clsx(helper?.(get(mergedProps, path), get(mobileProps, path))),
       );
       return acc;
     },
     {} as Record<string, string[]>,
   );
+  if (brick.type === "text" && type === "wrapper") {
+    // console.log("getClassesFromStyleProps", { mergedProps, stylesProps });
+    // console.log("getClassesFromStyleProps text", classes);
+  }
   return classes;
 }
 
@@ -87,27 +94,27 @@ export function useColorsPreprocessing<T extends BrickManifest>({ brick }: Brick
 }
 
 export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable, selected }: BrickProps<T>) {
-  console.debug("useBrickWrapperStyle", brick);
-  const { props, position } = brick;
+  const { props } = brick;
   const isContainerChild = brick.parentId !== undefined;
   const manifest = useBrickManifest(brick.type);
   const stylesProps = getStyleProperties(manifest.props);
   const styleIds = Object.values(stylesProps);
   const classes = getClassesFromStyleProps(stylesProps, brick, "wrapper");
 
-  return tx(
-    apply(props.className as string),
+  return clsx(
+    props.className as string,
     // no transition otherwise it will slow down the drag
-    "brick-wrapper group/brick flex",
+    "brick-wrapper group/brick flex flex-1",
     styleIds.includes("#styles:fixedPositioned") === false && "relative",
     styleIds.includes("#styles:fixedPositioned") &&
-      css({
-        height: `${position.desktop.h * LAYOUT_ROW_HEIGHT}px`,
-        maxHeight: `${position.desktop.h * LAYOUT_ROW_HEIGHT}px`,
-      }),
+      // css({
+      //   height: `${position.desktop.h * LAYOUT_ROW_HEIGHT}px`,
+      //   maxHeight: `${position.desktop.h * LAYOUT_ROW_HEIGHT}px`,
+      // }),
 
-    // container children expand to fill the space
-    isContainerChild && "container-child",
+      // container children expand to fill the space
+      isContainerChild &&
+      "container-child",
 
     getBrickWrapperEditorStyles(editable === true, !!brick.isContainer, isContainerChild, selected),
 
@@ -117,23 +124,23 @@ export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable,
     //        relatively to the page grid but to the container
     //
     // Warning: those 2 rules blocks are pretty sensible, especially the height!
-    !isContainerChild &&
-      `@desktop:(
-        col-start-${position.desktop.x + 1}
-        col-span-${position.desktop.w}
-        row-start-${position.desktop.y + 1}
-        h-fit
-        min-h-[${position.desktop.h * LAYOUT_ROW_HEIGHT}px]
-        max-h-fit
-      )
-      @mobile:(
-        col-start-${position.mobile.x + 1}
-        col-span-${position.mobile.w}
-        row-start-${position.mobile.y + 1}
-        h-fit
-        min-h-[${position.mobile.h * LAYOUT_ROW_HEIGHT}px]
-        max-h-fit
-      )`,
+    // !isContainerChild &&
+    //   `@desktop:(
+    //     col-start-${position.desktop.x + 1}
+    //     col-span-${position.desktop.w}
+    //     row-start-${position.desktop.y + 1}
+    //     h-fit
+    //     min-h-[${position.desktop.h * LAYOUT_ROW_HEIGHT}px]
+    //     max-h-fit
+    //   )
+    //   @mobile:(
+    //     col-start-${position.mobile.x + 1}
+    //     col-span-${position.mobile.w}
+    //     row-start-${position.mobile.y + 1}
+    //     h-fit
+    //     min-h-[${position.mobile.h * LAYOUT_ROW_HEIGHT}px]
+    //     max-h-fit
+    //   )`,
     // ${position.mobile.manualHeight ? `h-[${position.mobile.manualHeight * LAYOUT_ROW_HEIGHT}px]` : ""}
 
     ...Object.values(classes).flat(),

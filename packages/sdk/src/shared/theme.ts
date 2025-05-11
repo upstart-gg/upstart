@@ -70,14 +70,13 @@ export const themeSchema = Type.Object({
   tags: Type.Optional(
     Type.Array(Type.String({ title: "Tag" }), { title: "Tags", description: "The tags of the theme" }),
   ),
-
+  browserColorScheme: Type.String({
+    title: "Browser scheme",
+    description: "Color of browser-provided UI. Either 'light' or 'dark'",
+  }),
   // Define the theme colors
   colors: Type.Object(
     {
-      browserColorScheme: Type.String({
-        title: "Browser scheme",
-        description: "Color of browser-provided UI. Can be 'light' or 'dark'",
-      }),
       primary: Type.String({
         title: "Primary color",
         description: "The brand's primary color.",

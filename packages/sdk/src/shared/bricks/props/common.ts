@@ -1,5 +1,4 @@
 import { Type } from "@sinclair/typebox";
-import { StringEnum } from "~/shared/utils/schema";
 import { preset } from "./preset";
 
 export const commonProps = {
@@ -14,6 +13,18 @@ export const commonProps = {
       default: 0,
       "ui:field": "hidden",
     }),
+  ),
+  hidden: Type.Optional(
+    Type.Object(
+      {
+        desktop: Type.Boolean(),
+        mobile: Type.Boolean(),
+      },
+      {
+        "ui:field": "hidden",
+        "ai:instructions": "Do not use the hidden prop. It is used internally by the editor.",
+      },
+    ),
   ),
   editable: Type.Optional(
     Type.Boolean({

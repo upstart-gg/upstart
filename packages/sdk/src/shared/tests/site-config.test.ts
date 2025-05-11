@@ -1,7 +1,7 @@
 import { Type as ds, Type } from "@sinclair/typebox";
 import { defineDataSources } from "../datasources";
 import { defineAttributes, attr } from "../attributes";
-import { defineBricks, defineSections } from "../bricks";
+import { processSections } from "../bricks";
 import { defineConfig } from "../template";
 import type { Theme } from "../theme";
 
@@ -43,25 +43,19 @@ const datasources = defineDataSources({
   },
 });
 
-const homePageSections = defineSections([
+const homePageSections = processSections([
   {
     id: "header",
     label: "Header",
     order: 0,
     props: {
       preset: "bold-accent",
-      $paddingHorizontal: 20,
-    },
-    position: {
-      mobile: {
-        h: 3,
-      },
-      desktop: {
-        h: "full",
-      },
+      horizontalPadding: "20px",
+      verticalPadding: "20px",
     },
     bricks: [
       {
+        id: "brick-header",
         type: "header",
         props: {
           container: {
@@ -72,22 +66,9 @@ const homePageSections = defineSections([
             color: "color-auto",
           },
         },
-        position: {
-          mobile: {
-            x: 0,
-            y: 0,
-            w: "full",
-            h: 3,
-          },
-          desktop: {
-            x: 0,
-            y: 0,
-            w: "full",
-            h: 3,
-          },
-        },
       },
       {
+        id: "brick-nav",
         type: "container",
         props: {
           $children: [
@@ -114,20 +95,6 @@ const homePageSections = defineSections([
             },
           ],
         },
-        position: {
-          mobile: {
-            x: 0,
-            y: 8,
-            w: "full",
-            h: 8,
-          },
-          desktop: {
-            x: 6,
-            y: 8,
-            w: "twoThird",
-            h: 8,
-          },
-        },
       },
     ],
   },
@@ -141,53 +108,19 @@ const homePageSections = defineSections([
       },
       preset: "bold-accent",
     },
-    position: {
-      mobile: {
-        h: "full",
-      },
-      desktop: {
-        h: "full",
-      },
-    },
     bricks: [
       {
+        id: "brick-hero",
         type: "text",
         props: {
           content: "Some specific content",
         },
-        position: {
-          mobile: {
-            x: "quarter",
-            y: 0,
-            w: "half",
-            h: 3,
-          },
-          desktop: {
-            x: "quarter",
-            y: 0,
-            w: "half",
-            h: 3,
-          },
-        },
       },
       {
+        id: "brick-hero-2",
         type: "text",
         props: {
           content: "Some specific content 2",
-        },
-        position: {
-          mobile: {
-            x: "quarter",
-            y: 6,
-            w: "half",
-            h: 3,
-          },
-          desktop: {
-            x: "quarter",
-            y: 6,
-            w: "half",
-            h: 3,
-          },
         },
       },
     ],
@@ -202,33 +135,12 @@ const homePageSections = defineSections([
         color: "#CCCCCC",
       },
     },
-    position: {
-      mobile: {
-        h: 3,
-      },
-      desktop: {
-        h: 3,
-      },
-    },
     bricks: [
       {
+        id: "brick-footer",
         type: "text",
         props: {
           textContent: "Footer text",
-        },
-        position: {
-          mobile: {
-            x: 0,
-            y: 0,
-            w: "full",
-            h: 3,
-          },
-          desktop: {
-            x: 0,
-            y: 0,
-            w: "full",
-            h: 3,
-          },
         },
       },
     ],
@@ -241,8 +153,8 @@ const themes: Theme[] = [
     name: "Aurora",
     description: "Vibrant gradients with ethereal color transitions",
     tags: ["gradient", "vibrant", "modern", "creative", "dynamic", "artistic", "bold"],
+    browserColorScheme: "light",
     colors: {
-      browserColorScheme: "light",
       primary: "#2F5ABF",
       secondary: "#50C5B7",
       accent: "#533A71",

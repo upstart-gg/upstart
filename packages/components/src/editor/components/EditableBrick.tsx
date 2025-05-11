@@ -9,13 +9,10 @@ import {
   useEffect,
   useMemo,
 } from "react";
-import { tx } from "@upstart.gg/style-system/twind";
 import {
   useDebugMode,
-  useDraft,
   useDraftHelpers,
   useEditorHelpers,
-  useGetBrick,
   usePreviewMode,
   useSection,
   useSelectedBrickId,
@@ -27,8 +24,6 @@ import {
   useMergeRefs,
   autoPlacement,
   offset,
-  Popover,
-  Inset,
   toast,
   useHover,
   useInteractions,
@@ -51,6 +46,7 @@ import { BiSolidColor } from "react-icons/bi";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { FiSettings, FiDatabase, FiTrash, FiTrash2 } from "react-icons/fi";
 import { BrickPopover } from "./BrickPopover";
+import clsx from "clsx";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -59,37 +55,37 @@ type BrickWrapperProps = ComponentProps<"div"> & {
 };
 
 function useBarPlacements(brick: Brick): Placement[] {
-  const previewMode = usePreviewMode();
-  const { isLastSection } = useDraftHelpers();
-  console.debug("BrickWrapper: useBarPlacements", brick);
-  const section = useSection(brick.sectionId);
-  const manifest = useBrickManifest(brick.type);
-  return useMemo(() => {
-    const placements: Placement[] = [];
-    if (brick.parentId || manifest.isContainer || !section) {
-      placements.push(...(["bottom", "top"] as const));
-    } else {
-      if (!isLastSection(section.id)) {
-        placements.push("bottom-start");
-      }
-      if (
-        (typeof brick.position[previewMode].y === "number" && brick.position[previewMode].y > 2) ||
-        isLastSection(section.id)
-      ) {
-        placements.push("top-start");
-      }
-    }
-    return placements;
-  }, [brick, previewMode, manifest.isContainer, section, isLastSection]);
+  // const previewMode = usePreviewMode();
+  // const { isLastSection } = useDraftHelpers();
+  // const section = useSection(brick.sectionId);
+  // const manifest = useBrickManifest(brick.type);
+  return ["bottom", "top"] as Placement[];
+  // return useMemo(() => {
+  //   const placements: Placement[] = [];
+  // if (brick.parentId || manifest.isContainer || !section) {
+  //   placements.push(...(["bottom", "top"] as const));
+  // } else {
+  //   if (!isLastSection(section.id)) {
+  //     placements.push("bottom-start");
+  //   }
+  //   if (
+  //     (typeof brick.position[previewMode].y === "number" && brick.position[previewMode].y > 2) ||
+  //     isLastSection(section.id)
+  //   ) {
+  //     placements.push("top-start");
+  //   }
+  // }
+  //   return placements;
+  // }, [brick, previewMode, manifest.isContainer, section, isLastSection]);
 }
 
 const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
   ({ brick, children, isContainerChild, index }, ref) => {
-    console.debug("EditableBrickWrapper", brick);
     const hasMouseMoved = useRef(false);
     const selectedBrickId = useSelectedBrickId();
     const { setSelectedBrickId } = useEditorHelpers();
     const previewMode = usePreviewMode();
+    const editorHelpers = useEditorHelpers();
     const { getParentBrick } = useDraftHelpers();
     const manifest = useBrickManifest(brick.type);
     const parentBrick = getParentBrick(brick.id);
@@ -188,8 +184,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       }
 
       setSelectedBrickId(selectedBrick.id);
-
-      // setPanel("inspector");
+      editorHelpers.setPanel("inspector");
       hasMouseMoved.current = false;
 
       // stop propagation otherwise the click could then be handled by the container
@@ -203,16 +198,12 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           id={brick.id}
           data-brick
           data-brick-id={brick.id}
-          data-x={brick.position?.[previewMode]?.x ?? 0}
-          data-y={brick.position?.[previewMode]?.y ?? 0}
-          data-w={brick.position?.[previewMode]?.w ?? 0}
-          data-h={brick.position?.[previewMode]?.h ?? 0}
           data-brick-type={brick.type}
           data-element-kind={manifest.kind}
           data-last-touched={brick.props.lastTouched ?? "0"}
           data-dropzone={manifest.isContainer}
           {...(manifest.movable ? {} : { "data-no-drag": "true" })}
-          className={tx(wrapperClass, `![animation-delay:${0.5 * (index + 1)}s]`)}
+          className={clsx(wrapperClass, `![animation-delay:${0.5 * (index + 1)}s]`)}
           ref={brickRef}
           onClick={onBrickWrapperClick}
           {...getReferenceProps()}
@@ -262,7 +253,7 @@ const BrickMenuBarsContainer = forwardRef<HTMLDivElement, BrickMenuBarProps>(
         data-ui
         data-ui-menu-bars-container
         role="navigation"
-        className={tx(
+        className={clsx(
           "z-[99999] isolate text-base items-center gap-1",
           "transition-opacity duration-150 border rounded-lg",
           visible ? "opacity-100 flex" : "opacity-0 hidden",
@@ -272,7 +263,7 @@ const BrickMenuBarsContainer = forwardRef<HTMLDivElement, BrickMenuBarProps>(
         {...rest}
       >
         {/* container for main nav bar */}
-        <BrickMainNavBar brick={brick} />
+        {/* <BrickMainNavBar brick={brick} /> */}
         {/* container for text editor buttons */}
         <BrickTextNavBar brick={brick} />
       </div>
@@ -285,8 +276,8 @@ function BrickTextNavBar({ brick }: { brick: Brick }) {
     <div
       id={`text-editor-menu-${brick.id}`}
       // Hide the menu if it doesn't have any children so that the border doesn't show up
-      className={tx("contents", menuNavBarCls, "!empty:hidden")}
-      // className={tx("contents", menuNavBarCls, "!empty:hidden")}
+      className={clsx("contents", menuNavBarCls, "!empty:hidden")}
+      // className={clsx("contents", menuNavBarCls, "!empty:hidden")}
     />
   );
 }
@@ -299,37 +290,29 @@ function BrickMainNavBar({ brick }: { brick: Brick }) {
   }
 
   return (
-    <nav className={tx(menuNavBarCls)} data-ui data-ui-options-bar>
-      <span className={tx(menuBarBtnCls, menuBarBtnCommonCls, "block capitalize pointer-events-none")}>
+    <nav className={clsx(menuNavBarCls)} data-ui data-ui-options-bar>
+      {/* <span className={clsx(menuBarBtnCls, menuBarBtnCommonCls, "block capitalize pointer-events-none")}>
         {manifest.type}
-      </span>
+      </span> */}
       {manifest.presets && (
         <BrickPopover brick={brick} view="presets">
-          <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-            <BiSolidColor className={tx("w-5 h-5")} />
-            {/* <span className={tx(menuBarTooltipCls)}>Presets</span> */}
+          <button type="button" className={clsx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
+            <BiSolidColor className={clsx("w-5 h-5")} />
+            {/* <span className={clsx(menuBarTooltipCls)}>Presets</span> */}
           </button>
         </BrickPopover>
       )}
       {/* Settings & styles */}
       <BrickPopover brick={brick} view="settings">
-        <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-          <FiSettings className={tx("w-5 h-5")} />
-          {/* <span className={tx(menuBarTooltipCls)}>Settings</span> */}
+        <button type="button" className={clsx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
+          <FiSettings className={clsx("w-5 h-5")} />
+          {/* <span className={clsx(menuBarTooltipCls)}>Settings</span> */}
         </button>
       </BrickPopover>
       {/* Content */}
-      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-        <FiDatabase className={tx("w-5 h-5")} />
-        {/* <span className={tx(menuBarTooltipCls)}>Dynamic content</span> */}
-      </button>
-      <button
-        type="button"
-        className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}
-        onClick={() => deleteBrick(brick.id)}
-      >
-        <FiTrash className={tx("w-5 h-5 hover:text-red-500/70 group-hover:text-red-500/70")} />
-        {/* <span className={tx(menuBarTooltipCls)}>Dynamic content</span> */}
+      <button type="button" className={clsx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
+        <FiDatabase className={clsx("w-5 h-5")} />
+        {/* <span className={clsx(menuBarTooltipCls)}>Dynamic content</span> */}
       </button>
     </nav>
   );
@@ -425,7 +408,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
               <ContextMenu.SubTrigger>Visible on</ContextMenu.SubTrigger>
               <ContextMenu.SubContent>
                 <ContextMenu.CheckboxItem
-                  checked={!brick.position.mobile?.hidden}
+                  checked={!brick.props.hidden?.mobile}
                   onClick={(e) => e.stopPropagation()}
                   onCheckedChange={() => draftHelpers.toggleBrickVisibilityPerBreakpoint(brick.id, "mobile")}
                 >
@@ -433,7 +416,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                 </ContextMenu.CheckboxItem>
 
                 <ContextMenu.CheckboxItem
-                  checked={!brick.position.desktop?.hidden}
+                  checked={!brick.props.hidden?.desktop}
                   onClick={(e) => e.stopPropagation()}
                   onCheckedChange={() => draftHelpers.toggleBrickVisibilityPerBreakpoint(brick.id, "desktop")}
                 >

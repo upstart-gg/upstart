@@ -3,7 +3,7 @@ import { hydrateRoot } from "react-dom/client";
 import App from "./App";
 import { setupTwindReact } from "@upstart.gg/style-system/twind";
 
-setupTwindReact(false);
+// setupTwindReact(false);
 
 const hydrate = () =>
   startTransition(() => {

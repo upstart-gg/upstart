@@ -8,7 +8,6 @@ import { merge, set } from "lodash-es";
 import { useDraftHelpers, useGetBrick, usePreviewMode, useSection } from "~/editor/hooks/use-editor";
 import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
 import { Value } from "@sinclair/typebox/value";
-import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
 type SectionSettingsViewProps = {
   section: Section;
@@ -19,9 +18,6 @@ export default function SectionSettingsView({ section, group }: SectionSettingsV
   const { updateSectionProps } = useDraftHelpers();
   const previewMode = usePreviewMode();
   console.debug("SectionSettingsView", section);
-  const sectionInfo = useSection(section.id);
-
-  invariant(sectionInfo, `SectionSettingsView: sectionInfo is undefined for section ${section.id}`);
 
   const filter: SchemaFilter = (prop) => {
     return (
@@ -39,9 +35,9 @@ export default function SectionSettingsView({ section, group }: SectionSettingsV
   const formData = useMemo(() => {
     const defProps = Value.Create(sectionSchema.properties.props);
     return previewMode === "mobile"
-      ? merge({}, defProps, sectionInfo.props, sectionInfo.mobileProps)
-      : merge({}, defProps, sectionInfo.props ?? {});
-  }, [sectionInfo, previewMode]);
+      ? merge({}, defProps, section.props, section.mobileProps)
+      : merge({}, defProps, section.props ?? {});
+  }, [previewMode, section.props, section.mobileProps]);
 
   const onChange = useCallback(
     (data: Record<string, unknown>, propertyChangedPath: string) => {
@@ -51,14 +47,14 @@ export default function SectionSettingsView({ section, group }: SectionSettingsV
         return;
       }
       // Note: this is a weird way to update the brick props, but it'it allows us to deal with frozen trees
-      const props = JSON.parse(JSON.stringify(sectionInfo?.props ?? {}));
+      const props = JSON.parse(JSON.stringify(section?.props ?? {}));
       // `propertyChangedPath` can take the form of `a.b.c` which means we need to update `props.a.b.c`
       // For this we use lodash.set
       set(props, propertyChangedPath, data[propertyChangedPath]);
       // Update the brick props in the store
       updateSectionProps(section.id, props, previewMode === "mobile");
     },
-    [section.id, previewMode, updateSectionProps, sectionInfo],
+    [section.id, previewMode, updateSectionProps, section.props],
   );
 
   return (

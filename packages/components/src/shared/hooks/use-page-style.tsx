@@ -1,19 +1,20 @@
-import { css, tx } from "@upstart.gg/style-system/twind";
+import { css } from "@emotion/css";
 import { isStandardColor } from "@upstart.gg/sdk/shared/themes/color-system";
 import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
-import type { ResponsiveMode } from "@upstart.gg/sdk/shared/responsive";
+import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
+import clsx from "clsx";
 
 type UsePageStyleProps = {
   attributes: Attributes;
   editable?: boolean;
-  previewMode?: ResponsiveMode;
+  previewMode?: Resolution;
   typography: Theme["typography"];
   showIntro?: boolean;
 };
 
 export function useBodyStyle({ attributes }: { attributes: Attributes }) {
-  return tx(
+  return clsx(
     isStandardColor(attributes.$bodyBackground?.color) &&
       css({ backgroundColor: attributes.$bodyBackground?.color as string }),
     !isStandardColor(attributes.$bodyBackground?.color) && (attributes.$bodyBackground?.color as string),
@@ -28,7 +29,7 @@ export function useBodyStyle({ attributes }: { attributes: Attributes }) {
 }
 
 export function usePageStyle({ attributes, editable, typography, showIntro }: UsePageStyleProps) {
-  return tx(
+  return clsx(
     "flex flex-col group/page mx-auto relative max-w-full w-full p-0 antialiased",
     editable && "overflow-hidden",
     isStandardColor(attributes.$pageBackground?.color) &&
@@ -71,10 +72,10 @@ function getTypographyStyles(typography: Theme["typography"]) {
     return font.type === "stack" ? `var(--font-${font.family})` : font.family;
   }
   return css({
-    "font-family": formatFontFamily(typography.body),
-    "font-size": `${typography.base}px`,
+    fontFamily: formatFontFamily(typography.body),
+    fontSize: `${typography.base}px`,
     "& h1, & h2, & h3, & h4, & h5, & h6, & h7": {
-      "font-family": formatFontFamily(typography.heading),
+      fontFamily: formatFontFamily(typography.heading),
     },
   });
 }

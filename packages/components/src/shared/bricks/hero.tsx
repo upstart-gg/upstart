@@ -1,10 +1,10 @@
 import { forwardRef } from "react";
-import { tx } from "@upstart.gg/style-system/twind";
 import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/hero.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { memoizeIgnoringPaths } from "../utils/memoize";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { TextContent } from "../components/TextContent";
+import clsx from "clsx";
 
 const Hero = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
@@ -14,11 +14,11 @@ const Hero = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
   console.log("hero props", props);
 
   return (
-    <div className={tx("flex-1", ...classes)}>
+    <div className={clsx("flex-1", ...classes)}>
       <TextContent
         as="h1"
         propPath="content"
-        className={tx("hero grow flex-wrap text-wrap")}
+        className="hero grow flex-wrap text-wrap"
         brickId={brick.id}
         content={props.content}
         textSizeMode="hero"

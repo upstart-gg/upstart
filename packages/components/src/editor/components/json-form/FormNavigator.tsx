@@ -10,11 +10,11 @@ import {
   type CSSProperties,
 } from "react";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
-import { tx } from "@upstart.gg/style-system/twind";
 import type { NavItem, NavItemProperty } from "./types";
 import { processObjectSchemaToFields } from "./field-factory";
 import { type TObject, Type } from "@sinclair/typebox";
 import { useMutationObserver } from "~/editor/hooks/use-mutation-observer";
+import clsx from "clsx";
 
 type FormNavigatorContextType = {
   navigateTo: (item: NavItem) => void;
@@ -42,12 +42,12 @@ export const useFormNavigation = () => {
 export const NavList: FC<{ items: NavItem[]; brickId: string }> = ({ items, brickId }) => {
   const { navigateTo } = useFormNavigation();
   return (
-    <ul className={tx("list-none p-0 m-0")}>
+    <ul className="list-none p-0 m-0">
       {items.map((item) => {
         return (
           <li
             key={item.id}
-            className={tx(
+            className={clsx(
               `select-none p-2.5 flex items-center text-[0.9rem] text-gray-600 justify-between border-b last:border-b-0 border-gray-200
             dark:border-dark-400 transition-colors duration-200 flex-wrap`,
               // if empty, hide
@@ -61,7 +61,7 @@ export const NavList: FC<{ items: NavItem[]; brickId: string }> = ({ items, bric
             }}
           >
             {item.schema ? <SchemaField item={item} /> : item.label}
-            {item.children && <FiChevronRight className={tx("text-gray-400")} />}
+            {item.children && <FiChevronRight className="text-gray-400" />}
           </li>
         );
       })}
@@ -207,7 +207,7 @@ const FormNavigator: FC<FormNavigatorProps> = ({
     >
       <div
         ref={ref}
-        className={tx(
+        className={clsx(
           "navigator-view transition-all relative overflow-x-hidden overflow-y-hidden rounded-md  bg-white dark:bg-dark-500",
           className,
         )}
@@ -218,17 +218,13 @@ const FormNavigator: FC<FormNavigatorProps> = ({
         }}
       >
         {/* Current View */}
-        <div className={tx("absolute inset-0 flex flex-col", getAnimationClass())}>
+        <div className={clsx("absolute inset-0 flex flex-col", getAnimationClass())}>
           {/* Header */}
-          <div
-            className={tx(
-              "flex items-center p-2.5 border-b border-gray-200 dark:border-dark-400 bg-gray-50 sticky top-0 z-10",
-            )}
-          >
+          <div className="flex items-center p-2.5 border-b border-gray-200 dark:border-dark-400 bg-gray-50 sticky top-0 z-10">
             {viewStack.length > 1 ? (
               <button
                 type="button"
-                className={tx(
+                className={clsx(
                   `flex items-center gap-1 p-0 bg-transparent text-upstart-600 dark:text-upstart-300
                   border-0 cursor-pointer font-medium text-sm hover:opacity-90 focus:outline-none select-none`,
                 )}
@@ -238,18 +234,18 @@ const FormNavigator: FC<FormNavigatorProps> = ({
                 Back
               </button>
             ) : (
-              <div className={tx("w-10")} />
+              <div className="w-10" />
             )}
             <h3
-              className={tx(
+              className={clsx(
                 "flex-1 m-0 text-sm font-semibold text-center select-none first-letter:uppercase",
               )}
             >
               {currentView.title}
             </h3>
-            <div className={tx("w-10")} />
+            <div className="w-10" />
           </div>
-          <div className={tx("flex-1 overflow-auto min-h-max h-fit")}>{currentView.content}</div>
+          <div className="flex-1 overflow-auto min-h-max h-fit">{currentView.content}</div>
         </div>
       </div>
     </FormNavigatorContext.Provider>

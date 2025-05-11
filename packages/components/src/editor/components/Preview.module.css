@@ -1,11 +1,13 @@
 .desktop {
   display: flex;
-  min-height: 100dvh;
-  height: max-content;
-  /* width: calc(100dvw - 58px); */
-  width: 100%;
+  height: calc(100dvh - 66px);
+  max-height: calc(100dvh - 66px);
+  width: calc(100dvw - 90px);
+  border-radius: .5rem;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
   margin-block: auto;
-  overflow: visible;
+  overflow-y: scroll;
 }
 
 .handled {

@@ -1,4 +1,3 @@
-import { tx, css } from "@upstart.gg/style-system/twind";
 import { defaultProps, manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { Value } from "@sinclair/typebox/value";
 import { WiStars } from "react-icons/wi";
@@ -21,6 +20,8 @@ import interact from "interactjs";
 import { IoCloseOutline } from "react-icons/io5";
 import { panelTabContentScrollClass } from "../utils/styles";
 import { useEditorHelpers } from "../hooks/use-editor";
+import clsx from "clsx";
+import { PanelBlockTitle } from "./PanelBlockTitle";
 
 export default function PanelLibrary() {
   const { shouldDisplay: shouldDisplayLibraryCallout } = useCalloutViewCounter("blocks-library");
@@ -61,33 +62,23 @@ export default function PanelLibrary() {
 
   return (
     <Tabs.Root defaultValue="library">
-      <Tabs.List className={tx("sticky top-0 z-50")}>
-        <Tabs.Trigger value="library" className={tx("!flex-1")}>
+      <Tabs.List className={clsx("sticky top-0 z-50")}>
+        <Tabs.Trigger value="library" className={clsx("!flex-1")}>
           Library
         </Tabs.Trigger>
-        <Tabs.Trigger value="ai" className={tx("!flex-1")}>
-          AI creator <BsStars className={tx("ml-1 w-4 h-4 text-upstart-500")} />
+        <Tabs.Trigger value="ai" className={clsx("!flex-1")}>
+          AI creator <BsStars className={clsx("ml-1 w-4 h-4 text-upstart-500")} />
         </Tabs.Trigger>
-        <IconButton
-          title="Close"
-          className="self-center items-center justify-center inline-flex !mr-1 !mt-2"
-          size="1"
-          variant="ghost"
-          color="gray"
-          onClick={() => hidePanel()}
-        >
-          <IoCloseOutline className="w-4 h-4 text-gray-400 hover:text-gray-700" />
-        </IconButton>
       </Tabs.List>
       <Tabs.Content value="library">
         <div className="flex flex-col gap-8">
           <div
-            className={tx(
+            className={clsx(
               "flex flex-col max-h-[calc(100dvh/2-99px)] overflow-y-auto",
               panelTabContentScrollClass,
             )}
           >
-            <BlockTitle title="Base bricks" />
+            <PanelBlockTitle>Base bricks</PanelBlockTitle>
             {shouldDisplayLibraryCallout && (
               <Callout.Root size="1" color="violet" className="!rounded-none">
                 <Callout.Text size="1">Simply drag and drop those base bricks to your page.</Callout.Text>
@@ -95,7 +86,7 @@ export default function PanelLibrary() {
             )}
 
             <div
-              className={tx("grid gap-1 p-1.5")}
+              className={clsx("grid gap-1 p-1.5")}
               style={{
                 gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
               }}
@@ -112,12 +103,12 @@ export default function PanelLibrary() {
             </div>
           </div>
           <div
-            className={tx(
+            className={clsx(
               "flex flex-col max-h-[calc(100dvh/2-99px)] overflow-y-auto",
               panelTabContentScrollClass,
             )}
           >
-            <BlockTitle title="Widgets" />
+            <PanelBlockTitle>Widgets</PanelBlockTitle>
             {shouldDisplayLibraryCallout && (
               <Callout.Root size="1" color="violet" className="!rounded-none">
                 <Callout.Text size="1">
@@ -127,7 +118,7 @@ export default function PanelLibrary() {
             )}
 
             <div
-              className={tx("grid gap-1 p-1.5")}
+              className={clsx("grid gap-1 p-1.5")}
               style={{
                 gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
               }}
@@ -145,10 +136,10 @@ export default function PanelLibrary() {
           </div>
         </div>
       </Tabs.Content>
-      <ScrollablePanelTab tab="ai" className={tx("p-2")}>
+      <ScrollablePanelTab tab="ai" className={clsx("p-2")}>
         <Callout.Root size="1">
           <Callout.Icon>
-            <WiStars className={tx("w-7 h-7 mt-3")} />
+            <WiStars className={clsx("w-7 h-7 mt-3")} />
           </Callout.Icon>
           <Callout.Text size="1">Tell AI what you want and it will generate a brick for you!</Callout.Text>
         </Callout.Root>
@@ -156,7 +147,7 @@ export default function PanelLibrary() {
           onInput={(e) => {
             setBrickPrompt(e.currentTarget.value);
           }}
-          className={tx("w-full my-2 h-24")}
+          className={clsx("w-full my-2 h-24")}
           size="2"
           placeholder="Add an image of delivery guy"
           spellCheck={false}
@@ -164,28 +155,16 @@ export default function PanelLibrary() {
         <Button
           size="2"
           disabled={brickPrompt.length < 10 || isGenerating}
-          className={tx("block !w-full")}
+          className={clsx("block !w-full")}
           onClick={generateBrick}
         >
           <Spinner loading={isGenerating}>
-            <BsStars className={tx("w-4 h-4")} />
+            <BsStars className={clsx("w-4 h-4")} />
           </Spinner>
           {isGenerating ? "Generating themes" : "Generate a brick"}
         </Button>
       </ScrollablePanelTab>
     </Tabs.Root>
-  );
-}
-
-function BlockTitle({ title }: { title: string }) {
-  return (
-    <h3
-      className={tx(
-        "text-[0.9rem] font-medium bg-upstart-100 dark:bg-dark-600 px-2 py-1.5 sticky top-0 z-[999] border-b border-upstart-200 dark:border-dark-500",
-      )}
-    >
-      {title}
-    </h3>
   );
 }
 
@@ -197,7 +176,7 @@ const DraggableBrick = forwardRef<HTMLButtonElement, DraggableBrickProps>(({ bri
   const icon =
     typeof brick.icon === "string" ? (
       <span
-        className={tx(
+        className={clsx(
           "w-7 h-7 text-upstart-600 dark:text-upstart-400 [&>svg]:w-auto [&>svg]:h-7 inline-block",
         )}
         // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
@@ -205,20 +184,20 @@ const DraggableBrick = forwardRef<HTMLButtonElement, DraggableBrickProps>(({ bri
       />
     ) : (
       <brick.icon
-        className={tx("w-6 h-6 text-upstart-600/90 group-hover:text-upstart-700", brick.iconClassName)}
+        className={clsx("w-6 h-6 text-upstart-600/90 group-hover:text-upstart-700", brick.iconClassName)}
       />
     );
   return (
     <button
       ref={ref}
       data-brick-type={brick.type}
-      data-brick-min-w={brick.minWidth}
-      data-brick-min-h={brick.minHeight}
-      data-brick-default-w={brick.defaultWidth}
-      data-brick-default-h={brick.defaultHeight}
+      data-brick-min-w={brick.minWidth?.desktop}
+      data-brick-min-h={brick.minHeight?.desktop}
+      data-brick-default-w={brick.defaultWidth?.desktop}
+      data-brick-default-h={brick.defaultHeight?.desktop}
       type="button"
-      className={tx(
-        `rounded border border-upstart-100 hover:(border-upstart-600 bg-upstart-50 scale-110) bg-white dark:bg-dark-700 cursor-grab
+      className={clsx(
+        `rounded border border-upstart-100 hover:(border-upstart-600 bg-upstart-50) bg-white dark:bg-dark-700 cursor-grab
         active:cursor-grabbing touch-none select-none pointer-events-auto transition draggable-brick group aspect-square
         z-[99999] flex flex-col items-center justify-center
         [&:is(.clone)]:(opacity-80 !bg-white)`,
@@ -226,12 +205,12 @@ const DraggableBrick = forwardRef<HTMLButtonElement, DraggableBrickProps>(({ bri
       {...props}
     >
       <div
-        className={tx(
+        className={clsx(
           "flex-1 flex flex-col justify-center text-upstart-700 dark:text-upstart-400 items-center gap-1 rounded-[inherit]",
         )}
       >
         {icon}
-        <span className={tx("whitespace-nowrap text-xs")}>{brick.name}</span>
+        <span className={clsx("whitespace-nowrap text-xs")}>{brick.name}</span>
       </div>
     </button>
   );

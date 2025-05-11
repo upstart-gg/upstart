@@ -1,7 +1,7 @@
 import { useDebounceCallback } from "usehooks-ts";
 import {
   useAttributesSubscribe,
-  useBricksSubscribe,
+  useSectionsSubscribe,
   useDraft,
   useEditorHelpers,
   useEditorMode,
@@ -49,10 +49,10 @@ export function usePageAutoSave() {
     AUTO_SAVE_MIN_INTERVAL,
   );
 
-  useBricksSubscribe(async (bricks) => {
-    console.debug("Bricks have changed, updating page version", bricks);
+  useSectionsSubscribe(async (sections) => {
+    console.debug("Sections have changed, updating page version", sections);
     draft.setDirty(true);
-    savePage({ bricks });
+    savePage({ sections });
   });
   useAttributesSubscribe((attributes) => {
     console.debug("Attributes have changed, updating page version");

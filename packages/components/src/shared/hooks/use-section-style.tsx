@@ -1,8 +1,9 @@
-import { tx, apply, css } from "@upstart.gg/style-system/twind";
+import { css } from "@emotion/css";
 import type { Section } from "@upstart.gg/sdk/shared/bricks";
 import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import { getBackgroundStyles } from "../styles/helpers";
-import type { ResponsiveMode } from "@upstart.gg/sdk/shared/responsive";
+import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
+import clsx from "clsx";
 
 type UseSectionStyleProps = {
   section: Section;
@@ -11,33 +12,36 @@ type UseSectionStyleProps = {
    * Not used yet
    */
   selected?: boolean;
-  previewMode?: ResponsiveMode;
+  previewMode?: Resolution;
 };
 
 export function useSectionStyle({ section, editable, previewMode }: UseSectionStyleProps) {
-  if (section.label === "Header") {
-    console.log(section);
-  }
-  return tx("grid group/section overflow-visible relative", [
-    typeof section.position.desktop.h === "number" &&
-      `h-[${LAYOUT_ROW_HEIGHT * section.position.desktop.h}px]`,
-
+  return clsx("flex w-full py-0 group/section overflow-visible relative", [
+    typeof section.props.minHeight === "string" &&
+      section.props.minHeight !== "full" &&
+      `min-h-[${section.props.minHeight}] bg-red-800`,
     // full height
-    section.position.desktop.h === "full" && editable && "h-[calc(100dvh-60px)]", // when in editor mode
-    section.position.desktop.h === "full" && !editable && "h-dvh", // when in real mode
-
+    section.props.minHeight === "full" && editable && "min-h-[calc(100dvh-60px)]", // when in editor mode
+    section.props.minHeight === "full" && !editable && "min-h-dvh", // when in real mode
+    typeof section.props.minHeight === "undefined" && "min-h-[40px]", // when in real mode
     // entire width of the grid
-    " w-full py-0",
     // mobile grid
-    `@mobile:(
-      grid-cols-${LAYOUT_COLS.mobile}
-      grid-rows-[repeat(auto-fill,${LAYOUT_ROW_HEIGHT}px)]
-    )`,
-    // Desktop grid
-    `@desktop:(
-      grid-cols-${LAYOUT_COLS.desktop}
-      grid-rows-[repeat(auto-fill,${LAYOUT_ROW_HEIGHT}px)]
-    )`,
+    // `@mobile:(
+    //   grid-cols-${LAYOUT_COLS.mobile}
+    //   grid-rows-[repeat(auto-fill,${LAYOUT_ROW_HEIGHT}px)]
+    // )`,
+    // // Desktop grid
+    // `@desktop:(
+    //   grid-cols-${LAYOUT_COLS.desktop}
+    //   grid-rows-[repeat(auto-fill,${LAYOUT_ROW_HEIGHT}px)]
+    // )`,
+
+    section.props.alignItems,
+    section.props.justifyContent,
+    section.props.gap,
+    typeof section.props.wrap === "undefined" || section.props.wrap === true ? "flex-wrap" : "flex-nowrap",
+    section.props.fillSpace && "[&>*]:flex-1",
+    "[&>*]:flex-shrink-0",
 
     // Background
     section.props.background && getBackgroundStyles(section.props.background),
@@ -45,9 +49,14 @@ export function useSectionStyle({ section, editable, previewMode }: UseSectionSt
     // Section editor styles
     getSectionEditorStyles({ editable, previewMode, section }),
 
-    css({
-      paddingInline: `${section.props.$paddingHorizontal ?? 0}px`,
-    }),
+    section.props.horizontalPadding &&
+      css({
+        paddingInline: `${section.props.horizontalPadding}`,
+      }),
+    section.props.verticalPadding &&
+      css({
+        paddingBlock: `${section.props.verticalPadding}`,
+      }),
 
     // Manage the section order using css "order" (flex) property
     css({
@@ -74,9 +83,10 @@ function getSectionEditorStyles({ section, editable, previewMode }: UseSectionSt
           content: "";
           position: absolute;
           opacity: 0.7;
-          inset: 0;
-          left: ${section.props.$paddingHorizontal ?? 0}px;
-          right: ${section.props.$paddingHorizontal ?? 0}px;
+          top: ${section.props.verticalPadding ?? "0px"};
+          bottom: ${section.props.verticalPadding ?? "0px"};
+          left: ${section.props.horizontalPadding ?? "0px"};
+          right: ${section.props.horizontalPadding ?? "0px"};
           z-index: 999999;
           pointer-events: none;
           background-size:

@@ -19,12 +19,102 @@ export const manifest = defineBrickManifest({
   icon: RxButton,
   props: defineProps({
     // preset: optional(preset()),
+    /*
+    classnames:
+  component:
+  - class: 'btn'
+    desc: Button
+  color:
+  - class: btn-neutral
+    desc: neutral color
+  - class: btn-primary
+    desc: primary color
+  - class: btn-secondary
+    desc: secondary color
+  - class: btn-accent
+    desc: accent color
+  - class: btn-info
+    desc: info color
+  - class: btn-success
+    desc: success color
+  - class: btn-warning
+    desc: warning color
+  - class: btn-error
+    desc: error color
+  style:
+  - class: btn-outline
+    desc: outline style
+  - class: btn-dash
+    desc: dash style
+  - class: btn-soft
+    desc: soft style
+  - class: btn-ghost
+    desc: ghost style
+  - class: btn-link
+    desc: looks like a link
+  behavior:
+  - class: btn-active
+    desc: looks active
+  - class: btn-disabled
+    desc: looks disabled
+  size:
+  - class: btn-xs
+    desc: Extra small size
+  - class: btn-sm
+    desc: Small size
+  - class: btn-md
+    desc: Medium size (default)
+  - class: btn-lg
+    desc: Large size
+  - class: btn-xl
+    desc: Extra large size
+  modifier:
+  - class: btn-wide
+    desc: more horizontal padding
+  - class: btn-block
+    desc: Full width
+  - class: btn-square
+    desc: 1:1 ratio
+  - class: btn-circle
+    desc: 1:1 ratio with rounded corners
+    */
+
+    /**
+     * @see https://daisyui.com/components/button/?lang=en
+     * @see https://raw.githubusercontent.com/saadeghi/daisyui/refs/heads/master/packages/docs/src/routes/(routes)/components/button/+page.md?plain=1
+     */
     variants: Type.Array(
       Type.Union(
-        [Type.Literal("centered", { title: "Centered" }), Type.Literal("uppercase", { title: "Uppercase" })],
+        [
+          Type.Literal("btn-neutral", { title: "Neutral", "ai:variant-type": "color" }),
+          Type.Literal("btn-primary", { title: "Primary", "ai:variant-type": "color" }),
+          Type.Literal("btn-secondary", { title: "Secondary", "ai:variant-type": "color" }),
+          Type.Literal("btn-accent", { title: "Accent", "ai:variant-type": "color" }),
+          Type.Literal("btn-info", { title: "Info", "ai:variant-type": "color" }),
+          Type.Literal("btn-success", { title: "Success", "ai:variant-type": "color" }),
+          Type.Literal("btn-warning", { title: "Warning", "ai:variant-type": "color" }),
+          Type.Literal("btn-error", { title: "Error", "ai:variant-type": "color" }),
+          Type.Literal("btn-outline", { title: "Outline", "ai:variant-type": "style" }),
+          Type.Literal("btn-dash", { title: "Dash", "ai:variant-type": "style" }),
+          Type.Literal("btn-soft", { title: "Soft", "ai:variant-type": "style" }),
+          Type.Literal("btn-ghost", { title: "Ghost", "ai:variant-type": "style" }),
+          Type.Literal("btn-link", { title: "Link", "ai:variant-type": "style" }),
+          Type.Literal("btn-active", { title: "Active", "ai:variant-type": "behavior" }),
+          Type.Literal("btn-disabled", { title: "Disabled", "ai:variant-type": "behavior" }),
+          Type.Literal("btn-xs", { title: "Extra small", "ai:variant-type": "size" }),
+          Type.Literal("btn-sm", { title: "Small", "ai:variant-type": "size" }),
+          Type.Literal("btn-md", { title: "Medium", "ai:variant-type": "size" }),
+          Type.Literal("btn-lg", { title: "Large", "ai:variant-type": "size" }),
+          Type.Literal("btn-xl", { title: "Extra large", "ai:variant-type": "size" }),
+          Type.Literal("btn-wide", { title: "Wide", "ai:variant-type": "modifier" }),
+          Type.Literal("btn-block", { title: "Block", "ai:variant-type": "modifier" }),
+          Type.Literal("btn-square", { title: "Square", "ai:variant-type": "modifier" }),
+          Type.Literal("btn-circle", { title: "Circle", "ai:variant-type": "modifier" }),
+        ],
         {
           title: "Variant",
           description: "Button variants.",
+          "ai:tip": "Those are DaisyUI button variants",
         },
       ),
     ),
@@ -45,11 +135,6 @@ export const manifest = defineBrickManifest({
       ),
     }),
     linkToUrlOrPageId: optional(urlOrPageId("Link")),
-    backgroundColor: backgroundColor("bg-primary-70"),
-    color: optional(color()),
-    padding: optional(padding("p-2")),
-    border: optional(border()),
-    effects: optional(effects({ enableTextShadow: true })),
   }),
 });
 

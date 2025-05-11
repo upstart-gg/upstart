@@ -1,5 +1,4 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { tx } from "@upstart.gg/style-system/twind";
 
 export default forwardRef((props, ref) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -54,7 +53,7 @@ export default forwardRef((props, ref) => {
           <button
             type="button"
             role="menuitem"
-            className={tx(
+            className={clsx(
               index === selectedIndex && "bg-upstart-200",
               "flex text-left w-full items-center px-1.5 py-0.5 rounded",
             )}

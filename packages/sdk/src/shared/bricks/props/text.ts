@@ -68,7 +68,7 @@ export function textContent(
       default: defaultContent,
       "ui:disable-sizing": disableSizing,
       "ui:disable-alignment": disableAlignment,
-      "ui:field": showInSettings ? "string" : "hidden-in-ui",
+      "ui:field": showInSettings ? "string" : "hidden",
     }),
   });
 }

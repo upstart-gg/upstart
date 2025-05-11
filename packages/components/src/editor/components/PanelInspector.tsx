@@ -6,7 +6,6 @@ import {
   useSelectedBrickId,
 } from "../hooks/use-editor";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
-import { tx } from "@upstart.gg/style-system/twind";
 import { Callout, IconButton, Tabs } from "@upstart.gg/style-system/system";
 import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
@@ -18,42 +17,33 @@ import { useCallback, useEffect, useMemo } from "react";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import BrickSettingsView from "./BrickSettingsView";
+import clsx from "clsx";
 
 type TabType = "preset" | "style" | "content";
 
-export default function Inspector() {
+export default function Inspector({ brick }: { brick: Brick }) {
   const { getParentBrick } = useDraftHelpers();
   const getBrickInfo = useGetBrick();
   const { hidePanel, setSelectedBrickId, deselectBrick } = useEditorHelpers();
   const previewMode = usePreviewMode();
   const [tabsMapping, setTabsMapping] = useLocalStorage<Record<string, TabType>>("inspector_tabs_map", {});
 
-  const brickId = useSelectedBrickId();
-  const brick = brickId ? getBrickInfo(brickId) : null;
-
-  if (!brickId || !brick) {
-    return null;
-  }
-
-  const parentBrick = getParentBrick(brick.id);
-
-  const manifest = manifests[brick.type];
-  if (!manifest) {
-    console.warn(`No manifest found for brick: ${JSON.stringify(brick)}`);
-    deselectBrick();
-    hidePanel("inspector");
-    return null;
-  }
-
-  // const selectedTab =
-  //   tabsMapping[brick.id] ?? manifest.defaultInspectorTab ?? (previewMode === "desktop" ? "preset" : "style");
   const selectedTab = tabsMapping[brick.id] ?? "style";
+  const manifest = manifests[brick.type];
 
   useEffect(() => {
     if (!manifest.isContainer && selectedTab === "content") {
       setTabsMapping((prev) => ({ ...prev, [brick.id]: "style" }));
     }
-  }, [setTabsMapping, brick.id, selectedTab, manifest.isContainer]);
+  }, [setTabsMapping, brick?.id, selectedTab, manifest?.isContainer]);
+
+  const parentBrick = getParentBrick(brick.id);
+  // if (!manifest) {
+  //   console.warn(`No manifest found for brick: ${JSON.stringify(brick)}`);
+  //   deselectBrick();
+  //   hidePanel("inspector");
+  //   return null;
+  // }
 
   return (
     <Tabs.Root
@@ -66,30 +56,20 @@ export default function Inspector() {
       <Tabs.List className="sticky top-0 z-50">
         {previewMode === "desktop" && (
           <Tabs.Trigger value="preset" className="!flex-1">
-            Style Preset
+            Preset
           </Tabs.Trigger>
         )}
         <Tabs.Trigger value="style" className="!flex-1">
-          {previewMode === "mobile" ? "Mobile styles" : "Styles"}
+          {previewMode === "mobile" ? "Mobile settings" : "Settings"}
+        </Tabs.Trigger>
+        <Tabs.Trigger value="section" className="!flex-1">
+          Section
         </Tabs.Trigger>
         {manifest.isContainer && (
           <Tabs.Trigger value="content" className="!flex-1">
             Content
           </Tabs.Trigger>
         )}
-        <IconButton
-          title="Close"
-          className="self-center items-center justify-center inline-flex !mr-1 !mt-2"
-          size="1"
-          variant="ghost"
-          color="gray"
-          onClick={() => {
-            deselectBrick();
-            hidePanel();
-          }}
-        >
-          <IoCloseOutline className="w-4 h-4 text-gray-400 hover:text-gray-700" />
-        </IconButton>
       </Tabs.List>
       <ScrollablePanelTab tab="preset">
         <div className="flex justify-between pr-0">
@@ -121,7 +101,7 @@ export default function Inspector() {
             </span>
           </h2>
         </div>
-        <div className={tx("p-2 flex flex-col gap-3")}>
+        <div className={clsx("p-2 flex flex-col gap-3")}>
           <Callout.Root size="1">
             <Callout.Text size="1">
               <span className="font-semibold">Style presets</span> are pre-configured settings that can be
@@ -187,7 +167,7 @@ export default function Inspector() {
 
 function StyleTab({ brick }: { brick: Brick }) {
   return (
-    <form className={tx("px-3 flex flex-col gap-3")}>
+    <form className={clsx("px-3 flex flex-col gap-3")}>
       <BrickSettingsView brick={brick} />
     </form>
   );
@@ -214,7 +194,7 @@ function ContentTab({ brick, manifest }: { brick: Brick; manifest: BrickManifest
   invariant(brickInfo, "Brick info props is missing in ContentTab");
 
   return (
-    <form className={tx("px-3 flex flex-col gap-3")}>
+    <form className={clsx("px-3 flex flex-col gap-3")}>
       <FormRenderer
         brickId={brick.id}
         formSchema={manifest.props}

@@ -1,4 +1,4 @@
-import { css, tx } from "@upstart.gg/style-system/twind";
+import { css } from "@emotion/css";
 import { propToClass, propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
 import type {
   BackgroundSettings,
@@ -64,13 +64,14 @@ function getFixedPositionedStyles(value: FixedPositionedSettings) {
   if (!value) {
     return null;
   }
-  return tx("fixed top-inherit left-auto right-auto self-start w-fill z-[99999] isolate");
+  return "fixed top-inherit left-auto right-auto self-start w-fill z-[99999] isolate";
 }
 
 function getBorderStyles(props?: Partial<BorderSettings>) {
   if (!props) {
     return null;
   }
+  console.log("getBorderStyles", props);
   const {
     width = "border-0",
     sides = [],
@@ -186,7 +187,6 @@ export const brickStylesHelpersMap = {
   "#styles:opacity": getOpacityStyles,
   "#styles:objectFit": simpleClassHandler,
   "#styles:objectPosition": simpleClassHandler,
-
   "#styles:heroSize": simpleClassHandler,
 };
 

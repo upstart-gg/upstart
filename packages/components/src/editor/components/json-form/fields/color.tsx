@@ -1,5 +1,5 @@
 import { IconButton, Popover, Text } from "@upstart.gg/style-system/system";
-import { tx, css } from "@upstart.gg/style-system/twind";
+import { css } from "@emotion/css";
 import transSvg from "./trans.svg?url";
 import {
   isStandardColor,
@@ -12,6 +12,7 @@ import type { FieldProps } from "./types";
 import { IoCloseOutline } from "react-icons/io5";
 import { fieldLabel } from "../form-class";
 import { FieldTitle } from "../field-factory";
+import clsx from "clsx";
 
 const ColorField: React.FC<FieldProps<string | undefined> & { hideColorLabel?: boolean }> = (props) => {
   const { schema, onChange, formSchema: formContext, currentValue, title, description } = props;
@@ -76,6 +77,7 @@ export function ColorFieldRow({
   elementColorType,
   hideColorLabel,
 }: ColorFieldRowProps) {
+  console.log("ColorFieldRow", { name, description, color, required, labelClassName, colorType });
   return (
     <div className="color-field flex-1 flex items-center justify-between">
       <FieldTitle title={name} description={description} />
@@ -146,14 +148,14 @@ function formatColorName(color?: ElementColor) {
 }
 
 function getColorPillBackgroundClass(color: string) {
+  if (isStandardColor(color)) {
+    return `bg-[${color.replace(/[\s]+/g, "_")}]`;
+  }
   if (color.startsWith("bg-")) {
     return color;
   }
   if (color.match(/^(border|text|shadow)-/)) {
     return color.replace(/^(border|text|shadow)-/, "bg-");
-  }
-  if (isStandardColor(color)) {
-    return `bg-[${color}]`;
   }
   return `bg-${color}`;
 }
@@ -179,7 +181,7 @@ function ColorElementPreviewPill({
             type="button"
             data-color={color}
             data-element-color-type={elementColorType}
-            className={tx(
+            className={clsx(
               "rounded-full w-6 h-6 ring ring-transparent hover:ring-upstart-400 border border-gray-200",
               getColorPillBackgroundClass(color ?? "bg-transparent"),
               !color?.includes("gradient") &&
@@ -244,7 +246,7 @@ function ColorBasePreviewPill({
           {!hideColorLabel && formatColorName(color)}
           <button
             type="button"
-            className={tx(
+            className={clsx(
               "rounded-full w-6 h-6 ring ring-transparent hover:ring-upstart-400 border border-gray-200",
               getColorPillBackgroundClass(color ?? "bg-transparent"),
               !color?.includes("gradient") &&

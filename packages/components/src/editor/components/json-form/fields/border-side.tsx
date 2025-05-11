@@ -1,9 +1,9 @@
 import type { FieldProps } from "./types";
 import { Text } from "@upstart.gg/style-system/system";
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
-import { tx } from "@upstart.gg/style-system/twind";
 import { MdBorderBottom, MdBorderLeft, MdBorderRight, MdBorderTop } from "react-icons/md";
 import { FieldTitle } from "../field-factory";
+import clsx from "clsx";
 
 export const BorderSideField: React.FC<FieldProps<BorderSettings["sides"]>> = (props) => {
   const { currentValue = [], onChange, title, description, schema } = props;
@@ -27,7 +27,7 @@ export const BorderSideField: React.FC<FieldProps<BorderSettings["sides"]>> = (p
 
                 onChange(side);
               }}
-              className={tx(
+              className={clsx(
                 "p-1 px-2 inline-flex  first:rounded-l last:rounded-r",
                 currentValue.includes(option.const)
                   ? "bg-upstart-500 text-white"

@@ -6,25 +6,20 @@ import EditableBrickWrapper from "./EditableBrick";
 import ResizeHandle from "./ResizeHandle";
 import { useSectionStyle } from "~/shared/hooks/use-section-style";
 import { TbArrowAutofitHeight, TbBorderCorners, TbDots } from "react-icons/tb";
-import { tx } from "@upstart.gg/style-system/twind";
 import { useEffect, useRef, useState } from "react";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { useGridConfig, type GridConfig } from "~/shared/hooks/use-grid-config";
 import { getBrickResizeOptions, getBrickPosition } from "~/shared/utils/layout-utils";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import SectionSettingsView from "./SectionSettingsView";
+import clsx from "clsx";
 
 type EditableSectionProps = {
   section: SectionType;
 };
 
 export default function EditableSection({ section }: EditableSectionProps) {
-  console.debug("EditableSection", section);
-  const sectionObj = useSection(section.id);
-  invariant(sectionObj, "Section not found in EditableSection");
-  const { bricks, id } = sectionObj;
-
-  console.debug("EditableSection bricks", bricks);
+  const { bricks, id } = section;
 
   const ref = useRef<HTMLDivElement>(null);
   const gridConfig = useGridConfig(ref);
@@ -36,18 +31,10 @@ export default function EditableSection({ section }: EditableSectionProps) {
   const className = useSectionStyle({ section, editable: true, previewMode });
 
   return (
-    <section
-      key={id}
-      id={id}
-      ref={ref}
-      data-element-kind="section"
-      data-dropzone
-      data-section-h-padding={responsiveProps?.$paddingHorizontal ?? 0}
-      className={className}
-    >
+    <section key={id} id={id} ref={ref} data-element-kind="section" data-dropzone className={className}>
       <SectionOptionsButtons section={section} />
       {bricks
-        .filter((b) => !b.position[previewMode]?.hidden && !b.parentId)
+        .filter((b) => !b.props.hidden?.[previewMode])
         .map((brick, index) => {
           const resizeOpts = getBrickResizeOptions(brick, manifests[brick.type], previewMode);
           // const brickWithDef = brickWithDefaults(brick);
@@ -134,13 +121,8 @@ function useResizableSection(section: SectionType, gridConfig: GridConfig) {
           sectionEl.style.maxHeight = "";
           sectionEl.style.flex = "";
           sectionEl.dataset.h = "";
-          draftHelpers.updateSection(section.id, {
-            position: {
-              ...section.position,
-              [previewMode]: {
-                h: size.h,
-              },
-            },
+          draftHelpers.updateSectionProps(section.id, {
+            minHeight: `${size.h}px`,
           });
         },
       },
@@ -157,12 +139,12 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
   const [modalOpen, setModalOpen] = useState(false);
   const draftHelpers = useDraftHelpers();
   const sections = useSections();
-  const previewMode = usePreviewMode();
   const isLastSection = section.order === sections.length - 1;
   const isFirstSection = section.order === 0;
+  const container = document.querySelector<HTMLElement>("#page-container");
 
-  const btnCls = tx(
-    "select-none",
+  const btnCls = clsx(
+    "select-none hover:opacity-90",
     "text-base px-2.5 h-9  ",
     "text-black/80 font-bold flex items-center gap-1",
     "active:(outline-none ring-0) focus:(outline-none ring-0)",
@@ -177,51 +159,41 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
           </Inset>
         </Popover.Content>
         <div
-          className={tx(
-            dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
-            "section-options-buttons bottom-0 absolute z-[99999] left-1/2 -translate-x-1/2 border border-gray-200 border-b-0",
-            "flex gap-0 rounded-t-md [&>*:first-child]:rounded-tl-md [&>*:last-child]:rounded-tr-md divide-x divide-white/80",
-            "bg-white/70 backdrop-blur-md transition-opacity duration-500  group-hover/section:opacity-80",
+          className={clsx(
+            // dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
+            `section-options-buttons bottom-0 hidden
+            absolute z-[99999] left-1/2 -translate-x-1/2 border border-gray-200 border-b-0`,
+            "gap-0 rounded-t-md [&>*:first-child]:rounded-tl-md [&>*:last-child]:rounded-tr-md divide-x divide-white/80",
+            "bg-white/70 backdrop-blur-md transition-opacity duration-500  group-hover/section:opacity-80 group-hover/section:flex",
           )}
         >
-          <div
-            className={tx(btnCls, "cursor-default flex-col leading-[0.5] items-start justify-center gap-0")}
-          >
-            <div className="text-xs font-light leading-[0.8] ">Section</div>
-            <div className="text-sm font-semibold -mt-2">{section.label ?? "No name"}</div>
+          <div className={clsx(btnCls, "cursor-default flex-col items-start justify-center gap-0")}>
+            <div className="text-xs font-light leading-[0.9] ">Section</div>
+            <div className="text-sm font-semibold -mt-1.5">{section.label ?? `${section.order + 1}`}</div>
           </div>
           {!isLastSection && (
-            <Tooltip content="Drag vertically to resize section" delayDuration={500}>
-              <button
-                type="button"
-                id={`${section.id}-resize-handle`}
-                className={tx(btnCls, "cursor-ns-resize", "section-resizable-handle")}
-              >
-                <TbArrowAutofitHeight className="w-6 h-6" />
-              </button>
-            </Tooltip>
+            <button
+              type="button"
+              id={`${section.id}-resize-handle`}
+              className={clsx(btnCls, "cursor-ns-resize", "section-resizable-handle")}
+            >
+              <TbArrowAutofitHeight className="w-6 h-6" />
+            </button>
           )}
-          {section.position[previewMode]?.h !== "full" && (
+          {section.props.minHeight !== "full" && (
             <Tooltip content="Fill entire screen height" delayDuration={500}>
               <button
                 type="button"
                 onClick={() => {
-                  draftHelpers.updateSection(section.id, {
-                    position: {
-                      desktop: {
-                        h: "full",
-                      },
-                      mobile: {
-                        h: "full",
-                      },
-                    },
+                  draftHelpers.updateSectionProps(section.id, {
+                    minHeight: "full",
                   });
                   setTimeout(() => {
                     window.scrollTo(0, document.body.scrollHeight);
                     document.getElementById(section.id)?.scrollIntoView({ behavior: "smooth" });
                   }, 100);
                 }}
-                className={tx(btnCls, "cursor-pointer")}
+                className={clsx(btnCls, "cursor-pointer")}
               >
                 <TbBorderCorners className="w-6 h-6" />
               </button>
@@ -229,7 +201,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
           )}
           <DropdownMenu.Root modal={false} onOpenChange={setDropdownOpen}>
             <DropdownMenu.Trigger>
-              <button type="button" className={tx(btnCls)}>
+              <button type="button" className={clsx(btnCls)}>
                 <TbDots className="w-6 h-6" />
                 <Popover.Anchor />
               </button>

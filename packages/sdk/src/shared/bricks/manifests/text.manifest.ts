@@ -38,13 +38,13 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
       content: textContent(),
       backgroundColor: optional(backgroundColor()),
       color: optional(color()),
-      padding: padding(),
+      padding: optional(padding()),
       border: optional(border()),
       effects: optional(effects({ enableTextShadow: true })),
     },
     {
       default: {
-        padding: "p-2",
+        padding: "p-8",
       },
     },
   ),

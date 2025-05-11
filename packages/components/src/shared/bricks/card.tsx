@@ -1,13 +1,13 @@
 import { forwardRef } from "react";
-import { tx } from "@upstart.gg/style-system/twind";
 import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/card.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { TextContent } from "../components/TextContent";
+import clsx from "clsx";
 
 const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const props = brick.props;
   return (
-    <div className={tx("card flex flex-col")} ref={ref}>
+    <div className={clsx("card flex flex-col")} ref={ref}>
       {props.cardTitle?.content && (
         <TextContent
           propPath="cardTitle.content"

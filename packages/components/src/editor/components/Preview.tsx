@@ -1,8 +1,9 @@
 import { type ComponentProps, useEffect, useRef, useState } from "react";
 import { useAttributes, usePreviewMode } from "~/editor/hooks/use-editor";
-import { tx, css } from "@upstart.gg/style-system/twind";
+import { css } from "@emotion/css";
 import { useBodyStyle } from "~/shared/hooks/use-page-style";
 import styles from "./Preview.module.css";
+import clsx from "clsx";
 
 export function DeviceFrame({ children, ...props }: ComponentProps<"div">) {
   const ref = useRef<HTMLDivElement>(null);
@@ -22,7 +23,7 @@ export function DeviceFrame({ children, ...props }: ComponentProps<"div">) {
   return (
     <div
       ref={ref}
-      className={tx(
+      className={clsx(
         // The container class is important because it simulate the device frame viewport
         "device-frame @container opacity-20 transition-all duration-200 mx-auto  overscroll-contain",
         styles[previewMode],
