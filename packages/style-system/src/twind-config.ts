@@ -12,7 +12,7 @@ export default defineConfig({
   ignorelist: [/^btn-*/],
   presets: [
     presetAutoprefix(),
-    presetTailwind({ disablePreflight: true }),
+    presetTailwind({ disablePreflight: false }),
     presetContainerQueries(),
     presetExt(),
     presetLineClamp(),

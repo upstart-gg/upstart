@@ -278,7 +278,7 @@ export default function NavBar({ showIntro }: TopBarProps) {
         <span className={tx(tooltipCls)}>Zomm In</span>
       </button>
 
-      <span className="text-gray-500 text-xs ml-1">{(zoom * 100).toFixed(0)}%</span>
+      <span className={tx("text-gray-500 text-xs ml-1")}>{(zoom * 100).toFixed(0)}%</span>
 
       <div className={tx("flex-1", "border-x border-l-upstart-400 border-r-upstart-700", baseCls)} />
 
