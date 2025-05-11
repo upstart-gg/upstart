@@ -80,14 +80,14 @@ const contentBricks: Brick[] = [
     },
   },
   {
-    id: "b-hero-2",
+    id: "b-hero-xyz",
     type: "text",
     props: {
       content: "Some specific content",
     },
   },
   {
-    id: "b-hero-3",
+    id: "b-hero-abc",
     type: "text",
     props: {
       content: "Some specific content 2",
@@ -114,7 +114,7 @@ const homePageSections = processSections([
     bricks: [
       {
         id: "b-header",
-        type: "header",
+        type: "navbar",
         props: {
           container: {
             backgroundColor: "bg-secondary-900",

@@ -8,7 +8,7 @@ import { manifest as mapManifest } from "./map.manifest";
 import { manifest as formManifest } from "./form.manifest";
 import { manifest as imagesWallManifest } from "./images-gallery.manifest";
 import { manifest as carouselManifest } from "./carousel.manifest";
-import { manifest as headerManifest } from "./header.manifest";
+import { manifest as navbarManifest } from "./navbar.manifest";
 import { manifest as footerManifest } from "./footer.manifest";
 import { manifest as buttonManifest } from "./button.manifest";
 import { manifest as iconManifest } from "./icon.manifest";
@@ -32,7 +32,7 @@ export const manifests: Record<string, BrickManifest> = {
   [sidebarManifest.type]: sidebarManifest,
   [imagesWallManifest.type]: imagesWallManifest,
   [carouselManifest.type]: carouselManifest,
-  [headerManifest.type]: headerManifest,
+  [navbarManifest.type]: navbarManifest,
   [footerManifest.type]: footerManifest,
   [buttonManifest.type]: buttonManifest,
   [iconManifest.type]: iconManifest,
@@ -55,7 +55,7 @@ export const defaultProps: Record<string, BrickDefaults> = {
   [formManifest.type]: getBrickManifestDefaults(formManifest),
   [imagesWallManifest.type]: getBrickManifestDefaults(imagesWallManifest),
   [carouselManifest.type]: getBrickManifestDefaults(carouselManifest),
-  [headerManifest.type]: getBrickManifestDefaults(headerManifest),
+  [navbarManifest.type]: getBrickManifestDefaults(navbarManifest),
   [footerManifest.type]: getBrickManifestDefaults(footerManifest),
   [buttonManifest.type]: getBrickManifestDefaults(buttonManifest),
   [iconManifest.type]: getBrickManifestDefaults(iconManifest),

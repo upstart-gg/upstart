@@ -58,7 +58,7 @@ import { menuBarBtnActiveCls, menuBarBtnCls, menuBarBtnCommonCls } from "../styl
 import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import type { TSchema } from "@sinclair/typebox";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 function DatasourceFieldNode(props: NodeViewProps) {
   return (
@@ -222,7 +222,7 @@ const TextEditor = <T extends ElementType = "div">({
           "span",
           {
             "data-type": "mention",
-            class: clsx("bg-upstart-500 text-white text-[94%] px-0.5 py-0.5 rounded"),
+            class: tx("bg-upstart-500 text-white text-[94%] px-0.5 py-0.5 rounded"),
             "data-field": field,
           },
           `${options.suggestion.char}${field}}}`,
@@ -244,7 +244,7 @@ const TextEditor = <T extends ElementType = "div">({
       editable: true,
       editorProps: {
         attributes: {
-          class: clsx(className),
+          class: tx(className),
         },
       },
     },
@@ -314,7 +314,7 @@ const TextEditor = <T extends ElementType = "div">({
         autoCorrect="false"
         spellCheck="false"
         editor={editor}
-        className={clsx("outline-none ring-0 min-h-full flex flex-1")}
+        className={tx("outline-none ring-0 min-h-full flex flex-1")}
       />
       {focused && menuBarContainer && (
         <Portal container={menuBarContainer} asChild>
@@ -380,17 +380,17 @@ function TextAlignButtonGroup({ editor }: { editor: Editor }) {
         })),
       ]}
     >
-      <button type="button" className={clsx(menuBarBtnCls, menuBarBtnCommonCls)}>
+      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
         {!currentAlignment || currentAlignment === "left" ? (
-          <MdFormatAlignLeft className={clsx("w-5 h-5")} />
+          <MdFormatAlignLeft className={tx("w-5 h-5")} />
         ) : currentAlignment === "center" ? (
-          <MdFormatAlignCenter className={clsx("w-5 h-5")} />
+          <MdFormatAlignCenter className={tx("w-5 h-5")} />
         ) : currentAlignment === "right" ? (
-          <MdFormatAlignRight className={clsx("w-5 h-5")} />
+          <MdFormatAlignRight className={tx("w-5 h-5")} />
         ) : (
-          <MdFormatAlignJustify className={clsx("w-5 h-5")} />
+          <MdFormatAlignJustify className={tx("w-5 h-5")} />
         )}
-        <RiArrowDownSLine className={clsx(arrowClass)} />
+        <RiArrowDownSLine className={tx(arrowClass)} />
       </button>
     </DropMenu>
   );
@@ -501,7 +501,7 @@ function DatasourceItemButton({ editor }: { editor: Editor }) {
   return (
     <Popover.Root>
       <Popover.Trigger>
-        <button type="button" className={clsx(menuBarBtnCls, menuBarBtnCommonCls)}>
+        <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
           <RiBracesLine className="w-5 h-5" />
         </button>
       </Popover.Trigger>
@@ -523,7 +523,7 @@ function TextStyleButtonGroup({ editor, noTextStrike, textSizeMode }: TextStyleB
   const isStrike = editor.isActive("strike");
   return (
     <ToggleGroup.Root
-      className={clsx("flex !shadow-none divide-x", !textSizeMode && "!rounded-l-none")}
+      className={tx("flex !shadow-none divide-x", !textSizeMode && "!rounded-l-none")}
       type="multiple"
       value={
         [
@@ -535,7 +535,7 @@ function TextStyleButtonGroup({ editor, noTextStrike, textSizeMode }: TextStyleB
       aria-label="Text style"
     >
       <ToggleGroup.Item
-        className={clsx(
+        className={tx(
           menuBarBtnCls,
           menuBarBtnCommonCls,
           !textSizeMode && "!rounded-l-none",
@@ -548,7 +548,7 @@ function TextStyleButtonGroup({ editor, noTextStrike, textSizeMode }: TextStyleB
         <MdFormatBold className="w-5 h-5" />
       </ToggleGroup.Item>
       <ToggleGroup.Item
-        className={clsx(menuBarBtnCls, menuBarBtnCommonCls, isItalic && menuBarBtnActiveCls)}
+        className={tx(menuBarBtnCls, menuBarBtnCommonCls, isItalic && menuBarBtnActiveCls)}
         value="italic"
         // @ts-ignore
         onClick={() => editor.chain().focus().toggleItalic().run()}
@@ -557,12 +557,7 @@ function TextStyleButtonGroup({ editor, noTextStrike, textSizeMode }: TextStyleB
       </ToggleGroup.Item>
       {!noTextStrike && (
         <ToggleGroup.Item
-          className={clsx(
-            menuBarBtnCls,
-            menuBarBtnCommonCls,
-            "!rounded-none",
-            isStrike && menuBarBtnActiveCls,
-          )}
+          className={tx(menuBarBtnCls, menuBarBtnCommonCls, "!rounded-none", isStrike && menuBarBtnActiveCls)}
           value="strike"
           // @ts-ignore
           onClick={() => editor.chain().focus().toggleStrike().run()}
@@ -662,11 +657,11 @@ function TextSizeClassicDropdown({ editor }: TextSizeClassicDropdownProps) {
         },
       ]}
     >
-      <button type="button" className={clsx(menuBarBtnCls, menuBarBtnCommonCls)}>
+      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
         <span className="text-[0.8rem] font-medium">
           {value === "code" ? "Code" : value === "paragraph" ? "Paragraph" : `Title ${value}`}
         </span>
-        <RiArrowDownSLine className={clsx(arrowClass)} />
+        <RiArrowDownSLine className={tx(arrowClass)} />
       </button>
     </DropMenu>
   );
@@ -709,9 +704,9 @@ function TextSizeHeroDropdown({ editor }: TextSizeHeroDropdownProps) {
         checked: value === `hero-size-${size}`,
       }))}
     >
-      <button type="button" className={clsx(menuBarBtnCls, menuBarBtnCommonCls)}>
+      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
         <span className="text-[0.94rem] font-medium capitalize">Hero {map[value]}</span>
-        <RiArrowDownSLine className={clsx(arrowClass)} />
+        <RiArrowDownSLine className={tx(arrowClass)} />
       </button>
     </DropMenu>
   );

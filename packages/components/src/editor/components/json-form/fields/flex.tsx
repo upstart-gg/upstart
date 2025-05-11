@@ -5,7 +5,7 @@ import { fieldLabel } from "../form-class";
 import { SegmentedControl, Switch } from "@upstart.gg/style-system/system";
 import { HelpIcon } from "../HelpIcon";
 import { FieldTitle } from "../field-factory";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
   const {
@@ -43,7 +43,7 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
               <SegmentedControl.Item
                 key={option.const}
                 value={option.const}
-                className={clsx("[&_.rt-SegmentedControlItemLabel]:px-1")}
+                className={tx("[&_.rt-SegmentedControlItemLabel]:px-1")}
               >
                 {option.title}
               </SegmentedControl.Item>

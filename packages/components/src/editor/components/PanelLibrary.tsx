@@ -20,7 +20,7 @@ import interact from "interactjs";
 import { IoCloseOutline } from "react-icons/io5";
 import { panelTabContentScrollClass } from "../utils/styles";
 import { useEditorHelpers } from "../hooks/use-editor";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";
 
 export default function PanelLibrary() {
@@ -62,19 +62,19 @@ export default function PanelLibrary() {
 
   return (
     <Tabs.Root defaultValue="library">
-      <Tabs.List className={clsx("sticky top-0 z-50")}>
-        <Tabs.Trigger value="library" className={clsx("!flex-1")}>
+      <Tabs.List className="sticky top-0 z-50 bg-gray-100">
+        <Tabs.Trigger value="library" className={tx("!flex-1")}>
           Library
         </Tabs.Trigger>
-        <Tabs.Trigger value="ai" className={clsx("!flex-1")}>
-          AI creator <BsStars className={clsx("ml-1 w-4 h-4 text-upstart-500")} />
+        <Tabs.Trigger value="ai" className={tx("!flex-1")}>
+          AI creator <BsStars className={tx("ml-1 w-4 h-4 text-upstart-500")} />
         </Tabs.Trigger>
       </Tabs.List>
       <Tabs.Content value="library">
         <div className="flex flex-col gap-8">
           <div
-            className={clsx(
-              "flex flex-col max-h-[calc(100dvh/2-99px)] overflow-y-auto",
+            className={tx(
+              "flex flex-col max-h-[calc(100dvh/2-40px)] overflow-y-auto",
               panelTabContentScrollClass,
             )}
           >
@@ -86,7 +86,7 @@ export default function PanelLibrary() {
             )}
 
             <div
-              className={clsx("grid gap-1 p-1.5")}
+              className={tx("grid gap-1 p-1.5")}
               style={{
                 gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
               }}
@@ -103,8 +103,8 @@ export default function PanelLibrary() {
             </div>
           </div>
           <div
-            className={clsx(
-              "flex flex-col max-h-[calc(100dvh/2-99px)] overflow-y-auto",
+            className={tx(
+              "flex flex-col max-h-[calc(100dvh/2-40px)] overflow-y-auto",
               panelTabContentScrollClass,
             )}
           >
@@ -118,7 +118,7 @@ export default function PanelLibrary() {
             )}
 
             <div
-              className={clsx("grid gap-1 p-1.5")}
+              className={tx("grid gap-1 p-1.5")}
               style={{
                 gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
               }}
@@ -136,10 +136,10 @@ export default function PanelLibrary() {
           </div>
         </div>
       </Tabs.Content>
-      <ScrollablePanelTab tab="ai" className={clsx("p-2")}>
+      <ScrollablePanelTab tab="ai" className={tx("p-2")}>
         <Callout.Root size="1">
           <Callout.Icon>
-            <WiStars className={clsx("w-7 h-7 mt-3")} />
+            <WiStars className={tx("w-7 h-7 mt-3")} />
           </Callout.Icon>
           <Callout.Text size="1">Tell AI what you want and it will generate a brick for you!</Callout.Text>
         </Callout.Root>
@@ -147,7 +147,7 @@ export default function PanelLibrary() {
           onInput={(e) => {
             setBrickPrompt(e.currentTarget.value);
           }}
-          className={clsx("w-full my-2 h-24")}
+          className={tx("w-full my-2 h-24")}
           size="2"
           placeholder="Add an image of delivery guy"
           spellCheck={false}
@@ -155,11 +155,11 @@ export default function PanelLibrary() {
         <Button
           size="2"
           disabled={brickPrompt.length < 10 || isGenerating}
-          className={clsx("block !w-full")}
+          className={tx("block !w-full")}
           onClick={generateBrick}
         >
           <Spinner loading={isGenerating}>
-            <BsStars className={clsx("w-4 h-4")} />
+            <BsStars className={tx("w-4 h-4")} />
           </Spinner>
           {isGenerating ? "Generating themes" : "Generate a brick"}
         </Button>
@@ -176,7 +176,7 @@ const DraggableBrick = forwardRef<HTMLButtonElement, DraggableBrickProps>(({ bri
   const icon =
     typeof brick.icon === "string" ? (
       <span
-        className={clsx(
+        className={tx(
           "w-7 h-7 text-upstart-600 dark:text-upstart-400 [&>svg]:w-auto [&>svg]:h-7 inline-block",
         )}
         // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
@@ -184,7 +184,7 @@ const DraggableBrick = forwardRef<HTMLButtonElement, DraggableBrickProps>(({ bri
       />
     ) : (
       <brick.icon
-        className={clsx("w-6 h-6 text-upstart-600/90 group-hover:text-upstart-700", brick.iconClassName)}
+        className={tx("w-6 h-6 text-upstart-600/90 group-hovertext-upstart-700", brick.iconClassName)}
       />
     );
   return (
@@ -196,21 +196,21 @@ const DraggableBrick = forwardRef<HTMLButtonElement, DraggableBrickProps>(({ bri
       data-brick-default-w={brick.defaultWidth?.desktop}
       data-brick-default-h={brick.defaultHeight?.desktop}
       type="button"
-      className={clsx(
-        `rounded border border-upstart-100 hover:(border-upstart-600 bg-upstart-50) bg-white dark:bg-dark-700 cursor-grab
-        active:cursor-grabbing touch-none select-none pointer-events-auto transition draggable-brick group aspect-square
+      className={tx(
+        `rounded border border-upstart-100 hover:border-upstart-600 hover:bg-upstart-50 bg-white dark:bg-dark-700 !cursor-grab
+        active:!cursor-grabbing touch-none select-none pointer-events-auto transition draggable-brick group aspect-square
         z-[99999] flex flex-col items-center justify-center
         [&:is(.clone)]:(opacity-80 !bg-white)`,
       )}
       {...props}
     >
       <div
-        className={clsx(
+        className={tx(
           "flex-1 flex flex-col justify-center text-upstart-700 dark:text-upstart-400 items-center gap-1 rounded-[inherit]",
         )}
       >
         {icon}
-        <span className={clsx("whitespace-nowrap text-xs")}>{brick.name}</span>
+        <span className={tx("whitespace-nowrap text-xs")}>{brick.name}</span>
       </div>
     </button>
   );

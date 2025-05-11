@@ -4,7 +4,6 @@ import dts from "vite-plugin-dts";
 import Inspect from "vite-plugin-inspect";
 import bundlesize from "vite-plugin-bundlesize";
 import tsconfigPaths from "vite-tsconfig-paths";
-import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   envPrefix: ["PUBLIC_"],
@@ -13,7 +12,6 @@ export default defineConfig({
     tsconfigPaths() as PluginOption,
     Inspect(),
     react() as PluginOption,
-    tailwindcss(),
     dts({
       include: [
         "src/editor/components/Editor.tsx",

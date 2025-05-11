@@ -6,7 +6,7 @@ import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useDatasource } from "../hooks/use-datasource";
 import { processBrick, type Brick } from "@upstart.gg/sdk/shared/bricks";
 import BrickWrapper from "../components/BrickWrapper";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const props = brick.props;
@@ -35,7 +35,7 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edi
 
   return (
     // Always apply the "brick" class
-    <div className={clsx("brick flex-1", Object.values(styles))} ref={ref}>
+    <div className={tx("brick flex-1", Object.values(styles))} ref={ref}>
       {props.$children?.length > 0 ? (
         props.$children.map((brick, index) => {
           return editable ? (

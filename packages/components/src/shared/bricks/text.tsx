@@ -3,7 +3,7 @@ import { useBrickStyle } from "../hooks/use-brick-style";
 import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/text.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { TextContent } from "../components/TextContent";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 /**
  * Text brick
@@ -14,7 +14,7 @@ const Text = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
   const classes = Object.values(styles);
 
   return (
-    <div className={clsx("flex-1", ...classes)}>
+    <div className={tx("flex-1", ...classes)}>
       <TextContent
         ref={ref}
         propPath="content"

@@ -1,5 +1,5 @@
 import type { UiSchema, ObjectFieldTemplateProps } from "@rjsf/utils";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 import { Fragment } from "react/jsx-runtime";
 
 interface GroupedField {
@@ -36,7 +36,7 @@ export const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
           </h3>
         )}
         {Object.entries(groupedFields).map(([group, fields]) => (
-          <div key={group} className={clsx({ "-mx-3": !isRoot })}>
+          <div key={group} className={tx({ "-mx-3": !isRoot })}>
             <div className="object-fields">
               {fields
                 .filter((f) => !f.hidden)
@@ -51,7 +51,7 @@ export const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
   }
 
   return (
-    <div className={clsx("rjsf-sections", { "-mx-3": !isRoot })}>
+    <div className={tx("rjsf-sections", { "-mx-3": !isRoot })}>
       {title && <h2 className="text-sm bg-upstart-200 dark:bg-dark-700 px-2">{title}</h2>}
       {Object.entries(groupedFields).map(([group, fields]) => (
         <div key={group} className="form-section">

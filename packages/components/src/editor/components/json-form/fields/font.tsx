@@ -12,13 +12,12 @@ import Select, {
   type OptionProps,
   type GroupBase,
 } from "react-select";
-import { css } from "@emotion/css";
 import { createRef, useMemo, useState } from "react";
 import googleFonts from "../../../utils/fonts.json";
 import { useTheme } from "~/editor/hooks/use-editor";
 import { fontStacks, type FontType } from "@upstart.gg/sdk/shared/theme";
 import { type FixedSizeList, FixedSizeList as List, type ListChildComponentProps } from "react-window";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 type OptionType = {
   label: string;
@@ -176,14 +175,14 @@ export default function FontPicker({ initialValue, onChange, fontType }: FontPic
         },
       }),
     loadingMessage(props) {
-      return clsx("text-sm py-2");
+      return tx("text-sm py-2");
     },
     indicatorsContainer: () => "text-sm pr-1.5 font-normal scale-75",
 
     option: (state) =>
       state.isSelected
-        ? clsx("bg-upstart-100 px-2 py-1.5")
-        : clsx("bg-white px-2 py-1.5 hover:(bg-upstart-600 text-white)"),
+        ? tx("bg-upstart-100 px-2 py-1.5")
+        : tx("bg-white px-2 py-1.5 hover:(bg-upstart-600 text-white)"),
   };
 
   return (

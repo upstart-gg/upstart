@@ -7,7 +7,7 @@ import {
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useDatasource } from "../hooks/use-datasource";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 /**
  * Containers can operate in two modes: Static and Dynamic.
@@ -22,7 +22,7 @@ const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, 
   return (
     <div
       ref={ref}
-      className={clsx(
+      className={tx(
         ...Object.values(styles),
         "transition-all relative",
         // props.styles.layoutType === "flex" &&

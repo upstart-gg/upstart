@@ -13,7 +13,6 @@ const loader = {
 };
 
 const external = [
-  // "tailwindcss",
   // "jsdom",
   "vite",
   "vite-plugin-inspect",

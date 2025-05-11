@@ -1,9 +1,8 @@
 import { useMemo } from "react";
-import { css } from "@emotion/css";
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
 import { sortJsonSchemaProperties } from "~/shared/utils/sort-json-schema-props";
 import { processObjectSchemaToFields } from "./field-factory";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 interface FormRendererProps {
   brickId?: string;
@@ -30,7 +29,7 @@ const FormGroup: React.FC<FormGroupProps> = ({ groupTitle, groupName, children }
         {groupTitle}
       </h3>
       <div
-        className={clsx("form-group flex flex-col gap-3", css`&:not(:has(div)) { display: none; }`)}
+        className={tx("form-group flex flex-col gap-3", css`&:not(:has(div)) { display: none; }`)}
         data-group={groupName}
       >
         {children}

@@ -53,7 +53,7 @@ export default forwardRef((props, ref) => {
           <button
             type="button"
             role="menuitem"
-            className={clsx(
+            className={tx(
               index === selectedIndex && "bg-upstart-200",
               "flex text-left w-full items-center px-1.5 py-0.5 rounded",
             )}

@@ -20,7 +20,7 @@ import { ColorFieldRow } from "./json-form/fields/color";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import type { ColorType } from "@upstart.gg/sdk/shared/themes/color-system";
 import type { TUnion } from "@sinclair/typebox";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 export default function DataPanel() {
   const draft = useDraft();
@@ -28,8 +28,8 @@ export default function DataPanel() {
 
   return (
     <Tabs.Root defaultValue="datasources">
-      <div className={clsx("bg-white dark:bg-dark-800")}>
-        <Tabs.List className="sticky top-0 z-50">
+      <div className={tx("bg-white dark:bg-dark-800")}>
+        <Tabs.List className="sticky top-0 z-50 bg-gray-100">
           <Tabs.Trigger value="datasources" className="!flex-1">
             Sources
           </Tabs.Trigger>

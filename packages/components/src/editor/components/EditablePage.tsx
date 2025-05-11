@@ -8,6 +8,7 @@ import {
   useEditorHelpers,
   usePreviewMode,
   useSections,
+  useZoom,
 } from "../hooks/use-editor";
 import Selecto from "react-selecto";
 import { useEditablePage } from "~/editor/hooks/use-editable-page";
@@ -17,10 +18,10 @@ import { useFontWatcher } from "../hooks/use-font-watcher";
 import Section from "./EditableSection";
 import BrickSettingsPopover from "./BrickPopover";
 import { getBrickIdAtPosition } from "~/shared/utils/layout-utils";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
-const ghostValid = clsx("bg-upstart-100");
-const ghostInvalid = clsx("bg-red-100");
+const ghostValid = tx("bg-upstart-100");
+const ghostInvalid = tx("bg-red-100");
 
 type EditablePageProps = {
   showIntro?: boolean;
@@ -31,6 +32,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const editorHelpers = useEditorHelpers();
   const draftHelpers = useDraftHelpers();
   const draft = useDraft();
+  const { zoom } = useZoom();
   const pageRef = useRef<HTMLDivElement>(null);
   const attributes = useAttributes();
   const sections = useSections();
@@ -176,13 +178,20 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
 
   return (
     <>
-      <div id="page-container" ref={pageRef} className={pageClassName}>
+      <div
+        id="page-container"
+        ref={pageRef}
+        className={pageClassName}
+        style={{
+          zoom,
+        }}
+      >
         {sections.map((section) => (
           <Section key={section.id} section={section} />
         ))}
         <div
           ref={dragOverRef}
-          className={clsx(
+          className={tx(
             "fixed z-[99999] isolate pointer-events-none drop-indicator bg-upstart-50 rounded opacity-0 hidden",
           )}
         />

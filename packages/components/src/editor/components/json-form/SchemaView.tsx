@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import type { TArray, TObject, TSchema } from "@sinclair/typebox";
 import { Text } from "@upstart.gg/style-system/system";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 type ChoiceContextProps = {
   onFieldSelect: (value: string) => void;
@@ -101,7 +101,7 @@ function SchemaObject({
   if (properties)
     return (
       <ul className="list-disc">
-        <li className={clsx({ hidden: !name })}>
+        <li className={tx({ hidden: !name })}>
           <span>{name}</span>
         </li>
         {Object.entries(renderProperties).map(([name, value], i) => (

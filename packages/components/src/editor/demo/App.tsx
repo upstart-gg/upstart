@@ -8,8 +8,6 @@ import "@upstart.gg/style-system/default-theme.css";
 import "@upstart.gg/components/dist/assets/style.css";
 import { getNewSiteConfig } from "@upstart.gg/sdk/shared/site";
 
-import "./demo.css";
-
 export default function App({ path }: { path: string }) {
   const siteConfig = getNewSiteConfig(
     testEnpageConfig,

@@ -20,7 +20,7 @@ import "@upstart.gg/style-system/tiptap-text-editor.css";
 import "@upstart.gg/style-system/react-resizable.css";
 import { DatasourceProvider } from "~/shared/hooks/use-datasource";
 import type { Site } from "@upstart.gg/sdk/shared/site";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 export type EditorWrapperProps = {
   mode?: "local" | "remote";
@@ -113,7 +113,7 @@ export function EditorWrapper({
       <UploaderProvider onImageUpload={onImageUpload}>
         <EditorStoreContext.Provider value={editorStore} key="EditorStoreContext">
           <DraftStoreContext.Provider value={draftStore} key="DraftStoreContext">
-            <Theme accentColor="violet" className={clsx("w-full")} appearance={isDarkMode ? "dark" : "light"}>
+            <Theme accentColor="violet" className={tx("w-full")} appearance={isDarkMode ? "dark" : "light"}>
               {children}
             </Theme>
           </DraftStoreContext.Provider>

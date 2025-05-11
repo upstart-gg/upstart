@@ -10,7 +10,7 @@ import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { useCallback } from "react";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 const DatasourceRefField: React.FC<FieldProps<DatasourceRefSettings>> = (props) => {
   const { onChange, currentValue = {} as DatasourceRefSettings, brickId } = props;
@@ -208,7 +208,7 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRefSettings>> = (props) 
               <>
                 <div className="flex flex-col flex-1 gap-2">
                   <h3
-                    className={clsx(
+                    className={tx(
                       "text-sm font-semibold !dark:bg-dark-600 bg-upstart-100 px-2 py-1 sticky top-0 z-[999] -mx-3",
                     )}
                   >
@@ -223,7 +223,7 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRefSettings>> = (props) 
                 </div>
                 <div className="flex flex-col flex-1 gap-2">
                   <h3
-                    className={clsx(
+                    className={tx(
                       "text-sm font-semibold !dark:bg-dark-600 bg-upstart-100 px-2 py-1 sticky top-0 z-[999] -mx-3",
                     )}
                   >
@@ -287,7 +287,7 @@ function FieldsMapper({
       {Object.entries(schemaFields).map(([fieldName, field]) => {
         return (
           <div className="flex gap-0.5 justify-between items-center flex-wrap" key={fieldName}>
-            <label className={clsx("text-[85%] flex-1 flex-grow")}>{field.title ?? fieldName}</label>
+            <label className={tx("text-[85%] flex-1 flex-grow")}>{field.title ?? fieldName}</label>
             <Select.Root
               value={currentMapping[fieldName]}
               size="1"

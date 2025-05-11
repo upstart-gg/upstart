@@ -1,10 +1,9 @@
 import { LuUndo, LuRedo } from "react-icons/lu";
-import { RxMobile } from "react-icons/rx";
-import { RxDesktop } from "react-icons/rx";
+import { RxMobile, RxDesktop, RxZoomIn, RxZoomOut } from "react-icons/rx";
 import { VscCopy } from "react-icons/vsc";
 import { type MouseEvent, type PropsWithChildren, useCallback, useMemo } from "react";
 import { BsStars } from "react-icons/bs";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 import {
   useDraftUndoManager,
   usePagesInfo,
@@ -15,8 +14,10 @@ import {
   useEditorHelpers,
   usePreviewMode,
   useLogoLink,
+  usePanel,
+  useChatVisible,
+  useZoom,
 } from "~/editor/hooks/use-editor";
-import { css } from "@emotion/css";
 import { RxRocket } from "react-icons/rx";
 import logo from "../../../../../creatives/upstart.svg";
 import { RiArrowDownSLine } from "react-icons/ri";
@@ -42,6 +43,9 @@ export default function NavBar({ showIntro }: TopBarProps) {
   const pageVersion = usePageVersion();
   const lastSaved = useLastSaved();
   const pages = usePagesInfo();
+  const { panel } = usePanel();
+  const { canZoomIn, canZoomOut, zoomIn, zoomOut, zoom } = useZoom();
+  const chatVisible = useChatVisible();
   const { undo, redo, futureStates, pastStates } = useDraftUndoManager();
   const canRedo = useMemo(() => futureStates.length > 0, [futureStates]);
   const canUndo = useMemo(() => pastStates.length > 0, [pastStates]);
@@ -88,7 +92,7 @@ export default function NavBar({ showIntro }: TopBarProps) {
   );
 
   // bg-upstart-600
-  const baseCls = clsx(
+  const baseCls = tx(
     `transition-opacity duration-300 bg-gradient-to-t from-transparent to-[rgba(255,255,255,0.15)] px-3 min-w-[2.5rem]`,
     showIntro && "opacity-0",
   );
@@ -98,9 +102,11 @@ export default function NavBar({ showIntro }: TopBarProps) {
     disabled:text-gray-300
   `;
 
-  const rocketBtn = clsx(
+  const activeCls = `bg-upstart-100 dark:bg-upstart-700/80`;
+
+  const rocketBtn = tx(
     `transition-opacity duration-300
-    px-3 bg-gradient-to-tr from-orange-500 to-yellow-400 border-l border-l-orange-300
+    px-3 bg-gradient-to-tr from-orange-400 to-yellow-400 border-l border-l-orange-300
   hover:opacity-80 rounded-lg`,
     showIntro && "opacity-0",
   );
@@ -125,12 +131,12 @@ export default function NavBar({ showIntro }: TopBarProps) {
   return (
     <nav
       role="navigation"
-      className={clsx(
-        ` z-[9999]
-          flex text-xl w-full justify-start items-center transition-opacity duration-300 pl-3.5 pr-3 pt-2 text-black/70
+      className={tx(
+        ` z-[9999] h-14 gap-1
+          flex text-xl w-full justify-start items-center transition-opacity duration-300 px-4 pt-2 text-black/70
           `,
         css({
-          gridArea: "topbar",
+          gridArea: "navbar",
         }),
       )}
     >
@@ -140,9 +146,9 @@ export default function NavBar({ showIntro }: TopBarProps) {
         onClick={() => {
           window.location.href = logoLink;
         }}
-        className={clsx("flex-shrink-0")}
+        className={tx("flex-shrink-0")}
       >
-        <img src={logo} alt="Upstart" className={clsx("h-8 w-auto")} />
+        <img src={logo} alt="Upstart" className={tx("h-8 w-auto")} />
       </button>
 
       {(editorMode === "remote" || (editorMode === "local" && pages.length > 1)) && (
@@ -173,41 +179,55 @@ export default function NavBar({ showIntro }: TopBarProps) {
               : []),
           ]}
         >
-          <button type="button" className={clsx(btnClass, commonCls, btnWithArrow, "!px-1.5 ml-4")}>
+          <button type="button" className={tx(btnClass, commonCls, btnWithArrow, "!px-1.5 ml-4")}>
             <VscCopy className="h-6 w-auto" />
             <div className="flex flex-col gap-1 ml-1.5 mr-2 justify-start items-start">
               <span className="text-xs inline-block">Page</span>
               <span className="text-sm inline-block -mt-[8px] font-semibold">{currentPageLabel}</span>
             </div>
-            <RiArrowDownSLine className={clsx(arrowClass)} />
+            <RiArrowDownSLine className={tx(arrowClass)} />
           </button>
         </TopbarMenu>
       )}
 
       {/* spacer */}
-      <div className={clsx(baseCls, "max-lg:hidden flex-1")} />
+      <div className={tx(baseCls, "max-lg:hidden flex-1")} />
 
-      <button onClick={() => redo()} type="button" className={clsx(btnClass, squareBtn, commonCls)}>
+      <button
+        onClick={() => editorHelpers.toggleChat()}
+        type="button"
+        className={tx(btnClass, squareBtn, commonCls, chatVisible && activeCls)}
+      >
         <BsStars className="h-5 w-auto text-upstart-500" />
-        <span className={clsx(tooltipCls)}>Ask AI</span>
+        <span className={tx(tooltipCls)}>Ask AI</span>
       </button>
 
-      <button onClick={() => redo()} type="button" className={clsx(btnClass, squareBtn, commonCls)}>
+      <button
+        onClick={() => editorHelpers.togglePanel("library")}
+        type="button"
+        className={tx(btnClass, squareBtn, commonCls, panel === "library" && activeCls)}
+      >
         <LuPlus className="h-6 w-auto" />
-        <span className={clsx(tooltipCls)}>Add elements</span>
+        <span className={tx(tooltipCls)}>Add elements</span>
       </button>
 
       <div className={separator} />
-      <button onClick={() => redo()} type="button" className={clsx(btnClass, squareBtn, commonCls)}>
+      <button
+        onClick={() => editorHelpers.togglePanel("theme")}
+        type="button"
+        className={tx(btnClass, squareBtn, commonCls, panel === "theme" && activeCls)}
+      >
         <PiPalette className="h-6 w-auto" />
-        <span className={clsx(tooltipCls)}>Color theme</span>
+        <span className={tx(tooltipCls)}>Color theme</span>
       </button>
 
-      <div className={separator} />
-
-      <button onClick={() => redo()} type="button" className={clsx(btnClass, squareBtn, commonCls)}>
+      <button
+        onClick={() => editorHelpers.togglePanel("settings")}
+        type="button"
+        className={tx(btnClass, squareBtn, commonCls, panel === "settings" && activeCls)}
+      >
         <VscSettings className="h-6 w-auto" />
-        <span className={clsx(tooltipCls)}>Page / Site settings</span>
+        <span className={tx(tooltipCls)}>Page / Site settings</span>
       </button>
 
       <div className={separator} />
@@ -216,54 +236,75 @@ export default function NavBar({ showIntro }: TopBarProps) {
         disabled={!canUndo}
         onClick={() => undo()}
         type="button"
-        className={clsx(btnClass, commonCls, squareBtn, "ml-auto")}
+        className={tx(btnClass, commonCls, squareBtn, "ml-auto")}
       >
         <LuUndo className="h-5 w-auto" />
-        <span className={clsx(tooltipCls)}>Undo</span>
+        <span className={tx(tooltipCls)}>Undo</span>
       </button>
       <button
         disabled={!canRedo}
         onClick={() => redo()}
         type="button"
-        className={clsx(btnClass, squareBtn, commonCls)}
+        className={tx(btnClass, squareBtn, commonCls)}
       >
         <LuRedo className="h-5 w-auto" />
-        <span className={clsx(tooltipCls)}>Redo</span>
+        <span className={tx(tooltipCls)}>Redo</span>
       </button>
 
       <div className={separator} />
 
-      <button type="button" className={clsx(btnClass, squareBtn, commonCls)} onClick={switchPreviewMode}>
+      <button type="button" className={tx(btnClass, squareBtn, commonCls)} onClick={switchPreviewMode}>
         {previewMode === "desktop" && <RxDesktop className="h-5 w-auto" />}
         {previewMode === "mobile" && <RxMobile className="h-5 w-auto" />}
-        <span className={clsx(tooltipCls)}>Switch View</span>
+        <span className={tx(tooltipCls)}>Switch View</span>
       </button>
 
-      <div className={clsx("flex-1", "border-x border-l-upstart-400 border-r-upstart-700", baseCls)} />
+      <button
+        onClick={zoomOut}
+        disabled={!canZoomOut}
+        type="button"
+        className={tx(btnClass, squareBtn, commonCls)}
+      >
+        <RxZoomOut className="h-5 w-auto" />
+        <span className={tx(tooltipCls)}>Zoom Out</span>
+      </button>
+      <button
+        onClick={zoomIn}
+        disabled={!canZoomIn}
+        type="button"
+        className={tx(btnClass, squareBtn, commonCls)}
+      >
+        <RxZoomIn className="h-5 w-auto" />
+        <span className={tx(tooltipCls)}>Zomm In</span>
+      </button>
+
+      <span className="text-gray-500 text-xs ml-1">{(zoom * 100).toFixed(0)}%</span>
+
+      <div className={tx("flex-1", "border-x border-l-upstart-400 border-r-upstart-700", baseCls)} />
 
       {editorMode === "remote" && (
         <button
           type="button"
-          className={clsx(btnClass, commonCls, "text-base px-5")}
+          className={tx(btnClass, commonCls, "text-base px-5")}
           onClick={() => {
             window.open(`/sites/${draft.siteId}/pages/${draft.id}/preview`, "upstart_preview");
           }}
         >
           Preview
           <LuExternalLink className="h-4 w-auto ml-1" />
-          <span className={clsx(tooltipCls)}>Open page preview</span>
+          <span className={tx(tooltipCls)}>Open page preview</span>
         </button>
       )}
 
       {editorMode === "remote" && (
-        <div className={clsx(btnClass, baseCls, "px-8")}>
+        <div className={tx(btnClass, baseCls, "px-8")}>
           {lastSaved ? (
-            <div className={clsx("text-sm text-black/50")}>
+            <div className={tx("text-sm text-black/50")}>
               Saved {formatDistance(lastSaved, new Date(), { addSuffix: true })}
               Saved {formatDistance(lastSaved, new Date(), { addSuffix: true })}
             </div>
           ) : (
-            <div className={clsx("text-sm")}>Not saved yet</div>
+            <div className={tx("text-sm")}>Not saved yet</div>
           )}
         </div>
       )}
@@ -279,9 +320,9 @@ export default function NavBar({ showIntro }: TopBarProps) {
             { label: "Schedule publish" },
           ]}
         >
-          <button type="button" className={clsx(btnClass, rocketBtn, btnWithArrow, "px-4")}>
-            <RxRocket className={clsx("h-5 w-auto")} />
-            <span className={clsx("font-bold italic px-2", css({ fontSize: "1rem" }))}>Publish</span>
+          <button type="button" className={tx(btnClass, rocketBtn, btnWithArrow, "px-4")}>
+            <RxRocket className={tx("h-5 w-auto")} />
+            <span className={tx("font-bold italic px-2", css({ fontSize: "1rem" }))}>Publish</span>
             <RiArrowDownSLine className={arrowClass} />
           </button>
         </TopbarMenu>
@@ -289,17 +330,17 @@ export default function NavBar({ showIntro }: TopBarProps) {
         <button
           id="publish-menu-btn"
           type="button"
-          className={clsx("px-3.5 py-2", btnClass, rocketBtn)}
+          className={tx("px-3.5 py-2.5", btnClass, rocketBtn)}
           onClick={() => {
             editorHelpers.onShowLogin();
           }}
         >
-          <IoIosSave className={clsx("h-5 w-auto")} />
+          <IoIosSave className={tx("h-5 w-auto")} />
           <span
             style={{
               textShadow: "1px 1px 0px rgba(255, 255, 255, 0.3)",
             }}
-            className={clsx("font-semibold pl-1 text-black", css({ fontSize: ".94rem" }))}
+            className={tx("font-semibold pl-1 text-black", css({ fontSize: ".94rem" }))}
           >
             Save your site
           </span>

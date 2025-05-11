@@ -9,6 +9,7 @@ import presetContainerQueries from "@twind/preset-container-queries";
 
 export default defineConfig({
   darkMode: "media",
+  ignorelist: [/^btn-*/],
   presets: [
     presetAutoprefix(),
     presetTailwind({ disablePreflight: true }),
@@ -435,41 +436,10 @@ export default defineConfig({
 
     ["text-pretty", { textWrap: "pretty" }],
     ["text-balance", { textWrap: "balance" }],
+    ["text-nowrap", { textWrap: "nowrap" }],
 
     ["scrollbar-thin", { scrollbarWidth: "thin" }],
     ["scrollbar-color-", ({ $$ }) => ({ scrollbarColor: `var(--${$$}-6) var(--${$$}-surface)` })],
-    [
-      "button",
-      {
-        color: "var(--color-button-text)",
-        backgroundColor: "var(--color-button-bg)",
-        padding: "0.5rem 1rem",
-        borderRadius: "0.25rem",
-        fontSize: "1rem",
-        cursor: "pointer",
-      },
-    ],
-    [
-      "button-sm",
-      {
-        padding: "0.25rem 0.5rem",
-        fontSize: "0.875rem",
-      },
-    ],
-    [
-      "button-lg",
-      {
-        padding: "0.75rem 1.5rem",
-        fontSize: "1.25rem",
-      },
-    ],
-    [
-      "button-xl",
-      {
-        padding: "1rem 2rem",
-        fontSize: "1.5rem",
-      },
-    ],
   ],
   theme: {
     extend: {

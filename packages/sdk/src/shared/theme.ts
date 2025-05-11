@@ -78,7 +78,7 @@ export const themeSchema = Type.Object({
   colors: Type.Object(
     {
       primary: Type.String({
-        title: "Primary color",
+        title: "Primary",
         description: "The brand's primary color.",
       }),
       primaryContent: Type.String({
@@ -86,7 +86,7 @@ export const themeSchema = Type.Object({
         description: "Text color on primary background",
       }),
       secondary: Type.String({
-        title: "Secondary color",
+        title: "Secondary",
         description: "The brand's second most used color",
       }),
       secondaryContent: Type.String({
@@ -94,7 +94,7 @@ export const themeSchema = Type.Object({
         description: "Text color on secondary background",
       }),
       accent: Type.String({
-        title: "Accent color",
+        title: "Accent",
         description: "The brand's least used color",
       }),
       accentContent: Type.String({
@@ -102,7 +102,7 @@ export const themeSchema = Type.Object({
         description: "Text color on accent background",
       }),
       neutral: Type.String({
-        title: "Neutral color",
+        title: "Neutral",
         description: "The base neutral color",
       }),
       neutralContent: Type.String({
@@ -110,16 +110,16 @@ export const themeSchema = Type.Object({
         description: "Text color on neutral background",
       }),
       base100: Type.String({
-        title: "Base color",
+        title: "Base",
         description: "Base surface color of page, used for blank backgrounds. Should be very light.",
       }),
       base200: Type.String({
-        title: "Base color 2",
+        title: "Base 2",
         description:
           "Base color, darker shade, to create elevations. Should be darker than base100 but still light.",
       }),
       base300: Type.String({
-        title: "Base color 3",
+        title: "Base 3",
         description:
           "Base color, even more darker shade, to create elevations. Should be darker than base200 but still light.",
       }),

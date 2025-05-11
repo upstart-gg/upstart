@@ -1,20 +1,21 @@
 import {
+  useChatVisible,
   useDraft,
   useEditorEnabled,
+  useEditorHelpers,
   useGetBrick,
   usePanel,
   usePreviewMode,
   useSelectedBrickId,
-  type DraftState,
-  type usePageInfo,
 } from "../hooks/use-editor";
 import Toolbar from "./Toolbar";
-import Topbar from "./NavBar";
+import { LuPanelLeft, LuPanelRight } from "react-icons/lu";
+import NavBar from "./NavBar";
 import { lazy, Suspense, useEffect, useRef, useState, type ComponentProps } from "react";
 import { useDebounceCallback } from "usehooks-ts";
 import { DeviceFrame } from "./Preview";
 import EditablePage from "./EditablePage";
-import { injectGlobal, css } from "@emotion/css";
+import { injectGlobal, css, tx } from "@upstart.gg/style-system/twind";
 import { Button, Spinner, toast } from "@upstart.gg/style-system/system";
 import { usePageAutoSave } from "~/editor/hooks/use-page-autosave";
 import DataPanel from "./PanelData";
@@ -26,7 +27,7 @@ import Tour from "./Tour";
 import { getThemeCss } from "~/shared/utils/get-theme-css";
 import Page from "~/shared/components/Page";
 import { useEditorHotKeys } from "../hooks/use-editor-hot-keys";
-import clsx from "clsx";
+import Chat from "./Chat";
 
 type EditorProps = ComponentProps<"div"> & {
   mode?: "local" | "live";
@@ -37,6 +38,7 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
   const draft = useDraft();
   const previewMode = usePreviewMode();
   const editorEnabled = useEditorEnabled();
+  const chatVisible = useChatVisible();
 
   // intro is a state when the site has just been created.
   // It is used for animating the editor.
@@ -81,18 +83,19 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
   return (
     <div
       id="editor"
-      className={clsx("min-h-[100dvh] max-h-[100dvh] grid relative", getEditorCss(showIntro, panelPosition))}
+      className={tx("min-h-[100dvh] max-h-[100dvh] grid relative", getEditorCss(chatVisible))}
       {...props}
       ref={rootRef}
     >
       {showIntro === false && <Tour />}
-      {editorEnabled && <Topbar showIntro={showIntro} />}
+      {editorEnabled && <NavBar showIntro={showIntro} />}
+      {editorEnabled && chatVisible && <Chat />}
       <Panel />
-      {editorEnabled && <Toolbar showIntro={showIntro} />}
+      {/* {editorEnabled && <Toolbar showIntro={showIntro} />} */}
       {draft.previewTheme && <ThemePreviewConfirmButton />}
       <main
-        className={clsx(
-          "editor-main flex-1 flex place-content-center z-40 overscroll-none ",
+        className={tx(
+          "flex-1 flex place-content-center z-40 overscroll-none ",
           showIntro
             ? "overflow-x-hidden overflow-y-hidden pointer-events-none"
             : "overflow-x-auto overflow-y-visible ",
@@ -125,12 +128,11 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
   );
 }
 
-function getEditorCss(showIntro: boolean, panelPosition: "left" | "right") {
+function getEditorCss(chatVisible?: boolean) {
   return css({
-    gridTemplateAreas:
-      panelPosition === "left" ? `"topbar topbar" "toolbar main"` : `"topbar topbar" "main toolbar"`,
-    gridTemplateRows: "50px 1fr",
-    gridTemplateColumns: panelPosition === "left" ? "60px 1fr" : "1fr 60px",
+    gridTemplateAreas: chatVisible ? `"navbar navbar" "chat main"` : `"navbar" "main"`,
+    gridTemplateRows: "70px 1fr",
+    gridTemplateColumns: chatVisible ? "clamp(280px, 25%, 380px) 1fr" : "1fr",
   });
 }
 
@@ -148,6 +150,7 @@ function Panel({ className, ...props }: PanelProps) {
   const { panel, panelPosition } = usePanel();
   const previewMode = usePreviewMode();
   const selectedBrickId = useSelectedBrickId();
+  const { togglePanelPosition } = useEditorHelpers();
   const getBrickInfo = useGetBrick();
   const selectedBrick = selectedBrickId ? getBrickInfo(selectedBrickId) : null;
 
@@ -158,24 +161,39 @@ function Panel({ className, ...props }: PanelProps) {
   return (
     <aside
       id="floating-panel"
-      className={clsx(
-        `z-[9999] fixed top-[58px] bottom-0 flex shadow-2xl flex-col overscroll-none \
+      className={tx(
+        `z-[9999] fixed top-0 bottom-0 flex shadow-2xl overscroll-none \
         min-w-[360px] w-[360px] opacity-100 transition-transform duration-150
-        bg-gray-50 dark:bg-dark-700  border-t border-upstart-200 dark:border-dark-700 overflow-visible`,
+        bg-white dark:bg-dark-700 border-upstart-200 dark:border-dark-700 overflow-visible`,
         {
-          "left-[calc(70px-15px)] pl-1 border-r rounded-r-xl": panelPosition === "left",
-          "right-[calc(70px-15px)] pr-1 border-l rounded-l-xl": panelPosition === "right",
+          "left-0 border-r": panelPosition === "left",
+          "right-0 border-l": panelPosition === "right",
           "-translate-x-full opacity-0": !panel && panelPosition === "left",
           "translate-x-full": !panel && panelPosition === "right",
         },
       )}
       {...props}
     >
-      {previewMode === "desktop" && panel === "library" && <PanelLibrary />}
-      {panel === "inspector" && selectedBrick && <PanelInspector brick={selectedBrick} />}
-      {panel === "theme" && <PanelTheme />}
-      {panel === "settings" && <PanelSettings />}
-      {panel === "data" && <DataPanel />}
+      <div className="flex-1 relative">
+        {previewMode === "desktop" && panel === "library" && <PanelLibrary />}
+        {panel === "inspector" && selectedBrick && <PanelInspector brick={selectedBrick} />}
+        {panel === "theme" && <PanelTheme />}
+        {panel === "settings" && <PanelSettings />}
+        {panel === "data" && <DataPanel />}
+
+        <button
+          type="button"
+          className={tx(
+            "absolute bottom-1 p-1 bg-upstart-50 rounded-sm text-upstart-400 dark:text-upstart-200 hover:text-upstart-600 dark:hover:text-upstart-100",
+            panelPosition === "right" ? "left-1" : "right-1",
+          )}
+          onClick={() => {
+            togglePanelPosition();
+          }}
+        >
+          {panelPosition === "right" ? <LuPanelLeft size={24} /> : <LuPanelRight size={24} />}
+        </button>
+      </div>
     </aside>
   );
 }

@@ -16,7 +16,7 @@ import {
 } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { FieldTitle } from "../field-factory";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
@@ -99,7 +99,7 @@ export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
                     sides,
                   });
                 }}
-                className={clsx(
+                className={tx(
                   "p-1 px-2 inline-flex  first:rounded-l last:rounded-r",
                   currentSide.includes(option.const)
                     ? "bg-upstart-500 text-white"

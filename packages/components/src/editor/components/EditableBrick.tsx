@@ -8,11 +8,13 @@ import {
   type MouseEvent,
   useEffect,
   useMemo,
+  useCallback,
 } from "react";
 import {
   useDebugMode,
   useDraftHelpers,
   useEditorHelpers,
+  usePanel,
   usePreviewMode,
   useSection,
   useSelectedBrickId,
@@ -46,7 +48,7 @@ import { BiSolidColor } from "react-icons/bi";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { FiSettings, FiDatabase, FiTrash, FiTrash2 } from "react-icons/fi";
 import { BrickPopover } from "./BrickPopover";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -83,8 +85,8 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
   ({ brick, children, isContainerChild, index }, ref) => {
     const hasMouseMoved = useRef(false);
     const selectedBrickId = useSelectedBrickId();
-    const { setSelectedBrickId } = useEditorHelpers();
     const previewMode = usePreviewMode();
+    const { panelPosition } = usePanel();
     const editorHelpers = useEditorHelpers();
     const { getParentBrick } = useDraftHelpers();
     const manifest = useBrickManifest(brick.type);
@@ -160,36 +162,53 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       }
     }, [barsRefs.reference, updateBarsPlacement]);
 
-    const onBrickWrapperClick = (e: MouseEvent<HTMLElement>) => {
-      const brickTarget = e.currentTarget as HTMLElement;
-      const target = e.target as HTMLElement;
-      const group = target.closest<HTMLElement>("[data-brick-group]");
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    const onBrickWrapperClick = useCallback(
+      (e: MouseEvent<HTMLElement>) => {
+        const brickTarget = e.currentTarget as HTMLElement;
+        const target = e.target as HTMLElement;
+        const group = target.closest<HTMLElement>("[data-brick-group]");
 
-      if (group) {
-        console.debug("onBrickWrapperClick: click ignored (group)");
-        return;
-      }
-
-      if (hasMouseMoved.current || !brickTarget.matches("[data-brick]")) {
-        return;
-      }
-
-      let selectedBrick = brick;
-
-      // If has shift key pressed, then we try to select the upper container
-      if (e.shiftKey) {
-        if (parentBrick) {
-          selectedBrick = parentBrick;
+        if (group) {
+          console.debug("onBrickWrapperClick: click ignored (group)");
+          return;
         }
-      }
 
-      setSelectedBrickId(selectedBrick.id);
-      editorHelpers.setPanel("inspector");
-      hasMouseMoved.current = false;
+        if (hasMouseMoved.current || !brickTarget.matches("[data-brick]")) {
+          return;
+        }
 
-      // stop propagation otherwise the click could then be handled by the container
-      e.stopPropagation();
-    };
+        let selectedBrick = brick;
+
+        // If has shift key pressed, then we try to select the upper container
+        if (e.shiftKey) {
+          if (parentBrick) {
+            selectedBrick = parentBrick;
+          }
+        }
+
+        //
+        // Commented fow now, e.g don't auto move the panel
+        //
+        // If brick is on the left of the screen, we need to move the panel to the right, and vice versa
+        // if (panelPosition === "right" && brickTarget.getBoundingClientRect().right > window.innerWidth / 2) {
+        //   editorHelpers.togglePanelPosition();
+        // } else if (
+        //   panelPosition === "left" &&
+        //   brickTarget.getBoundingClientRect().left < window.innerWidth / 2
+        // ) {
+        //   editorHelpers.togglePanelPosition();
+        // }
+
+        editorHelpers.setSelectedBrickId(selectedBrick.id);
+        editorHelpers.setPanel("inspector");
+        hasMouseMoved.current = false;
+
+        // stop propagation otherwise the click could then be handled by the container
+        e.stopPropagation();
+      },
+      [panelPosition],
+    );
 
     return (
       <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
@@ -203,7 +222,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           data-last-touched={brick.props.lastTouched ?? "0"}
           data-dropzone={manifest.isContainer}
           {...(manifest.movable ? {} : { "data-no-drag": "true" })}
-          className={clsx(wrapperClass, `![animation-delay:${0.5 * (index + 1)}s]`)}
+          className={tx(wrapperClass, `![animation-delay:${0.5 * (index + 1)}s]`)}
           ref={brickRef}
           onClick={onBrickWrapperClick}
           {...getReferenceProps()}
@@ -253,7 +272,7 @@ const BrickMenuBarsContainer = forwardRef<HTMLDivElement, BrickMenuBarProps>(
         data-ui
         data-ui-menu-bars-container
         role="navigation"
-        className={clsx(
+        className={tx(
           "z-[99999] isolate text-base items-center gap-1",
           "transition-opacity duration-150 border rounded-lg",
           visible ? "opacity-100 flex" : "opacity-0 hidden",
@@ -276,8 +295,8 @@ function BrickTextNavBar({ brick }: { brick: Brick }) {
     <div
       id={`text-editor-menu-${brick.id}`}
       // Hide the menu if it doesn't have any children so that the border doesn't show up
-      className={clsx("contents", menuNavBarCls, "!empty:hidden")}
-      // className={clsx("contents", menuNavBarCls, "!empty:hidden")}
+      className={tx("contents", menuNavBarCls, "!empty:hidden")}
+      // className={tx("contents", menuNavBarCls, "!empty:hidden")}
     />
   );
 }
@@ -290,29 +309,29 @@ function BrickMainNavBar({ brick }: { brick: Brick }) {
   }
 
   return (
-    <nav className={clsx(menuNavBarCls)} data-ui data-ui-options-bar>
-      {/* <span className={clsx(menuBarBtnCls, menuBarBtnCommonCls, "block capitalize pointer-events-none")}>
+    <nav className={tx(menuNavBarCls)} data-ui data-ui-options-bar>
+      {/* <span className={tx(menuBarBtnCls, menuBarBtnCommonCls, "block capitalize pointer-events-none")}>
         {manifest.type}
       </span> */}
       {manifest.presets && (
         <BrickPopover brick={brick} view="presets">
-          <button type="button" className={clsx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-            <BiSolidColor className={clsx("w-5 h-5")} />
-            {/* <span className={clsx(menuBarTooltipCls)}>Presets</span> */}
+          <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
+            <BiSolidColor className={tx("w-5 h-5")} />
+            {/* <span className={tx(menuBarTooltipCls)}>Presets</span> */}
           </button>
         </BrickPopover>
       )}
       {/* Settings & styles */}
       <BrickPopover brick={brick} view="settings">
-        <button type="button" className={clsx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-          <FiSettings className={clsx("w-5 h-5")} />
-          {/* <span className={clsx(menuBarTooltipCls)}>Settings</span> */}
+        <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
+          <FiSettings className={tx("w-5 h-5")} />
+          {/* <span className={tx(menuBarTooltipCls)}>Settings</span> */}
         </button>
       </BrickPopover>
       {/* Content */}
-      <button type="button" className={clsx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-        <FiDatabase className={clsx("w-5 h-5")} />
-        {/* <span className={clsx(menuBarTooltipCls)}>Dynamic content</span> */}
+      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
+        <FiDatabase className={tx("w-5 h-5")} />
+        {/* <span className={tx(menuBarTooltipCls)}>Dynamic content</span> */}
       </button>
     </nav>
   );

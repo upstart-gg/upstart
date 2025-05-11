@@ -5,8 +5,7 @@ import { FormRenderer } from "./json-form/FormRenderer";
 import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 import { Tabs, Spinner, IconButton } from "@upstart.gg/style-system/system";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
-import { IoCloseOutline } from "react-icons/io5";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 export default function SettingsForm() {
   const draft = useDraft();
@@ -44,16 +43,16 @@ export default function SettingsForm() {
 
   return (
     <Tabs.Root defaultValue={currentTab} onValueChange={setCurrentTab}>
-      <Tabs.List className={clsx("sticky top-0 z-50")}>
-        <Tabs.Trigger value="page-settings" className={clsx("!flex-1")}>
+      <Tabs.List className="sticky top-0 z-50 bg-gray-100">
+        <Tabs.Trigger value="page-settings" className={tx("!flex-1")}>
           Page settings
         </Tabs.Trigger>
-        <Tabs.Trigger value="site-settings" className={clsx("!flex-1")}>
+        <Tabs.Trigger value="site-settings" className={tx("!flex-1")}>
           Site settings
         </Tabs.Trigger>
       </Tabs.List>
       <ScrollablePanelTab tab="page-settings">
-        <form className={clsx("px-3 flex flex-col gap-y-2.5 pb-6")}>
+        <form className={tx("px-3 flex flex-col gap-y-2.5 pb-6")}>
           <FormRenderer
             formSchema={filteredAttrSchema}
             formData={attributes}
@@ -67,7 +66,7 @@ export default function SettingsForm() {
         </form>
       </ScrollablePanelTab>
       <ScrollablePanelTab tab="site-settings">
-        <form className={clsx("px-3 flex flex-col gap-y-2.5 pb-6")}>
+        <form className={tx("px-3 flex flex-col gap-y-2.5 pb-6")}>
           <FormRenderer
             formSchema={filteredAttrSchema}
             formData={attributes}

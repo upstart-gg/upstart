@@ -1,4 +1,3 @@
-import { css } from "@emotion/css";
 import { propToClass, propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
 import type {
   BackgroundSettings,
@@ -11,6 +10,7 @@ import type { PaddingSettings } from "@upstart.gg/sdk/shared/bricks/props/paddin
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
 import type { ColorSettings } from "@upstart.gg/sdk/shared/bricks/props/text";
 import type { ContainerLayoutSettings, FlexSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
+import { css } from "@upstart.gg/style-system/twind";
 
 export function getBackgroundStyles(props?: BackgroundSettings) {
   if (!props) {
@@ -113,12 +113,7 @@ function getGapStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLa
     return null;
   }
   if (mobileProps) {
-    return `@desktop:(
-      ${props.gap}
-    )
-    @mobile:(
-      ${mobileProps.gap}
-    )`;
+    return `${mobileProps.gap} @desktop:${props.gap}`;
   }
   return props.gap;
 }

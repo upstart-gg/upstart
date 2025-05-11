@@ -6,7 +6,7 @@ import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { useDraftHelpers } from "../hooks/use-editor";
 import { getTextContrastedColor } from "@upstart.gg/sdk/shared/themes/color-system";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 // type PresetsViewProps = {
 //   onChoose: (presetStyles: StyleProperties) => void;
@@ -91,7 +91,7 @@ export default function PresetsView({ brick }: BrickPresetsViewProps) {
                 <SegmentedControl.Item
                   key={option}
                   value={option}
-                  className={clsx("[&_.rt-SegmentedControlItemLabel]:px-1.5")}
+                  className={tx("[&_.rt-SegmentedControlItemLabel]:px-1.5")}
                 >
                   <span className="capitalize">{option}</span>
                 </SegmentedControl.Item>
@@ -111,7 +111,7 @@ export default function PresetsView({ brick }: BrickPresetsViewProps) {
             >
               <div
                 data-preset-preview
-                className={clsx(
+                className={tx(
                   "flex flex-1 flex-col items-center justify-center rounded text-center p-2",
                   preset.previewClasses.replace(/<variant>/g, variant),
                 )}

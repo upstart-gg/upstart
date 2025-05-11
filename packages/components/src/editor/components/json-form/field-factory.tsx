@@ -27,7 +27,7 @@ import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/bac
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import { fieldLabel } from "./form-class";
 import { Tooltip } from "@upstart.gg/style-system/system";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 export interface FieldFactoryOptions {
   brickId?: string;
@@ -376,7 +376,7 @@ export function FieldTitle({ title, description }: { title?: string; description
           align="start"
         >
           <label
-            className={clsx(
+            className={tx(
               fieldLabel,
               "underline-offset-4 no-underline hover:underline decoration-upstart-300 decoration-dotted cursor-help",
             )}

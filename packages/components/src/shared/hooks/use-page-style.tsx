@@ -1,9 +1,8 @@
-import { css } from "@emotion/css";
 import { isStandardColor } from "@upstart.gg/sdk/shared/themes/color-system";
 import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 type UsePageStyleProps = {
   attributes: Attributes;
@@ -14,7 +13,7 @@ type UsePageStyleProps = {
 };
 
 export function useBodyStyle({ attributes }: { attributes: Attributes }) {
-  return clsx(
+  return tx(
     isStandardColor(attributes.$bodyBackground?.color) &&
       css({ backgroundColor: attributes.$bodyBackground?.color as string }),
     !isStandardColor(attributes.$bodyBackground?.color) && (attributes.$bodyBackground?.color as string),
@@ -29,7 +28,7 @@ export function useBodyStyle({ attributes }: { attributes: Attributes }) {
 }
 
 export function usePageStyle({ attributes, editable, typography, showIntro }: UsePageStyleProps) {
-  return clsx(
+  return tx(
     "flex flex-col group/page mx-auto relative max-w-full w-full p-0 antialiased",
     editable && "overflow-hidden",
     isStandardColor(attributes.$pageBackground?.color) &&
@@ -46,16 +45,9 @@ export function usePageStyle({ attributes, editable, typography, showIntro }: Us
         backgroundPosition: "center top",
       }),
 
-    // mobile grid
-    `@mobile:(
-      min-h-[110%]
-      h-fit
-    )`,
-    // Desktop grid
-    `@desktop:(
-      min-h-[inherit]
-      h-max
-    )`,
+    // on one-line
+    "min-h-[110%] h-fit",
+    "@desktop:min-h-[inherit] @desktop:h-max",
 
     getTypographyStyles(typography),
 

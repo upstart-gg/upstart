@@ -1,4 +1,4 @@
-import { css } from "@emotion/css";
+import { css } from "@upstart.gg/style-system/twind";
 
 /**
  * Used for panels that have a scrollbar

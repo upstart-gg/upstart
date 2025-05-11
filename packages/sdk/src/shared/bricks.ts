@@ -172,6 +172,7 @@ const sectionProps = Type.Object(
           Type.Literal("gap-16", { title: "2XL" }),
         ],
         {
+          title: "Gap",
           default: "gap-4",
           description: "Space between bricks",
           "ui:field": "enum",
@@ -183,7 +184,7 @@ const sectionProps = Type.Object(
     border: Type.Optional(border()),
     minHeight: Type.Optional(
       Type.String({
-        title: "Section min height",
+        title: "Section height",
         description: "The height of the section in css units, or 'full' to take the entire page height",
       }),
     ),

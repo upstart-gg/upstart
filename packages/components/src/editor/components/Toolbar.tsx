@@ -3,10 +3,9 @@ import { PiPalette } from "react-icons/pi";
 import { VscSettings } from "react-icons/vsc";
 import type { MouseEvent, PropsWithChildren } from "react";
 import { useEditorHelpers, usePanel, usePreviewMode } from "../hooks/use-editor";
-import { css } from "@emotion/css";
 import { DropdownMenu } from "@upstart.gg/style-system/system";
 import { IoMdClose } from "react-icons/io";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 type ToolbarProps = {
   showIntro: boolean;
@@ -29,7 +28,7 @@ export default function Toolbar({ showIntro }: ToolbarProps) {
     disabled:text-gray-400/80 disabled:hover:from-transparent disabled:hover:to-transparent
   `;
 
-  const btnClass = clsx(
+  const btnClass = tx(
     `flex border-transparent items-center justify-center py-3 gap-x-0.5 aspect-square
     group relative disabled:hover:cursor-default focus-visible:outline-none`,
     {
@@ -46,7 +45,7 @@ export default function Toolbar({ showIntro }: ToolbarProps) {
     }`,
   );
 
-  const tooltipCls = clsx(
+  const tooltipCls = tx(
     `absolute py-0.5 px-2.5 bg-upstart-600/90 group-hover:translate-x-0
     rounded-full text-sm text-white min-w-full transition-all delay-75 duration-200 ease-in-out opacity-0
     group-hover:block group-hover:opacity-100  text-nowrap whitespace-nowrap pointer-events-none`,
@@ -58,7 +57,7 @@ export default function Toolbar({ showIntro }: ToolbarProps) {
   return (
     <nav
       role="toolbar"
-      className={clsx(
+      className={tx(
         `bg-gray-200 dark:bg-dark-800 z-[9999] transition-opacity duration-200
           flex flex-col w-[60px] text-xl text-gray-600 dark:text-gray-300
           border border-b-0 border-gray-300 dark:border-dark-700 mt-2`,
@@ -79,12 +78,12 @@ export default function Toolbar({ showIntro }: ToolbarProps) {
       <button
         type="button"
         onClick={() => editorHelpers.togglePanel()}
-        className={clsx(btnClass, commonCls, !panel && "opacity-0 cursor-default pointer-events-none")}
+        className={tx(btnClass, commonCls, !panel && "opacity-0 cursor-default pointer-events-none")}
       >
         <IoMdClose className="h-5 w-auto" />
       </button>
       <div
-        className={clsx("flex-1 !rounded-none", baseCls, {
+        className={tx("flex-1 !rounded-none", baseCls, {
           "rounded-tr-lg": panelPosition === "left",
           "rounded-tl-lg": panelPosition === "right",
         })}
@@ -93,48 +92,48 @@ export default function Toolbar({ showIntro }: ToolbarProps) {
         type="button"
         disabled={previewMode === "mobile"}
         onClick={() => editorHelpers.togglePanel("library")}
-        className={clsx(btnClass, commonCls, panel === "library" && "active")}
+        className={tx(btnClass, commonCls, panel === "library" && "active")}
       >
         <LuPlus className="h-7 w-auto" />
         {previewMode === "desktop" && <span className={tooltipCls}>Add elements</span>}
         {previewMode === "mobile" && (
-          <span className={clsx(tooltipCls, "!bg-gray-400/90")}>Disabled in mobile view</span>
+          <span className={tx(tooltipCls, "!bg-gray-400/90")}>Disabled in mobile view</span>
         )}
       </button>
       <button
         type="button"
-        className={clsx(btnClass, commonCls, panel === "settings" && "active")}
+        className={tx(btnClass, commonCls, panel === "settings" && "active")}
         onClick={(e) => {
           editorHelpers.togglePanel("settings");
         }}
       >
         <VscSettings className="h-7 w-auto" />
-        <span className={clsx(tooltipCls)}>Page & site settings</span>
+        <span className={tx(tooltipCls)}>Page & site settings</span>
       </button>
       <button
         type="button"
-        className={clsx(btnClass, commonCls, panel === "theme" && "active")}
+        className={tx(btnClass, commonCls, panel === "theme" && "active")}
         onClick={(e) => {
           editorHelpers.togglePanel("theme");
         }}
       >
         <PiPalette className="h-7 w-auto" />
-        <span className={clsx(tooltipCls)}>Color theme</span>
+        <span className={tx(tooltipCls)}>Color theme</span>
       </button>
       {/* <button
         type="button"
-        className={clsx(btnClass, commonCls, panel === "data" && "active")}
+        className={tx(btnClass, commonCls, panel === "data" && "active")}
         onClick={(e) => {
           editorHelpers.togglePanel("data");
         }}
       >
         <VscDatabase className="h-7 w-auto" />
-        <span className={clsx(tooltipCls)}>Data</span>
+        <span className={tx(tooltipCls)}>Data</span>
       </button> */}
-      <div className={clsx("flex-1", "border-t-gray-200 dark:border-t-dark-500")} />
+      <div className={tx("flex-1", "border-t-gray-200 dark:border-t-dark-500")} />
       <button
         type="button"
-        className={clsx(btnClass, commonCls, {})}
+        className={tx(btnClass, commonCls, {})}
         onClick={(e) => {
           editorHelpers.togglePanelPosition();
         }}
@@ -144,7 +143,7 @@ export default function Toolbar({ showIntro }: ToolbarProps) {
         ) : (
           <LuPanelRight className="h-7 w-auto" />
         )}
-        <span className={clsx(tooltipCls)}>
+        <span className={tx(tooltipCls)}>
           {panelPosition === "left" ? "Move toolbar to right" : "Move toolbar to left"}
         </span>
       </button>

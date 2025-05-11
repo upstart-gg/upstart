@@ -1,9 +1,8 @@
-import { css } from "@emotion/css";
 import type { Section } from "@upstart.gg/sdk/shared/bricks";
 import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import { getBackgroundStyles } from "../styles/helpers";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 type UseSectionStyleProps = {
   section: Section;
@@ -16,10 +15,10 @@ type UseSectionStyleProps = {
 };
 
 export function useSectionStyle({ section, editable, previewMode }: UseSectionStyleProps) {
-  return clsx("flex w-full py-0 group/section overflow-visible relative", [
+  return tx("flex w-full py-0 group/section overflow-visible relative", [
     typeof section.props.minHeight === "string" &&
       section.props.minHeight !== "full" &&
-      `min-h-[${section.props.minHeight}] bg-red-800`,
+      `min-h-[${section.props.minHeight}]`,
     // full height
     section.props.minHeight === "full" && editable && "min-h-[calc(100dvh-60px)]", // when in editor mode
     section.props.minHeight === "full" && !editable && "min-h-dvh", // when in real mode

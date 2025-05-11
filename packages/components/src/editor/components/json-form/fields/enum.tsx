@@ -5,7 +5,7 @@ import { Select } from "@upstart.gg/style-system/system";
 import { HelpIcon } from "../HelpIcon";
 import { IoIosHelpCircleOutline } from "react-icons/io";
 import { FieldTitle } from "../field-factory";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 interface EnumOption {
   const: string;
@@ -87,7 +87,7 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
                 <SegmentedControl.Item
                   key={option.const}
                   value={option.const}
-                  className={clsx(discrete && "[&_.rt-SegmentedControlItemLabel]:px-[6px]")}
+                  className={tx(discrete && "[&_.rt-SegmentedControlItemLabel]:px-[6px]")}
                 >
                   {option.title}
                 </SegmentedControl.Item>
@@ -108,7 +108,7 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
                 <button
                   key={option.const}
                   type="button"
-                  className={clsx(
+                  className={tx(
                     `text-sm first:rounded-l last:rounded-r py-0.5 flex-1 flex items-center justify-center`,
                     {
                       "bg-upstart-600 text-white": currentValue === option.const,

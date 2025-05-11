@@ -1,4 +1,3 @@
-import { css } from "@emotion/css";
 import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import { getStyleProperties } from "@upstart.gg/sdk/shared/bricks/props/helpers";
 import { brickStylesHelpersMap, brickWrapperStylesHelpersMap } from "../styles/helpers";
@@ -10,7 +9,7 @@ import { getTextContrastedColor } from "@upstart.gg/sdk/shared/themes/color-syst
 import { useEffect } from "react";
 import { useGetBrick } from "~/editor/hooks/use-editor";
 import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 // Return the upper path without the last part (the property name)
 function extractStylePath(path: string) {
@@ -35,7 +34,7 @@ function getClassesFromStyleProps<T extends BrickManifest>(
       acc[part] = acc[part] ?? [];
       acc[part].push(
         // @ts-expect-error
-        clsx(helper?.(get(mergedProps, path), get(mobileProps, path))),
+        tx(helper?.(get(mergedProps, path), get(mobileProps, path))),
       );
       return acc;
     },
@@ -101,7 +100,7 @@ export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable,
   const styleIds = Object.values(stylesProps);
   const classes = getClassesFromStyleProps(stylesProps, brick, "wrapper");
 
-  return clsx(
+  return tx(
     props.className as string,
     // no transition otherwise it will slow down the drag
     "brick-wrapper group/brick flex flex-1",

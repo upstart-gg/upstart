@@ -1,14 +1,14 @@
 import { forwardRef } from "react";
-import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/header.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/navbar.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { TextContent } from "../components/TextContent";
 import { useDatasource } from "../hooks/use-datasource";
 import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import { RxHamburgerMenu } from "react-icons/rx";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
-const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+const Navbar = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
   const props = brick.props;
   const ds = useDatasource(props.navigation.datasource, manifest.datasource);
@@ -17,20 +17,20 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
     <header
       ref={ref}
       data-brick-group="container"
-      className={clsx(
+      className={tx(
         "flex-1 flex px-4 brick basis-full navbar",
         !props.container.backgroundColor && "bg-gradient-to-t from-gray-200 to-gray-50",
         styles.container,
       )}
     >
       <div
-        className={clsx(
-          "flex flex-1 items-center @mobile:justify-between @desktop:justify-start",
-          props.navigation.position !== "center" && "@desktop:gap-4",
+        className={tx(
+          "flex flex-1 items-center justify-between @lg:justify-start",
+          props.navigation.position !== "center" && "@lg:gap-4",
         )}
       >
         <div
-          className={clsx("flex items-center gap-3", styles.brand)}
+          className={tx("flex items-center gap-3", styles.brand)}
           data-brick-group="brand"
           data-brick-menu-offset="70"
         >
@@ -45,7 +45,7 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
             <TextContent
               as="h1"
               propPath="brand.name"
-              className={clsx("text-2xl font-bold flex-1")}
+              className={tx("text-2xl font-bold flex-1")}
               brickId={brick.id}
               content={props.brand.name}
               editable={editable}
@@ -58,8 +58,8 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
         </div>
         <nav
           data-brick-group="navigation"
-          className={clsx(
-            "@mobile:hidden @desktop:flex items-center gap-2",
+          className={tx(
+            "hidden @desktop:flex items-center gap-2",
             styles.navigation,
             props.navigation.position === "right" && "ml-auto",
             props.navigation.position === "center" && "mx-auto",
@@ -70,7 +70,7 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
               <a
                 key={index}
                 href={item.href}
-                className={clsx(
+                className={tx(
                   "font-semibold py-2 px-4 self-stretch rounded-md",
                   editable && "hover:bg-black/10",
                   styles.navigationItem,
@@ -83,7 +83,7 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
         </nav>
         <div
           role="menu"
-          className="@desktop:hidden @mobile:flex items-center gap-4 color-auto"
+          className="flex @desktop:hidden items-center gap-4 color-auto"
           data-brick-group="actions"
         >
           <RxHamburgerMenu className="w-6 h-6" />
@@ -93,4 +93,4 @@ const Header = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
   );
 });
 
-export default Header;
+export default Navbar;

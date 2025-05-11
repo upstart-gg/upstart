@@ -21,7 +21,7 @@ import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import type { ColorType } from "@upstart.gg/sdk/shared/themes/color-system";
 import FontPicker from "./json-form/fields/font";
 import { IoCloseOutline } from "react-icons/io5";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";
 
 export default function ThemePanel() {
@@ -58,7 +58,7 @@ export default function ThemePanel() {
 
   return (
     <Tabs.Root defaultValue="current">
-      <Tabs.List className="sticky top-0 z-50">
+      <Tabs.List className="sticky top-0 z-50 bg-gray-100">
         <Tabs.Trigger value="current" className="!flex-1">
           Theme
         </Tabs.Trigger>
@@ -72,12 +72,9 @@ export default function ThemePanel() {
       <ScrollablePanelTab tab="ai" className="p-2">
         <Callout.Root size="1">
           <Callout.Icon>
-            <WiStars className="w-8 h-8 mt-3" />
+            <WiStars className="w-7 h-7 mt-2" />
           </Callout.Icon>
-          <Callout.Text size="1">
-            Tell us about your website / page purpose and color preferences, and our AI will generate
-            personalized themes for you!
-          </Callout.Text>
+          <Callout.Text size="2">Let Upstart AI generate personalized themes for you!</Callout.Text>
         </Callout.Root>
         <TextArea
           onInput={(e) => {
@@ -107,17 +104,18 @@ export default function ThemePanel() {
       </ScrollablePanelTab>
       <ScrollablePanelTab tab="current" className="p-2">
         <Callout.Root size="1">
-          <Callout.Text size="1" className={clsx("text-balance")}>
+          <Callout.Text size="1" className={tx("text-balance")}>
             Customize your theme colors and typography to match your brand. Please note that the theme will be
             applied to your entire site, not just the current page.
           </Callout.Text>
         </Callout.Root>
         <div className="flex flex-col">
           <PanelBlockTitle className="-mx-2 my-2">Colors</PanelBlockTitle>
-          <div className="flex text-sm flex-col gap-y-4 px-1 pb-2">
+          <div className="grid grid-cols-2 gap-x-4 text-sm flex-col gap-y-4 px-1 pb-2">
             {Object.entries(draft.theme.colors).map(([colorType, color]) => (
               <ColorFieldRow
                 key={colorType}
+                hideColorLabel
                 /* @ts-ignore */
                 name={themeSchema.properties.colors.properties[colorType].title}
                 /* @ts-ignore */
@@ -188,7 +186,7 @@ const ThemeListWrapper = forwardRef<HTMLDivElement, ComponentProps<"div">>(funct
   return (
     <div
       ref={ref}
-      className={clsx("flex flex-col divide-y divide-upstart-100 dark:divide-dark-600", className)}
+      className={tx("flex flex-col divide-y divide-upstart-100 dark:divide-dark-600", className)}
     >
       {children}
     </div>

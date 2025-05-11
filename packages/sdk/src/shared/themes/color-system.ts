@@ -1,8 +1,8 @@
 import chroma from "chroma-js";
 import type { Theme } from "../theme";
 export { default as chroma } from "chroma-js";
-import { css } from "@emotion/css";
 import { kebabCase } from "lodash-es";
+import { css } from "@upstart.gg/style-system/twind";
 
 export type ColorType = keyof Theme["colors"];
 export type ElementColorType = "page-background" | "background" | "text" | "border" | "shadow";

@@ -13,7 +13,7 @@ import {
 import { Button, TextField, Text, Select, Tabs, Inset } from "@upstart.gg/style-system/system";
 import { useColorAdjustment, useEditor, useTheme } from "~/editor/hooks/use-editor";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
-import clsx from "clsx";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 const gradientMixs = [
   ["50", "200"],
@@ -149,7 +149,7 @@ const BaseColorPicker: React.FC<BaseColorPickerProps> = ({
           handleColorSelect(color, chroma(color).oklab());
         }}
       >
-        <div className={clsx("flex text-sm gap-x-1")}>
+        <div className={tx("flex text-sm gap-x-1")}>
           {colorType !== "primary" && (
             <div className="flex flex-col items-start justify-start gap-y-1 flex-shrink basis-1/2">
               <Text color="gray">Suggestions:</Text>
@@ -257,7 +257,7 @@ function ColorPillList({
             <button
               type="button"
               key={color}
-              className={clsx(
+              className={tx(
                 "mx-auto h-7 w-7 rounded-full shadow-sm shadow-upstart-300 transition-transform",
                 `bg-${color} hover:outline-gray-300 hover:scale-110`,
               )}
@@ -313,7 +313,7 @@ function ColorPillList({
                 <button
                   type="button"
                   key={`${color.from}-${color.to}`}
-                  className={clsx(
+                  className={tx(
                     "mx-auto h-7 w-7 rounded-full shadow-sm shadow-upstart-300 transition-transform",
                     `bg-gradient-to-${gradientDir} from-${color.from} to-${color.to} hover:scale-110`,
                   )}
@@ -536,7 +536,7 @@ function ButtonsBar({
 }) {
   if (!colorButtons) return null;
   return (
-    <div className={clsx(`flex gap-1.5 mt-1 w-full`, `col-span-${shadesLen}`)}>
+    <div className={tx(`flex gap-1.5 mt-1 w-full`, `col-span-${shadesLen}`)}>
       {colorButtons.map((button) => (
         <button
           key={button.value}

@@ -49,6 +49,7 @@ export interface EditorStateProps {
    * When true, disable the editor and renders the page as it would be rendered in production using non-editable components
    */
   disabled?: boolean;
+  zoom: number;
 
   previewMode: Resolution;
   textEditMode?: "default" | "large";
@@ -105,6 +106,8 @@ export interface EditorState extends EditorStateProps {
   setCollidingBrick: (info: { brick: Brick; side: "top" | "bottom" | "left" | "right" } | null) => void;
   hideModal: () => void;
   toggleChat: () => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
 }
 
 export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
@@ -115,6 +118,7 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
     colorAdjustment: "default",
     panelPosition: "left",
     logoLink: "/dashboard",
+    zoom: 1,
     onShowLogin: () => {
       console.warn("onShowLogin is not implemented");
     },
@@ -200,6 +204,16 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                 if (!panel || state.panel === panel) {
                   state.panel = undefined;
                 }
+              }),
+
+            zoomIn: () =>
+              set((state) => {
+                state.zoom = Math.min(state.zoom + 0.1, 2);
+              }),
+
+            zoomOut: () =>
+              set((state) => {
+                state.zoom = Math.max(state.zoom - 0.1, 0.5);
               }),
 
             setSelectedGroup: (group) =>
@@ -1070,9 +1084,20 @@ export const useEditorMode = () => {
   return useStore(ctx, (state) => state.mode);
 };
 
+export const useZoom = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => ({
+    zoom: state.zoom,
+    zoomIn: state.zoomIn,
+    zoomOut: state.zoomOut,
+    canZoomIn: state.zoom < 2,
+    canZoomOut: state.zoom > 0.5,
+  }));
+};
+
 export const useChatVisible = () => {
   const ctx = useEditorStoreContext();
-  return useStore(ctx, (state) => state.chatVisible);
+  return useStore(ctx, (state) => !!state.chatVisible);
 };
 
 export const useTours = () => {
@@ -1130,6 +1155,21 @@ export const useSection = (sectionId?: string) => {
       section,
       bricks: Array.from(state.brickMap).filter(([, rec]) => rec.sectionId === sectionId),
     };
+  });
+};
+
+export const useSectionByBrickId = (brickId: string) => {
+  const ctx = useDraftStoreContext();
+  return useStore(ctx, (state) => {
+    const brick = state.brickMap.get(brickId);
+    if (!brick) {
+      return null;
+    }
+    const section = state.sections.find((s) => s.id === brick.sectionId);
+    if (!section) {
+      return null;
+    }
+    return section;
   });
 };
 

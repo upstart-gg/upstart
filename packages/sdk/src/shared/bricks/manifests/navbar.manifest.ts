@@ -114,10 +114,10 @@ const solidPresets = [1, 2, 3, 4].reduce(
 );
 
 export const manifest = defineBrickManifest({
-  type: "header",
+  type: "navbar",
   kind: "widget",
-  name: "Header",
-  description: "A header with logo and navigation",
+  name: "Navbar",
+  description: "A navigation bar with logo and navigation",
   aiInstructions: "This brick should be used on most sites/pages.",
   datasource,
   duplicatable: false,
