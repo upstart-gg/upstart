@@ -99,10 +99,9 @@ export type BackgroundSettings = Static<ReturnType<typeof background>>;
 export function backgroundColor(defaultValue = "transparent", title = "Background color") {
   return prop({
     title,
-    description:
-      "Can be set to transparent, hex/rgb/rgba color, or even classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900",
     schema: Type.String({
-      "ai:instructions": "Use bg-<variant>-<shade> classes as much as possible.",
+      "ai:instructions":
+        "Can be set to transparent, hex/rgb/rgba color, or classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 100 and 900. Use bg-<variant>-<shade> classes as much as possible.",
       default: defaultValue,
       "ui:field": "color",
       "ui:color-type": "background",

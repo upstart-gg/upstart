@@ -19,7 +19,8 @@ const Navbar = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
       data-brick-group="container"
       className={tx(
         "flex-1 flex px-4 brick basis-full navbar",
-        !props.container.backgroundColor && "bg-gradient-to-t from-gray-200 to-gray-50",
+        props.preset,
+        // !props.preset && !props.container.backgroundColor && "bg-gradient-to-t from-gray-200 to-gray-50",
         styles.container,
       )}
     >
@@ -81,11 +82,7 @@ const Navbar = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
             );
           })}
         </nav>
-        <div
-          role="menu"
-          className="flex @desktop:hidden items-center gap-4 color-auto"
-          data-brick-group="actions"
-        >
+        <div role="menu" className="flex @desktop:hidden items-center gap-4" data-brick-group="actions">
           <RxHamburgerMenu className="w-6 h-6" />
         </div>
       </div>

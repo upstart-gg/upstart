@@ -11,16 +11,14 @@ const tabContentScrollClass = css({
   },
 });
 
-export function ScrollablePanelTab({
-  children,
-  tab,
-  className,
-  hasTitle,
-}: ComponentProps<"div"> & { tab: string; hasTitle?: boolean }) {
+export function ScrollablePanelTab({ children, tab, className }: ComponentProps<"div"> & { tab: string }) {
   // same for now
   const height = "h-[calc(100dvh-60px)]";
   return (
-    <Tabs.Content value={tab} className={tx(height, "overflow-y-auto", tabContentScrollClass, className)}>
+    <Tabs.Content
+      value={tab}
+      className={tx(height, "@container/tab overflow-y-auto", tabContentScrollClass, className)}
+    >
       {children}
     </Tabs.Content>
   );

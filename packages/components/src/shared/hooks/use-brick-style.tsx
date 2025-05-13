@@ -47,36 +47,6 @@ function getClassesFromStyleProps<T extends BrickManifest>(
   return classes;
 }
 
-function usePreprocessTextColors<T extends BrickManifest>(
-  brick: BrickProps<T>["brick"],
-  stylesProps: ReturnType<typeof getStyleProperties>,
-) {
-  const getBrickInfo = useGetBrick();
-  const brickInfo = getBrickInfo(brick.id);
-  const onChange = debounce(function process() {
-    const { props } = brick;
-    for (const [path, styleId] of Object.entries(stylesProps)) {
-      if (styleId === "#styles:color") {
-        const value = get(props, path);
-        if (value === "color-auto") {
-          const selector = `#${brick.id}.color-auto, #${brick.id} .color-auto`;
-          const elements = document.querySelectorAll<HTMLElement>(selector);
-          if (!elements.length) {
-            console.warn("No elements found for selector %s", selector);
-          }
-          elements.forEach((el) => {
-            const chosenColor = getTextContrastedColor(el);
-            el.style.setProperty("--up-color-auto", `${chosenColor}`);
-          });
-        }
-      }
-    }
-  }, 800);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(onChange, [brickInfo]);
-}
-
 /**
  * The classNames for the brick
  */
@@ -84,12 +54,6 @@ export function useBrickStyle<T extends BrickManifest>(brick: BrickProps<T>["bri
   const manifest = useBrickManifest(brick.type);
   const stylesProps = getStyleProperties(manifest.props);
   return getClassesFromStyleProps(stylesProps, brick, "brick");
-}
-
-export function useColorsPreprocessing<T extends BrickManifest>({ brick }: BrickProps<T>) {
-  const manifest = useBrickManifest(brick.type);
-  const stylesProps = getStyleProperties(manifest.props);
-  usePreprocessTextColors(brick, stylesProps);
 }
 
 export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable, selected }: BrickProps<T>) {
@@ -102,6 +66,7 @@ export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable,
 
   return tx(
     props.className as string,
+    props.preset as string,
     // no transition otherwise it will slow down the drag
     "brick-wrapper group/brick flex flex-1",
     styleIds.includes("#styles:fixedPositioned") === false && "relative",
@@ -159,7 +124,7 @@ function getBrickWrapperEditorStyles(
     return null;
   }
   return [
-    "select-none transition-colors delay-300 duration-300",
+    "select-none transition-colors delay-100 duration-200",
     "outline outline-2 outline-transparent -outline-offset-1",
     selected && !isContainer && "!outline-upstart-500 shadow-lg shadow-upstart-500/20",
     selected && isContainer && "!outline-orange-300 shadow-lg shadow-orange-300/20",

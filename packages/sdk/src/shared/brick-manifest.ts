@@ -39,10 +39,6 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
     desktop: number;
   };
   props: TObject<BProps>;
-  presets?: Record<
-    string,
-    { label: string; previewClasses: string; props: Partial<Static<TObject<BProps>>> }
-  >;
   datasource?: DSSchema;
   hideInLibrary?: boolean;
   defaultInspectorTab?: "preset" | "style" | "content";
@@ -71,14 +67,12 @@ export function defineBrickManifest<BProps extends TProperties, DSSchema extends
   duplicatable = true,
   defaultInspectorTab = "preset",
   datasource,
-  presets,
   ...rest
 }: BrickManifestProps<BProps, DSSchema>) {
   return {
     ...rest,
     datasource: datasource as DSSchema,
     props,
-    presets,
     kind,
     defaultInspectorTab,
     hideInLibrary,

@@ -1,18 +1,13 @@
-import {
-  Type,
-  type StringOptions,
-  type NumberOptions,
-  type SchemaOptions,
-  type ObjectOptions,
-  type TProperties,
-  type Static,
-  type TObject,
-} from "@sinclair/typebox";
-import type { ElementColor } from "./themes/color-system";
+import { Type, type TProperties, type Static, type TObject } from "@sinclair/typebox";
 import type { JSONSchemaType } from "ajv";
 import { ajv } from "./ajv";
 import { background } from "./bricks/props/background";
 import { Value } from "@sinclair/typebox/value";
+import { string } from "./bricks/props/string";
+import { optional } from "./bricks/props/helpers";
+import { boolean } from "./bricks/props/boolean";
+import { datetime } from "./bricks/props/date";
+import { enumProp } from "./bricks/props/enum";
 
 type EnumOption = {
   title?: string;
@@ -20,16 +15,6 @@ type EnumOption = {
   value: string;
   icon?: string;
 };
-
-type AttributeOptions<T extends Record<string, unknown>> = {
-  "ui:field"?: string;
-  "ui:group"?: string;
-  "ui:group:title"?: string;
-  "ui:group:order"?: number;
-  advanced?: boolean;
-  "ui:hidden"?: boolean | "if-empty";
-  "ui:scope"?: "site" | "page";
-} & T;
 
 type GeoPoint = { lat: number; lng: number; name?: string };
 
@@ -54,155 +39,9 @@ export function processAttributesSchema(customAttributes: TObject) {
 
 export type { JSONSchemaType };
 
-export const attr = {
-  /**
-   * Define a text
-   */
-  string(name: string, defaultValue = "", opts?: AttributeOptions<Omit<StringOptions, "title" | "default">>) {
-    return Type.String({ title: name, default: defaultValue, ...opts });
-  },
-  /**
-   * Define a number attribute
-   */
-  number(name: string, defaultValue = 0, opts?: AttributeOptions<Omit<NumberOptions, "title" | "default">>) {
-    return Type.Number({ title: name, default: defaultValue, ...opts });
-  },
-  /**
-   * Define a boolean
-   */
-  boolean(
-    name: string,
-    defaultValue = false,
-    opts?: AttributeOptions<Omit<SchemaOptions, "title" | "default">>,
-  ) {
-    const defaultOpts = {
-      "ui:field": "switch",
-    };
-    return Type.Boolean({ title: name, default: defaultValue, ...defaultOpts, ...opts });
-  },
-  /**
-   * Define an enum
-   */
-  enum(
-    name: string,
-    defaultValue: string,
-    opts: AttributeOptions<
-      Omit<SchemaOptions, "title" | "default"> & {
-        options: EnumOption[] | string[];
-        displayAs?: "radio" | "select" | "button-group" | "icon-group";
-      }
-    >,
-  ) {
-    const defaultOpts = {
-      "ui:field": "enum",
-      "ui:display": opts.displayAs || "select",
-    };
-    const { options, displayAs, ...commonOpts } = opts;
-    return Type.Union(
-      options.map((opt) =>
-        Type.Literal(typeof opt === "string" ? opt : opt.value, {
-          title: typeof opt === "string" ? opt : opt.title,
-          "ui:icon": typeof opt === "string" ? undefined : opt.icon,
-        }),
-      ),
-      {
-        title: name,
-        default: defaultValue,
-        ...defaultOpts,
-        ...commonOpts,
-      },
-    );
-  },
-  /**
-   * Define a file that can be uploaded by the user
-   */
-  file(
-    name: string,
-    defaultValue = "",
-    opts: AttributeOptions<Omit<SchemaOptions, "title" | "default">> = {},
-  ) {
-    return Type.String({ title: name, default: defaultValue, ...opts, format: "data-url" });
-  },
-  /**
-   * Define a URL
-   */
-  url(
-    name: string,
-    defaultValue = "",
-    opts: AttributeOptions<Omit<SchemaOptions, "title" | "default">> = {},
-  ) {
-    return Type.String({ title: name, default: defaultValue, ...opts, format: "uri" });
-  },
-  /**
-   * Define a color attribute
-   */
-  color(
-    name: string,
-    defaultValue: ElementColor = "",
-    opts?: AttributeOptions<Omit<StringOptions, "title" | "default">>,
-  ) {
-    const defaultOpts = {
-      "ui:field": "color",
-      // important for the json schema form not to display several fields because of the union type
-      // "ui:fieldReplacesAnyOrOneOf": true,
-    };
-    return Type.String({ title: name, default: defaultValue, ...defaultOpts, ...opts });
-  },
-  /**
-   * Define a date
-   */
-  date(
-    name: string,
-    defaultValue = new Date(),
-    opts: AttributeOptions<Omit<SchemaOptions, "title" | "default">> = {},
-  ) {
-    return Type.String({ title: name, default: defaultValue.toISOString(), ...opts, format: "date" });
-  },
-  /**
-   * Define a date and time
-   */
-  datetime(
-    name: string,
-    defaultValue = new Date(),
-    opts: AttributeOptions<Omit<SchemaOptions, "title" | "default">> = {},
-  ) {
-    return Type.String({ title: name, default: defaultValue.toISOString(), ...opts, format: "date-time" });
-  },
-  /**
-   * Define a geolocation
-   */
-  geolocation(
-    name: string,
-    defaultValue: GeoPoint,
-    opts: AttributeOptions<Omit<ObjectOptions, "title" | "default">> = {},
-  ) {
-    return Type.Object(
-      {
-        lat: Type.Number({ minimum: -90, maximum: 90 }),
-        lng: Type.Number({ minimum: -180, maximum: 180 }),
-        name: Type.Optional(Type.String({ title: "Name" })),
-      },
-      { title: name, default: defaultValue, ...opts },
-    );
-  },
-  cssLength(
-    name: string,
-    defaultValue = "px",
-    opts: AttributeOptions<Omit<SchemaOptions, "title" | "default">> = {},
-  ) {
-    return Type.String({
-      title: name,
-      default: defaultValue,
-      ...opts,
-      pattern: "^[0-9.]+(px|em|rem|%|dvh|vh|vw|dvw)$",
-      "ui:field": "csslength",
-    });
-  },
-};
-
 // Default attributes
 const defaultAttributes = {
-  $pageLanguage: attr.enum("Language", "en", {
+  $pageLanguage: enumProp("Language", "en", {
     options: [
       { value: "ar", title: "Arabic" },
       { value: "zh", title: "Chinese" },
@@ -231,16 +70,16 @@ const defaultAttributes = {
     "ui:group:title": "Meta tags",
   }),
 
-  $pageOgImage: Type.Optional(
-    attr.string("Social share image", "", {
+  $pageOgImage: optional(
+    string("Social share image", "", {
       description: "Image shown when page is shared on social media",
       "ai:guidelines": "Don't generate this property/image, it is automatically generated.",
       "ui:group": "meta",
     }),
   ),
 
-  $robotsIndexing: Type.Optional(
-    attr.boolean("Allow search engines to index this site", true, {
+  $robotsIndexing: optional(
+    boolean("Allow search engines to index this site", true, {
       description: "Disabling this will prevent search engines from indexing this site",
       "ai:guidelines": "Don't generate this property/image, it is automatically generated.",
       "ui:group": "seo",
@@ -249,8 +88,8 @@ const defaultAttributes = {
     }),
   ),
 
-  $siteOgImage: Type.Optional(
-    attr.string("Social share image", "", {
+  $siteOgImage: optional(
+    string("Social share image", "", {
       description: "Image shown when this site is shared on social media",
       "ai:guidelines": "Don't generate this image, it is automatically generated.",
       "ui:field": "image",
@@ -260,33 +99,33 @@ const defaultAttributes = {
     }),
   ),
 
-  $pagePath: attr.string("Page path", "/", {
+  $pagePath: string("Page path", "/", {
     description: "The URL path of the page",
     "ui:group": "location",
     "ui:group:title": "Location",
   }),
 
-  $pageTitle: attr.string("Title", "Untitled", {
+  $pageTitle: string("Title", "Untitled", {
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
     description: "The title of the page. Appears in the browser tab and search results",
   }),
 
-  $pageDescription: attr.string("Description", "", {
+  $pageDescription: string("Description", "", {
     "ui:widget": "textarea",
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
     description: "A short description of the page. Used by search engines",
   }),
 
-  $pageKeywords: attr.string("Keywords", "", {
+  $pageKeywords: string("Keywords", "", {
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
     description: "Keywords related to the page. Used by search engines",
   }),
 
-  $pageLastUpdated: Type.Optional(
-    attr.datetime("Last updated", undefined, {
+  $pageLastUpdated: optional(
+    datetime("Last updated", {
       "ui:hidden": true,
       "ai:guidelines": "Don't generate this property.",
     }),
@@ -294,7 +133,7 @@ const defaultAttributes = {
 
   // --- layout attributes ---
 
-  $bodyBackground: Type.Optional(
+  $bodyBackground: optional(
     Type.Composite([background()], {
       default: {
         color: "#ffffff",
@@ -310,7 +149,7 @@ const defaultAttributes = {
     }),
   ),
 
-  $pageBackground: Type.Optional(
+  $pageBackground: optional(
     Type.Composite(
       [
         background(),
@@ -335,7 +174,7 @@ const defaultAttributes = {
     ),
   ),
 
-  $siteHeadTags: Type.Optional(
+  $siteHeadTags: optional(
     Type.String({
       title: "Head tags",
       description:
@@ -347,7 +186,7 @@ const defaultAttributes = {
       "ui:group:title": "External scripts",
     }),
   ),
-  $siteBodyTags: Type.Optional(
+  $siteBodyTags: optional(
     Type.String({
       title: "Body tags",
       description:

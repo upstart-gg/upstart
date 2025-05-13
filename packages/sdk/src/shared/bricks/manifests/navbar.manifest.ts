@@ -35,84 +35,6 @@ export const datasource = Type.Array(
   },
 );
 
-const softBorderedPresets = [1, 2, 3, 4].reduce(
-  (acc, i) => {
-    const id = `soft-bordered-${i}`;
-    acc[id] = {
-      label: `Soft Bordered ${i}`,
-      previewClasses: `color-auto border-b-4 bg-transparent preset-border-<variant>-${i}`,
-      props: {
-        container: {
-          border: {
-            side: ["border-b"],
-            color: `preset-border-<variant>-${i}`,
-            radius: "rounded-none",
-            style: "border-solid",
-            width: "border-4",
-          },
-          backgroundColor: `bg-transparent`,
-          shadow: "shadow-none",
-        },
-        brand: {
-          color: "color-auto",
-        },
-      },
-    };
-    return acc;
-  },
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  {} as Record<string, any>,
-);
-
-const gradientPresets = [1, 2, 3, 4].reduce(
-  (acc, i) => {
-    const id = `gradient-${i}`;
-    acc[id] = {
-      label: `Gradient ${i}`,
-      previewClasses: `preset-bg-gradient-<variant>-${i} color-auto`,
-      props: {
-        container: {
-          backgroundColor: `preset-bg-gradient-<variant>-${i}`,
-          shadow: "shadow-none",
-          border: {
-            width: "border-0",
-          },
-        },
-        brand: {
-          color: "color-auto",
-        },
-      },
-    };
-    return acc;
-  },
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  {} as Record<string, any>,
-);
-const solidPresets = [1, 2, 3, 4].reduce(
-  (acc, i) => {
-    const id = `solid-${i}`;
-    acc[id] = {
-      label: `Solid ${i}`,
-      previewClasses: `preset-bg-solid-<variant>-${i} color-auto`,
-      props: {
-        container: {
-          backgroundColor: `preset-bg-solid-<variant>-${i}`,
-          shadow: "shadow-none",
-          border: {
-            width: "border-0",
-          },
-        },
-        brand: {
-          color: "color-auto",
-        },
-      },
-    };
-    return acc;
-  },
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  {} as Record<string, any>,
-);
-
 export const manifest = defineBrickManifest({
   type: "navbar",
   kind: "widget",
@@ -135,11 +57,6 @@ export const manifest = defineBrickManifest({
   },
   icon: VscLayoutPanelOff,
   iconClassName: "rotate-180",
-  presets: {
-    ...softBorderedPresets,
-    ...solidPresets,
-    ...gradientPresets,
-  },
   props: defineProps({
     container: group({
       title: "Main element",

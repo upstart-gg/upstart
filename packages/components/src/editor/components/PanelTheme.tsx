@@ -66,7 +66,7 @@ export default function ThemePanel() {
           All themes
         </Tabs.Trigger>
         <Tabs.Trigger value="ai" className="!flex-1 text-gray-400 group">
-          AI creator <BsStars className="ml-1 w-4 h-4 text-upstart-500" />
+          Upstart AI <BsStars className="ml-1 w-4 h-4 text-upstart-500" />
         </Tabs.Trigger>
       </Tabs.List>
       <ScrollablePanelTab tab="ai" className="p-2">
@@ -111,11 +111,12 @@ export default function ThemePanel() {
         </Callout.Root>
         <div className="flex flex-col">
           <PanelBlockTitle className="-mx-2 my-2">Colors</PanelBlockTitle>
-          <div className="grid grid-cols-2 gap-x-4 text-sm flex-col gap-y-4 px-1 pb-2">
+          <div className="grid grid-cols-2 gap-x-3 text-sm flex-col gap-y-3 pb-2">
             {Object.entries(draft.theme.colors).map(([colorType, color]) => (
               <ColorFieldRow
                 key={colorType}
                 hideColorLabel
+                labelPlacement="right"
                 /* @ts-ignore */
                 name={themeSchema.properties.colors.properties[colorType].title}
                 /* @ts-ignore */
@@ -196,27 +197,32 @@ const ThemeListWrapper = forwardRef<HTMLDivElement, ComponentProps<"div">>(funct
 function ThemePreview({ theme }: { theme: Theme }) {
   const draft = useDraft();
   return (
-    <div className="flex-1 py-2 pl-3 pr-2 text-sm mb-2.5" key={theme.id}>
-      <h3 className="font-semibold">{theme.name}</h3>
-      {/* <p className="text-sm">{theme.description}</p> */}
-      <div className="flex justify-between items-center">
-        <div className="flex mt-1">
-          {Object.entries(theme.colors).map(([colorName, color]) => (
-            <div
-              key={colorName}
-              className="w-7 h-7 rounded-full [&:not(:first-child)]:(-ml-1) ring-1 ring-white dark:ring-dark-300"
-              style={{
-                backgroundColor: color,
-              }}
-            />
-          ))}
-        </div>
-        <Button size="1" variant="soft" radius="full" onClick={() => draft.setPreviewTheme(theme)}>
-          Preview
-          <LuArrowRightCircle className="w-4 h-4" />
-        </Button>
+    <button
+      type="button"
+      className="flex justify-between text-sm p-2 items-center group w-full hover:bg-upstart-100 dark:hover:bg-dark-600 transition-all duration-150"
+      onClick={() => draft.setPreviewTheme(theme)}
+    >
+      <h3 className="font-semibold basis-1/3 text-left">{theme.name}</h3>
+      <div className="flex mt-1 basis-1/3">
+        {Object.entries(theme.colors).map(([colorName, color]) => (
+          <div
+            key={colorName}
+            className="w-7 h-7 rounded-full [&:not(:first-child)]:(-ml-1) ring-1 ring-white dark:ring-dark-300"
+            style={{
+              backgroundColor: color,
+            }}
+          />
+        ))}
       </div>
-    </div>
+      <span
+        className={tx(
+          "!opacity-0 basis-1/3 group-hover:!opacity-100 transition-opacity duration-150 text-xs inline-flex flex-nowrap justify-end items-center gap-1.5 text-upstart-700 px-2 py-1",
+        )}
+      >
+        Preview
+        <LuArrowRightCircle className="w-3 h-3" />
+      </span>
+    </button>
   );
 }
 

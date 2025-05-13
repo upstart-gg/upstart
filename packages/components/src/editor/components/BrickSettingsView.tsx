@@ -64,6 +64,7 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
       initialGroup={group}
       navItems={navItems}
       formSchema={manifest.props}
+      className="h-[calc(100cqh/2)]"
       formData={formData}
       onChange={onChange}
       brickId={brick.id}

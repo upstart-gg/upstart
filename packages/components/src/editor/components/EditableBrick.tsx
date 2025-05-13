@@ -35,7 +35,7 @@ import {
   useDelayGroup,
 } from "@upstart.gg/style-system/system";
 import BaseBrick from "~/shared/components/BaseBrick";
-import { useBrickWrapperStyle, useColorsPreprocessing } from "~/shared/hooks/use-brick-style";
+import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
 import {
   menuBarBtnCls,
   menuBarBtnCommonCls,
@@ -130,8 +130,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       editable: true,
       selected: selectedBrickId === brick.id,
     });
-
-    useColorsPreprocessing({ brick });
 
     useEffect(() => {
       if (barsRefs.reference.current) {
@@ -313,14 +311,7 @@ function BrickMainNavBar({ brick }: { brick: Brick }) {
       {/* <span className={tx(menuBarBtnCls, menuBarBtnCommonCls, "block capitalize pointer-events-none")}>
         {manifest.type}
       </span> */}
-      {manifest.presets && (
-        <BrickPopover brick={brick} view="presets">
-          <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-            <BiSolidColor className={tx("w-5 h-5")} />
-            {/* <span className={tx(menuBarTooltipCls)}>Presets</span> */}
-          </button>
-        </BrickPopover>
-      )}
+
       {/* Settings & styles */}
       <BrickPopover brick={brick} view="settings">
         <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>

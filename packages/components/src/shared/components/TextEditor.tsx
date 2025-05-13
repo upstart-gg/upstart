@@ -271,7 +271,6 @@ const TextEditor = <T extends ElementType = "div">({
 
       // If there is a related target, it means the blur event was triggered by a click on the editor buttons
       if (e.event.relatedTarget) {
-        console.log("editor blured from related target", e.event.relatedTarget);
         return;
       }
 

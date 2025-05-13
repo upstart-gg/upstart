@@ -30,7 +30,7 @@ export function useBodyStyle({ attributes }: { attributes: Attributes }) {
 export function usePageStyle({ attributes, editable, typography, showIntro }: UsePageStyleProps) {
   return tx(
     "flex flex-col group/page mx-auto relative max-w-full w-full p-0 antialiased",
-    editable && "overflow-hidden",
+    editable && "overflow-hidden min-h-[110cqh] h-fit",
     isStandardColor(attributes.$pageBackground?.color) &&
       css({ backgroundColor: attributes.$pageBackground?.color as string }),
     !isStandardColor(attributes.$pageBackground?.color) && (attributes.$pageBackground?.color as string),
@@ -44,10 +44,6 @@ export function usePageStyle({ attributes, editable, typography, showIntro }: Us
         backgroundSize: attributes.$pageBackground.size ?? "cover",
         backgroundPosition: "center top",
       }),
-
-    // on one-line
-    "min-h-[110%] h-fit",
-    "@desktop:min-h-[inherit] @desktop:h-max",
 
     getTypographyStyles(typography),
 

@@ -1,9 +1,10 @@
 import { Type } from "@sinclair/typebox";
 import { defineDataSources } from "@upstart.gg/sdk/datasources";
-import { defineAttributes, attr } from "@upstart.gg/sdk/attributes";
+import { defineAttributes } from "@upstart.gg/sdk/attributes";
 import { defineConfig } from "@upstart.gg/sdk/template";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import { type Brick, processBrick, processSections } from "@upstart.gg/sdk/shared/bricks";
+import { preset } from "@upstart.gg/sdk/shared/bricks/props/preset";
 
 // define your datasources
 const datasources = defineDataSources({
@@ -109,20 +110,18 @@ const homePageSections = processSections([
     order: 0,
     props: {
       preset: "bold-primary",
-      horizontalPadding: "10px",
+      // horizontalPadding: "10px",
     },
     bricks: [
       {
         id: "b-header",
         type: "navbar",
         props: {
-          container: {
-            backgroundColor: "bg-secondary-900",
-          },
+          preset: "bold-primary",
+          container: {},
           navigation: {},
           brand: {
             name: "Upstart",
-            color: "color-auto",
           },
         },
       },

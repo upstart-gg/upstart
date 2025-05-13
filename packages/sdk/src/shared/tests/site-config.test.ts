@@ -1,9 +1,10 @@
 import { Type as ds, Type } from "@sinclair/typebox";
 import { defineDataSources } from "../datasources";
-import { defineAttributes, attr } from "../attributes";
+import { defineAttributes } from "../attributes";
 import { processSections } from "../bricks";
 import { defineConfig } from "../template";
 import type { Theme } from "../theme";
+import { string, url } from "../bricks/props/string";
 
 // define your datasources
 const datasources = defineDataSources({
@@ -63,7 +64,6 @@ const homePageSections = processSections([
           },
           brand: {
             name: "Upstart",
-            color: "color-auto",
           },
         },
       },
@@ -190,15 +190,12 @@ const themes: Theme[] = [
 
 // define your attributes
 const siteAttributes = defineAttributes({
-  mainButtonUrl: attr.url("Main Button URL", "https://facebook.com", {
+  mainButtonUrl: url("Main Button URL", "https://facebook.com"),
+  customerId: string("Customer ID", "", {
     "ui:group": "other",
     "ui:group:title": "Other",
   }),
-  customerId: attr.string("Customer ID", "", {
-    "ui:group": "other",
-    "ui:group:title": "Other",
-  }),
-  testUrl: attr.url("Test URL", "https://upstart.gg"),
+  testUrl: url("Test URL", "https://upstart.gg"),
 });
 
 export default defineConfig({

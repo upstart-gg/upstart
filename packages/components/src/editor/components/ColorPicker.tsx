@@ -3,20 +3,19 @@ import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type Props
 import {
   chroma,
   getColorsSuggestions,
-  colorAdjustmentsLuminous,
-  colorAdjustmentsSubdued,
-  type ColorAdjustment,
   type ColorType,
   type ElementColorType,
   type ElementColor,
+  baseColorsLabels,
 } from "@upstart.gg/sdk/themes/color-system";
 import { Button, TextField, Text, Select, Tabs, Inset } from "@upstart.gg/style-system/system";
-import { useColorAdjustment, useEditor, useTheme } from "~/editor/hooks/use-editor";
+import { useEditor, useTheme } from "~/editor/hooks/use-editor";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { tx, css } from "@upstart.gg/style-system/twind";
+import { colorPalette } from "@upstart.gg/style-system/colors";
 
 const gradientMixs = [
-  ["50", "200"],
+  ["100", "200"],
   ["100", "300"],
   ["200", "400"],
   ["300", "500"],
@@ -36,49 +35,10 @@ interface BaseColorPickerProps {
 const BaseColorPicker: React.FC<BaseColorPickerProps> = ({
   colorType,
   initialValue = 120,
-  steps = 81, // Default to 81 colors
   onChange = () => {},
 }) => {
   const theme = useTheme();
-  const editor = useEditor();
-  const colorAdjustment = useColorAdjustment();
-
-  // todo fix this
-  const lightness = 0.5;
-  const saturation = 0.5;
-
-  const generateColor = useCallback((hue: number) => {
-    try {
-      const color = chroma.hsl(hue, saturation / 100, lightness / 100);
-      const oklabValues = color.oklch();
-      return {
-        color: color.hex(),
-        oklabValues,
-      };
-    } catch (error) {
-      console.error(`Error generating color for hue: ${hue}`, error);
-      return {
-        color: "#000000",
-        oklabValues: [lightness / 100, 0, 0],
-      };
-    }
-  }, []);
-
-  const initialColor = generateColor(
-    typeof initialValue === "string" ? chroma(initialValue).hsl()[0] : initialValue,
-  );
-  const [selectedColor, setSelectedColor] = useState(initialColor.color);
-  const suggestions = colorType === "primary" ? [] : getColorsSuggestions(theme.colors.primary, theme);
-
-  const colors = useMemo(() => {
-    const spacing = 360 / steps;
-    const hues = Array.from({ length: steps }, (_, i) => i * spacing);
-    return hues.map((hue) => generateColor(hue));
-  }, [generateColor, steps]);
-
-  const suggestedColors = useMemo(() => {
-    return suggestions.map(generateColor);
-  }, [generateColor, suggestions]);
+  const [selectedColor, setSelectedColor] = useState(initialValue);
 
   // Handle color selection
   const handleColorSelect = (color: string, oklabValues: number[]) => {
@@ -88,56 +48,38 @@ const BaseColorPicker: React.FC<BaseColorPickerProps> = ({
   return (
     <div>
       <Text as="p" size="2" color="gray" className="!capitalize !font-medium">
-        {colorType} color
+        {baseColorsLabels[colorType]}
       </Text>
-      <Select.Root
-        defaultValue={colorAdjustment}
-        size="1"
-        onValueChange={(adjustment) => {
-          editor.setColorAdjustment(adjustment as ColorAdjustment);
-        }}
-      >
-        <Select.Trigger className="!w-full !mt-2" />
-        <Select.Content>
-          <Select.Group>
-            <Select.Label>Luminous styles</Select.Label>
-            {colorAdjustmentsLuminous.map((option) => (
-              <Select.Item key={option} value={option}>
-                <span className="capitalize">{option} palette</span>
-              </Select.Item>
-            ))}
-          </Select.Group>
-          <Select.Group>
-            <Select.Label>Subdued styles</Select.Label>
-            {colorAdjustmentsSubdued.map((option) => (
-              <Select.Item key={option} value={option}>
-                <span className="capitalize">{option} palette</span>
-              </Select.Item>
-            ))}
-          </Select.Group>
-        </Select.Content>
-      </Select.Root>
+
       {/* Color circles */}
-      <div className="flex flex-wrap gap-1.5 mt-3">
-        {colors.map((color, i) => (
-          <button
-            type="button"
-            key={i}
-            className="w-6 h-6 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            style={{
-              background: color.color,
-              boxShadow: selectedColor === color.color ? `0 0 0 2px white, 0 0 0 4px ${color.color}` : "none",
-            }}
-            onClick={() => handleColorSelect(color.color, color.oklabValues)}
-            aria-label={`Select color ${color.color}`}
-          />
-        ))}
+      <div className="grid grid-cols-7 gap-1.5 mt-3 max-h-96 overflow-y-auto scrollbar-thin scrollbar-color-upstart-200">
+        {Object.entries(colorPalette).map(([colorName, shades], i) =>
+          Object.entries(shades)
+            .filter((shade) => {
+              const shadeInt = parseInt(shade[0], 10);
+              return shadeInt >= 200 && shadeInt <= 800;
+            })
+            .map(([shadeName, color]) => (
+              <button
+                type="button"
+                id={`${colorName}-${shadeName}`}
+                key={`${colorName}-${shadeName}`}
+                className="w-7 h-7 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={{
+                  background: color,
+                  boxShadow: selectedColor === color ? `0 0 0 2px white, 0 0 0 4px ${color}` : "none",
+                }}
+                onClick={() => handleColorSelect(color, chroma(color).oklab())}
+                aria-label={`Select color ${color}`}
+              />
+            )),
+        )}
       </div>
 
       {/* Current color display */}
       <div className="flex items-center gap-3 p-2 bg-gray-100 rounded mt-3">
-        <div className="w-8 h-8 rounded-md shadow-sm" style={{ background: selectedColor }} />
-        <code className="text-sm font-mono">{selectedColor}</code>
+        <div className="w-8 h-8 flex-nowrap rounded-md shadow-sm" style={{ background: selectedColor }} />
+        <code className="text-xs font-mono">{selectedColor}</code>
       </div>
 
       <form
@@ -149,7 +91,7 @@ const BaseColorPicker: React.FC<BaseColorPickerProps> = ({
           handleColorSelect(color, chroma(color).oklab());
         }}
       >
-        <div className={tx("flex text-sm gap-x-1")}>
+        {/* <div className={tx("flex text-sm gap-x-1")}>
           {colorType !== "primary" && (
             <div className="flex flex-col items-start justify-start gap-y-1 flex-shrink basis-1/2">
               <Text color="gray">Suggestions:</Text>
@@ -166,7 +108,7 @@ const BaseColorPicker: React.FC<BaseColorPickerProps> = ({
               </div>
             </div>
           )}
-          <div className="flex flex-col gap-y-1 items-start justify-start basis-1/2">
+           <div className="flex flex-col gap-y-1 items-start justify-start basis-1/2">
             <Text color="gray">Use a custom color</Text>
             <div className="flex gap-x-1">
               <TextField.Root
@@ -188,7 +130,7 @@ const BaseColorPicker: React.FC<BaseColorPickerProps> = ({
               </Button>
             </div>
           </div>
-        </div>
+        </div> */}
       </form>
     </div>
   );
@@ -199,7 +141,7 @@ export default BaseColorPicker;
 interface ElementColorPickerProps {
   elementColorType: ElementColorType;
   initialValue?: ElementColor;
-  onChange?: (color: ElementColor) => void;
+  onChange?: (color: ElementColor | null) => void;
 }
 
 type ColorPillListProps =
@@ -208,7 +150,7 @@ type ColorPillListProps =
       elementColorType: ElementColorType;
       colors: string[];
       cols: number;
-      onChange: (color: ElementColor) => void;
+      onChange: (color: ElementColor | null) => void;
       currentColor?: ElementColor;
     }
   | {
@@ -216,7 +158,7 @@ type ColorPillListProps =
       elementColorType: ElementColorType;
       colors: { from: string; to: string }[];
       cols: number;
-      onChange: (color: ElementColor) => void;
+      onChange: (color: ElementColor | null) => void;
       currentColor?: ElementColor;
     };
 
@@ -284,7 +226,6 @@ function ColorPillList({
           size="1"
           onValueChange={(g) => {
             setGradientDir(g);
-            console.log("gradient dir changed while gradient was %o", gradient);
             if (gradient) {
               onChange(`bg-gradient-to-${g} from-${gradient.from} to-${gradient.to}`);
             }
@@ -366,6 +307,7 @@ function getAvailableColorsAndShadesForElement(elementType: ElementColorType) {
       colors: ["primary", "secondary", "accent", "neutral"],
       shades: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
       colorButtons: [
+        { label: "None", value: null },
         { label: "White", value: "#FFFFFF" },
         { label: "Black", value: "#000000" },
         { label: "Transparent", value: "transparent" },
@@ -390,7 +332,6 @@ function getAvailableColorsAndShadesForElement(elementType: ElementColorType) {
       colors: ["primary", "secondary", "accent", "neutral"],
       shades: ["100", "300", "500", "700", "900"],
       colorButtons: [
-        { label: "Auto", value: "color-auto" },
         { label: "White", value: "#FFFFFF" },
         { label: "Black", value: "#000000" },
       ],
@@ -530,8 +471,8 @@ function ButtonsBar({
   onChange,
   shadesLen,
 }: {
-  colorButtons?: { label: string; value: string }[];
-  onChange: (color: string) => void;
+  colorButtons?: { label: string; value: string | null }[];
+  onChange: (color: string | null) => void;
   shadesLen: number;
 }) {
   if (!colorButtons) return null;

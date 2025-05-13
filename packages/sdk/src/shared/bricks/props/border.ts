@@ -12,15 +12,7 @@ type BorderOptions = {
   };
 };
 
-export function border({
-  title = "Border",
-  defaultValue = {
-    // style: "border-solid",
-    // width: "border-0",
-    // sides: [],
-    // rounding: "rounded-auto",
-  },
-}: BorderOptions = {}) {
+export function border({ title = "Border", defaultValue = {} }: BorderOptions = {}) {
   return group({
     title,
     options: {
@@ -69,8 +61,8 @@ export function border({
       color: Type.String({
         default: defaultValue?.color,
         title: "Color",
-        description:
-          "Can be set to transparent, hex/rgb/rgba color, or even classes like `border-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900",
+        "ai:instructions":
+          "Can be set to transparent, hex/rgb/rgba color, or classes like `border-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900",
         "ui:field": "color",
         "ui:color-type": "border",
       }),
@@ -115,29 +107,3 @@ export function border({
 }
 
 export type BorderSettings = Static<ReturnType<typeof border>>;
-
-// export function rounding(defaultValue = "rounded-auto", title = "Rounding") {
-//   return prop({
-//     title,
-//     schema: Type.Union(
-//       [
-//         Type.Literal("rounded-auto", { title: "Auto" }),
-//         Type.Literal("rounded-none", { title: "None" }),
-//         Type.Literal("rounded-sm", { title: "Small" }),
-//         Type.Literal("rounded-md", { title: "Medium" }),
-//         Type.Literal("rounded-lg", { title: "Large" }),
-//         Type.Literal("rounded-xl", { title: "Extra large" }),
-//         Type.Literal("rounded-2xl", { title: "2xl" }),
-//         Type.Literal("rounded-3xl", { title: "3xl" }),
-//         Type.Literal("rounded-full", { title: "Full" }),
-//       ],
-//       {
-//         default: defaultValue,
-//         "ui:field": "enum",
-//         "ui:display": "select",
-//       },
-//     ),
-//   });
-// }
-
-// export type RoundingSettings = Static<ReturnType<typeof rounding>>;

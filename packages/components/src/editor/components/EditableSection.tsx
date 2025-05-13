@@ -1,6 +1,12 @@
 import interact from "interactjs";
 import type { Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
-import { useDraftHelpers, usePreviewMode, useSection, useSections } from "../hooks/use-editor";
+import {
+  useDraftHelpers,
+  usePreviewMode,
+  useSection,
+  useSections,
+  useSelectedSectionId,
+} from "../hooks/use-editor";
 import { DropdownMenu, Inset, Popover, Tooltip } from "@upstart.gg/style-system/system";
 import EditableBrickWrapper from "./EditableBrick";
 import ResizeHandle from "./ResizeHandle";
@@ -28,7 +34,13 @@ export default function EditableSection({ section }: EditableSectionProps) {
 
   const previewMode = usePreviewMode();
   const responsiveProps = section[previewMode === "desktop" ? "props" : "mobileProps"];
-  const className = useSectionStyle({ section, editable: true, previewMode });
+  const selectedSectionId = useSelectedSectionId();
+  const className = useSectionStyle({
+    section,
+    editable: true,
+    selected: selectedSectionId === section.id,
+    previewMode,
+  });
 
   return (
     <section key={id} id={id} ref={ref} data-element-kind="section" data-dropzone className={className}>
@@ -158,6 +170,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
           </Inset>
         </Popover.Content>
         <div
+          role="toolbar"
           className={tx(
             dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
             `section-options-buttons bottom-0

@@ -125,7 +125,7 @@ export const themeSchema = Type.Object({
       }),
       baseContent: Type.String({
         title: "Base content",
-        description: "Foreground content color to use on base colors",
+        description: "Text color to use on base colors",
       }),
     },
     {

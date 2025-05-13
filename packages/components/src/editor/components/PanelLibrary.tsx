@@ -1,6 +1,8 @@
 import { defaultProps, manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { Value } from "@sinclair/typebox/value";
 import { WiStars } from "react-icons/wi";
+import { MdOutlineHelpOutline } from "react-icons/md";
+
 import {
   Tabs,
   Button,
@@ -61,110 +63,70 @@ export default function PanelLibrary() {
   };
 
   return (
-    <Tabs.Root defaultValue="library">
-      <Tabs.List className="sticky top-0 z-50 bg-gray-100">
-        <Tabs.Trigger value="library" className={tx("!flex-1")}>
-          Library
-        </Tabs.Trigger>
-        <Tabs.Trigger value="ai" className={tx("!flex-1")}>
-          AI creator <BsStars className={tx("ml-1 w-4 h-4 text-upstart-500")} />
-        </Tabs.Trigger>
-      </Tabs.List>
-      <Tabs.Content value="library">
-        <div className="flex flex-col gap-8">
-          <div
-            className={tx(
-              "flex flex-col max-h-[calc(100dvh/2-40px)] overflow-y-auto",
-              panelTabContentScrollClass,
-            )}
-          >
-            <PanelBlockTitle>Base bricks</PanelBlockTitle>
-            {shouldDisplayLibraryCallout && (
-              <Callout.Root size="1" color="violet" className="!rounded-none">
-                <Callout.Text size="1">Simply drag and drop those base bricks to your page.</Callout.Text>
-              </Callout.Root>
-            )}
+    <div className="flex flex-col gap-8">
+      <div
+        className={tx(
+          "flex flex-col max-h-[calc(100dvh/2-40px)] overflow-y-auto",
+          panelTabContentScrollClass,
+        )}
+      >
+        <PanelBlockTitle>Base bricks</PanelBlockTitle>
+        {shouldDisplayLibraryCallout && (
+          <Callout.Root size="1" color="violet" className="!rounded-none">
+            <Callout.Text size="1">Simply drag and drop those base bricks to your page.</Callout.Text>
+          </Callout.Root>
+        )}
 
-            <div
-              className={tx("grid gap-1 p-1.5")}
-              style={{
-                gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
-              }}
-            >
-              {Object.values(manifests)
-                .filter((m) => m.kind === "brick" && !m.hideInLibrary)
-                .map((brickImport) => {
-                  return (
-                    <Tooltip content={brickImport.description} key={brickImport.type}>
-                      <DraggableBrick brick={defaultProps[brickImport.type]} />
-                    </Tooltip>
-                  );
-                })}
-            </div>
-          </div>
-          <div
-            className={tx(
-              "flex flex-col max-h-[calc(100dvh/2-40px)] overflow-y-auto",
-              panelTabContentScrollClass,
-            )}
-          >
-            <PanelBlockTitle>Widgets</PanelBlockTitle>
-            {shouldDisplayLibraryCallout && (
-              <Callout.Root size="1" color="violet" className="!rounded-none">
-                <Callout.Text size="1">
-                  Widgets are reusable components that can be added to your page.
-                </Callout.Text>
-              </Callout.Root>
-            )}
-
-            <div
-              className={tx("grid gap-1 p-1.5")}
-              style={{
-                gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
-              }}
-            >
-              {Object.values(manifests)
-                .filter((m) => m.kind === "widget" && !m.hideInLibrary)
-                .map((brickImport) => {
-                  return (
-                    <Tooltip content={brickImport.description} key={brickImport.type} delayDuration={850}>
-                      <DraggableBrick brick={defaultProps[brickImport.type]} />
-                    </Tooltip>
-                  );
-                })}
-            </div>
-          </div>
-        </div>
-      </Tabs.Content>
-      <ScrollablePanelTab tab="ai" className={tx("p-2")}>
-        <Callout.Root size="1">
-          <Callout.Icon>
-            <WiStars className={tx("w-7 h-7 mt-3")} />
-          </Callout.Icon>
-          <Callout.Text size="1">Tell AI what you want and it will generate a brick for you!</Callout.Text>
-        </Callout.Root>
-        <TextArea
-          onInput={(e) => {
-            setBrickPrompt(e.currentTarget.value);
+        <div
+          className={tx("grid gap-1 p-1.5")}
+          style={{
+            gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
           }}
-          className={tx("w-full my-2 h-24")}
-          size="2"
-          placeholder="Add an image of delivery guy"
-          spellCheck={false}
-        />
-        <Button
-          size="2"
-          disabled={brickPrompt.length < 10 || isGenerating}
-          className={tx("block !w-full")}
-          onClick={generateBrick}
         >
-          <Spinner loading={isGenerating}>
-            <BsStars className={tx("w-4 h-4")} />
-          </Spinner>
-          {isGenerating ? "Generating themes" : "Generate a brick"}
-        </Button>
-      </ScrollablePanelTab>
-    </Tabs.Root>
+          {Object.values(manifests)
+            .filter((m) => m.kind === "brick" && !m.hideInLibrary)
+            .map((brickImport) => {
+              return (
+                <Tooltip content={brickImport.description} key={brickImport.type}>
+                  <DraggableBrick brick={defaultProps[brickImport.type]} />
+                </Tooltip>
+              );
+            })}
+        </div>
+      </div>
+      <div
+        className={tx(
+          "flex flex-col max-h-[calc(100dvh/2-40px)] overflow-y-auto",
+          panelTabContentScrollClass,
+        )}
+      >
+        <PanelBlockTitle>Widgets</PanelBlockTitle>
+        {shouldDisplayLibraryCallout && (
+          <Callout.Root size="1" color="violet" className="!rounded-none">
+            <Callout.Text size="1">
+              Widgets are reusable components that can be added to your page.
+            </Callout.Text>
+          </Callout.Root>
+        )}
+
+        <div
+          className={tx("grid gap-1 p-1.5")}
+          style={{
+            gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
+          }}
+        >
+          {Object.values(manifests)
+            .filter((m) => m.kind === "widget" && !m.hideInLibrary)
+            .map((brickImport) => {
+              return (
+                <Tooltip content={brickImport.description} key={brickImport.type} delayDuration={850}>
+                  <DraggableBrick brick={defaultProps[brickImport.type]} />
+                </Tooltip>
+              );
+            })}
+        </div>
+      </div>
+    </div>
   );
 }
 

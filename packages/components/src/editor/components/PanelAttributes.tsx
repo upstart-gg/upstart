@@ -2,25 +2,49 @@ import { useAttributes, useAttributesSchema, useDraft, useEditorHelpers } from "
 import { sortJsonSchemaProperties } from "~/shared/utils/sort-json-schema-props";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FormRenderer } from "./json-form/FormRenderer";
-import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
+import type { Attributes, AttributesSchema } from "@upstart.gg/sdk/shared/attributes";
 import { Tabs, Spinner, IconButton } from "@upstart.gg/style-system/system";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import { tx, css } from "@upstart.gg/style-system/twind";
+import FormNavigator from "./json-form/FormNavigator";
+import AttributesSettingsView from "./AttributesSettingsView";
+import { TObject } from "@sinclair/typebox";
 
 export default function SettingsForm() {
   const draft = useDraft();
   const attributes = useAttributes();
   const attrSchema = useAttributesSchema();
-  const filteredAttrSchema = useMemo(() => sortJsonSchemaProperties(attrSchema), [attrSchema]);
   const [shouldRender, setShouldRender] = useState(false);
   const [currentTab, setCurrentTab] = useState("page-settings");
-  const { hidePanel } = useEditorHelpers();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: draft.updateAttributes is a stable function
   const onChange = useCallback((data: Record<string, unknown>, propertyChanged: string) => {
     console.log("changed attr %o", data);
     draft.updateAttributes(data as Attributes);
   }, []);
+
+  const filteredAttrSchema = useMemo(() => {
+    const filteredSchema = {
+      ...attrSchema,
+      properties: Object.fromEntries(
+        Object.entries(attrSchema.properties).filter(([key, value]) => {
+          // Filter out properties with "ui:hidden" set to true
+          if (value["ui:hidden"]) {
+            return false;
+          }
+          // Filter out properties based on the current tab
+          if (currentTab === "page-settings" && value["ui:scope"] === "site") {
+            return false;
+          }
+          if (currentTab === "site-settings" && value["ui:scope"] !== "site") {
+            return false;
+          }
+          return true;
+        }),
+      ),
+    };
+    return filteredSchema as AttributesSchema;
+  }, [attrSchema, currentTab]);
 
   useEffect(() => {
     // Defer the form rendering to the next frame
@@ -52,32 +76,10 @@ export default function SettingsForm() {
         </Tabs.Trigger>
       </Tabs.List>
       <ScrollablePanelTab tab="page-settings">
-        <form className={tx("px-3 flex flex-col gap-y-2.5 pb-6")}>
-          <FormRenderer
-            formSchema={filteredAttrSchema}
-            formData={attributes}
-            filter={(field) => {
-              return currentTab === "page-settings"
-                ? field?.["ui:scope"] !== "site"
-                : field?.["ui:scope"] === "site";
-            }}
-            onChange={onChange}
-          />
-        </form>
+        <AttributesSettingsView attributesSchema={filteredAttrSchema} title="Page settings" />
       </ScrollablePanelTab>
       <ScrollablePanelTab tab="site-settings">
-        <form className={tx("px-3 flex flex-col gap-y-2.5 pb-6")}>
-          <FormRenderer
-            formSchema={filteredAttrSchema}
-            formData={attributes}
-            filter={(field) => {
-              return currentTab === "page-settings"
-                ? field?.["ui:scope"] !== "site"
-                : field?.["ui:scope"] === "site";
-            }}
-            onChange={onChange}
-          />
-        </form>
+        <AttributesSettingsView attributesSchema={filteredAttrSchema} title="Site settings" />
       </ScrollablePanelTab>
     </Tabs.Root>
   );

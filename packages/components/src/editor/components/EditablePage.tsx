@@ -167,6 +167,8 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         // also deselect the library panel
         editorHelpers.hidePanel("library");
         editorHelpers.hidePanel("inspector");
+        editorHelpers.hidePanel("settings");
+        editorHelpers.hidePanel("theme");
         editorHelpers.setTextEditMode("default");
       }
     };

@@ -1,11 +1,12 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { customAlphabet } from "nanoid";
 import { defaultProps } from "./bricks/manifests/all-manifests";
-import { attr } from "./attributes";
 import { background } from "./bricks/props/background";
 import { border } from "./bricks/props/border";
 import { preset } from "./bricks/props/preset";
 import { merge } from "lodash-es";
+import { cssLength } from "./bricks/props/css-length";
+import { enumProp } from "./bricks/props/enum";
 
 /**
  * Generates a unique identifier for bricks.
@@ -189,7 +190,7 @@ const sectionProps = Type.Object(
       }),
     ),
     maxWidth: Type.Optional(
-      attr.enum("Width", "max-w-full", {
+      enumProp("Width", "max-w-full", {
         options: [
           {
             value: "max-w-screen-lg",
@@ -208,15 +209,13 @@ const sectionProps = Type.Object(
       }),
     ),
     horizontalPadding: Type.Optional(
-      attr.cssLength("Horizontal padding", "20px", {
+      cssLength("Horizontal padding", "20px", {
         description: "Horizontal padding. Desktop only",
-        displayAs: "button-group",
       }),
     ),
     verticalPadding: Type.Optional(
-      attr.cssLength("Vertical padding", "20px", {
+      cssLength("Vertical padding", "20px", {
         description: "Vertical padding.",
-        displayAs: "button-group",
       }),
     ),
     lastTouched: Type.Optional(

@@ -63,6 +63,7 @@ export default function SectionSettingsView({ section, group }: SectionSettingsV
       initialGroup={group}
       navItems={navItems}
       formSchema={sectionSchema.properties.props}
+      className="h-[calc(100cqh/2)]"
       formData={formData}
       onChange={onChange}
       brickId={section.id}

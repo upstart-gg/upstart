@@ -3,7 +3,6 @@ import { useBrickSettingsPopover } from "../hooks/use-brick-settings-popover";
 import BrickSettingsGroupMenu from "./BrickSettingsGroupMenu";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import BrickSettingsView from "./BrickSettingsView";
-import BrickPresetsView from "./BrickPresetsView";
 import { Popover, Inset } from "@upstart.gg/style-system/system";
 
 /**
@@ -38,7 +37,7 @@ export function BrickPopover({ brick, children, view }: BrickPopoverProps) {
         maxWidth={view === "settings" ? "100%" : "100%"}
       >
         <Inset>
-          {view === "settings" ? <BrickSettingsView brick={brick} /> : <BrickPresetsView brick={brick} />}
+          {/* {view === "settings" ? <BrickSettingsView brick={brick} /> : <BrickPresetsView brick={brick} />} */}
         </Inset>
       </Popover.Content>
     </Popover.Root>

@@ -20,8 +20,9 @@ import {
 } from "~/editor/hooks/use-editor";
 import { RxRocket } from "react-icons/rx";
 import logo from "../../../../../creatives/upstart.svg";
+import dark from "../../../../../creatives/upstart-dark.svg";
 import { RiArrowDownSLine } from "react-icons/ri";
-import { DropdownMenu, Popover, TextField } from "@upstart.gg/style-system/system";
+import { DropdownMenu, Link, Popover, TextField } from "@upstart.gg/style-system/system";
 import { IoIosSave } from "react-icons/io";
 import { LuExternalLink } from "react-icons/lu";
 import { formatDistance } from "date-fns";
@@ -92,13 +93,10 @@ export default function NavBar({ showIntro }: TopBarProps) {
   );
 
   // bg-upstart-600
-  const baseCls = tx(
-    `transition-opacity duration-300 bg-gradient-to-t from-transparent to-[rgba(255,255,255,0.15)] px-3 min-w-[2.5rem]`,
-    showIntro && "opacity-0",
-  );
+  const baseCls = tx(`transition-opacity duration-300 px-3 min-w-[2.5rem]`, showIntro && "opacity-0");
 
   const commonCls = `${baseCls}
-    hover:bg-upstart-100
+    hover:bg-upstart-100 dark:hover:bg-white/10
     disabled:text-gray-300
   `;
 
@@ -113,15 +111,15 @@ export default function NavBar({ showIntro }: TopBarProps) {
 
   const btnWithArrow = "cursor-default !aspect-auto";
 
-  const btnClass = `flex items-center justify-center my-1 py-1 gap-x-0.5 px-1.5  group relative
+  const btnClass = `flex items-center justify-center my-1 py-1 gap-x-0.5 px-1.5 group relative
   focus-visible:outline-none disabled:hover:cursor-default rounded-md
   disabled:pointer-events-none
   `;
 
   const squareBtn = "aspect-square";
 
-  const tooltipCls = `absolute py-0.5 px-2.5 bg-upstart-600/80 top-[calc(100%+.5rem)]
-    rounded-full text-sm text-white min-w-full transition-all delay-75 duration-200 ease-in-out opacity-0 -translate-y-1.5
+  const tooltipCls = `absolute py-0.5 px-2.5 bg-upstart-600/92 top-[calc(100%+.3rem)]
+    rounded-full text-sm text-white min-w-full transition-all delay-75 duration-200 ease-in-out opacity-0 -translate-y-1
   group-hover:block group-hover:opacity-100 group-hover:translate-y-0 text-nowrap whitespace-nowrap pointer-events-none`;
 
   const arrowClass = "h-4 w-4 opacity-60 -ml-0.5";
@@ -134,6 +132,7 @@ export default function NavBar({ showIntro }: TopBarProps) {
       className={tx(
         ` z-[9999] h-14 gap-1
           flex text-xl w-full justify-start items-center transition-opacity duration-300 px-4 pt-2 text-black/70
+          dark:text-dark-200
           `,
         css({
           gridArea: "navbar",
@@ -148,7 +147,10 @@ export default function NavBar({ showIntro }: TopBarProps) {
         }}
         className={tx("flex-shrink-0")}
       >
-        <img src={logo} alt="Upstart" className={tx("h-8 w-auto")} />
+        <picture className={tx("h-8 w-auto")}>
+          <source srcSet={dark} className={tx("h-8 w-auto")} media="(prefers-color-scheme: dark)" />
+          <img src={logo} className={tx("h-8 w-auto")} alt="Upstart" />
+        </picture>
       </button>
 
       {(editorMode === "remote" || (editorMode === "local" && pages.length > 1)) && (
@@ -198,7 +200,7 @@ export default function NavBar({ showIntro }: TopBarProps) {
         type="button"
         className={tx(btnClass, squareBtn, commonCls, chatVisible && activeCls)}
       >
-        <BsStars className="h-5 w-auto text-upstart-500" />
+        <BsStars className={tx("h-6 w-auto", !chatVisible && "text-upstart-500")} />
         <span className={tx(tooltipCls)}>Ask AI</span>
       </button>
 
@@ -278,7 +280,24 @@ export default function NavBar({ showIntro }: TopBarProps) {
         <span className={tx(tooltipCls)}>Zomm In</span>
       </button>
 
-      <span className={tx("text-gray-500 text-xs ml-1")}>{(zoom * 100).toFixed(0)}%</span>
+      <span className={tx("text-gray-500 dark:text-dark-200 text-[.85rem] ml-1")}>
+        {(zoom * 100).toFixed(0)}%
+      </span>
+
+      <div className={separator} />
+
+      <div className="inline-flex flex-col gap-1 leading-none text-sm items-start">
+        <span className="inline-flex items-center gap-1">
+          <BsStars className="opacity-60 w-4 h-4" /> 3500 credits
+        </span>
+        <button
+          type="button"
+          className="underline underline-offset-2 -mt-1.5 pl-5 text-[88%] text-upstart-600 hover:text-orange-800"
+          onClick={() => alert("buy")}
+        >
+          Buy more
+        </button>
+      </div>
 
       <div className={tx("flex-1", "border-x border-l-upstart-400 border-r-upstart-700", baseCls)} />
 
@@ -330,7 +349,7 @@ export default function NavBar({ showIntro }: TopBarProps) {
         <button
           id="publish-menu-btn"
           type="button"
-          className={tx("px-3.5 py-2.5", btnClass, rocketBtn)}
+          className={tx("px-3.5 py-2 text-black", btnClass, rocketBtn)}
           onClick={() => {
             editorHelpers.onShowLogin();
           }}
@@ -340,7 +359,7 @@ export default function NavBar({ showIntro }: TopBarProps) {
             style={{
               textShadow: "1px 1px 0px rgba(255, 255, 255, 0.3)",
             }}
-            className={tx("font-semibold pl-1 text-black", css({ fontSize: ".94rem" }))}
+            className={tx("font-semibold pl-1 ", css({ fontSize: ".94rem" }))}
           >
             Save your site
           </span>

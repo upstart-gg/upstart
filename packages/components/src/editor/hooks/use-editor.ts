@@ -14,8 +14,8 @@ import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 import { generateId } from "@upstart.gg/sdk/shared/bricks";
 import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
 import type { Site } from "@upstart.gg/sdk/shared/site";
+import { set } from "date-fns";
 export { type Immer } from "immer";
-import type { ColorAdjustment } from "@upstart.gg/sdk/shared/themes/color-system";
 
 enableMapSet();
 
@@ -58,6 +58,7 @@ export interface EditorStateProps {
 
   selectedBrickId?: Brick["id"];
   selectedGroup?: Brick["id"][];
+  selectedSectionId?: string;
 
   isEditingTextForBrickId?: string;
   panel?: "library" | "inspector" | "theme" | "settings" | "data";
@@ -68,11 +69,6 @@ export interface EditorStateProps {
   disableTours?: boolean;
   logoLink: string;
 
-  /**
-   * Latest used color adjustment
-   */
-  colorAdjustment: ColorAdjustment;
-  collidingBrick?: { brick: Brick; side: "top" | "bottom" | "left" | "right" };
   onShowLogin: () => void;
   onPublish: (data: PagePublishPayload) => void;
   /**
@@ -98,12 +94,11 @@ export interface EditorState extends EditorStateProps {
   hidePanel: (panel?: EditorStateProps["panel"]) => void;
   setSelectedGroup: (group?: Brick["id"][]) => void;
   setSelectedBrickId: (brickId?: Brick["id"]) => void;
+  setSelectedSectionId: (sectionId?: string) => void;
   deselectBrick: (brickId?: Brick["id"]) => void;
-  setColorAdjustment: (colorAdjustment: ColorAdjustment) => void;
   markTourAsSeen: (tourId: string) => void;
   togglePanelPosition: () => void;
   showModal: (modal: EditorStateProps["modal"]) => void;
-  setCollidingBrick: (info: { brick: Brick; side: "top" | "bottom" | "left" | "right" } | null) => void;
   hideModal: () => void;
   toggleChat: () => void;
   zoomIn: () => void;
@@ -115,7 +110,6 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
     previewMode: "desktop",
     seenTours: [],
     mode: "local",
-    colorAdjustment: "default",
     panelPosition: "left",
     logoLink: "/dashboard",
     zoom: 1,
@@ -146,11 +140,6 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
             markTourAsSeen: (tourId) =>
               set((state) => {
                 state.seenTours = [...state.seenTours, tourId];
-              }),
-
-            setCollidingBrick: (info) =>
-              set((state) => {
-                state.collidingBrick = info ?? undefined;
               }),
 
             setlastTextEditPosition: (position) =>
@@ -224,6 +213,18 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
             setSelectedBrickId: (brickId) =>
               set((state) => {
                 state.selectedBrickId = brickId;
+                if (brickId) {
+                  state.selectedSectionId = undefined;
+                }
+              }),
+
+            setSelectedSectionId: (sectionId) =>
+              set((state) => {
+                state.selectedSectionId = sectionId;
+                if (sectionId) {
+                  state.selectedBrickId = undefined;
+                  state.selectedGroup = undefined;
+                }
               }),
 
             deselectBrick: (brickId) =>
@@ -231,11 +232,6 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                 if (state.selectedBrickId && (!brickId || state.selectedBrickId === brickId)) {
                   state.selectedBrickId = undefined;
                 }
-              }),
-
-            setColorAdjustment: (colorAdjustment) =>
-              set((state) => {
-                state.colorAdjustment = colorAdjustment;
               }),
 
             togglePanelPosition: () =>
@@ -263,6 +259,7 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                     ![
                       "mode",
                       "selectedBrickId",
+                      "selectedSectionId",
                       "selectedGroup",
                       "collidingBrick",
                       "panel",
@@ -335,7 +332,7 @@ export interface DraftState extends DraftStateProps {
   toggleBrickVisibility: (id: string, resolution: Resolution) => void;
   setPreviewTheme: (theme: Theme) => void;
   setTheme: (theme: Theme) => void;
-  validatePreviewTheme: () => void;
+  validatePreviewTheme: (accept: boolean) => void;
   cancelPreviewTheme: () => void;
   updateAttributes: (attr: Partial<Attributes>) => void;
   setLastSaved: (date: Date) => void;
@@ -682,6 +679,15 @@ export const createDraftStore = (
                   } else {
                     brick.props = mergeIgnoringArrays({}, brick.props, props, { lastTouched: Date.now() });
                   }
+                  for (const section of state.sections) {
+                    for (const b of section.bricks) {
+                      if (b.id === id) {
+                        b.props = brick.props;
+                        b.mobileProps = brick.mobileProps;
+                        return;
+                      }
+                    }
+                  }
                 }
               }),
 
@@ -841,9 +847,9 @@ export const createDraftStore = (
                 state.previewTheme = theme;
               }),
 
-            validatePreviewTheme: () =>
+            validatePreviewTheme: (accept) =>
               set((state) => {
-                if (state.previewTheme) {
+                if (state.previewTheme && accept) {
                   state.theme = state.previewTheme;
                 }
                 state.previewTheme = undefined;
@@ -1064,10 +1070,22 @@ export const useSelectedBrickId = () => {
   return useStore(ctx, (state) => state.selectedBrickId);
 };
 
-export const useColorAdjustment = () => {
+export function useSelectedSectionId() {
   const ctx = useEditorStoreContext();
-  return useStore(ctx, (state) => state.colorAdjustment);
-};
+  return useStore(ctx, (state) => state.selectedSectionId);
+}
+
+export function useSelectedSection() {
+  const ctx = useEditorStoreContext();
+  const draft = useDraftStoreContext();
+  return useStore(ctx, (state) => {
+    const section = draft.getState().sections.find((s) => s.id === state.selectedSectionId);
+    if (!section) {
+      return null;
+    }
+    return section;
+  });
+}
 
 export const useDebugMode = () => {
   const ctx = useEditorStoreContext();
@@ -1203,12 +1221,11 @@ export const useEditorHelpers = () => {
     hidePanel: state.hidePanel,
     setSelectedGroup: state.setSelectedGroup,
     setSelectedBrickId: state.setSelectedBrickId,
+    setSelectedSectionId: state.setSelectedSectionId,
     deselectBrick: state.deselectBrick,
-    setColorAdjustment: state.setColorAdjustment,
     togglePanelPosition: state.togglePanelPosition,
     showModal: state.showModal,
     hideModal: state.hideModal,
-    setCollidingBrick: state.setCollidingBrick,
     toggleEditorEnabled: state.toggleEditorEnabled,
     onShowLogin: state.onShowLogin,
     onPublish: state.onPublish,
@@ -1224,6 +1241,7 @@ export const useDraftHelpers = () => {
     deleteBrick: state.deleteBrick,
     duplicateBrick: state.duplicateBrick,
     getBrick: state.getBrick,
+    validatePreviewTheme: state.validatePreviewTheme,
     adjustMobileLayout: state.adjustMobileLayout,
     duplicateSection: state.duplicateSection,
     toggleBrickVisibilityPerBreakpoint: state.toggleBrickVisibility,

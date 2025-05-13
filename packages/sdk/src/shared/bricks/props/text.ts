@@ -32,12 +32,12 @@ export function fontSize(defaultValue = "inherit", title = "Font size") {
 
 export type FontSizeSettings = Static<ReturnType<typeof fontSize>>;
 
-export function color(defaultValue: string | "color-auto" = "color-auto", title = "Text color") {
+export function color(defaultValue = "inherit", title = "Text color") {
   return prop({
     title,
-    description:
-      "Can be set to `transparent`, hex/rgb/rgba color, `color-auto` to automatically contrast with background, or even classes like `text-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900",
     schema: Type.String({
+      "ai:instructions":
+        "hex/rgb/rgba color or classes like `text-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900",
       default: defaultValue,
       "ui:styleId": "#styles:color",
       "ui:field": "color",

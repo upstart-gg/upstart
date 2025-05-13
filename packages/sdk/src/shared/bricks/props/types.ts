@@ -20,6 +20,8 @@ export type { TSchema };
 
 type CommonMetadata = {
   "ui:responsive"?: boolean | "mobile" | "mobile-only";
+  "ui:hidden"?: boolean | "if-empty";
+  "ui:scope"?: "site" | "page";
 };
 
 export type FieldMetadata = CommonMetadata & {

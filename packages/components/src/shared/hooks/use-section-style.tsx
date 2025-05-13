@@ -7,14 +7,11 @@ import { tx, css } from "@upstart.gg/style-system/twind";
 type UseSectionStyleProps = {
   section: Section;
   editable?: boolean;
-  /**
-   * Not used yet
-   */
   selected?: boolean;
   previewMode?: Resolution;
 };
 
-export function useSectionStyle({ section, editable, previewMode }: UseSectionStyleProps) {
+export function useSectionStyle({ section, selected, editable, previewMode }: UseSectionStyleProps) {
   return tx("flex w-full py-0 group/section overflow-visible relative", [
     typeof section.props.minHeight === "string" &&
       section.props.minHeight !== "full" &&
@@ -46,7 +43,7 @@ export function useSectionStyle({ section, editable, previewMode }: UseSectionSt
     section.props.background && getBackgroundStyles(section.props.background),
 
     // Section editor styles
-    getSectionEditorStyles({ editable, previewMode, section }),
+    getSectionEditorStyles({ editable, previewMode, section, selected }),
 
     section.props.horizontalPadding &&
       css({
@@ -64,14 +61,16 @@ export function useSectionStyle({ section, editable, previewMode }: UseSectionSt
   ]);
 }
 
-function getSectionEditorStyles({ section, editable, previewMode }: UseSectionStyleProps) {
+function getSectionEditorStyles({ section, editable, selected, previewMode }: UseSectionStyleProps) {
   if (!editable) {
     return null;
   }
   return [
     "select-none hover:z-[9999] transition-colors duration-500 relative",
-    "outline-dotted outline-4 outline-transparent -outline-offset-2 hover:(outline-upstart-500/60 shadow-upstart-500/20)",
+    "outline-dashed outline-2 -outline-offset-2 hover:(outline-upstart-500/60 shadow-upstart-500/20)",
     "self-stretch",
+
+    selected ? "outline-upstart-500" : "outline-transparent",
 
     // this is the grid overlay shown when dragging
     editable &&

@@ -37,7 +37,6 @@ export const manifest = defineBrickManifest({
     {
       default: {
         padding: "p-4",
-        color: "color-auto",
       },
     },
   ),
