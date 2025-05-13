@@ -5,6 +5,7 @@ import {
   usePreviewMode,
   useSection,
   useSections,
+  useSelectedBrickId,
   useSelectedSectionId,
 } from "../hooks/use-editor";
 import { DropdownMenu, Inset, Popover, Tooltip } from "@upstart.gg/style-system/system";
@@ -35,6 +36,7 @@ export default function EditableSection({ section }: EditableSectionProps) {
   const previewMode = usePreviewMode();
   const responsiveProps = section[previewMode === "desktop" ? "props" : "mobileProps"];
   const selectedSectionId = useSelectedSectionId();
+  const selectedBrickId = useSelectedBrickId();
   const className = useSectionStyle({
     section,
     editable: true,
@@ -44,7 +46,7 @@ export default function EditableSection({ section }: EditableSectionProps) {
 
   return (
     <section key={id} id={id} ref={ref} data-element-kind="section" data-dropzone className={className}>
-      <SectionOptionsButtons section={section} />
+      {!selectedBrickId && <SectionOptionsButtons section={section} />}
       {bricks
         .filter((b) => !b.props.hidden?.[previewMode])
         .map((brick, index) => {

@@ -207,7 +207,13 @@ export default function NavBar({ showIntro }: TopBarProps) {
       <button
         onClick={() => editorHelpers.togglePanel("library")}
         type="button"
-        className={tx(btnClass, squareBtn, commonCls, panel === "library" && activeCls)}
+        disabled={previewMode === "mobile"}
+        className={tx(
+          btnClass,
+          squareBtn,
+          commonCls,
+          panel === "library" && previewMode === "desktop" && activeCls,
+        )}
       >
         <LuPlus className="h-6 w-auto" />
         <span className={tx(tooltipCls)}>Add elements</span>

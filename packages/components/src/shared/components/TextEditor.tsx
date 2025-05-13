@@ -9,12 +9,11 @@ import {
   type NodeViewProps,
   mergeAttributes,
   nodeInputRule,
-  type Extension,
+  Extension,
 } from "@tiptap/react";
 import Placeholder from "@tiptap/extension-placeholder";
 import { RiArrowDownSLine, RiBracesLine } from "react-icons/ri";
 import TextStyle from "@tiptap/extension-text-style";
-
 import StarterKit from "@tiptap/starter-kit"; // define your extension array
 import TextAlign from "@tiptap/extension-text-align";
 import Heading from "@tiptap/extension-heading";
@@ -59,6 +58,7 @@ import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import type { TSchema } from "@sinclair/typebox";
 import { tx, css } from "@upstart.gg/style-system/twind";
+import { useHotkeys } from "react-hotkeys-hook";
 
 function DatasourceFieldNode(props: NodeViewProps) {
   return (
@@ -150,6 +150,15 @@ export type TextEditorProps<E extends ElementType> = PolymorphicProps<E> & {
   inline?: boolean;
 };
 
+const OverrideEscape = Extension.create({
+  name: "OverrideEscape",
+  addKeyboardShortcuts() {
+    return {
+      Escape: () => this.editor.commands.blur(),
+    };
+  },
+});
+
 const TextEditor = <T extends ElementType = "div">({
   content,
   className,
@@ -233,6 +242,7 @@ const TextEditor = <T extends ElementType = "div">({
         return `${options.suggestion.char}${field}}}`;
       },
     }),
+    OverrideEscape,
   ] as Extension[];
 
   const editor = useTextEditor(
@@ -271,16 +281,14 @@ const TextEditor = <T extends ElementType = "div">({
 
       // If there is a related target, it means the blur event was triggered by a click on the editor buttons
       if (e.event.relatedTarget) {
+        console.debug("Editor blur triggered by editor buttons, ignoring");
         return;
       }
 
       mainEditor.setIsEditingText(false);
       mainEditor.setlastTextEditPosition(e.editor.state.selection.anchor);
-
-      console.log("setting selection to ", {
-        from: e.editor.state.doc.content.size,
-        to: e.editor.state.doc.content.size,
-      });
+      mainEditor.setSelectedBrickId();
+      mainEditor.togglePanel("inspector");
 
       // reset the selection to the end of the document
       const unselected = e.editor.commands.setTextSelection({
@@ -288,16 +296,9 @@ const TextEditor = <T extends ElementType = "div">({
         to: e.editor.state.doc.content.size,
       });
 
-      e.editor.commands.blur();
-
-      console.log("unselected", unselected);
-
       setFocused(false);
     };
 
-    editor.options.element.addEventListener("resize", () => {
-      console.log("editor resized");
-    });
     editor?.on("focus", onFocus);
     editor?.on("blur", onBlur);
 

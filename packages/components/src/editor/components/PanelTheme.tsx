@@ -7,6 +7,8 @@ import {
   useAutoAnimate,
   IconButton,
   Text,
+  SegmentedControl,
+  Select,
 } from "@upstart.gg/style-system/system";
 import { themes } from "@upstart.gg/sdk/shared/themes/all-themes";
 import { forwardRef, useState, type ComponentProps } from "react";
@@ -31,6 +33,8 @@ export default function ThemePanel() {
   const [generatedThemes, setGeneratedThemes] = useState<Theme[]>([]);
   const [genListRef] = useAutoAnimate(/* optional config */);
   const { hidePanel } = useEditorHelpers();
+
+  const baseSizes = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
 
   const generateTheme = async () => {
     if (!themeDescription) {
@@ -138,7 +142,7 @@ export default function ThemePanel() {
           </div>
 
           <PanelBlockTitle className="-mx-2 my-2">Typography</PanelBlockTitle>
-          <div className="text-sm flex flex-col gap-y-3 px-1">
+          <div className="text-sm flex flex-col gap-y-4 p-2">
             {Object.entries(draft.theme.typography)
               .filter((obj) => obj[0] === "body" || obj[0] === "heading")
               .map(([fontType, font]) => (
@@ -147,7 +151,7 @@ export default function ThemePanel() {
                     {/* @ts-ignore */}
                     {themeSchema.properties.typography.properties[fontType].title}
                   </label>
-                  <Text color="gray" as="p" size="1" className="mb-1">
+                  <Text color="gray" as="p" size="1" className="mb-1.5">
                     {/* @ts-ignore */}
                     {themeSchema.properties.typography.properties[fontType].description}
                   </Text>
@@ -166,6 +170,35 @@ export default function ThemePanel() {
                   />
                 </div>
               ))}
+
+            <div>
+              <label className="font-medium">Base Font size</label>
+              <Text color="gray" as="p" size="1" className="mb-2">
+                Can be changed for fonts that are too small or too big
+              </Text>
+              <Select.Root
+                defaultValue={`${draft.theme.typography.base}`}
+                size="2"
+                onValueChange={(chosen) => {
+                  draft.setTheme({
+                    ...draft.theme,
+                    typography: {
+                      ...draft.theme.typography,
+                      base: parseInt(chosen),
+                    },
+                  });
+                }}
+              >
+                <Select.Trigger className="!w-full" radius="large" variant="surface" />
+                <Select.Content position="popper">
+                  {baseSizes.map((size) => (
+                    <Select.Item key={`base-${size}`} value={`${size}`}>
+                      {size} px
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select.Root>
+            </div>
           </div>
         </div>
       </ScrollablePanelTab>
