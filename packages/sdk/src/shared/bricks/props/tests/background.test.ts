@@ -21,7 +21,6 @@ describe("Background prop test suite", () => {
       expect(schema["ui:field"]).toBe("background");
       expect(schema["ui:group"]).toBe("background");
       expect(schema["ui:group:title"]).toBe("Background");
-      expect(schema["ui:inspector-tab"]).toBe("style");
       expect(schema["ui:show-img-search"]).toBe(true);
     });
 

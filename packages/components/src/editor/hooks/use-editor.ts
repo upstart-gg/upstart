@@ -50,6 +50,13 @@ export interface EditorStateProps {
    */
   disabled?: boolean;
   zoom: number;
+  /**
+   * 0 = free
+   * 1 = essentials
+   * 2 = pro
+   * ...
+   */
+  planIndex: number;
 
   previewMode: Resolution;
   textEditMode?: "default" | "large";
@@ -64,7 +71,7 @@ export interface EditorStateProps {
   panel?: "library" | "inspector" | "theme" | "settings" | "data";
   modal?: "image-search" | "datasources";
   panelPosition: "left" | "right";
-  chatVisible?: boolean;
+  chatVisible: boolean;
   seenTours: string[];
   disableTours?: boolean;
   logoLink: string;
@@ -113,6 +120,8 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
     panelPosition: "left",
     logoLink: "/dashboard",
     zoom: 1,
+    chatVisible: true,
+    planIndex: 0,
     onShowLogin: () => {
       console.warn("onShowLogin is not implemented");
     },
@@ -136,6 +145,10 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
             toggleChat: () =>
               set((state) => {
                 state.chatVisible = !state.chatVisible;
+                if (state.chatVisible) {
+                  state.panel = undefined;
+                  state.panelPosition = "right";
+                }
               }),
             markTourAsSeen: (tourId) =>
               set((state) => {
@@ -851,6 +864,8 @@ export const createDraftStore = (
               set((state) => {
                 if (state.previewTheme && accept) {
                   state.theme = state.previewTheme;
+                } else if (!accept) {
+                  Object.assign(state.theme, {});
                 }
                 state.previewTheme = undefined;
               }),
@@ -1096,6 +1111,16 @@ export const usePanel = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => ({ panel: state.panel, panelPosition: state.panelPosition }));
 };
+
+export const useIsPremiumPlan = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.planIndex > 0);
+};
+
+export function useHasPlanOrHigher(plan: number) {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.planIndex >= plan);
+}
 
 export const useEditorMode = () => {
   const ctx = useEditorStoreContext();

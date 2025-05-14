@@ -12,15 +12,17 @@ import { Theme } from "@upstart.gg/style-system/system";
 import { useDarkMode } from "usehooks-ts";
 import { UploaderProvider } from "./UploaderContext";
 
+import { DatasourceProvider } from "~/shared/hooks/use-datasource";
+import type { Site } from "@upstart.gg/sdk/shared/site";
+import { tx } from "@upstart.gg/style-system/twind";
+
 import "@radix-ui/themes/styles.css";
 import "@upstart.gg/style-system/radix.css";
 import "@upstart.gg/style-system/editor.css";
-// import "@upstart.gg/style-system/default-theme.css";
+import "@upstart.gg/components/dist/assets/style.css";
 import "@upstart.gg/style-system/tiptap-text-editor.css";
 import "@upstart.gg/style-system/react-resizable.css";
-import { DatasourceProvider } from "~/shared/hooks/use-datasource";
-import type { Site } from "@upstart.gg/sdk/shared/site";
-import { tx, css } from "@upstart.gg/style-system/twind";
+import "@upstart.gg/style-system/default-theme.css";
 
 export type EditorWrapperProps = {
   mode?: "local" | "remote";

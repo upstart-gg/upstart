@@ -166,7 +166,10 @@ export default defineConfig({
     ["text-nowrap", { textWrap: "nowrap" }],
 
     ["scrollbar-thin", { scrollbarWidth: "thin" }],
-    ["scrollbar-color-", ({ $$ }) => ({ scrollbarColor: `var(--color-${$$}) var(--${$$}-surface)` })],
+    ["scrollbar-none", { scrollbarWidth: "none" }],
+    ["scrollbar-gutter-stable", { scrollbarGutter: "stable" }],
+    ["scrollbar-gutter-stable-both", { scrollbarGutter: "stable both-edges" }],
+    ["scrollbar-color-", ({ $$ }) => ({ scrollbarColor: `var(--${$$}-8) var(--${$$}-surface)` })],
 
     // presets preview
     ["surface-", ({ $$ }) => `@(bg-base-${$$}00 text-base${$$}00 border-base-${$$}00)`],

@@ -4,6 +4,8 @@ import { VscCopy } from "react-icons/vsc";
 import { type MouseEvent, type PropsWithChildren, useCallback, useMemo } from "react";
 import { BsStars } from "react-icons/bs";
 import { tx, css } from "@upstart.gg/style-system/twind";
+import { IoIosHelpCircleOutline } from "react-icons/io";
+
 import {
   useDraftUndoManager,
   usePagesInfo,
@@ -26,6 +28,7 @@ import { DropdownMenu, Link, Popover, TextField } from "@upstart.gg/style-system
 import { IoIosSave } from "react-icons/io";
 import { LuExternalLink } from "react-icons/lu";
 import { formatDistance } from "date-fns";
+import { IoChatboxEllipsesOutline } from "react-icons/io5";
 
 import { LuPlus } from "react-icons/lu";
 import { PiPalette } from "react-icons/pi";
@@ -113,7 +116,7 @@ export default function NavBar({ showIntro }: TopBarProps) {
 
   const btnClass = `flex items-center justify-center my-1 py-1 gap-x-0.5 px-1.5 group relative
   focus-visible:outline-none disabled:hover:cursor-default rounded-md
-  disabled:pointer-events-none
+  disabled:pointer-events-none text-sm
   `;
 
   const squareBtn = "aspect-square";
@@ -200,8 +203,8 @@ export default function NavBar({ showIntro }: TopBarProps) {
         type="button"
         className={tx(btnClass, squareBtn, commonCls, chatVisible && activeCls)}
       >
-        <BsStars className={tx("h-6 w-auto", !chatVisible && "text-upstart-500")} />
-        <span className={tx(tooltipCls)}>Ask AI</span>
+        <IoChatboxEllipsesOutline className={tx("h-6 w-auto")} />
+        <span className={tx(tooltipCls)}>Toggle chat</span>
       </button>
 
       <button
@@ -304,6 +307,13 @@ export default function NavBar({ showIntro }: TopBarProps) {
           Buy more
         </button>
       </div>
+
+      <div className={separator} />
+
+      <button type="button" className={tx(btnClass, commonCls, squareBtn)}>
+        <IoIosHelpCircleOutline className="h-5 w-auto" />
+        <span className={tx(tooltipCls)}>Help</span>
+      </button>
 
       <div className={tx("flex-1", "border-x border-l-upstart-400 border-r-upstart-700", baseCls)} />
 

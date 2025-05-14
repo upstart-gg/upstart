@@ -155,7 +155,6 @@ const homePageSections = processSections([
     bricks: [],
   },
 ]);
-
 const themes: Theme[] = [
   {
     id: "aurora",
@@ -169,22 +168,17 @@ const themes: Theme[] = [
       base100: "oklch(0.99 0.005 85)", // Warm white background
       base200: "oklch(0.97 0.008 85)", // Soft cream
       base300: "oklch(0.94 0.01 85)", // Light warm gray
-
       // Content colors (dark text)
       baseContent: "oklch(0.18 0.025 80)", // Rich dark brown-gray
-
       // Primary colors (vibrant pink/magenta)
       primary: "oklch(0.68 0.28 340)",
       primaryContent: "oklch(0.99 0.005 340)", // White text on primary
-
       // Secondary colors (electric teal)
       secondary: "oklch(0.65 0.22 185)",
       secondaryContent: "oklch(0.98 0.005 185)", // White text on secondary
-
       // Accent colors (sunny yellow-orange)
       accent: "oklch(0.82 0.18 85)",
       accentContent: "oklch(0.18 0.02 85)", // Dark text on accent
-
       // Neutral colors (cool violet-gray)
       neutral: "oklch(0.38 0.08 280)",
       neutralContent: "oklch(0.96 0.005 280)", // Light text on neutral
@@ -193,18 +187,6 @@ const themes: Theme[] = [
       base: 16,
       heading: { type: "stack", family: "system-ui" },
       body: { type: "stack", family: "system-ui" },
-      alternatives: [
-        {
-          heading: {
-            type: "stack",
-            family: "transitional",
-          },
-          body: {
-            type: "stack",
-            family: "humanist",
-          },
-        },
-      ],
     },
   },
 ];

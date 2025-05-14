@@ -4,8 +4,8 @@ import { ClientOnly } from "~/shared/utils/client-only";
 import Editor from "~/editor/components/Editor";
 import type { PropsWithChildren } from "react";
 
-import "@upstart.gg/style-system/default-theme.css";
-import "@upstart.gg/components/dist/assets/style.css";
+// import "@upstart.gg/style-system/default-theme.css";
+// import "@upstart.gg/components/dist/assets/style.css";
 import { getNewSiteConfig } from "@upstart.gg/sdk/shared/site";
 
 export default function App({ path }: { path: string }) {

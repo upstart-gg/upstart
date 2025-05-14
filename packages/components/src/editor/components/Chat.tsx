@@ -1,23 +1,16 @@
 import { TextArea } from "@radix-ui/themes";
 import { tx, css } from "@upstart.gg/style-system/twind";
-import { Button, Text } from "@upstart.gg/style-system/system";
+import { Button, Text, Switch } from "@upstart.gg/style-system/system";
 import { BsStars } from "react-icons/bs";
 import { TbSend2 } from "react-icons/tb";
 import { IoIosAttach } from "react-icons/io";
 import icon from "@creatives/favicon.svg";
 
-const msgCommon = tx("p-2 rounded backdrop-blur-sm shadow-sm");
-const aiMsgClass = tx(
-  "bg-upstart-200 text-upstart-900 dark:(bg-upstart-900 text-upstart-200)",
-  css({
-    backgroundImage: `url(${icon})`,
-    backgroundSize: "1.2rem",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "0.5rem 0.5rem",
-    paddingLeft: "2.2rem",
-  }),
+const msgCommon = tx("rounded-lg ");
+const aiMsgClass = tx("px-1 text-black/80 dark:text-upstart-200 text-base", css({ fontSize: "0.95rem" }));
+const userMsgClass = tx(
+  "px-2.5 py-2 text-sm opacity-80 bg-gradient-to-tr from-upstart-200/80 to-upstart-100 w-fit max-w-[90%] text-gray-800 dark:(bg-dark-900 text-white/70) self-end",
 );
-const userMsgClass = tx("bg-gray-200 text-gray-700 dark:(bg-dark-900 text-white/70)");
 
 export default function Chat() {
   const messages = [
@@ -92,52 +85,70 @@ export default function Chat() {
       content: "You too!",
       role: "user",
     },
+    {
+      id: "15",
+      content: "Thanks!",
+      role: "ai",
+    },
+    {
+      id: "16",
+      content: "You're welcome!",
+      role: "user",
+    },
+    {
+      id: "17",
+      content: "Goodbye!",
+      role: "ai",
+    },
+    {
+      id: "18",
+      content: "Goodbye!",
+      role: "user",
+    },
   ];
   return (
-    <div className="flex flex-col rounded-tr-xl relative bg-gray-100">
+    <div className="flex flex-col rounded-tr-xl relative bg-gray-50">
       <div
         className={tx(
-          `messages scrollbar-thin scrollbar-color-upstart-500 flex-1 overflow-y-auto
-            h-[calc(100cqh-246px)] max-h-[calc(100cqh-246px)]
-           text-xl p-2 pb-6 rounded flex flex-col gap-y-2 items-start justify-start
+          `messages scrollbar-thin flex-grow overflow-y-auto h-full max-h-[calc(100cqh-250px)]
+           text-xl py-2 pl-2 pr-3 pb-6 rounded flex flex-col gap-y-2.5
            shadow-inner scroll-smooth rounded-tr-xl
            `,
+          css({
+            scrollbarColor: "var(--violet-5) var(--violet-2)",
+            scrollbarGutter: "stable",
+          }),
         )}
       >
         {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={tx(
-              msg.role === "ai" ? aiMsgClass : userMsgClass,
-              msgCommon,
-              "w-fit max-w-[90%] text-sm",
-            )}
-          >
+          <div key={msg.id} className={tx(msg.role === "ai" ? aiMsgClass : userMsgClass, msgCommon)}>
             {msg.content}
           </div>
         ))}
       </div>
-      <div className="flex flex-col gap-1 p-2 justify-center bg-upstart-100 border-t border-upstart-300">
+      <form className="flex flex-col flex-1 max-h-60 gap-1.5 p-2 justify-center bg-upstart-100 border-t border-upstart-300">
         <TextArea
+          name="prompt"
           spellCheck={false}
+          autoComplete="off"
           autoCorrect="off"
           placeholder="Add a section just below the navbar showing a large photo of space"
           size="2"
           className={tx("h-32 w-full scrollbar-thin p-2")}
         />
         <div className="flex justify-between items-center text-gray-500">
-          <button type="button" className="hover:bg-upstart-200 p-1 rounded">
-            <IoIosAttach className="h-5 w-5" />
+          <button type="button" className="hover:bg-upstart-200 p-1 rounded inline-flex text-sm gap-1 ">
+            <IoIosAttach className="h-5 w-5" /> 3 files
           </button>
-          <Text color="gray" size="1" className="inline-flex items-center gap-1">
-            <BsStars className="text-sm text-upstart-400" /> Credits: 3500
-          </Text>
-          <Button type="button" size={"2"} className={tx("flex items-center gap-0.5")}>
+          <label className="inline-flex items-center gap-1 text-sm select-none">
+            <Switch name="allow_web_search" size={"1"} /> Allow web search
+          </label>
+          <Button type="submit" size={"2"} className={tx("flex items-center gap-0.5")}>
             <span className="text-[80%] font-normal opacity-80">⌘⏎</span>
             <TbSend2 className="text-lg" />
           </Button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }

@@ -24,7 +24,6 @@ export function fontSize(defaultValue = "inherit", title = "Font size") {
         "ui:styleId": "#styles:fontSize",
         "ui:field": "enum",
         "ui:display": "select",
-        "ui:inspector-tab": "style",
       },
     ),
   });
@@ -42,7 +41,6 @@ export function color(defaultValue = "inherit", title = "Text color") {
       "ui:styleId": "#styles:color",
       "ui:field": "color",
       "ui:color-type": "text",
-      "ui:inspector-tab": "style",
     }),
   });
 }

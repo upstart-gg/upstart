@@ -6,6 +6,7 @@ import { Text } from "@upstart.gg/style-system/system";
 import { HelpIcon } from "../HelpIcon";
 import { useDebounceCallback } from "usehooks-ts";
 import { FieldTitle } from "../field-factory";
+import { tx } from "@upstart.gg/style-system/twind";
 
 export const StringField: React.FC<FieldProps<string>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
@@ -19,7 +20,7 @@ export const StringField: React.FC<FieldProps<string>> = (props) => {
         <TextArea
           defaultValue={currentValue}
           onChange={(e) => onChangeDebounced(e.target.value)}
-          className="!mt-1 scrollbar-thin"
+          className={tx("!mt-1 scrollbar-thin", schema["ui:textarea-class"])}
           required={required}
           placeholder={placeholder}
           resize="vertical"
@@ -46,17 +47,8 @@ export const PathField: React.FC<FieldProps<string>> = (props) => {
   const path = (currentValue || "").toString().replace(/^\//, "");
 
   return (
-    <div className="field field-string">
-      {title && (
-        <div>
-          <label className={fieldLabel}>{title}</label>
-          {description && (
-            <Text as="p" color="gray" size="1">
-              {description}
-            </Text>
-          )}
-        </div>
-      )}
+    <div className="field field-path basis-full">
+      <FieldTitle title={title} description={description} />
       <TextField.Root
         defaultValue={path}
         onChange={(e) => onChangeDebounced(e.target.value)}

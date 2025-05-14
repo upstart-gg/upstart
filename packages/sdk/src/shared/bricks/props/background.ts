@@ -82,8 +82,8 @@ export function background(opts: BackgroundOptions = {}) {
         "ui:group": "background",
         "ui:group:title": "Background",
         "ui:color-type": colorType,
-        "ui:show-img-search": true,
-        "ui:inspector-tab": "style",
+        // disable for now
+        // "ui:show-img-search": true,
         default: {
           color: defaultValue.color,
           size: defaultValue.size,

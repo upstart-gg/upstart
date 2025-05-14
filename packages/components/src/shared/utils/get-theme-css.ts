@@ -6,6 +6,8 @@ export function getThemeCss(theme: Theme) {
   const injected = `@layer upstart-theme {
     :root {
       color-scheme: ${theme.browserColorScheme};
+      /* cache buster */
+      --rnd: ${Date.now()};
       ${Object.entries(shades)
         .map(([key, value]) => `--${key}: ${value};`)
         .join("\n")}

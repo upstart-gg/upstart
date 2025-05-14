@@ -78,7 +78,11 @@ export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
           <ColorPill
             color={currentValue.color}
             elementColorType="border"
-            onChange={(e) => onChange({ ...currentValue, color: e })}
+            onChange={(color) => {
+              if (color) {
+                onChange({ ...currentValue, color });
+              }
+            }}
           />
         </div>
 

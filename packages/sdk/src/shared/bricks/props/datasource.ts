@@ -50,7 +50,6 @@ export function datasourceRef() {
       },
       {
         "ui:field": "datasource-ref",
-        "ui:inspector-tab": "content",
         "ui:meta-type": "datasource-ref",
         description: "Datasource reference. Only used for dynamic websites. Do not use for static websites.",
       },

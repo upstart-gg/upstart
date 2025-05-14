@@ -5,7 +5,6 @@ import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { debounce, get, merge } from "lodash-es";
 import { useBrickManifest } from "./use-brick-manifest";
-import { getTextContrastedColor } from "@upstart.gg/sdk/shared/themes/color-system";
 import { useEffect } from "react";
 import { useGetBrick } from "~/editor/hooks/use-editor";
 import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";

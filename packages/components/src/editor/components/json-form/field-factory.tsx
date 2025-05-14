@@ -379,7 +379,7 @@ export function FieldTitle({ title, description }: { title?: string; description
           <label
             className={clsx(
               fieldLabel,
-              "underline-offset-4 no-underline hover:underline decoration-upstart-300 decoration-dotted cursor-help",
+              "underline-offset-4 no-underline hover:underline decoration-upstart-300 decoration-dotted cursor-default",
             )}
           >
             {title}

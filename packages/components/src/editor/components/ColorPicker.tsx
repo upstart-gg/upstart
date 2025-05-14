@@ -52,7 +52,7 @@ const BaseColorPicker: React.FC<BaseColorPickerProps> = ({
       </Text>
 
       {/* Color circles */}
-      <div className="grid grid-cols-7 gap-1.5 mt-3 max-h-96 overflow-y-auto scrollbar-thin scrollbar-color-upstart-200">
+      <div className="grid grid-cols-7 gap-1.5 mt-3 pr-4 max-h-[45dvh] overflow-y-scroll scrollbar-thin scrollbar-gutter-stable-both scrollbar-color-violet">
         {Object.entries(colorPalette).map(([colorName, shades], i) =>
           Object.entries(shades)
             .filter((shade) => {
@@ -64,7 +64,7 @@ const BaseColorPicker: React.FC<BaseColorPickerProps> = ({
                 type="button"
                 id={`${colorName}-${shadeName}`}
                 key={`${colorName}-${shadeName}`}
-                className="w-7 h-7 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-6 h-6 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 style={{
                   background: color,
                   boxShadow: selectedColor === color ? `0 0 0 2px white, 0 0 0 4px ${color}` : "none",

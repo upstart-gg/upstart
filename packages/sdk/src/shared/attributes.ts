@@ -70,11 +70,31 @@ const defaultAttributes = {
     "ui:group:title": "Meta tags",
   }),
 
+  $bodyBackground: optional(
+    Type.Composite([background()], {
+      default: {
+        color: "#ffffff",
+      },
+      title: "Body Background",
+      description:
+        "Applies to the body element of the page (while $pageBackground applies to the page container)",
+      "ui:field": "background",
+      // disable for now
+      // "ui:show-img-search": true,
+      "ui:group": "layout",
+      "ui:group:title": "Page Layout",
+      "ui:group:order": 3,
+    }),
+  ),
+
+  $pageBackground: optional(background({ title: "Page Background", defaultValue: { color: "base-100" } })),
+
   $pageOgImage: optional(
     string("Social share image", "", {
       description: "Image shown when page is shared on social media",
       "ai:guidelines": "Don't generate this property/image, it is automatically generated.",
       "ui:group": "meta",
+      "ui:field": "image",
     }),
   ),
 
@@ -103,6 +123,7 @@ const defaultAttributes = {
     description: "The URL path of the page",
     "ui:group": "location",
     "ui:group:title": "Location",
+    "ui:field": "path",
   }),
 
   $pageTitle: string("Title", "Untitled", {
@@ -116,12 +137,14 @@ const defaultAttributes = {
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
     description: "A short description of the page. Used by search engines",
+    "ui:multiline": true,
   }),
 
   $pageKeywords: string("Keywords", "", {
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
     description: "Keywords related to the page. Used by search engines",
+    "ui:multiline": true,
   }),
 
   $pageLastUpdated: optional(
@@ -133,47 +156,6 @@ const defaultAttributes = {
 
   // --- layout attributes ---
 
-  $bodyBackground: optional(
-    Type.Composite([background()], {
-      default: {
-        color: "#ffffff",
-      },
-      title: "Body Background",
-      description:
-        "Applies to the body element of the page (while $pageBackground applies to the page container)",
-      "ui:field": "background",
-      "ui:show-img-search": true,
-      "ui:group": "layout",
-      "ui:group:title": "Page Layout",
-      "ui:group:order": 3,
-    }),
-  ),
-
-  $pageBackground: optional(
-    Type.Composite(
-      [
-        background(),
-        Type.Object(
-          {},
-          {
-            title: "Page Background",
-          },
-        ),
-      ],
-      {
-        default: {
-          color: "base-100",
-        },
-        title: "Page Background",
-        "ui:field": "background",
-        "ui:show-img-search": true,
-        "ui:group": "background",
-        "ui:group:title": "Page Background",
-        "ui:group:order": 4,
-      },
-    ),
-  ),
-
   $siteHeadTags: optional(
     Type.String({
       title: "Head tags",
@@ -181,6 +163,9 @@ const defaultAttributes = {
         "Add custom tags to the <head> of your site. Useful for analytics tags, custom scripts, etc.",
       "ai:guidelines": "Don't include meta tags here, they are automatically generated.",
       "ui:multiline": true,
+      "ui:textarea-class": "h-40",
+      "ui:placeholder": "<script src='https://example.com/script.js'></script>",
+      "ui:premium": true,
       "ui:scope": "site",
       "ui:group": "external-scripts",
       "ui:group:title": "External scripts",
@@ -192,6 +177,9 @@ const defaultAttributes = {
       description:
         "Add custom tags to the <body> of your site. Useful for analytics tags, custom scripts, etc.",
       "ui:multiline": true,
+      "ui:premium": true,
+      "ui:textarea-class": "h-40",
+      "ui:placeholder": "<script src='https://example.com/script.js'></script>",
       "ui:scope": "site",
       "ui:group": "external-scripts",
       "ui:group:title": "External scripts",

@@ -287,7 +287,7 @@ function ColorBasePopover({
   color,
   onChange,
 }: Pick<ColorBasePreviewPillProps, "align" | "side" | "color" | "colorType" | "onChange">) {
-  const width = "280px";
+  const width = "240px";
   return (
     <Popover.Content width={width} side={side} align={align} maxWidth={width}>
       <BaseColorPicker colorType={colorType} initialValue={color} onChange={onChange} />

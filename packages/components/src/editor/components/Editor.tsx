@@ -20,7 +20,7 @@ import { lazy, Suspense, useEffect, useRef, useState, type ComponentProps } from
 import { useDebounceCallback } from "usehooks-ts";
 import { DeviceFrame } from "./Preview";
 import EditablePage from "./EditablePage";
-import { injectGlobal, css, tx } from "@upstart.gg/style-system/twind";
+import { injectGlobal, css, tx, tw } from "@upstart.gg/style-system/twind";
 import { Button, Spinner, toast } from "@upstart.gg/style-system/system";
 import { usePageAutoSave } from "~/editor/hooks/use-page-autosave";
 import DataPanel from "./PanelData";
@@ -70,7 +70,8 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
 
   useEffect(() => {
     const themeUsed = draft.previewTheme ?? draft.theme;
-    injectGlobal(getThemeCss(themeUsed));
+    console.debug("Theme changed");
+    tw(css(getThemeCss(themeUsed)));
   }, [draft.previewTheme, draft.theme]);
 
   if (!editorEnabled) {
@@ -139,7 +140,7 @@ function getEditorCss(chatVisible?: boolean) {
   return css({
     gridTemplateAreas: chatVisible ? `"navbar navbar" "chat main"` : `"navbar" "main"`,
     gridTemplateRows: "64px 1fr",
-    gridTemplateColumns: chatVisible ? "clamp(280px, 25%, 380px) 1fr" : "1fr",
+    gridTemplateColumns: chatVisible ? "clamp(280px, 25%, 410px) 1fr" : "1fr",
   });
 }
 
@@ -183,9 +184,11 @@ function Panel({ className, ...props }: PanelProps) {
       id="floating-panel"
       className={tx(
         `z-[9999] fixed top-0 bottom-0 flex shadow-2xl overscroll-none \
-        min-w-[360px] w-[360px] opacity-100 transition-transform duration-150
+        min-w-[360px] w-[360px] opacity-100
         bg-white dark:bg-dark-900 border-upstart-200 dark:border-dark-700 overflow-visible`,
         {
+          "transition-transform duration-150": !!panel,
+          "transition-opacity duration-100": !panel,
           "left-0 border-r": panelPosition === "left",
           "right-0 border-l": panelPosition === "right",
           "-translate-x-full opacity-0": !panel && panelPosition === "left",

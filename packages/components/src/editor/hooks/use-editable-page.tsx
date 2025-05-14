@@ -365,13 +365,9 @@ export const useEditablePage = (
     snapSizeToGrid,
   ]);
 
-  const dropzoneOverElement = useRef<HTMLElement | null>(null);
-
   useEffect(() => {
     if (pageRef.current) {
       dropzone.current = interact('[data-dropzone="true"]');
-      // dropzone.current = interact("section");
-      // dropzone.current = interact(pageRef.current);
       dropzone.current
         .dropzone({
           accept: ".draggable-brick",
