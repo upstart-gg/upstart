@@ -8,6 +8,7 @@ import { string } from "../props/string";
 import { padding } from "../props/padding";
 import { border } from "../props/border";
 import { shadow } from "../props/effects";
+import { RiMapPinTimeLine } from "react-icons/ri";
 
 export const manifest = defineBrickManifest({
   type: "timeline",
@@ -19,7 +20,7 @@ export const manifest = defineBrickManifest({
     It can be used for company history, project roadmaps, or any sequential information.
     Each item has a date/time, title, description, and optional icon.
   `.trim(),
-  icon: MdTimeline,
+  icon: RiMapPinTimeLine,
 
   defaultHeight: { desktop: 12, mobile: 18 },
   defaultWidth: { desktop: 36, mobile: 24 },

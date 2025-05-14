@@ -4,7 +4,6 @@ import { defineAttributes } from "@upstart.gg/sdk/attributes";
 import { defineConfig } from "@upstart.gg/sdk/template";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import { type Brick, processBrick, processSections } from "@upstart.gg/sdk/shared/bricks";
-import { preset } from "@upstart.gg/sdk/shared/bricks/props/preset";
 
 // define your datasources
 const datasources = defineDataSources({
@@ -84,21 +83,21 @@ const contentBricks: Brick[] = [
     id: "b-hero-xyz",
     type: "text",
     props: {
-      content: "Some specific content",
+      content: "XYZ content",
     },
   },
   {
     id: "b-hero-abc",
     type: "text",
     props: {
-      content: "Some specific content 2",
+      content: "ABC content",
     },
   },
   {
     id: "b-hero-4",
     type: "text",
     props: {
-      textContent: "Footer text",
+      content: "Footer text",
     },
   },
 ];
@@ -110,7 +109,6 @@ const homePageSections = processSections([
     order: 0,
     props: {
       preset: "bold-primary",
-      // horizontalPadding: "10px",
     },
     bricks: [
       {
@@ -149,7 +147,7 @@ const homePageSections = processSections([
     props: {
       preset: "bold-primary",
       background: {
-        color: "#CCCCCC",
+        color: "medium-accent",
       },
     },
     bricks: [],

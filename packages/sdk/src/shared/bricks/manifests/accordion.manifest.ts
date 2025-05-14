@@ -10,6 +10,7 @@ import { padding } from "../props/padding";
 import { border } from "../props/border";
 import { shadow } from "../props/effects";
 import { boolean } from "../props/boolean";
+import { TfiLayoutAccordionSeparated } from "react-icons/tfi";
 
 export const manifest = defineBrickManifest({
   type: "accordion",
@@ -22,7 +23,7 @@ export const manifest = defineBrickManifest({
     Each item has a title and expandable content area.
     Multiple panels can be open simultaneously or limited to one at a time.
   `.trim(),
-  icon: MdExpandMore,
+  icon: TfiLayoutAccordionSeparated,
 
   defaultHeight: { desktop: 10, mobile: 15 },
   defaultWidth: { desktop: 36, mobile: 24 },

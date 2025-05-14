@@ -1,4 +1,4 @@
-import { Type, type StringOptions } from "@sinclair/typebox";
+import { type Static, Type, type StringOptions } from "@sinclair/typebox";
 import { prop } from "./helpers";
 import type { jsonStringsSupportedFormats } from "../../ajv";
 import type { FieldMetadata } from "./types";
@@ -37,16 +37,18 @@ export function urlOrPageId(title = "URL or Page ID", defaultValue?: string) {
       [
         Type.String({
           format: "uri",
-          "ui:field": "url",
         }),
         pageIdSchema,
       ],
       {
         default: defaultValue,
         title: "URL or Page ID",
+        "ui:field": "url-page-id",
         "ai:instructions":
           "This field can be a URL or a page ID. Use the page ID when linking to a internal page, and a URL for external links.",
       },
     ),
   });
 }
+
+export type UrlOrPageIdSettings = Static<ReturnType<typeof urlOrPageId>>;

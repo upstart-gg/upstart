@@ -108,10 +108,9 @@ function getSectionEditorStyles({ section, editable, selected, previewMode }: Us
           display: none;
         }
         &>[data-element-kind="brick"]:not(.moving) {
-          outline: 2px dotted #FF9900;
-          outline-offset: 0px;
+          /*outline: 2px dotted #FF9900;
+          outline-offset: 0px;*/
         }
-      }
-    `,
+      }`,
   ];
 }

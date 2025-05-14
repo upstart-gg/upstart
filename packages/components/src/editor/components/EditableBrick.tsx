@@ -47,7 +47,6 @@ import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests
 import { BiSolidColor } from "react-icons/bi";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { FiSettings, FiDatabase, FiTrash, FiTrash2 } from "react-icons/fi";
-import { BrickPopover } from "./BrickPopover";
 import { tx, css } from "@upstart.gg/style-system/twind";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
@@ -167,10 +166,10 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
         const target = e.target as HTMLElement;
         const group = target.closest<HTMLElement>("[data-brick-group]");
 
-        if (group) {
-          console.debug("onBrickWrapperClick: click ignored (group)");
-          return;
-        }
+        // if (group) {
+        //   console.debug("onBrickWrapperClick: click ignored (group)");
+        //   return;
+        // }
 
         if (hasMouseMoved.current || !brickTarget.matches("[data-brick]")) {
           return;
@@ -201,7 +200,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
         editorHelpers.setSelectedBrickId(selectedBrick.id);
         editorHelpers.setPanel("inspector");
         hasMouseMoved.current = false;
-
         // stop propagation otherwise the click could then be handled by the container
         e.stopPropagation();
       },
@@ -226,7 +224,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           {...getReferenceProps()}
         >
           <BaseBrick brick={brick} selectedBrickId={selectedBrickId} editable />
-          {/* <BrickEditLabel brick={brick} isContainerChild={isContainerChild} /> */}
+          {!manifest.isContainer && <BrickDebugLabel brick={brick} />}
           {children} {/* Make sure to include children to add resizable handle */}
           <BrickMenuBarsContainer
             ref={barsRefs.setFloating}
@@ -241,6 +239,18 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     );
   },
 );
+
+function BrickDebugLabel({ brick }: { brick: Brick }) {
+  const debug = useDebugMode();
+  if (!debug) {
+    return null;
+  }
+  return (
+    <div className="absolute hidden group-hover/brick:block bottom-1 right-1 text-xs text-black/40">
+      {brick.id}
+    </div>
+  );
+}
 
 type BrickMenuBarProps = ComponentProps<"div"> &
   PropsWithChildren<{
@@ -313,12 +323,10 @@ function BrickMainNavBar({ brick }: { brick: Brick }) {
       </span> */}
 
       {/* Settings & styles */}
-      <BrickPopover brick={brick} view="settings">
-        <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-          <FiSettings className={tx("w-5 h-5")} />
-          {/* <span className={tx(menuBarTooltipCls)}>Settings</span> */}
-        </button>
-      </BrickPopover>
+      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
+        <FiSettings className={tx("w-5 h-5")} />
+        {/* <span className={tx(menuBarTooltipCls)}>Settings</span> */}
+      </button>
       {/* Content */}
       <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
         <FiDatabase className={tx("w-5 h-5")} />

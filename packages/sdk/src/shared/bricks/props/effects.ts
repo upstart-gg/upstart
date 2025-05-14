@@ -21,6 +21,7 @@ export function shadow({ title = "Shadow", defaultValue = "shadow-none" }: Shado
       {
         default: defaultValue,
         "ui:styleId": "#styles:shadow",
+        "ui:placeholder": "Not specified",
         "ui:field": "enum",
         "ui:display": "select",
       },
@@ -52,6 +53,7 @@ export function textShadow({
       {
         default: defaultValue,
         "ui:field": "enum",
+        "ui:placeholder": "Not specified",
       },
     ),
   });

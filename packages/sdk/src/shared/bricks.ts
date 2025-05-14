@@ -266,7 +266,7 @@ export function processBrick(brick: Brick): Brick {
 
   const result = {
     ...brick,
-    props: merge(defProps.props, brick.props),
+    props: merge({}, defProps.props, brick.props),
     ...(brick.$children ? { $children: (brick.$children as Brick[]).map(processBrick) } : {}),
   };
 

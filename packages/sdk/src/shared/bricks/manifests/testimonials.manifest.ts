@@ -5,6 +5,7 @@ import { string } from "../props/string";
 import { Type } from "@sinclair/typebox";
 import { textContent } from "../props/text";
 import { image } from "../props/image";
+import { HiOutlineChatBubbleBottomCenter } from "react-icons/hi2";
 
 export const manifest = defineBrickManifest({
   type: "testimonials",
@@ -12,7 +13,7 @@ export const manifest = defineBrickManifest({
   kind: "widget",
   description: "Display testimonials from users",
   repeatable: false,
-  icon: PiConfetti,
+  icon: HiOutlineChatBubbleBottomCenter,
   props: defineProps(
     {
       orientation: optional(

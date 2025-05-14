@@ -29,7 +29,7 @@ export default function ThemePanel() {
       </Tabs.List>
 
       <ScrollablePanelTab tab="current" className="p-2">
-        <Callout.Root size="1">
+        <Callout.Root>
           <Callout.Text size="1" className={tx("text-pretty")}>
             Customize your theme colors and typography to match your brand. Please note that the theme will be
             applied to your entire site, not just the current page.
@@ -140,10 +140,10 @@ export default function ThemePanel() {
         </div>
       </ScrollablePanelTab>
       <ScrollablePanelTab tab="list" className="p-2">
-        <Callout.Root size="1">
-          <Callout.Text size="1" className={tx("text-pretty")}>
-            Here are some pre-made themes you can use. Click on a theme to preview it. Also feel free to use
-            the Upstart AI chat to ask for a specific theme!
+        <Callout.Root>
+          <Callout.Text size="2" className={tx("text-pretty")}>
+            Here are some pre-made color themes. Click on a theme to preview it. Also feel free to use the
+            Upstart AI chat to ask for a specific theme!
           </Callout.Text>
         </Callout.Root>
         <ThemeListWrapper>

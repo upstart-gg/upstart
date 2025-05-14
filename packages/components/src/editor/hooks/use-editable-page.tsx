@@ -11,11 +11,17 @@ import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import {
   getBrickPosition,
   getBrickCoordsInPage,
-  getSectionAtPosition,
+  getSectionElementAtPosition,
   getDropPosition,
   getGridConfig,
   getClosestSection,
+  getBrickElementAtPosition,
+  getBricksHovered,
+  getDropInstructions,
+  showDropIndicator,
+  removeDropIndicator,
 } from "~/shared/utils/layout-utils";
+import { backgroundColor } from "@upstart.gg/sdk/shared/bricks/props/background";
 
 interface DragCallbacks {
   onDragEnd: (
@@ -114,6 +120,7 @@ export const useEditablePage = (
   useEffect(() => {
     interactable.current = interact(bricksSelectorOrRef, {
       styleCursor: false,
+      // hold: 50,
     })
       .on("dragstart", (event) => {
         event.target.style.cursor = "move";
@@ -148,64 +155,109 @@ export const useEditablePage = (
         start: (event: Interact.InteractEvent) => {
           console.debug("useEditablePage:listeners:start()", event);
           const target = event.target as HTMLElement;
+
           const elements = selectedGroup ? selectedGroup.map((id) => document.getElementById(id)!) : [target];
 
           elements.forEach((target) => {
             // Get initial position relative to container
             const initialPos = getBrickCoordsInPage(target);
+            const computedStyle = window.getComputedStyle(target);
+            const clone = target.cloneNode(true) as HTMLElement;
+            clone.setAttribute("id", `${target.id}-clone`);
 
             // Now set up the element for dragging
-            target.dataset.tempX = initialPos.x.toString();
-            target.dataset.tempY = initialPos.y.toString();
-            target.dataset.originalStylePos =
-              target.style.position && target.style.position !== "" ? target.style.position : "relative";
-            target.dataset.originalStyleZIndex = target.style.zIndex;
+            clone.dataset.tempX = initialPos.x.toString();
+            clone.dataset.tempY = initialPos.y.toString();
+            clone.dataset.elementKind = "clone";
+
+            // wasDragged has to be set on the original element
             target.dataset.wasDragged = "false";
 
-            Object.assign(target.style, {
+            Object.assign(clone.style, {
               position: "fixed",
               top: `${initialPos.y}px`,
               left: `${initialPos.x}px`,
               width: `${initialPos.w}px`,
               height: `${initialPos.h}px`,
               zIndex: "999999",
+              backgroundColor:
+                computedStyle.backgroundColor === "rgba(0, 0, 0, 0)"
+                  ? "var(--violet-a6)"
+                  : computedStyle.backgroundColor,
             });
+
+            target.insertAdjacentElement("afterend", clone);
+          });
+        },
+        move: (event: Interact.InteractEvent) => {
+          const target = event.target as HTMLElement;
+
+          target.dataset.wasDragged = "true";
+
+          requestAnimationFrame(() => {
+            target.classList.add("moving");
+          });
+
+          const section = getSectionElementAtPosition(event.client.x, event.client.y);
+          const hoveredBricks = section ? getBricksHovered(target.id, event.rect, section) : null;
+          const instructions = hoveredBricks ? getDropInstructions(event.rect, hoveredBricks) : null;
+          instructions && showDropIndicator(instructions);
+
+          const elements = selectedGroup ? selectedGroup.map((id) => document.getElementById(id)!) : [target];
+          elements.forEach((element) => {
+            const clone = document.getElementById(`${element.id}-clone`);
+            if (!clone) {
+              console.warn("Clone not found");
+              return;
+            }
+
+            // hide the original element
+            element.style.visibility = "hidden";
+
+            const x = parseFloat(clone.dataset.tempX || "0") + event.dx;
+            const y = parseFloat(clone.dataset.tempY || "0") + event.dy;
+            updateElementTransform(clone, x, y);
           });
         },
 
         end: (event: Interact.InteractEvent) => {
           console.log("useEditablePage:listeners:end()", event);
 
+          removeDropIndicator();
+
           const target = event.target as HTMLElement;
           const updatedPositions: Parameters<DragCallbacks["onDragEnd"]>[0] = [];
           const elements = selectedGroup ? selectedGroup.map((id) => document.getElementById(id)!) : [target];
-          const section = getSectionAtPosition(event.client.x, event.client.y);
+          const section = getSectionElementAtPosition(event.client.x, event.client.y);
+          const hoveredBricks = section ? getBricksHovered(target.id, event.rect, section) : null;
+          const instructions = hoveredBricks ? getDropInstructions(event.rect, hoveredBricks) : null;
 
-          invariant(section, "Section not found");
+          console.log("DROPPED instructions", instructions);
 
-          for (const element of elements) {
-            const brick = getBrick(element.id);
-            if (brick) {
-              updatedPositions.push({
-                brick,
-                gridPosition: getBrickPosition(element, previewMode, section),
-                sectionId: section.id,
-              });
+          for (const draggedElement of elements) {
+            // restore element visibility
+            draggedElement.style.visibility = "visible";
+
+            const brick = getBrick(draggedElement.id);
+            if (brick && section && instructions) {
+              // updatedPositions.push({
+              //   brick,
+              //   gridPosition: getBrickPosition(element, previewMode, section),
+              //   sectionId: section.id,
+              // });
+              const { dropTarget, position } = instructions;
+              if (!dropTarget) {
+                console.warn("No drop target found");
+                return;
+              }
+              dropTarget.insertAdjacentElement(position, draggedElement);
             }
 
-            // reset the styles
-            requestAnimationFrame(() => {
-              Object.assign(element.style, {
-                transform: "none",
-                transition: "none",
-                position: target.dataset.originalStylePos ?? "relative",
-                zIndex: target.dataset.originalStyleZIndex ?? "",
-                top: "",
-                left: "",
-                width: "auto",
-                height: "auto",
-              });
-            });
+            // remove the clone
+            const clone = document.getElementById(`${draggedElement.id}-clone`);
+            if (clone) {
+              clone.remove();
+            }
           }
 
           // Important: only remove the `moving` class after we've collected the positions
@@ -218,23 +270,6 @@ export const useEditablePage = (
           setTimeout(() => {
             target.dataset.wasDragged = "false";
           }, 200);
-        },
-
-        move: (event: Interact.InteractEvent) => {
-          const target = event.target as HTMLElement;
-          target.dataset.wasDragged = "true";
-
-          requestAnimationFrame(() => {
-            target.classList.add("moving");
-          });
-
-          const elements = selectedGroup ? selectedGroup.map((id) => document.getElementById(id)!) : [target];
-          elements.forEach((element) => {
-            if (!element) return;
-            const x = parseFloat(element.dataset.tempX || "0") + event.dx;
-            const y = parseFloat(element.dataset.tempY || "0") + event.dy;
-            updateElementTransform(element, x, y);
-          });
         },
       },
       ...dragOptions,
@@ -374,7 +409,7 @@ export const useEditablePage = (
           ondrop: (event: Interact.DropEvent) => {
             const type = event.relatedTarget.dataset.brickType as Brick["type"] | undefined;
             if (type) {
-              const section = getSectionAtPosition(event.dragEvent.clientX, event.dragEvent.clientY);
+              const section = getSectionElementAtPosition(event.dragEvent.clientX, event.dragEvent.clientY);
               invariant(section, "Section not found");
 
               const gridConfig = getGridConfig(section, previewMode);
@@ -413,7 +448,7 @@ export const useEditablePage = (
           // console.log("dropmove", event, type, overElement.id);
 
           if (type) {
-            const section = getSectionAtPosition(event.dragEvent.clientX, event.dragEvent.clientY);
+            const section = getSectionElementAtPosition(event.dragEvent.clientX, event.dragEvent.clientY);
             invariant(section, "Section not found");
             const gridConfig = getGridConfig(section, previewMode);
             const constraints: BrickConstraints = defaultProps[type];

@@ -971,6 +971,7 @@ export const createDraftStore = (
           {
             name: `draft-state-${initProps.id}`,
             skipHydration: initProps.mode === "remote" || import.meta.env.DEV,
+            version: 1,
             // Add this to force storage on initialization
             onRehydrateStorage: () => (state) => {
               if (state) {
@@ -1055,7 +1056,7 @@ export const useEditor = () => {
   return useStore(ctx);
 };
 
-export const usePagesInfo = () => {
+export const usePagesMap = () => {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => state.pagesMap);
 };

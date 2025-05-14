@@ -76,9 +76,8 @@ export default function PanelLibrary() {
             <Callout.Text size="1">Simply drag and drop those base bricks to your page.</Callout.Text>
           </Callout.Root>
         )}
-
         <div
-          className={tx("grid gap-1 p-1.5")}
+          className={tx("grid gap-1.5 p-2")}
           style={{
             gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
           }}
@@ -103,14 +102,12 @@ export default function PanelLibrary() {
         <PanelBlockTitle>Widgets</PanelBlockTitle>
         {shouldDisplayLibraryCallout && (
           <Callout.Root size="1" color="violet" className="!rounded-none">
-            <Callout.Text size="1">
-              Widgets are reusable components that can be added to your page.
-            </Callout.Text>
+            <Callout.Text size="1">Widgets are more complex components you can use.</Callout.Text>
           </Callout.Root>
         )}
 
         <div
-          className={tx("grid gap-1 p-1.5")}
+          className={tx("grid gap-1.5 p-2")}
           style={{
             gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
           }}

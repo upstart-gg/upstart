@@ -12,8 +12,7 @@ import {
   useSelectedSectionId,
 } from "../hooks/use-editor";
 import { BiArrowFromRight, BiArrowFromLeft } from "react-icons/bi";
-
-import Toolbar from "./Toolbar";
+import { RxCross2 } from "react-icons/rx";
 import { LuPanelLeft, LuPanelRight } from "react-icons/lu";
 import NavBar from "./NavBar";
 import { lazy, Suspense, useEffect, useRef, useState, type ComponentProps } from "react";
@@ -171,7 +170,7 @@ function Panel({ className, ...props }: PanelProps) {
   const previewMode = usePreviewMode();
   const selectedBrickId = useSelectedBrickId();
   const selectedSection = useSelectedSection();
-  const { togglePanelPosition } = useEditorHelpers();
+  const { togglePanelPosition, hidePanel } = useEditorHelpers();
   const getBrickInfo = useGetBrick();
   const selectedBrick = selectedBrickId ? getBrickInfo(selectedBrickId) : null;
 
@@ -208,19 +207,37 @@ function Panel({ className, ...props }: PanelProps) {
         {panel === "data" && <DataPanel />}
 
         {panel && (
-          <button
-            type="button"
-            className={tx(
-              "absolute bottom-0 p-1 bg-upstart-50  border border-b-0 border-upstart-200 text-upstart-400 dark:text-upstart-200 hover:text-upstart-600 dark:hover:text-upstart-100",
-              panelPosition === "right" ? "-left-8 rounded-tl border-r-0" : "-right-8 rounded-tr border-l-0",
-            )}
-            onClick={() => {
-              togglePanelPosition();
-            }}
-          >
-            {panelPosition === "right" && <LuPanelLeft size={24} />}
-            {panelPosition === "left" && <LuPanelRight size={24} />}
-          </button>
+          <>
+            <button
+              type="button"
+              className={tx(
+                "absolute top-0 p-1.5 shadow-lg bg-gradient-to-tr from-upstart-500 to-upstart-400 border border-t-0 border-upstart-200 text-white/80 hover:text-white",
+                panelPosition === "right"
+                  ? "-left-9 rounded-bl border-r-0"
+                  : "-right-9 rounded-br border-l-0",
+              )}
+              onClick={() => {
+                hidePanel();
+              }}
+            >
+              <RxCross2 size={22} />
+            </button>
+            <button
+              type="button"
+              className={tx(
+                "absolute bottom-0 p-1.5 bg-upstart-50  border border-b-0 border-upstart-200 text-upstart-400 dark:text-upstart-200 hover:text-upstart-600 dark:hover:text-upstart-100",
+                panelPosition === "right"
+                  ? "-left-9 rounded-tl border-r-0"
+                  : "-right-9 rounded-tr border-l-0",
+              )}
+              onClick={() => {
+                togglePanelPosition();
+              }}
+            >
+              {panelPosition === "right" && <LuPanelLeft size={24} />}
+              {panelPosition === "left" && <LuPanelRight size={24} />}
+            </button>
+          </>
         )}
       </div>
     </aside>

@@ -8,7 +8,7 @@ import { IoIosHelpCircleOutline } from "react-icons/io";
 
 import {
   useDraftUndoManager,
-  usePagesInfo,
+  usePagesMap,
   useEditorMode,
   usePageVersion,
   useLastSaved,
@@ -46,7 +46,7 @@ export default function NavBar({ showIntro }: TopBarProps) {
   const editorMode = useEditorMode();
   const pageVersion = usePageVersion();
   const lastSaved = useLastSaved();
-  const pages = usePagesInfo();
+  const pages = usePagesMap();
   const { panel } = usePanel();
   const { canZoomIn, canZoomOut, zoomIn, zoomOut, zoom } = useZoom();
   const chatVisible = useChatVisible();
@@ -299,13 +299,23 @@ export default function NavBar({ showIntro }: TopBarProps) {
         <span className="inline-flex items-center gap-1">
           <BsStars className="opacity-60 w-4 h-4" /> 3500 credits
         </span>
-        <button
-          type="button"
-          className="underline underline-offset-2 -mt-1.5 pl-5 text-[88%] text-upstart-600 hover:text-orange-800"
-          onClick={() => alert("buy")}
-        >
-          Buy more
-        </button>
+        <div className="inline-flex gap-1 items-center">
+          <button
+            type="button"
+            className="hover:underline tracking-tight underline-offset-2 -mt-1.5 text-[88%] text-upstart-600 hover:text-upstart-700"
+            onClick={() => alert("buy")}
+          >
+            What's this?
+          </button>
+          <span className="-mt-1.5 ">&bull;</span>
+          <button
+            type="button"
+            className="hover:underline tracking-tight underline-offset-2 -mt-1.5 text-[88%] text-upstart-600 hover:text-orange-800"
+            onClick={() => alert("buy")}
+          >
+            Buy more
+          </button>
+        </div>
       </div>
 
       <div className={separator} />

@@ -4,6 +4,7 @@ import { PiConfetti } from "react-icons/pi";
 import { string } from "../props/string";
 import { Type } from "@sinclair/typebox";
 import { backgroundColor } from "../props/background";
+import { RxDividerHorizontal } from "react-icons/rx";
 
 export const manifest = defineBrickManifest({
   type: "divider",
@@ -11,7 +12,7 @@ export const manifest = defineBrickManifest({
   kind: "brick",
   description: "A horizontal or vertical divider",
   repeatable: true,
-  icon: PiConfetti,
+  icon: RxDividerHorizontal,
   props: defineProps(
     {
       orientation: optional(

@@ -314,7 +314,9 @@ const TextEditor = <T extends ElementType = "div">({
         autoCorrect="false"
         spellCheck="false"
         editor={editor}
-        className={tx("outline-none ring-0 min-h-full flex flex-1")}
+        // test not growing the text editor so that the brick can be more easily dragged
+        className={tx("outline-none ring-0 flex")}
+        // className={tx("outline-none ring-0 min-h-full flex flex-1")}
       />
       {focused && menuBarContainer && (
         <Portal container={menuBarContainer} asChild>

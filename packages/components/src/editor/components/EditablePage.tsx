@@ -16,8 +16,7 @@ import { defaultProps, manifests } from "@upstart.gg/sdk/bricks/manifests/all-ma
 import { usePageStyle } from "~/shared/hooks/use-page-style";
 import { useFontWatcher } from "../hooks/use-font-watcher";
 import Section from "./EditableSection";
-import BrickSettingsPopover from "./BrickPopover";
-import { getBrickIdAtPosition } from "~/shared/utils/layout-utils";
+import { getBrickElementAtPosition } from "~/shared/utils/layout-utils";
 import { tx, css } from "@upstart.gg/style-system/twind";
 
 const ghostValid = tx("bg-upstart-100");
@@ -106,8 +105,10 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
             type: brickType,
           };
 
-          const hoveredBrickId = getBrickIdAtPosition(position.x, position.y);
-          const hoveredBrick = hoveredBrickId ? draft.getBrick(hoveredBrickId) : null;
+          const hoveredBrickElement = getBrickElementAtPosition(position.x, position.y);
+          const hoveredBrick = hoveredBrickElement
+            ? draft.getBrick(hoveredBrickElement.dataset.brickId as string)
+            : null;
           const hoveredBrickManifest = hoveredBrick ? manifests[hoveredBrick.type] : null;
 
           // Add the new brick to the store
@@ -220,7 +221,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           });
         }}
       />
-      <BrickSettingsPopover />
       <Toaster
         toastOptions={{
           position: "bottom-center",

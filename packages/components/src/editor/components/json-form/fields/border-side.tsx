@@ -8,8 +8,6 @@ import { tx, css } from "@upstart.gg/style-system/twind";
 export const BorderSideField: React.FC<FieldProps<BorderSettings["sides"]>> = (props) => {
   const { currentValue = [], onChange, title, description, schema } = props;
 
-  console.log("init with currentValue", currentValue);
-
   return (
     <div className="border-side-field flex flex-1">
       <div className="flex justify-between items-center flex-1">
