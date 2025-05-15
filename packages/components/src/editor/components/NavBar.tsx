@@ -24,7 +24,7 @@ import { RxRocket } from "react-icons/rx";
 import logo from "../../../../../creatives/upstart.svg";
 import dark from "../../../../../creatives/upstart-dark.svg";
 import { RiArrowDownSLine } from "react-icons/ri";
-import { DropdownMenu, Link, Popover, TextField } from "@upstart.gg/style-system/system";
+import { DropdownMenu, HoverCard, Link, Popover, TextField } from "@upstart.gg/style-system/system";
 import { IoIosSave } from "react-icons/io";
 import { LuExternalLink } from "react-icons/lu";
 import { formatDistance } from "date-fns";
@@ -300,13 +300,22 @@ export default function NavBar({ showIntro }: TopBarProps) {
           <BsStars className="opacity-60 w-4 h-4" /> 3500 credits
         </span>
         <div className="inline-flex gap-1 items-center">
-          <button
-            type="button"
-            className="hover:underline tracking-tight underline-offset-2 -mt-1.5 text-[88%] text-upstart-600 hover:text-upstart-700"
-            onClick={() => alert("buy")}
-          >
-            What's this?
-          </button>
+          <HoverCard.Root>
+            <HoverCard.Trigger>
+              <button
+                type="button"
+                className="hover:underline cursor-help tracking-tight underline-offset-2 -mt-1.5 text-[88%] text-upstart-600 hover:text-upstart-700"
+              >
+                What's this?
+              </button>
+            </HoverCard.Trigger>
+            <HoverCard.Content maxWidth="300px">
+              <div className="text-sm">
+                Credits are used for content generation with AI. If you ever run out of credits, you can buy
+                more or upgrade your plan.
+              </div>
+            </HoverCard.Content>
+          </HoverCard.Root>
           <span className="-mt-1.5 ">&bull;</span>
           <button
             type="button"

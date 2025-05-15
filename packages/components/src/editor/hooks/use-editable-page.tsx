@@ -93,6 +93,7 @@ export const useEditablePage = (
   const previewMode = usePreviewMode();
   const interactable = useRef<Interact.Interactable | null>(null);
   const dropzone = useRef<Interact.Interactable | null>(null);
+  const dropTargetRef = useRef<HTMLElement | null>(null);
 
   const snapPositionToGrid = useCallback(() => {
     return function (x: number, y: number, { element }: Interact.Interaction) {
@@ -201,7 +202,22 @@ export const useEditablePage = (
           const section = getSectionElementAtPosition(event.client.x, event.client.y);
           const hoveredBricks = section ? getBricksHovered(target.id, event.rect, section) : null;
           const instructions = hoveredBricks ? getDropInstructions(event.rect, hoveredBricks) : null;
-          instructions && showDropIndicator(instructions);
+
+          if (instructions?.dropTarget) {
+            if (dropTargetRef.current && instructions.dropTarget.id !== dropTargetRef.current?.id) {
+              dropTargetRef.current.style.backgroundColor =
+                dropTargetRef.current?.dataset.originalBackgroundColor ?? "";
+            }
+
+            dropTargetRef.current = instructions.dropTarget;
+            showDropIndicator(instructions);
+            dropTargetRef.current.dataset.originalBackgroundColor =
+              dropTargetRef.current.style.backgroundColor;
+            dropTargetRef.current.style.backgroundColor = "var(--violet-a3)";
+          } else if (dropTargetRef.current) {
+            dropTargetRef.current.style.backgroundColor =
+              dropTargetRef.current.dataset.originalBackgroundColor ?? "";
+          }
 
           const elements = selectedGroup ? selectedGroup.map((id) => document.getElementById(id)!) : [target];
           elements.forEach((element) => {
