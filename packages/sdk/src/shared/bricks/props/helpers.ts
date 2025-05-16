@@ -77,7 +77,7 @@ export function getStyleProperties(schema: TSchema, path = "", styles: Record<Pr
   if (schema.type === "object") {
     for (const key in schema.properties) {
       const prop = schema.properties[key];
-      if (prop["ui:styleId"]?.startsWith("#styles:")) {
+      if (prop["ui:styleId"]) {
         styles[`${path}${key}`] = prop["ui:styleId"];
       }
       getStyleProperties(prop, `${path}${key}.`, styles);

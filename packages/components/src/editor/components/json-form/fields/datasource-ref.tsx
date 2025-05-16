@@ -78,7 +78,10 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRefSettings>> = (props) 
 
   const datasourceSchema = brickManifest.datasource;
 
-  invariant(datasourceSchema, "Datasource schema is required for DatasourceRefField");
+  if (!datasourceSchema) {
+    console.warn("Datasource schema is not defined in the manifest");
+    return <Text>Datasource schema is not defined in the manifest</Text>;
+  }
 
   // We need to get the fields from the datasource schema. This will be used to map fields from the datasource to the schema
   // The datasource schema could be an object or an array of objects

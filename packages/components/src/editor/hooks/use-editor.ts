@@ -14,7 +14,6 @@ import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 import { generateId } from "@upstart.gg/sdk/shared/bricks";
 import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
 import type { Site } from "@upstart.gg/sdk/shared/site";
-import { set } from "date-fns";
 export { type Immer } from "immer";
 
 enableMapSet();
@@ -110,6 +109,7 @@ export interface EditorState extends EditorStateProps {
   toggleChat: () => void;
   zoomIn: () => void;
   zoomOut: () => void;
+  resetZoom: () => void;
 }
 
 export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
@@ -216,6 +216,11 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
             zoomOut: () =>
               set((state) => {
                 state.zoom = Math.max(state.zoom - 0.1, 0.5);
+              }),
+
+            resetZoom: () =>
+              set((state) => {
+                state.zoom = 1;
               }),
 
             setSelectedGroup: (group) =>
@@ -695,6 +700,7 @@ export const createDraftStore = (
                   for (const section of state.sections) {
                     for (const b of section.bricks) {
                       if (b.id === id) {
+                        console.log("found brick to UPDATE!", brick.props);
                         b.props = brick.props;
                         b.mobileProps = brick.mobileProps;
                         return;
@@ -1136,6 +1142,7 @@ export const useZoom = () => {
     zoomOut: state.zoomOut,
     canZoomIn: state.zoom < 2,
     canZoomOut: state.zoom > 0.5,
+    resetZoom: state.resetZoom,
   }));
 };
 

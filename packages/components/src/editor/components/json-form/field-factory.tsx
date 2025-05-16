@@ -29,6 +29,7 @@ import { fieldLabel } from "./form-class";
 import { Tooltip } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import clsx from "clsx";
+import { CssLengthField } from "./fields/css-length";
 
 export interface FieldFactoryOptions {
   brickId?: string;
@@ -230,6 +231,18 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;
       return (
         <UrlOrPageIdField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: string | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
+    case "css-length": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;
+      return (
+        <CssLengthField
           key={`field-${id}`}
           currentValue={currentValue}
           onChange={(value: string | null) => onChange({ [id]: value }, id)}

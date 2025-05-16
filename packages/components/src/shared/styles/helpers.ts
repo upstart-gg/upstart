@@ -101,21 +101,8 @@ export function getBasicAlignmentStyles(props: AlignBasicSettings, mobileProps?:
 }
 
 function getContainerLayoutStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {
-  return [
-    getGapStyles(props, mobileProps),
-    ...getFlexStyles(props, mobileProps),
-    ...getGridStyles(props, mobileProps),
-  ];
-}
-
-function getGapStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {
-  if (!props) {
-    return null;
-  }
-  if (mobileProps) {
-    return `${mobileProps.gap} @desktop:${props.gap}`;
-  }
-  return props.gap;
+  console.log("getContainerLayoutStyles", props);
+  return props?.type === "grid" ? getGridStyles(props, mobileProps) : getFlexStyles(props, mobileProps);
 }
 
 /**
@@ -126,6 +113,7 @@ function getFlexStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerL
   if (!props) {
     return [];
   }
+  console.log("getFlexStyles", props);
   if (mobileProps) {
     const mobileWrap = mobileProps.wrap ?? props.wrap;
     const mobileFillSpace = mobileProps.fillSpace ?? props.fillSpace;
@@ -134,16 +122,18 @@ function getFlexStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerL
       ${props.direction ?? ""}
       ${props.justifyContent ?? ""}
       ${props.alignItems ?? ""}
+      ${props.gap ?? ""}
       ${props.wrap ? "flex-wrap" : ""}
-      ${props.fillSpace ? "[&>*]:flex-1" : ""}
+      ${props.fillSpace ? "[&>*]:grow" : ""}
     )
     @mobile:(
       ${mobileProps.type ?? props.type ?? ""}
       ${mobileProps.direction ?? props.direction ?? ""}
       ${mobileProps.justifyContent ?? props.justifyContent ?? ""}
       ${mobileProps.alignItems ?? props.alignItems ?? ""}
+      ${props.gap ?? ""}
       ${mobileWrap ? "flex-wrap" : ""}
-      ${mobileFillSpace ? "[&>*]:flex-1" : ""}
+      ${mobileFillSpace ? "[&>*]:grow" : ""}
     )`;
   }
   return [
@@ -151,8 +141,10 @@ function getFlexStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerL
     props.direction,
     props.justifyContent,
     props.alignItems,
+    props.gap ?? "",
     props.wrap && "flex-wrap",
-    props.fillSpace && "[&>*]:flex-1",
+    props.fillSpace && "[&>*]:grow",
+    // props.fillSpace && "[&>*]:flex-1",
   ];
 }
 
@@ -194,3 +186,11 @@ export const brickWrapperStylesHelpersMap = {
   // "#styles:rounding": simpleClassHandler,
   "#styles:fixedPositioned": getFixedPositionedStyles,
 };
+
+// Return the upper path without the last part (the property name)
+export function extractStylePath(path: string) {
+  if (!path.includes(".")) {
+    return path;
+  }
+  return path.split(".").slice(0, -1).join(".");
+}

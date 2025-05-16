@@ -31,7 +31,7 @@ export function fontSize(defaultValue = "inherit", title = "Font size") {
 
 export type FontSizeSettings = Static<ReturnType<typeof fontSize>>;
 
-export function color(defaultValue = "inherit", title = "Text color") {
+export function color(defaultValue?: string, title = "Text color") {
   return prop({
     title,
     schema: Type.String({

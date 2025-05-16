@@ -14,7 +14,7 @@ const Text = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
   const classes = Object.values(styles);
 
   return (
-    <div className={tx("flex-1", ...classes)}>
+    <div className={tx("flex-inherit", ...classes)}>
       <TextContent
         ref={ref}
         propPath="content"

@@ -121,7 +121,7 @@ type ColorElementPreviewPillProps = {
 
 function formatColorName(color?: ElementColor) {
   if (!color) {
-    return "transparent";
+    return "inherited";
   }
   if (color === "#FFFFFF") {
     return "white";

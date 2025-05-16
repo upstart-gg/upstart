@@ -57,7 +57,7 @@ export default function AttributesSettingsView({
       initialGroup={group}
       navItems={navItems}
       formSchema={sectionSchema.properties.props}
-      className="h-[calc(100cqh/2)]"
+      className="h-full"
       formData={formData}
       onChange={onChange}
     />

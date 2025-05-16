@@ -160,8 +160,8 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         !target.closest("#text-editor-menubar") &&
         !target.matches("html") &&
         !target.matches("body") &&
-        !target.matches("[data-brick]") &&
-        !target.closest("[data-brick]")
+        !target.closest("[data-element-kind]") &&
+        !target.matches("[data-element-kind]")
       ) {
         console.debug("click out, hidding", event, event.target);
         editorHelpers.deselectBrick();

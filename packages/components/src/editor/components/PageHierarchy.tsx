@@ -49,13 +49,9 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
   }
 
   return (
-    <div className="flex-1 h-[calc(100cqh/2)]">
+    <div className="basis-1/2 grow-0">
       <PanelBlockTitle>Hierarchy</PanelBlockTitle>
-      <div
-        className={tx(
-          "py-2 px-2 flex flex-col gap-1 text-sm max-h-[calc(100cqh/2)] overflow-y-auto scrollbar-thin",
-        )}
-      >
+      <div className={tx("py-2 px-2 flex flex-col gap-1 text-sm overflow-y-auto scrollbar-thin")}>
         {/* <div className="py-2 px-2 flex flex-col gap-1 text-sm max-h-[calc((100dvh-75px)/2)] overflow-y-auto scrollbar-thin"> */}
         {sections.map((section) => (
           <div key={section.id} className="flex flex-col gap-px">

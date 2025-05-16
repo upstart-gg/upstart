@@ -96,7 +96,7 @@ export function background(opts: BackgroundOptions = {}) {
 
 export type BackgroundSettings = Static<ReturnType<typeof background>>;
 
-export function backgroundColor(defaultValue = "transparent", title = "Background color") {
+export function backgroundColor(defaultValue?: string, title = "Background color") {
   return prop({
     title,
     schema: Type.String({

@@ -30,9 +30,9 @@ export default function ThemePanel() {
 
       <ScrollablePanelTab tab="current" className="p-2">
         <Callout.Root>
-          <Callout.Text size="1" className={tx("text-pretty")}>
-            Customize your theme colors and typography to match your brand. Please note that the theme will be
-            applied to your entire site, not just the current page.
+          <Callout.Text size="2" className={tx("text-pretty")}>
+            Customize your theme colors and typography to match your brand. Theme is applied to your entire
+            site, not just the current page.
           </Callout.Text>
         </Callout.Root>
         <div className="flex flex-col">

@@ -7,7 +7,6 @@ import {
   type ComponentProps,
   type MouseEvent,
   useEffect,
-  useMemo,
   useCallback,
 } from "react";
 import {
@@ -16,7 +15,6 @@ import {
   useEditorHelpers,
   usePanel,
   usePreviewMode,
-  useSection,
   useSelectedBrickId,
 } from "../hooks/use-editor";
 import {
@@ -32,7 +30,6 @@ import {
   safePolygon,
   autoUpdate,
   type Placement,
-  useDelayGroup,
 } from "@upstart.gg/style-system/system";
 import BaseBrick from "~/shared/components/BaseBrick";
 import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
@@ -40,14 +37,12 @@ import {
   menuBarBtnCls,
   menuBarBtnCommonCls,
   menuBarBtnSquareCls,
-  menuBarTooltipCls,
   menuNavBarCls,
 } from "~/shared/styles/menubar-styles";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
-import { BiSolidColor } from "react-icons/bi";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
-import { FiSettings, FiDatabase, FiTrash, FiTrash2 } from "react-icons/fi";
-import { tx, css } from "@upstart.gg/style-system/twind";
+import { FiSettings, FiDatabase } from "react-icons/fi";
+import { tx } from "@upstart.gg/style-system/twind";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -94,7 +89,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const allowedPlacements = useBarPlacements(brick);
 
     // brick = brickWithDefaults(brick);
-
     const {
       refs: barsRefs,
       floatingStyles: barsFloatingStyles,
@@ -128,6 +122,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       brick,
       editable: true,
       selected: selectedBrickId === brick.id,
+      isContainerChild,
     });
 
     useEffect(() => {

@@ -2,6 +2,7 @@ import interact from "interactjs";
 import type { Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
 import {
   useDraftHelpers,
+  useEditorHelpers,
   usePreviewMode,
   useSection,
   useSections,
@@ -30,11 +31,11 @@ export default function EditableSection({ section }: EditableSectionProps) {
 
   const ref = useRef<HTMLDivElement>(null);
   const gridConfig = useGridConfig(ref);
+  const { setSelectedSectionId, setPanel } = useEditorHelpers();
 
   useResizableSection(section, gridConfig);
 
   const previewMode = usePreviewMode();
-  const responsiveProps = section[previewMode === "desktop" ? "props" : "mobileProps"];
   const selectedSectionId = useSelectedSectionId();
   const selectedBrickId = useSelectedBrickId();
   const className = useSectionStyle({
@@ -44,8 +45,21 @@ export default function EditableSection({ section }: EditableSectionProps) {
     previewMode,
   });
 
+  const onClick = () => {
+    setSelectedSectionId(section.id);
+    setPanel("inspector");
+  };
+
   return (
-    <section key={id} id={id} ref={ref} data-element-kind="section" data-dropzone className={className}>
+    <section
+      key={id}
+      id={id}
+      ref={ref}
+      data-element-kind="section"
+      onClick={onClick}
+      data-dropzone
+      className={className}
+    >
       {!selectedBrickId && <SectionOptionsButtons section={section} />}
       {bricks
         .filter((b) => !b.props.hidden?.[previewMode])
@@ -152,6 +166,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const draftHelpers = useDraftHelpers();
+  const { setSelectedSectionId, setPanel } = useEditorHelpers();
   const sections = useSections();
   const isLastSection = section.order === sections.length - 1;
   const isFirstSection = section.order === 0;
@@ -163,106 +178,98 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
     "active:(outline-none ring-0) focus:(outline-none ring-0)",
   );
   return (
-    <>
-      <Popover.Root onOpenChange={setModalOpen}>
-        {/* Don't put height on Popover otherwise it bugs and disapears just after appearing */}
-        <Popover.Content width="390px" maxWidth="100%">
-          <Inset>
-            <SectionSettingsView section={section} />
-          </Inset>
-        </Popover.Content>
-        <div
-          role="toolbar"
-          className={tx(
-            dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
-            `section-options-buttons bottom-0
+    <div
+      role="toolbar"
+      className={tx(
+        dropdownOpen || modalOpen ? "opacity-100" : "opacity-0",
+        `section-options-buttons bottom-0
             absolute z-[99999] left-1/2 -translate-x-1/2 border border-gray-200 border-b-0`,
-            "gap-0 rounded-t-md [&>*:first-child]:rounded-tl-md [&>*:last-child]:rounded-tr-md divide-x divide-white/80",
-            "bg-white/70 backdrop-blur-md transition-opacity duration-500  group-hover/section:opacity-80 flex",
-          )}
-        >
-          <div className={tx(btnCls, "cursor-default flex-col items-start justify-center gap-0")}>
-            <div className="text-xs font-light leading-[0.9] ">Section</div>
-            <div className="text-sm font-semibold -mt-1.5">{section.label ?? `${section.order + 1}`}</div>
-          </div>
-          {/* {!isLastSection && ( */}
+        "gap-0 rounded-t-md [&>*:first-child]:rounded-tl-md [&>*:last-child]:rounded-tr-md divide-x divide-white/80",
+        "bg-white/70 backdrop-blur-md transition-opacity duration-500  group-hover/section:opacity-80 flex",
+      )}
+    >
+      <div className={tx(btnCls, "cursor-default flex-col items-start justify-center gap-0")}>
+        <div className="text-xs font-light leading-[0.9] ">Section</div>
+        <div className="text-sm font-semibold -mt-1.5">{section.label ?? `${section.order + 1}`}</div>
+      </div>
+      {/* {!isLastSection && ( */}
+      <button
+        type="button"
+        id={`${section.id}-resize-handle`}
+        className={tx("!cursor-ns-resize", btnCls, "section-resizable-handle")}
+      >
+        <TbArrowAutofitHeight className="w-6 h-6" />
+      </button>
+      {/* )} */}
+      {section.props.minHeight !== "full" && (
+        <Tooltip content="Fill entire screen height" delayDuration={500}>
           <button
             type="button"
-            id={`${section.id}-resize-handle`}
-            className={tx("!cursor-ns-resize", btnCls, "section-resizable-handle")}
+            onClick={() => {
+              draftHelpers.updateSectionProps(section.id, {
+                minHeight: "full",
+              });
+              setTimeout(() => {
+                window.scrollTo(0, document.body.scrollHeight);
+                document.getElementById(section.id)?.scrollIntoView({ behavior: "smooth" });
+              }, 100);
+            }}
+            className={tx(btnCls, "cursor-pointer")}
           >
-            <TbArrowAutofitHeight className="w-6 h-6" />
+            <TbBorderCorners className="w-6 h-6" />
           </button>
-          {/* )} */}
-          {section.props.minHeight !== "full" && (
-            <Tooltip content="Fill entire screen height" delayDuration={500}>
-              <button
-                type="button"
-                onClick={() => {
-                  draftHelpers.updateSectionProps(section.id, {
-                    minHeight: "full",
-                  });
-                  setTimeout(() => {
-                    window.scrollTo(0, document.body.scrollHeight);
-                    document.getElementById(section.id)?.scrollIntoView({ behavior: "smooth" });
-                  }, 100);
-                }}
-                className={tx(btnCls, "cursor-pointer")}
-              >
-                <TbBorderCorners className="w-6 h-6" />
-              </button>
-            </Tooltip>
-          )}
-          <DropdownMenu.Root modal={false} onOpenChange={setDropdownOpen}>
-            <DropdownMenu.Trigger>
-              <button type="button" className={tx(btnCls)}>
-                <TbDots className="w-6 h-6" />
-                <Popover.Anchor />
-              </button>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content sideOffset={5} size="2" side="bottom" align="end">
-              <DropdownMenu.Group>
-                <DropdownMenu.Label>{section.label ?? ""} section</DropdownMenu.Label>
-                {!isFirstSection && (
-                  <DropdownMenu.Item onClick={() => draftHelpers.moveSectionUp(section.id)}>
-                    <div className="flex items-center justify-start gap-2">
-                      <span>Reorder up</span>
-                    </div>
-                  </DropdownMenu.Item>
-                )}
-                {!isLastSection && (
-                  <DropdownMenu.Item onClick={() => draftHelpers.moveSectionDown(section.id)}>
-                    <div className="flex items-center justify-start gap-2">
-                      <span>Reorder down</span>
-                    </div>
-                  </DropdownMenu.Item>
-                )}
-              </DropdownMenu.Group>
-              <DropdownMenu.Separator />
-              <DropdownMenu.Group>
-                <DropdownMenu.Item onClick={() => draftHelpers.moveSectionDown(section.id)}>
-                  <div className="flex items-center justify-start gap-2">
-                    <span>Duplicate</span>
-                  </div>
-                </DropdownMenu.Item>
-                <Popover.Trigger>
-                  <DropdownMenu.Item>
-                    <div className="flex items-center justify-start gap-2.5">
-                      <span>Settings</span>
-                    </div>
-                  </DropdownMenu.Item>
-                </Popover.Trigger>
-              </DropdownMenu.Group>
-              <DropdownMenu.Separator />
-              <DropdownMenu.Item color="red" onClick={() => draftHelpers.deleteSection(section.id)}>
-                <div className="flex items-center justify-start gap-2.5">
-                  <span>Delete</span>
+        </Tooltip>
+      )}
+      <DropdownMenu.Root modal={false} onOpenChange={setDropdownOpen}>
+        <DropdownMenu.Trigger>
+          <button type="button" className={tx(btnCls)}>
+            <TbDots className="w-6 h-6" />
+          </button>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content sideOffset={5} size="2" side="bottom" align="end">
+          <DropdownMenu.Group>
+            <DropdownMenu.Label>{section.label ?? ""} section</DropdownMenu.Label>
+            {!isFirstSection && (
+              <DropdownMenu.Item onClick={() => draftHelpers.moveSectionUp(section.id)}>
+                <div className="flex items-center justify-start gap-2">
+                  <span>Reorder up</span>
                 </div>
               </DropdownMenu.Item>
-            </DropdownMenu.Content>
-          </DropdownMenu.Root>
-        </div>
-      </Popover.Root>
-    </>
+            )}
+            {!isLastSection && (
+              <DropdownMenu.Item onClick={() => draftHelpers.moveSectionDown(section.id)}>
+                <div className="flex items-center justify-start gap-2">
+                  <span>Reorder down</span>
+                </div>
+              </DropdownMenu.Item>
+            )}
+          </DropdownMenu.Group>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Group>
+            <DropdownMenu.Item onClick={() => draftHelpers.moveSectionDown(section.id)}>
+              <div className="flex items-center justify-start gap-2">
+                <span>Duplicate</span>
+              </div>
+            </DropdownMenu.Item>
+            <DropdownMenu.Item
+              onClick={() => {
+                setSelectedSectionId(section.id);
+                setPanel("inspector");
+              }}
+            >
+              <div className="flex items-center justify-start gap-2">
+                <span>Settings</span>
+              </div>
+            </DropdownMenu.Item>
+          </DropdownMenu.Group>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item color="red" onClick={() => draftHelpers.deleteSection(section.id)}>
+            <div className="flex items-center justify-start gap-2.5">
+              <span>Delete</span>
+            </div>
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
+    </div>
   );
 }

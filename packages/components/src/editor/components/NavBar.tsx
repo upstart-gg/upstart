@@ -24,7 +24,15 @@ import { RxRocket } from "react-icons/rx";
 import logo from "../../../../../creatives/upstart.svg";
 import dark from "../../../../../creatives/upstart-dark.svg";
 import { RiArrowDownSLine } from "react-icons/ri";
-import { DropdownMenu, HoverCard, Link, Popover, TextField } from "@upstart.gg/style-system/system";
+import {
+  Button,
+  DropdownMenu,
+  HoverCard,
+  Link,
+  Popover,
+  TextField,
+  Tooltip,
+} from "@upstart.gg/style-system/system";
 import { IoIosSave } from "react-icons/io";
 import { LuExternalLink } from "react-icons/lu";
 import { formatDistance } from "date-fns";
@@ -48,7 +56,7 @@ export default function NavBar({ showIntro }: TopBarProps) {
   const lastSaved = useLastSaved();
   const pages = usePagesMap();
   const { panel } = usePanel();
-  const { canZoomIn, canZoomOut, zoomIn, zoomOut, zoom } = useZoom();
+  const { canZoomIn, canZoomOut, zoomIn, zoomOut, zoom, resetZoom } = useZoom();
   const chatVisible = useChatVisible();
   const { undo, redo, futureStates, pastStates } = useDraftUndoManager();
   const canRedo = useMemo(() => futureStates.length > 0, [futureStates]);
@@ -106,9 +114,9 @@ export default function NavBar({ showIntro }: TopBarProps) {
   const activeCls = `bg-upstart-100 dark:bg-upstart-700/80`;
 
   const rocketBtn = tx(
-    `transition-opacity duration-300
-    px-3 bg-gradient-to-tr from-orange-400 to-yellow-400 border-l border-l-orange-300
-  hover:opacity-80 rounded-lg`,
+    `transition-opacity duration-300 !rounded-full !p-px
+    bg-gradient-to-tr from-orange-400 to-yellow-300 border-l border-l-orange-300
+  hover:opacity-80`,
     showIntro && "opacity-0",
   );
 
@@ -126,7 +134,6 @@ export default function NavBar({ showIntro }: TopBarProps) {
   group-hover:block group-hover:opacity-100 group-hover:translate-y-0 text-nowrap whitespace-nowrap pointer-events-none`;
 
   const arrowClass = "h-4 w-4 opacity-60 -ml-0.5";
-
   const separator = "h-[70%] w-px bg-black/10 mx-3";
 
   return (
@@ -289,13 +296,21 @@ export default function NavBar({ showIntro }: TopBarProps) {
         <span className={tx(tooltipCls)}>Zomm In</span>
       </button>
 
-      <span className={tx("text-gray-500 dark:text-dark-200 text-[.85rem] ml-1")}>
-        {(zoom * 100).toFixed(0)}%
-      </span>
+      <Tooltip content="Click to reset zoom" side="bottom" align="center">
+        <button
+          type="button"
+          onClick={resetZoom}
+          className={tx(
+            "text-gray-500 dark:text-dark-200 text-[.85rem] ml-1 cursor-pointer hover:text-upstart-800",
+          )}
+        >
+          {(zoom * 100).toFixed(0)}%
+        </button>
+      </Tooltip>
 
       <div className={separator} />
 
-      <div className="inline-flex flex-col gap-1 leading-none text-sm items-start">
+      <div className="inline-flex flex-col gap-1.5 leading-none text-sm items-start">
         <span className="inline-flex items-center gap-1">
           <BsStars className="opacity-60 w-4 h-4" /> 3500 credits
         </span>
@@ -304,22 +319,42 @@ export default function NavBar({ showIntro }: TopBarProps) {
             <HoverCard.Trigger>
               <button
                 type="button"
-                className="hover:underline cursor-help tracking-tight underline-offset-2 -mt-1.5 text-[88%] text-upstart-600 hover:text-upstart-700"
+                className="hover:underline cursor-help tracking-tight underline-offset-2 -mt-1.5 text-[88%] text-upstart-700 hover:text-upstart-700"
               >
                 What's this?
               </button>
             </HoverCard.Trigger>
-            <HoverCard.Content maxWidth="300px">
+            <HoverCard.Content maxWidth="330px">
               <div className="text-sm">
-                Credits are used for content generation with AI. If you ever run out of credits, you can buy
-                more or upgrade your plan.
+                Credits are spent when you generate content with AI. If you ever run out of credits, you can
+                either{" "}
+                <button
+                  type="button"
+                  className="text-upstart-700 cursor-pointer font-medium hover:underline"
+                  onClick={() => {
+                    alert("TODO upgrade");
+                  }}
+                >
+                  upgrade your plan
+                </button>{" "}
+                or{" "}
+                <button
+                  type="button"
+                  className="text-upstart-700 cursor-pointer font-medium hover:underline"
+                  onClick={() => {
+                    alert("TODO buy more");
+                  }}
+                >
+                  buy more
+                </button>
+                .
               </div>
             </HoverCard.Content>
           </HoverCard.Root>
           <span className="-mt-1.5 ">&bull;</span>
           <button
             type="button"
-            className="hover:underline tracking-tight underline-offset-2 -mt-1.5 text-[88%] text-upstart-600 hover:text-orange-800"
+            className="hover:underline tracking-tight underline-offset-2 -mt-1.5 text-[88%] text-upstart-700 hover:text-orange-800"
             onClick={() => alert("buy")}
           >
             Buy more
@@ -374,8 +409,10 @@ export default function NavBar({ showIntro }: TopBarProps) {
             { label: "Schedule publish" },
           ]}
         >
-          <button type="button" className={tx(btnClass, rocketBtn, btnWithArrow, "px-4")}>
-            <RxRocket className={tx("h-5 w-auto")} />
+          <button type="button" className={tx(btnClass, rocketBtn, btnWithArrow)}>
+            <div>
+              <RxRocket className={tx("h-5 w-auto")} />
+            </div>
             <span className={tx("font-bold italic px-2", css({ fontSize: "1rem" }))}>Publish</span>
             <RiArrowDownSLine className={arrowClass} />
           </button>
@@ -384,20 +421,23 @@ export default function NavBar({ showIntro }: TopBarProps) {
         <button
           id="publish-menu-btn"
           type="button"
-          className={tx("px-3.5 py-2 text-black", btnClass, rocketBtn)}
+          className={tx(btnClass, rocketBtn)}
           onClick={() => {
             editorHelpers.onShowLogin();
           }}
         >
-          <IoIosSave className={tx("h-5 w-auto")} />
-          <span
+          <div
             style={{
               textShadow: "1px 1px 0px rgba(255, 255, 255, 0.3)",
             }}
-            className={tx("font-semibold pl-1 ", css({ fontSize: ".94rem" }))}
+            className={tx(
+              "font-semibold inline-flex gap-1 bg-orange-100 py-2 px-3 rounded-full",
+              css({ fontSize: ".94rem" }),
+            )}
           >
+            <IoIosSave className={tx("h-5 w-auto")} />
             Save your site
-          </span>
+          </div>
         </button>
       )}
     </nav>

@@ -37,7 +37,6 @@ const BaseColorPicker: React.FC<BaseColorPickerProps> = ({
   initialValue = 120,
   onChange = () => {},
 }) => {
-  const theme = useTheme();
   const [selectedColor, setSelectedColor] = useState(initialValue);
 
   // Handle color selection
@@ -307,7 +306,7 @@ function getAvailableColorsAndShadesForElement(elementType: ElementColorType) {
       colors: ["primary", "secondary", "accent", "neutral"],
       shades: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
       colorButtons: [
-        { label: "None", value: null },
+        { label: "Reset", value: null },
         { label: "White", value: "#FFFFFF" },
         { label: "Black", value: "#000000" },
         { label: "Transparent", value: "transparent" },
@@ -332,13 +331,14 @@ function getAvailableColorsAndShadesForElement(elementType: ElementColorType) {
       colors: ["primary", "secondary", "accent", "neutral"],
       shades: ["100", "300", "500", "700", "900"],
       colorButtons: [
+        { label: "Reset", value: null },
         { label: "White", value: "#FFFFFF" },
         { label: "Black", value: "#000000" },
       ],
     };
   }
   return {
-    colors: ["gray", "primary", "secondary", "accent", "neutral"],
+    colors: ["primary", "secondary", "accent", "neutral"],
     shades: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   };
 }

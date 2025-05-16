@@ -13,6 +13,7 @@ type UseSectionStyleProps = {
 
 export function useSectionStyle({ section, selected, editable, previewMode }: UseSectionStyleProps) {
   return tx("flex w-full py-0 group/section overflow-visible relative", [
+    section.props.preset as string,
     typeof section.props.minHeight === "string" &&
       section.props.minHeight !== "full" &&
       `min-h-[${section.props.minHeight}]`,
@@ -20,23 +21,14 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
     section.props.minHeight === "full" && editable && "min-h-[calc(100dvh-60px)]", // when in editor mode
     section.props.minHeight === "full" && !editable && "min-h-dvh", // when in real mode
     typeof section.props.minHeight === "undefined" && "min-h-[40px]", // when in real mode
-    // entire width of the grid
-    // mobile grid
-    // `@mobile:(
-    //   grid-cols-${LAYOUT_COLS.mobile}
-    //   grid-rows-[repeat(auto-fill,${LAYOUT_ROW_HEIGHT}px)]
-    // )`,
-    // // Desktop grid
-    // `@desktop:(
-    //   grid-cols-${LAYOUT_COLS.desktop}
-    //   grid-rows-[repeat(auto-fill,${LAYOUT_ROW_HEIGHT}px)]
-    // )`,
 
-    section.props.alignItems,
-    section.props.justifyContent,
-    section.props.gap,
-    typeof section.props.wrap === "undefined" || section.props.wrap === true ? "flex-wrap" : "flex-nowrap",
-    section.props.fillSpace && "[&>*]:flex-1",
+    section.props.layout?.alignItems,
+    section.props.layout?.justifyContent,
+    section.props.layout?.gap,
+    typeof section.props.layout?.wrap === "undefined" || section.props.layout?.wrap === true
+      ? "flex-wrap"
+      : "flex-nowrap",
+    section.props.layout?.fillSpace && "[&>*]:grow",
     "[&>*]:flex-shrink-0",
 
     // Background

@@ -11,6 +11,7 @@ export type BrickProps<T extends BrickManifest> = {
   };
   editable?: boolean;
   selected?: boolean;
+  isContainerChild?: boolean;
 };
 
 export type BrickPropCategory = "settings" | "presets" | "content";

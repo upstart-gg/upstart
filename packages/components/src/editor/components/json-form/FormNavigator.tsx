@@ -123,24 +123,6 @@ const FormNavigator: FC<FormNavigatorProps> = ({
   // Direction of animation
   const [animationDirection, setAnimationDirection] = useState<"forward" | "backward" | null>(null);
 
-  // watch for overflow changes on vertical scroll
-  useMutationObserver(
-    ref,
-    (entries) => {
-      // wait for end of animation
-      setTimeout(() => {
-        for (const entry of entries) {
-          const target = (entry.target as HTMLElement)?.closest(".navigator-view");
-          if (!target?.clientHeight) return;
-          if (ref.current && target.scrollHeight - target.clientHeight > 5) {
-            ref.current.style.minHeight = `${target.scrollHeight + 2}px`;
-          }
-        }
-      }, 200);
-    },
-    {},
-  );
-
   // Navigate to a new view
   const navigateTo = useCallback((item: NavItem, direction: typeof animationDirection = "forward") => {
     setAnimationDirection(direction);
@@ -235,7 +217,7 @@ const FormNavigator: FC<FormNavigatorProps> = ({
             </h3>
             <div className="w-10" />
           </div>
-          <div className=" overflow-auto min-h-max h-fit">{currentView.content}</div>
+          <div className="overflow-y-auto scrollbar-thin min-h-max h-fit">{currentView.content}</div>
         </div>
       </div>
     </FormNavigatorContext.Provider>

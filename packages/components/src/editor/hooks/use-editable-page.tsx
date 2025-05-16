@@ -3,14 +3,13 @@ import { useCallback, useEffect, useRef, type RefObject } from "react";
 import type { RestrictOptions } from "@interactjs/modifiers/restrict/pointer";
 import type { DraggableOptions } from "@interactjs/actions/drag/plugin";
 import type { ResizableOptions } from "@interactjs/actions/resize/plugin";
-import { useGetBrick, usePreviewMode, useSelectedGroup } from "./use-editor";
+import { useGetBrick, usePreviewMode, useSelectedGroup, useZoom } from "./use-editor";
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
 import type { BrickConstraints } from "@upstart.gg/sdk/shared/brick-manifest";
 import { defaultProps, manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import {
   getBrickPosition,
-  getBrickCoordsInPage,
   getSectionElementAtPosition,
   getDropPosition,
   getGridConfig,
@@ -94,6 +93,7 @@ export const useEditablePage = (
   const interactable = useRef<Interact.Interactable | null>(null);
   const dropzone = useRef<Interact.Interactable | null>(null);
   const dropTargetRef = useRef<HTMLElement | null>(null);
+  const { zoom } = useZoom();
 
   const snapPositionToGrid = useCallback(() => {
     return function (x: number, y: number, { element }: Interact.Interaction) {
@@ -157,18 +157,17 @@ export const useEditablePage = (
           console.debug("useEditablePage:listeners:start()", event);
           const target = event.target as HTMLElement;
 
+          // The group of elements that are being dragged (selected using "selecto" library)
           const elements = selectedGroup ? selectedGroup.map((id) => document.getElementById(id)!) : [target];
 
           elements.forEach((target) => {
             // Get initial position relative to container
-            const initialPos = getBrickCoordsInPage(target);
             const computedStyle = window.getComputedStyle(target);
             const clone = target.cloneNode(true) as HTMLElement;
             clone.setAttribute("id", `${target.id}-clone`);
 
-            // Now set up the element for dragging
-            clone.dataset.tempX = initialPos.x.toString();
-            clone.dataset.tempY = initialPos.y.toString();
+            clone.dataset.tempX = event.rect.left.toString();
+            clone.dataset.tempY = event.rect.top.toString();
             clone.dataset.elementKind = "clone";
 
             // wasDragged has to be set on the original element
@@ -176,10 +175,11 @@ export const useEditablePage = (
 
             Object.assign(clone.style, {
               position: "fixed",
-              top: `${initialPos.y}px`,
-              left: `${initialPos.x}px`,
-              width: `${initialPos.w}px`,
-              height: `${initialPos.h}px`,
+              top: `${event.rect.top}px`,
+              left: `${event.rect.left}px`,
+              width: `${event.rect.width}px`,
+              height: `${event.rect.height}px`,
+              zoom: 1 / zoom,
               zIndex: "999999",
               backgroundColor:
                 computedStyle.backgroundColor === "rgba(0, 0, 0, 0)"
@@ -204,6 +204,7 @@ export const useEditablePage = (
           const instructions = hoveredBricks ? getDropInstructions(event.rect, hoveredBricks) : null;
 
           if (instructions?.dropTarget) {
+            console.log("we have a drop target", instructions?.dropTarget.id);
             if (dropTargetRef.current && instructions.dropTarget.id !== dropTargetRef.current?.id) {
               dropTargetRef.current.style.backgroundColor =
                 dropTargetRef.current?.dataset.originalBackgroundColor ?? "";
@@ -215,10 +216,12 @@ export const useEditablePage = (
               dropTargetRef.current.style.backgroundColor;
             dropTargetRef.current.style.backgroundColor = "var(--violet-a3)";
           } else if (dropTargetRef.current) {
+            console.log("Resetting style of brick %s", dropTargetRef.current.id);
             dropTargetRef.current.style.backgroundColor =
               dropTargetRef.current.dataset.originalBackgroundColor ?? "";
           }
 
+          // Update elements position
           const elements = selectedGroup ? selectedGroup.map((id) => document.getElementById(id)!) : [target];
           elements.forEach((element) => {
             const clone = document.getElementById(`${element.id}-clone`);
@@ -226,10 +229,8 @@ export const useEditablePage = (
               console.warn("Clone not found");
               return;
             }
-
             // hide the original element
-            element.style.visibility = "hidden";
-
+            // element.style.visibility = "hidden";
             const x = parseFloat(clone.dataset.tempX || "0") + event.dx;
             const y = parseFloat(clone.dataset.tempY || "0") + event.dy;
             updateElementTransform(clone, x, y);
@@ -243,12 +244,18 @@ export const useEditablePage = (
 
           const target = event.target as HTMLElement;
           const updatedPositions: Parameters<DragCallbacks["onDragEnd"]>[0] = [];
+
           const elements = selectedGroup ? selectedGroup.map((id) => document.getElementById(id)!) : [target];
           const section = getSectionElementAtPosition(event.client.x, event.client.y);
           const hoveredBricks = section ? getBricksHovered(target.id, event.rect, section) : null;
           const instructions = hoveredBricks ? getDropInstructions(event.rect, hoveredBricks) : null;
 
           console.log("DROPPED instructions", instructions);
+
+          // remove all clones
+          document.querySelectorAll(`[data-element-kind="clone"]`).forEach((el) => {
+            el.remove();
+          });
 
           for (const draggedElement of elements) {
             // restore element visibility
@@ -267,12 +274,6 @@ export const useEditablePage = (
                 return;
               }
               dropTarget.insertAdjacentElement(position, draggedElement);
-            }
-
-            // remove the clone
-            const clone = document.getElementById(`${draggedElement.id}-clone`);
-            if (clone) {
-              clone.remove();
             }
           }
 
@@ -414,6 +415,7 @@ export const useEditablePage = (
     selectedGroup,
     snapPositionToGrid,
     snapSizeToGrid,
+    zoom,
   ]);
 
   useEffect(() => {

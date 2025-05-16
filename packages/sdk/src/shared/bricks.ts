@@ -7,6 +7,7 @@ import { preset } from "./bricks/props/preset";
 import { merge } from "lodash-es";
 import { cssLength } from "./bricks/props/css-length";
 import { enumProp } from "./bricks/props/enum";
+import { containerLayout } from "./bricks/props/container";
 
 /**
  * Generates a unique identifier for bricks.
@@ -111,86 +112,18 @@ export type Brick = Static<typeof brickSchema>;
 
 const sectionProps = Type.Object(
   {
-    wrap: Type.Optional(
-      Type.Boolean({
-        title: "Wrap",
-        description: "Wrap bricks to the next line when there is not enough space",
-        default: true,
-      }),
-    ),
-    fillSpace: Type.Optional(
-      Type.Boolean({
-        title: "Fill space",
-        description: "Makes bricks fill the available space",
-        default: true,
-      }),
-    ),
-    justifyContent: Type.Optional(
-      Type.Optional(
-        Type.Union(
-          [
-            Type.Literal("justify-start", { title: "Start" }),
-            Type.Literal("justify-center", { title: "Center" }),
-            Type.Literal("justify-end", { title: "End" }),
-            Type.Literal("justify-between", { title: "Space between" }),
-            Type.Literal("justify-around", { title: "Space around" }),
-            Type.Literal("justify-evenly", { title: "Evenly distributed" }),
-            Type.Literal("justify-stretch", { title: "Stretch" }),
-          ],
-          {
-            title: "Justify",
-            default: "justify-stretch",
-            description: "Justify bricks horizontally",
-          },
-        ),
-      ),
-    ),
-    alignItems: Type.Optional(
-      Type.Optional(
-        Type.Union(
-          [
-            Type.Literal("items-start", { title: "Start" }),
-            Type.Literal("items-center", { title: "Center" }),
-            Type.Literal("items-end", { title: "End" }),
-            Type.Literal("items-stretch", { title: "Stretch" }),
-          ],
-          {
-            title: "Vertical alignment",
-            default: "items-stretch",
-            description: "Align items vertically.",
-          },
-        ),
-      ),
-    ),
-    gap: Type.Optional(
-      Type.Union(
-        [
-          Type.Literal("gap-0", { title: "None" }),
-          Type.Literal("gap-1", { title: "S" }),
-          Type.Literal("gap-2", { title: "M" }),
-          Type.Literal("gap-4", { title: "L" }),
-          Type.Literal("gap-8", { title: "XL" }),
-          Type.Literal("gap-16", { title: "2XL" }),
-        ],
-        {
-          title: "Gap",
-          default: "gap-4",
-          description: "Space between bricks",
-          "ui:field": "enum",
-        },
-      ),
-    ),
+    layout: Type.Optional(containerLayout({ options: { disableGrid: true } })),
     background: Type.Optional(background()),
     preset: preset(),
     border: Type.Optional(border()),
     minHeight: Type.Optional(
-      Type.String({
-        title: "Section height",
-        description: "The height of the section in css units, or 'full' to take the entire page height",
+      cssLength("Minimum height", "0px", {
+        description: "The min height of the section",
+        units: "height-only",
       }),
     ),
     maxWidth: Type.Optional(
-      enumProp("Width", "max-w-full", {
+      enumProp("Maximum width", "max-w-full", {
         options: [
           {
             value: "max-w-screen-lg",
@@ -203,19 +136,18 @@ const sectionProps = Type.Object(
         ],
         description: "The maximum width of the section. Desktop only",
         displayAs: "select",
-        "ui:group": "layout",
-        "ui:group:order": 3,
-        "ui:group:title": "Layout",
       }),
     ),
     horizontalPadding: Type.Optional(
       cssLength("Horizontal padding", "20px", {
         description: "Horizontal padding. Desktop only",
+        units: "width-only",
       }),
     ),
     verticalPadding: Type.Optional(
       cssLength("Vertical padding", "20px", {
         description: "Vertical padding.",
+        units: "height-only",
       }),
     ),
     lastTouched: Type.Optional(

@@ -47,7 +47,7 @@ export function flex(opts: FlexOptions = {}) {
               Type.Literal("gap-16", { title: "2XL" }),
             ],
             {
-              default: defaultValue,
+              default: defaultValue.gap,
               description: "Space between items",
               "ui:field": "enum",
             },
@@ -172,7 +172,7 @@ const isFlexLayoutFilter = (manifestProps: TObject, formData: Record<string, unk
     formData,
     "#styles:containerLayout",
   );
-  return currentStyle?.type === "flex";
+  return currentStyle?.type === "flex" || !currentStyle?.type;
 };
 
 const isGridLayoutFilter = (manifestProps: TObject, formData: Record<string, unknown>) => {
@@ -194,9 +194,16 @@ type ContainerLayoutOptions = {
     justifyContent?: string;
     alignItems?: string;
   };
+  options?: {
+    disableGrid?: boolean;
+  };
 };
 
-export function containerLayout({ title = "Layout", defaults = {} }: ContainerLayoutOptions = {}) {
+export function containerLayout({
+  title = "Layout",
+  defaults = {},
+  options = {},
+}: ContainerLayoutOptions = {}) {
   return group({
     title,
     options: {
@@ -204,14 +211,21 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
     },
     children: Type.Object(
       {
-        type: Type.Union([Type.Literal("flex", { title: "Flex" }), Type.Literal("grid", { title: "Grid" })], {
-          title: "Layout type",
-          default: defaults?.type ?? "flex",
-          description:
-            "Type of the container. Flex layout arranges items in a one-dimensional line. Grid layout arranges items in a two-dimensional grid",
-          "ui:field": "enum",
-          "ui:responsive": true,
-        }),
+        ...(!options.disableGrid
+          ? {
+              type: Type.Union(
+                [Type.Literal("flex", { title: "Flex" }), Type.Literal("grid", { title: "Grid" })],
+                {
+                  title: "Layout type",
+                  default: defaults?.type ?? "flex",
+                  description:
+                    "Type of the container. Flex layout arranges items in a one-dimensional line. Grid layout arranges items in a two-dimensional grid",
+                  "ui:field": "enum",
+                  "ui:responsive": true,
+                },
+              ),
+            }
+          : {}),
         gap: Type.Union(
           [
             Type.Literal("gap-0", { title: "None" }),
@@ -225,7 +239,8 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
             title: "Gap",
             description: "Space between items",
             "ui:field": "enum",
-            default: defaults?.gap ?? "gap-2",
+            "ui:placeholder": "Not specified",
+            default: defaults?.gap,
           },
         ),
         direction: Type.Optional(
@@ -256,7 +271,8 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
         ),
         wrap: Type.Boolean({
           title: "Wrap",
-          description: "Wrap items. Only applies to flex layout.",
+          description: "Wrap items.",
+          "ai:instructions": "Only applies to flex layout",
           default: defaults?.wrap ?? true,
           metadata: {
             filter: isFlexLayoutFilter,
@@ -264,8 +280,9 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
         }),
         fillSpace: Type.Boolean({
           title: "Fill space",
-          description: "Makes items of the container fill the available space. Only applies to flex layout.",
-          default: defaults?.fillSpace ?? true,
+          description: "Makes items of the container fill the available space.",
+          "ai:instructions": "Only applies to flex layout",
+          default: defaults?.fillSpace ?? false,
           metadata: {
             filter: isFlexLayoutFilter,
           },
@@ -284,8 +301,8 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
             {
               title: "Justify",
               default: defaults?.justifyContent ?? "justify-stretch",
-              description:
-                "Justify content along the main axis (horizontal for row, vertical for column). Only applies to flex layout",
+              description: "Justify content along the main axis (horizontal for row, vertical for column).",
+              "ai:instructions": "Only applies to flex layout",
               metadata: {
                 filter: isFlexLayoutFilter,
               },
@@ -303,8 +320,8 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
             {
               title: "Alignment",
               default: defaults?.alignItems ?? "items-stretch",
-              description:
-                "Align items along the cross axis (vertical for row, horizontal for column). Only applies to flex layout",
+              description: "Align items along the cross axis (vertical for row, horizontal for column).",
+              "ai:instructions": "Only applies to flex layout",
               metadata: {
                 filter: isFlexLayoutFilter,
               },

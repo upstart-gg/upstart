@@ -271,6 +271,7 @@ export default defineConfig({
         "elastic-pop": "elastic-pop 1s cubic-bezier(0.22, 1, 0.36, 1) forwards",
         "slide-in": "slide-in 0.15s ease-out",
         "slide-back": "slide-back 0.15s ease-out",
+        border: "border 4s linear infinite",
       },
       keyframes: {
         "elastic-pop": {
@@ -290,6 +291,9 @@ export default defineConfig({
         "slide-back": {
           from: { transform: "translateX(-100%)" },
           to: { transform: "translateX(0)" },
+        },
+        border: {
+          to: { "--border-angle": "360deg" },
         },
       },
     },

@@ -60,7 +60,7 @@ export const PathField: React.FC<FieldProps<string>> = (props) => {
         placeholder={placeholder}
       >
         <TextField.Slot>
-          <TbSlash className="bg-transparent h-5 w-5 rounded-md stroke-1 !-ml-1 !-mr-1" />
+          <TbSlash className="bg-transparent h-5 w-5 rounded-md stroke-1 !-ml-1 !-mr-2 -rotate-[20deg]" />
         </TextField.Slot>
       </TextField.Root>
     </div>

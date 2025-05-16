@@ -1,10 +1,12 @@
 import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/layout-constants";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
-import type { BrickConstraints, BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
+import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import type { GridConfig } from "../hooks/use-grid-config";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import type { FullRect } from "@interactjs/types/index";
+
+const DROP_INDICATOR_WIDTH = 4;
 
 export function getClosestSection(element: Element) {
   return element.closest<HTMLElement>('[data-element-kind="section"]')!;
@@ -131,67 +133,6 @@ export function getBricksHovered(brickId: string, rect: FullRect, section: HTMLE
     height: number;
   }
  */
-export function getDropInstructionsOld(
-  rect: FullRect,
-  hoveredElements: HTMLElement[],
-): {
-  dropTarget: HTMLElement | null;
-  position: InsertPosition;
-} {
-  // If no elements are hovered, return null
-  if (!hoveredElements.length) {
-    return { dropTarget: null, position: "beforeend" };
-  }
-
-  // Sort hovered elements by their position in the DOM
-  // This is to ensure consistent behavior when multiple elements are hovered
-  const sortedElements = [...hoveredElements].sort((a, b) => {
-    const aRect = a.getBoundingClientRect();
-    const bRect = b.getBoundingClientRect();
-
-    // First compare vertical position
-    if (Math.abs(aRect.top - bRect.top) > 10) {
-      return aRect.top - bRect.top;
-    }
-
-    // If vertically aligned, compare horizontal position
-    return aRect.left - bRect.left;
-  });
-
-  // Get the most relevant hovered element
-  const targetElement = sortedElements[0];
-  const targetRect = targetElement.getBoundingClientRect();
-
-  // Calculate the center point of the dragged element
-  const dragCenterY = rect.top + rect.height / 2;
-  const dragCenterX = rect.left + rect.width / 2;
-
-  // Determine if we should insert before, after, or inside the target element
-
-  // Check for nesting (if dragged element is mostly inside the target)
-  const isInsideHorizontally = dragCenterX > targetRect.left && dragCenterX < targetRect.right;
-  const isInsideVertically = dragCenterY > targetRect.top && dragCenterY < targetRect.bottom;
-
-  if (isInsideHorizontally && isInsideVertically) {
-    // If we're inside, check if we're closer to the top or bottom half
-    const isInTopHalf = dragCenterY < (targetRect.top + targetRect.bottom) / 2;
-
-    if (isInTopHalf) {
-      return { dropTarget: targetElement, position: "afterbegin" };
-    } else {
-      return { dropTarget: targetElement, position: "beforeend" };
-    }
-  }
-
-  // If not inside, check if we're above or below
-  const isAbove = dragCenterY < targetRect.top;
-
-  if (isAbove) {
-    return { dropTarget: targetElement, position: "beforebegin" };
-  } else {
-    return { dropTarget: targetElement, position: "afterend" };
-  }
-}
 
 /**
  * Given a dragged Rect and a list of hovered elements, this function will return the
@@ -337,7 +278,7 @@ export function showDropIndicator(dropInstructions: {
   // Adjust indicator style based on parent layout and position
   if (isInHorizontalFlex && (position === "beforebegin" || position === "afterend")) {
     // For horizontal flex containers, show vertical indicators between items
-    indicator.style.width = "3px";
+    indicator.style.width = `${DROP_INDICATOR_WIDTH}px`;
     indicator.style.height = `${targetRect.height}px`;
     indicator.style.backgroundColor = "var(--violet-a8)";
 
@@ -353,7 +294,7 @@ export function showDropIndicator(dropInstructions: {
     // Original behavior for vertical layouts or nested positions
     switch (position) {
       case "beforebegin": // Insert before the element
-        indicator.style.height = "3px";
+        indicator.style.height = `${DROP_INDICATOR_WIDTH}px`;
         indicator.style.width = `${targetRect.width}px`;
         indicator.style.backgroundColor = "var(--violet-a8)";
         indicator.style.top = `${targetRect.top - 2}px`;
@@ -361,7 +302,7 @@ export function showDropIndicator(dropInstructions: {
         break;
 
       case "afterend": // Insert after the element
-        indicator.style.height = "3px";
+        indicator.style.height = `${DROP_INDICATOR_WIDTH}px`;
         indicator.style.width = `${targetRect.width}px`;
         indicator.style.backgroundColor = "var(--violet-a8)";
         indicator.style.top = `${targetRect.bottom}px`;
@@ -376,7 +317,7 @@ export function showDropIndicator(dropInstructions: {
 
         if (isTargetHorizontalFlex) {
           // Vertical indicator at the start of the flex container
-          indicator.style.width = "3px";
+          indicator.style.width = `${DROP_INDICATOR_WIDTH}px`;
           indicator.style.height = `${targetRect.height - 10}px`;
           indicator.style.backgroundColor = "var(--orange-a8)";
           indicator.style.top = `${targetRect.top + 5}px`;
@@ -389,7 +330,7 @@ export function showDropIndicator(dropInstructions: {
           }
         } else {
           // Original horizontal indicator
-          indicator.style.height = "3px";
+          indicator.style.height = `${DROP_INDICATOR_WIDTH}px`;
           indicator.style.width = `${targetRect.width - 20}px`;
           indicator.style.backgroundColor = "var(--orange-a8)";
           indicator.style.top = `${targetRect.top + 5}px`;
@@ -405,7 +346,7 @@ export function showDropIndicator(dropInstructions: {
 
         if (isTargetHorizFlex) {
           // Vertical indicator at the end of the flex container
-          indicator.style.width = "3px";
+          indicator.style.width = `${DROP_INDICATOR_WIDTH}px`;
           indicator.style.height = `${targetRect.height - 10}px`;
           indicator.style.backgroundColor = "var(--orange-a8)";
           indicator.style.top = `${targetRect.top + 5}px`;
@@ -418,7 +359,7 @@ export function showDropIndicator(dropInstructions: {
           }
         } else {
           // Original horizontal indicator
-          indicator.style.height = "3px";
+          indicator.style.height = `${DROP_INDICATOR_WIDTH}px`;
           indicator.style.width = `${targetRect.width - 20}px`;
           indicator.style.backgroundColor = "var(--orange-a8)";
           indicator.style.top = `${targetRect.bottom - 5}px`;
@@ -442,27 +383,9 @@ export function removeDropIndicator() {
   }
 }
 
-export function getElementCenterPoint(element: HTMLElement) {
-  const rect = element.getBoundingClientRect();
-  return {
-    x: rect.left + rect.width / 2,
-    y: rect.top + rect.height / 2,
-  };
-}
-
 /**
- * Returns the coords of an element relative to the #page-container
+ *  Todo
  */
-export function getBrickCoordsInPage(element: HTMLElement) {
-  const rect = element.getBoundingClientRect();
-  return {
-    x: rect.left,
-    y: rect.top,
-    w: rect.width,
-    h: rect.height,
-  };
-}
-
 export function getBrickResizeOptions(brick: Brick, manifest: BrickManifest, currentBp: Resolution) {
   const { maxHeight, maxWidth, minHeight, minWidth } = manifest;
   return {

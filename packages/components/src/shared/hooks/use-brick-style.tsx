@@ -1,22 +1,11 @@
-import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import { getStyleProperties } from "@upstart.gg/sdk/shared/bricks/props/helpers";
-import { brickStylesHelpersMap, brickWrapperStylesHelpersMap } from "../styles/helpers";
+import { brickStylesHelpersMap, brickWrapperStylesHelpersMap, extractStylePath } from "../styles/helpers";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { debounce, get, merge } from "lodash-es";
 import { useBrickManifest } from "./use-brick-manifest";
-import { useEffect } from "react";
-import { useGetBrick } from "~/editor/hooks/use-editor";
 import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { tx, css } from "@upstart.gg/style-system/twind";
-
-// Return the upper path without the last part (the property name)
-function extractStylePath(path: string) {
-  if (!path.includes(".")) {
-    return path;
-  }
-  return path.split(".").slice(0, -1).join(".");
-}
 
 function getClassesFromStyleProps<T extends BrickManifest>(
   stylesProps: Record<string, string>,
@@ -24,7 +13,7 @@ function getClassesFromStyleProps<T extends BrickManifest>(
   type: "brick" | "wrapper",
 ) {
   const { props, mobileProps } = brick;
-  const mergedProps = merge({}, props, defaultProps[brick.type].props);
+  const mergedProps = merge({}, defaultProps[brick.type].props, props);
   const helpers = type === "brick" ? brickStylesHelpersMap : brickWrapperStylesHelpersMap;
   const classes = Object.entries(stylesProps).reduce(
     (acc, [path, styleId]) => {
@@ -39,10 +28,6 @@ function getClassesFromStyleProps<T extends BrickManifest>(
     },
     {} as Record<string, string[]>,
   );
-  if (brick.type === "text" && type === "wrapper") {
-    // console.log("getClassesFromStyleProps", { mergedProps, stylesProps });
-    // console.log("getClassesFromStyleProps text", classes);
-  }
   return classes;
 }
 
@@ -55,9 +40,13 @@ export function useBrickStyle<T extends BrickManifest>(brick: BrickProps<T>["bri
   return getClassesFromStyleProps(stylesProps, brick, "brick");
 }
 
-export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable, selected }: BrickProps<T>) {
+export function useBrickWrapperStyle<T extends BrickManifest>({
+  brick,
+  editable,
+  selected,
+  isContainerChild = false,
+}: BrickProps<T>) {
   const { props } = brick;
-  const isContainerChild = brick.parentId !== undefined;
   const manifest = useBrickManifest(brick.type);
   const stylesProps = getStyleProperties(manifest.props);
   const styleIds = Object.values(stylesProps);
@@ -67,49 +56,20 @@ export function useBrickWrapperStyle<T extends BrickManifest>({ brick, editable,
     props.className as string,
     props.preset as string,
     // no transition otherwise it will slow down the drag
-    "brick-wrapper group/brick flex flex-1",
+    "brick-wrapper group/brick flex",
+
+    // When inside a container, let the container handle the flex
+    // otherwise, force the children to fill the space
+    !isContainerChild && "flex-1",
+
     styleIds.includes("#styles:fixedPositioned") === false && "relative",
-    styleIds.includes("#styles:fixedPositioned") &&
-      // css({
-      //   height: `${position.desktop.h * LAYOUT_ROW_HEIGHT}px`,
-      //   maxHeight: `${position.desktop.h * LAYOUT_ROW_HEIGHT}px`,
-      // }),
 
-      // container children expand to fill the space
-      isContainerChild &&
-      "container-child",
+    // container children expand to fill the space
+    isContainerChild && "container-child",
 
-    getBrickWrapperEditorStyles(editable === true, !!brick.isContainer, isContainerChild, selected),
-
-    // Position of the wrapper
-    //
-    // Note:  for container children, we don't set it as they are NOT positioned
-    //        relatively to the page grid but to the container
-    //
-    // Warning: those 2 rules blocks are pretty sensible, especially the height!
-    // !isContainerChild &&
-    //   `@desktop:(
-    //     col-start-${position.desktop.x + 1}
-    //     col-span-${position.desktop.w}
-    //     row-start-${position.desktop.y + 1}
-    //     h-fit
-    //     min-h-[${position.desktop.h * LAYOUT_ROW_HEIGHT}px]
-    //     max-h-fit
-    //   )
-    //   @mobile:(
-    //     col-start-${position.mobile.x + 1}
-    //     col-span-${position.mobile.w}
-    //     row-start-${position.mobile.y + 1}
-    //     h-fit
-    //     min-h-[${position.mobile.h * LAYOUT_ROW_HEIGHT}px]
-    //     max-h-fit
-    //   )`,
-    // ${position.mobile.manualHeight ? `h-[${position.mobile.manualHeight * LAYOUT_ROW_HEIGHT}px]` : ""}
+    getBrickWrapperEditorStyles(editable === true, manifest.isContainer, isContainerChild, selected),
 
     ...Object.values(classes).flat(),
-
-    // getFlexStyles(props as BrickStyleProps),
-    // getBasicAlignmentStyles(props as BrickStyleProps),
   );
 }
 
@@ -118,6 +78,7 @@ function getBrickWrapperEditorStyles(
   isContainer: boolean,
   isContainerChild: boolean,
   selected?: boolean,
+  modKeyPressed?: boolean,
 ) {
   if (!editable) {
     return null;
@@ -126,9 +87,9 @@ function getBrickWrapperEditorStyles(
     "select-none transition-colors delay-100 duration-200",
     "outline outline-2 outline-transparent -outline-offset-1",
     selected && !isContainer && "!outline-upstart-500 shadow-lg shadow-upstart-500/20",
-    selected && isContainer && "!outline-orange-300 shadow-lg shadow-orange-300/20",
+    selected && isContainer && "!outline-orange-300 shadow-lg",
     !selected && !isContainerChild && !isContainer && "hover:(outline-upstart-500/60)",
-    !selected && !isContainerChild && isContainer && "hover:(outline-dotted outline-orange-500/30)",
+    !selected && !isContainerChild && isContainer && "hover:(outline-orange-300/20)",
     !selected && isContainerChild && "hover:(outline-upstart-500/40)",
     css({
       "&.selected-group": {
@@ -138,6 +99,15 @@ function getBrickWrapperEditorStyles(
         outline: "1px dashed var(--violet-8)",
         opacity: 0.85,
       },
+      // This is the class of the drag element original emplacement
+      "&.moving": {
+        backgroundColor: "var(--gray-a6)",
+      },
+      // Hide all content when dragging
+      "&.moving > *": {
+        visibility: "hidden",
+      },
+      // Hide any UI children elements when dragging
       "&.moving [data-ui]": {
         display: "none",
       },

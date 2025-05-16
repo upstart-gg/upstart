@@ -8,6 +8,7 @@ import { merge, set } from "lodash-es";
 import { useDraftHelpers, useGetBrick, usePreviewMode } from "~/editor/hooks/use-editor";
 import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
+import { tx } from "@upstart.gg/style-system/twind";
 
 type BrickSettingsViewProps = {
   brick: Brick;
@@ -52,6 +53,9 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
       // `propertyChangedPath` can take the form of `a.b.c` which means we need to update `props.a.b.c`
       // For this we use lodash.set
       set(props, propertyChangedPath, data[propertyChangedPath]);
+
+      console.log("updating brick props", brick.id, props);
+
       // Update the brick props in the store
       updateBrickProps(brick.id, props, previewMode === "mobile");
     },
@@ -64,7 +68,7 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
       initialGroup={group}
       navItems={navItems}
       formSchema={manifest.props}
-      className="h-[calc(100cqh/2)]"
+      className={tx("flex-1")}
       formData={formData}
       onChange={onChange}
       brickId={brick.id}
