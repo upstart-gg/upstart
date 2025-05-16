@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { getNewSiteConfig } from "../page";
-import testConfig from "./test-config";
+import testConfig from "./site-config.test";
+import { getNewSiteConfig } from "../site";
 
 describe("Page test suite", () => {
   describe("getNewSiteConfig", () => {

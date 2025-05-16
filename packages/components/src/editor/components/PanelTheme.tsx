@@ -1,136 +1,48 @@
-import {
-  Tabs,
-  Button,
-  Callout,
-  TextArea,
-  Spinner,
-  useAutoAnimate,
-  IconButton,
-  Text,
-} from "@upstart.gg/style-system/system";
+import { Tabs, Callout, useAutoAnimate, Text, Select } from "@upstart.gg/style-system/system";
 import { themes } from "@upstart.gg/sdk/shared/themes/all-themes";
 import { forwardRef, useState, type ComponentProps } from "react";
 import { LuArrowRightCircle } from "react-icons/lu";
-import { WiStars } from "react-icons/wi";
 import { nanoid } from "nanoid";
-import { BsStars } from "react-icons/bs";
-import { tx } from "@upstart.gg/style-system/twind";
 import { type Theme, themeSchema, type FontType } from "@upstart.gg/sdk/shared/theme";
 import { useDraft, useEditorHelpers } from "~/editor/hooks/use-editor";
 import { ColorFieldRow } from "./json-form/fields/color";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
-import type { ColorType } from "@upstart.gg/sdk/shared/themes/color-system";
+import { getContrastingTextColor, type ColorType } from "@upstart.gg/sdk/shared/themes/color-system";
 import FontPicker from "./json-form/fields/font";
-import { IoCloseOutline } from "react-icons/io5";
+import { tx, css } from "@upstart.gg/style-system/twind";
+import { PanelBlockTitle } from "./PanelBlockTitle";
 
 export default function ThemePanel() {
   const draft = useDraft();
-  const [themeDescription, setThemeDescription] = useState<string>("");
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedThemes, setGeneratedThemes] = useState<Theme[]>([]);
   const [genListRef] = useAutoAnimate(/* optional config */);
-  const { hidePanel } = useEditorHelpers();
-
-  const generateTheme = async () => {
-    if (!themeDescription) {
-      return;
-    }
-    setIsGenerating(true);
-
-    const newThemes = await generateThemeWithAI(themeDescription);
-
-    if (newThemes) {
-      setGeneratedThemes((prevThemes) => {
-        const count = prevThemes.length;
-        return [
-          ...newThemes.map((theme, index) => ({
-            ...theme,
-            id: nanoid(),
-            name: `Theme #${count + index + 1}`,
-          })),
-          ...prevThemes,
-        ];
-      });
-    }
-    setIsGenerating(false);
-  };
+  const baseSizes = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
 
   return (
     <Tabs.Root defaultValue="current">
-      <div className={tx("bg-white dark:bg-dark-800")}>
-        <Tabs.List className="sticky top-0 z-50">
-          <Tabs.Trigger value="current" className="!flex-1">
-            Theme
-          </Tabs.Trigger>
-          <Tabs.Trigger value="list" className="!flex-1">
-            All themes
-          </Tabs.Trigger>
-          <Tabs.Trigger value="ai" className="!flex-1 text-gray-400 group">
-            AI creator <BsStars className="ml-1 w-4 h-4 text-upstart-500" />
-          </Tabs.Trigger>
-          <IconButton
-            title="Close"
-            className="self-center items-center justify-center inline-flex !mr-1 !mt-2"
-            size="1"
-            variant="ghost"
-            color="gray"
-            onClick={() => hidePanel()}
-          >
-            <IoCloseOutline className="w-4 h-4 text-gray-400 hover:text-gray-700" />
-          </IconButton>
-        </Tabs.List>
-      </div>
-      <ScrollablePanelTab tab="ai" className="p-2">
-        <Callout.Root size="1">
-          <Callout.Icon>
-            <WiStars className="w-8 h-8 mt-3" />
-          </Callout.Icon>
-          <Callout.Text size="1">
-            Tell us about your website / page purpose and color preferences, and our AI will generate
-            personalized themes for you!
-          </Callout.Text>
-        </Callout.Root>
-        <TextArea
-          onInput={(e) => {
-            setThemeDescription(e.currentTarget.value);
-          }}
-          className="w-full my-2 h-24"
-          size="2"
-          placeholder="Describe your website purpose, color preferences, etc..."
-          spellCheck={false}
-        />
-        <Button
-          size="2"
-          disabled={themeDescription.length < 10 || isGenerating}
-          className="block !w-full"
-          onClick={generateTheme}
-        >
-          <Spinner loading={isGenerating}>
-            <BsStars className="w-4 h-4" />
-          </Spinner>
-          {isGenerating ? "Generating themes" : "Generate themes"}
-        </Button>
-        <ThemeListWrapper className="mt-2" ref={genListRef}>
-          {generatedThemes.map((theme) => (
-            <ThemePreview key={theme.id} theme={theme} />
-          ))}
-        </ThemeListWrapper>
-      </ScrollablePanelTab>
+      <Tabs.List className="sticky top-0 z-50 bg-gray-100">
+        <Tabs.Trigger value="current" className="!flex-1">
+          Theme
+        </Tabs.Trigger>
+        <Tabs.Trigger value="list" className="!flex-1">
+          Themes library
+        </Tabs.Trigger>
+      </Tabs.List>
+
       <ScrollablePanelTab tab="current" className="p-2">
-        <Callout.Root size="1">
-          <Callout.Text size="1" className={tx("text-balance")}>
-            Customize your theme colors and typography to match your brand. Please note that the theme will be
-            applied to your entire site, not just the current page.
+        <Callout.Root>
+          <Callout.Text size="2" className={tx("text-pretty")}>
+            Customize your theme colors and typography to match your brand. Theme is applied to your entire
+            site, not just the current page.
           </Callout.Text>
         </Callout.Root>
         <div className="flex flex-col">
-          <div className="font-medium text-sm my-2 bg-upstart-100 dark:bg-dark-600 py-1 -mx-2 px-2">
-            Colors
-          </div>
-          <div className="flex text-sm flex-col gap-y-4 px-1 pb-2">
+          <PanelBlockTitle className="-mx-2 my-2">Colors</PanelBlockTitle>
+          <div className="grid grid-cols-2 gap-x-3 text-sm flex-col gap-y-3 pb-2">
             {Object.entries(draft.theme.colors).map(([colorType, color]) => (
               <ColorFieldRow
                 key={colorType}
+                hideColorLabel
+                labelPlacement="right"
                 /* @ts-ignore */
                 name={themeSchema.properties.colors.properties[colorType].title}
                 /* @ts-ignore */
@@ -139,22 +51,35 @@ export default function ThemePanel() {
                 labelClassName="font-medium"
                 colorType={colorType as ColorType}
                 onChange={(newColor: string) => {
-                  console.log("updating theme color %s with %s", colorType, newColor);
+                  const colors = { [colorType]: newColor };
+
+                  if (
+                    ["primary", "secondary", "accent", "neutral", "base100", "base200", "base300"].includes(
+                      colorType,
+                    )
+                  ) {
+                    const textColor = getContrastingTextColor(newColor);
+                    if (colorType.startsWith("base")) {
+                      colors.baseContent = textColor;
+                    } else {
+                      colors[`${colorType}Content`] = textColor;
+                    }
+                  }
+
                   draft.setTheme({
                     ...draft.theme,
                     colors: {
                       ...draft.theme.colors,
-                      [colorType]: newColor,
+                      ...colors,
                     },
                   });
                 }}
               />
             ))}
           </div>
-          <div className="font-medium text-sm my-2 bg-upstart-100 dark:bg-dark-600 py-1 -mx-2 px-2">
-            Typography
-          </div>
-          <div className="text-sm flex flex-col gap-y-3 px-1">
+
+          <PanelBlockTitle className="-mx-2 my-2">Typography</PanelBlockTitle>
+          <div className="text-sm flex flex-col gap-y-4 p-2">
             {Object.entries(draft.theme.typography)
               .filter((obj) => obj[0] === "body" || obj[0] === "heading")
               .map(([fontType, font]) => (
@@ -163,7 +88,7 @@ export default function ThemePanel() {
                     {/* @ts-ignore */}
                     {themeSchema.properties.typography.properties[fontType].title}
                   </label>
-                  <Text color="gray" as="p" size="1" className="mb-1">
+                  <Text color="gray" as="p" size="1" className="mb-1.5">
                     {/* @ts-ignore */}
                     {themeSchema.properties.typography.properties[fontType].description}
                   </Text>
@@ -182,10 +107,45 @@ export default function ThemePanel() {
                   />
                 </div>
               ))}
+
+            <div>
+              <label className="font-medium">Base Font size</label>
+              <Text color="gray" as="p" size="1" className="mb-2">
+                Can be changed for fonts that are too small or too big
+              </Text>
+              <Select.Root
+                defaultValue={`${draft.theme.typography.base}`}
+                size="2"
+                onValueChange={(chosen) => {
+                  draft.setTheme({
+                    ...draft.theme,
+                    typography: {
+                      ...draft.theme.typography,
+                      base: parseInt(chosen),
+                    },
+                  });
+                }}
+              >
+                <Select.Trigger className="!w-full" radius="large" variant="surface" />
+                <Select.Content position="popper">
+                  {baseSizes.map((size) => (
+                    <Select.Item key={`base-${size}`} value={`${size}`}>
+                      {size} px
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select.Root>
+            </div>
           </div>
         </div>
       </ScrollablePanelTab>
-      <ScrollablePanelTab tab="list">
+      <ScrollablePanelTab tab="list" className="p-2">
+        <Callout.Root>
+          <Callout.Text size="2" className={tx("text-pretty")}>
+            Here are some pre-made color themes. Click on a theme to preview it. Also feel free to use the
+            Upstart AI chat to ask for a specific theme!
+          </Callout.Text>
+        </Callout.Root>
         <ThemeListWrapper>
           {themes.map((theme) => (
             <ThemePreview key={theme.id} theme={theme} />
@@ -201,10 +161,7 @@ const ThemeListWrapper = forwardRef<HTMLDivElement, ComponentProps<"div">>(funct
   ref,
 ) {
   return (
-    <div
-      ref={ref}
-      className={tx("flex flex-col divide-y divide-upstart-100 dark:divide-dark-600", className)}
-    >
+    <div ref={ref} className={tx("grid grid-cols-2 gap-2 mt-2", className)}>
       {children}
     </div>
   );
@@ -213,51 +170,44 @@ const ThemeListWrapper = forwardRef<HTMLDivElement, ComponentProps<"div">>(funct
 function ThemePreview({ theme }: { theme: Theme }) {
   const draft = useDraft();
   return (
-    <div className="flex-1 py-2 pl-3 pr-2 text-sm mb-2.5" key={theme.id}>
-      <h3 className="font-semibold">{theme.name}</h3>
-      {/* <p className="text-sm">{theme.description}</p> */}
-      <div className="flex justify-between items-center">
-        <div className="flex mt-1">
-          {Object.entries(theme.colors).map(([colorName, color]) => (
-            <div
-              key={colorName}
-              className="w-7 h-7 rounded-full [&:not(:first-child)]:(-ml-1) ring-1 ring-white dark:ring-dark-300"
-              style={{
-                backgroundColor: color,
-              }}
-            />
-          ))}
-        </div>
-        <Button size="1" variant="soft" radius="full" onClick={() => draft.setPreviewTheme(theme)}>
-          Preview
-          <LuArrowRightCircle className="w-4 h-4" />
-        </Button>
-      </div>
-    </div>
+    <button
+      type="button"
+      className={tx(
+        "relative border border-upstart-300 flex flex-col text-xs items-center p-1 group w-full rounded hover:(ring-2 ring-upstart-300) transition-all",
+        css({ backgroundColor: theme.colors.base100, color: theme.colors.baseContent }),
+      )}
+      onClick={() => draft.setPreviewTheme(theme)}
+    >
+      <div
+        className={tx(
+          "h-5 self-stretch",
+          css({ backgroundColor: theme.colors.primary, color: theme.colors.primaryContent }),
+        )}
+      />
+      <div
+        className={tx(
+          "h-5 self-stretch",
+          css({ backgroundColor: theme.colors.secondary, color: theme.colors.secondaryContent }),
+        )}
+      />
+      <div
+        className={tx(
+          "h-5 self-stretch",
+          css({ backgroundColor: theme.colors.accent, color: theme.colors.accentContent }),
+        )}
+      />
+
+      <h3 className="pt-1">{theme.name}</h3>
+      <span
+        className={tx(
+          `!opacity-0 w-fit absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+           text-xs text-white font-medium
+          justify-end items-center gap-1.5 text-upstart-700 px-2 py-1 bg-upstart-700/80 rounded-md
+          group-hover:!opacity-100 transition-opacity duration-150 `,
+        )}
+      >
+        Preview
+      </span>
+    </button>
   );
-}
-
-async function generateThemeWithAI(
-  query: string,
-  url = "https://test-matt-ai.flippable.workers.dev/",
-): Promise<Theme[] | null> {
-  const urlObj = new URL(url);
-  urlObj.searchParams.append("q", query);
-  const abortCtrl = new AbortController();
-  const resp = await fetch(urlObj, { signal: abortCtrl.signal });
-  try {
-    let text = await resp.text();
-    // replace the begining of the string until it matches a "[" character
-    text = text.replace(/^[^\[]*/, "");
-    // replace potential "```" characters
-    text = text.replace(/`/g, "");
-
-    console.log("resp", text);
-    // const json = await resp.json();
-    return JSON.parse(text);
-  } catch (e) {
-    // console.log("resp", await resp.text());
-    console.error("Cannot parse JSON response", e);
-    return null;
-  }
 }

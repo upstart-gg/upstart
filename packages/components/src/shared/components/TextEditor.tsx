@@ -9,11 +9,11 @@ import {
   type NodeViewProps,
   mergeAttributes,
   nodeInputRule,
-  type Extension,
+  Extension,
 } from "@tiptap/react";
 import Placeholder from "@tiptap/extension-placeholder";
 import { RiArrowDownSLine, RiBracesLine } from "react-icons/ri";
-
+import TextStyle from "@tiptap/extension-text-style";
 import StarterKit from "@tiptap/starter-kit"; // define your extension array
 import TextAlign from "@tiptap/extension-text-align";
 import Heading from "@tiptap/extension-heading";
@@ -26,7 +26,6 @@ import {
   ToggleGroup,
   Portal,
 } from "@upstart.gg/style-system/system";
-import { tx } from "@upstart.gg/style-system/twind";
 import {
   useState,
   useEffect,
@@ -58,6 +57,8 @@ import { menuBarBtnActiveCls, menuBarBtnCls, menuBarBtnCommonCls } from "../styl
 import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import type { TSchema } from "@sinclair/typebox";
+import { tx, css } from "@upstart.gg/style-system/twind";
+import { useHotkeys } from "react-hotkeys-hook";
 
 function DatasourceFieldNode(props: NodeViewProps) {
   return (
@@ -149,6 +150,15 @@ export type TextEditorProps<E extends ElementType> = PolymorphicProps<E> & {
   inline?: boolean;
 };
 
+const OverrideEscape = Extension.create({
+  name: "OverrideEscape",
+  addKeyboardShortcuts() {
+    return {
+      Escape: () => this.editor.commands.blur(),
+    };
+  },
+});
+
 const TextEditor = <T extends ElementType = "div">({
   content,
   className,
@@ -179,6 +189,9 @@ const TextEditor = <T extends ElementType = "div">({
         color: "#FF9900",
       },
       heading: textSizeMode === "hero" ? false : {},
+    }),
+    TextStyle.configure({
+      mergeNestedSpanStyles: false,
     }),
     Placeholder.configure({
       placeholder: "Write something …",
@@ -229,6 +242,7 @@ const TextEditor = <T extends ElementType = "div">({
         return `${options.suggestion.char}${field}}}`;
       },
     }),
+    OverrideEscape,
   ] as Extension[];
 
   const editor = useTextEditor(
@@ -267,17 +281,14 @@ const TextEditor = <T extends ElementType = "div">({
 
       // If there is a related target, it means the blur event was triggered by a click on the editor buttons
       if (e.event.relatedTarget) {
-        console.log("editor blured from related target", e.event.relatedTarget);
+        console.debug("Editor blur triggered by editor buttons, ignoring");
         return;
       }
 
       mainEditor.setIsEditingText(false);
       mainEditor.setlastTextEditPosition(e.editor.state.selection.anchor);
-
-      console.log("setting selection to ", {
-        from: e.editor.state.doc.content.size,
-        to: e.editor.state.doc.content.size,
-      });
+      mainEditor.setSelectedBrickId();
+      mainEditor.togglePanel("inspector");
 
       // reset the selection to the end of the document
       const unselected = e.editor.commands.setTextSelection({
@@ -285,16 +296,9 @@ const TextEditor = <T extends ElementType = "div">({
         to: e.editor.state.doc.content.size,
       });
 
-      e.editor.commands.blur();
-
-      console.log("unselected", unselected);
-
       setFocused(false);
     };
 
-    editor.options.element.addEventListener("resize", () => {
-      console.log("editor resized");
-    });
     editor?.on("focus", onFocus);
     editor?.on("blur", onBlur);
 
@@ -310,7 +314,9 @@ const TextEditor = <T extends ElementType = "div">({
         autoCorrect="false"
         spellCheck="false"
         editor={editor}
-        className={tx("outline-none ring-0 min-h-full flex flex-1")}
+        // test not growing the text editor so that the brick can be more easily dragged
+        className={tx("outline-none ring-0 flex")}
+        // className={tx("outline-none ring-0 min-h-full flex flex-1")}
       />
       {focused && menuBarContainer && (
         <Portal container={menuBarContainer} asChild>
@@ -451,6 +457,7 @@ function DatasourceFieldPickerModal(props: DatasourceFieldPickerModalProps) {
             </div>
             <div className="flex items-center justify-between flex-1">
               <JSONSchemaView
+                // @ts-ignore
                 schema={selectedSchema as TSchema}
                 rootName={currentDatasourceId}
                 onFieldSelect={props.onFieldSelect}

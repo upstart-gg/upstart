@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "vitest",
-    "dev": "pnpm build && pnpm --reporter-hide-prefix --parallel --filter=!@upstart.gg/template-example -r dev ",
-    "build": "nx run-many --no-cloud -t build --maxParallel=3 --exclude=@upstart.gg/template-example --output-style stream",
+    "dev": "pnpm build && pnpm --reporter-hide-prefix --parallel -r dev ",
+    "build": "nx run-many --no-cloud -t build --maxParallel=3 --output-style stream",
     "build:docker": "pnpm --dir packages/style-system run build && pnpm --dir packages/sdk run build && pnpm --dir packages/components run build",
     "lint": "pnpm --parallel --recursive lint",
     "ci:lint": "biome ci --changed --no-errors-on-unmatched --since=head --reporter=github --colors=off packages && pnpm --parallel --recursive ci:lint",
@@ -40,7 +40,6 @@
     "nx": "19.7.2",
     "postcss": "8.5.3",
     "rimraf": "6.0.1",
-    "tailwindcss": "3.4.10",
     "tsx": "4.19.3",
     "typescript": "5.5.3",
     "vite-tsconfig-paths": "5.1.4",
@@ -63,11 +62,5 @@
       "esbuild",
       "nx"
     ]
-  },
-  "postcss": {
-    "plugins": {
-      "tailwindcss": {},
-      "autoprefixer": {}
-    }
   }
 }

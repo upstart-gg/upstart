@@ -7,24 +7,9 @@ import { themeSchema } from "./theme";
 
 export * from "@sinclair/typebox";
 
-type TemplateDefinedConfig = Omit<TemplateConfig, "attributes"> & {
-  attributes: TObject;
-};
-
-export function defineConfig(config: TemplateDefinedConfig): TemplateConfig {
-  return {
-    attributes: processAttributesSchema(config.attributes),
-    attr: config.attr,
-    manifest: config.manifest,
-    pages: config.pages,
-    themes: config.themes,
-    ...(config.datasources ? { datasources: config.datasources } : {}),
-  };
-}
-
 export const templateSchema = Type.Object(
   {
-    manifest: manifestSchema,
+    manifest: Type.Optional(manifestSchema),
     themes: Type.Array(themeSchema),
     datasources: Type.Optional(datasourcesMap),
     // Those are site-level attributes
@@ -48,3 +33,18 @@ export type TemplateConfig = Omit<StaticTemplate, "attributes" | "pages"> & {
     }
   >;
 };
+
+type TemplateDefinedConfig = Omit<TemplateConfig, "attributes"> & {
+  attributes?: TObject;
+};
+
+export function defineConfig(config: TemplateDefinedConfig): TemplateConfig {
+  return {
+    attributes: config.attributes ? processAttributesSchema(config.attributes) : defaultAttributesSchema,
+    attr: config.attr,
+    manifest: config.manifest,
+    pages: config.pages,
+    themes: config.themes,
+    ...(config.datasources ? { datasources: config.datasources } : {}),
+  };
+}

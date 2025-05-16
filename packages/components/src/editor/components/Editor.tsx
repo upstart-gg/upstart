@@ -1,29 +1,38 @@
 import {
+  useChatVisible,
   useDraft,
+  useDraftHelpers,
   useEditorEnabled,
+  useEditorHelpers,
+  useGetBrick,
   usePanel,
   usePreviewMode,
-  type DraftState,
-  type usePageInfo,
+  useSelectedBrickId,
+  useSelectedSection,
+  useSelectedSectionId,
 } from "../hooks/use-editor";
-import Toolbar from "./Toolbar";
-import Topbar from "./Topbar";
+import { BiArrowFromRight, BiArrowFromLeft } from "react-icons/bi";
+import { RxCross2 } from "react-icons/rx";
+import { LuPanelLeft, LuPanelRight } from "react-icons/lu";
+import NavBar from "./NavBar";
 import { lazy, Suspense, useEffect, useRef, useState, type ComponentProps } from "react";
 import { useDebounceCallback } from "usehooks-ts";
 import { DeviceFrame } from "./Preview";
 import EditablePage from "./EditablePage";
-import { tx, injectGlobal, css } from "@upstart.gg/style-system/twind";
+import { injectGlobal, css, tx, tw } from "@upstart.gg/style-system/twind";
 import { Button, Spinner, toast } from "@upstart.gg/style-system/system";
 import { usePageAutoSave } from "~/editor/hooks/use-page-autosave";
 import DataPanel from "./PanelData";
-import PanelSettings from "./PanelSettings";
+import PanelSettings from "./PanelAttributes";
 import PanelTheme from "./PanelTheme";
-import PanelInspector from "./PanelInspector";
+import PanelBrickInspector from "./PanelBrickInspector";
+import PanelSectionInspector from "./PanelSectionInspector";
 import PanelLibrary from "./PanelLibrary";
 import Tour from "./Tour";
 import { getThemeCss } from "~/shared/utils/get-theme-css";
 import Page from "~/shared/components/Page";
 import { useEditorHotKeys } from "../hooks/use-editor-hot-keys";
+import Chat from "./Chat";
 
 type EditorProps = ComponentProps<"div"> & {
   mode?: "local" | "live";
@@ -34,6 +43,7 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
   const draft = useDraft();
   const previewMode = usePreviewMode();
   const editorEnabled = useEditorEnabled();
+  const chatVisible = useChatVisible();
 
   // intro is a state when the site has just been created.
   // It is used for animating the editor.
@@ -59,7 +69,8 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
 
   useEffect(() => {
     const themeUsed = draft.previewTheme ?? draft.theme;
-    injectGlobal(getThemeCss(themeUsed));
+    console.debug("Theme changed");
+    tw(css(getThemeCss(themeUsed)));
   }, [draft.previewTheme, draft.theme]);
 
   if (!editorEnabled) {
@@ -78,25 +89,22 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
   return (
     <div
       id="editor"
-      className={tx(
-        "min-h-[100dvh] max-h-[100dvh] grid relative overscroll-none overflow-hidden",
-        getEditorCss(showIntro, panelPosition),
-      )}
+      className={tx("min-h-[100dvh] max-h-[100dvh] grid relative", getEditorCss(chatVisible))}
       {...props}
       ref={rootRef}
     >
       {showIntro === false && <Tour />}
-      {editorEnabled && <Topbar showIntro={showIntro} />}
+      {editorEnabled && <NavBar showIntro={showIntro} />}
+      {editorEnabled && chatVisible && <Chat />}
       <Panel />
-      {editorEnabled && <Toolbar showIntro={showIntro} />}
-      {draft.previewTheme && <ThemePreviewConfirmButton />}
+      {/* {editorEnabled && <Toolbar showIntro={showIntro} />} */}
+
       <main
         className={tx(
-          "editor-main flex-1 flex place-content-center z-40 overscroll-none transition-colors duration-300",
+          "flex-1 flex place-content-center z-40 overscroll-none ",
           showIntro
             ? "overflow-x-hidden overflow-y-hidden pointer-events-none"
             : "overflow-x-auto overflow-y-visible ",
-          previewMode === "mobile" && "bg-gray-300",
           css({
             gridArea: "main",
             scrollbarColor: "var(--violet-4) var(--violet-2)",
@@ -120,23 +128,35 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
               }}
             />
           )}
+          {draft.previewTheme && <ThemePreviewConfirmButton />}
         </DeviceFrame>
       </main>
     </div>
   );
 }
 
-function getEditorCss(showIntro: boolean, panelPosition: "left" | "right") {
+function getEditorCss(chatVisible?: boolean) {
   return css({
-    gridTemplateAreas:
-      panelPosition === "left" ? `"topbar topbar" "toolbar main"` : `"topbar topbar" "main toolbar"`,
-    gridTemplateRows: "3.7rem 1fr",
-    gridTemplateColumns: panelPosition === "left" ? "3.7rem 1fr" : "1fr 3.7rem",
+    gridTemplateAreas: chatVisible ? `"navbar navbar" "chat main"` : `"navbar" "main"`,
+    gridTemplateRows: "64px 1fr",
+    gridTemplateColumns: chatVisible ? "clamp(280px, 25%, 410px) 1fr" : "1fr",
   });
 }
 
 function ThemePreviewConfirmButton() {
-  return <Button>Accept theme</Button>;
+  const { validatePreviewTheme } = useDraftHelpers();
+  return (
+    <div className="sticky bottom-4 left-0 right-0 flex justify-center items-center z-[9999]">
+      <div className="p-3 bg-black/70 backdrop-blur-md rounded-lg max-w-fit flex gap-2 shadow-xl">
+        <Button variant="solid" color="gray" onClick={() => validatePreviewTheme(false)}>
+          Revert
+        </Button>
+        <Button onClick={() => validatePreviewTheme(true)} variant="solid">
+          Accept theme
+        </Button>
+      </div>
+    </div>
+  );
 }
 
 type PanelProps = ComponentProps<"aside">;
@@ -148,6 +168,11 @@ const TEMP_PANEL_DISABLED = false;
 function Panel({ className, ...props }: PanelProps) {
   const { panel, panelPosition } = usePanel();
   const previewMode = usePreviewMode();
+  const selectedBrickId = useSelectedBrickId();
+  const selectedSection = useSelectedSection();
+  const { togglePanelPosition, hidePanel } = useEditorHelpers();
+  const getBrickInfo = useGetBrick();
+  const selectedBrick = selectedBrickId ? getBrickInfo(selectedBrickId) : null;
 
   if (TEMP_PANEL_DISABLED) {
     return null;
@@ -157,23 +182,62 @@ function Panel({ className, ...props }: PanelProps) {
     <aside
       id="floating-panel"
       className={tx(
-        `z-[9999] fixed top-[3.7rem] bottom-0 flex shadow-2xl flex-col overscroll-none \
-        min-w-[300px] w-[320px] transition-all duration-200 ease-in-out opacity-100
-        bg-gray-50 dark:bg-dark-700 border-r border-upstart-200 dark:border-dark-700 overflow-visible`,
+        `z-[9999] fixed top-0 bottom-0 flex shadow-2xl overscroll-none \
+        min-w-[360px] w-[360px] opacity-100
+        bg-white dark:bg-dark-900 border-upstart-200 dark:border-dark-700 overflow-visible`,
         {
-          "left-[3.7rem]": panelPosition === "left",
-          "right-[3.7rem]": panelPosition === "right",
+          "transition-transform duration-150": !!panel,
+          "transition-opacity duration-100": !panel,
+          "left-0 border-r": panelPosition === "left",
+          "right-0 border-l": panelPosition === "right",
           "-translate-x-full opacity-0": !panel && panelPosition === "left",
           "translate-x-full": !panel && panelPosition === "right",
         },
       )}
       {...props}
     >
-      {previewMode === "desktop" && panel === "library" && <PanelLibrary />}
-      {panel === "inspector" && <PanelInspector />}
-      {panel === "theme" && <PanelTheme />}
-      {panel === "settings" && <PanelSettings />}
-      {panel === "data" && <DataPanel />}
+      <div className="flex-1 relative">
+        {previewMode === "desktop" && panel === "library" && <PanelLibrary />}
+        {panel === "inspector" && selectedBrick && <PanelBrickInspector brick={selectedBrick} />}
+        {panel === "inspector" && !selectedBrick && selectedSection && (
+          <PanelSectionInspector section={selectedSection} />
+        )}
+        {panel === "theme" && <PanelTheme />}
+        {panel === "settings" && <PanelSettings />}
+        {panel === "data" && <DataPanel />}
+
+        {panel && (
+          <>
+            <button
+              type="button"
+              className={tx(
+                "absolute z-[9999] aspect-square h-7 w-7 top-0 flex justify-center items-center bg-gray-100 hover:(bg-upstart-100 text-upstart-800) backdrop-blur-md border border-t-0 border-upstart-200 text-black/50",
+                panelPosition === "right" ? "-left-7 rounded-bl" : "-right-7 rounded-br",
+              )}
+              onClick={() => {
+                hidePanel();
+              }}
+            >
+              <RxCross2 className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              className={tx(
+                "absolute z-[9999] aspect-square h-8 w-8 bottom-0 flex justify-center items-center bg-gray-100 hover:(bg-upstart-100 text-upstart-800) backdrop-blur-md border border-b-0 border-upstart-200 text-black/50",
+                panelPosition === "right"
+                  ? "-left-8 rounded-tl border-r-0"
+                  : "-right-8 rounded-tr border-l-0",
+              )}
+              onClick={() => {
+                togglePanelPosition();
+              }}
+            >
+              {panelPosition === "right" && <LuPanelLeft className="h-5 w-5" />}
+              {panelPosition === "left" && <LuPanelRight className="h-5 w-5" />}
+            </button>
+          </>
+        )}
+      </div>
     </aside>
   );
 }

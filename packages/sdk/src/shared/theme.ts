@@ -1,4 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
+import { StringEnum } from "./utils/schema";
 
 export const fontStacks = [
   { value: "system-ui", label: "System UI" },
@@ -20,7 +21,7 @@ export const fontStacks = [
 
 const headingFont = Type.Object(
   {
-    type: Type.Union([Type.Literal("stack"), Type.Literal("theme"), Type.Literal("google")], {
+    type: StringEnum(["stack", "theme", "google"], {
       title: "Type of font",
       description: "The type of font. Can be a font stack, a theme font or a Google font",
     }),
@@ -41,7 +42,7 @@ const headingFont = Type.Object(
 
 const bodyFont = Type.Object(
   {
-    type: Type.Union([Type.Literal("stack"), Type.Literal("theme"), Type.Literal("google")], {
+    type: StringEnum(["stack", "theme", "google"], {
       title: "Type of font",
       description: "The type of font. Can be a font stack, a theme font or a Google font",
     }),
@@ -60,113 +61,102 @@ const bodyFont = Type.Object(
   },
 );
 
-export const themeSchema = Type.Object(
-  {
-    id: Type.String({ title: "ID", description: "The unique identifier of the theme" }),
-    name: Type.String({ title: "Name", description: "The name of the theme" }),
-    description: Type.Optional(
-      Type.String({ title: "Description", description: "The description of the theme" }),
-    ),
-    tags: Type.Optional(
-      Type.Array(Type.String({ title: "Tag" }), { title: "Tags", description: "The tags of the theme" }),
-    ),
-
-    // Define the theme colors
-    colors: Type.Object(
-      {
-        primary: Type.String({
-          title: "Primary color",
-          description: "The brand's primary color",
-        }),
-        secondary: Type.String({
-          title: "Secondary color",
-          description: "The brand's second most used color",
-        }),
-        accent: Type.String({
-          title: "Accent color",
-          description: "The brand's least used color",
-        }),
-        neutral: Type.String({
-          title: "Neutral color",
-          description: "The base neutral color",
-        }),
-      },
-      {
-        title: "Theme base colors",
-        description: "The base colors of the theme. Each theme must declare all these colors",
-      },
-    ),
-
-    // Define the theme typography
-    typography: Type.Object({
-      base: Type.Number({
-        title: "Base font size",
-        description: "The base font size in pixels. It is safe to keep it as is",
-        default: 16,
+export const themeSchema = Type.Object({
+  id: Type.String({ title: "ID", description: "The unique identifier of the theme" }),
+  name: Type.String({ title: "Name", description: "The name of the theme" }),
+  description: Type.Optional(
+    Type.String({ title: "Description", description: "The description of the theme" }),
+  ),
+  tags: Type.Optional(
+    Type.Array(Type.String({ title: "Tag" }), { title: "Tags", description: "The tags of the theme" }),
+  ),
+  browserColorScheme: Type.String({
+    title: "Browser scheme",
+    description: "Color of browser-provided UI. Either 'light' or 'dark'",
+  }),
+  // Define the theme colors
+  colors: Type.Object(
+    {
+      primary: Type.String({
+        title: "Primary",
+        description: "The brand's primary color.",
       }),
-      heading: headingFont,
-      body: bodyFont,
-      alternatives: Type.Optional(
-        Type.Array(
-          Type.Object({
-            body: bodyFont,
-            heading: headingFont,
-          }),
-          {
-            title: "Alternative fonts",
-            description: "Alternative fonts that can be suggested to the user. Takes the same shape",
-          },
-        ),
-      ),
-    }),
-  },
-  {
-    $id: "Theme",
-  },
-);
+      primaryContent: Type.String({
+        title: "Primary content",
+        description: "Text color on primary background",
+      }),
+      secondary: Type.String({
+        title: "Secondary",
+        description: "The brand's second most used color",
+      }),
+      secondaryContent: Type.String({
+        title: "Secondary content",
+        description: "Text color on secondary background",
+      }),
+      accent: Type.String({
+        title: "Accent",
+        description: "The brand's least used color",
+      }),
+      accentContent: Type.String({
+        title: "Accent content",
+        description: "Text color on accent background",
+      }),
+      neutral: Type.String({
+        title: "Neutral",
+        description: "The base neutral color",
+      }),
+      neutralContent: Type.String({
+        title: "Neutral content",
+        description: "Text color on neutral background",
+      }),
+      base100: Type.String({
+        title: "Base",
+        description: "Base surface color of page, used for blank backgrounds. Should be very light.",
+      }),
+      base200: Type.String({
+        title: "Base 2",
+        description:
+          "Base color, darker shade, to create elevations. Should be darker than base100 but still light.",
+      }),
+      base300: Type.String({
+        title: "Base 3",
+        description:
+          "Base color, even more darker shade, to create elevations. Should be darker than base200 but still light.",
+      }),
+      baseContent: Type.String({
+        title: "Base content",
+        description: "Text color to use on base colors",
+      }),
+    },
+    {
+      title: "Theme base colors",
+      description: "The base colors of the theme. Each theme must declare all these colors",
+    },
+  ),
 
-/**
- * Process the theme schema and potentialy modify the typography entries by adding custom fonts defined in the theme to the accepted union.
- */
-// export function getProcessedThemeSchema(schema: typeof themeSchema, theme: Theme): TObject {
-//   if (!theme.customFonts?.length) {
-//     return schema;
-//   }
-//   return {
-//     ...schema,
-//     properties: {
-//       ...schema.properties,
-//       typography: {
-//         ...schema.properties.typography,
-//         properties: {
-//           ...schema.properties.typography.properties,
-//           body: Type.Union(
-//             [
-//               ...theme.customFonts.map((font) => Type.Literal(font.name, { title: font.name })),
-//               schema.properties.typography.properties.body,
-//             ],
-//             {
-//               title: schema.properties.typography.properties.body.title,
-//               description: schema.properties.typography.properties.body.description,
-//               default: schema.properties.typography.properties.body.default,
-//             },
-//           ),
-//           heading: Type.Union(
-//             [
-//               ...theme.customFonts.map((font) => Type.Literal(font.name, { title: font.name })),
-//               schema.properties.typography.properties.heading,
-//             ],
-//             {
-//               title: schema.properties.typography.properties.heading.title,
-//               description: schema.properties.typography.properties.heading.description,
-//               default: schema.properties.typography.properties.heading.default,
-//             },
-//           ),
-//         },
-//       },
-//     },
-//   };
-// }
+  // Define the theme typography
+  typography: Type.Object({
+    base: Type.Number({
+      title: "Base font size",
+      description: "The base font size in pixels. It is safe to keep it as is",
+      default: 16,
+    }),
+    heading: headingFont,
+    body: bodyFont,
+    alternatives: Type.Optional(
+      Type.Array(
+        Type.Object({
+          body: bodyFont,
+          heading: headingFont,
+        }),
+        {
+          title: "Alternative fonts",
+          description: "Alternative fonts that can be suggested to the user. Takes the same shape",
+        },
+      ),
+    ),
+  }),
+});
 
 export type Theme = Static<typeof themeSchema>;
 export const themeArray = Type.Array(themeSchema);

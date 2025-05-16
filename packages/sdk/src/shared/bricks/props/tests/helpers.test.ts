@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Type } from "@sinclair/typebox";
 import { prop, group, defineProps, getGroupInfo, getStyleProperties } from "../helpers";
-import { manifest as sampleManifest } from "../../manifests/header.manifest";
+import { manifest as sampleManifest } from "../../manifests/navbar.manifest";
 
 describe("Props helpers test suite", () => {
   describe("prop", () => {

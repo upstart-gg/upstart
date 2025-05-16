@@ -1,6 +1,6 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { color, textContent } from "../props/text";
-import { defineProps } from "../props/helpers";
+import { defineProps, optional } from "../props/helpers";
 import { backgroundColor } from "../props/background";
 import { padding } from "../props/padding";
 import { border } from "../props/border";
@@ -12,6 +12,9 @@ export const manifest = defineBrickManifest({
   kind: "brick",
   name: "Text",
   description: "Text with formatting options",
+  aiInstructions: `Text "content" can contain minimal HTML tags like <strong>, <em>, <br> and <a> as well as <p> and <span> and lists.
+Only 'align' is supported as an inline style, so don't use other inline styles like 'font-size' or 'color' in the content prop.
+`,
   minHeight: {
     desktop: 2,
     mobile: 2,
@@ -30,17 +33,21 @@ export const manifest = defineBrickManifest({
   },
   repeatable: true,
   icon: RxTextAlignLeft,
-  // icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-  //       stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-  //       <path d="M4 7h16M4 12h16M4 17h16"></path></svg>`,
-  props: defineProps({
-    content: textContent(),
-    backgroundColor: backgroundColor(),
-    color: color(),
-    padding: padding("p-2"),
-    border: border(),
-    effects: effects({ enableTextShadow: true }),
-  }),
+  props: defineProps(
+    {
+      content: textContent(),
+      backgroundColor: optional(backgroundColor()),
+      color: optional(color()),
+      padding: optional(padding()),
+      border: optional(border()),
+      effects: optional(effects({ enableTextShadow: true })),
+    },
+    {
+      default: {
+        padding: "p-8",
+      },
+    },
+  ),
 });
 
 export type Manifest = typeof manifest;

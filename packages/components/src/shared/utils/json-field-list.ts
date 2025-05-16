@@ -1,5 +1,5 @@
 import type { TArray, TObject, TSchema } from "@sinclair/typebox";
-import type { Site } from "@upstart.gg/sdk/shared/page";
+import type { Site } from "@upstart.gg/sdk/shared/site";
 
 function getSchemaObject({
   rootName,
@@ -50,7 +50,11 @@ function getSchemaEntry({
 
 export function getJSONSchemaFieldsList(schemasMap?: Site["datasources"]) {
   if (!schemasMap) return [];
-  return Object.entries(schemasMap)
-    .filter(([, ds]) => !!ds.schema)
-    .flatMap(([name, ds]) => getSchemaEntry({ schema: ds.schema as TSchema, rootName: name, level: 0 }));
+  return (
+    Object.entries(schemasMap)
+      .filter(([, ds]) => !!ds.schema)
+      // todo fix this
+      // @ts-ignore
+      .flatMap(([name, ds]) => getSchemaEntry({ schema: ds.schema as TSchema, rootName: name, level: 0 }))
+  );
 }

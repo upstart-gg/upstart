@@ -1,10 +1,11 @@
 import { useHotkeys } from "react-hotkeys-hook";
-import { useDraftHelpers, useEditorHelpers, useSelectedBrickId } from "./use-editor";
+import { useDraft, useDraftHelpers, useEditorHelpers, useSelectedBrickId } from "./use-editor";
 import { toast } from "@upstart.gg/style-system/system";
 
 export function useEditorHotKeys() {
   const editorHelpers = useEditorHelpers();
   const draftHelpers = useDraftHelpers();
+  const draft = useDraft();
   const selectedBrickId = useSelectedBrickId();
 
   useHotkeys("esc", () => {
@@ -82,7 +83,14 @@ export function useEditorHotKeys() {
     }
   });
 
-  useHotkeys("mod+2", (e) => {
+  useHotkeys("mod+j", (e) => {
+    e.preventDefault();
     editorHelpers.toggleEditorEnabled();
+  });
+
+  useHotkeys("mod+g", (e) => {
+    e.preventDefault();
+    console.log("Debugging draft:");
+    console.log(draft);
   });
 }

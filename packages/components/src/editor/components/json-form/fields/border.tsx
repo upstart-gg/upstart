@@ -3,7 +3,6 @@ import { Text, Select, SegmentedControl } from "@upstart.gg/style-system/system"
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import { fieldLabel } from "../form-class";
 import { ColorPill } from "./color";
-import { tx } from "@upstart.gg/style-system/twind";
 import {
   MdBorderOuter,
   MdBorderBottom,
@@ -17,6 +16,7 @@ import {
 } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { FieldTitle } from "../field-factory";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
@@ -78,7 +78,11 @@ export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
           <ColorPill
             color={currentValue.color}
             elementColorType="border"
-            onChange={(e) => onChange({ ...currentValue, color: e })}
+            onChange={(color) => {
+              if (color) {
+                onChange({ ...currentValue, color });
+              }
+            }}
           />
         </div>
 

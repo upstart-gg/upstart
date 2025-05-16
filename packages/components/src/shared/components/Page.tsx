@@ -7,11 +7,7 @@ export default function Page({ page }: { page: GenericPageContext }) {
   return (
     <div className={pageClassName}>
       {page.sections.map((section) => (
-        <Section
-          key={section.id}
-          section={section}
-          bricks={page.bricks.filter((b) => b.sectionId === section.id)}
-        />
+        <Section key={section.id} section={section} />
       ))}
     </div>
   );

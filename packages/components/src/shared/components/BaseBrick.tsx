@@ -28,18 +28,15 @@ const BaseBrick = ({
   selectedBrickId?: string;
 } & ComponentProps<"div">) => {
   const BrickModule = bricksMap[brick.type];
-
   if (!BrickModule) {
     console.warn("Brick not found", brick.type);
     return null;
   }
-
   const brickProps = {
     brick,
     editable,
     selected: brick.id === selectedBrickId,
   } satisfies BrickProps<BrickManifest>;
-
   return (
     <Suspense>
       <BrickModule {...brickProps} />

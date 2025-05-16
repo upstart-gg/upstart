@@ -1,92 +1,20 @@
 @layer upstart-theme, upstart-generated, upstart-utilities;
-
 @layer upstart-theme {
-
   [data-upstart-theme] {
     font-family: initial;
     background: initial;
     color: initial;
   }
-
-  :root {
-    /* Luminance threshold for deciding between light and dark text */
-    --luminance-threshold: 0.6;
-    --l-threshold: 0.7;
-    --l: clamp(0, (var(--l-threshold) / l - 1) * infinity, 1);
-
-  }
-
 }
-
 @layer upstart-generated {
   :root {
-
-
-    /* Background Colors (3 shades, 0, 1 and 2) */
-    --color-bg-neutral-0: var(--color-neutral-0);
-    --color-bg-neutral-1: var(--color-neutral-1);
-    --color-bg-neutral-2: var(--color-neutral-2);
-
-    --color-bg-primary-0: var(--color-primary-0);
-    --color-bg-primary-1: var(--color-primary-1);
-    --color-bg-primary-2: var(--color-primary-2);
-
-    --color-bg-secondary-0: var(--color-secondary-0);
-    --color-bg-secondary-1: var(--color-secondary-1);
-    --color-bg-secondary-2: var(--color-secondary-2);
-
-    --color-bg-tertiary-0: var(--color-tertiary-0);
-    --color-bg-tertiary-1: var(--color-tertiary-1);
-    --color-bg-tertiary-2: var(--color-tertiary-2);
-
-    --color-bg-accent-0: var(--color-accent-0);
-    --color-bg-accent-1: var(--color-accent-1);
-    --color-bg-accent-2: var(--color-accent-2);
-
-    /* Interactive Element Colors (from shade #3 to #5) */
-    --color-interactive-primary-1: var(--color-primary-3);
-    --color-interactive-primary-2: var(--color-primary-4);
-    --color-interactive-primary-3: var(--color-primary-5);
-
-    --color-interactive-secondary-1: var(--color-secondary-3);
-    --color-interactive-secondary-2: var(--color-secondary-4);
-    --color-interactive-secondary-3: var(--color-secondary-5);
-
-    --color-interactive-tertiary-1: var(--color-tertiary-3);
-    --color-interactive-tertiary-2: var(--color-tertiary-4);
-    --color-interactive-tertiary-3: var(--color-tertiary-5);
-
-
-    /** Borders and separators shades (3 shades) */
-    --color-border-neutral-1: var(--color-neutral-6);
-    --color-border-neutral-2: var(--color-neutral-7);
-    --color-border-neutral-3: var(--color-neutral-8);
-
-    --color-border-primary-1: var(--color-primary-6);
-    --color-border-primary-2: var(--color-primary-7);
-    --color-border-primary-3: var(--color-primary-8);
-
-    --color-border-secondary-1: var(--color-secondary-6);
-    --color-border-secondary-2: var(--color-secondary-7);
-    --color-border-secondary-3: var(--color-secondary-8);
-
-    --color-border-tertiary-1: var(--color-tertiary-6);
-    --color-border-tertiary-2: var(--color-tertiary-7);
-    --color-border-tertiary-3: var(--color-tertiary-8);
-
-    /* Solid Element Colors (from shade #9 to #10) */
-    --color-solid-neutral-1: var(--color-neutral-9);
-    --color-solid-neutral-2: var(--color-neutral-10);
-
-    --color-solid-primary-1: var(--color-primary-9);
-    --color-solid-primary-2: var(--color-primary-10);
-
-    --color-solid-secondary-1: var(--color-secondary-9);
-    --color-solid-secondary-2: var(--color-secondary-10);
-
-    --color-solid-tertiary-1: var(--color-tertiary-9);
-    --color-solid-tertiary-2: var(--color-tertiary-10);
-
+    button,
+    [role="button"] {
+      cursor: pointer;
+    }
+    :disabled {
+      cursor: default;
+    }
     /* Fonts stacks */
     --font-system-ui: system-ui, sans-serif;
     --font-transitional: Charter, Bitstream Charter, Sitka Text, Cambria, serif;
@@ -105,10 +33,7 @@
     --font-handwritten: Segoe Print, Bradley Hand, Chilanka, TSCu_Comic, casual, cursive;
   }
 }
-
-
 @layer upstart-utilities {
-
   /* Font classes */
   .font-system-ui { font-family: var(--font-system-ui); }
   .font-transitional { font-family: var(--font-transitional); }
@@ -125,8 +50,4 @@
   .font-antique { font-family: var(--font-antique); }
   .font-didone { font-family: var(--font-didone); }
   .font-handwritten { font-family: var(--font-handwritten); }
-
 }
-
-
-

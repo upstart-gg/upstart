@@ -1,4 +1,3 @@
-import { tx } from "@upstart.gg/style-system/twind";
 import { Toaster } from "@upstart.gg/style-system/system";
 import { startTransition, useEffect, useRef } from "react";
 import { generateId, type Brick } from "@upstart.gg/sdk/shared/bricks";
@@ -9,18 +8,16 @@ import {
   useEditorHelpers,
   usePreviewMode,
   useSections,
-  useSelectedBrickId,
+  useZoom,
 } from "../hooks/use-editor";
-import { useHotkeys } from "react-hotkeys-hook";
 import Selecto from "react-selecto";
 import { useEditablePage } from "~/editor/hooks/use-editable-page";
 import { defaultProps, manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
-import { getBrickAtPosition } from "~/shared/utils/layout-utils";
 import { useFontWatcher } from "../hooks/use-font-watcher";
 import Section from "./EditableSection";
-import BrickSettingsPopover from "./BrickPopover";
-import { useEditorHotKeys } from "../hooks/use-editor-hot-keys";
+import { getBrickElementAtPosition } from "~/shared/utils/layout-utils";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 const ghostValid = tx("bg-upstart-100");
 const ghostInvalid = tx("bg-red-100");
@@ -34,6 +31,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const editorHelpers = useEditorHelpers();
   const draftHelpers = useDraftHelpers();
   const draft = useDraft();
+  const { zoom } = useZoom();
   const pageRef = useRef<HTMLDivElement>(null);
   const attributes = useAttributes();
   const sections = useSections();
@@ -79,34 +77,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         updateDragOverGhostStyle(null);
 
         updatedPositions.forEach(({ brick, gridPosition, sectionId }) => {
-          const hoveredBrick = getBrickAtPosition(gridPosition.x, gridPosition.y, draft.bricks, previewMode);
-          const hoveredBrickManifest = hoveredBrick ? manifests[hoveredBrick.type] : null;
-          if (
-            hoveredBrick &&
-            hoveredBrickManifest?.isContainer /* && event.shiftKey*/ &&
-            hoveredBrick.id !== brick.id
-          ) {
-            console.debug("Moving element(s) to parent %s", hoveredBrick.id);
-            console.log("Brick has moved", brick);
-            draftHelpers.moveBrickToParent(brick.id, hoveredBrick.id);
-          } else {
-            console.debug(
-              "Updating position of %s to x = %s, y = %s, w = %s, h = %s in section %s",
-              brick.id,
-              gridPosition.x,
-              gridPosition.y,
-              gridPosition.w,
-              gridPosition.h,
-              sectionId,
-            );
-            draft.updateBrick(brick.id, { sectionId });
-            draft.updateBrickPosition(brick.id, previewMode, {
-              x: gridPosition.x,
-              y: gridPosition.y,
-              w: gridPosition.w,
-              h: gridPosition.h,
-            });
-          }
+          // Move the brick to the new position
         });
 
         // reset the selected group
@@ -131,21 +102,20 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           const newBrick: Brick = {
             id: `brick-${generateId()}`,
             ...bricksDefaults,
-            sectionId: section.id,
             type: brickType,
-            position: {
-              desktop: position,
-              mobile: position,
-            },
           };
 
-          const hoveredBrick = getBrickAtPosition(position.x, position.y, draft.bricks, previewMode);
+          const hoveredBrickElement = getBrickElementAtPosition(position.x, position.y);
+          const hoveredBrick = hoveredBrickElement
+            ? draft.getBrick(hoveredBrickElement.dataset.brickId as string)
+            : null;
           const hoveredBrickManifest = hoveredBrick ? manifests[hoveredBrick.type] : null;
 
           // Add the new brick to the store
           // Specify the parent if we dropped on a container
           draft.addBrick(
             newBrick,
+            section.id,
             hoveredBrick && hoveredBrickManifest?.isContainer ? hoveredBrick.id : null,
           );
 
@@ -163,15 +133,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       onResizeEnd: (brickId, gridPos) => {
         console.debug("onResizeEnd (%s)", previewMode, brickId, gridPos);
         updateDragOverGhostStyle(null);
-        // Update the brick position (and height if needed)
-        draftHelpers.updateBrickPosition(brickId, previewMode, {
-          ...draftHelpers.getBrick(brickId)!.position[previewMode],
-          ...gridPos,
-          // wWen resizing through the mobile view, set the manual height
-          // so that the system knows that the height is not automatic
-          ...(previewMode === "mobile" ? { manualHeight: gridPos.h } : {}),
-        });
-
+        // TODO: Update the brick position
         // try to automatically adjust the mobile layout when resizing from desktop
         if (previewMode === "desktop") {
           draftHelpers.adjustMobileLayout();
@@ -179,8 +141,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       },
     },
   });
-
-  // useEditableTextManager();
 
   // listen for global click events on the document
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -200,14 +160,16 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         !target.closest("#text-editor-menubar") &&
         !target.matches("html") &&
         !target.matches("body") &&
-        !target.matches("[data-brick]") &&
-        !target.closest("[data-brick]")
+        !target.closest("[data-element-kind]") &&
+        !target.matches("[data-element-kind]")
       ) {
         console.debug("click out, hidding", event, event.target);
         editorHelpers.deselectBrick();
         // also deselect the library panel
         editorHelpers.hidePanel("library");
         editorHelpers.hidePanel("inspector");
+        editorHelpers.hidePanel("settings");
+        editorHelpers.hidePanel("theme");
         editorHelpers.setTextEditMode("default");
       }
     };
@@ -219,7 +181,14 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
 
   return (
     <>
-      <div id="page-container" ref={pageRef} className={pageClassName}>
+      <div
+        id="page-container"
+        ref={pageRef}
+        className={pageClassName}
+        style={{
+          zoom,
+        }}
+      >
         {sections.map((section) => (
           <Section key={section.id} section={section} />
         ))}
@@ -252,7 +221,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           });
         }}
       />
-      <BrickSettingsPopover />
       <Toaster
         toastOptions={{
           position: "bottom-center",

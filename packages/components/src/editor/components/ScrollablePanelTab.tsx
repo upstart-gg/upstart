@@ -12,10 +12,12 @@ const tabContentScrollClass = css({
 });
 
 export function ScrollablePanelTab({ children, tab, className }: ComponentProps<"div"> & { tab: string }) {
+  // same for now
+  const height = "h-[calc(100dvh-60px)]";
   return (
     <Tabs.Content
       value={tab}
-      className={tx("h-[calc(100dvh-99px)] overflow-y-auto", tabContentScrollClass, className)}
+      className={tx(height, "@container/tab overflow-y-auto", tabContentScrollClass, className)}
     >
       {children}
     </Tabs.Content>

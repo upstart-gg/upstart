@@ -13,7 +13,6 @@ const loader = {
 };
 
 const external = [
-  // "tailwindcss",
   // "jsdom",
   "vite",
   "vite-plugin-inspect",
@@ -47,7 +46,7 @@ const external = [
   "__STATIC_CONTENT_MANIFEST",
 ];
 
-const ignored = ["!**/*.md", "!**/tests/**/*", "!**/sample.ts"];
+const ignored = ["!**/*.md", "!**/tests/**/*", "!**/*.test.ts", "!**/sample.ts"];
 
 export default defineConfig((options) => {
   return [
@@ -94,6 +93,8 @@ export default defineConfig((options) => {
         "src/shared/ajv.ts",
         "src/shared/themes",
         "src/shared/theme.ts",
+        "src/shared/page.ts",
+        "src/shared/site.ts",
         "src/shared/responsive.ts",
         "src/shared/analytics",
         "src/shared/utils",

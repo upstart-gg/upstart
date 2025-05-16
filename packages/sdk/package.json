@@ -56,6 +56,7 @@
     "http-errors-enhanced": "2.0.8",
     "immer": "10.1.1",
     "import-meta-resolve": "4.1.0",
+    "json-schema-default": "1.0.2",
     "lodash-es": "4.17.21",
     "nanoid": "5.0.7",
     "open": "10.1.0",
