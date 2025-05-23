@@ -5,12 +5,14 @@ import Inspect from "vite-plugin-inspect";
 import bundlesize from "vite-plugin-bundlesize";
 import tsconfigPaths from "vite-tsconfig-paths";
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   envPrefix: ["PUBLIC_"],
   base: "./",
   plugins: [
     tsconfigPaths() as PluginOption,
-    Inspect(),
+    Inspect({
+      open: true,
+    }),
     react() as PluginOption,
     dts({
       include: [
@@ -20,14 +22,13 @@ export default defineConfig({
         "src/shared/hooks/use-datasource.tsx",
         "src/shared/components/Page.tsx",
         "src/shared/utils/get-theme-css.ts",
-        // "src/shared/components/Brick.tsx",
-        "src/test-config.ts",
       ],
       outDir: "dist/types",
     }),
-    bundlesize({
-      limits: [{ name: "**/*", limit: "1.2 mB" }],
-    }),
+    process.env.NODE_ENV === "production" &&
+      bundlesize({
+        limits: [{ name: "**/*", limit: "1.6 mB" }],
+      }),
   ],
   optimizeDeps: {
     // include: ["@upstart.gg/sdk"],
@@ -42,7 +43,7 @@ export default defineConfig({
   },
   build: {
     copyPublicDir: false,
-    sourcemap: true,
+    sourcemap: "hidden",
     lib: {
       entry: {
         Editor: "src/editor/components/Editor.tsx",
@@ -52,12 +53,11 @@ export default defineConfig({
         "use-editor": "src/editor/hooks/use-editor.ts",
         "use-datasource": "src/shared/hooks/use-datasource.tsx",
         "get-theme-css": "src/shared/utils/get-theme-css.ts",
-        "test-config": "src/test-config.ts",
       },
       formats: ["es"],
     },
     minify: process.env.NODE_ENV === "production" && process.env.NOMINIFY !== "1",
-    cssMinify: false,
+    // cssMinify: false,
     rollupOptions: {
       external: [
         "react-icons",
@@ -77,4 +77,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));

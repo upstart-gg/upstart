@@ -1,4 +1,4 @@
-import { IconButton, Popover, Text } from "@upstart.gg/style-system/system";
+import { IconButton, Popover } from "@upstart.gg/style-system/system";
 import transSvg from "./trans.svg?url";
 import {
   isStandardColor,
@@ -9,7 +9,6 @@ import {
 import BaseColorPicker, { ElementColorPicker } from "~/editor/components/ColorPicker";
 import type { FieldProps } from "./types";
 import { IoCloseOutline } from "react-icons/io5";
-import { fieldLabel } from "../form-class";
 import { FieldTitle } from "../field-factory";
 import { tx, css } from "@upstart.gg/style-system/twind";
 

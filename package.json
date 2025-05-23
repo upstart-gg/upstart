@@ -7,6 +7,7 @@
     "test": "vitest",
     "dev": "pnpm build && pnpm --reporter-hide-prefix --parallel -r dev ",
     "build": "nx run-many --no-cloud -t build --maxParallel=3 --output-style stream",
+    "build:watch": "nx run-many --no-cloud -t build:watch --maxParallel=3 --output-style stream",
     "build:docker": "pnpm --dir packages/style-system run build && pnpm --dir packages/sdk run build && pnpm --dir packages/components run build",
     "lint": "pnpm --parallel --recursive lint",
     "ci:lint": "biome ci --changed --no-errors-on-unmatched --since=head --reporter=github --colors=off packages && pnpm --parallel --recursive ci:lint",
@@ -55,7 +56,9 @@
       "@twind/with-react": "1.1.3",
       "@sinclair/typebox": "0.34.6",
       "@radix-ui/themes": "3.1.4",
-      "caniuse-lite": "1.0.30001699"
+      "caniuse-lite": "1.0.30001699",
+      "property-information": "7.1.0",
+      "vite": "5.4.17"
     },
     "onlyBuiltDependencies": [
       "@biomejs/biome",

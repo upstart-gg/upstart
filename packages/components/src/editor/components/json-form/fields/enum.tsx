@@ -1,11 +1,8 @@
-import { IconButton, SegmentedControl, Tooltip } from "@upstart.gg/style-system/system";
+import { SegmentedControl } from "@upstart.gg/style-system/system";
 import type { FieldProps } from "./types";
-import { fieldLabel } from "../form-class";
 import { Select } from "@upstart.gg/style-system/system";
-import { HelpIcon } from "../HelpIcon";
-import { IoIosHelpCircleOutline } from "react-icons/io";
 import { FieldTitle } from "../field-factory";
-import { tx, css } from "@upstart.gg/style-system/twind";
+import { tx } from "@upstart.gg/style-system/twind";
 
 interface EnumOption {
   const: string;

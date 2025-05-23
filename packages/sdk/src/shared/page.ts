@@ -10,7 +10,7 @@ import type { Theme } from "./theme";
 import { Type, type Static } from "@sinclair/typebox";
 import type { DatasourcesMap, DatasourcesResolved } from "./datasources/types";
 import type { TemplateConfig } from "./template";
-import type { PageInfo, PagesMap } from "./pages-map";
+import type { PageInfo, Sitemap } from "./sitemap";
 
 /**
  * The Page config represents the page configuration (datasources, attributes, etc)
@@ -69,7 +69,7 @@ export type GenericPageContext = Omit<GenericPageConfig, "attr" | "attributes"> 
   siteId: string;
   hostname: string;
   theme: Theme;
-  pagesMap: PagesMap;
+  sitemap: Sitemap;
   attr: Attributes;
 };
 

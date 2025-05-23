@@ -1,10 +1,10 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { type GenericPageConfig, getNewPageConfig, templatePageSchema } from "./page";
-import { pageInfoSchema, pagesMapSchema } from "./pages-map";
+import { pageInfoSchema, sitemapSchema } from "./sitemap";
 import { defaultAttributesSchema, type AttributesSchema, resolveAttributes } from "./attributes";
 import { datasourcesMap } from "./datasources/types";
 import { datarecordsMap } from "./datarecords/types";
-import { themeSchema } from "./theme";
+import { defaultTheme, themeSchema } from "./theme";
 import type { TemplateConfig } from "./template";
 
 export const siteSchema = Type.Object({
@@ -17,7 +17,7 @@ export const siteSchema = Type.Object({
   datarecords: Type.Optional(datarecordsMap),
   themes: Type.Array(themeSchema),
   theme: themeSchema,
-  pagesMap: pagesMapSchema,
+  sitemap: sitemapSchema,
 });
 
 /**
@@ -44,6 +44,32 @@ export type SiteAndPagesConfig = {
     }
   >;
 };
+
+export function createEmptyConfig(): SiteAndPagesConfig {
+  return {
+    site: {
+      id: crypto.randomUUID(),
+      label: "New site",
+      hostname: "example.com",
+      theme: defaultTheme,
+      themes: [],
+      sitemap: [],
+      attributes: defaultAttributesSchema,
+      attr: resolveAttributes(),
+    },
+    pages: [
+      {
+        id: "_default_",
+        label: "First page",
+        path: "/",
+        sections: [],
+        tags: [],
+        attributes: defaultAttributesSchema,
+        attr: resolveAttributes(),
+      },
+    ],
+  };
+}
 
 /**
  * Creates the necessary config for a new site based on the given template.
@@ -75,7 +101,7 @@ export function getNewSiteConfig(
     datasources: templateConfig.datasources,
     themes: templateConfig.themes,
     theme: templateConfig.themes[0],
-    pagesMap: pages.map((p) => ({
+    sitemap: pages.map((p) => ({
       id: p.id,
       label: p.label,
       path: p.path,

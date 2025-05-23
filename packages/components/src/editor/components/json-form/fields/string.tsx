@@ -1,15 +1,12 @@
 import type { FieldProps } from "./types";
 import { TextField, TextArea, SegmentedControl, Select } from "@upstart.gg/style-system/system";
 import { TbSlash } from "react-icons/tb";
-import { fieldLabel } from "../form-class";
-import { Text } from "@upstart.gg/style-system/system";
-import { HelpIcon } from "../HelpIcon";
 import { useDebounceCallback } from "usehooks-ts";
 import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { UrlOrPageIdSettings } from "@upstart.gg/sdk/shared/bricks/props/string";
 import { useState } from "react";
-import { usePagesMap } from "~/editor/hooks/use-editor";
+import { useSitemap } from "~/editor/hooks/use-editor";
 
 export const StringField: React.FC<FieldProps<string>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
@@ -23,7 +20,7 @@ export const StringField: React.FC<FieldProps<string>> = (props) => {
         <TextArea
           defaultValue={currentValue}
           onChange={(e) => onChangeDebounced(e.target.value)}
-          className={tx("!mt-1 scrollbar-thin", schema["ui:textarea-class"])}
+          className={tx("!mt-1.5 scrollbar-thin", schema["ui:textarea-class"])}
           required={required}
           placeholder={placeholder}
           resize="vertical"
@@ -69,9 +66,9 @@ export const PathField: React.FC<FieldProps<string>> = (props) => {
 
 export const UrlOrPageIdField: React.FC<FieldProps<UrlOrPageIdSettings | null>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
-  const pagesMap = usePagesMap();
+  const sitemap = useSitemap();
   const [type, setType] = useState<"url" | "pageId">(
-    currentValue?.startsWith("http") || pagesMap.length === 1 ? "url" : "pageId",
+    currentValue?.startsWith("http") || sitemap.length === 1 ? "url" : "pageId",
   );
 
   return (
@@ -112,7 +109,7 @@ export const UrlOrPageIdField: React.FC<FieldProps<UrlOrPageIdSettings | null>> 
           />
           <Select.Content position="popper">
             <Select.Group>
-              {Object.entries(pagesMap).map(([, page]) => (
+              {Object.entries(sitemap).map(([, page]) => (
                 <Select.Item key={page.id} value={page.label}>
                   {page.label}
                 </Select.Item>

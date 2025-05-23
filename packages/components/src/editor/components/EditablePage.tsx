@@ -1,4 +1,4 @@
-import { Toaster } from "@upstart.gg/style-system/system";
+import { Toaster, useAutoAnimate } from "@upstart.gg/style-system/system";
 import { startTransition, useEffect, useRef } from "react";
 import { generateId, type Brick } from "@upstart.gg/sdk/shared/bricks";
 import {
@@ -6,8 +6,12 @@ import {
   useDraft,
   useDraftHelpers,
   useEditorHelpers,
+  useGenerationState,
   usePreviewMode,
   useSections,
+  useSiteReady,
+  useTheme,
+  useThemeSubscribe,
   useZoom,
 } from "../hooks/use-editor";
 import Selecto from "react-selecto";
@@ -18,6 +22,11 @@ import { useFontWatcher } from "../hooks/use-font-watcher";
 import Section from "./EditableSection";
 import { getBrickElementAtPosition } from "~/shared/utils/layout-utils";
 import { tx, css } from "@upstart.gg/style-system/twind";
+import { type Theme, isDefaultTheme } from "@upstart.gg/sdk/shared/theme";
+import ThemePreview from "./ThemePreview";
+import { motion } from "motion/react";
+import ThemePreviewAnimated from "./ThemePreviewAnimated";
+import { Spinner } from "@upstart.gg/style-system/system";
 
 const ghostValid = tx("bg-upstart-100");
 const ghostInvalid = tx("bg-red-100");
@@ -38,9 +47,16 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const dragOverRef = useRef<HTMLDivElement>(null);
   const typography = useFontWatcher();
   const pageClassName = usePageStyle({ attributes, typography, editable: true, previewMode, showIntro });
+  const siteReady = useSiteReady();
+  const genState = useGenerationState();
+  const theme = useTheme();
 
   // on page load, set last loaded property so that the store is saved to local storage
   useEffect(draft.setLastLoaded, []);
+
+  useEffect(() => {
+    console.log("Gen state changed in EditablePage", genState);
+  }, [genState]);
 
   /**
    *  Update the ghost style based on the drop position
@@ -74,7 +90,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     },
     dragCallbacks: {
       onDragEnd: (updatedPositions, event) => {
-        updateDragOverGhostStyle(null);
+        // updateDragOverGhostStyle(null);
 
         updatedPositions.forEach(({ brick, gridPosition, sectionId }) => {
           // Move the brick to the new position
@@ -86,15 +102,15 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     },
     dropCallbacks: {
       onDropMove(event, rect, brickType) {
-        updateDragOverGhostStyle(rect);
+        // updateDragOverGhostStyle(rect);
       },
       onDropDeactivate() {
-        updateDragOverGhostStyle(null);
+        // updateDragOverGhostStyle(null);
       },
       onDrop(event, position, section, brickType) {
         console.debug("onDrop (%s)", previewMode, position, brickType);
 
-        updateDragOverGhostStyle(null);
+        // updateDragOverGhostStyle(null);
 
         if (position) {
           console.debug("New brick dropped at", position, section);
@@ -132,7 +148,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     resizeCallbacks: {
       onResizeEnd: (brickId, gridPos) => {
         console.debug("onResizeEnd (%s)", previewMode, brickId, gridPos);
-        updateDragOverGhostStyle(null);
+        // updateDragOverGhostStyle(null);
         // TODO: Update the brick position
         // try to automatically adjust the mobile layout when resizing from desktop
         if (previewMode === "desktop") {
@@ -173,11 +189,13 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         editorHelpers.setTextEditMode("default");
       }
     };
-    document.addEventListener("click", listener, true);
+    if (siteReady) {
+      document.addEventListener("click", listener, true);
+    }
     return () => {
       document.removeEventListener("click", listener, true);
     };
-  }, []);
+  }, [siteReady]);
 
   return (
     <>
@@ -192,6 +210,12 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         {sections.map((section) => (
           <Section key={section.id} section={section} />
         ))}
+        {sections.length === 0 &&
+          (draft.themes.length && !genState.hasChosenTheme ? (
+            <ThemesList themes={draft.themes} />
+          ) : (
+            <BlankWaitPage />
+          ))}
         <div
           ref={dragOverRef}
           className={tx(
@@ -199,28 +223,30 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           )}
         />
       </div>
-      <Selecto
-        className="selecto"
-        selectableTargets={["[data-brick]:not(.container-child)"]}
-        selectFromInside={false}
-        hitRate={1}
-        selectByClick={false}
-        dragCondition={(e) => {
-          // prevent triggering a selection when clicking on sections resize handle buttons
-          return !e.inputEvent.target.closest(".section-options-buttons");
-        }}
-        onSelect={(e) => {
-          if (e.selected.length) {
-            editorHelpers.setSelectedGroup(e.selected.map((el) => el.id));
-          }
-          e.added.forEach((el) => {
-            el.classList.add("selected-group");
-          });
-          e.removed.forEach((el) => {
-            el.classList.remove("selected-group");
-          });
-        }}
-      />
+      {siteReady === true && (
+        <Selecto
+          className="selecto"
+          selectableTargets={["[data-brick]:not(.container-child)"]}
+          selectFromInside={false}
+          hitRate={1}
+          selectByClick={false}
+          dragCondition={(e) => {
+            // prevent triggering a selection when clicking on sections resize handle buttons
+            return !e.inputEvent.target.closest(".section-options-buttons");
+          }}
+          onSelect={(e) => {
+            if (e.selected.length) {
+              editorHelpers.setSelectedGroup(e.selected.map((el) => el.id));
+            }
+            e.added.forEach((el) => {
+              el.classList.add("selected-group");
+            });
+            e.removed.forEach((el) => {
+              el.classList.remove("selected-group");
+            });
+          }}
+        />
+      )}
       <Toaster
         toastOptions={{
           position: "bottom-center",
@@ -240,5 +266,59 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         }}
       />
     </>
+  );
+}
+
+function BlankWaitPage() {
+  const genState = useGenerationState();
+  if (genState.hasChosenTheme) {
+    return (
+      <div
+        className={tx("absolute bg-gray-200 top-0 bottom-0 left-0 right-0 flex items-center justify-center")}
+      >
+        <h2
+          className={tx("text-gray-400 leading-relaxed text-xl font-semibold flex-1 text-center !font-sans")}
+        >
+          Upsie is working... this can take a while
+          <br />
+          Your site will then appear here... 🤩
+        </h2>
+      </div>
+    );
+  }
+  return (
+    <div
+      className={tx("absolute bg-gray-200 top-0 bottom-0 left-0 right-0 flex items-center justify-center")}
+    >
+      <h2 className={tx("text-gray-400 leading-relaxed text-xl font-semibold flex-1 text-center !font-sans")}>
+        Welcome!
+        <br />
+        To get started, please answer a few questions from our beloved Bot, Upsie.
+        <br />
+        Your site will then appear here... 🤩
+      </h2>
+    </div>
+  );
+}
+
+function ThemesList({ themes }: { themes: Theme[] }) {
+  // return <ThemePreviewAnimated theme={themes[0]} />;
+  const { pickTheme } = useDraftHelpers();
+  const [parentRef] = useAutoAnimate();
+  return (
+    <div className={tx("bg-gray-200 w-full flex-auto flex items-center justify-center")}>
+      <div ref={parentRef} className="flex gap-4 text-sm justify-around items-center w-full px-12">
+        {themes.map((theme) => (
+          // <ThemePreview
+          //   key={theme.id}
+          //   theme={theme}
+          //   noPreview
+          //   className="p-2 !min-h-[100px] max-w-[20%] rounded-xl"
+          //   onClick={() => pickTheme(theme.id)}
+          // />
+          <ThemePreviewAnimated key={theme.id} theme={theme} onClick={() => pickTheme(theme.id)} />
+        ))}
+      </div>
+    </div>
   );
 }

@@ -8,6 +8,7 @@ import { merge } from "lodash-es";
 import { cssLength } from "./bricks/props/css-length";
 import { enumProp } from "./bricks/props/enum";
 import { containerLayout } from "./bricks/props/container";
+import { StringEnum } from "./utils/schema";
 
 /**
  * Generates a unique identifier for bricks.
@@ -67,15 +68,17 @@ const brickAbsolutePositionSchema = Type.Object({
 
 export type BrickAbsolutePosition = Static<typeof brickAbsolutePositionSchema>;
 
+export const brickTypeSchema = StringEnum(Object.keys(defaultProps), {
+  title: "Brick type",
+});
+
 export const brickSchema = Type.Object(
   {
     id: Type.String({
       title: "ID",
       description: "A unique identifier for the brick.",
     }),
-    type: Type.String({
-      title: "Type",
-    }),
+    type: brickTypeSchema,
     props: Type.Record(Type.String(), Type.Any(), {
       description: "The available props depends on the brick type.",
     }),
@@ -90,27 +93,27 @@ export const brickSchema = Type.Object(
         description: "The children of the brick. Only used when the brick is a container.",
       }),
     ),
-    absolutePosition: Type.Optional(
-      Type.Object(
-        {
-          mobile: brickAbsolutePositionSchema,
-          desktop: brickAbsolutePositionSchema,
-        },
-        {
-          title: "Position",
-          description:
-            "The position of the brick in the layout. Optional when the brick is a container child",
-          additionalProperties: false,
-        },
-      ),
-    ),
+    // absolutePosition: Type.Optional(
+    //   Type.Object(
+    //     {
+    //       mobile: brickAbsolutePositionSchema,
+    //       desktop: brickAbsolutePositionSchema,
+    //     },
+    //     {
+    //       title: "Position",
+    //       description:
+    //         "The position of the brick in the layout. Optional when the brick is a container child",
+    //       additionalProperties: false,
+    //     },
+    //   ),
+    // ),
   },
   { $id: "brick", additionalProperties: false },
 );
 
 export type Brick = Static<typeof brickSchema>;
 
-const sectionProps = Type.Object(
+export const sectionProps = Type.Object(
   {
     layout: Type.Optional(containerLayout({ options: { disableGrid: true } })),
     background: Type.Optional(background()),

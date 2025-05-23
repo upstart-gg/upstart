@@ -183,8 +183,8 @@ const themes: Theme[] = [
     },
     typography: {
       base: 16,
-      heading: { type: "stack", family: "system-ui" },
-      body: { type: "stack", family: "system-ui" },
+      heading: { type: "google", family: "Ubuntu" },
+      body: { type: "google", family: "Ubuntu" },
     },
   },
 ];

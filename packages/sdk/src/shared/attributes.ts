@@ -209,7 +209,10 @@ export type Attributes<T extends Record<string, unknown> = Record<string, unknow
 > &
   T;
 
-export function resolveAttributes(customAttrsSchema: TObject, initialData: Record<string, unknown> = {}) {
+export function resolveAttributes(
+  customAttrsSchema: TObject = Type.Object({}),
+  initialData: Record<string, unknown> = {},
+) {
   const validateCustom = ajv.compile(customAttrsSchema);
   const valid = validateCustom(initialData);
   if (!valid) {

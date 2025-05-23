@@ -1,28 +1,27 @@
-import testEnpageConfig from "~/test-config";
 import { EditorWrapper, type EditorWrapperProps } from "~/editor/components/EditorWrapper";
 import { ClientOnly } from "~/shared/utils/client-only";
 import Editor from "~/editor/components/Editor";
 import type { PropsWithChildren } from "react";
 // import "@upstart.gg/style-system/default-theme.css";
 // import "@upstart.gg/components/dist/assets/style.css";
-import { getNewSiteConfig } from "@upstart.gg/sdk/shared/site";
+import { createEmptyConfig, getNewSiteConfig } from "@upstart.gg/sdk/shared/site";
+import type { SitePrompt } from "../hooks/use-editor";
 
 export default function App({ path }: { path: string }) {
-  const siteConfig = getNewSiteConfig(
-    testEnpageConfig,
-    "localhost:8080",
-    { label: "New site" },
-    // use a fixed site id to avoid changing the site id on every reload
-    true,
-  );
+  const siteConfig = createEmptyConfig();
 
   const searchParams = new URL(`http://localhost${path}`).searchParams;
   const p = searchParams.get("p");
   const page = siteConfig.pages.find((page) => page.id === p) ?? siteConfig.pages[0];
+  const sitePrompt: SitePrompt = {
+    siteColorScheme: "none",
+    siteDescription: "",
+    siteType: "none",
+  };
 
   return (
     <ClientOnly>
-      <InnerEditor pageConfig={page} siteConfig={siteConfig.site} mode="local">
+      <InnerEditor pageConfig={page} siteConfig={siteConfig.site} sitePrompt={sitePrompt} mode="local">
         <Editor />
       </InnerEditor>
     </ClientOnly>

@@ -1,22 +1,12 @@
 import type { FieldProps } from "./types";
-import { Text, Select, SegmentedControl } from "@upstart.gg/style-system/system";
+import { Select } from "@upstart.gg/style-system/system";
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import { fieldLabel } from "../form-class";
 import { ColorPill } from "./color";
-import {
-  MdBorderOuter,
-  MdBorderBottom,
-  MdBorderAll,
-  MdBorderLeft,
-  MdBorderRight,
-  MdBorderHorizontal,
-  MdBorderVertical,
-  MdBorderTop,
-  MdOutlineBorderBottom,
-} from "react-icons/md";
-import { useEffect, useState } from "react";
+import { MdBorderBottom, MdBorderLeft, MdBorderRight, MdBorderTop } from "react-icons/md";
+import { useState } from "react";
 import { FieldTitle } from "../field-factory";
-import { tx, css } from "@upstart.gg/style-system/twind";
+import { tx } from "@upstart.gg/style-system/twind";
 
 export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;

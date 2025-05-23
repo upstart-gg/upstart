@@ -3,7 +3,7 @@ import { useAttributes, usePreviewMode } from "~/editor/hooks/use-editor";
 import { useBodyStyle } from "~/shared/hooks/use-page-style";
 import { tx, css } from "@upstart.gg/style-system/twind";
 
-export function DeviceFrame({ children, ...props }: ComponentProps<"div">) {
+export default function DeviceFrame({ children, ...props }: ComponentProps<"div">) {
   const ref = useRef<HTMLDivElement>(null);
   const previewMode = usePreviewMode();
   const attributes = useAttributes();

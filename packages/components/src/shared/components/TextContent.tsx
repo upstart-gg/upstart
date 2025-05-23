@@ -1,12 +1,18 @@
-import { forwardRef } from "react";
-import TextEditor, { type TextEditorProps } from "./TextEditor";
+import { forwardRef, lazy, Suspense } from "react";
+import type { TextEditorProps } from "./TextEditor";
+
+const TextEditor = lazy(() => import("./TextEditor"));
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export const TextContent = forwardRef<HTMLDivElement, TextEditorProps<any>>(
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   (props: TextEditorProps<any>, ref) => {
     if (props.editable) {
-      return <TextEditor ref={ref} {...props} />;
+      return (
+        <Suspense>
+          <TextEditor ref={ref} {...props} />
+        </Suspense>
+      );
     }
     const Component = props.as || "div";
     return (

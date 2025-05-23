@@ -3,12 +3,6 @@ import {
   EditorContent,
   type EditorEvents,
   type Editor,
-  ReactNodeViewRenderer,
-  Node,
-  NodeViewWrapper,
-  type NodeViewProps,
-  mergeAttributes,
-  nodeInputRule,
   Extension,
 } from "@tiptap/react";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -17,15 +11,7 @@ import TextStyle from "@tiptap/extension-text-style";
 import StarterKit from "@tiptap/starter-kit"; // define your extension array
 import TextAlign from "@tiptap/extension-text-align";
 import Heading from "@tiptap/extension-heading";
-import {
-  Callout,
-  IconButton,
-  Popover,
-  DropdownMenu,
-  Select,
-  ToggleGroup,
-  Portal,
-} from "@upstart.gg/style-system/system";
+import { Callout, Popover, DropdownMenu, Select, ToggleGroup, Portal } from "@upstart.gg/style-system/system";
 import {
   useState,
   useEffect,
@@ -47,7 +33,6 @@ import { MdOutlineFormatItalic } from "react-icons/md";
 import { MdStrikethroughS } from "react-icons/md";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { useDatasourcesSchemas, useEditor } from "~/editor/hooks/use-editor";
-import { VscDatabase } from "react-icons/vsc";
 import { JSONSchemaView } from "~/editor/components/json-form/SchemaView";
 import Mention from "@tiptap/extension-mention";
 import datasourceFieldSuggestions from "./datasourceFieldSuggestions";
@@ -57,21 +42,20 @@ import { menuBarBtnActiveCls, menuBarBtnCls, menuBarBtnCommonCls } from "../styl
 import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import type { TSchema } from "@sinclair/typebox";
-import { tx, css } from "@upstart.gg/style-system/twind";
-import { useHotkeys } from "react-hotkeys-hook";
+import { tx } from "@upstart.gg/style-system/twind";
 
-function DatasourceFieldNode(props: NodeViewProps) {
-  return (
-    <NodeViewWrapper
-      className="datasource-field content bg-upstart-200 px-1 rounded-sm inline-block mx-0.5"
-      as={"span"}
-    >
-      {props.node.attrs.name}
-    </NodeViewWrapper>
-  );
-}
+// function DatasourceFieldNode(props: NodeViewProps) {
+//   return (
+//     <NodeViewWrapper
+//       className="datasource-field content bg-upstart-200 px-1 rounded-sm inline-block mx-0.5"
+//       as={"span"}
+//     >
+//       {props.node.attrs.name}
+//     </NodeViewWrapper>
+//   );
+// }
 
-const fieldsRegex = /(\{\{([^}]+)\}\})/;
+// const fieldsRegex = /(\{\{([^}]+)\}\})/;
 
 const HeroHeading = Heading.extend({
   addAttributes() {
@@ -91,44 +75,44 @@ const HeroHeading = Heading.extend({
   },
 });
 
-const DatasourceFieldExtension = Node.create({
-  // configuration
-  name: "datasourceField",
-  group: "inline",
-  inline: true,
-  addAttributes() {
-    return {
-      name: {
-        default: "unknown",
-      },
-    };
-  },
-  parseHTML() {
-    return [
-      {
-        tag: "datasource-field",
-      },
-    ];
-  },
-  renderHTML({ HTMLAttributes }) {
-    return ["datasource-field", mergeAttributes(HTMLAttributes)];
-  },
+// const DatasourceFieldExtension = Node.create({
+//   // configuration
+//   name: "datasourceField",
+//   group: "inline",
+//   inline: true,
+//   addAttributes() {
+//     return {
+//       name: {
+//         default: "unknown",
+//       },
+//     };
+//   },
+//   parseHTML() {
+//     return [
+//       {
+//         tag: "datasource-field",
+//       },
+//     ];
+//   },
+//   renderHTML({ HTMLAttributes }) {
+//     return ["datasource-field", mergeAttributes(HTMLAttributes)];
+//   },
 
-  addNodeView() {
-    return ReactNodeViewRenderer(DatasourceFieldNode, {
-      as: "span",
-    });
-  },
-  addInputRules() {
-    return [
-      nodeInputRule({
-        find: fieldsRegex,
-        type: this.type,
-        getAttributes: (match) => ({ name: match[2] }),
-      }),
-    ];
-  },
-});
+//   addNodeView() {
+//     return ReactNodeViewRenderer(DatasourceFieldNode, {
+//       as: "span",
+//     });
+//   },
+//   addInputRules() {
+//     return [
+//       nodeInputRule({
+//         find: fieldsRegex,
+//         type: this.type,
+//         getAttributes: (match) => ({ name: match[2] }),
+//       }),
+//     ];
+//   },
+// });
 
 type PolymorphicProps<E extends ElementType> = PropsWithChildren<
   ComponentPropsWithoutRef<E> & {

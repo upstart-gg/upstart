@@ -8,7 +8,7 @@ allows users to define themes, site & pages attributes, and other configurations
 ## Terms
 - Theme: a set of available colors and fonts for the whole site.
 - Page: a web page described by a set of attributes and organized into sections & bricks
-- Pages-map: an object referencing all pages from the site.
+- sitemap: an object referencing all pages from the site.
 - Section: A page is composed of sections vertically stacked. Each section contain bricks stacked horizontally.
   When needed to place bricks vertically inside a section, you can use a container brick.
 - Brick: an component within a section, such as a text block, image, video, etc. Aka "widgets" for some complex bricks

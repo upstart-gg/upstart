@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, type RefObject } from "react";
 import type { RestrictOptions } from "@interactjs/modifiers/restrict/pointer";
 import type { DraggableOptions } from "@interactjs/actions/drag/plugin";
 import type { ResizableOptions } from "@interactjs/actions/resize/plugin";
-import { useGetBrick, usePreviewMode, useSelectedGroup, useZoom } from "./use-editor";
+import { useGetBrick, usePreviewMode, useSelectedGroup, useSiteReady, useZoom } from "./use-editor";
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
 import type { BrickConstraints } from "@upstart.gg/sdk/shared/brick-manifest";
 import { defaultProps, manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
@@ -20,7 +20,6 @@ import {
   showDropIndicator,
   removeDropIndicator,
 } from "~/shared/utils/layout-utils";
-import { backgroundColor } from "@upstart.gg/sdk/shared/bricks/props/background";
 
 interface DragCallbacks {
   onDragEnd: (
@@ -94,6 +93,7 @@ export const useEditablePage = (
   const dropzone = useRef<Interact.Interactable | null>(null);
   const dropTargetRef = useRef<HTMLElement | null>(null);
   const { zoom } = useZoom();
+  const siteReady = useSiteReady();
 
   const snapPositionToGrid = useCallback(() => {
     return function (x: number, y: number, { element }: Interact.Interaction) {
@@ -121,6 +121,7 @@ export const useEditablePage = (
   useEffect(() => {
     interactable.current = interact(bricksSelectorOrRef, {
       styleCursor: false,
+      enabled: !!siteReady,
       // hold: 50,
     })
       .on("dragstart", (event) => {
@@ -132,6 +133,7 @@ export const useEditablePage = (
 
     const container = document.querySelector<HTMLElement>("#page-container")!;
     interactable.current.draggable({
+      enabled: !!siteReady,
       // inertia: true,
       autoScroll: {
         container,
@@ -294,6 +296,7 @@ export const useEditablePage = (
 
     interactable.current.resizable({
       // inertia: true,
+      enabled: !!siteReady,
       ignoreFrom: ".resize-handle-disabled, [data-ui-options-bar], [data-ui-drag-handle]",
       listeners: {
         start: (event) => {
@@ -415,11 +418,12 @@ export const useEditablePage = (
     selectedGroup,
     snapPositionToGrid,
     snapSizeToGrid,
+    siteReady,
     zoom,
   ]);
 
   useEffect(() => {
-    if (pageRef.current) {
+    if (pageRef.current && siteReady) {
       dropzone.current = interact('[data-dropzone="true"]');
       dropzone.current
         .dropzone({
@@ -485,5 +489,5 @@ export const useEditablePage = (
       dropzone.current?.unset();
       dropzone.current = null;
     };
-  }, [pageRef, dropCallbacks, previewMode]);
+  }, [pageRef, dropCallbacks, siteReady, previewMode]);
 };

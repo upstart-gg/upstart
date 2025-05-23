@@ -1,9 +1,7 @@
 import { Value } from "@sinclair/typebox/value";
-import type { TObject, TProperties, TArray, Static } from "@sinclair/typebox";
-import type { ReactNode, FC, Component, ComponentType } from "react";
+import type { TObject, TProperties, TArray } from "@sinclair/typebox";
+import type { FC } from "react";
 import type { IconBaseProps } from "react-icons/lib";
-import { TypeCompiler } from "@sinclair/typebox/compiler";
-import { jsonDefault } from "json-schema-default";
 
 type BrickKind = "brick" | "widget" | "container";
 

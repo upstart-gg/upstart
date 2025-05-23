@@ -30,7 +30,7 @@ export function useBodyStyle({ attributes }: { attributes: Attributes }) {
 export function usePageStyle({ attributes, editable, typography, showIntro }: UsePageStyleProps) {
   return tx(
     "flex flex-col group/page mx-auto relative max-w-full w-full p-0 antialiased",
-    editable && "overflow-hidden min-h-[110cqh] h-fit",
+    editable && "overflow-hidden min-h-full transition-all duration-300",
     isStandardColor(attributes.$pageBackground?.color) &&
       css({ backgroundColor: attributes.$pageBackground?.color as string }),
     !isStandardColor(attributes.$pageBackground?.color) && (attributes.$pageBackground?.color as string),
@@ -46,8 +46,6 @@ export function usePageStyle({ attributes, editable, typography, showIntro }: Us
       }),
 
     getTypographyStyles(typography),
-
-    editable && "transition-all duration-300",
 
     // Animate all bricks when the page is loading
     editable && showIntro && "[&>.brick-wrapper]:(opacity-0 animate-elastic-pop)",

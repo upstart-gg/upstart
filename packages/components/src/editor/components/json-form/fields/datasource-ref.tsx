@@ -4,13 +4,11 @@ import { SegmentedControl, Select } from "@upstart.gg/style-system/system";
 import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import { fieldLabel } from "../form-class";
 import { type TProperties, type TSchema, Type } from "@sinclair/typebox";
-import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { useGetBrick } from "~/editor/hooks/use-editor";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
-import { MdKeyboardArrowDown } from "react-icons/md";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { useCallback } from "react";
-import { tx, css } from "@upstart.gg/style-system/twind";
+import { tx } from "@upstart.gg/style-system/twind";
 
 const DatasourceRefField: React.FC<FieldProps<DatasourceRefSettings>> = (props) => {
   const { onChange, currentValue = {} as DatasourceRefSettings, brickId } = props;

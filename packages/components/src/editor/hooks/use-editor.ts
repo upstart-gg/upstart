@@ -9,14 +9,24 @@ import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
 import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
-import type { Theme } from "@upstart.gg/sdk/shared/theme";
+import { defaultTheme, type Theme } from "@upstart.gg/sdk/shared/theme";
 import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 import { generateId } from "@upstart.gg/sdk/shared/bricks";
-import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
+import type { GenericPageConfig, GenericPageContext, TemplatePage } from "@upstart.gg/sdk/shared/page";
 import type { Site } from "@upstart.gg/sdk/shared/site";
 export { type Immer } from "immer";
 
 enableMapSet();
+
+/*
+Zustan rules:
+
+const { someField } = useStore() // there's no optimizations here
+const { someField } = useStore(state => state) // same as `useStore()`
+const someField = useStore(state => state.someField) // optimized only for primitive values, so be careful when you use objects or arrays
+const someField = useStore(useShallow(state => state.someField)) // optimized for any value, but be careful on nested values
+
+*/
 
 export type PagePublishPayload =
   | { siteId: string; mode: "publish-page"; pageId: string; pageVersionId: string }
@@ -34,6 +44,19 @@ export type SiteSavePayload = {
   data: Partial<Site>;
 };
 
+export type SitePrompt = {
+  siteType: string;
+  siteColorScheme: string;
+  siteDescription: string;
+};
+
+export type GenerationState = {
+  hasThemesGenerated: boolean;
+  hasChosenTheme: boolean;
+  hasSitemap: boolean;
+  isReady: boolean;
+};
+
 export interface EditorStateProps {
   /**
    * When local, the editor does not fetch data from the server or save data to the server
@@ -49,6 +72,8 @@ export interface EditorStateProps {
    */
   disabled?: boolean;
   zoom: number;
+
+  credits: number;
   /**
    * 0 = free
    * 1 = essentials
@@ -56,6 +81,8 @@ export interface EditorStateProps {
    * ...
    */
   planIndex: number;
+
+  sitePrompt: SitePrompt;
 
   previewMode: Resolution;
   textEditMode?: "default" | "large";
@@ -74,6 +101,12 @@ export interface EditorStateProps {
   seenTours: string[];
   disableTours?: boolean;
   logoLink: string;
+  themesLibrary: Theme[];
+
+  /**
+   * When falsse or undefined, we are just beginning creating the site
+   */
+  siteReady?: boolean;
 
   onShowLogin: () => void;
   onPublish: (data: PagePublishPayload) => void;
@@ -116,12 +149,19 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
   const DEFAULT_PROPS: Omit<EditorStateProps, "pageConfig" | "pages"> = {
     previewMode: "desktop",
     seenTours: [],
+    themesLibrary: [],
     mode: "local",
     panelPosition: "left",
     logoLink: "/dashboard",
     zoom: 1,
     chatVisible: true,
     planIndex: 0,
+    credits: 0,
+    sitePrompt: {
+      siteType: "none",
+      siteColorScheme: "none",
+      siteDescription: "",
+    },
     onShowLogin: () => {
       console.warn("onShowLogin is not implemented");
     },
@@ -276,6 +316,7 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                   ([key]) =>
                     ![
                       "mode",
+                      "siteReady",
                       "selectedBrickId",
                       "selectedSectionId",
                       "selectedGroup",
@@ -313,12 +354,13 @@ export interface DraftStateProps {
   attr: GenericPageContext["attr"];
   attributes: GenericPageConfig["attributes"];
   siteAttributes: Site["attributes"];
-  theme: Site["theme"];
+  theme: Theme;
+  previewTheme?: Theme;
+  themes: Theme[];
   siteId: Site["id"];
   siteLabel: Site["label"];
-  pagesMap: Site["pagesMap"];
+  sitemap: Site["sitemap"];
   hostname: Site["hostname"];
-  previewTheme?: Theme;
   version?: string;
   lastSaved?: Date;
   dirty?: boolean;
@@ -350,6 +392,8 @@ export interface DraftState extends DraftStateProps {
   toggleBrickVisibility: (id: string, resolution: Resolution) => void;
   setPreviewTheme: (theme: Theme) => void;
   setTheme: (theme: Theme) => void;
+  pickTheme: (themeId: Theme["id"]) => void;
+  setThemes: (themes: Theme[]) => void;
   validatePreviewTheme: (accept: boolean) => void;
   cancelPreviewTheme: () => void;
   updateAttributes: (attr: Partial<Attributes>) => void;
@@ -397,7 +441,7 @@ export const createDraftStore = (
     siteLabel: DraftStateProps["siteLabel"];
     siteId: DraftStateProps["siteId"];
     hostname: DraftStateProps["hostname"];
-    pagesMap: DraftStateProps["pagesMap"];
+    sitemap: DraftStateProps["sitemap"];
     theme: DraftStateProps["theme"];
     sections: DraftStateProps["sections"];
   },
@@ -406,6 +450,8 @@ export const createDraftStore = (
     data: {},
     mode: "local" as const,
     brickMap: buildBrickMap(initProps.sections),
+    themes: [],
+    // themes: [defaultTheme, { ...defaultTheme, id: "t2" }, { ...defaultTheme, id: "t3" }],
   };
   return createStore<DraftState>()(
     subscribeWithSelector(
@@ -420,10 +466,25 @@ export const createDraftStore = (
               return state.sections.find((s) => s.order === 0)?.id === sectionId;
             },
 
+            pickTheme: (themeId) =>
+              set((state) => {
+                const theme = state.themes.find((t) => t.id === themeId);
+                if (!theme) {
+                  console.error("Cannot pick theme %s, it does not exist", themeId);
+                  return;
+                }
+                state.theme = theme;
+              }),
+
+            setThemes: (themes) =>
+              set((state) => {
+                state.themes = themes;
+              }),
+
             getPageDataForDuplication: () => {
               const state = _get();
-              const pageCount = state.pagesMap.length + 1;
-              console.log("state.pagesMap", state.pagesMap);
+              const pageCount = state.sitemap.length + 1;
+              console.log("state.sitemap", state.sitemap);
               const newPage = {
                 id: `page-${generateId()}`,
                 label: `${state.label} (page ${pageCount})`,
@@ -870,8 +931,6 @@ export const createDraftStore = (
               set((state) => {
                 if (state.previewTheme && accept) {
                   state.theme = state.previewTheme;
-                } else if (!accept) {
-                  Object.assign(state.theme, {});
                 }
                 state.previewTheme = undefined;
               }),
@@ -992,9 +1051,11 @@ export const createDraftStore = (
                   ([key]) =>
                     ![
                       "previewTheme",
+                      "themes",
+                      "theme",
                       "attributes",
                       "lastSaved",
-                      "pagesMap",
+                      "sitemap",
                       "datasources",
                       "brickMap",
                     ].includes(key),
@@ -1012,9 +1073,10 @@ export const createDraftStore = (
                 ([key]) =>
                   ![
                     "previewTheme",
+                    "theme",
                     "attributes",
                     "lastSaved",
-                    "pagesMap",
+                    "sitemap",
                     "datasources",
                     "brickMap",
                   ].includes(key),
@@ -1062,14 +1124,34 @@ export const useEditor = () => {
   return useStore(ctx);
 };
 
-export const usePagesMap = () => {
+export const useSitePrompt = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.sitePrompt);
+};
+
+export const useSitemap = () => {
   const ctx = useDraftStoreContext();
-  return useStore(ctx, (state) => state.pagesMap);
+  return useStore(ctx, (state) => state.sitemap);
 };
 
 export const usePreviewMode = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => state.previewMode);
+};
+
+export const useGenerationState = () => {
+  const draft = useDraftStoreContext();
+  return useStore(draft, (state) => {
+    const hasSitemap = state.sitemap.length > 0;
+    const hasThemesGenerated = state.themes.length > 0;
+    const hasChosenTheme = state.theme.id !== defaultTheme.id;
+    return {
+      hasSitemap,
+      hasThemesGenerated,
+      hasChosenTheme,
+      isReady: hasSitemap && hasThemesGenerated && hasChosenTheme,
+    } satisfies GenerationState;
+  });
 };
 
 export const useEditorEnabled = () => {
@@ -1132,6 +1214,16 @@ export function useHasPlanOrHigher(plan: number) {
 export const useEditorMode = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => state.mode);
+};
+
+export const useThemes = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.themesLibrary);
+};
+
+export const useCredits = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.credits);
 };
 
 export const useZoom = () => {
@@ -1268,10 +1360,18 @@ export const useEditorHelpers = () => {
   }));
 };
 
+export const useSiteReady = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.siteReady);
+};
+
 export const useDraftHelpers = () => {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => ({
     deleteBrick: state.deleteBrick,
+    setThemes: state.setThemes,
+    setTheme: state.setTheme,
+    pickTheme: state.pickTheme,
     duplicateBrick: state.duplicateBrick,
     getBrick: state.getBrick,
     validatePreviewTheme: state.validatePreviewTheme,
@@ -1312,6 +1412,39 @@ export const usePageInfo = () => {
     siteId: state.siteId,
     hostname: state.hostname,
   }));
+};
+
+export const useSerializedPage = () => {
+  const ctx = useDraftStoreContext();
+  return useStore(
+    ctx,
+    (state) =>
+      ({
+        id: state.id,
+        path: state.path,
+        label: state.label,
+        sections: state.sections,
+        attr: state.attr,
+        tags: state.sitemap.find((p) => p.id === state.id)?.tags ?? [],
+      }) satisfies GenericPageConfig,
+  );
+};
+export const useSerializedSite = () => {
+  const ctx = useDraftStoreContext();
+  return useStore(
+    ctx,
+    (state) =>
+      ({
+        id: state.id,
+        label: state.label,
+        sitemap: state.sitemap,
+        attr: state.attr,
+        theme: state.theme,
+        themes: state.themes,
+        attributes: state.siteAttributes,
+        hostname: state.hostname,
+      }) satisfies Site,
+  );
 };
 
 export const useTheme = () => {

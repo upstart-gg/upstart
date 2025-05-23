@@ -1,21 +1,26 @@
 import { Tabs, Callout, useAutoAnimate, Text, Select } from "@upstart.gg/style-system/system";
-import { themes } from "@upstart.gg/sdk/shared/themes/all-themes";
 import { forwardRef, useState, type ComponentProps } from "react";
 import { LuArrowRightCircle } from "react-icons/lu";
 import { nanoid } from "nanoid";
 import { type Theme, themeSchema, type FontType } from "@upstart.gg/sdk/shared/theme";
-import { useDraft, useEditorHelpers } from "~/editor/hooks/use-editor";
+import { useDraft, useEditorHelpers, useThemes } from "~/editor/hooks/use-editor";
 import { ColorFieldRow } from "./json-form/fields/color";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import { getContrastingTextColor, type ColorType } from "@upstart.gg/sdk/shared/themes/color-system";
 import FontPicker from "./json-form/fields/font";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";
+import ThemePreview from "./ThemePreview";
+import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 
 export default function ThemePanel() {
   const draft = useDraft();
   const [genListRef] = useAutoAnimate(/* optional config */);
   const baseSizes = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
+
+  invariant(draft.theme, "ThemePanel: No theme found");
+
+  const theme = draft.theme;
 
   return (
     <Tabs.Root defaultValue="current">
@@ -67,9 +72,9 @@ export default function ThemePanel() {
                   }
 
                   draft.setTheme({
-                    ...draft.theme,
+                    ...theme,
                     colors: {
-                      ...draft.theme.colors,
+                      ...theme.colors,
                       ...colors,
                     },
                   });
@@ -97,9 +102,9 @@ export default function ThemePanel() {
                     initialValue={font as FontType}
                     onChange={(chosen) => {
                       draft.setTheme({
-                        ...draft.theme,
+                        ...theme,
                         typography: {
-                          ...draft.theme.typography,
+                          ...theme.typography,
                           [fontType]: chosen,
                         },
                       });
@@ -118,9 +123,9 @@ export default function ThemePanel() {
                 size="2"
                 onValueChange={(chosen) => {
                   draft.setTheme({
-                    ...draft.theme,
+                    ...theme,
                     typography: {
-                      ...draft.theme.typography,
+                      ...theme.typography,
                       base: parseInt(chosen),
                     },
                   });
@@ -146,68 +151,21 @@ export default function ThemePanel() {
             Upstart AI chat to ask for a specific theme!
           </Callout.Text>
         </Callout.Root>
-        <ThemeListWrapper>
-          {themes.map((theme) => (
-            <ThemePreview key={theme.id} theme={theme} />
-          ))}
-        </ThemeListWrapper>
+        <ThemeList />
       </ScrollablePanelTab>
     </Tabs.Root>
   );
 }
 
-const ThemeListWrapper = forwardRef<HTMLDivElement, ComponentProps<"div">>(function ThemeListWrapper(
-  { children, className }: ComponentProps<"div">,
-  ref,
-) {
-  return (
-    <div ref={ref} className={tx("grid grid-cols-2 gap-2 mt-2", className)}>
-      {children}
-    </div>
-  );
-});
-
-function ThemePreview({ theme }: { theme: Theme }) {
+function ThemeList() {
+  const themes = useThemes();
   const draft = useDraft();
+  const [parentRef] = useAutoAnimate();
   return (
-    <button
-      type="button"
-      className={tx(
-        "relative border border-upstart-300 flex flex-col text-xs items-center p-1 group w-full rounded hover:(ring-2 ring-upstart-300) transition-all",
-        css({ backgroundColor: theme.colors.base100, color: theme.colors.baseContent }),
-      )}
-      onClick={() => draft.setPreviewTheme(theme)}
-    >
-      <div
-        className={tx(
-          "h-5 self-stretch",
-          css({ backgroundColor: theme.colors.primary, color: theme.colors.primaryContent }),
-        )}
-      />
-      <div
-        className={tx(
-          "h-5 self-stretch",
-          css({ backgroundColor: theme.colors.secondary, color: theme.colors.secondaryContent }),
-        )}
-      />
-      <div
-        className={tx(
-          "h-5 self-stretch",
-          css({ backgroundColor: theme.colors.accent, color: theme.colors.accentContent }),
-        )}
-      />
-
-      <h3 className="pt-1">{theme.name}</h3>
-      <span
-        className={tx(
-          `!opacity-0 w-fit absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-           text-xs text-white font-medium
-          justify-end items-center gap-1.5 text-upstart-700 px-2 py-1 bg-upstart-700/80 rounded-md
-          group-hover:!opacity-100 transition-opacity duration-150 `,
-        )}
-      >
-        Preview
-      </span>
-    </button>
+    <div ref={parentRef} className={tx("grid grid-cols-2 gap-2 mt-2")}>
+      {themes.map((theme) => (
+        <ThemePreview key={theme.id} theme={theme} onClick={() => draft.setPreviewTheme(theme)} />
+      ))}
+    </div>
   );
 }

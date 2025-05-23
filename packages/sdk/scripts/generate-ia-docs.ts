@@ -12,7 +12,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
 import { preset } from "../src/shared/bricks/props/preset";
-import { pagesMapSchema } from "../src/shared/pages-map";
+import { sitemapSchema } from "../src/shared/sitemap";
 
 const __dirname = import.meta.dirname;
 
@@ -194,7 +194,7 @@ function getPresetsDescriptions() {
 template = template.replace("{{PRESETS}}", getPresetsDescriptions());
 template = template.replace("{{THEME_JSON_SCHEMA}}", JSON.stringify(refinedThemeSchema));
 template = template.replace("{{SITE_ATTRIBUTES_JSON_SCHEMA}}", JSON.stringify(siteAttributesSchemaForLLM));
-template = template.replace("{{PAGES_MAP_JSON_SCHEMA}}", JSON.stringify(pagesMapSchema));
+template = template.replace("{{PAGES_MAP_JSON_SCHEMA}}", JSON.stringify(sitemapSchema));
 template = template.replace("{{PAGE_JSON_SCHEMA}}", JSON.stringify(templatePageSchema));
 template = template.replace("{{AVAILABLE_BRICKS}}", brickDescriptions.trim());
 template = template.replace("{{AVAILABLE_BRICKS_SUMMARY}}", bricksSummary.trim());
