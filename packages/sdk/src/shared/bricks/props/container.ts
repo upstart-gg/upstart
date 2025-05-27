@@ -1,7 +1,5 @@
 import { type TObject, Type, type Static } from "@sinclair/typebox";
 import { getStyleProperties, getStyleValueById, group, optional, prop } from "./helpers";
-import type { defaults } from "lodash-es";
-import def from "ajv/dist/vocabularies/discriminator";
 
 type FlexOptions = {
   title?: string;
@@ -26,7 +24,6 @@ export function flex(opts: FlexOptions = {}) {
     },
   } = opts;
   return prop({
-    $id: "#styles:flex",
     title,
     schema: Type.Object(
       {
@@ -50,7 +47,7 @@ export function flex(opts: FlexOptions = {}) {
               Type.Literal("gap-16", { title: "2XL" }),
             ],
             {
-              default: defaultValue,
+              default: defaultValue.gap,
               description: "Space between items",
               "ui:field": "enum",
             },
@@ -98,6 +95,7 @@ export function flex(opts: FlexOptions = {}) {
         ),
       },
       {
+        "ui:styleId": "#styles:flex",
         "ui:field": "flex",
         "ui:responsive": true,
         default: {
@@ -125,7 +123,6 @@ type GridOptions = {
 export function grid(options: GridOptions = {}) {
   const { title = "Layout", defaultValue = { gap: "gap-1", columns: 2 } } = options;
   return prop({
-    $id: "#styles:grid",
     title,
     schema: Type.Object(
       {
@@ -157,6 +154,7 @@ export function grid(options: GridOptions = {}) {
         ),
       },
       {
+        "ui:styleId": "#styles:grid",
         "ui:field": "grid",
         "ui:responsive": true,
         default: defaultValue,
@@ -174,7 +172,7 @@ const isFlexLayoutFilter = (manifestProps: TObject, formData: Record<string, unk
     formData,
     "#styles:containerLayout",
   );
-  return currentStyle?.type === "flex";
+  return currentStyle?.type === "flex" || !currentStyle?.type;
 };
 
 const isGridLayoutFilter = (manifestProps: TObject, formData: Record<string, unknown>) => {
@@ -196,39 +194,56 @@ type ContainerLayoutOptions = {
     justifyContent?: string;
     alignItems?: string;
   };
+  options?: {
+    disableGrid?: boolean;
+  };
 };
 
-export function containerLayout({ title = "Layout", defaults = {} }: ContainerLayoutOptions = {}) {
+export function containerLayout({
+  title = "Layout",
+  defaults = {},
+  options = {},
+}: ContainerLayoutOptions = {}) {
   return group({
     title,
     options: {
-      $id: "#styles:containerLayout",
+      "ui:styleId": "#styles:containerLayout",
     },
     children: Type.Object(
       {
-        type: Type.Union([Type.Literal("flex", { title: "Flex" }), Type.Literal("grid", { title: "Grid" })], {
-          title: "Layout type",
-          default: defaults?.type ?? "flex",
-          description:
-            "Type of the container. Flex layout arranges items in a one-dimensional line. Grid layout arranges items in a two-dimensional grid",
-          "ui:field": "enum",
-          "ui:responsive": true,
-        }),
-        gap: Type.Union(
-          [
-            Type.Literal("gap-0", { title: "None" }),
-            Type.Literal("gap-1", { title: "Small" }),
-            Type.Literal("gap-2", { title: "Medium" }),
-            Type.Literal("gap-4", { title: "Large" }),
-            Type.Literal("gap-8", { title: "XL" }),
-            Type.Literal("gap-16", { title: "2XL" }),
-          ],
-          {
-            title: "Gap",
-            description: "Space between items",
-            "ui:field": "enum",
-            default: defaults?.gap ?? "gap-2",
-          },
+        ...(!options.disableGrid
+          ? {
+              type: Type.Union(
+                [Type.Literal("flex", { title: "Flex" }), Type.Literal("grid", { title: "Grid" })],
+                {
+                  title: "Layout type",
+                  default: defaults?.type ?? "flex",
+                  description:
+                    "Type of the container. Flex layout arranges items in a one-dimensional line. Grid layout arranges items in a two-dimensional grid",
+                  "ui:field": "enum",
+                  "ui:responsive": true,
+                },
+              ),
+            }
+          : {}),
+        gap: optional(
+          Type.Union(
+            [
+              Type.Literal("gap-0", { title: "None" }),
+              Type.Literal("gap-1", { title: "Small" }),
+              Type.Literal("gap-2", { title: "Medium" }),
+              Type.Literal("gap-4", { title: "Large" }),
+              Type.Literal("gap-8", { title: "XL" }),
+              Type.Literal("gap-16", { title: "2XL" }),
+            ],
+            {
+              title: "Gap",
+              description: "Space between items",
+              "ui:field": "enum",
+              "ui:placeholder": "Not specified",
+              default: defaults?.gap,
+            },
+          ),
         ),
         direction: Type.Optional(
           Type.Union(
@@ -258,7 +273,8 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
         ),
         wrap: Type.Boolean({
           title: "Wrap",
-          description: "Wrap items. Only applies to flex layout.",
+          description: "Wrap items.",
+          "ai:instructions": "Only applies to flex layout",
           default: defaults?.wrap ?? true,
           metadata: {
             filter: isFlexLayoutFilter,
@@ -266,8 +282,9 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
         }),
         fillSpace: Type.Boolean({
           title: "Fill space",
-          description: "Makes items of the container fill the available space. Only applies to flex layout.",
-          default: defaults?.fillSpace ?? true,
+          description: "Makes items of the container fill the available space.",
+          "ai:instructions": "Only applies to flex layout",
+          default: defaults?.fillSpace ?? false,
           metadata: {
             filter: isFlexLayoutFilter,
           },
@@ -286,8 +303,8 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
             {
               title: "Justify",
               default: defaults?.justifyContent ?? "justify-stretch",
-              description:
-                "Justify content along the main axis (horizontal for row, vertical for column). Only applies to flex layout",
+              description: "Justify content along the main axis (horizontal for row, vertical for column).",
+              "ai:instructions": "Only applies to flex layout",
               metadata: {
                 filter: isFlexLayoutFilter,
               },
@@ -305,8 +322,8 @@ export function containerLayout({ title = "Layout", defaults = {} }: ContainerLa
             {
               title: "Alignment",
               default: defaults?.alignItems ?? "items-stretch",
-              description:
-                "Align items along the cross axis (vertical for row, horizontal for column). Only applies to flex layout",
+              description: "Align items along the cross axis (vertical for row, horizontal for column).",
+              "ai:instructions": "Only applies to flex layout",
               metadata: {
                 filter: isFlexLayoutFilter,
               },
@@ -335,7 +352,6 @@ export function makeContainerProps() {
   return {
     $childrenType: Type.Optional(
       Type.String({
-        $id: "#container:childrenType",
         title: "Dynamic child brick type",
         description: "Type of the child bricks that will be created when container is dynamic.",
         "ui:field": "brick-type",
@@ -345,7 +361,6 @@ export function makeContainerProps() {
       }),
     ),
     $children: Type.Array(Type.Any(), {
-      $id: "#container:childrenBricks",
       "ui:field": "hidden",
       description: "List of nested bricks",
       default: [],

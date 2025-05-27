@@ -5,9 +5,9 @@ import {
   manifest,
 } from "@upstart.gg/sdk/shared/bricks/manifests/images-gallery.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { tx, css } from "@upstart.gg/style-system/twind";
 import { useDatasource } from "../hooks/use-datasource";
 import { useBrickStyle } from "../hooks/use-brick-style";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 /**
  * Containers can operate in two modes: Static and Dynamic.

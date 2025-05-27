@@ -8,7 +8,7 @@ import EnumField from "./fields/enum";
 import ImageField from "./fields/image";
 import { BorderField } from "./fields/border";
 import { BorderSideField } from "./fields/border-side";
-import { PathField, StringField } from "./fields/string";
+import { PathField, StringField, UrlOrPageIdField } from "./fields/string";
 import { NumberField, SliderField } from "./fields/number";
 import SwitchField from "./fields/switch";
 import { PagePaddingField, type TempPadding } from "./fields/padding";
@@ -28,6 +28,8 @@ import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import { fieldLabel } from "./form-class";
 import { Tooltip } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
+import clsx from "clsx";
+import { CssLengthField } from "./fields/css-length";
 
 export interface FieldFactoryOptions {
   brickId?: string;
@@ -225,6 +227,30 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       );
     }
 
+    case "url-page-id": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;
+      return (
+        <UrlOrPageIdField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: string | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
+    case "css-length": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;
+      return (
+        <CssLengthField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: string | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
     case "slider": {
       const currentValue = (get(formData, id) ?? commonProps.schema.default) as number;
       return (
@@ -293,7 +319,8 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       return null;
 
     default:
-      console.warn("Unknown field type", { fieldType, fieldSchema });
+      console.warn("Unknown field type: %s", fieldType);
+      console.log("Field schema", fieldSchema);
       return null;
   }
 }
@@ -376,9 +403,9 @@ export function FieldTitle({ title, description }: { title?: string; description
           align="start"
         >
           <label
-            className={tx(
+            className={clsx(
               fieldLabel,
-              "underline-offset-4 no-underline hover:underline decoration-upstart-300 decoration-dotted cursor-help",
+              "underline-offset-4 no-underline hover:underline decoration-upstart-300 decoration-dotted cursor-default",
             )}
           >
             {title}

@@ -3,8 +3,9 @@ import { PiPalette } from "react-icons/pi";
 import { VscSettings } from "react-icons/vsc";
 import type { MouseEvent, PropsWithChildren } from "react";
 import { useEditorHelpers, usePanel, usePreviewMode } from "../hooks/use-editor";
-import { tx, css } from "@upstart.gg/style-system/twind";
 import { DropdownMenu } from "@upstart.gg/style-system/system";
+import { IoMdClose } from "react-icons/io";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 type ToolbarProps = {
   showIntro: boolean;
@@ -57,11 +58,16 @@ export default function Toolbar({ showIntro }: ToolbarProps) {
     <nav
       role="toolbar"
       className={tx(
-        `bg-gray-200 dark:bg-dark-800 z-[9999] transition-opacity duration-300
-          flex flex-col w-[3.7rem] text-xl text-gray-600 dark:text-gray-300
-          border-r border-gray-300 dark:border-dark-700`,
+        `bg-gray-200 dark:bg-dark-800 z-[9999] transition-opacity duration-200
+          flex flex-col w-[60px] text-xl text-gray-600 dark:text-gray-300
+          border border-b-0 border-gray-300 dark:border-dark-700 mt-2`,
         {
-          "shadow-[0px_0px_10px_0px_rgba(0,0,0,0.08)]": !panel,
+          // "shadow-[0px_0px_10px_0px_rgba(0,0,0,0.08)]": !panel,
+          "rounded-tr-lg border-l-0": panelPosition === "left" && !panel,
+          "rounded-tl-lg border-r-0": panelPosition === "right" && !panel,
+          "border-transparent": !!panel,
+          // "border-r-0": panelPosition === "left" && panel,
+          // "border-l-0": panelPosition === "right" && panel,
         },
         css({
           gridArea: "toolbar",
@@ -69,7 +75,19 @@ export default function Toolbar({ showIntro }: ToolbarProps) {
         showIntro && "opacity-0",
       )}
     >
-      <div className={tx("flex-1", baseCls)} />
+      <button
+        type="button"
+        onClick={() => editorHelpers.togglePanel()}
+        className={tx(btnClass, commonCls, !panel && "opacity-0 cursor-default pointer-events-none")}
+      >
+        <IoMdClose className="h-5 w-auto" />
+      </button>
+      <div
+        className={tx("flex-1 !rounded-none", baseCls, {
+          "rounded-tr-lg": panelPosition === "left",
+          "rounded-tl-lg": panelPosition === "right",
+        })}
+      />
       <button
         type="button"
         disabled={previewMode === "mobile"}
@@ -115,7 +133,7 @@ export default function Toolbar({ showIntro }: ToolbarProps) {
       <div className={tx("flex-1", "border-t-gray-200 dark:border-t-dark-500")} />
       <button
         type="button"
-        className={tx(btnClass, commonCls)}
+        className={tx(btnClass, commonCls, {})}
         onClick={(e) => {
           editorHelpers.togglePanelPosition();
         }}

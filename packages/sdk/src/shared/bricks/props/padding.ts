@@ -4,7 +4,6 @@ import { prop } from "./helpers";
 export function padding(defaultValue = "p-0") {
   return prop({
     title: "Padding",
-    $id: "#styles:padding",
     schema: Type.Union(
       [
         Type.Literal("p-0", { title: "None" }),
@@ -19,6 +18,7 @@ export function padding(defaultValue = "p-0") {
         description: "Space between the content and the border",
         "ui:field": "enum",
         "ui:responsive": true,
+        "ui:styleId": "#styles:padding",
       },
     ),
   });

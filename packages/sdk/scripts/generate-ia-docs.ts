@@ -1,23 +1,23 @@
-import { Type, type TObject, type TSchema } from "@sinclair/typebox";
-import {
-  defaultAttributesSchema,
-  type Attributes,
-  siteAttributesSchemaForLLM,
-  pageAttributesSchemaForLLM,
-} from "../src/shared/attributes";
+import { type TArray, Type, type TObject } from "@sinclair/typebox";
+import { siteAttributesSchemaForLLM } from "../src/shared/attributes";
 import { manifests } from "../src/shared/bricks/manifests/all-manifests";
+import { schemasMap as providersSchemasMap } from "../src/shared/datasources/schemas";
 import { themeSchema } from "../src/shared/theme";
-import { templatePageSchema, pagesMapSchema } from "../src/shared/page";
-import { commonStyleForDocsOnly } from "../src/shared/bricks/props/_docs-common-styles";
-import testConfig from "../src/shared/tests/test-config";
+import { pageSchema } from "../src/shared/page";
+import {
+  commonStyleForDocsOnly,
+  shortDocumentedForDocsOnly,
+} from "../src/shared/bricks/props/_docs-common-styles";
 import fs from "node:fs";
 import path from "node:path";
-import { definedBrickSchema, definedSectionSchema } from "../src/shared/bricks";
 import { parseArgs } from "node:util";
+import { preset } from "../src/shared/bricks/props/preset";
+import { sitemapSchema } from "../src/shared/sitemap";
 
 const __dirname = import.meta.dirname;
 
 let template = fs.readFileSync(path.join(__dirname, "ia-docs", "template.md"), "utf-8");
+
 const {
   values: { outfile },
 } = parseArgs({
@@ -39,69 +39,110 @@ if (!outfile) {
 // Only keep name and tags for IA generated themes
 const refinedThemeSchema = Type.Omit(themeSchema, ["description"]);
 
+const commonStyleKeys = Object.keys(commonStyleForDocsOnly.properties);
+const shortDocsKeys = Object.keys(shortDocumentedForDocsOnly.properties);
+
+function getDatasourcesProviders() {
+  let result = "";
+  for (const [provider, schema] of Object.entries(providersSchemasMap)) {
+    result += `#### \`${provider}\`\n${schema.description}\n`;
+    if ("type" in schema) {
+      result += `Schema:\n${schemaToString(schema)}\n`;
+    } else {
+      result += `This provider needs you to declare your schema.\n`;
+    }
+  }
+  return result;
+}
+
 /**
  * Generate a markdown list for documentation from a TypeBox schema for props.
  * The generated doc should include the title, description, type, as well as possible values.
  * It should call itself recursively for nested objects.
  */
-function objectSchemaToString(objSchema: TObject, mode: "common-styles" | "default" = "default", level = 0) {
+function schemaToString(
+  objSchema: TObject | TArray,
+  mode: "common-styles" | "default" = "default",
+  level = 0,
+) {
   if (!objSchema.properties && !objSchema.items) {
+    console.warn("No properties or items in schema", objSchema);
     return "";
   }
 
-  const props = objSchema.properties ?? objSchema.items?.properties;
   let result = "";
   const indent = "  ".repeat(level);
+  const ignoredProps = ["id", "className", "editable", "lastTouched"];
 
-  for (const [propName, propSchema] of Object.entries(objSchema.properties)) {
+  for (const [propName, propSchema] of Object.entries(
+    objSchema.properties ?? objSchema.items.properties ?? {},
+  )) {
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const schema = propSchema as any;
 
-    if (schema["ui:field"] === "hidden") {
+    if (ignoredProps.includes(propName)) {
+      console.log(`Ignoring ${propName} prop`);
       continue;
     }
 
-    const required = objSchema.required?.includes(propName) ? "Required" : "Optional";
+    // test
+    if (commonStyleKeys.includes(propName)) {
+      console.log(`Ignoring ${propName} prop`);
+      continue;
+    }
+
+    // if (propName === "variants") {
+    //   console.log(`variants`, schema);
+    // }
+
+    const required = objSchema.required?.includes(propName) ? "required " : "optional ";
     const description = schema.description ? `${schema.description}.` : "";
-    const typeStr = schema["doc:type"]
-      ? schema["doc:type"]
-      : schema.type
-        ? schema.items
-          ? `\`${schema.items.type}[]\``
-          : `\`${schema.type}\``
-        : schema.anyOf
-          ? `\`enum\``
-          : `\`unknown\``;
+    const typeStr = schema.items
+      ? schema.items.type
+        ? `\`${schema.items.type}[]\``
+        : schema.type === "array"
+          ? "`array`"
+          : "`enum`"
+      : schema.anyOf
+        ? `\`enum\``
+        : `\`${schema.type}\``;
 
-    result += `${indent}- **\`${mode === "common-styles" && schema.$id ? `${schema.$id}` : propName}\`**: ${required} ${typeStr}. ${description} `;
-
-    if (mode === "default" && schema.$id?.startsWith("#styles:")) {
-      result += `See common style \`${schema.$id}\`\n`;
+    if (mode === "default" && shortDocsKeys.includes(propName)) {
+      result += `${indent}- \`${propName}\`: ${required}${typeStr} (see docs)\n`;
       continue;
     }
 
-    if (schema["doc:type"]) {
-    } else if (schema.anyOf) {
-      result += `Possible values: ${schema.anyOf
+    result += `${indent}- \`${propName}\`: ${required}${typeStr}. ${description} `;
+
+    if (schema.default !== undefined && schema.default !== "{}") {
+      result += `Default: \`${JSON.stringify(schema.default)}\`. `;
+    }
+
+    if (schema.anyOf) {
+      result += `Values: ${schema.anyOf
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-        .map((v: any) => `\`${v.const}\``)
-        .join(", ")}. `;
+        .map((v: any) => `\`${v.const}\`${v.description ? ` (${v.description})` : ""}`)
+        .join(", ")} `;
+    } else if (schema.enum) {
+      result += `Values: ${schema.enum
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        .map((v: any) => `\`${v}\``)
+        .join(", ")} `;
     } else if (schema.items) {
       if (schema.items.type === "object") {
-        result += objectSchemaToString(schema.items, mode, level + 1);
-      } else {
-        // result += `Items type: \`${schema.items.type}\`[]`;
+        result += `\n${schemaToString(schema.items, mode, level + 1)}`;
+      } else if (schema.items.anyOf) {
+        result += `Values: ${schema.items.anyOf
+          // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+          .map((v: any) => `\`${v.const}\`${v.description ? ` (${v.description})` : ""}`)
+          .join(", ")} `;
       }
-    }
-
-    if (schema.default !== undefined) {
-      result += `Default: \`${JSON.stringify(schema.default)}\``;
     }
 
     result += "\n";
 
     if (schema.type === "object" && schema.properties) {
-      result += objectSchemaToString(schema as TObject, mode, level + 1);
+      result += schemaToString(schema as TObject, mode, level + 1);
     }
   }
 
@@ -113,37 +154,48 @@ function objectSchemaToString(objSchema: TObject, mode: "common-styles" | "defau
 let brickDescriptions = "";
 for (const [name, manifest] of Object.entries(manifests)) {
   const { name, type } = manifest;
+  brickDescriptions += `### ${name} (\`${type}\`)
+${manifest.description}${manifest.aiInstructions ? `\n${manifest.aiInstructions}` : ""}
 
-  brickDescriptions += `
-### ${name} (\`${type}\`)
-
-${manifest.description}
-
-#### Props Schema
-${JSON.stringify(manifest.props)}
-
+Props:
+${schemaToString(manifest.props)}
 `;
 }
 
-template = template.replace("{{THEME_JSON_SCHEMA}}", objectSchemaToString(refinedThemeSchema));
-template = template.replace(
-  "{{SITE_ATTRIBUTES_JSON_SCHEMA}}",
-  objectSchemaToString(siteAttributesSchemaForLLM),
-);
-template = template.replace("{{PAGES_MAP_JSON_SCHEMA}}", JSON.stringify(pagesMapSchema));
-template = template.replace("{{PAGE_JSON_SCHEMA}}", JSON.stringify(templatePageSchema));
-template = template.replace("{{AVAILABLE_BRICKS}}", brickDescriptions);
-template = template.replace(
-  "{{BRICK_POSITION_JSON_SCHEMA}}",
-  objectSchemaToString(definedBrickSchema.properties.position),
-);
-// template = template.replace("{{COMMON_BRICK_STYLES}}", commonBrickStyles);
+/*
+\`\`\`json
+${JSON.stringify(manifest.props)}
+\`\`\`
+*/
 
-// template = template.replace("{{TEMPLATE_EXAMPLE}}", JSON.stringify(testConfig));
-template = template.replace(
-  "{{COMMON_STYLES}}",
-  objectSchemaToString(commonStyleForDocsOnly, "common-styles"),
-);
+const bricksSummary = Object.entries(manifests)
+  .map(([, manifest]) => {
+    const { name, type } = manifest;
+    return `- ${name} (\`${type}\`): ${manifest.description}`;
+  })
+  .join("\n");
+
+function getPresetsDescriptions() {
+  const presets = preset();
+  let result = "";
+  for (const value of presets.anyOf) {
+    result += `- \`${value.const}\`: ${value.title}. ${value.description}\n`;
+  }
+  return result;
+}
+
+template = template.replace("{{PRESETS}}", getPresetsDescriptions());
+template = template.replace("{{THEME_JSON_SCHEMA}}", JSON.stringify(refinedThemeSchema));
+template = template.replace("{{SITE_ATTRIBUTES_JSON_SCHEMA}}", JSON.stringify(siteAttributesSchemaForLLM));
+template = template.replace("{{PAGES_MAP_JSON_SCHEMA}}", JSON.stringify(sitemapSchema));
+template = template.replace("{{PAGE_JSON_SCHEMA}}", JSON.stringify(pageSchema));
+template = template.replace("{{AVAILABLE_BRICKS}}", brickDescriptions.trim());
+template = template.replace("{{AVAILABLE_BRICKS_SUMMARY}}", bricksSummary.trim());
+// template = template.replace("{{DATASOURCES_PROVIDERS}}", getDatasourcesProviders().trim());
+// template = template.replace(
+//   "{{BRICK_POSITION_JSON_SCHEMA}}",
+//   JSON.stringify(brickSchema.properties.position),
+// );
 
 console.log("Writing to %s", outfile);
 fs.writeFileSync(outfile, template, "utf-8");

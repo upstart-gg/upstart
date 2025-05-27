@@ -1,11 +1,8 @@
-import { IconButton, SegmentedControl, Tooltip } from "@upstart.gg/style-system/system";
-import { tx } from "@upstart.gg/style-system/twind";
+import { SegmentedControl } from "@upstart.gg/style-system/system";
 import type { FieldProps } from "./types";
-import { fieldLabel } from "../form-class";
 import { Select } from "@upstart.gg/style-system/system";
-import { HelpIcon } from "../HelpIcon";
-import { IoIosHelpCircleOutline } from "react-icons/io";
 import { FieldTitle } from "../field-factory";
+import { tx } from "@upstart.gg/style-system/twind";
 
 interface EnumOption {
   const: string;
@@ -71,7 +68,6 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
       );
 
     case "button-group": {
-      const discrete = !!schema["ui:discrete"];
       return (
         <div className="button-group-field flex-1 flex justify-between flex-wrap gap-1">
           <FieldTitle title={title} description={description} />
@@ -84,11 +80,7 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
             {options
               .filter((o) => !o["ui:hidden-option"])
               .map((option) => (
-                <SegmentedControl.Item
-                  key={option.const}
-                  value={option.const}
-                  className={tx(discrete && "[&_.rt-SegmentedControlItemLabel]:px-[6px]")}
-                >
+                <SegmentedControl.Item key={option.const} value={option.const}>
                   {option.title}
                 </SegmentedControl.Item>
               ))}
@@ -134,7 +126,7 @@ const EnumField: React.FC<FieldProps<string>> = (props) => {
         <div className="flex justify-between flex-1 pr-1 gap-1">
           <FieldTitle title={title} description={description} />
           <Select.Root defaultValue={currentValue} size="2" onValueChange={(value) => onChange(value)}>
-            <Select.Trigger radius="large" variant="ghost" />
+            <Select.Trigger radius="large" variant="ghost" placeholder={schema["ui:placeholder"]} />
             <Select.Content position="popper">
               <Select.Group>
                 {options

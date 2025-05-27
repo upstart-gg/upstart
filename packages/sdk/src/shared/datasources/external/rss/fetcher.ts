@@ -11,17 +11,11 @@ const fetchRss: DatasourceFetcher<RssSchema, null, RssOptions> = async ({ option
   const content = await (await fetch(url)).text();
   const feed = parseFeed(content);
 
-  const newFeed: RssSchema = {
-    ...feed,
-    link: feed?.link ?? "",
-    title: feed?.title ?? "",
-    updated: feed?.updated ? feed.updated.toISOString() : undefined,
-    items:
-      feed?.items.map((item) => ({
-        ...item,
-        pubDate: item.pubDate ? item.pubDate.toISOString() : new Date().toISOString(),
-      })) ?? [],
-  };
+  const newFeed: RssSchema =
+    feed?.items.map((item) => ({
+      ...item,
+      pubDate: item.pubDate ? item.pubDate.toISOString() : new Date().toISOString(),
+    })) ?? [];
 
   const validate = ajv.compile<RssSchema>(rssSchema);
   const isValid = validate(newFeed);

@@ -13,7 +13,6 @@ const loader = {
 };
 
 const external = [
-  // "tailwindcss",
   // "jsdom",
   "vite",
   "vite-plugin-inspect",
@@ -47,7 +46,7 @@ const external = [
   "__STATIC_CONTENT_MANIFEST",
 ];
 
-const ignored = ["!**/*.md", "!**/tests/**/*", "!**/sample.ts"];
+const ignored = ["!**/*.md", "!**/tests/**/*", "!**/*.test.ts", "!**/sample.ts"];
 
 export default defineConfig((options) => {
   return [
@@ -57,10 +56,9 @@ export default defineConfig((options) => {
       target: "node22.11",
       format: ["esm"],
       dts: false,
-      // clean: !options.watch,
-      clean: false,
+      clean: !options.watch,
       minify: !options.watch,
-      metafile: !!process.env.ANALYSE_BUNDLE,
+      metafile: !!process.env.ANALYZE_BUNDLE,
       sourcemap: !options.watch,
       // Important: force splitting to false to avoid issues with dynamic imports and __dirname resolutions
       splitting: false,
@@ -90,10 +88,15 @@ export default defineConfig((options) => {
         "src/shared/layout-constants.ts",
         "src/shared/utils/invariant.ts",
         "src/shared/utils/merge.ts",
+        "src/shared/utils/schema.ts",
         "src/shared/oauth.ts",
         "src/shared/ajv.ts",
         "src/shared/themes",
         "src/shared/theme.ts",
+        "src/shared/page.ts",
+        "src/shared/sitemap.ts",
+        "src/shared/images.ts",
+        "src/shared/site.ts",
         "src/shared/responsive.ts",
         "src/shared/analytics",
         "src/shared/utils",
@@ -105,15 +108,15 @@ export default defineConfig((options) => {
         ...ignored,
       ],
       outDir: "dist/shared",
-      target: "es2020",
+      target: "es2022",
       format: ["esm"],
       dts: false,
       // splitting: false,
       // dts: true,
-      // metafile: process.env.CI || process.env.ANALYSE_BUNDLE,
-      metafile: !!process.env.ANALYSE_BUNDLE,
+      // metafile: process.env.CI || process.env.ANALYZE_BUNDLE,
+      metafile: !!process.env.ANALYZE_BUNDLE,
       // clean: !options.watch,
-      clean: false,
+      clean: !options.watch,
       minify: !options.watch,
       sourcemap: options.watch ? "inline" : false,
       external,

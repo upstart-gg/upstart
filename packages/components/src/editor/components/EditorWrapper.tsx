@@ -5,26 +5,32 @@ import {
   createEditorStore,
   type EditorState,
   type EditorStateProps,
+  type SitePrompt,
 } from "../hooks/use-editor";
 import { useEffect, useRef, type PropsWithChildren } from "react";
-import type { GenericPageConfig, Site } from "@upstart.gg/sdk/shared/page";
+import type { GenericPageConfig } from "@upstart.gg/sdk/shared/page";
 import { Theme } from "@upstart.gg/style-system/system";
-import { tx } from "@upstart.gg/style-system/twind";
 import { useDarkMode } from "usehooks-ts";
 import { UploaderProvider } from "./UploaderContext";
 
+import { DatasourceProvider } from "~/shared/hooks/use-datasource";
+import type { Site, SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
+import { tx } from "@upstart.gg/style-system/twind";
+
 import "@radix-ui/themes/styles.css";
 import "@upstart.gg/style-system/radix.css";
-// import "@upstart.gg/style-system/default-theme.css";
+import "@upstart.gg/style-system/editor.css";
+// import "@upstart.gg/components/dist/assets/style.css";
 import "@upstart.gg/style-system/tiptap-text-editor.css";
 import "@upstart.gg/style-system/react-resizable.css";
-import { DatasourceProvider } from "~/shared/hooks/use-datasource";
+import "@upstart.gg/style-system/default-theme.css";
 
 export type EditorWrapperProps = {
   mode?: "local" | "remote";
   pageConfig: GenericPageConfig;
   pageVersion?: string;
   siteConfig: Site;
+  sitePrompt: SitePrompt;
   /**
    * Callback when an image is uploaded through the editor.
    * The callback should return the URL of the uploaded image.
@@ -59,6 +65,7 @@ export function EditorWrapper({
   mode,
   onImageUpload,
   children,
+  sitePrompt,
   seenTours = [],
   disableTours,
   onShowLogin,
@@ -79,20 +86,21 @@ export function EditorWrapper({
       disableTours,
       debugMode,
       panel: (new URL(self.location.href).searchParams.get("panel") as EditorState["panel"]) ?? undefined,
+      sitePrompt,
     }),
   ).current;
+
   const draftStore = useRef(
     createDraftStore({
       siteId: siteConfig.id,
       hostname: siteConfig.hostname,
-      pagesMap: siteConfig.pagesMap,
+      sitemap: siteConfig.sitemap,
       siteLabel: siteConfig.label,
       id: pageConfig.id,
       version: pageVersion,
       path: pageConfig.path,
       label: pageConfig.label,
       sections: pageConfig.sections,
-      bricks: pageConfig.bricks,
       attr: Object.assign({}, siteConfig.attr, pageConfig.attr),
       attributes: pageConfig.attributes,
       siteAttributes: siteConfig.attributes,

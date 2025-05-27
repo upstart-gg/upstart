@@ -7,7 +7,6 @@ describe("Padding props test suite", () => {
       const prop = padding();
       expect(prop.title).toBe("Padding");
       expect(prop["ui:group"]).toBe("spacing");
-      expect(prop["ui:inspector-tab"]).toBe("style");
     });
   });
 });

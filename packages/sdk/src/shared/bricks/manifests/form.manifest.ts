@@ -1,22 +1,53 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps } from "../props/helpers";
+import { defineProps, optional, prop } from "../props/helpers";
 import { FaWpforms } from "react-icons/fa6";
+import { Type } from "@sinclair/typebox";
+import { string } from "../props/string";
 
 export const manifest = defineBrickManifest({
   type: "form",
   kind: "widget",
   name: "Form",
   description: "A form element",
+  aiInstructions: `The form brick takes a JSON schema as input and generates a form based on it.
+The schema should define the fields using string, number, and boolean types.
+The available string formats are:
+- date-time
+- time
+- date
+- email
+- uri
+- uuid
+- regex
+- password
+- multiline (for textarea)
+The form will be rendered with the specified fields and will handle user input accordingly.`,
   isContainer: true,
   icon: FaWpforms,
-  // icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-  //   <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-  //   <rect x="6" y="6" width="12" height="3" rx="1"></rect>
-  //   <rect x="6" y="11" width="12" height="3" rx="1"></rect>
-  //   <rect x="12" y="17" width="6" height="2" rx="1"
-  //     fill="currentColor"
-  //   ></rect></svg>`,
-  props: defineProps({}),
+  props: defineProps({
+    // preset: preset(),
+    title: optional(string("Title", "My form", { description: " The title of the form" })),
+    intro: optional(string("Intro", undefined, { description: " The intro text of the form" })),
+    fields: prop({
+      title: "Fields",
+      description: "The JSON schema of the form fields",
+      schema: Type.Object({}, { additionalProperties: true }),
+    }),
+    align: optional(
+      prop({
+        title: "Alignment",
+        description:
+          "The alignment of the form fields. Default is vertical. Only use horizotal for very short forms.",
+        schema: Type.Union(
+          [
+            Type.Literal("vertical", { title: "Vertical" }),
+            Type.Literal("horizontal", { title: "Horizontal" }),
+          ],
+          { default: "vertical" },
+        ),
+      }),
+    ),
+  }),
 });
 
 export type Manifest = typeof manifest;
