@@ -1,4 +1,4 @@
-import { Toaster, useAutoAnimate } from "@upstart.gg/style-system/system";
+import { Toaster } from "@upstart.gg/style-system/system";
 import { startTransition, useEffect, useRef } from "react";
 import { generateId, type Brick } from "@upstart.gg/sdk/shared/bricks";
 import {
@@ -7,11 +7,11 @@ import {
   useDraftHelpers,
   useEditorHelpers,
   useGenerationState,
+  useImagesSearchResults,
   usePreviewMode,
   useSections,
   useSiteReady,
   useTheme,
-  useThemeSubscribe,
   useZoom,
 } from "../hooks/use-editor";
 import Selecto from "react-selecto";
@@ -21,12 +21,7 @@ import { usePageStyle } from "~/shared/hooks/use-page-style";
 import { useFontWatcher } from "../hooks/use-font-watcher";
 import Section from "./EditableSection";
 import { getBrickElementAtPosition } from "~/shared/utils/layout-utils";
-import { tx, css } from "@upstart.gg/style-system/twind";
-import { type Theme, isDefaultTheme } from "@upstart.gg/sdk/shared/theme";
-import ThemePreview from "./ThemePreview";
-import { motion } from "motion/react";
-import ThemePreviewAnimated from "./ThemePreviewAnimated";
-import { Spinner } from "@upstart.gg/style-system/system";
+import { tx } from "@upstart.gg/style-system/twind";
 
 const ghostValid = tx("bg-upstart-100");
 const ghostInvalid = tx("bg-red-100");
@@ -49,6 +44,8 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const pageClassName = usePageStyle({ attributes, typography, editable: true, previewMode, showIntro });
   const siteReady = useSiteReady();
   const genState = useGenerationState();
+  const imagesSearchResults = useImagesSearchResults();
+  const { setLastToolCallResult } = useEditorHelpers();
   const theme = useTheme();
 
   // on page load, set last loaded property so that the store is saved to local storage
@@ -210,12 +207,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         {sections.map((section) => (
           <Section key={section.id} section={section} />
         ))}
-        {sections.length === 0 &&
-          (draft.themes.length && !genState.hasChosenTheme ? (
-            <ThemesList themes={draft.themes} />
-          ) : (
-            <BlankWaitPage />
-          ))}
         <div
           ref={dragOverRef}
           className={tx(
@@ -266,59 +257,5 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         }}
       />
     </>
-  );
-}
-
-function BlankWaitPage() {
-  const genState = useGenerationState();
-  if (genState.hasChosenTheme) {
-    return (
-      <div
-        className={tx("absolute bg-gray-200 top-0 bottom-0 left-0 right-0 flex items-center justify-center")}
-      >
-        <h2
-          className={tx("text-gray-400 leading-relaxed text-xl font-semibold flex-1 text-center !font-sans")}
-        >
-          Upsie is working... this can take a while
-          <br />
-          Your site will then appear here... 🤩
-        </h2>
-      </div>
-    );
-  }
-  return (
-    <div
-      className={tx("absolute bg-gray-200 top-0 bottom-0 left-0 right-0 flex items-center justify-center")}
-    >
-      <h2 className={tx("text-gray-400 leading-relaxed text-xl font-semibold flex-1 text-center !font-sans")}>
-        Welcome!
-        <br />
-        To get started, please answer a few questions from our beloved Bot, Upsie.
-        <br />
-        Your site will then appear here... 🤩
-      </h2>
-    </div>
-  );
-}
-
-function ThemesList({ themes }: { themes: Theme[] }) {
-  // return <ThemePreviewAnimated theme={themes[0]} />;
-  const { pickTheme } = useDraftHelpers();
-  const [parentRef] = useAutoAnimate();
-  return (
-    <div className={tx("bg-gray-200 w-full flex-auto flex items-center justify-center")}>
-      <div ref={parentRef} className="flex gap-4 text-sm justify-around items-center w-full px-12">
-        {themes.map((theme) => (
-          // <ThemePreview
-          //   key={theme.id}
-          //   theme={theme}
-          //   noPreview
-          //   className="p-2 !min-h-[100px] max-w-[20%] rounded-xl"
-          //   onClick={() => pickTheme(theme.id)}
-          // />
-          <ThemePreviewAnimated key={theme.id} theme={theme} onClick={() => pickTheme(theme.id)} />
-        ))}
-      </div>
-    </div>
   );
 }

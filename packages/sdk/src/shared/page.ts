@@ -4,13 +4,13 @@ import {
   defaultAttributesSchema,
   type AttributesSchema,
 } from "./attributes";
-import { type Section, sectionSchema } from "./bricks";
+import { type Section, sectionSchema, sectionSchemaForLLM } from "./bricks";
 import invariant from "./utils/invariant";
 import type { Theme } from "./theme";
 import { Type, type Static } from "@sinclair/typebox";
 import type { DatasourcesMap, DatasourcesResolved } from "./datasources/types";
-import type { TemplateConfig } from "./template";
 import type { PageInfo, Sitemap } from "./sitemap";
+import type { SiteAndPagesConfig } from "./site";
 
 /**
  * The Page config represents the page configuration (datasources, attributes, etc)
@@ -40,11 +40,11 @@ export type PageConfig<D extends DatasourcesMap> = PageInfo & {
 export type GenericPageConfig = PageConfig<DatasourcesMap>;
 
 export function getNewPageConfig(
-  templateConfig: TemplateConfig,
+  config: SiteAndPagesConfig,
   path = "/",
   useFixedId: false | string = false,
 ): GenericPageConfig {
-  const pageConfig = templateConfig.pages.find((p) => p.path === path);
+  const pageConfig = config.pages.find((p) => p.path === path);
   invariant(pageConfig, `createPageConfigFromTemplateConfig: No page config found for path ${path}`);
 
   return {
@@ -73,8 +73,9 @@ export type GenericPageContext = Omit<GenericPageConfig, "attr" | "attributes"> 
   attr: Attributes;
 };
 
-export const templatePageSchema = Type.Object(
+export const pageSchema = Type.Object(
   {
+    id: Type.String({ description: "The unique ID of the page. Use a human readable url-safe slug" }),
     label: Type.String({ description: "The label (name) of the page" }),
     path: Type.String({ description: "The path of the page in the URL. Should be unique" }),
     sections: Type.Array(sectionSchema, {
@@ -82,11 +83,28 @@ export const templatePageSchema = Type.Object(
     }),
     tags: Type.Array(Type.String(), {
       description: "The tags of the page, used for organizating and filtering pages",
-      default: [],
     }),
     attr: Type.Optional(defaultAttributesSchema),
   },
   { additionalProperties: false },
 );
 
-export type TemplatePage = Static<typeof templatePageSchema>;
+export const pageSchemaForLLM = Type.Object(
+  {
+    type: Type.Literal("page"),
+    page: Type.Composite(
+      [
+        Type.Omit(pageSchema, ["sections"]),
+        Type.Object({
+          sections: Type.Array(sectionSchemaForLLM, {
+            description: "The sections of the page. See the Section schema",
+          }),
+        }),
+      ],
+      { additionalProperties: false },
+    ),
+  },
+  { additionalProperties: false },
+);
+
+export type Page = Static<typeof pageSchema>;

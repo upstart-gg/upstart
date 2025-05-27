@@ -1,11 +1,11 @@
 import { memo } from "react";
 import ReactMarkdown from "react-markdown";
-import remarkBreaks from "remark-breaks";
 import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
 
 const MemoizedMarkdownBlock = memo(
   ({ content }: { content: string }) => {
-    return <ReactMarkdown rehypePlugins={[rehypeRaw, remarkBreaks]}>{content}</ReactMarkdown>;
+    return <ReactMarkdown rehypePlugins={[rehypeRaw, remarkGfm]}>{content}</ReactMarkdown>;
   },
   (prevProps, nextProps) => {
     if (prevProps.content !== nextProps.content) return false;
@@ -15,8 +15,8 @@ const MemoizedMarkdownBlock = memo(
 
 MemoizedMarkdownBlock.displayName = "MemoizedMarkdownBlock";
 
-const Markdown = memo(({ content, id }: { content: string; id: string }) => {
-  return <MemoizedMarkdownBlock content={content} key={id} />;
+const Markdown = memo(({ content }: { content: string }) => {
+  return <MemoizedMarkdownBlock content={content} />;
 });
 
 export default Markdown;

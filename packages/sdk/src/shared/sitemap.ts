@@ -1,28 +1,34 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { StringEnum } from "./utils/schema";
 
-export const pageInfoSchema = Type.Object({
-  id: Type.String({ title: "Page UUID" }),
-  label: Type.String(),
-  path: Type.String(),
-});
+export const pageInfoSchema = Type.Object(
+  {
+    id: Type.String({ title: "Page ID" }),
+    label: Type.String(),
+    path: Type.String(),
+  },
+  { additionalProperties: false },
+);
 
 export type PageInfo = Static<typeof pageInfoSchema>;
 
 export const sectionsPlanSchema = Type.Array(
-  Type.Object({
-    id: Type.String({ title: "Section ID (slug format)" }),
-    name: Type.String({ title: "Section name" }),
-    description: Type.String({
-      title: "A long description of the section",
-      description: `You must elaborate a clear and detailled plan that describes:
+  Type.Object(
+    {
+      id: Type.String({ title: "Section ID (slug format)" }),
+      name: Type.String({ title: "Section name" }),
+      description: Type.String({
+        title: "A long description of the section",
+        description: `You must elaborate a clear and detailled plan that describes:
 - the section purpose in the page, in detail
 - the section structure, look & feel, and structural/design organization, in detail
 - the types of bricks (e.g. "container", "text", "video", "carousel", etc) and count that will be used and their purpose, in detail
 
 All these information will be used in a later prompt to generate the section content`,
-    }),
-  }),
+      }),
+    },
+    { additionalProperties: false },
+  ),
   {
     title: "Sections plan",
     description: "A plan for the sections of the page. Used to generate the page content.",
@@ -53,6 +59,7 @@ export const sitemapSchema = Type.Array(
     ],
     {
       description: "Pages map. The complete list of site pages, their metadata and their sections summary",
+      additionalProperties: false,
     },
   ),
 );

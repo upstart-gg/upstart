@@ -1,14 +1,16 @@
 import { motion } from "motion/react";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import { tx } from "@upstart.gg/style-system/twind";
+import { useDraftHelpers, useEditorHelpers } from "../hooks/use-editor";
 
 interface ThemePreviewProps {
   theme: Theme;
-  onClick: () => void;
 }
 
-const ThemePreview: React.FC<ThemePreviewProps> = ({ theme, onClick }) => {
+const ThemePreview: React.FC<ThemePreviewProps> = ({ theme }) => {
   const colors = theme.colors;
+  const { pickTheme } = useDraftHelpers();
+  const { setLastToolCallResult } = useEditorHelpers();
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -39,11 +41,14 @@ const ThemePreview: React.FC<ThemePreviewProps> = ({ theme, onClick }) => {
         "w-auto aspect-square cursor-pointer h-[200px] border-2 outline-8 mx-auto my-auto flex rounded-2xl relative overflow-hidden",
       )}
       style={{ borderColor: colors.base100, outlineColor: colors.base300 }}
-      onClick={onClick}
+      onClick={() => {
+        pickTheme(theme.id);
+        setLastToolCallResult(theme.name);
+      }}
     >
       <motion.div
         variants={mainColorVariants}
-        whileHover={{ scale: 1.2, rotate: 90 }}
+        whileHover={{ scale: 1.2 }}
         transition={{ type: "spring" }}
         className={tx("absolute -left-1/2 -top-1/2 h-[200%] w-[200%] flex")}
         style={{

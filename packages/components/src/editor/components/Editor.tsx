@@ -1,11 +1,14 @@
 import {
+  type GenerationState,
   useChatVisible,
   useDraft,
   useDraftHelpers,
   useEditorEnabled,
+  useGenerationState,
   usePanel,
   useSections,
   useSiteReady,
+  useThemes,
 } from "../hooks/use-editor";
 import { lazy, Suspense, useEffect, useRef, type ComponentProps } from "react";
 import { css, tx, tw } from "@upstart.gg/style-system/twind";
@@ -13,6 +16,8 @@ import { Button } from "@upstart.gg/style-system/system";
 import { usePageAutoSave } from "~/editor/hooks/use-page-autosave";
 import { getThemeCss } from "~/shared/utils/get-theme-css";
 import { useEditorHotKeys } from "../hooks/use-editor-hot-keys";
+import ThemesPreviewList from "./ThemesPreviewList";
+import BlankWaitPage from "./BlankWaitPage";
 
 const Tour = lazy(() => import("./Tour"));
 const NavBar = lazy(() => import("./NavBar"));
@@ -34,6 +39,8 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
   const sections = useSections();
   const { panelPosition } = usePanel();
   const siteReady = useSiteReady();
+  const themes = useThemes();
+  const generationState = useGenerationState();
 
   usePageAutoSave();
   useEditorHotKeys();
@@ -63,7 +70,10 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
   return (
     <div
       id="editor"
-      className={tx("min-h-[100dvh] max-h-[100dvh] grid relative", getEditorCss(chatVisible))}
+      className={tx(
+        "min-h-[100dvh] max-h-[100dvh] grid relative transition-all mx-auto",
+        getEditorCss(generationState, chatVisible),
+      )}
       {...props}
       ref={rootRef}
     >
@@ -99,22 +109,36 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
           }),
         )}
       >
-        <Suspense>
-          <DeviceFrame>
-            <EditablePage />
-            {draft.previewTheme && <ThemePreviewConfirmButton />}
-          </DeviceFrame>
-        </Suspense>
+        {siteReady && (
+          <Suspense>
+            <DeviceFrame>
+              <EditablePage />
+              {draft.previewTheme && <ThemePreviewConfirmButton />}
+            </DeviceFrame>
+          </Suspense>
+        )}
+        {!siteReady &&
+          (themes.length > 0 ? (
+            <DeviceFrame>
+              <ThemesPreviewList themes={themes} />
+            </DeviceFrame>
+          ) : (
+            <DeviceFrame>
+              <BlankWaitPage />
+            </DeviceFrame>
+          ))}
       </main>
     </div>
   );
 }
 
-function getEditorCss(chatVisible?: boolean) {
+function getEditorCss(generationState: GenerationState, chatVisible: boolean) {
   return css({
     gridTemplateAreas: chatVisible ? `"navbar navbar" "chat main"` : `"navbar" "main"`,
     gridTemplateRows: "64px 1fr",
-    gridTemplateColumns: chatVisible ? "clamp(280px, 25%, 410px) 1fr" : "1fr",
+    gridTemplateColumns:
+      generationState.isReady === false ? "1fr 0px" : chatVisible ? "clamp(280px, 25%, 410px) 1fr" : "1fr",
+    maxWidth: generationState.isReady === false ? "clamp(380px, 40dvw, 550px)" : "none",
   });
 }
 

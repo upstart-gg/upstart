@@ -1,4 +1,4 @@
-# Upstart SDK
+# Upstart SDK documentation
 
 The Upstart SDK allows users to create and manage websites using a structured JSON format.
 It is later converted into a website.

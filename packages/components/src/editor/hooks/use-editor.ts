@@ -11,8 +11,9 @@ import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
 import { defaultTheme, type Theme } from "@upstart.gg/sdk/shared/theme";
 import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
+import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
 import { generateId } from "@upstart.gg/sdk/shared/bricks";
-import type { GenericPageConfig, GenericPageContext, TemplatePage } from "@upstart.gg/sdk/shared/page";
+import type { GenericPageConfig, GenericPageContext, Page } from "@upstart.gg/sdk/shared/page";
 import type { Site } from "@upstart.gg/sdk/shared/site";
 export { type Immer } from "immer";
 
@@ -88,6 +89,7 @@ export interface EditorStateProps {
   textEditMode?: "default" | "large";
   lastTextEditPosition?: number;
   settingsVisible?: boolean;
+  genFlowDone?: boolean;
 
   selectedBrickId?: Brick["id"];
   selectedGroup?: Brick["id"][];
@@ -102,6 +104,9 @@ export interface EditorStateProps {
   disableTours?: boolean;
   logoLink: string;
   themesLibrary: Theme[];
+  imagesSearchResults?: ImageSearchResultsType;
+
+  lastToolCall?: { id: string; result?: unknown };
 
   /**
    * When falsse or undefined, we are just beginning creating the site
@@ -127,7 +132,7 @@ export interface EditorState extends EditorStateProps {
   toggleEditorEnabled: () => void;
   setTextEditMode: (mode: EditorStateProps["textEditMode"]) => void;
   setIsEditingText: (forBrickId: string | false) => void;
-  setlastTextEditPosition: (position?: number) => void;
+  setLastTextEditPosition: (position?: number) => void;
   setPanel: (panel?: EditorStateProps["panel"]) => void;
   togglePanel: (panel?: EditorStateProps["panel"]) => void;
   hidePanel: (panel?: EditorStateProps["panel"]) => void;
@@ -136,6 +141,7 @@ export interface EditorState extends EditorStateProps {
   setSelectedSectionId: (sectionId?: string) => void;
   deselectBrick: (brickId?: Brick["id"]) => void;
   markTourAsSeen: (tourId: string) => void;
+  setImagesSearchResults: (images: EditorStateProps["imagesSearchResults"]) => void;
   togglePanelPosition: () => void;
   showModal: (modal: EditorStateProps["modal"]) => void;
   hideModal: () => void;
@@ -143,6 +149,9 @@ export interface EditorState extends EditorStateProps {
   zoomIn: () => void;
   zoomOut: () => void;
   resetZoom: () => void;
+  setLastToolCall: (id: string) => void;
+  setLastToolCallResult: (result: unknown) => void;
+  clearLastToolCall: () => void;
 }
 
 export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
@@ -195,7 +204,29 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                 state.seenTours = [...state.seenTours, tourId];
               }),
 
-            setlastTextEditPosition: (position) =>
+            setImagesSearchResults: (images) =>
+              set((state) => {
+                state.imagesSearchResults = images;
+              }),
+
+            setLastToolCall: (id) =>
+              set((state) => {
+                state.lastToolCall = { id };
+              }),
+
+            setLastToolCallResult: (result) =>
+              set((state) => {
+                if (state.lastToolCall) {
+                  state.lastToolCall.result = result;
+                }
+              }),
+
+            clearLastToolCall: () =>
+              set((state) => {
+                state.lastToolCall = undefined;
+              }),
+
+            setLastTextEditPosition: (position) =>
               set((state) => {
                 state.lastTextEditPosition = position;
               }),
@@ -317,11 +348,14 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                     ![
                       "mode",
                       "siteReady",
+                      "imagesSearchResults",
                       "selectedBrickId",
                       "selectedSectionId",
                       "selectedGroup",
                       "collidingBrick",
+                      "lastToolCall",
                       "panel",
+                      "sitePrompt",
                       "isEditingTextForBrickId",
                       "textEditMode",
                       "onShowLogin",
@@ -420,6 +454,7 @@ export interface DraftState extends DraftStateProps {
   updateSectionProps: (id: string, props: Partial<Section["props"]>, isMobileProps?: boolean) => void;
   deleteSection: (id: string) => void;
   getSection: (id: string) => Section | undefined;
+  setSections: (sections: Section[]) => void;
 }
 
 /**
@@ -465,6 +500,13 @@ export const createDraftStore = (
               const state = _get();
               return state.sections.find((s) => s.order === 0)?.id === sectionId;
             },
+
+            setSections: (sections) =>
+              set((state) => {
+                state.sections = sections;
+                // Rebuild the brickMap based on the new sections
+                state.brickMap = buildBrickMap(sections);
+              }),
 
             pickTheme: (themeId) =>
               set((state) => {
@@ -1141,7 +1183,8 @@ export const usePreviewMode = () => {
 
 export const useGenerationState = () => {
   const draft = useDraftStoreContext();
-  return useStore(draft, (state) => {
+  const editorCtx = useEditorStoreContext();
+  const baseState = useStore(draft, (state) => {
     const hasSitemap = state.sitemap.length > 0;
     const hasThemesGenerated = state.themes.length > 0;
     const hasChosenTheme = state.theme.id !== defaultTheme.id;
@@ -1149,7 +1192,14 @@ export const useGenerationState = () => {
       hasSitemap,
       hasThemesGenerated,
       hasChosenTheme,
-      isReady: hasSitemap && hasThemesGenerated && hasChosenTheme,
+    } satisfies Omit<GenerationState, "isReady">;
+  });
+  return useStore(editorCtx, (state) => {
+    const isReady =
+      baseState.hasSitemap && baseState.hasThemesGenerated && baseState.hasChosenTheme && !!state.genFlowDone;
+    return {
+      ...baseState,
+      isReady,
     } satisfies GenerationState;
   });
 };
@@ -1217,6 +1267,11 @@ export const useEditorMode = () => {
 };
 
 export const useThemes = () => {
+  const ctx = useDraftStoreContext();
+  return useStore(ctx, (state) => state.themes);
+};
+
+export const useThemesLibrary = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => state.themesLibrary);
 };
@@ -1224,6 +1279,11 @@ export const useThemes = () => {
 export const useCredits = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => state.credits);
+};
+
+export const useImagesSearchResults = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.imagesSearchResults);
 };
 
 export const useZoom = () => {
@@ -1340,7 +1400,11 @@ export const useEditorHelpers = () => {
     toggleTextEditMode: state.toggleTextEditMode,
     setTextEditMode: state.setTextEditMode,
     setIsEditingText: state.setIsEditingText,
-    setlastTextEditPosition: state.setlastTextEditPosition,
+    setLastTextEditPosition: state.setLastTextEditPosition,
+    setImagesSearchResults: state.setImagesSearchResults,
+    setLastToolCall: state.setLastToolCall,
+    setLastToolCallResult: state.setLastToolCallResult,
+    clearLastToolCall: state.clearLastToolCall,
     setPanel: state.setPanel,
     togglePanel: state.togglePanel,
     hidePanel: state.hidePanel,
@@ -1365,10 +1429,16 @@ export const useSiteReady = () => {
   return useStore(ctx, (state) => state.siteReady);
 };
 
+export const useLastToolCall = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.lastToolCall);
+};
+
 export const useDraftHelpers = () => {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => ({
     deleteBrick: state.deleteBrick,
+    setSections: state.setSections,
     setThemes: state.setThemes,
     setTheme: state.setTheme,
     pickTheme: state.pickTheme,

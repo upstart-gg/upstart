@@ -3,7 +3,7 @@ import { siteAttributesSchemaForLLM } from "../src/shared/attributes";
 import { manifests } from "../src/shared/bricks/manifests/all-manifests";
 import { schemasMap as providersSchemasMap } from "../src/shared/datasources/schemas";
 import { themeSchema } from "../src/shared/theme";
-import { templatePageSchema } from "../src/shared/page";
+import { pageSchema } from "../src/shared/page";
 import {
   commonStyleForDocsOnly,
   shortDocumentedForDocsOnly,
@@ -69,13 +69,6 @@ function schemaToString(
     console.warn("No properties or items in schema", objSchema);
     return "";
   }
-
-  // if (level === 0) {
-  //   objSchema.properties.variant = Type.String({
-  //     title: "Variant",
-  //     description: "The variant of the component",
-  //   });
-  // }
 
   let result = "";
   const indent = "  ".repeat(level);
@@ -195,7 +188,7 @@ template = template.replace("{{PRESETS}}", getPresetsDescriptions());
 template = template.replace("{{THEME_JSON_SCHEMA}}", JSON.stringify(refinedThemeSchema));
 template = template.replace("{{SITE_ATTRIBUTES_JSON_SCHEMA}}", JSON.stringify(siteAttributesSchemaForLLM));
 template = template.replace("{{PAGES_MAP_JSON_SCHEMA}}", JSON.stringify(sitemapSchema));
-template = template.replace("{{PAGE_JSON_SCHEMA}}", JSON.stringify(templatePageSchema));
+template = template.replace("{{PAGE_JSON_SCHEMA}}", JSON.stringify(pageSchema));
 template = template.replace("{{AVAILABLE_BRICKS}}", brickDescriptions.trim());
 template = template.replace("{{AVAILABLE_BRICKS_SUMMARY}}", bricksSummary.trim());
 // template = template.replace("{{DATASOURCES_PROVIDERS}}", getDatasourcesProviders().trim());

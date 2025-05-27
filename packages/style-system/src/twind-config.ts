@@ -272,8 +272,21 @@ export default defineConfig({
         "slide-in": "slide-in 0.15s ease-out",
         "slide-back": "slide-back 0.15s ease-out",
         border: "border 4s linear infinite",
+        "spin-blob": "spin-blob 20s linear infinite",
+        background: "background 15s ease infinite",
       },
       keyframes: {
+        background: {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
+        "spin-blob": {
+          "0%": { transform: "rotate(0deg) scale(2)" },
+          "25%": { transform: "rotate(.5turn) scale(6)" },
+          "50%": { transform: "rotate(0turn) scale(6)" },
+          "100%": { transform: "rotate(0deg) scale(2)" },
+        },
         "elastic-pop": {
           "0%": { transform: "scale(0)", opacity: "0" },
           "50%": { transform: "scale(1.1)", opacity: "0.8" },

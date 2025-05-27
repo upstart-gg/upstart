@@ -95,6 +95,7 @@ export default defineConfig((options) => {
         "src/shared/theme.ts",
         "src/shared/page.ts",
         "src/shared/sitemap.ts",
+        "src/shared/images.ts",
         "src/shared/site.ts",
         "src/shared/responsive.ts",
         "src/shared/analytics",

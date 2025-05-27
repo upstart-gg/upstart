@@ -3,19 +3,19 @@ import { readFile } from "node:fs/promises";
 import fg from "fast-glob";
 import { type Logger, logger as defaultLogger } from "./logger";
 import { basename, dirname, extname } from "node:path";
-import type { TemplateConfig } from "~/shared/template";
+import type { SiteAndPagesConfig } from "~/shared/site";
 
 export async function loadConfigFromJsFile(
   configPath: string,
   logger = defaultLogger,
-): Promise<TemplateConfig> {
+): Promise<SiteAndPagesConfig> {
   if (!fs.existsSync(configPath)) {
     logger.error(
       "🔴 No enpage.config.js found!\nYour project must have an enpage.config.js file in the root directory.\n\n",
     );
     process.exit(1);
   }
-  const config = (await import(configPath)) as TemplateConfig;
+  const config = (await import(configPath)) as SiteAndPagesConfig;
 
   // Parse the readme files fro the same directory as the config file
   const readmePath = dirname(configPath);
@@ -35,14 +35,10 @@ export async function loadConfigFromJsFile(
     readme[language] = await readFile(file, "utf-8");
   }
 
-  if (config.manifest) {
-    config.manifest.readme = readme;
-  }
-
   return config;
 }
 
-export function loadConfigFromManifestFile(manifestPath: string, logger: Logger): TemplateConfig {
+export function loadConfigFromManifestFile(manifestPath: string, logger: Logger): SiteAndPagesConfig {
   if (!fs.existsSync(manifestPath)) {
     logger.error("🔴 No enpage.manifest.json found!\nYou may want to 'build' your template.\n\n");
     process.exit(1);
@@ -50,9 +46,9 @@ export function loadConfigFromManifestFile(manifestPath: string, logger: Logger)
   return JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
 }
 
-export function validateTemplateConfig(config: TemplateConfig, logger: Logger) {
-  for (const key in config.datasources) {
-    if (config.datasources[key].provider === "http-json" && !config.datasources[key].sampleData) {
+export function validateTemplateConfig(config: SiteAndPagesConfig, logger: Logger) {
+  for (const key in config.site.datasources) {
+    if (config.site.datasources[key].provider === "http-json" && !config.site.datasources[key].sampleData) {
       logger.error(
         `🔴 Error: Datasource "${key}" is missing sample data - nothing will be rendered during development! Please check your enpage.config.js file and add a "sampleData" key to your ${key} datasource.`,
       );

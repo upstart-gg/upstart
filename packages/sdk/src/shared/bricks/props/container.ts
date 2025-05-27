@@ -226,22 +226,24 @@ export function containerLayout({
               ),
             }
           : {}),
-        gap: Type.Union(
-          [
-            Type.Literal("gap-0", { title: "None" }),
-            Type.Literal("gap-1", { title: "Small" }),
-            Type.Literal("gap-2", { title: "Medium" }),
-            Type.Literal("gap-4", { title: "Large" }),
-            Type.Literal("gap-8", { title: "XL" }),
-            Type.Literal("gap-16", { title: "2XL" }),
-          ],
-          {
-            title: "Gap",
-            description: "Space between items",
-            "ui:field": "enum",
-            "ui:placeholder": "Not specified",
-            default: defaults?.gap,
-          },
+        gap: optional(
+          Type.Union(
+            [
+              Type.Literal("gap-0", { title: "None" }),
+              Type.Literal("gap-1", { title: "Small" }),
+              Type.Literal("gap-2", { title: "Medium" }),
+              Type.Literal("gap-4", { title: "Large" }),
+              Type.Literal("gap-8", { title: "XL" }),
+              Type.Literal("gap-16", { title: "2XL" }),
+            ],
+            {
+              title: "Gap",
+              description: "Space between items",
+              "ui:field": "enum",
+              "ui:placeholder": "Not specified",
+              default: defaults?.gap,
+            },
+          ),
         ),
         direction: Type.Optional(
           Type.Union(

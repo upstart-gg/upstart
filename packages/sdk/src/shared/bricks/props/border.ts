@@ -2,7 +2,6 @@ import { Type, type Static } from "@sinclair/typebox";
 import { group, optional, prop } from "./helpers";
 
 type BorderOptions = {
-  title?: string;
   defaultValue?: {
     style?: string;
     color?: string;
@@ -12,7 +11,7 @@ type BorderOptions = {
   };
 };
 
-export function border({ title = "Border", defaultValue = {} }: BorderOptions = {}) {
+export function border({ defaultValue = {} }: BorderOptions = {}, title = "Border") {
   return group({
     title,
     options: {
@@ -60,14 +59,16 @@ export function border({ title = "Border", defaultValue = {} }: BorderOptions = 
           },
         ),
       ),
-      color: Type.String({
-        default: defaultValue?.color,
-        title: "Color",
-        "ai:instructions":
-          "Can be set to transparent, hex/rgb/rgba color, or classes like `border-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900",
-        "ui:field": "color",
-        "ui:color-type": "border",
-      }),
+      color: Type.Optional(
+        Type.String({
+          // default: defaultValue?.color,
+          title: "Color",
+          "ai:instructions":
+            "Can be set to transparent, hex/rgb/rgba color, or classes like `border-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900",
+          "ui:field": "color",
+          "ui:color-type": "border",
+        }),
+      ),
       sides: Type.Optional(
         Type.Array(
           Type.Union([

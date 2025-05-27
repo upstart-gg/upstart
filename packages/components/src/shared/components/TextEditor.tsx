@@ -270,7 +270,7 @@ const TextEditor = <T extends ElementType = "div">({
       }
 
       mainEditor.setIsEditingText(false);
-      mainEditor.setlastTextEditPosition(e.editor.state.selection.anchor);
+      mainEditor.setLastTextEditPosition(e.editor.state.selection.anchor);
       mainEditor.setSelectedBrickId();
       mainEditor.togglePanel("inspector");
 

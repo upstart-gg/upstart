@@ -83,9 +83,7 @@ export async function publish({ options, args, logger }: CommandArgOpts) {
     // call API to create a new template
     const { data, isError, status } = await post<{ success: true; template: { id: string } }>(
       API_ENDPOINT_REGISTER_TEMPLATE,
-      {
-        manifest: config.manifest,
-      },
+      {}, // todo: fill with template data
     );
     if (isError) {
       logger.error(`  ${chalk.redBright("Error")}: Cannot register template: ${formatAPIError(data)}\n`);

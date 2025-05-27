@@ -115,7 +115,18 @@ export type Brick = Static<typeof brickSchema>;
 
 export const sectionProps = Type.Object(
   {
-    layout: Type.Optional(containerLayout({ options: { disableGrid: true } })),
+    layout: Type.Optional(
+      containerLayout({
+        options: { disableGrid: true },
+        defaults: {
+          gap: "gap-4",
+          wrap: true,
+          fillSpace: false,
+          alignItems: "items-stretch",
+          justifyContent: "justify-stretch",
+        },
+      }),
+    ),
     background: Type.Optional(background()),
     preset: preset(),
     border: Type.Optional(border()),
@@ -165,8 +176,12 @@ export const sectionProps = Type.Object(
 
 export const sectionSchema = Type.Object(
   {
-    id: Type.String(),
-    label: Type.Optional(Type.String()),
+    id: Type.String({ description: "The unique ID of the section. Use a human readable url-safe slug" }),
+    label: Type.Optional(
+      Type.String({
+        description: "The label (name) of the section. Used for editor purposes only.",
+      }),
+    ),
     order: Type.Number({
       description: "Determines section order in the page (lower numbers appear first). 0-based",
     }),
@@ -184,6 +199,15 @@ export const sectionSchema = Type.Object(
 
 export type Section = Static<typeof sectionSchema>;
 
+export const sectionSchemaForLLM = Type.Composite(
+  [Type.Omit(sectionSchema, ["bricks"])],
+  Type.Object({
+    bricks: Type.Array(Type.Any(), {
+      description: "The bricks of the section. Each brick has its own type and props.",
+    }),
+  }),
+);
+
 export function processSections(sections: Section[]) {
   return sections.map((section) => {
     return {
@@ -198,12 +222,10 @@ export function processSections(sections: Section[]) {
  */
 export function processBrick(brick: Brick): Brick {
   const defProps = defaultProps[brick.type];
-
   const result = {
     ...brick,
     props: merge({}, defProps.props, brick.props),
     ...(brick.$children ? { $children: (brick.$children as Brick[]).map(processBrick) } : {}),
   };
-
   return result;
 }
