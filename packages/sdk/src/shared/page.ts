@@ -4,7 +4,7 @@ import {
   defaultAttributesSchema,
   type AttributesSchema,
 } from "./attributes";
-import { type Section, sectionSchema, sectionSchemaForLLM } from "./bricks";
+import { type Section, sectionSchema } from "./bricks";
 import invariant from "./utils/invariant";
 import type { Theme } from "./theme";
 import { Type, type Static } from "@sinclair/typebox";
@@ -73,38 +73,17 @@ export type GenericPageContext = Omit<GenericPageConfig, "attr" | "attributes"> 
   attr: Attributes;
 };
 
-export const pageSchema = Type.Object(
-  {
-    id: Type.String({ description: "The unique ID of the page. Use a human readable url-safe slug" }),
-    label: Type.String({ description: "The label (name) of the page" }),
-    path: Type.String({ description: "The path of the page in the URL. Should be unique" }),
-    sections: Type.Array(sectionSchema, {
-      description: "The sections of the page. See the Section schema",
-    }),
-    tags: Type.Array(Type.String(), {
-      description: "The tags of the page, used for organizating and filtering pages",
-    }),
-    attr: Type.Optional(defaultAttributesSchema),
-  },
-  { additionalProperties: false },
-);
-
-export const pageSchemaForLLM = Type.Object(
-  {
-    type: Type.Literal("page"),
-    page: Type.Composite(
-      [
-        Type.Omit(pageSchema, ["sections"]),
-        Type.Object({
-          sections: Type.Array(sectionSchemaForLLM, {
-            description: "The sections of the page. See the Section schema",
-          }),
-        }),
-      ],
-      { additionalProperties: false },
-    ),
-  },
-  { additionalProperties: false },
-);
+export const pageSchema = Type.Object({
+  id: Type.String({ description: "The unique ID of the page. Use a human readable url-safe slug" }),
+  label: Type.String({ description: "The label (name) of the page" }),
+  path: Type.String({ description: "The path of the page in the URL. Should be unique" }),
+  sections: Type.Array(sectionSchema, {
+    description: "The sections of the page. See the Section schema",
+  }),
+  tags: Type.Array(Type.String(), {
+    description: "The tags of the page, used for organizating and filtering pages",
+  }),
+  attr: Type.Optional(defaultAttributesSchema),
+});
 
 export type Page = Static<typeof pageSchema>;

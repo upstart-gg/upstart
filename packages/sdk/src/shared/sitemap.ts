@@ -35,33 +35,32 @@ All these information will be used in a later prompt to generate the section con
   },
 );
 
-export const sitemapSchema = Type.Array(
-  Type.Composite(
-    [
-      pageInfoSchema,
-      Type.Object({
-        tags: Type.Array(Type.String(), {
-          default: [],
-          description:
-            "Tags for the page. Use the tag 'main-nav' for pages that should appear in the main navbar",
-        }),
-        status: Type.Optional(
-          StringEnum(["draft", "published"], {
-            title: "Page status",
-            enumNames: ["Draft", "Published"],
-            description:
-              "The status of the page. Can be draft or published. [AI instructions: Dont generate this.]",
-            "ai:instructions": "Do not generate this.",
-          }),
-        ),
-        sectionsPlan: sectionsPlanSchema,
+export const sitemapEntry = Type.Composite(
+  [
+    pageInfoSchema,
+    Type.Object({
+      tags: Type.Array(Type.String(), {
+        default: [],
+        description:
+          "Tags for the page. Use the tag 'main-nav' for pages that should appear in the main navbar",
       }),
-    ],
-    {
-      description: "Pages map. The complete list of site pages, their metadata and their sections summary",
-      additionalProperties: false,
-    },
-  ),
+      status: Type.Optional(
+        StringEnum(["draft", "published"], {
+          title: "Page status",
+          enumNames: ["Draft", "Published"],
+          description:
+            "The status of the page. Can be draft or published. [AI instructions: Dont generate this.]",
+          "ai:instructions": "Do not generate this.",
+        }),
+      ),
+      sectionsPlan: sectionsPlanSchema,
+    }),
+  ],
+  {
+    description: "Pages map. The complete list of site pages, their metadata and their sections summary",
+    additionalProperties: false,
+  },
 );
+export const sitemapSchema = Type.Array(sitemapEntry);
 
 export type Sitemap = Static<typeof sitemapSchema>;

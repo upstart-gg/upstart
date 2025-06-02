@@ -2,16 +2,17 @@ import { Type } from "@sinclair/typebox";
 import { preset } from "./preset";
 
 export const commonProps = {
-  className: Type.Optional(
-    Type.String({
-      default: "",
-      "ui:field": "hidden",
-    }),
-  ),
+  // className: Type.Optional(
+  //   Type.String({
+  //     default: "",
+  //     "ui:field": "hidden",
+  //   }),
+  // ),
   lastTouched: Type.Optional(
     Type.Number({
       default: 0,
       "ui:field": "hidden",
+      "ai:instructions": "Do not use. It is used internally by the editor.",
     }),
   ),
   hidden: Type.Optional(
@@ -22,13 +23,13 @@ export const commonProps = {
       },
       {
         "ui:field": "hidden",
-        "ai:instructions": "Do not use the hidden prop. It is used internally by the editor.",
+        "ai:instructions": "Do not use. It is used internally by the editor.",
       },
     ),
   ),
   editable: Type.Optional(
     Type.Boolean({
-      description: "Allow editing. It is automatically set by the editor, so no need to specify it manually.",
+      description: "Do not use. It is used internally by the editor.",
       default: false,
       "ui:field": "hidden",
     }),

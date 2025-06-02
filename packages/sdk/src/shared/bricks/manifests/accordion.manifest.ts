@@ -30,7 +30,6 @@ export const manifest = defineBrickManifest({
 
   props: defineProps(
     {
-      preset: optional(preset()),
       container: optional(
         group({
           title: "Container",

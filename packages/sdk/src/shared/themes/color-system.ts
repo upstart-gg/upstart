@@ -37,11 +37,6 @@ export function getColorsSuggestions(baseHueOrColor: number | string, theme: The
   return [];
 }
 
-interface ContrastRequirements {
-  minContrast: number; // WCAG requirements: 4.5 for normal text, 3 for large text
-  preferredContrast: number;
-}
-
 export function isStandardColor(color: unknown): boolean {
   if (typeof color !== "string") {
     return false;

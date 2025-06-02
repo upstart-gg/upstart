@@ -10,7 +10,6 @@ import {
   useImagesSearchResults,
   usePreviewMode,
   useSections,
-  useSiteReady,
   useTheme,
   useZoom,
 } from "../hooks/use-editor";
@@ -42,11 +41,8 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const dragOverRef = useRef<HTMLDivElement>(null);
   const typography = useFontWatcher();
   const pageClassName = usePageStyle({ attributes, typography, editable: true, previewMode, showIntro });
-  const siteReady = useSiteReady();
+  const generationState = useGenerationState();
   const genState = useGenerationState();
-  const imagesSearchResults = useImagesSearchResults();
-  const { setLastToolCallResult } = useEditorHelpers();
-  const theme = useTheme();
 
   // on page load, set last loaded property so that the store is saved to local storage
   useEffect(draft.setLastLoaded, []);
@@ -112,6 +108,8 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         if (position) {
           console.debug("New brick dropped at", position, section);
           const bricksDefaults = defaultProps[brickType];
+
+          // @ts-ignore
           const newBrick: Brick = {
             id: `brick-${generateId()}`,
             ...bricksDefaults,
@@ -186,13 +184,13 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         editorHelpers.setTextEditMode("default");
       }
     };
-    if (siteReady) {
+    if (generationState.isReady) {
       document.addEventListener("click", listener, true);
     }
     return () => {
       document.removeEventListener("click", listener, true);
     };
-  }, [siteReady]);
+  }, [generationState.isReady]);
 
   return (
     <>
@@ -214,7 +212,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           )}
         />
       </div>
-      {siteReady === true && (
+      {generationState.isReady === true && (
         <Selecto
           className="selecto"
           selectableTargets={["[data-brick]:not(.container-child)"]}

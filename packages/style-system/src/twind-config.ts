@@ -306,6 +306,7 @@ export default defineConfig({
           to: { transform: "translateX(0)" },
         },
         border: {
+          from: { "--border-angle": "0deg" },
           to: { "--border-angle": "360deg" },
         },
       },

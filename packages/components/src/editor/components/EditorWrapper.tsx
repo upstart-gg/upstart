@@ -5,16 +5,13 @@ import {
   createEditorStore,
   type EditorState,
   type EditorStateProps,
-  type SitePrompt,
 } from "../hooks/use-editor";
 import { useEffect, useRef, type PropsWithChildren } from "react";
-import type { GenericPageConfig } from "@upstart.gg/sdk/shared/page";
 import { Theme } from "@upstart.gg/style-system/system";
 import { useDarkMode } from "usehooks-ts";
 import { UploaderProvider } from "./UploaderContext";
-
 import { DatasourceProvider } from "~/shared/hooks/use-datasource";
-import type { Site, SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
+import type { SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
 import { tx } from "@upstart.gg/style-system/twind";
 
 import "@radix-ui/themes/styles.css";
@@ -27,10 +24,9 @@ import "@upstart.gg/style-system/default-theme.css";
 
 export type EditorWrapperProps = {
   mode?: "local" | "remote";
-  pageConfig: GenericPageConfig;
   pageVersion?: string;
-  siteConfig: Site;
-  sitePrompt: SitePrompt;
+  pageId?: string;
+  config: SiteAndPagesConfig;
   /**
    * Callback when an image is uploaded through the editor.
    * The callback should return the URL of the uploaded image.
@@ -59,13 +55,12 @@ export type EditorWrapperProps = {
  * If no children are provided, the default Page component will be rendered, but not within the Editor.
  */
 export function EditorWrapper({
-  pageConfig,
+  config,
   pageVersion,
-  siteConfig,
+  pageId,
   mode,
   onImageUpload,
   children,
-  sitePrompt,
   seenTours = [],
   disableTours,
   onShowLogin,
@@ -74,7 +69,11 @@ export function EditorWrapper({
   onPublish,
   onReady = () => {},
 }: PropsWithChildren<EditorWrapperProps>) {
+  const { site, pages } = config;
+
   const debugMode = new URLSearchParams(window.location.search).has("debug");
+  const page = pages.find((p) => p.id === pageId) ?? pages[0];
+
   const editorStore = useRef(
     createEditorStore({
       mode,
@@ -86,28 +85,31 @@ export function EditorWrapper({
       disableTours,
       debugMode,
       panel: (new URL(self.location.href).searchParams.get("panel") as EditorState["panel"]) ?? undefined,
-      sitePrompt,
+      pages,
+      sitePrompt: site.sitePrompt,
     }),
   ).current;
 
   const draftStore = useRef(
     createDraftStore({
-      siteId: siteConfig.id,
-      hostname: siteConfig.hostname,
-      sitemap: siteConfig.sitemap,
-      siteLabel: siteConfig.label,
-      id: pageConfig.id,
+      siteId: site.id,
+      hostname: site.hostname,
+      sitemap: site.sitemap,
+      siteLabel: site.label,
+      id: page.id,
       version: pageVersion,
-      path: pageConfig.path,
-      label: pageConfig.label,
-      sections: pageConfig.sections,
-      attr: Object.assign({}, siteConfig.attr, pageConfig.attr),
-      attributes: pageConfig.attributes,
-      siteAttributes: siteConfig.attributes,
-      datasources: siteConfig.datasources,
-      datarecords: siteConfig.datarecords,
-      data: pageConfig.data,
-      theme: siteConfig.theme,
+      path: page.path,
+      label: page.label,
+      sections: page.sections,
+      siteAttr: site.attr,
+      attr: Object.assign({}, site.attr, page.attr),
+      attributes: page.attributes,
+      siteAttributes: site.attributes,
+      datasources: site.datasources,
+      datarecords: site.datarecords,
+      // todo: pass the appropriate data for the page
+      data: {},
+      theme: site.theme,
     }),
   ).current;
 
@@ -120,7 +122,11 @@ export function EditorWrapper({
       <UploaderProvider onImageUpload={onImageUpload}>
         <EditorStoreContext.Provider value={editorStore} key="EditorStoreContext">
           <DraftStoreContext.Provider value={draftStore} key="DraftStoreContext">
-            <Theme accentColor="violet" className={tx("w-full")} appearance={isDarkMode ? "dark" : "light"}>
+            <Theme
+              accentColor="violet"
+              className={tx("w-full flex flex-col")}
+              appearance={isDarkMode ? "dark" : "light"}
+            >
               {children}
             </Theme>
           </DraftStoreContext.Provider>

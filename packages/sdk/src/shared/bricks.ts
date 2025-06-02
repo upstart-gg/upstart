@@ -9,6 +9,7 @@ import { cssLength } from "./bricks/props/css-length";
 import { enumProp } from "./bricks/props/enum";
 import { containerLayout } from "./bricks/props/container";
 import { StringEnum } from "./utils/schema";
+import { commonProps } from "./bricks/props/common";
 
 /**
  * Generates a unique identifier for bricks.
@@ -79,20 +80,30 @@ export const brickSchema = Type.Object(
       description: "A unique identifier for the brick.",
     }),
     type: brickTypeSchema,
-    props: Type.Record(Type.String(), Type.Any(), {
-      description: "The available props depends on the brick type.",
+    props: Type.Object({
+      ...commonProps,
+      $children: Type.Optional(
+        Type.Array(Type.Ref("brick"), {
+          title: "Children",
+          description: "The children of the brick. Only used when the brick is a container.",
+        }),
+      ),
     }),
     mobileProps: Type.Optional(
-      Type.Record(Type.String(), Type.Any(), {
-        description: "The props for mobile, merged with the default props",
-      }),
+      Type.Object(
+        {},
+        { additionalProperties: true, description: "The props for mobile, merged with the default props" },
+      ),
     ),
-    $children: Type.Optional(
-      Type.Array(Type.Ref("brick"), {
-        title: "Children",
-        description: "The children of the brick. Only used when the brick is a container.",
-      }),
-    ),
+    // props: Type.Record(Type.String(), Type.Any(), {
+    //   description: "The available props depends on the brick type.",
+    // }),
+    // mobileProps: Type.Optional(
+    //   Type.Record(Type.String(), Type.Any(), {
+    //     description: "The props for mobile, merged with the default props",
+    //   }),
+    // ),
+
     // absolutePosition: Type.Optional(
     //   Type.Object(
     //     {
@@ -108,7 +119,7 @@ export const brickSchema = Type.Object(
     //   ),
     // ),
   },
-  { $id: "brick", additionalProperties: false },
+  { $id: "brick", additionalProperties: true },
 );
 
 export type Brick = Static<typeof brickSchema>;
@@ -128,7 +139,7 @@ export const sectionProps = Type.Object(
       }),
     ),
     background: Type.Optional(background()),
-    preset: preset(),
+    preset: Type.Optional(preset("preset-none")),
     border: Type.Optional(border()),
     minHeight: Type.Optional(
       cssLength("Minimum height", "0px", {
@@ -191,22 +202,12 @@ export const sectionSchema = Type.Object(
   },
   {
     $id: "section",
-    additionalProperties: false,
     description:
       "Sections are direct children of the page that are stacked vertically, but they always align their children horizontally (flex-row).",
   },
 );
 
 export type Section = Static<typeof sectionSchema>;
-
-export const sectionSchemaForLLM = Type.Composite(
-  [Type.Omit(sectionSchema, ["bricks"])],
-  Type.Object({
-    bricks: Type.Array(Type.Any(), {
-      description: "The bricks of the section. Each brick has its own type and props.",
-    }),
-  }),
-);
 
 export function processSections(sections: Section[]) {
   return sections.map((section) => {
@@ -224,8 +225,10 @@ export function processBrick(brick: Brick): Brick {
   const defProps = defaultProps[brick.type];
   const result = {
     ...brick,
-    props: merge({}, defProps.props, brick.props),
-    ...(brick.$children ? { $children: (brick.$children as Brick[]).map(processBrick) } : {}),
+    props: merge({}, defProps.props, {
+      ...brick.props,
+      ...(brick.props.$children ? { $children: (brick.props.$children as Brick[]).map(processBrick) } : {}),
+    }),
   };
   return result;
 }

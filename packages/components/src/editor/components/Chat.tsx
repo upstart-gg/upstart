@@ -11,11 +11,9 @@ import {
   useDraftHelpers,
   useEditorHelpers,
   useGenerationState,
-  useLastToolCall,
   useSerializedPage,
   useSerializedSite,
   useSitePrompt,
-  useSiteReady,
   useTheme,
   useThemes,
 } from "../hooks/use-editor";
@@ -28,31 +26,35 @@ import { type Theme, processTheme } from "@upstart.gg/sdk/shared/theme";
 import { useDeepCompareEffect } from "use-deep-compare";
 import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
 import type { GenericPageConfig } from "@upstart.gg/sdk/shared/page";
+import type { Sitemap } from "@upstart.gg/sdk/shared/sitemap";
 
 // Lazy import "Markdown"
 // import Markdown from "./Markdown";
 const Markdown = lazy(() => import("./Markdown"));
 
 const msgCommon = tx(
-  "rounded-lg text-sm px-2.5 py-2 text-pretty transition-all duration-300",
+  "rounded-lg px-2.5 py-2 text-pretty transition-all duration-300 flex flex-col gap-1.5",
   css({
     // whiteSpace: "pre-line",
-    "& > p:not(:has(+ul)):not(:last-child)": {
-      marginBottom: "1rem",
+    "& p": {
+      marginTop: ".5rem",
+      marginBottom: ".5rem",
     },
-    "& ul": {
+    "& p:first-child": {
+      marginTop: "0",
+    },
+    "& p:last-child": {
+      marginBottom: "0",
+    },
+    "& code": {
+      fontSize: "88%",
+    },
+    "& ul, ol": {
       listStyle: "outside",
       listStyleType: "square",
       paddingLeft: "1rem",
-      marginTop: "0.25rem",
-      marginBottom: "1rem",
-    },
-    "& ol": {
-      listStyle: "outside",
-      listStyleType: "decimal",
-      paddingLeft: "1rem",
-      marginTop: "0.25rem",
-      marginBottom: "1rem",
+      // marginTop: "0.25rem",
+      marginBottom: "0.2rem",
     },
     "& div.choices": {
       display: "flex",
@@ -60,9 +62,10 @@ const msgCommon = tx(
       justifyContent: "space-between",
       gap: ".5rem",
       marginTop: "1rem",
-      "&:not(:last-child)": {
-        marginBottom: "1rem",
-      },
+      // "&:not(:last-child)": {
+      //   marginBottom: "1rem",
+      // },
+
       "& > button": {
         backgroundColor: "var(--violet-10)",
         color: "#fff",
@@ -78,19 +81,16 @@ const msgCommon = tx(
     },
   }),
 );
-const aiMsgClass = tx(
-  "text-black/80 bg-gradient-to-tr from-upstart-200/80 to-upstart-100 dark:text-upstart-200",
-);
+
 const userMsgClass = tx(
-  "text-gray-800 opacity-80 bg-gradient-to-tr from-gray-200/80 to-gray-100 w-fit max-w-[90%] dark:(bg-dark-900 text-white/70) self-end",
+  "text-gray-800 text-[0.8rem] opacity-70 bg-gradient-to-tr from-gray-200/20 to-gray-100/20 w-fit max-w-[90%] dark:(bg-dark-900 text-white/70) self-end",
 );
 
 export default function Chat() {
-  const siteReady = useSiteReady();
   const prompt = useSitePrompt();
   const setupRef = useRef(false);
   const draftHelpers = useDraftHelpers();
-  const { setImagesSearchResults, setLastToolCall, clearLastToolCall } = useEditorHelpers();
+  const { setImagesSearchResults } = useEditorHelpers();
   const generationState = useGenerationState();
   const page = useSerializedPage();
   const site = useSerializedSite();
@@ -98,7 +98,13 @@ export default function Chat() {
   const theme = useTheme();
   const listPlaceholderRef = useRef<HTMLDivElement>(null);
   const handledToolResults = useRef(new Set<string>());
-  const lastToolCall = useLastToolCall();
+
+  const aiMsgClass = tx(
+    " text-sm text-black/80 dark:text-upstart-200",
+    generationState.isReady
+      ? "bg-gradient-to-tr from-upstart-200/80 to-upstart-100"
+      : "bg-white/80 dark:bg-dark-800",
+  );
 
   const {
     messages,
@@ -110,25 +116,82 @@ export default function Chat() {
     append,
     stop,
     data,
+    setData,
     addToolResult,
     id,
     metadata,
+    experimental_resume,
   } = useChat({
     api: "/editor/chat",
-    headers: {
-      "x-upstart-user-id": crypto.randomUUID(),
-    },
-    sendExtraMessageFields: true,
-    maxSteps: 30,
+    // sendExtraMessageFields: true,
+    // maxSteps: 30,
     initialMessages:
       generationState.isReady === false
-        ? [
-            {
-              id: "init-website",
-              role: "user",
-              content: `action:generate_website\n\nContext:\n${JSON.stringify(prompt, null, 2)}}\n\nStart by generating color themes for the website`,
-            },
-          ]
+        ? import.meta.env.DEV
+          ? ([
+              {
+                id: "fake-1",
+                role: "assistant",
+                content: `Welcome to Upsie! This is a fake message to test the chat component in dev mode. You can ignore it.`,
+              },
+              {
+                id: "fake-1-2",
+                role: "user",
+                content: `Hey Upsie, can you help me create a website?`,
+              },
+              {
+                id: "fake-2",
+                role: "assistant",
+                content: `Sure! I can help you create a website. What kind of website do you want to create?`,
+              },
+              {
+                id: "fake-3",
+                role: "user",
+                content: `I want to create a website about my favorite hobby.`,
+              },
+              {
+                id: "fake-4",
+                role: "assistant",
+                content: `Great! What is your favorite hobby?`,
+              },
+              {
+                id: "fake-5",
+                role: "user",
+                content: `My favorite hobby is photography. I love taking pictures of nature and landscapes.
+I also enjoy editing my photos to make them look even better.
+I would like to create a website to showcase my photography work and share my passion with others.
+
+I want the website to have a clean and modern design, with a gallery to display my photos,
+a blog section to share my thoughts and experiences, and a contact page for people to reach out to me.
+
+I would also like to have a section where I can share tips and tutorials on photography techniques and editing software.
+I want the website to be easy to navigate and visually appealing, with a focus on showcasing my photography work.
+                `,
+              },
+              {
+                id: "fake-6",
+                role: "assistant",
+                content: `That sounds like a great idea! I can help you create a website that showcases your photography work and shares your passion with others.
+Let's start by generating some color themes for your website. This will help us create a cohesive design that reflects your style and personality.`,
+              },
+              {
+                id: "fake-7",
+                role: "user",
+                content: `Super! I can't wait to see the color themes you come up with. Let's do it!`,
+              },
+              {
+                id: "fake-8",
+                role: "assistant",
+                content: `Great! Let's get started on generating some color themes for your website. I'll start by analyzing your preferences and the type of photography you do.`,
+              },
+            ] satisfies Message[])
+          : [
+              {
+                id: "init-website",
+                role: "user",
+                content: `action:generate_website\n\nContext:\n${JSON.stringify(prompt, null, 2)}}\n\nStart by generating color themes for the website`,
+              },
+            ]
         : [],
     credentials: "include",
     experimental_prepareRequestBody({ requestData, ...rest }) {
@@ -150,16 +213,10 @@ export default function Chat() {
      * For tools that should be called client-side
      */
     onToolCall: ({ toolCall }) => {
-      console.log("Tool call: %s [%s]: ", toolCall.toolName, toolCall.toolCallId, toolCall);
-      switch (toolCall.toolName) {
-        case "set_theme":
-        case "show_images": {
-          setLastToolCall(toolCall.toolCallId);
-          return true;
-        }
-        default: {
-          // !WARNING: don't return anything for server-side tools otherwise it would override the tool result
-        }
+      console.log("Tool call: %s: ", toolCall.toolName, toolCall);
+      if (toolCall.toolName === "setSiteReady") {
+        // This tool is used to set the site as ready, set the response here
+        // return true;
       }
     },
   });
@@ -183,12 +240,15 @@ export default function Chat() {
     if (listPlaceholderRef.current) {
       listPlaceholderRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, 500);
+  }, 200);
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(debouncedScroll, [status, data, messages]);
 
-  useEffect(() => {
-    console.log("NEW CHAT DATA", data);
+  useDeepCompareEffect(() => {
+    if (data) {
+      console.log("NEW CHAT DATA", data);
+    }
   }, [data]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -196,47 +256,13 @@ export default function Chat() {
     if (setupRef.current) return;
     setupRef.current = true;
     const url = new URL(window.location.href);
+
     if (url.searchParams.get("action") === "generate") {
       console.log("Chat initialized");
       reload();
     }
     //
   }, []);
-
-  // useEffect(() => {
-  //   const clickListener = (e: MouseEvent) => {
-  //     // detect click on button
-  //     if (e.target instanceof HTMLButtonElement && e.target.parentElement?.classList.contains("choices")) {
-  //       // const text = e.target.innerText;
-  //       // append({
-  //       //   role: "user",
-  //       //   content: text,
-  //       // });
-  //       const elements = messagesListRef.current?.querySelectorAll<HTMLDivElement>(".choices") ?? [];
-  //       // reset all choices
-  //       elements.forEach((el) => {
-  //         el.style.setProperty("transition", "all 0.2s");
-  //         el.style.setProperty("opacity", "0.1");
-  //         el.style.setProperty("pointer-events", "none");
-  //         // scale down
-  //         el.style.setProperty("transform", "scale(0)");
-  //       });
-  //       setTimeout(() => {
-  //         elements.forEach((el) => {
-  //           el.remove();
-  //         });
-  //       }, 200);
-  //     }
-  //   };
-  //   if (messagesListRef.current) {
-  //     messagesListRef.current.addEventListener("click", clickListener);
-  //   }
-  //   return () => {
-  //     if (messagesListRef.current) {
-  //       messagesListRef.current.removeEventListener("click", clickListener);
-  //     }
-  //   };
-  // }, []);
 
   const toolInvocations = useMemo(() => {
     const results = messages
@@ -266,16 +292,16 @@ export default function Chat() {
       if (handledToolResults.current.has(toolInvocation.toolCallId)) {
         continue;
       }
+      handledToolResults.current.add(toolInvocation.toolCallId);
       switch (toolInvocation.toolName) {
         case "generatePage": {
-          const page = toolInvocation.result as GenericPageConfig | { error: string };
-          handledToolResults.current.add(toolInvocation.toolCallId);
-          // if ("error" in page) {
-          //   console.error("Error generating page:", page.error);
-          //   return;
-          // }
-          console.log("Generated page", page);
-          // draftHelpers.setSections(page.sections);
+          const result = toolInvocation.result as { page: GenericPageConfig } | { error: string };
+          if ("error" in result) {
+            console.error("Error generating page:", result.error);
+            return;
+          }
+          console.log("Generated page", result.page);
+          draftHelpers.setSections(result.page.sections);
           break;
         }
         case "generateThemes": {
@@ -283,58 +309,62 @@ export default function Chat() {
           const themesProcessed = themes.map(processTheme);
           console.log("Generated themes", themesProcessed);
           draftHelpers.setThemes(themesProcessed);
-          handledToolResults.current.add(toolInvocation.toolCallId);
+          break;
+        }
+        case "generateSitemap": {
+          const sitemap = toolInvocation.result as Sitemap;
+          console.log("Generated sitemap", sitemap);
+          draftHelpers.setSitemap(sitemap);
           break;
         }
         case "searchImages": {
           const images = toolInvocation.result as ImageSearchResultsType;
           console.log("Generated images", images);
           setImagesSearchResults(images);
-          handledToolResults.current.add(toolInvocation.toolCallId);
           break;
         }
-
         default:
           console.log("Default tool invocation", toolInvocation.toolName, toolInvocation);
-          handledToolResults.current.add(toolInvocation.toolCallId);
           break;
       }
     }
   }, [toolInvocations, draftHelpers, siteThemes]);
 
-  // Check when last toolcall result has been updated outside the chat so that we can addToolResult()
-  useEffect(() => {
-    if (lastToolCall == null) return;
-    if (handledToolResults.current.has(lastToolCall.id)) {
-      return;
-    }
-    addToolResult({ toolCallId: lastToolCall.id, result: lastToolCall.result });
-    clearLastToolCall();
-  }, [lastToolCall, addToolResult, clearLastToolCall]);
-
   return (
     <div
       className={tx(
-        "flex flex-col bg-gray-50",
+        "flex flex-col mx-auto w-full",
+        {
+          "rounded-xl animate-border my-auto h-full max-h-[calc(100dvh-100px)]":
+            generationState.isReady === false,
+          "rounded-tr-xl bg-gray-50 max-h-[inherit]": generationState.isReady === true,
+        },
         css({
           gridArea: "chat",
+          maxWidth: generationState.isReady ? "none" : "clamp(500px, 40dvw, 650px)",
         }),
-        generationState.isReady === false ? "rounded-xl mb-5" : "rounded-tr-xl",
+        generationState.isReady === false &&
+          css({
+            scrollbarColor: "var(--violet-4) var(--violet-2)",
+            border: "2px solid transparent",
+            boxShadow: "rgba(100, 100, 111, 0.3) 0px 0px 36px 0px",
+            // padding: "12px",
+            background: `linear-gradient(#ffffff, #ffffff) padding-box, linear-gradient(var(--border-angle), transparent 15%, #9291e7, #7270c6, #c050c2, #ef50a2, #ff6285, #ff806b, #ffa25a, #ffc358, transparent 85%) border-box`,
+          }),
       )}
     >
       <div
         ref={messagesListRef}
         className={tx(
           // h-full max-h-[calc(100cqh-250px)]
-          `scrollbar-thin overflow-y-auto
-           py-2 pl-2 pr-3 flex flex-col gap-y-2.5 flex-grow
-           shadow-inner scroll-smooth relative`,
+          ` overflow-y-auto h-full max-h-[inherit] p-2 pr-4
+            flex flex-col gap-y-2.5 flex-grow scroll-smooth scrollbar-thin relative`,
           {
-            "rounded-tr-xl": generationState.isReady === true,
-            "rounded-t-xl": !generationState.isReady,
+            "rounded-tr-xl shadow-inner": generationState.isReady === true,
           },
           css({
-            // scrollbarColor: "var(--violet-a8) var(--violet-a2)",
+            scrollbarColor: "var(--violet-a8) var(--violet-a2)",
+            // scrollbarColor: "var(--violet-4) var(--violet-2)",
             scrollbarGutter: "stable",
           }),
         )}
@@ -405,12 +435,12 @@ export default function Chat() {
             </div>
           ))}
         {!hasRunningTools && (status === "submitted" || status === "streaming") && (
-          <div className={tx("h-6 px-2 text-xs text-gray-600 flex items-center justify-center gap-1.5")}>
-            <Spinner size="1" /> Please wait...
+          <div className={tx("h-6 px-2 text-sm text-gray-600 flex items-center justify-center gap-1.5")}>
+            <Spinner size="2" /> Please wait...
           </div>
         )}
         {error && (
-          <div className={tx(msgCommon, "bg-red-200 text-red-800")}>
+          <div className={tx(msgCommon, "bg-red-200 text-red-800 text-sm")}>
             <p>An error occured: {error.message}</p>
             <button
               type="button"
@@ -432,7 +462,8 @@ export default function Chat() {
         className={tx(
           "flex flex-col flex-1 h-36 max-h-36 gap-1.5 p-2 justify-center ",
           "bg-upstart-100 border-t border-upstart-300 relative",
-          generationState.isReady === false && "rounded-b-xl border",
+          // generationState.isReady === false && "hidden",
+          generationState.isReady === false && "rounded-b-xl",
           // "[&:has(textarea:focus)]:(ring-2 ring-upstart-700)",
         )}
       >
@@ -465,16 +496,18 @@ export default function Chat() {
           <button type="button" className={tx("hover:bg-upstart-200 p-1 rounded inline-flex text-sm gap-1")}>
             <IoIosAttach className="h-5 w-5" />
           </button>
-          <label className={tx("inline-flex items-center gap-1 text-[80%] select-none")}>
-            <Switch
-              name="allow_web_search"
-              size={"1"}
-              onCheckedChange={() => {
-                promptRef.current?.focus();
-              }}
-            />{" "}
-            Allow web search
-          </label>
+          {generationState.isReady && (
+            <label className={tx("inline-flex items-center gap-1 text-[80%] select-none")}>
+              <Switch
+                name="allow_web_search"
+                size={"1"}
+                onCheckedChange={() => {
+                  promptRef.current?.focus();
+                }}
+              />{" "}
+              Allow web search
+            </label>
+          )}
           {status === "submitted" || status === "streaming" ? (
             <Button
               type="button"
@@ -546,13 +579,14 @@ function ToolRenderer({
     };
     return (
       <Suspense key={toolInvocation.toolCallId}>
-        <AnimatePresence>
+        <AnimatePresence initial={false}>
           {toolInvocation.state !== "result" ? (
             <motion.div
               className="choices"
-              initial={{ opacity: 0, scaleY: 0 }}
-              animate={{ opacity: 1, scaleY: 1 }}
-              exit={{ opacity: 0, scaleY: 0 }}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.4 }}
             >
               {args.question && (
                 <div className="basis-full">
@@ -569,10 +603,10 @@ function ToolRenderer({
                         toolCallId: toolInvocation.toolCallId,
                         result: choice,
                       });
-                      append({
-                        role: "user",
-                        content: choice,
-                      });
+                      // append({
+                      //   role: "user",
+                      //   content: choice,
+                      // });
                     }}
                   >
                     {choice}
@@ -583,15 +617,17 @@ function ToolRenderer({
           ) : (
             <motion.div
               className="choices"
-              initial={{ opacity: 0, scaleY: 0 }}
-              animate={{ opacity: 1, scaleY: 1 }}
-              exit={{ opacity: 0, scaleY: 0 }}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.4 }}
             >
               {args.question && (
                 <div className="basis-full">
                   <Markdown content={args.question} />
                 </div>
               )}
+              <div className="basis-full text-right italic text-gray-800">{toolInvocation.result}</div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -601,23 +637,23 @@ function ToolRenderer({
   const waitLabel = getToolWaitingLabel(toolInvocation);
   if (waitLabel) {
     return (
-      <AnimatePresence>
+      <AnimatePresence initial={false}>
         {toolInvocation.state !== "result" ? (
           <motion.div
             className="flex items-center gap-1.5"
-            initial={{ opacity: 0, scaleY: 0 }}
-            animate={{ opacity: 1, scaleY: 1 }}
-            exit={{ opacity: 0, scaleY: 0 }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
           >
-            <Spinner size="1" />
+            <Spinner size="1" className="w-4" />
             <Text size="2">{waitLabel}</Text>
           </motion.div>
         ) : (
           <motion.div
             className="flex items-center gap-1.5"
-            initial={{ opacity: 0, scaleY: 0 }}
-            animate={{ opacity: 1, scaleY: 1 }}
-            exit={{ opacity: 0, scaleY: 0 }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
           >
             <MdDone className="w-4 h-4 text-green-600" />
             <Text size="2">{waitLabel}</Text>
@@ -626,42 +662,9 @@ function ToolRenderer({
       </AnimatePresence>
     );
   }
+
+  if (toolInvocation.args.message) {
+    return <Markdown content={toolInvocation.args.message} />;
+  }
   return null;
-  // return (
-  //   <details className="flex flex-col mt-0 mb-4 text-xs [&_svg]:open:-rotate-0">
-  //     <summary className="flex items-center gap-1 cursor-pointer list-none text-black/60">
-  //       <div className="text-xs font-normal">
-  //         <svg
-  //           className="-rotate-90 transform text-upstart-500 transition-all duration-300"
-  //           fill="none"
-  //           height="14"
-  //           width="14"
-  //           stroke="currentColor"
-  //           strokeLinecap="round"
-  //           strokeLinejoin="round"
-  //           strokeWidth="2"
-  //           viewBox="0 0 24 24"
-  //         >
-  //           <title>Arrow</title>
-  //           <polyline points="6 9 12 15 18 9" />
-  //         </svg>
-  //       </div>
-  //       <div>{tools[toolInvocation.toolName] ?? toolInvocation.toolName}</div>
-  //     </summary>
-  //     <Text size="2" className="text-gray-500">
-  //       Tool: {toolInvocation.toolName}
-  //     </Text>
-  //     <Text size="2" className="text-gray-500">
-  //       State: {toolInvocation.state}
-  //     </Text>
-  //     <Text size="2" className="text-gray-500">
-  //       Call ID: {toolInvocation.toolCallId}
-  //     </Text>
-  //     {toolInvocation.state === "result" && (
-  //       <Text size="2" className="text-gray-500">
-  //         {JSON.stringify(toolInvocation.result)}
-  //       </Text>
-  //     )}
-  //   </details>
-  // );
 }

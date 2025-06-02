@@ -47,15 +47,15 @@ A brick is mainly defined by those properties (non exhaustive):
 - `$children`: For container-bricks only. An array of children bricks.
 
 ### Presets
-Most of the bricks have a `preset` prop that will help you style it. When present, you MUST use it.
+Most of the bricks have a prop called `preset` that will help you style it. When present, you MUST use it.
 List of presets:
 
 {{PRESETS}}
 
 ## Variants
-Some bricks have `variants` that can be used to change the look and/or layout of the brick.
+Some bricks have a prop called `variants` that can be used to change the look and/or layout of the brick.
 You can specify multiple variants if they don't share the same prefix.
-For example, you can use `variants: ["with-logo-left", "align-h"]` to apply both variants to the brick.
+For example, you can use `props: { variants: ["with-logo-left", "align-h"] ... }` to apply both variants to the brick because they don't share the same prefix.
 
 ## Available bricks
 {{AVAILABLE_BRICKS_SUMMARY}}

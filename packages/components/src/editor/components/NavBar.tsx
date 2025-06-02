@@ -20,7 +20,7 @@ import {
   useChatVisible,
   useZoom,
   useCredits,
-  useSiteReady,
+  useGenerationState,
 } from "~/editor/hooks/use-editor";
 import { RxRocket } from "react-icons/rx";
 import logo from "../../../../../creatives/upstart.svg";
@@ -61,7 +61,7 @@ export default function NavBar() {
   const canRedo = useMemo(() => futureStates.length > 0, [futureStates]);
   const canUndo = useMemo(() => pastStates.length > 0, [pastStates]);
   const currentPageLabel = pages.find((page) => page.id === draft.id)?.label;
-  const siteReady = useSiteReady();
+  const generationState = useGenerationState();
 
   const publish = useCallback(
     (wholeSite = false) => {
@@ -134,8 +134,8 @@ export default function NavBar() {
     <nav
       role="navigation"
       className={tx(
-        `z-[9999] h-14 gap-1 px-4 pt-2 flex text-xl w-full items-center transition-opacity duration-300
-        text-black/70 dark:text-dark-200`,
+        `z-[9999] h-14 gap-1 px-4 flex text-xl w-full items-center transition-opacity duration-300
+        text-black/70 dark:text-dark-200 bg-white`,
         css({
           gridArea: "navbar",
         }),
@@ -143,9 +143,8 @@ export default function NavBar() {
     >
       <button
         type="button"
-        disabled={editorMode === "local"}
         onClick={() => {
-          window.location.href = logoLink;
+          window.location.href = editorMode === "local" ? "/" : logoLink;
         }}
         className={tx("flex-shrink-0")}
       >
@@ -155,7 +154,7 @@ export default function NavBar() {
         </picture>
       </button>
 
-      <div className={tx("flex items-center gap-1 flex-1", !siteReady && "hidden")}>
+      <div className={tx("flex items-center gap-1 flex-1", !generationState.isReady && "hidden")}>
         {(editorMode === "remote" || (editorMode === "local" && pages.length > 1)) && (
           <TopbarMenu
             id="switch-page-menu-btn"

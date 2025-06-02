@@ -5,23 +5,17 @@ import type { PropsWithChildren } from "react";
 // import "@upstart.gg/style-system/default-theme.css";
 // import "@upstart.gg/components/dist/assets/style.css";
 import { createEmptyConfig } from "@upstart.gg/sdk/shared/site";
-import type { SitePrompt } from "../hooks/use-editor";
 
 export default function App({ path }: { path: string }) {
-  const siteConfig = createEmptyConfig();
+  const siteConfig = createEmptyConfig("a site about coffee and tea");
 
   const searchParams = new URL(`http://localhost${path}`).searchParams;
   const p = searchParams.get("p");
   const page = siteConfig.pages.find((page) => page.id === p) ?? siteConfig.pages[0];
-  const sitePrompt: SitePrompt = {
-    siteColorScheme: "none",
-    siteDescription: "",
-    siteType: "none",
-  };
 
   return (
     <ClientOnly>
-      <InnerEditor pageConfig={page} siteConfig={siteConfig.site} sitePrompt={sitePrompt} mode="local">
+      <InnerEditor config={siteConfig} mode="local">
         <Editor />
       </InnerEditor>
     </ClientOnly>

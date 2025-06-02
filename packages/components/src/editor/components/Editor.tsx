@@ -1,16 +1,15 @@
 import {
-  type GenerationState,
   useChatVisible,
   useDraft,
   useDraftHelpers,
   useEditorEnabled,
   useGenerationState,
+  useImagesSearchResults,
   usePanel,
   useSections,
-  useSiteReady,
   useThemes,
 } from "../hooks/use-editor";
-import { lazy, Suspense, useEffect, useRef, type ComponentProps } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, type ComponentProps } from "react";
 import { css, tx, tw } from "@upstart.gg/style-system/twind";
 import { Button } from "@upstart.gg/style-system/system";
 import { usePageAutoSave } from "~/editor/hooks/use-page-autosave";
@@ -18,6 +17,7 @@ import { getThemeCss } from "~/shared/utils/get-theme-css";
 import { useEditorHotKeys } from "../hooks/use-editor-hot-keys";
 import ThemesPreviewList from "./ThemesPreviewList";
 import BlankWaitPage from "./BlankWaitPage";
+import type { GenerationState } from "@upstart.gg/sdk/shared/context";
 
 const Tour = lazy(() => import("./Tour"));
 const NavBar = lazy(() => import("./NavBar"));
@@ -38,9 +38,10 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
   const chatVisible = useChatVisible();
   const sections = useSections();
   const { panelPosition } = usePanel();
-  const siteReady = useSiteReady();
   const themes = useThemes();
   const generationState = useGenerationState();
+  // const images = useImagesSearchResults();
+  // const [bgImg, setBgImg] = useState<NonNullable<typeof images>[number] | null>(null);
 
   usePageAutoSave();
   useEditorHotKeys();
@@ -51,6 +52,25 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
       tw(css(getThemeCss(themeUsed)));
     }
   }, [draft.previewTheme, draft.theme]);
+
+  // useEffect(() => {
+  //   if (generationState.isReady || !images?.length) {
+  //     return;
+  //   }
+  //   // If generation is not ready, set a random background image from the images
+  //   const randomImage = images[Math.floor(Math.random() * images.length)];
+  //   setBgImg(randomImage);
+  //   const itv = setInterval(async () => {
+  //     const randomImage = images[Math.floor(Math.random() * images.length)];
+
+  //     // preload the image to avoid flickering
+  //     const img = new Image();
+  //     img.src = randomImage.url;
+  //     await img.decode(); // Wait for the image to load
+  //     setBgImg(randomImage);
+  //   }, 10000); // Change every 10 seconds
+  //   return () => clearInterval(itv);
+  // }, [generationState.isReady, images]);
 
   if (!editorEnabled) {
     return (
@@ -71,13 +91,51 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
     <div
       id="editor"
       className={tx(
-        "min-h-[100dvh] max-h-[100dvh] grid relative transition-all mx-auto",
+        "grid relative transition-all mx-auto w-full",
         getEditorCss(generationState, chatVisible),
+        "min-h-[100dvh] max-h-[100dvh]",
+        /*
+.firstSection {
+    --opacity: 0.65;
+  background: linear-gradient(
+    120deg,
+    oklab(from #9291e7 l a b / var(--opacity)),
+    oklab(from #7270c6 l a b / var(--opacity)),
+    oklab(from #c050c2 l a b / var(--opacity)),
+    oklab(from #ef50a2 l a b / var(--opacity)),
+    oklab(from #ff6285 l a b / var(--opacity)),
+    oklab(from #ff806b l a b / var(--opacity)),
+    oklab(from #ffa25a l a b / var(--opacity)),
+    oklab(from #ffc358 l a b / var(--opacity))
+  );
+  padding-top: 90px;
+  display: flex;
+  flex-direction: column  ;
+  justify-content: center;
+  position: relative;
+}
+
+        */
+        generationState.isReady === false &&
+          css({
+            background: `linear-gradient(120deg,
+              oklab(from #9291e7 l a b / 0.65),
+              oklab(from #7270c6 l a b / 0.65),
+              oklab(from #c050c2 l a b / 0.65),
+              oklab(from #ef50a2 l a b / 0.65),
+              oklab(from #ff6285 l a b / 0.65),
+              oklab(from #ff806b l a b / 0.65),
+              oklab(from #ffa25a l a b / 0.65),
+              oklab(from #ffc358 l a b / 0.65)
+          )`,
+          }),
+        generationState.isReady === false && "transition-all duration-500 ease-in-out",
+        //   "my-auto h-[clamp(500px,70dvh,1000px)] max-h-[clamp(500px,70dvh,1000px)]",
       )}
       {...props}
       ref={rootRef}
     >
-      {sections.length > 0 && siteReady && (
+      {sections.length > 0 && generationState.isReady && (
         <Suspense>
           <Tour />
         </Suspense>
@@ -97,6 +155,7 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
         className={tx(
           "flex-1 flex place-content-center z-40 overscroll-none ",
           "overflow-x-auto overflow-y-visible ",
+          generationState.isReady === false && "!hidden",
           css({
             gridArea: "main",
             scrollbarColor: "var(--violet-4) var(--violet-2)",
@@ -109,7 +168,7 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
           }),
         )}
       >
-        {siteReady && (
+        {generationState.isReady && (
           <Suspense>
             <DeviceFrame>
               <EditablePage />
@@ -117,7 +176,7 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
             </DeviceFrame>
           </Suspense>
         )}
-        {!siteReady &&
+        {!generationState.isReady &&
           (themes.length > 0 ? (
             <DeviceFrame>
               <ThemesPreviewList themes={themes} />
@@ -138,7 +197,7 @@ function getEditorCss(generationState: GenerationState, chatVisible: boolean) {
     gridTemplateRows: "64px 1fr",
     gridTemplateColumns:
       generationState.isReady === false ? "1fr 0px" : chatVisible ? "clamp(280px, 25%, 410px) 1fr" : "1fr",
-    maxWidth: generationState.isReady === false ? "clamp(380px, 40dvw, 550px)" : "none",
+    // maxWidth: generationState.isReady === false ? "clamp(500px, 40dvw, 650px)" : "none",
   });
 }
 

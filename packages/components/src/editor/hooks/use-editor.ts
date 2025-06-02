@@ -7,13 +7,15 @@ import { createContext, useContext, useEffect } from "react";
 import { temporal } from "zundo";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
 import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
+import type { SitePrompt } from "@upstart.gg/sdk/shared/prompt";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
-import { defaultTheme, type Theme } from "@upstart.gg/sdk/shared/theme";
+import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
+import type { GenerationState } from "@upstart.gg/sdk/shared/context";
 import { generateId } from "@upstart.gg/sdk/shared/bricks";
-import type { GenericPageConfig, GenericPageContext, Page } from "@upstart.gg/sdk/shared/page";
+import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
 import type { Site } from "@upstart.gg/sdk/shared/site";
 export { type Immer } from "immer";
 
@@ -45,19 +47,6 @@ export type SiteSavePayload = {
   data: Partial<Site>;
 };
 
-export type SitePrompt = {
-  siteType: string;
-  siteColorScheme: string;
-  siteDescription: string;
-};
-
-export type GenerationState = {
-  hasThemesGenerated: boolean;
-  hasChosenTheme: boolean;
-  hasSitemap: boolean;
-  isReady: boolean;
-};
-
 export interface EditorStateProps {
   /**
    * When local, the editor does not fetch data from the server or save data to the server
@@ -84,6 +73,7 @@ export interface EditorStateProps {
   planIndex: number;
 
   sitePrompt: SitePrompt;
+  pages: GenericPageConfig[];
 
   previewMode: Resolution;
   textEditMode?: "default" | "large";
@@ -105,13 +95,6 @@ export interface EditorStateProps {
   logoLink: string;
   themesLibrary: Theme[];
   imagesSearchResults?: ImageSearchResultsType;
-
-  lastToolCall?: { id: string; result?: unknown };
-
-  /**
-   * When falsse or undefined, we are just beginning creating the site
-   */
-  siteReady?: boolean;
 
   onShowLogin: () => void;
   onPublish: (data: PagePublishPayload) => void;
@@ -149,28 +132,56 @@ export interface EditorState extends EditorStateProps {
   zoomIn: () => void;
   zoomOut: () => void;
   resetZoom: () => void;
-  setLastToolCall: (id: string) => void;
-  setLastToolCallResult: (result: unknown) => void;
-  clearLastToolCall: () => void;
 }
 
 export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
-  const DEFAULT_PROPS: Omit<EditorStateProps, "pageConfig" | "pages"> = {
-    previewMode: "desktop",
+  const DEFAULT_PROPS = {
+    previewMode: "desktop" as EditorStateProps["previewMode"],
     seenTours: [],
     themesLibrary: [],
-    mode: "local",
-    panelPosition: "left",
+    pages: [],
+    mode: "local" as EditorStateProps["mode"],
+    panelPosition: "left" as EditorStateProps["panelPosition"],
     logoLink: "/dashboard",
     zoom: 1,
     chatVisible: true,
     planIndex: 0,
     credits: 0,
-    sitePrompt: {
-      siteType: "none",
-      siteColorScheme: "none",
-      siteDescription: "",
-    },
+    imagesSearchResults: import.meta.env.DEV
+      ? [
+          {
+            blurHash: "",
+            description: "Placeholder image",
+            provider: "unsplash",
+            url: "https://images.unsplash.com/photo-1624555130581-1d9cca783bc0?q=80&w=3542&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            user: {
+              name: "Placeholder",
+              profile_url: "https://unsplash.com/@placeholder",
+            },
+          },
+          {
+            blurHash: "",
+            description: "Placeholder image",
+            provider: "unsplash",
+            url: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=3538&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            user: {
+              name: "Placeholder",
+              profile_url: "https://unsplash.com/@placeholder",
+            },
+          },
+          {
+            blurHash: "",
+            description: "Placeholder image",
+            provider: "unsplash",
+            url: "https://plus.unsplash.com/premium_photo-1661596686441-611034b8077e?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            user: {
+              name: "Placeholder",
+              profile_url: "https://unsplash.com/@placeholder",
+            },
+          },
+        ]
+      : undefined,
+    sitePrompt: "",
     onShowLogin: () => {
       console.warn("onShowLogin is not implemented");
     },
@@ -207,23 +218,6 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
             setImagesSearchResults: (images) =>
               set((state) => {
                 state.imagesSearchResults = images;
-              }),
-
-            setLastToolCall: (id) =>
-              set((state) => {
-                state.lastToolCall = { id };
-              }),
-
-            setLastToolCallResult: (result) =>
-              set((state) => {
-                if (state.lastToolCall) {
-                  state.lastToolCall.result = result;
-                }
-              }),
-
-            clearLastToolCall: () =>
-              set((state) => {
-                state.lastToolCall = undefined;
               }),
 
             setLastTextEditPosition: (position) =>
@@ -347,13 +341,11 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                   ([key]) =>
                     ![
                       "mode",
-                      "siteReady",
                       "imagesSearchResults",
                       "selectedBrickId",
                       "selectedSectionId",
                       "selectedGroup",
-                      "collidingBrick",
-                      "lastToolCall",
+                      "genFlowDone",
                       "panel",
                       "sitePrompt",
                       "isEditingTextForBrickId",
@@ -385,9 +377,22 @@ export interface DraftStateProps {
   data: Record<string, unknown>;
   datasources?: Site["datasources"];
   datarecords?: Site["datarecords"];
-  attr: GenericPageContext["attr"];
-  attributes: GenericPageConfig["attributes"];
+  /**
+   * Site attributes key/value pairs
+   */
+  siteAttr: Site["attr"];
+  /**
+   * Site attributes schema
+   */
   siteAttributes: Site["attributes"];
+  /**
+   * Page attributes key/value pairs
+   */
+  attr: GenericPageContext["attr"];
+  /**
+   * Page attributes schema
+   */
+  attributes: GenericPageConfig["attributes"];
   theme: Theme;
   previewTheme?: Theme;
   themes: Theme[];
@@ -437,6 +442,8 @@ export interface DraftState extends DraftStateProps {
   setVersion(version: string): void;
   adjustMobileLayout(): void;
 
+  setSitemap(sitemap: Site["sitemap"]): void;
+
   getPositionWithinParent: (brickId: Brick["id"]) => number | undefined;
   canMoveToWithinParent: (brickId: Brick["id"], to: "left" | "right") => boolean;
 
@@ -472,6 +479,7 @@ export const createDraftStore = (
     attributes: DraftStateProps["attributes"];
     datasources?: DraftStateProps["datasources"];
     datarecords?: DraftStateProps["datarecords"];
+    siteAttr: DraftStateProps["siteAttr"];
     siteAttributes: DraftStateProps["siteAttributes"];
     siteLabel: DraftStateProps["siteLabel"];
     siteId: DraftStateProps["siteId"];
@@ -521,6 +529,11 @@ export const createDraftStore = (
             setThemes: (themes) =>
               set((state) => {
                 state.themes = themes;
+              }),
+
+            setSitemap: (sitemap) =>
+              set((state) => {
+                state.sitemap = sitemap;
               }),
 
             getPageDataForDuplication: () => {
@@ -991,7 +1004,8 @@ export const createDraftStore = (
               set((state) => {
                 const brick = getBrick(id, state);
                 if (brick) {
-                  brick.props.hidden[breakpoint] = !brick.props.hidden[breakpoint];
+                  brick.props.hidden ??= { desktop: false, mobile: false };
+                  brick.props.hidden[breakpoint] = !brick.props.hidden?.[breakpoint];
                 }
               }),
 
@@ -1187,16 +1201,13 @@ export const useGenerationState = () => {
   const baseState = useStore(draft, (state) => {
     const hasSitemap = state.sitemap.length > 0;
     const hasThemesGenerated = state.themes.length > 0;
-    const hasChosenTheme = state.theme.id !== defaultTheme.id;
     return {
       hasSitemap,
       hasThemesGenerated,
-      hasChosenTheme,
-    } satisfies Omit<GenerationState, "isReady">;
+    };
   });
   return useStore(editorCtx, (state) => {
-    const isReady =
-      baseState.hasSitemap && baseState.hasThemesGenerated && baseState.hasChosenTheme && !!state.genFlowDone;
+    const isReady = baseState.hasSitemap && baseState.hasThemesGenerated && !!state.genFlowDone;
     return {
       ...baseState,
       isReady,
@@ -1402,9 +1413,6 @@ export const useEditorHelpers = () => {
     setIsEditingText: state.setIsEditingText,
     setLastTextEditPosition: state.setLastTextEditPosition,
     setImagesSearchResults: state.setImagesSearchResults,
-    setLastToolCall: state.setLastToolCall,
-    setLastToolCallResult: state.setLastToolCallResult,
-    clearLastToolCall: state.clearLastToolCall,
     setPanel: state.setPanel,
     togglePanel: state.togglePanel,
     hidePanel: state.hidePanel,
@@ -1424,16 +1432,6 @@ export const useEditorHelpers = () => {
   }));
 };
 
-export const useSiteReady = () => {
-  const ctx = useEditorStoreContext();
-  return useStore(ctx, (state) => state.siteReady);
-};
-
-export const useLastToolCall = () => {
-  const ctx = useEditorStoreContext();
-  return useStore(ctx, (state) => state.lastToolCall);
-};
-
 export const useDraftHelpers = () => {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => ({
@@ -1442,6 +1440,7 @@ export const useDraftHelpers = () => {
     setThemes: state.setThemes,
     setTheme: state.setTheme,
     pickTheme: state.pickTheme,
+    setSitemap: state.setSitemap,
     duplicateBrick: state.duplicateBrick,
     getBrick: state.getBrick,
     validatePreviewTheme: state.validatePreviewTheme,
@@ -1500,12 +1499,12 @@ export const useSerializedPage = () => {
   );
 };
 export const useSerializedSite = () => {
-  const ctx = useDraftStoreContext();
-  return useStore(
-    ctx,
+  const draft = useDraftStoreContext();
+  const draftData = useStore(
+    draft,
     (state) =>
       ({
-        id: state.id,
+        id: state.siteId,
         label: state.label,
         sitemap: state.sitemap,
         attr: state.attr,
@@ -1513,8 +1512,14 @@ export const useSerializedSite = () => {
         themes: state.themes,
         attributes: state.siteAttributes,
         hostname: state.hostname,
-      }) satisfies Site,
+      }) satisfies Omit<Site, "sitePrompt">,
   );
+  const editor = useEditorStoreContext();
+  const sitePrompt = useStore(editor, (state) => state.sitePrompt);
+  return {
+    ...draftData,
+    sitePrompt,
+  } satisfies Site;
 };
 
 export const useTheme = () => {

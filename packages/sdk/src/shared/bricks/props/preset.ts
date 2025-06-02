@@ -63,7 +63,7 @@ export function preset(defaultValue?: string) {
       title: "Preset",
       description: "The styles preset of the component",
       "ui:field": "hidden",
-      default: defaultValue ?? "none",
+      default: defaultValue ?? "preset-none",
     },
   );
 }

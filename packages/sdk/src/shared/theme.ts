@@ -61,12 +61,8 @@ export const themeSchema = Type.Object(
   {
     id: Type.String({ title: "ID", description: "The unique identifier of the theme" }),
     name: Type.String({ title: "Name", description: "The name of the theme" }),
-    description: Type.Optional(
-      Type.String({ title: "Description", description: "The description of the theme" }),
-    ),
-    tags: Type.Optional(
-      Type.Array(Type.String({ title: "Tag" }), { title: "Tags", description: "The tags of the theme" }),
-    ),
+    description: Type.String({ title: "Description", description: "The description of the theme" }),
+    tags: Type.Array(Type.String({ title: "Tag" }), { title: "Tags", description: "The tags of the theme" }),
     browserColorScheme: Type.String({
       title: "Browser scheme",
       description: "Color of browser-provided UI. Either 'light' or 'dark'",
@@ -143,20 +139,18 @@ export const themeSchema = Type.Object(
         }),
         heading: headingFont,
         body: bodyFont,
-        alternatives: Type.Optional(
-          Type.Array(
-            Type.Object(
-              {
-                body: bodyFont,
-                heading: headingFont,
-              },
-              { additionalProperties: false },
-            ),
+        alternatives: Type.Array(
+          Type.Object(
             {
-              title: "Alternative fonts",
-              description: "Alternative fonts that can be suggested to the user. Takes the same shape",
+              body: bodyFont,
+              heading: headingFont,
             },
+            { additionalProperties: false },
           ),
+          {
+            title: "Alternative fonts",
+            description: "Alternative fonts that can be suggested to the user. Takes the same shape",
+          },
         ),
       },
       { additionalProperties: false },
@@ -196,6 +190,7 @@ export const defaultTheme: Theme = {
     base: 16,
     heading: { type: "stack", family: "system-ui" },
     body: { type: "stack", family: "system-ui" },
+    alternatives: [],
   },
 };
 

@@ -5,6 +5,7 @@ import { defaultAttributesSchema, type AttributesSchema, resolveAttributes } fro
 import { datasourcesMap } from "./datasources/types";
 import { datarecordsMap } from "./datarecords/types";
 import { defaultTheme, themeSchema } from "./theme";
+import { sitePrompt } from "./prompt";
 
 export const siteSchema = Type.Object({
   id: Type.String(),
@@ -17,6 +18,7 @@ export const siteSchema = Type.Object({
   themes: Type.Array(themeSchema),
   theme: themeSchema,
   sitemap: sitemapSchema,
+  sitePrompt: sitePrompt,
 });
 
 /**
@@ -44,12 +46,13 @@ export type SiteAndPagesConfig = {
   >;
 };
 
-export function createEmptyConfig(): SiteAndPagesConfig {
+export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
   return {
     site: {
       id: crypto.randomUUID(),
       label: "New site",
       hostname: "example.com",
+      sitePrompt,
       theme: defaultTheme,
       themes: [],
       sitemap: [],
@@ -88,14 +91,11 @@ export function getNewSiteConfig(
   );
 
   const site = {
-    id,
-    label: options.label,
+    ...config.site,
     hostname,
-    attributes: config.site.attributes,
-    attr: { ...resolveAttributes(config.site.attributes), ...(config.site.attr ?? {}) },
-    datasources: config.site.datasources,
-    themes: [],
+    label: options.label,
     theme: config.site.themes[0],
+    attr: { ...resolveAttributes(config.site.attributes), ...(config.site.attr ?? {}) },
     sitemap: pages.map((p) => ({
       id: p.id,
       label: p.label,
