@@ -1,6 +1,6 @@
 import { createStore, useStore } from "zustand";
 import { debounce, isEqual, merge } from "lodash-es";
-import { persist, subscribeWithSelector } from "zustand/middleware";
+import { subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { enableMapSet } from "immer";
 import { createContext, useContext, useEffect } from "react";
@@ -13,19 +13,18 @@ import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
-import type { GenerationState } from "@upstart.gg/sdk/shared/context";
+import type { CallContextProps, GenerationState } from "@upstart.gg/sdk/shared/context";
 import { generateId } from "@upstart.gg/sdk/shared/bricks";
 import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
-import type { Site } from "@upstart.gg/sdk/shared/site";
+import type { Site, SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
 export { type Immer } from "immer";
 
 enableMapSet();
 
 /*
-Zustan rules:
+Zustand rules:
 
 const { someField } = useStore() // there's no optimizations here
-const { someField } = useStore(state => state) // same as `useStore()`
 const someField = useStore(state => state.someField) // optimized only for primitive values, so be careful when you use objects or arrays
 const someField = useStore(useShallow(state => state.someField)) // optimized for any value, but be careful on nested values
 
@@ -52,7 +51,7 @@ export interface EditorStateProps {
    * When local, the editor does not fetch data from the server or save data to the server
    * It is used when the user is not logged in yet or does not have an account yet
    */
-  mode: "local" | "remote";
+  mode: "anonymous" | "authenticated";
   /**
    * When debugMode is enabled, context menu are disabled so that inspecting using devtools is easier
    */
@@ -90,8 +89,6 @@ export interface EditorStateProps {
   modal?: "image-search" | "datasources";
   panelPosition: "left" | "right";
   chatVisible: boolean;
-  seenTours: string[];
-  disableTours?: boolean;
   logoLink: string;
   themesLibrary: Theme[];
   imagesSearchResults?: ImageSearchResultsType;
@@ -105,6 +102,7 @@ export interface EditorStateProps {
     pageVersionId: string;
   }>;
   onSaveSite?: (site: SiteSavePayload) => Promise<void>;
+  onDraftChange?: (draft: DraftState, siteAndPages: SiteAndPagesConfig) => Promise<void>;
 }
 
 export interface EditorState extends EditorStateProps {
@@ -113,6 +111,7 @@ export interface EditorState extends EditorStateProps {
   toggleSettings: () => void;
   toggleTextEditMode: () => void;
   toggleEditorEnabled: () => void;
+  createPage: (page: GenericPageConfig) => void;
   setTextEditMode: (mode: EditorStateProps["textEditMode"]) => void;
   setIsEditingText: (forBrickId: string | false) => void;
   setLastTextEditPosition: (position?: number) => void;
@@ -123,7 +122,6 @@ export interface EditorState extends EditorStateProps {
   setSelectedBrickId: (brickId?: Brick["id"]) => void;
   setSelectedSectionId: (sectionId?: string) => void;
   deselectBrick: (brickId?: Brick["id"]) => void;
-  markTourAsSeen: (tourId: string) => void;
   setImagesSearchResults: (images: EditorStateProps["imagesSearchResults"]) => void;
   togglePanelPosition: () => void;
   showModal: (modal: EditorStateProps["modal"]) => void;
@@ -136,12 +134,11 @@ export interface EditorState extends EditorStateProps {
 
 export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
   const DEFAULT_PROPS = {
-    previewMode: "desktop" as EditorStateProps["previewMode"],
-    seenTours: [],
-    themesLibrary: [],
-    pages: [],
-    mode: "local" as EditorStateProps["mode"],
-    panelPosition: "left" as EditorStateProps["panelPosition"],
+    previewMode: "desktop" satisfies EditorStateProps["previewMode"],
+    themesLibrary: [] as Theme[],
+    pages: [] as GenericPageConfig[],
+    mode: "anonymous" satisfies EditorStateProps["mode"],
+    panelPosition: "left" satisfies EditorStateProps["panelPosition"],
     logoLink: "/dashboard",
     zoom: 1,
     chatVisible: true,
@@ -188,178 +185,153 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
     onPublish: () => {
       console.warn("onPublish is not implemented");
     },
+    onDraftChange: async () => {
+      console.warn("onDraftChange is not implemented");
+    },
     debugMode: false,
-  };
+  } as const;
 
   return createStore<EditorState>()(
     subscribeWithSelector(
       temporal(
-        persist(
-          immer((set, _get) => ({
-            ...DEFAULT_PROPS,
-            ...initProps,
-            toggleEditorEnabled: () =>
-              set((state) => {
-                state.disabled = !state.disabled;
-              }),
-            toggleChat: () =>
-              set((state) => {
-                state.chatVisible = !state.chatVisible;
-                if (state.chatVisible) {
-                  state.panel = undefined;
-                  state.panelPosition = "right";
-                }
-              }),
-            markTourAsSeen: (tourId) =>
-              set((state) => {
-                state.seenTours = [...state.seenTours, tourId];
-              }),
+        immer((set, _get) => ({
+          ...DEFAULT_PROPS,
+          ...initProps,
+          toggleEditorEnabled: () =>
+            set((state) => {
+              state.disabled = !state.disabled;
+            }),
+          toggleChat: () =>
+            set((state) => {
+              state.chatVisible = !state.chatVisible;
+              if (state.chatVisible) {
+                state.panel = undefined;
+                state.panelPosition = "right";
+              }
+            }),
 
-            setImagesSearchResults: (images) =>
-              set((state) => {
-                state.imagesSearchResults = images;
-              }),
+          createPage: (page) =>
+            set((state) => {
+              state.pages.push(page);
+            }),
 
-            setLastTextEditPosition: (position) =>
-              set((state) => {
-                state.lastTextEditPosition = position;
-              }),
+          setImagesSearchResults: (images) =>
+            set((state) => {
+              state.imagesSearchResults = images;
+            }),
 
-            toggleTextEditMode: () =>
-              set((state) => {
-                state.textEditMode =
-                  !state.textEditMode || state.textEditMode === "default" ? "large" : "default";
-              }),
+          setLastTextEditPosition: (position) =>
+            set((state) => {
+              state.lastTextEditPosition = position;
+            }),
 
-            setTextEditMode: (mode) =>
-              set((state) => {
-                state.textEditMode = mode;
-              }),
+          toggleTextEditMode: () =>
+            set((state) => {
+              state.textEditMode =
+                !state.textEditMode || state.textEditMode === "default" ? "large" : "default";
+            }),
 
-            setPreviewMode: (mode) =>
-              set((state) => {
-                state.previewMode = mode;
-              }),
+          setTextEditMode: (mode) =>
+            set((state) => {
+              state.textEditMode = mode;
+            }),
 
-            setSettingsVisible: (visible) =>
-              set((state) => {
-                state.settingsVisible = visible;
-              }),
+          setPreviewMode: (mode) =>
+            set((state) => {
+              state.previewMode = mode;
+            }),
 
-            toggleSettings: () =>
-              set((state) => {
-                state.settingsVisible = !state.settingsVisible;
-              }),
+          setSettingsVisible: (visible) =>
+            set((state) => {
+              state.settingsVisible = visible;
+            }),
 
-            setIsEditingText: (forBrickId: string | false) =>
-              set((state) => {
-                state.isEditingTextForBrickId = forBrickId || undefined;
-              }),
+          toggleSettings: () =>
+            set((state) => {
+              state.settingsVisible = !state.settingsVisible;
+            }),
 
-            setPanel: (panel) =>
-              set((state) => {
-                state.panel = panel;
-              }),
+          setIsEditingText: (forBrickId: string | false) =>
+            set((state) => {
+              state.isEditingTextForBrickId = forBrickId || undefined;
+            }),
 
-            togglePanel: (panel) =>
-              set((state) => {
-                state.panel = panel && state.panel === panel ? undefined : panel;
-              }),
+          setPanel: (panel) =>
+            set((state) => {
+              state.panel = panel;
+            }),
 
-            hidePanel: (panel) =>
-              set((state) => {
-                if (!panel || state.panel === panel) {
-                  state.panel = undefined;
-                }
-              }),
+          togglePanel: (panel) =>
+            set((state) => {
+              state.panel = panel && state.panel === panel ? undefined : panel;
+            }),
 
-            zoomIn: () =>
-              set((state) => {
-                state.zoom = Math.min(state.zoom + 0.1, 2);
-              }),
+          hidePanel: (panel) =>
+            set((state) => {
+              if (!panel || state.panel === panel) {
+                state.panel = undefined;
+              }
+            }),
 
-            zoomOut: () =>
-              set((state) => {
-                state.zoom = Math.max(state.zoom - 0.1, 0.5);
-              }),
+          zoomIn: () =>
+            set((state) => {
+              state.zoom = Math.min(state.zoom + 0.1, 2);
+            }),
 
-            resetZoom: () =>
-              set((state) => {
-                state.zoom = 1;
-              }),
+          zoomOut: () =>
+            set((state) => {
+              state.zoom = Math.max(state.zoom - 0.1, 0.5);
+            }),
 
-            setSelectedGroup: (group) =>
-              set((state) => {
-                state.selectedGroup = group;
-              }),
+          resetZoom: () =>
+            set((state) => {
+              state.zoom = 1;
+            }),
 
-            setSelectedBrickId: (brickId) =>
-              set((state) => {
-                state.selectedBrickId = brickId;
-                if (brickId) {
-                  state.selectedSectionId = undefined;
-                }
-              }),
+          setSelectedGroup: (group) =>
+            set((state) => {
+              state.selectedGroup = group;
+            }),
 
-            setSelectedSectionId: (sectionId) =>
-              set((state) => {
-                state.selectedSectionId = sectionId;
-                if (sectionId) {
-                  state.selectedBrickId = undefined;
-                  state.selectedGroup = undefined;
-                }
-              }),
+          setSelectedBrickId: (brickId) =>
+            set((state) => {
+              state.selectedBrickId = brickId;
+              if (brickId) {
+                state.selectedSectionId = undefined;
+              }
+            }),
 
-            deselectBrick: (brickId) =>
-              set((state) => {
-                if (state.selectedBrickId && (!brickId || state.selectedBrickId === brickId)) {
-                  state.selectedBrickId = undefined;
-                }
-              }),
+          setSelectedSectionId: (sectionId) =>
+            set((state) => {
+              state.selectedSectionId = sectionId;
+              if (sectionId) {
+                state.selectedBrickId = undefined;
+                state.selectedGroup = undefined;
+              }
+            }),
 
-            togglePanelPosition: () =>
-              set((state) => {
-                state.panelPosition = state.panelPosition === "left" ? "right" : "left";
-              }),
+          deselectBrick: (brickId) =>
+            set((state) => {
+              if (state.selectedBrickId && (!brickId || state.selectedBrickId === brickId)) {
+                state.selectedBrickId = undefined;
+              }
+            }),
 
-            showModal: (modal) =>
-              set((state) => {
-                state.modal = modal;
-              }),
+          togglePanelPosition: () =>
+            set((state) => {
+              state.panelPosition = state.panelPosition === "left" ? "right" : "left";
+            }),
 
-            hideModal: () =>
-              set((state) => {
-                state.modal = undefined;
-              }),
-          })),
-          {
-            name: `editor-state`,
-            skipHydration: initProps.mode === "remote",
-            partialize: (state) =>
-              Object.fromEntries(
-                Object.entries(state).filter(
-                  ([key]) =>
-                    ![
-                      "mode",
-                      "imagesSearchResults",
-                      "selectedBrickId",
-                      "selectedSectionId",
-                      "selectedGroup",
-                      "genFlowDone",
-                      "panel",
-                      "sitePrompt",
-                      "isEditingTextForBrickId",
-                      "textEditMode",
-                      "onShowLogin",
-                      "disableTours",
-                      "logoLink",
-                      "debugMode",
-                      "disabled",
-                    ].includes(key),
-                ),
-              ),
-          },
-        ),
+          showModal: (modal) =>
+            set((state) => {
+              state.modal = modal;
+            }),
+
+          hideModal: () =>
+            set((state) => {
+              state.modal = undefined;
+            }),
+        })),
         // limit undo history to 100
         { limit: 100, equality: (pastState, currentState) => isEqual(pastState, currentState) },
       ),
@@ -405,12 +377,6 @@ export interface DraftStateProps {
   dirty?: boolean;
   lastLoaded?: Date;
   brickMap: Map<string, { brick: Brick; sectionId: string; parentId: string | null }>;
-
-  /**
-   * When local, the editor does not fetch data from the server or save data to the server
-   * It is used when the user is not logged in yet or does not have an account yet
-   */
-  mode: "local" | "remote";
 }
 
 export interface DraftState extends DraftStateProps {
@@ -499,626 +465,595 @@ export const createDraftStore = (
   return createStore<DraftState>()(
     subscribeWithSelector(
       temporal(
-        persist(
-          immer((set, _get) => ({
-            ...DEFAULT_PROPS,
-            ...initProps,
+        immer((set, _get) => ({
+          ...DEFAULT_PROPS,
+          ...initProps,
 
-            isFirstSection: (sectionId) => {
-              const state = _get();
-              return state.sections.find((s) => s.order === 0)?.id === sectionId;
-            },
+          isFirstSection: (sectionId) => {
+            const state = _get();
+            return state.sections.find((s) => s.order === 0)?.id === sectionId;
+          },
 
-            setSections: (sections) =>
-              set((state) => {
-                state.sections = sections;
-                // Rebuild the brickMap based on the new sections
-                state.brickMap = buildBrickMap(sections);
-              }),
+          setSections: (sections) =>
+            set((state) => {
+              state.sections = sections;
+              // Rebuild the brickMap based on the new sections
+              state.brickMap = buildBrickMap(sections);
+            }),
 
-            pickTheme: (themeId) =>
-              set((state) => {
-                const theme = state.themes.find((t) => t.id === themeId);
-                if (!theme) {
-                  console.error("Cannot pick theme %s, it does not exist", themeId);
-                  return;
-                }
-                state.theme = theme;
-              }),
+          pickTheme: (themeId) =>
+            set((state) => {
+              const theme = state.themes.find((t) => t.id === themeId);
+              if (!theme) {
+                console.error("Cannot pick theme %s, it does not exist", themeId);
+                return;
+              }
+              state.theme = theme;
+            }),
 
-            setThemes: (themes) =>
-              set((state) => {
-                state.themes = themes;
-              }),
+          setThemes: (themes) =>
+            set((state) => {
+              state.themes = themes;
+            }),
 
-            setSitemap: (sitemap) =>
-              set((state) => {
-                state.sitemap = sitemap;
-              }),
+          setSitemap: (sitemap) =>
+            set((state) => {
+              state.sitemap = sitemap;
+            }),
 
-            getPageDataForDuplication: () => {
-              const state = _get();
-              const pageCount = state.sitemap.length + 1;
-              console.log("state.sitemap", state.sitemap);
-              const newPage = {
-                id: `page-${generateId()}`,
-                label: `${state.label} (page ${pageCount})`,
-                path: `${state.path}-${pageCount}`,
-                sections: state.sections,
-                attr: state.attr,
-                attributes: state.attributes,
-                datasources: state.datasources,
-                datarecords: state.datarecords,
+          getPageDataForDuplication: () => {
+            const state = _get();
+            const pageCount = state.sitemap.length + 1;
+            console.log("state.sitemap", state.sitemap);
+            const newPage = {
+              id: `page-${generateId()}`,
+              label: `${state.label} (page ${pageCount})`,
+              path: `${state.path}-${pageCount}`,
+              sections: state.sections,
+              attr: state.attr,
+              attributes: state.attributes,
+              datasources: state.datasources,
+              datarecords: state.datarecords,
+            };
+            return newPage;
+          },
+
+          isLastSection: (sectionId) => {
+            const state = _get();
+            return state.sections.find((s) => s.order === state.sections.length - 1)?.id === sectionId;
+          },
+
+          addSection: (section) =>
+            set((state) => {
+              state.sections.push(section);
+            }),
+
+          updateSection: (id, sectionData) =>
+            set((state) => {
+              const sectionIndex = state.sections.findIndex((s) => s.id === id);
+              if (sectionIndex !== -1) {
+                state.sections[sectionIndex] = {
+                  ...state.sections[sectionIndex],
+                  ...sectionData,
+                };
+              }
+            }),
+
+          duplicateSection: (id) =>
+            set((state) => {
+              const section = state.sections.find((s) => s.id === id);
+              if (!section) {
+                console.error("Cannot duplicate section %s, it does not exist", id);
+                return;
+              }
+              const newSection = {
+                ...section,
+                id: `section-${generateId()}`,
+                order: state.sections.length,
+                label: `${section.label} (copy)`,
               };
-              return newPage;
-            },
+              state.sections.push(newSection);
+            }),
 
-            isLastSection: (sectionId) => {
-              const state = _get();
-              return state.sections.find((s) => s.order === state.sections.length - 1)?.id === sectionId;
-            },
-
-            addSection: (section) =>
-              set((state) => {
-                state.sections.push(section);
-              }),
-
-            updateSection: (id, sectionData) =>
-              set((state) => {
-                const sectionIndex = state.sections.findIndex((s) => s.id === id);
-                if (sectionIndex !== -1) {
-                  state.sections[sectionIndex] = {
-                    ...state.sections[sectionIndex],
-                    ...sectionData,
-                  };
+          deleteSection: (id) =>
+            set((state) => {
+              const section = state.sections.find((s) => s.id === id);
+              if (section) {
+                return null;
+              }
+              // delete all bricks in this section in the brickMap reference
+              state.brickMap.forEach((m) => {
+                if (m.sectionId === id) {
+                  state.brickMap.delete(m.brick.id);
                 }
-              }),
+              });
+              // Then remove the section
+              state.sections = state.sections.filter((s) => s.id !== id);
+            }),
 
-            duplicateSection: (id) =>
-              set((state) => {
-                const section = state.sections.find((s) => s.id === id);
-                if (!section) {
-                  console.error("Cannot duplicate section %s, it does not exist", id);
-                  return;
-                }
-                const newSection = {
-                  ...section,
-                  id: `section-${generateId()}`,
-                  order: state.sections.length,
-                  label: `${section.label} (copy)`,
-                };
-                state.sections.push(newSection);
-              }),
+          getSection: (id) => {
+            return _get().sections.find((s) => s.id === id);
+          },
 
-            deleteSection: (id) =>
-              set((state) => {
-                const section = state.sections.find((s) => s.id === id);
-                if (section) {
-                  return null;
-                }
-                // delete all bricks in this section in the brickMap reference
-                state.brickMap.forEach((m) => {
-                  if (m.sectionId === id) {
-                    state.brickMap.delete(m.brick.id);
-                  }
-                });
-                // Then remove the section
-                state.sections = state.sections.filter((s) => s.id !== id);
-              }),
+          moveSectionUp: (sectionId) =>
+            set((state) => {
+              // current
+              const section = state.sections.find((s) => s.id === sectionId);
+              const sectionIndex = state.sections.findIndex((s) => s.id === sectionId);
+              invariant(section, "Section not found");
+              // previous
+              const previous = state.sections.find((s) => s.order === section.order - 1);
+              const previousIndex = state.sections.findIndex((s) => s.order === section.order - 1);
+              invariant(previous, "Previous section not found");
+              // swap
+              const temp = section.order;
+              section.order = previous.order;
+              previous.order = temp;
 
-            getSection: (id) => {
-              return _get().sections.find((s) => s.id === id);
-            },
+              state.sections[sectionIndex] = section;
+              state.sections[previousIndex] = previous;
+            }),
 
-            moveSectionUp: (sectionId) =>
-              set((state) => {
-                // current
-                const section = state.sections.find((s) => s.id === sectionId);
-                const sectionIndex = state.sections.findIndex((s) => s.id === sectionId);
-                invariant(section, "Section not found");
-                // previous
-                const previous = state.sections.find((s) => s.order === section.order - 1);
-                const previousIndex = state.sections.findIndex((s) => s.order === section.order - 1);
-                invariant(previous, "Previous section not found");
-                // swap
-                const temp = section.order;
-                section.order = previous.order;
-                previous.order = temp;
+          moveSectionDown: (sectionId) =>
+            set((state) => {
+              // current
+              const section = state.sections.find((s) => s.id === sectionId);
+              const sectionIndex = state.sections.findIndex((s) => s.id === sectionId);
+              invariant(section, "Section not found");
+              // next
+              const next = state.sections.find((s) => s.order === section.order + 1);
+              const nextIndex = state.sections.findIndex((s) => s.order === section.order + 1);
+              invariant(next, "Next section not found");
 
-                state.sections[sectionIndex] = section;
-                state.sections[previousIndex] = previous;
-              }),
+              // swap
+              const currentOrder = section.order;
+              const nextOrder = next.order;
 
-            moveSectionDown: (sectionId) =>
-              set((state) => {
-                // current
-                const section = state.sections.find((s) => s.id === sectionId);
-                const sectionIndex = state.sections.findIndex((s) => s.id === sectionId);
-                invariant(section, "Section not found");
-                // next
-                const next = state.sections.find((s) => s.order === section.order + 1);
-                const nextIndex = state.sections.findIndex((s) => s.order === section.order + 1);
-                invariant(next, "Next section not found");
+              state.sections[sectionIndex].order = nextOrder;
+              state.sections[nextIndex].order = currentOrder;
+            }),
 
-                // swap
-                const currentOrder = section.order;
-                const nextOrder = next.order;
+          reorderSections: (orderedIds) =>
+            set((state) => {
+              // Create a new array of sections in the specified order
+              const newSections: Section[] = [];
 
-                state.sections[sectionIndex].order = nextOrder;
-                state.sections[nextIndex].order = currentOrder;
-              }),
-
-            reorderSections: (orderedIds) =>
-              set((state) => {
-                // Create a new array of sections in the specified order
-                const newSections: Section[] = [];
-
-                // Add sections in the order specified by orderedIds
-                orderedIds.forEach((id) => {
-                  const section = state.sections.find((s) => s.id === id);
-                  if (section) {
-                    newSections.push(section);
-                  }
-                });
-
-                // Add any sections not included in orderedIds at the end
-                state.sections.forEach((section) => {
-                  if (!orderedIds.includes(section.id)) {
-                    newSections.push(section);
-                  }
-                });
-
-                // Replace the sections array
-                state.sections = newSections;
-              }),
-
-            setLastLoaded: () =>
-              set((state) => {
-                state.lastLoaded = new Date();
-              }),
-
-            deleteBrick: (id) =>
-              set((state) => {
-                // 1. retrieve all possible brick children ids
-                const brickToDelete = state.brickMap.get(id);
-                if (!brickToDelete) {
-                  console.error("Cannot delete brick %s, it does not exist", id);
-                  return;
-                }
-
-                const childrenIds: string[] = [];
-                const collectChildrenIds = (brickId: string) => {
-                  const map = state.brickMap.get(brickId);
-                  if (map?.brick.props?.$children) {
-                    const children = map.brick.props.$children as Brick[];
-                    children.forEach((child) => {
-                      childrenIds.push(child.id);
-                      collectChildrenIds(child.id);
-                    });
-                  }
-                };
-
-                collectChildrenIds(id);
-
-                // 2. delete brick in state sections
-                const { sectionId, parentId } = brickToDelete;
-                const section = state.sections.find((s) => s.id === sectionId);
-
-                if (parentId) {
-                  // Brick is inside a container, remove from parent's $children
-                  const parentBrick = state.getBrick(parentId);
-                  if (parentBrick?.props.$children) {
-                    parentBrick.props.$children = (parentBrick.props.$children as Brick[]).filter(
-                      (b) => b.id !== id,
-                    );
-                  }
-                } else if (section) {
-                  // Brick is at the top level of a section
-                  section.bricks = section.bricks.filter((b) => b.id !== id);
-                }
-
-                // 3. delete brick and children ids in brickMap
-                state.brickMap.delete(id);
-                childrenIds.forEach((childId) => {
-                  state.brickMap.delete(childId);
-                });
-              }),
-
-            duplicateBrick: (id) =>
-              set((state) => {
-                const original = state.brickMap.get(id);
-                if (!original) {
-                  console.error("Cannot duplicate brick %s, it does not exist", id);
-                  return;
-                }
-
-                // Deep clone the brick to create a new copy with new IDs
-                const deepCloneBrick = (brick: Brick): Brick => {
-                  const newId = `brick-${generateId()}`;
-                  const newBrick: Brick = {
-                    ...brick,
-                    id: newId,
-                    props: { ...brick.props },
-                    mobileProps: brick.mobileProps ? { ...brick.mobileProps } : undefined,
-                  };
-
-                  // Handle children recursively if this is a container
-                  if (brick.props.$children) {
-                    const children = brick.props.$children as Brick[];
-                    newBrick.props.$children = children.map((child) => deepCloneBrick(child));
-                  }
-
-                  return newBrick;
-                };
-
-                // Create a new brick with a new ID
-                const newBrick = deepCloneBrick(original.brick);
-
-                // Update the brick map with the new brick and its children
-                const updateBrickMap = (brick: Brick, sectionId: string, parentId: string | null) => {
-                  state.brickMap.set(brick.id, {
-                    brick,
-                    sectionId,
-                    parentId,
-                  });
-
-                  if (brick.props.$children) {
-                    const children = brick.props.$children as Brick[];
-                    children.forEach((child) => updateBrickMap(child, sectionId, brick.id));
-                  }
-                };
-
-                // Add the duplicated brick to the appropriate location
-                const { sectionId, parentId } = original;
-
-                if (parentId) {
-                  // Brick is inside a container, add to parent's $children
-                  const parentBrick = state.getBrick(parentId);
-                  if (parentBrick?.props.$children) {
-                    const children = parentBrick.props.$children as Brick[];
-                    const originalIndex = children.findIndex((b) => b.id === id);
-
-                    // Insert duplicated brick after the original
-                    (parentBrick.props.$children as Brick[]).splice(originalIndex + 1, 0, newBrick);
-                  }
-                } else {
-                  // Brick is at the top level of a section
-                  const section = state.sections.find((s) => s.id === sectionId);
-                  if (section) {
-                    const originalIndex = section.bricks.findIndex((b) => b.id === id);
-                    section.bricks.splice(originalIndex + 1, 0, newBrick);
-                  }
-                }
-
-                // Update the brickMap with the new brick and all its children
-                updateBrickMap(newBrick, sectionId, parentId);
-              }),
-
-            updateBrick: (id, brick) =>
-              set((state) => {
-                const original = getBrick(id, state);
-                if (original) {
-                  Object.assign(original, brick);
-                }
-              }),
-
-            updateBrickProps: (id, props, isMobileProps) =>
-              set((state) => {
-                const brick = getBrick(id, state);
-                if (brick) {
-                  if (isMobileProps) {
-                    brick.mobileProps = mergeIgnoringArrays({}, brick.mobileProps, props, {
-                      lastTouched: Date.now(),
-                    });
-                  } else {
-                    brick.props = mergeIgnoringArrays({}, brick.props, props, { lastTouched: Date.now() });
-                  }
-                  for (const section of state.sections) {
-                    for (const b of section.bricks) {
-                      if (b.id === id) {
-                        console.log("found brick to UPDATE!", brick.props);
-                        b.props = brick.props;
-                        b.mobileProps = brick.mobileProps;
-                        return;
-                      }
-                    }
-                  }
-                }
-              }),
-
-            updateSectionProps: (id, props, isMobileProps) =>
-              set((state) => {
+              // Add sections in the order specified by orderedIds
+              orderedIds.forEach((id) => {
                 const section = state.sections.find((s) => s.id === id);
                 if (section) {
-                  if (isMobileProps) {
-                    section.mobileProps = mergeIgnoringArrays({}, section.mobileProps, props, {
-                      lastTouched: Date.now(),
-                    });
-                  } else {
-                    // @ts-ignore
-                    section.props = mergeIgnoringArrays({}, section.props, props, {
-                      lastTouched: Date.now(),
-                    });
-                  }
+                  newSections.push(section);
                 }
-              }),
+              });
 
-            /**
-             * Move abrick inside its container.
-             * If the brick does not belong to a container, does nothing
-             */
-            moveBrickWithin: (id, to) =>
-              set((state) => {
-                const parentBrick = state.getParentBrick(id);
-                if (!parentBrick || !parentBrick.props.$children) {
-                  console.error("Cannot move brick %s, it does not have a parent container", id);
-                  return;
+              // Add any sections not included in orderedIds at the end
+              state.sections.forEach((section) => {
+                if (!orderedIds.includes(section.id)) {
+                  newSections.push(section);
                 }
+              });
 
-                const children = parentBrick.props.$children as Brick[];
-                const currentIndex = children.findIndex((b) => b.id === id);
+              // Replace the sections array
+              state.sections = newSections;
+            }),
 
-                if (currentIndex === -1) {
-                  console.error("Cannot move brick %s, it is not found in its parent's children", id);
-                  return;
-                }
+          setLastLoaded: () =>
+            set((state) => {
+              state.lastLoaded = new Date();
+            }),
 
-                // Calculate the new index based on the direction
-                const newIndex =
-                  to === "left"
-                    ? Math.max(0, currentIndex - 1)
-                    : Math.min(children.length - 1, currentIndex + 1);
+          deleteBrick: (id) =>
+            set((state) => {
+              // 1. retrieve all possible brick children ids
+              const brickToDelete = state.brickMap.get(id);
+              if (!brickToDelete) {
+                console.error("Cannot delete brick %s, it does not exist", id);
+                return;
+              }
 
-                // Don't do anything if we're already at the boundary
-                if (newIndex === currentIndex) {
-                  return;
-                }
-
-                // Remove from current position and insert at new position
-                const [brickToMove] = children.splice(currentIndex, 1);
-                children.splice(newIndex, 0, brickToMove);
-              }),
-
-            moveBrickToParent: (id, parentId) =>
-              set((state) => {
-                const brick = state.getBrick(id);
-                const parent = state.getBrick(parentId);
-                const brickMapping = state.brickMap.get(id);
-                if (!brick || !parent || !brickMapping) {
-                  console.error("Cannot move brick %s to new parent, brick or new parent is null", id);
-                  return;
-                }
-                if (!("$children" in parent.props)) {
-                  console.error("Cannot move brick %s, parent brick %s is not a container", id, parentId);
-                  return;
-                }
-                const { sectionId, parentId: currentParentId } = brickMapping;
-
-                // 1. Remove brick from its current parent
-                if (currentParentId) {
-                  // Brick is currently in a container
-                  const currentParent = state.getBrick(currentParentId);
-                  if (currentParent?.props.$children) {
-                    // Filter out the brick from current parent's children
-                    currentParent.props.$children = (currentParent.props.$children as Brick[]).filter(
-                      (child) => child.id !== id,
-                    );
-                  }
-                } else {
-                  // Brick is currently at the top level of a section
-                  const section = state.sections.find((s) => s.id === sectionId);
-                  if (section) {
-                    section.bricks = section.bricks.filter((b) => b.id !== id);
-                  }
-                }
-
-                // 2. Add brick to new parent's children
-                if (!parent.props.$children) {
-                  parent.props.$children = [];
-                }
-                (parent.props.$children as Brick[]).push(brick);
-
-                // 3. Update the brickMap reference
-                const targetMapping = state.brickMap.get(parentId);
-                if (targetMapping) {
-                  // Update the mapping for this brick
-                  state.brickMap.set(id, {
-                    brick,
-                    sectionId: targetMapping.sectionId,
-                    parentId,
+              const childrenIds: string[] = [];
+              const collectChildrenIds = (brickId: string) => {
+                const map = state.brickMap.get(brickId);
+                if (map?.brick.props?.$children) {
+                  const children = map.brick.props.$children as Brick[];
+                  children.forEach((child) => {
+                    childrenIds.push(child.id);
+                    collectChildrenIds(child.id);
                   });
-
-                  // Also update mappings for all children recursively
-                  const updateChildMappings = (brickId: string, newSectionId: string) => {
-                    const mapping = state.brickMap.get(brickId);
-                    if (mapping?.brick.props?.$children) {
-                      const children = mapping.brick.props.$children as Brick[];
-                      children.forEach((child) => {
-                        state.brickMap.set(child.id, {
-                          brick: child,
-                          sectionId: newSectionId,
-                          parentId: brickId,
-                        });
-                        updateChildMappings(child.id, newSectionId);
-                      });
-                    }
-                  };
-
-                  updateChildMappings(id, targetMapping.sectionId);
                 }
-              }),
+              };
 
-            getBrick: (id) => {
-              return _get().brickMap.get(id)?.brick;
-            },
+              collectChildrenIds(id);
 
-            getParentBrick: (id) => {
-              const map = _get().brickMap;
-              const { parentId } = map.get(id) ?? {};
+              // 2. delete brick in state sections
+              const { sectionId, parentId } = brickToDelete;
+              const section = state.sections.find((s) => s.id === sectionId);
+
               if (parentId) {
-                return map.get(parentId)?.brick;
+                // Brick is inside a container, remove from parent's $children
+                const parentBrick = state.getBrick(parentId);
+                if (parentBrick?.props.$children) {
+                  parentBrick.props.$children = (parentBrick.props.$children as Brick[]).filter(
+                    (b) => b.id !== id,
+                  );
+                }
+              } else if (section) {
+                // Brick is at the top level of a section
+                section.bricks = section.bricks.filter((b) => b.id !== id);
               }
-            },
 
-            getPositionWithinParent: (brickId) => {
-              const parent = _get().getParentBrick(brickId);
-              if (parent && "$children" in parent.props) {
-                return (parent.props.$children as Brick[]).findIndex((b: Brick) => b.id === brickId);
+              // 3. delete brick and children ids in brickMap
+              state.brickMap.delete(id);
+              childrenIds.forEach((childId) => {
+                state.brickMap.delete(childId);
+              });
+            }),
+
+          duplicateBrick: (id) =>
+            set((state) => {
+              const original = state.brickMap.get(id);
+              if (!original) {
+                console.error("Cannot duplicate brick %s, it does not exist", id);
+                return;
               }
-            },
 
-            canMoveToWithinParent: (brickId, to) => {
-              const parent = _get().getParentBrick(brickId);
-              if (parent && "$children" in parent.props) {
-                const children = parent.props.$children as Brick[];
-                const index = children.findIndex((b: Brick) => b.id === brickId);
-                return to === "left" ? index > 0 : index < children.length - 1;
-              }
-              return false;
-            },
+              // Deep clone the brick to create a new copy with new IDs
+              const deepCloneBrick = (brick: Brick): Brick => {
+                const newId = `brick-${generateId()}`;
+                const newBrick: Brick = {
+                  ...brick,
+                  id: newId,
+                  props: { ...brick.props },
+                  mobileProps: brick.mobileProps ? { ...brick.mobileProps } : undefined,
+                };
 
-            setPreviewTheme: (theme) =>
-              set((state) => {
-                state.previewTheme = theme;
-              }),
-
-            validatePreviewTheme: (accept) =>
-              set((state) => {
-                if (state.previewTheme && accept) {
-                  state.theme = state.previewTheme;
-                }
-                state.previewTheme = undefined;
-              }),
-
-            cancelPreviewTheme: () =>
-              set((state) => {
-                state.previewTheme = undefined;
-              }),
-
-            setTheme: (theme) =>
-              set((state) => {
-                state.theme = theme;
-              }),
-
-            toggleBrickVisibility: (id, breakpoint) =>
-              set((state) => {
-                const brick = getBrick(id, state);
-                if (brick) {
-                  brick.props.hidden ??= { desktop: false, mobile: false };
-                  brick.props.hidden[breakpoint] = !brick.props.hidden?.[breakpoint];
-                }
-              }),
-
-            addBrick: (brick, sectionId, parentContainerId) =>
-              set((state) => {
-                // Find the section to add the brick to
-                const section = state.sections.find((s) => s.id === sectionId);
-                if (!section) {
-                  console.error("Cannot add brick, section %s does not exist", sectionId);
-                  return;
+                // Handle children recursively if this is a container
+                if (brick.props.$children) {
+                  const children = brick.props.$children as Brick[];
+                  newBrick.props.$children = children.map((child) => deepCloneBrick(child));
                 }
 
-                // Check if this brick is being added to a container
-                if (parentContainerId) {
-                  const parentBrick = state.getBrick(parentContainerId);
-                  if (!parentBrick) {
-                    console.error("Cannot add brick, parent container %s does not exist", parentContainerId);
-                    return;
-                  }
+                return newBrick;
+              };
 
-                  if (!parentBrick.props.$children) {
-                    parentBrick.props.$children = [];
-                  }
+              // Create a new brick with a new ID
+              const newBrick = deepCloneBrick(original.brick);
 
-                  // Add the brick to the parent container's children
-                  (parentBrick.props.$children as Brick[]).push(brick);
-                } else {
-                  // Add the brick directly to the section
-                  section.bricks.push(brick);
-                }
-
-                // Add the brick to the brick map
+              // Update the brick map with the new brick and its children
+              const updateBrickMap = (brick: Brick, sectionId: string, parentId: string | null) => {
                 state.brickMap.set(brick.id, {
                   brick,
                   sectionId,
-                  parentId: parentContainerId,
+                  parentId,
                 });
 
-                // If this is a container brick with children, recursively add those to the brick map
-                if (brick.props?.$children) {
-                  const addChildrenToBrickMap = (children: Brick[], parentId: string) => {
+                if (brick.props.$children) {
+                  const children = brick.props.$children as Brick[];
+                  children.forEach((child) => updateBrickMap(child, sectionId, brick.id));
+                }
+              };
+
+              // Add the duplicated brick to the appropriate location
+              const { sectionId, parentId } = original;
+
+              if (parentId) {
+                // Brick is inside a container, add to parent's $children
+                const parentBrick = state.getBrick(parentId);
+                if (parentBrick?.props.$children) {
+                  const children = parentBrick.props.$children as Brick[];
+                  const originalIndex = children.findIndex((b) => b.id === id);
+
+                  // Insert duplicated brick after the original
+                  (parentBrick.props.$children as Brick[]).splice(originalIndex + 1, 0, newBrick);
+                }
+              } else {
+                // Brick is at the top level of a section
+                const section = state.sections.find((s) => s.id === sectionId);
+                if (section) {
+                  const originalIndex = section.bricks.findIndex((b) => b.id === id);
+                  section.bricks.splice(originalIndex + 1, 0, newBrick);
+                }
+              }
+
+              // Update the brickMap with the new brick and all its children
+              updateBrickMap(newBrick, sectionId, parentId);
+            }),
+
+          updateBrick: (id, brick) =>
+            set((state) => {
+              const original = getBrick(id, state);
+              if (original) {
+                Object.assign(original, brick);
+              }
+            }),
+
+          updateBrickProps: (id, props, isMobileProps) =>
+            set((state) => {
+              const brick = getBrick(id, state);
+              if (brick) {
+                if (isMobileProps) {
+                  brick.mobileProps = mergeIgnoringArrays({}, brick.mobileProps, props, {
+                    lastTouched: Date.now(),
+                  });
+                } else {
+                  brick.props = mergeIgnoringArrays({}, brick.props, props, { lastTouched: Date.now() });
+                }
+                for (const section of state.sections) {
+                  for (const b of section.bricks) {
+                    if (b.id === id) {
+                      console.log("found brick to UPDATE!", brick.props);
+                      b.props = brick.props;
+                      b.mobileProps = brick.mobileProps;
+                      return;
+                    }
+                  }
+                }
+              }
+            }),
+
+          updateSectionProps: (id, props, isMobileProps) =>
+            set((state) => {
+              const section = state.sections.find((s) => s.id === id);
+              if (section) {
+                if (isMobileProps) {
+                  section.mobileProps = mergeIgnoringArrays({}, section.mobileProps, props, {
+                    lastTouched: Date.now(),
+                  });
+                } else {
+                  // @ts-ignore
+                  section.props = mergeIgnoringArrays({}, section.props, props, {
+                    lastTouched: Date.now(),
+                  });
+                }
+              }
+            }),
+
+          /**
+           * Move abrick inside its container.
+           * If the brick does not belong to a container, does nothing
+           */
+          moveBrickWithin: (id, to) =>
+            set((state) => {
+              const parentBrick = state.getParentBrick(id);
+              if (!parentBrick || !parentBrick.props.$children) {
+                console.error("Cannot move brick %s, it does not have a parent container", id);
+                return;
+              }
+
+              const children = parentBrick.props.$children as Brick[];
+              const currentIndex = children.findIndex((b) => b.id === id);
+
+              if (currentIndex === -1) {
+                console.error("Cannot move brick %s, it is not found in its parent's children", id);
+                return;
+              }
+
+              // Calculate the new index based on the direction
+              const newIndex =
+                to === "left"
+                  ? Math.max(0, currentIndex - 1)
+                  : Math.min(children.length - 1, currentIndex + 1);
+
+              // Don't do anything if we're already at the boundary
+              if (newIndex === currentIndex) {
+                return;
+              }
+
+              // Remove from current position and insert at new position
+              const [brickToMove] = children.splice(currentIndex, 1);
+              children.splice(newIndex, 0, brickToMove);
+            }),
+
+          moveBrickToParent: (id, parentId) =>
+            set((state) => {
+              const brick = state.getBrick(id);
+              const parent = state.getBrick(parentId);
+              const brickMapping = state.brickMap.get(id);
+              if (!brick || !parent || !brickMapping) {
+                console.error("Cannot move brick %s to new parent, brick or new parent is null", id);
+                return;
+              }
+              if (!("$children" in parent.props)) {
+                console.error("Cannot move brick %s, parent brick %s is not a container", id, parentId);
+                return;
+              }
+              const { sectionId, parentId: currentParentId } = brickMapping;
+
+              // 1. Remove brick from its current parent
+              if (currentParentId) {
+                // Brick is currently in a container
+                const currentParent = state.getBrick(currentParentId);
+                if (currentParent?.props.$children) {
+                  // Filter out the brick from current parent's children
+                  currentParent.props.$children = (currentParent.props.$children as Brick[]).filter(
+                    (child) => child.id !== id,
+                  );
+                }
+              } else {
+                // Brick is currently at the top level of a section
+                const section = state.sections.find((s) => s.id === sectionId);
+                if (section) {
+                  section.bricks = section.bricks.filter((b) => b.id !== id);
+                }
+              }
+
+              // 2. Add brick to new parent's children
+              if (!parent.props.$children) {
+                parent.props.$children = [];
+              }
+              (parent.props.$children as Brick[]).push(brick);
+
+              // 3. Update the brickMap reference
+              const targetMapping = state.brickMap.get(parentId);
+              if (targetMapping) {
+                // Update the mapping for this brick
+                state.brickMap.set(id, {
+                  brick,
+                  sectionId: targetMapping.sectionId,
+                  parentId,
+                });
+
+                // Also update mappings for all children recursively
+                const updateChildMappings = (brickId: string, newSectionId: string) => {
+                  const mapping = state.brickMap.get(brickId);
+                  if (mapping?.brick.props?.$children) {
+                    const children = mapping.brick.props.$children as Brick[];
                     children.forEach((child) => {
                       state.brickMap.set(child.id, {
                         brick: child,
-                        sectionId,
-                        parentId,
+                        sectionId: newSectionId,
+                        parentId: brickId,
                       });
-
-                      if (child.props?.$children) {
-                        addChildrenToBrickMap(child.props.$children as Brick[], child.id);
-                      }
+                      updateChildMappings(child.id, newSectionId);
                     });
-                  };
+                  }
+                };
 
-                  addChildrenToBrickMap(brick.props.$children as Brick[], brick.id);
-                }
-              }),
-
-            updateAttributes: (attr) =>
-              set((state) => {
-                state.attr = { ..._get().attr, ...attr };
-              }),
-
-            setVersion: (version) =>
-              set((state) => {
-                state.version = version;
-              }),
-
-            adjustMobileLayout: () =>
-              set((state) => {
-                // state.bricks = adjustMobileLayout(state.bricks);
-              }),
-
-            setLastSaved: (date) =>
-              set((state) => {
-                state.lastSaved = date;
-              }),
-
-            setDirty: (dirty) =>
-              set((state) => {
-                state.dirty = dirty;
-              }),
-          })),
-          {
-            name: `draft-state-${initProps.id}`,
-            skipHydration: initProps.mode === "remote" || import.meta.env.DEV,
-            version: 1,
-            // Add this to force storage on initialization
-            onRehydrateStorage: () => (state) => {
-              if (state) {
-                // Rebuild the brickMap after rehydration
-                state.brickMap = buildBrickMap(state.sections);
-                console.log("Draft State has been rehydrated and brickMap rebuilt");
+                updateChildMappings(id, targetMapping.sectionId);
               }
-            },
-            partialize: (state) =>
-              Object.fromEntries(
-                Object.entries(state).filter(
-                  ([key]) =>
-                    ![
-                      "previewTheme",
-                      "themes",
-                      "theme",
-                      "attributes",
-                      "lastSaved",
-                      "sitemap",
-                      "datasources",
-                      "brickMap",
-                    ].includes(key),
-                ),
-              ),
+            }),
+
+          getBrick: (id) => {
+            return _get().brickMap.get(id)?.brick;
           },
-        ),
+
+          getParentBrick: (id) => {
+            const map = _get().brickMap;
+            const { parentId } = map.get(id) ?? {};
+            if (parentId) {
+              return map.get(parentId)?.brick;
+            }
+          },
+
+          getPositionWithinParent: (brickId) => {
+            const parent = _get().getParentBrick(brickId);
+            if (parent && "$children" in parent.props) {
+              return (parent.props.$children as Brick[]).findIndex((b: Brick) => b.id === brickId);
+            }
+          },
+
+          canMoveToWithinParent: (brickId, to) => {
+            const parent = _get().getParentBrick(brickId);
+            if (parent && "$children" in parent.props) {
+              const children = parent.props.$children as Brick[];
+              const index = children.findIndex((b: Brick) => b.id === brickId);
+              return to === "left" ? index > 0 : index < children.length - 1;
+            }
+            return false;
+          },
+
+          setPreviewTheme: (theme) =>
+            set((state) => {
+              state.previewTheme = theme;
+            }),
+
+          validatePreviewTheme: (accept) =>
+            set((state) => {
+              if (state.previewTheme && accept) {
+                state.theme = state.previewTheme;
+              }
+              state.previewTheme = undefined;
+            }),
+
+          cancelPreviewTheme: () =>
+            set((state) => {
+              state.previewTheme = undefined;
+            }),
+
+          setTheme: (theme) =>
+            set((state) => {
+              state.theme = theme;
+            }),
+
+          toggleBrickVisibility: (id, breakpoint) =>
+            set((state) => {
+              const brick = getBrick(id, state);
+              if (brick) {
+                brick.props.hidden ??= { desktop: false, mobile: false };
+                brick.props.hidden[breakpoint] = !brick.props.hidden?.[breakpoint];
+              }
+            }),
+
+          addBrick: (brick, sectionId, parentContainerId) =>
+            set((state) => {
+              // Find the section to add the brick to
+              const section = state.sections.find((s) => s.id === sectionId);
+              if (!section) {
+                console.error("Cannot add brick, section %s does not exist", sectionId);
+                return;
+              }
+
+              // Check if this brick is being added to a container
+              if (parentContainerId) {
+                const parentBrick = state.getBrick(parentContainerId);
+                if (!parentBrick) {
+                  console.error("Cannot add brick, parent container %s does not exist", parentContainerId);
+                  return;
+                }
+
+                if (!parentBrick.props.$children) {
+                  parentBrick.props.$children = [];
+                }
+
+                // Add the brick to the parent container's children
+                (parentBrick.props.$children as Brick[]).push(brick);
+              } else {
+                // Add the brick directly to the section
+                section.bricks.push(brick);
+              }
+
+              // Add the brick to the brick map
+              state.brickMap.set(brick.id, {
+                brick,
+                sectionId,
+                parentId: parentContainerId,
+              });
+
+              // If this is a container brick with children, recursively add those to the brick map
+              if (brick.props?.$children) {
+                const addChildrenToBrickMap = (children: Brick[], parentId: string) => {
+                  children.forEach((child) => {
+                    state.brickMap.set(child.id, {
+                      brick: child,
+                      sectionId,
+                      parentId,
+                    });
+
+                    if (child.props?.$children) {
+                      addChildrenToBrickMap(child.props.$children as Brick[], child.id);
+                    }
+                  });
+                };
+
+                addChildrenToBrickMap(brick.props.$children as Brick[], brick.id);
+              }
+            }),
+
+          updateAttributes: (attr) =>
+            set((state) => {
+              state.attr = { ..._get().attr, ...attr };
+            }),
+
+          setVersion: (version) =>
+            set((state) => {
+              state.version = version;
+            }),
+
+          adjustMobileLayout: () =>
+            set((state) => {
+              // state.bricks = adjustMobileLayout(state.bricks);
+            }),
+
+          setLastSaved: (date) =>
+            set((state) => {
+              state.lastSaved = date;
+            }),
+
+          setDirty: (dirty) =>
+            set((state) => {
+              state.dirty = dirty;
+            }),
+        })),
         {
           // limit undo history to 100
           limit: 100,
@@ -1277,6 +1212,16 @@ export const useEditorMode = () => {
   return useStore(ctx, (state) => state.mode);
 };
 
+export const useSiteAndPages = () => {
+  const ctx = useEditorStoreContext();
+  const pages = useStore(ctx, (state) => state.pages);
+  const site = useSite();
+  return {
+    site,
+    pages,
+  } satisfies Pick<CallContextProps, "site" | "pages">;
+};
+
 export const useThemes = () => {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => state.themes);
@@ -1312,15 +1257,6 @@ export const useZoom = () => {
 export const useChatVisible = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => !!state.chatVisible);
-};
-
-export const useTours = () => {
-  const ctx = useEditorStoreContext();
-  return useStore(ctx, (state) => ({
-    seenTours: state.seenTours,
-    disabled: state.disableTours,
-    markTourAsSeen: state.markTourAsSeen,
-  }));
 };
 
 export const useTextEditMode = () => {
@@ -1405,6 +1341,7 @@ export const useDatasourcesSchemas = () => {
 export const useEditorHelpers = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => ({
+    createPage: state.createPage,
     setPreviewMode: state.setPreviewMode,
     setSettingsVisible: state.setSettingsVisible,
     toggleSettings: state.toggleSettings,
@@ -1428,6 +1365,7 @@ export const useEditorHelpers = () => {
     onPublish: state.onPublish,
     onSavePage: state.onSavePage,
     onSaveSite: state.onSaveSite,
+    onDraftChange: state.onDraftChange,
     toggleChat: state.toggleChat,
   }));
 };
@@ -1483,22 +1421,7 @@ export const usePageInfo = () => {
   }));
 };
 
-export const useSerializedPage = () => {
-  const ctx = useDraftStoreContext();
-  return useStore(
-    ctx,
-    (state) =>
-      ({
-        id: state.id,
-        path: state.path,
-        label: state.label,
-        sections: state.sections,
-        attr: state.attr,
-        tags: state.sitemap.find((p) => p.id === state.id)?.tags ?? [],
-      }) satisfies GenericPageConfig,
-  );
-};
-export const useSerializedSite = () => {
+export const useSite = () => {
   const draft = useDraftStoreContext();
   const draftData = useStore(
     draft,

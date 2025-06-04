@@ -10,6 +10,7 @@ import { shadow } from "../props/effects";
 import { border } from "../props/border";
 import { fixedPositioned } from "../props/position";
 import { preset } from "../props/preset";
+import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({
   type: "sidebar",
@@ -23,36 +24,70 @@ export const manifest = defineBrickManifest({
   icon: VscLayoutSidebarLeftOff,
   props: defineProps({
     // preset: optional(preset()),
-    container: group({
-      title: "Main element",
-      children: {
-        backgroundColor: backgroundColor(),
-        border: optional(border()),
-        shadow: optional(shadow()),
-        fixedPositioned: optional(fixedPositioned()),
-      },
-      metadata: {
-        "ui:responsive": true,
-      },
-    }),
-    navigation: group({
-      title: "Links",
-      children: {
-        datasource: optional(datasourceRef()),
-        navItems: optional(
-          prop({
-            title: "Nav items",
-            schema: Type.Array(
-              Type.Object({
-                urlOrPageId: urlOrPageId(),
-              }),
-              { title: "Navigation items", default: [] },
-            ),
-          }),
-        ),
-      },
-    }),
+    container: optional(
+      group({
+        title: "Main element",
+        children: {
+          backgroundColor: optional(backgroundColor()),
+          border: optional(border()),
+          shadow: optional(shadow()),
+          fixedPositioned: optional(fixedPositioned()),
+        },
+        metadata: {
+          "ui:responsive": true,
+        },
+      }),
+    ),
+    navigation: optional(
+      group({
+        title: "Links",
+        children: {
+          datasource: optional(datasourceRef()),
+          navItems: optional(
+            prop({
+              title: "Nav items",
+              schema: Type.Array(
+                Type.Object({
+                  urlOrPageId: urlOrPageId(),
+                  label: Type.String({
+                    title: "Label",
+                  }),
+                }),
+                { title: "Navigation items", default: [] },
+              ),
+            }),
+          ),
+        },
+      }),
+    ),
   }),
 });
 
 export type Manifest = typeof manifest;
+
+export const examples: {
+  description: string;
+  type: string;
+  props: BrickProps<Manifest>["brick"]["props"];
+}[] = [
+  {
+    description: "Standard sidebar with navigation links base on site pages",
+    type: "sidebar",
+    props: {},
+  },
+  {
+    description: "Sidebar with specified navigation links",
+    type: "sidebar",
+    props: {
+      container: {
+        backgroundColor: "#f0f0f0",
+      },
+      navigation: {
+        navItems: [
+          { urlOrPageId: "https://google.com", label: "Google" },
+          { urlOrPageId: "https://bing.com", label: "Bing" },
+        ],
+      },
+    },
+  },
+];

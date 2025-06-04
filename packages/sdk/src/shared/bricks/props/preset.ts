@@ -1,69 +1,56 @@
-import { Type, type Static } from "@sinclair/typebox";
-import { backgroundColor } from "./background";
+import type { Static } from "@sinclair/typebox";
+import { StringEnum } from "~/shared/utils/schema";
 
 export function preset(defaultValue?: string) {
-  return Type.Union(
+  return StringEnum(
     [
-      Type.Literal("surface-1", {
-        title: "Surface 1",
-        description: "Surface elevation 1",
-      }),
-      Type.Literal("surface-2", {
-        title: "Surface 2",
-        description: "Surface elevation 2",
-      }),
-      Type.Literal("surface-3", {
-        title: "Surface 3",
-        description: "Surface elevation 3",
-      }),
-      Type.Literal("bold-primary", {
-        title: "Bold Primary",
-        description: "Bold display on primary-700 background",
-      }),
-      Type.Literal("bold-secondary", {
-        title: "Bold Secondary",
-        description: "Bold display on secondary-700 background",
-      }),
-      Type.Literal("bold-accent", {
-        title: "Bold Accent",
-        description: "Bold display on accent-700 background",
-      }),
-      Type.Literal("medium-primary", {
-        title: "Medium Primary",
-        description: "Filled display on primary-200 background",
-      }),
-      Type.Literal("medium-secondary", {
-        title: "Medium Secondary",
-        description: "Medium display on secondary-200 background",
-      }),
-      Type.Literal("medium-accent", {
-        title: "Medium Accent",
-        description: "Medium display on accent-200 background",
-      }),
-
-      Type.Literal("subtle-primary", {
-        title: "Subtle Primary",
-        description: "Subtle display on primary-100 background and 1px border",
-      }),
-      Type.Literal("subtle-secondary", {
-        title: "Subtle Secondary",
-        description: "Subtle display on secondary-100 background and 1px border",
-      }),
-      Type.Literal("subtle-accent", {
-        title: "Subtle Accent",
-        description: "Subtle display on accent-100 background and 1px border",
-      }),
-      Type.Literal("preset-none", {
-        title: "None",
-        description:
-          "No background and no border. This is useful for bricks inside a card or a container that already have a surface/background.",
-      }),
+      "surface-1",
+      "surface-2",
+      "surface-3",
+      "bold-primary",
+      "bold-secondary",
+      "bold-accent",
+      "medium-primary",
+      "medium-secondary",
+      "medium-accent",
+      "subtle-primary",
+      "subtle-secondary",
+      "subtle-accent",
+      "preset-none",
     ],
     {
       title: "Preset",
-      description: "The styles preset of the component",
-      "ui:field": "hidden",
+      description: `The styles preset of the component, used to maintain styles consistency across the application.
+  * surface-1: Surface elevation 1, light background with dark text.
+  * surface-2: Surface elevation 2, slightly darker background with dark text.
+  * surface-3: Surface elevation 3, even darker background with dark text.
+  * bold-primary: Bold display on primary-700 background.
+  * bold-secondary: Bold display on secondary-700 background.
+  * bold-accent: Bold display on accent-700 background.
+  * medium-primary: Filled display on primary-200 background.
+  * medium-secondary: Medium display on secondary-200 background.
+  * medium-accent: Medium display on accent-200 background.
+  * subtle-primary: Subtle display on primary-100 background and 1px border.
+  * subtle-secondary: Subtle display on secondary-100 background and 1px border.
+  * subtle-accent: Subtle display on accent-100 background and 1px border.
+  * preset-none: No background and no border. Useful for bricks inside a card or a container that already have a surface/background.
+`,
       default: defaultValue ?? "preset-none",
+      enumNames: [
+        "Surface 1",
+        "Surface 2",
+        "Surface 3",
+        "Bold Primary",
+        "Bold Secondary",
+        "Bold Accent",
+        "Medium Primary",
+        "Medium Secondary",
+        "Medium Accent",
+        "Subtle Primary",
+        "Subtle Secondary",
+        "Subtle Accent",
+        "None",
+      ],
     },
   );
 }

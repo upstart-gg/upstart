@@ -7,8 +7,8 @@ import { shadow } from "../props/effects";
 import { padding } from "../props/padding";
 import { RxImage } from "react-icons/rx";
 import { string } from "../props/string";
-import { str } from "ajv";
 import { Type } from "@sinclair/typebox";
+import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({
   type: "image",
@@ -47,9 +47,157 @@ export const manifest = defineBrickManifest({
       string("Image Provider", undefined, {
         "ui:field": "hidden",
         description: "Image provider. Use this to give credit to the author of the image.",
+        "ai:instructions": "The provider of the image, e.g. 'unsplash', 'pexels', etc.",
       }),
     ),
   }),
 });
 
 export type Manifest = typeof manifest;
+
+export const examples: {
+  description: string;
+  type: string;
+  props: BrickProps<Manifest>["brick"]["props"];
+}[] = [
+  {
+    description: "Hero landscape image with shadow",
+    type: "image",
+    props: {
+      image: {
+        src: "https://via.placeholder.com/800x400.png?text=Hero+Landscape",
+        alt: "Beautiful landscape view for hero section",
+      },
+      shadow: "shadow-lg",
+    },
+  },
+  {
+    description: "Team member profile photo",
+    type: "image",
+    props: {
+      image: {
+        src: "https://via.placeholder.com/300x300.png?text=Profile+Photo",
+        alt: "Team member profile photo",
+      },
+      shadow: "shadow-md",
+      border: {
+        rounding: "rounded-full",
+      },
+    },
+  },
+  {
+    description: "Product showcase image",
+    type: "image",
+    props: {
+      image: {
+        src: "https://via.placeholder.com/400x400.png?text=Product+Image",
+        alt: "Premium product showcase",
+      },
+      shadow: "shadow-sm",
+    },
+  },
+  {
+    description: "Blog article featured image",
+    type: "image",
+    props: {
+      image: {
+        src: "https://via.placeholder.com/600x300.png?text=Article+Featured",
+        alt: "Featured image for blog article",
+      },
+      author: {
+        name: "John Photographer",
+        url: "https://example.com/john",
+      },
+      provider: "unsplash",
+    },
+  },
+  {
+    description: "Gallery thumbnail with hover effect",
+    type: "image",
+    props: {
+      image: {
+        src: "https://via.placeholder.com/250x250.png?text=Gallery+Thumb",
+        alt: "Gallery thumbnail image",
+      },
+
+      shadow: "shadow-md",
+    },
+  },
+  {
+    description: "Logo image with padding",
+    type: "image",
+    props: {
+      image: {
+        src: "https://via.placeholder.com/200x80.png?text=Company+Logo",
+        alt: "Company logo",
+      },
+      padding: "p-8",
+    },
+  },
+  {
+    description: "Testimonial customer photo",
+    type: "image",
+    props: {
+      image: {
+        src: "https://via.placeholder.com/120x120.png?text=Customer",
+        alt: "Happy customer testimonial photo",
+      },
+      border: {
+        rounding: "rounded-xl",
+      },
+      shadow: "shadow-lg",
+      padding: "p-2",
+      backgroundColor: "#ffffff",
+    },
+  },
+  {
+    description: "Event banner image",
+    type: "image",
+    props: {
+      image: {
+        src: "https://via.placeholder.com/800x200.png?text=Event+Banner",
+        alt: "Annual conference event banner",
+      },
+      border: {
+        rounding: "rounded-lg",
+      },
+      shadow: "shadow-xl",
+      author: {
+        name: "Event Photographer",
+        url: "https://example.com/photographer",
+      },
+      provider: "pexels",
+    },
+  },
+  {
+    description: "Illustration with background",
+    type: "image",
+    props: {
+      image: {
+        src: "https://via.placeholder.com/150x150.png?text=Blabla+Feature",
+        alt: "Feature illustration",
+      },
+      backgroundColor: "#f0f9ff",
+      padding: "p-8",
+      border: {
+        rounding: "rounded-lg",
+      },
+      shadow: "shadow-sm",
+    },
+  },
+  {
+    description: "Image with blurHash",
+    type: "image",
+    props: {
+      image: {
+        src: "https://via.placeholder.com/300x200.png?text=Card+Image",
+        alt: "My image",
+      },
+      border: {
+        rounding: "rounded-lg",
+      },
+      shadow: "shadow-md",
+      blurHash: "L6PZfSi_.AyE_3t7t7R**0o#DgR4",
+    },
+  },
+];

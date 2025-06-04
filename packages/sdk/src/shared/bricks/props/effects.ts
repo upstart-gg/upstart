@@ -1,5 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
-import { group, prop } from "./helpers";
+import { group, optional, prop } from "./helpers";
 
 type ShadowOptions = {
   title?: string;
@@ -100,19 +100,25 @@ export function effects({ title = "Effects", defaultValue = {}, enableTextShadow
       default: defaultValue,
     },
     children: {
-      opacity: opacity({
-        title: "Opacity",
-        defaultValue: defaultValue.opacity,
-      }),
-      shadow: shadow({
-        title: "Shadow",
-        defaultValue: defaultValue.shadow,
-      }),
-      ...(enableTextShadow && {
-        textShadow: textShadow({
-          title: "Text shadow",
-          defaultValue: defaultValue.textShadow,
+      opacity: optional(
+        opacity({
+          title: "Opacity",
+          defaultValue: defaultValue.opacity,
         }),
+      ),
+      shadow: optional(
+        shadow({
+          title: "Shadow",
+          defaultValue: defaultValue.shadow,
+        }),
+      ),
+      ...(enableTextShadow && {
+        textShadow: optional(
+          textShadow({
+            title: "Text shadow",
+            defaultValue: defaultValue.textShadow,
+          }),
+        ),
       }),
     },
   });

@@ -5,6 +5,7 @@ import { string } from "../props/string";
 import { Type } from "@sinclair/typebox";
 import { backgroundColor } from "../props/background";
 import { RxDividerHorizontal } from "react-icons/rx";
+import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({
   type: "divider",
@@ -50,3 +51,82 @@ export const manifest = defineBrickManifest({
 });
 
 export type Manifest = typeof manifest;
+
+export const examples: {
+  description: string;
+  type: string;
+  props: BrickProps<Manifest>["brick"]["props"];
+}[] = [
+  {
+    description: "Basic horizontal divider",
+    type: "divider",
+    props: {
+      orientation: "horizontal",
+      color: "bg-base-300",
+      size: "100%",
+    },
+  },
+  {
+    description: "Accent colored divider for emphasis",
+    type: "divider",
+    props: {
+      orientation: "horizontal",
+      color: "bg-blue-500",
+      size: "100%",
+    },
+  },
+  {
+    description: "Short horizontal divider for content breaks",
+    type: "divider",
+    props: {
+      orientation: "horizontal",
+      color: "bg-base-300",
+      size: "50%",
+    },
+  },
+  {
+    description: "Thin vertical divider for compact layouts",
+    type: "divider",
+    props: {
+      orientation: "vertical",
+      color: "bg-gray-300",
+      size: "75%",
+    },
+  },
+  {
+    description: "Bold primary colored section divider",
+    type: "divider",
+    props: {
+      orientation: "horizontal",
+      color: "bg-primary",
+      size: "100%",
+    },
+  },
+  {
+    description: "Error colored divider for attention",
+    type: "divider",
+    props: {
+      orientation: "horizontal",
+      color: "bg-red-500",
+      size: "100%",
+    },
+  },
+  {
+    description: "Full height vertical divider for panels",
+    type: "divider",
+    props: {
+      orientation: "vertical",
+      color: "bg-base-300",
+      size: "100%",
+    },
+  },
+  {
+    description: "Secondary colored divider",
+    type: "divider",
+    props: {
+      orientation: "horizontal",
+      color: "bg-secondary",
+      size: "100%",
+    },
+  },
+];

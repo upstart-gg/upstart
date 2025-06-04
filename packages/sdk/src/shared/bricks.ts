@@ -221,13 +221,13 @@ export function processSections(sections: Section[]) {
 /**
  *  process a brick and add default props
  */
-export function processBrick(brick: Brick): Brick {
+export function processBrick<T extends Brick>(brick: T): T {
   const defProps = defaultProps[brick.type];
   const result = {
     ...brick,
     props: merge({}, defProps.props, {
       ...brick.props,
-      ...(brick.props.$children ? { $children: (brick.props.$children as Brick[]).map(processBrick) } : {}),
+      ...(brick.props.$children ? { $children: (brick.props.$children as T[]).map(processBrick) } : {}),
     }),
   };
   return result;

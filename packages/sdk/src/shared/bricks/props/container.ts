@@ -1,5 +1,6 @@
 import { type TObject, Type, type Static } from "@sinclair/typebox";
 import { getStyleProperties, getStyleValueById, group, optional, prop } from "./helpers";
+import { StringEnum } from "~/shared/utils/schema";
 
 type FlexOptions = {
   title?: string;
@@ -213,50 +214,37 @@ export function containerLayout({
       {
         ...(!options.disableGrid
           ? {
-              type: Type.Union(
-                [Type.Literal("flex", { title: "Flex" }), Type.Literal("grid", { title: "Grid" })],
-                {
-                  title: "Layout type",
-                  default: defaults?.type ?? "flex",
-                  description:
-                    "Type of the container. Flex layout arranges items in a one-dimensional line. Grid layout arranges items in a two-dimensional grid",
-                  "ui:field": "enum",
-                  "ui:responsive": true,
-                },
-              ),
+              type: StringEnum(["flex", "grid"], {
+                enumNames: ["Flex", "Grid"],
+                title: "Layout type",
+                description:
+                  "Type of the container. Flex layout arranges items in a one-dimensional line. Grid layout arranges items in a two-dimensional grid",
+                "ui:field": "enum",
+                "ui:responsive": true,
+                default: defaults?.type ?? "flex",
+              }),
             }
           : {}),
         gap: optional(
-          Type.Union(
-            [
-              Type.Literal("gap-0", { title: "None" }),
-              Type.Literal("gap-1", { title: "Small" }),
-              Type.Literal("gap-2", { title: "Medium" }),
-              Type.Literal("gap-4", { title: "Large" }),
-              Type.Literal("gap-8", { title: "XL" }),
-              Type.Literal("gap-16", { title: "2XL" }),
-            ],
-            {
-              title: "Gap",
-              description: "Space between items",
-              "ui:field": "enum",
-              "ui:placeholder": "Not specified",
-              default: defaults?.gap,
-            },
-          ),
+          StringEnum(["gap-0", "gap-1", "gap-2", "gap-4", "gap-8", "gap-16"], {
+            enumNames: ["None", "S", "M", "L", "XL", "2XL"],
+            title: "Gap",
+            description: "Space between items",
+            "ui:field": "enum",
+            "ui:placeholder": "Not specified",
+            default: defaults?.gap,
+          }),
         ),
-        direction: Type.Optional(
-          Type.Union(
-            [Type.Literal("flex-row", { title: "Row" }), Type.Literal("flex-col", { title: "Column" })],
-            {
-              title: "Direction",
-              description: "The direction of the container. Only applies to flex layout",
-              default: defaults?.direction ?? "flex-row",
-              metadata: {
-                filter: isFlexLayoutFilter,
-              },
+        direction: optional(
+          StringEnum(["flex-row", "flex-col"], {
+            enumNames: ["Row", "Column"],
+            title: "Direction",
+            description: "The direction of the container. Only applies to flex layout",
+            default: defaults?.direction ?? "flex-row",
+            metadata: {
+              filter: isFlexLayoutFilter,
             },
-          ),
+          }),
         ),
         columns: optional(
           Type.Number({
@@ -271,25 +259,29 @@ export function containerLayout({
             },
           }),
         ),
-        wrap: Type.Boolean({
-          title: "Wrap",
-          description: "Wrap items.",
-          "ai:instructions": "Only applies to flex layout",
-          default: defaults?.wrap ?? true,
-          metadata: {
-            filter: isFlexLayoutFilter,
-          },
-        }),
-        fillSpace: Type.Boolean({
-          title: "Fill space",
-          description: "Makes items of the container fill the available space.",
-          "ai:instructions": "Only applies to flex layout",
-          default: defaults?.fillSpace ?? false,
-          metadata: {
-            filter: isFlexLayoutFilter,
-          },
-        }),
-        justifyContent: Type.Optional(
+        wrap: optional(
+          Type.Boolean({
+            title: "Wrap",
+            description: "Wrap items.",
+            "ai:instructions": "Only applies to flex layout",
+            default: defaults?.wrap ?? true,
+            metadata: {
+              filter: isFlexLayoutFilter,
+            },
+          }),
+        ),
+        fillSpace: optional(
+          Type.Boolean({
+            title: "Fill space",
+            description: "Makes items of the container fill the available space.",
+            "ai:instructions": "Only applies to flex layout",
+            default: defaults?.fillSpace ?? false,
+            metadata: {
+              filter: isFlexLayoutFilter,
+            },
+          }),
+        ),
+        justifyContent: optional(
           Type.Union(
             [
               Type.Literal("justify-start", { title: "Start" }),
@@ -311,7 +303,7 @@ export function containerLayout({
             },
           ),
         ),
-        alignItems: Type.Optional(
+        alignItems: optional(
           Type.Union(
             [
               Type.Literal("items-start", { title: "Start" }),

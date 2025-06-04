@@ -8,7 +8,7 @@ import { backgroundColor } from "../props/background";
 import { border } from "../props/border";
 import { padding } from "../props/padding";
 import { shadow } from "../props/effects";
-import { preset } from "../props/preset";
+import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({
   type: "map",
@@ -37,3 +37,39 @@ export const manifest = defineBrickManifest({
 });
 
 export type Manifest = typeof manifest;
+
+export const examples: {
+  description: string;
+  type: string;
+  props: BrickProps<Manifest>["brick"]["props"];
+}[] = [
+  {
+    description: "Map showing a specific location",
+    type: "map",
+    props: {
+      location: {
+        lat: 37.7749,
+        lng: -122.4194,
+        tooltip: "San Francisco, CA",
+      },
+    },
+  },
+  {
+    description: "Map with custom styles",
+    type: "map",
+    props: {
+      location: {
+        lat: 40.7128,
+        lng: -74.006,
+        tooltip: "New York, NY",
+      },
+      backgroundColor: "bg-gray-100",
+      border: {
+        color: "border-gray-300",
+        width: "border",
+      },
+      padding: "p-16",
+      shadow: "shadow-lg",
+    },
+  },
+];

@@ -1,5 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
-import { prop } from "./helpers";
+import { optional, prop } from "./helpers";
 
 type AlignBasicOptions = {
   title?: string;
@@ -15,25 +15,29 @@ export function basicAlign(opts: AlignBasicOptions = {}) {
     title,
     schema: Type.Object(
       {
-        horizontal: Type.Union(
-          [
-            Type.Literal("justify-start", { title: "Left" }),
-            Type.Literal("justify-center", { title: "Center" }),
-            Type.Literal("justify-end", { title: "Right" }),
-          ],
-          {
-            title: "Horizontal",
-          },
+        horizontal: optional(
+          Type.Union(
+            [
+              Type.Literal("justify-start", { title: "Left" }),
+              Type.Literal("justify-center", { title: "Center" }),
+              Type.Literal("justify-end", { title: "Right" }),
+            ],
+            {
+              title: "Horizontal",
+            },
+          ),
         ),
-        vertical: Type.Union(
-          [
-            Type.Literal("items-start", { title: "Top" }),
-            Type.Literal("items-center", { title: "Center" }),
-            Type.Literal("items-end", { title: "Bottom" }),
-          ],
-          {
-            title: "Vertical",
-          },
+        vertical: optional(
+          Type.Union(
+            [
+              Type.Literal("items-start", { title: "Top" }),
+              Type.Literal("items-center", { title: "Center" }),
+              Type.Literal("items-end", { title: "Bottom" }),
+            ],
+            {
+              title: "Vertical",
+            },
+          ),
         ),
       },
       {

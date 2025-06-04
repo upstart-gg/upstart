@@ -10,7 +10,6 @@ interface ThemePreviewProps {
 const ThemePreview: React.FC<ThemePreviewProps> = ({ theme }) => {
   const colors = theme.colors;
   const { pickTheme } = useDraftHelpers();
-  const { setLastToolCallResult } = useEditorHelpers();
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -43,7 +42,6 @@ const ThemePreview: React.FC<ThemePreviewProps> = ({ theme }) => {
       style={{ borderColor: colors.base100, outlineColor: colors.base300 }}
       onClick={() => {
         pickTheme(theme.id);
-        setLastToolCallResult(theme.name);
       }}
     >
       <motion.div

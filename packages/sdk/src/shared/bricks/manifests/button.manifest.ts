@@ -1,15 +1,11 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, optional, prop } from "../props/helpers";
-import { color, textContent } from "../props/text";
+import { textContent } from "../props/text";
 import { RxButton } from "react-icons/rx";
-import { StringEnum } from "~/shared/utils/schema";
-import { urlOrPageId } from "../props/string";
+import { string, urlOrPageId } from "../props/string";
 import { Type } from "@sinclair/typebox";
-import { backgroundColor } from "../props/background";
-import { padding } from "../props/padding";
-import { border } from "../props/border";
-import { effects } from "../props/effects";
-import { preset } from "../props/preset";
+import { StringEnum } from "~/shared/utils/schema";
+import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({
   type: "button",
@@ -18,67 +14,6 @@ export const manifest = defineBrickManifest({
   description: "A button with text and optional icon",
   icon: RxButton,
   props: defineProps({
-    // preset: optional(preset()),
-    /*
-    classnames:
-  component:
-  - class: 'btn'
-    desc: Button
-  color:
-  - class: btn-neutral
-    desc: neutral color
-  - class: btn-primary
-    desc: primary color
-  - class: btn-secondary
-    desc: secondary color
-  - class: btn-accent
-    desc: accent color
-  - class: btn-info
-    desc: info color
-  - class: btn-success
-    desc: success color
-  - class: btn-warning
-    desc: warning color
-  - class: btn-error
-    desc: error color
-  style:
-  - class: btn-outline
-    desc: outline style
-  - class: btn-dash
-    desc: dash style
-  - class: btn-soft
-    desc: soft style
-  - class: btn-ghost
-    desc: ghost style
-  - class: btn-link
-    desc: looks like a link
-  behavior:
-  - class: btn-active
-    desc: looks active
-  - class: btn-disabled
-    desc: looks disabled
-  size:
-  - class: btn-xs
-    desc: Extra small size
-  - class: btn-sm
-    desc: Small size
-  - class: btn-md
-    desc: Medium size (default)
-  - class: btn-lg
-    desc: Large size
-  - class: btn-xl
-    desc: Extra large size
-  modifier:
-  - class: btn-wide
-    desc: more horizontal padding
-  - class: btn-block
-    desc: Full width
-  - class: btn-square
-    desc: 1:1 ratio
-  - class: btn-circle
-    desc: 1:1 ratio with rounded corners
-    */
-
     /**
      * @see https://daisyui.com/components/button/?lang=en
      * @see https://raw.githubusercontent.com/saadeghi/daisyui/refs/heads/master/packages/docs/src/routes/(routes)/components/button/+page.md?plain=1
@@ -101,6 +36,8 @@ export const manifest = defineBrickManifest({
           Type.Literal("btn-link", { title: "Link", "ai:variant-type": "style" }),
           Type.Literal("btn-active", { title: "Active", "ai:variant-type": "behavior" }),
           Type.Literal("btn-disabled", { title: "Disabled", "ai:variant-type": "behavior" }),
+          Type.Literal("btn-icon-left", { title: "Icon left", "ai:variant-type": "icon" }),
+          Type.Literal("btn-icon-right", { title: "Icon right", "ai:variant-type": "icon" }),
           Type.Literal("btn-xs", { title: "Extra small", "ai:variant-type": "size" }),
           Type.Literal("btn-sm", { title: "Small", "ai:variant-type": "size" }),
           Type.Literal("btn-md", { title: "Medium", "ai:variant-type": "size" }),
@@ -119,23 +56,90 @@ export const manifest = defineBrickManifest({
       ),
     ),
     label: textContent("Label", "My button"),
-    type: prop({
-      title: "Type",
-      schema: Type.Union(
-        [
-          Type.Literal("button", { title: "Button" }),
-          Type.Literal("submit", { title: "Submit" }),
-          Type.Literal("reset", { title: "Reset" }),
-        ],
-        {
-          title: "Type",
-          description: "The type of the button",
+    type: optional(
+      prop({
+        title: "Type",
+        schema: StringEnum(["button", "submit", "reset"], {
+          enumNames: ["Button", "Submit", "Reset"],
           default: "button",
-        },
-      ),
-    }),
+          description: "The type of the button",
+          "ai:instructions":
+            "Use 'button' for regular buttons, 'submit' for form submission, and 'reset' to reset form fields.",
+        }),
+      }),
+    ),
+    icon: optional(
+      prop({
+        title: "Icon",
+        description: "Icon to display (iconify reference)",
+        schema: string("Icon", undefined, {
+          description: "Icon to display (iconify reference)",
+          "ui:field": "iconify",
+        }),
+      }),
+    ),
     linkToUrlOrPageId: optional(urlOrPageId("Link")),
   }),
 });
 
 export type Manifest = typeof manifest;
+
+export const examples: {
+  description: string;
+  type: string;
+  props: BrickProps<Manifest>["brick"]["props"];
+}[] = [
+  {
+    description: "Primary button, large size, linking to a URL",
+    type: "button",
+    props: {
+      variants: ["btn-primary", "btn-lg"],
+      label: "Click me",
+      linkToUrlOrPageId: "https://example.com",
+    },
+  },
+  {
+    description: "Secondary button, small size, linking to a page",
+    type: "button",
+    props: {
+      variants: ["btn-secondary", "btn-sm"],
+      label: "Go to page",
+      linkToUrlOrPageId: "page-id-123",
+    },
+  },
+  {
+    description: "Disabled button with outline style",
+    type: "button",
+    props: {
+      variants: ["btn-outline", "btn-disabled"],
+      label: "Disabled Button",
+    },
+  },
+  {
+    description: "Ghost button",
+    type: "button",
+    props: {
+      variants: ["btn-ghost"],
+      label: "Ghost Button",
+      linkToUrlOrPageId: "https://example.com/ghost",
+    },
+  },
+  {
+    description: "Submit button in a form",
+    type: "button",
+    props: {
+      variants: ["btn-primary", "btn-md"],
+      label: "Submit form",
+      type: "submit",
+    },
+  },
+  {
+    description: "Button with icon on the right",
+    type: "button",
+    props: {
+      variants: ["btn-primary", "btn-md", "btn-icon-right"],
+      label: "Icon Button",
+      icon: "mdi:check-circle",
+    },
+  },
+];

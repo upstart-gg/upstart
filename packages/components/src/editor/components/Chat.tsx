@@ -11,8 +11,8 @@ import {
   useDraftHelpers,
   useEditorHelpers,
   useGenerationState,
-  useSerializedPage,
-  useSerializedSite,
+  useSite,
+  useSiteAndPages,
   useSitePrompt,
   useTheme,
   useThemes,
@@ -23,6 +23,7 @@ import { useDebounceCallback } from "usehooks-ts";
 import { Spinner } from "@upstart.gg/style-system/system";
 import { BiStopCircle } from "react-icons/bi";
 import { type Theme, processTheme } from "@upstart.gg/sdk/shared/theme";
+import type { CallContextProps } from "@upstart.gg/sdk/shared/context";
 import { useDeepCompareEffect } from "use-deep-compare";
 import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
 import type { GenericPageConfig } from "@upstart.gg/sdk/shared/page";
@@ -90,12 +91,15 @@ export default function Chat() {
   const prompt = useSitePrompt();
   const setupRef = useRef(false);
   const draftHelpers = useDraftHelpers();
-  const { setImagesSearchResults } = useEditorHelpers();
+  const { setImagesSearchResults, createPage } = useEditorHelpers();
   const generationState = useGenerationState();
-  const page = useSerializedPage();
-  const site = useSerializedSite();
+  const siteAndPages = useSiteAndPages();
   const siteThemes = useThemes();
   const theme = useTheme();
+  const [flow, setFlow] = useState<CallContextProps["flow"]>(
+    new URL(window.location.href).searchParams.get("action") === "generate" ? "setup" : "edit",
+  );
+
   const listPlaceholderRef = useRef<HTMLDivElement>(null);
   const handledToolResults = useRef(new Set<string>());
 
@@ -126,7 +130,7 @@ export default function Chat() {
     // sendExtraMessageFields: true,
     // maxSteps: 30,
     initialMessages:
-      generationState.isReady === false
+      flow === "setup"
         ? import.meta.env.DEV
           ? ([
               {
@@ -189,13 +193,13 @@ Let's start by generating some color themes for your website. This will help us 
               {
                 id: "init-website",
                 role: "user",
-                content: `action:generate_website\n\nContext:\n${JSON.stringify(prompt, null, 2)}}\n\nStart by generating color themes for the website`,
+                content: `Create a website based on this prompt:\n${prompt}`,
               },
             ]
         : [],
     credentials: "include",
     experimental_prepareRequestBody({ requestData, ...rest }) {
-      return { ...rest, requestData: { generationState, page, site, prompt } };
+      return { ...rest, requestData: { ...siteAndPages, flow, generationState } satisfies CallContextProps };
     },
     generateId: createIdGenerator({
       prefix: "ups",
@@ -214,9 +218,11 @@ Let's start by generating some color themes for your website. This will help us 
      */
     onToolCall: ({ toolCall }) => {
       console.log("Tool call: %s: ", toolCall.toolName, toolCall);
-      if (toolCall.toolName === "setSiteReady") {
-        // This tool is used to set the site as ready, set the response here
-        // return true;
+      // The "done" tool is a special case that indicates the server has finished processing the request.
+      // We need to handle it client-side and return the "result" for the tool call.
+      // here, we just return true to indicate that we handled the tool call
+      if (toolCall.toolName === "done") {
+        return true;
       }
     },
   });
@@ -246,22 +252,19 @@ Let's start by generating some color themes for your website. This will help us 
   useEffect(debouncedScroll, [status, data, messages]);
 
   useDeepCompareEffect(() => {
-    if (data) {
-      console.log("NEW CHAT DATA", data);
+    if (generationState) {
+      console.log("generation state changed", generationState);
     }
-  }, [data]);
+  }, [generationState]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (setupRef.current) return;
     setupRef.current = true;
-    const url = new URL(window.location.href);
-
-    if (url.searchParams.get("action") === "generate") {
+    if (flow === "setup") {
       console.log("Chat initialized");
       reload();
     }
-    //
   }, []);
 
   const toolInvocations = useMemo(() => {
@@ -301,7 +304,8 @@ Let's start by generating some color themes for your website. This will help us 
             return;
           }
           console.log("Generated page", result.page);
-          draftHelpers.setSections(result.page.sections);
+          createPage(result.page);
+          // draftHelpers.setSections(result.page.sections);
           break;
         }
         case "generateThemes": {
@@ -475,6 +479,7 @@ Let's start by generating some color themes for your website. This will help us 
             if (e.key === "Enter" && !e.shiftKey) onSubmit(e);
           }}
           name="prompt"
+          disabled={status === "streaming" || status === "submitted" || hasRunningTools}
           spellCheck={false}
           autoComplete="off"
           autoCorrect="off"
@@ -518,7 +523,12 @@ Let's start by generating some color themes for your website. This will help us 
               <BiStopCircle className="text-lg" />
             </Button>
           ) : (
-            <Button type="submit" size={"1"} className={tx("flex items-center gap-0.5")}>
+            <Button
+              type="submit"
+              size={"1"}
+              className={tx("flex items-center gap-0.5")}
+              disabled={hasRunningTools}
+            >
               <TbSend2 className="text-lg" />
             </Button>
           )}
@@ -568,7 +578,12 @@ function ToolRenderer({
   }) => void;
   append: (message: Message | CreateMessage) => void;
 }) {
+  // Some tools are not meant to be displayed in the chat, like the "setUserLanguage" tool
   if (hiddenTools.includes(toolInvocation.toolName)) {
+    return null;
+  }
+  // If there is an error, don't show pending tool invocations
+  if (error) {
     return null;
   }
   if (toolInvocation.toolName === "askUserChoice") {

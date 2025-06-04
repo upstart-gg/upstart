@@ -8,7 +8,6 @@ import {
   useAutoAnimate,
   Text,
 } from "@upstart.gg/style-system/system";
-import { themes } from "@upstart.gg/sdk/shared/themes/all-themes";
 import { forwardRef, useState, type ComponentProps, useMemo } from "react";
 import { LuArrowRightCircle } from "react-icons/lu";
 import { WiStars } from "react-icons/wi";

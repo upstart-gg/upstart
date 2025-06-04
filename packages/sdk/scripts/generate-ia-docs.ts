@@ -13,6 +13,7 @@ import path from "node:path";
 import { parseArgs } from "node:util";
 import { preset } from "../src/shared/bricks/props/preset";
 import { sitemapSchema } from "../src/shared/sitemap";
+import { commonProps } from "../src/shared/bricks/props/common";
 
 const __dirname = import.meta.dirname;
 
@@ -177,14 +178,19 @@ const bricksSummary = Object.entries(manifests)
 
 function getPresetsDescriptions() {
   const presets = preset();
+  console.dir(presets, { depth: null });
   let result = "";
-  for (const value of presets.anyOf) {
+  for (const value of presets.enum) {
     result += `- \`${value.const}\`: ${value.title}. ${value.description}\n`;
   }
   return result;
 }
 
-template = template.replace("{{PRESETS}}", getPresetsDescriptions());
+// template = template.replace("{{PRESETS}}", getPresetsDescriptions());
+template = template.replace(
+  "{{COMMON_BRICKS_PROPS}}",
+  schemaToString(Type.Object(commonProps), "common-styles"),
+);
 template = template.replace("{{THEME_JSON_SCHEMA}}", JSON.stringify(refinedThemeSchema));
 template = template.replace("{{SITE_ATTRIBUTES_JSON_SCHEMA}}", JSON.stringify(siteAttributesSchemaForLLM));
 template = template.replace("{{PAGES_MAP_JSON_SCHEMA}}", JSON.stringify(sitemapSchema));

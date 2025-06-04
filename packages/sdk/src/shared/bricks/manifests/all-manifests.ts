@@ -1,23 +1,23 @@
-import { manifest as heroManifest } from "./hero.manifest";
-import { manifest as imageManifest } from "./image.manifest";
-import { manifest as videoManifest } from "./video.manifest";
-import { manifest as textManifest } from "./text.manifest";
-import { manifest as containerManifest } from "./container.manifest";
-import { manifest as cardManifest } from "./card.manifest";
-import { manifest as mapManifest } from "./map.manifest";
-import { manifest as formManifest } from "./form.manifest";
-import { manifest as imagesWallManifest } from "./images-gallery.manifest";
-import { manifest as carouselManifest } from "./carousel.manifest";
-import { manifest as navbarManifest } from "./navbar.manifest";
-import { manifest as footerManifest } from "./footer.manifest";
-import { manifest as buttonManifest } from "./button.manifest";
-import { manifest as iconManifest } from "./icon.manifest";
-import { manifest as socialLinksManifest } from "./social-links.manifest";
-import { manifest as sidebarManifest } from "./sidebar.manifest";
-import { manifest as dividerManifest } from "./divider.manifest";
-import { manifest as testimonialsManifest } from "./testimonials.manifest";
-import { manifest as timelineManifest } from "./timeline.manifest";
-import { manifest as accordionManifest } from "./accordion.manifest";
+import { manifest as heroManifest, examples as heroExamples } from "./hero.manifest";
+import { manifest as imageManifest, examples as imageExamples } from "./image.manifest";
+import { manifest as videoManifest, examples as videoExamples } from "./video.manifest";
+import { manifest as textManifest, examples as textExamples } from "./text.manifest";
+import { manifest as containerManifest, examples as containerExamples } from "./container.manifest";
+import { manifest as cardManifest, examples as cardExamples } from "./card.manifest";
+import { manifest as mapManifest, examples as mapExamples } from "./map.manifest";
+import { manifest as formManifest, examples as formExamples } from "./form.manifest";
+import { manifest as imagesWallManifest, examples as imagesWallExamples } from "./images-gallery.manifest";
+import { manifest as carouselManifest, examples as carouselExamples } from "./carousel.manifest";
+import { manifest as navbarManifest, examples as navbarExamples } from "./navbar.manifest";
+import { manifest as footerManifest, examples as footerExamples } from "./footer.manifest";
+import { manifest as buttonManifest, examples as buttonExamples } from "./button.manifest";
+import { manifest as iconManifest, examples as iconExamples } from "./icon.manifest";
+import { manifest as socialLinksManifest, examples as socialLinksExamples } from "./social-links.manifest";
+import { manifest as sidebarManifest, examples as sidebarExamples } from "./sidebar.manifest";
+import { manifest as dividerManifest, examples as dividerExamples } from "./divider.manifest";
+import { manifest as testimonialsManifest, examples as testimonialsExamples } from "./testimonials.manifest";
+import { manifest as timelineManifest, examples as timelineExamples } from "./timeline.manifest";
+import { manifest as accordionManifest, examples as accordionExamples } from "./accordion.manifest";
 
 import { getBrickManifestDefaults, type BrickDefaults, type BrickManifest } from "../../brick-manifest";
 
@@ -65,4 +65,28 @@ export const defaultProps: Record<string, BrickDefaults> = {
   [testimonialsManifest.type]: getBrickManifestDefaults(testimonialsManifest),
   [timelineManifest.type]: getBrickManifestDefaults(timelineManifest),
   [accordionManifest.type]: getBrickManifestDefaults(accordionManifest),
+};
+
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+export const examples: Record<string, { description: string; type: string; props: any }[]> = {
+  [textManifest.type]: textExamples,
+  [heroManifest.type]: heroExamples,
+  [imageManifest.type]: imageExamples,
+  [videoManifest.type]: videoExamples,
+  [cardManifest.type]: cardExamples,
+  [mapManifest.type]: mapExamples,
+  [formManifest.type]: formExamples,
+  [sidebarManifest.type]: sidebarExamples,
+  [imagesWallManifest.type]: imagesWallExamples,
+  [carouselManifest.type]: carouselExamples,
+  [navbarManifest.type]: navbarExamples,
+  [footerManifest.type]: footerExamples,
+  [buttonManifest.type]: buttonExamples,
+  [iconManifest.type]: iconExamples,
+  [socialLinksManifest.type]: socialLinksExamples,
+  [containerManifest.type]: containerExamples,
+  [dividerManifest.type]: dividerExamples,
+  [testimonialsManifest.type]: testimonialsExamples,
+  [timelineManifest.type]: timelineExamples,
+  [accordionManifest.type]: accordionExamples,
 };

@@ -42,15 +42,17 @@ This means that the default value will be used if the property is not set.
 
 A brick is mainly defined by those properties (non exhaustive):
 - `type`: the type of the brick (e.g. `text`, `image`, `video`, `container` etc.)
-- `props`: the properties of the brick (e.g. `text`, `image`, `video`, etc.). See below for the available props per brick type.
+- `props`: the properties of the brick (e.g. `text`, `image`, `video`, etc.)
 - `mobileProps`: the optional properties of the brick for mobile devices. Merged with the `props` object. This is useful for bricks that have different properties for mobile devices.
 - `$children`: For container-bricks only. An array of children bricks.
 
+### Common props
+
+{{COMMON_BRICKS_PROPS}}
+
+
 ### Presets
 Most of the bricks have a prop called `preset` that will help you style it. When present, you MUST use it.
-List of presets:
-
-{{PRESETS}}
 
 ## Variants
 Some bricks have a prop called `variants` that can be used to change the look and/or layout of the brick.

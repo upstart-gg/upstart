@@ -30,10 +30,6 @@ export type CallContextProps = {
    */
   generationState?: GenerationState;
   /**
-   * The initial site prompt describing the purpose and main features of the site.
-   */
-  sitePrompt: string;
-  /**
    * The user language guessed from the sitePrompt, if available.
    */
   userLanguage?: string;

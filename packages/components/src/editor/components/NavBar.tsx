@@ -80,7 +80,7 @@ export default function NavBar() {
   );
 
   const duplicatePage = () => {
-    if (editorMode === "local") {
+    if (editorMode === "anonymous") {
       return editorHelpers.onShowLogin();
     }
     const data = draft.getPageDataForDuplication();
@@ -89,7 +89,7 @@ export default function NavBar() {
   };
 
   const createPage = () => {
-    if (editorMode === "local") {
+    if (editorMode === "anonymous") {
       return editorHelpers.onShowLogin();
     }
     // todo...
@@ -144,7 +144,7 @@ export default function NavBar() {
       <button
         type="button"
         onClick={() => {
-          window.location.href = editorMode === "local" ? "/" : logoLink;
+          window.location.href = editorMode === "anonymous" ? "/" : logoLink;
         }}
         className={tx("flex-shrink-0")}
       >
@@ -155,7 +155,7 @@ export default function NavBar() {
       </button>
 
       <div className={tx("flex items-center gap-1 flex-1", !generationState.isReady && "hidden")}>
-        {(editorMode === "remote" || (editorMode === "local" && pages.length > 1)) && (
+        {(editorMode === "authenticated" || (editorMode === "anonymous" && pages.length > 1)) && (
           <TopbarMenu
             id="switch-page-menu-btn"
             items={[
@@ -170,7 +170,7 @@ export default function NavBar() {
                     type: "checkbox" as const,
                     checked: draft.id === page.id || draft.path === page.path,
                     onClick: () => {
-                      if (editorMode === "remote") {
+                      if (editorMode === "anonymous") {
                         window.location.href = `/editor/sites/${draft.siteId}/edit?p=${page.id}&r=${Date.now()}`;
                       } else {
                         const currentURL = new URL(window.location.href);
@@ -388,7 +388,7 @@ export default function NavBar() {
 
         <div className={tx("flex-1", "border-x border-l-upstart-400 border-r-upstart-700", baseCls)} />
 
-        {editorMode === "remote" && (
+        {editorMode === "anonymous" && (
           <button
             type="button"
             className={tx(btnClass, commonCls, "text-base px-5")}
@@ -401,7 +401,7 @@ export default function NavBar() {
           </button>
         )}
 
-        {editorMode === "remote" && (
+        {editorMode === "anonymous" && (
           <div className={tx(btnClass, baseCls, "px-8")}>
             {lastSaved ? (
               <div className={tx("text-sm text-black/50")}>
@@ -414,7 +414,7 @@ export default function NavBar() {
           </div>
         )}
 
-        {editorMode === "remote" ? (
+        {editorMode === "authenticated" ? (
           <TopbarMenu
             id="publish-menu-btn"
             items={[

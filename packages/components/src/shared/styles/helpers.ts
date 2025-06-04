@@ -101,7 +101,6 @@ export function getBasicAlignmentStyles(props: AlignBasicSettings, mobileProps?:
 }
 
 function getContainerLayoutStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {
-  console.log("getContainerLayoutStyles", props);
   return props?.type === "grid" ? getGridStyles(props, mobileProps) : getFlexStyles(props, mobileProps);
 }
 

@@ -15,7 +15,7 @@ export default function App({ path }: { path: string }) {
 
   return (
     <ClientOnly>
-      <InnerEditor config={siteConfig} mode="local">
+      <InnerEditor config={siteConfig}>
         <Editor />
       </InnerEditor>
     </ClientOnly>

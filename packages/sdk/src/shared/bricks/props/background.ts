@@ -32,8 +32,8 @@ export function background(opts: BackgroundOptions = {}) {
             default: defaultValue.color,
             title: "Color",
             description:
-              "Use `bg-<variant>-<shade>`, variants being 'primary', 'secondary', 'accent' and 'neutral', and shades between 50 and 900.",
-            "ai:examples": ["bg-primary-50", "bg-primary-500", "bg-accent-900"],
+              "Use `bg-<variant>-<shade>`, variants being 'primary', 'secondary', 'accent' and 'neutral', and shades between 50 and 900. Can also be a gradient using 'bg-gradient-to-<direction> from-<color> to-<color>'",
+            "ai:examples": ["bg-primary", "bg-base-100", "bg-primary-50", "bg-primary-500", "bg-accent-900"],
           }),
         ),
         image: Type.Optional(

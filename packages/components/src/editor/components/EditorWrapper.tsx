@@ -23,7 +23,7 @@ import "@upstart.gg/style-system/react-resizable.css";
 import "@upstart.gg/style-system/default-theme.css";
 
 export type EditorWrapperProps = {
-  mode?: "local" | "remote";
+  mode?: "anonymous" | "authenticated";
   pageVersion?: string;
   pageId?: string;
   config: SiteAndPagesConfig;
@@ -35,19 +35,17 @@ export type EditorWrapperProps = {
   onReady?: () => void;
 
   /**
-   * Tours that already have been displayed to the user.
-   */
-  seenTours?: string[];
-  disableTours?: boolean;
-
-  /**
    * Callback when a tour is completed.
    */
   onTourComplete?: (tourId: string) => void;
   onShowLogin: () => void;
   onPublish: EditorStateProps["onPublish"];
-  onSavePage: EditorStateProps["onSavePage"];
-  onSaveSite: EditorStateProps["onSaveSite"];
+  onSavePage?: EditorStateProps["onSavePage"];
+  onSaveSite?: EditorStateProps["onSaveSite"];
+  /**
+   *  Used when mode = "anonymous" to notify the editor that the draft has changed.
+   */
+  onDraftChange?: EditorStateProps["onDraftChange"];
 };
 
 /**
@@ -61,11 +59,10 @@ export function EditorWrapper({
   mode,
   onImageUpload,
   children,
-  seenTours = [],
-  disableTours,
   onShowLogin,
   onSaveSite,
   onSavePage,
+  onDraftChange,
   onPublish,
   onReady = () => {},
 }: PropsWithChildren<EditorWrapperProps>) {
@@ -77,12 +74,11 @@ export function EditorWrapper({
   const editorStore = useRef(
     createEditorStore({
       mode,
-      seenTours,
       onShowLogin,
       onPublish,
       onSaveSite,
       onSavePage,
-      disableTours,
+      onDraftChange,
       debugMode,
       panel: (new URL(self.location.href).searchParams.get("panel") as EditorState["panel"]) ?? undefined,
       pages,

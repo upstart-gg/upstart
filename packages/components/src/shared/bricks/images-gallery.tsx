@@ -17,7 +17,7 @@ import { tx, css } from "@upstart.gg/style-system/twind";
 const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, ref) => {
   const { props } = brick;
   const styles = useBrickStyle<Manifest>(brick);
-  const { datasourceId, data, isSample } = useDatasource(props.content, manifest.datasource);
+  const { datasourceId, data, isSample } = useDatasource(props.datasource, manifest.datasource);
   // const children = props.childrenBricks;
   return (
     <div

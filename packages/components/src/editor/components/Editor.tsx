@@ -27,11 +27,9 @@ const Page = lazy(() => import("~/shared/components/Page"));
 const DeviceFrame = lazy(() => import("./DeviceFrame"));
 const Panel = lazy(() => import("./Panel"));
 
-type EditorProps = ComponentProps<"div"> & {
-  mode?: "local" | "live";
-};
+type EditorProps = ComponentProps<"div">;
 
-export default function Editor({ mode = "local", ...props }: EditorProps) {
+export default function Editor(props: EditorProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const draft = useDraft();
   const editorEnabled = useEditorEnabled();

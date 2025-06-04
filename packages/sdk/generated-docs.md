@@ -42,28 +42,35 @@ This means that the default value will be used if the property is not set.
 
 A brick is mainly defined by those properties (non exhaustive):
 - `type`: the type of the brick (e.g. `text`, `image`, `video`, `container` etc.)
-- `props`: the properties of the brick (e.g. `text`, `image`, `video`, etc.). See below for the available props per brick type.
+- `props`: the properties of the brick (e.g. `text`, `image`, `video`, etc.)
 - `mobileProps`: the optional properties of the brick for mobile devices. Merged with the `props` object. This is useful for bricks that have different properties for mobile devices.
 - `$children`: For container-bricks only. An array of children bricks.
 
+### Common props
+
+- `hidden`: optional `object`.  
+  - `desktop`: required `boolean`.  
+  - `mobile`: required `boolean`.  
+- `preset`: optional `string`. The styles preset of the component, used to maintain styles consistency across the application.
+  * surface-1: Surface elevation 1, light background with dark text.
+  * surface-2: Surface elevation 2, slightly darker background with dark text.
+  * surface-3: Surface elevation 3, even darker background with dark text.
+  * bold-primary: Bold display on primary-700 background.
+  * bold-secondary: Bold display on secondary-700 background.
+  * bold-accent: Bold display on accent-700 background.
+  * medium-primary: Filled display on primary-200 background.
+  * medium-secondary: Medium display on secondary-200 background.
+  * medium-accent: Medium display on accent-200 background.
+  * subtle-primary: Subtle display on primary-100 background and 1px border.
+  * subtle-secondary: Subtle display on secondary-100 background and 1px border.
+  * subtle-accent: Subtle display on accent-100 background and 1px border.
+  * preset-none: No background and no border. Useful for bricks inside a card or a container that already have a surface/background.
+. Default: `"preset-none"`. Values: `surface-1`, `surface-2`, `surface-3`, `bold-primary`, `bold-secondary`, `bold-accent`, `medium-primary`, `medium-secondary`, `medium-accent`, `subtle-primary`, `subtle-secondary`, `subtle-accent`, `preset-none` 
+
+
+
 ### Presets
 Most of the bricks have a prop called `preset` that will help you style it. When present, you MUST use it.
-List of presets:
-
-- `surface-1`: Surface 1. Surface elevation 1
-- `surface-2`: Surface 2. Surface elevation 2
-- `surface-3`: Surface 3. Surface elevation 3
-- `bold-primary`: Bold Primary. Bold display on primary-700 background
-- `bold-secondary`: Bold Secondary. Bold display on secondary-700 background
-- `bold-accent`: Bold Accent. Bold display on accent-700 background
-- `medium-primary`: Medium Primary. Filled display on primary-200 background
-- `medium-secondary`: Medium Secondary. Medium display on secondary-200 background
-- `medium-accent`: Medium Accent. Medium display on accent-200 background
-- `subtle-primary`: Subtle Primary. Subtle display on primary-100 background and 1px border
-- `subtle-secondary`: Subtle Secondary. Subtle display on secondary-100 background and 1px border
-- `subtle-accent`: Subtle Accent. Subtle display on accent-100 background and 1px border
-- `preset-none`: None. No background and no border. This is useful for bricks inside a card or a container that already have a surface/background.
-
 
 ## Variants
 Some bricks have a prop called `variants` that can be used to change the look and/or layout of the brick.
@@ -102,7 +109,7 @@ Props:
 - `hidden`: optional `object`.  
   - `desktop`: required `boolean`.  
   - `mobile`: required `boolean`.  
-- `preset`: optional `enum` (see docs)
+- `preset`: optional `string` (see docs)
 - `content`: required `string`. Text content. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists <ul> <ol> <li>.. 
 
 ### Hero (`hero`)
@@ -114,7 +121,7 @@ Props:
 - `hidden`: optional `object`.  
   - `desktop`: required `boolean`.  
   - `mobile`: required `boolean`.  
-- `preset`: optional `enum` (see docs)
+- `preset`: optional `string` (see docs)
 - `content`: required `string`. Text content. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists <ul> <ol> <li>.. Default: `"I'm a big text"`. 
 - `tagline`: optional `string`. Text content. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists <ul> <ol> <li>.. Default: `"I'm a tagline"`. 
 - `align`: optional `object`.  Default: `{"horizontal":"justify-start","vertical":"items-center"}`. 
@@ -128,7 +135,7 @@ Props:
 - `hidden`: optional `object`.  
   - `desktop`: required `boolean`.  
   - `mobile`: required `boolean`.  
-- `preset`: optional `enum` (see docs)
+- `preset`: optional `string` (see docs)
 - `image`: required `object`.  Default: `{"alt":"Image","fit":"object-cover","position":"object-center"}`. 
   - `src`: required `string`. Image URL. Can be a link to an image or a data URI. 
   - `alt`: optional `string`. Alternative text for the image. Recommended for screen readers and SEO. 
@@ -147,7 +154,7 @@ Props:
 - `hidden`: optional `object`.  
   - `desktop`: required `boolean`.  
   - `mobile`: required `boolean`.  
-- `preset`: optional `enum` (see docs)
+- `preset`: optional `string` (see docs)
 - `youtubeUrl`: required `string`.  
 
 ### Card (`card`)
@@ -157,7 +164,7 @@ Props:
 - `hidden`: optional `object`.  
   - `desktop`: required `boolean`.  
   - `mobile`: required `boolean`.  
-- `preset`: optional `enum` (see docs)
+- `preset`: optional `string` (see docs)
 - `variants`: required `array`.  Values: `image-first`, `image-last`, `image-overlay`, `image-left-side`, `image-right-side`, `centered`, `large-padding` 
 - `cardTitle`: optional `object`.  
   - `content`: required `string`. Text content. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists <ul> <ol> <li>.. 
@@ -178,7 +185,7 @@ Props:
 - `hidden`: optional `object`.  
   - `desktop`: required `boolean`.  
   - `mobile`: required `boolean`.  
-- `preset`: optional `enum` (see docs)
+- `preset`: optional `string` (see docs)
 - `location`: required `object`. The location to display on the map. 
   - `lat`: required `number`.  
   - `lng`: required `number`.  
@@ -204,7 +211,7 @@ Props:
 - `hidden`: optional `object`.  
   - `desktop`: required `boolean`.  
   - `mobile`: required `boolean`.  
-- `preset`: optional `enum` (see docs)
+- `preset`: optional `string` (see docs)
 - `title`: optional `string`.  The title of the form. Default: `"My form"`. 
 - `intro`: optional `string`.  The intro text of the form. 
 - `fields`: required `object`. The JSON schema of the form fields. 
@@ -219,7 +226,7 @@ Props:
 - `hidden`: optional `object`.  
   - `desktop`: required `boolean`.  
   - `mobile`: required `boolean`.  
-- `preset`: optional `enum` (see docs)
+- `preset`: optional `string` (see docs)
 - `container`: required `object`.  
   - `fixedPositioned`: optional `boolean`.  Default: `false`. 
 - `navigation`: required `object`.  
@@ -241,7 +248,7 @@ Props:
 - `hidden`: optional `object`.  
   - `desktop`: required `boolean`.  
   - `mobile`: required `boolean`.  
-- `preset`: optional `enum` (see docs)
+- `preset`: optional `string` (see docs)
 - `content`: optional `object`. Reference to a data source. Only used for dynamic websites.. 
   - `mapping`: required `object`. Mapping of data source fields to brick props. 
   - `filters`: optional `object`. Filter data source records. 
@@ -266,7 +273,7 @@ Props:
 - `hidden`: optional `object`.  
   - `desktop`: required `boolean`.  
   - `mobile`: required `boolean`.  
-- `preset`: optional `enum` (see docs)
+- `preset`: optional `string` (see docs)
 - `variants`: required `array`.  Values: `pager-arrows`, `pager-numbers`, `pager-dots` 
 
 ### Navbar (`navbar`)
@@ -277,7 +284,7 @@ Props:
 - `hidden`: optional `object`.  
   - `desktop`: required `boolean`.  
   - `mobile`: required `boolean`.  
-- `preset`: optional `enum` (see docs)
+- `preset`: optional `string` (see docs)
 - `container`: required `object`.  
   - `fixedPositioned`: optional `boolean`.  Default: `false`. 
 - `brand`: required `object`.  
@@ -307,7 +314,7 @@ Props:
 - `hidden`: optional `object`.  
   - `desktop`: required `boolean`.  
   - `mobile`: required `boolean`.  
-- `preset`: optional `enum` (see docs)
+- `preset`: optional `string` (see docs)
 - `variants`: required `array`.  Values: `logo-left` (Logo on the left), `logo-right` (Logo on the right), `logo-center` (Logo at center), `multiple-rows` (Span on multiple rows. Use when there a a lot of links sections) 
 - `logo`: optional `object`.  Default: `{"alt":"Image","fit":"object-cover","position":"object-center"}`. 
   - `src`: required `string`. Image URL. Can be a link to an image or a data URI. 
@@ -331,7 +338,7 @@ Props:
 - `hidden`: optional `object`.  
   - `desktop`: required `boolean`.  
   - `mobile`: required `boolean`.  
-- `preset`: optional `enum` (see docs)
+- `preset`: optional `string` (see docs)
 - `variants`: required `array`.  Values: `btn-neutral`, `btn-primary`, `btn-secondary`, `btn-accent`, `btn-info`, `btn-success`, `btn-warning`, `btn-error`, `btn-outline`, `btn-dash`, `btn-soft`, `btn-ghost`, `btn-link`, `btn-active`, `btn-disabled`, `btn-xs`, `btn-sm`, `btn-md`, `btn-lg`, `btn-xl`, `btn-wide`, `btn-block`, `btn-square`, `btn-circle` 
 - `label`: required `string`. Text content. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists <ul> <ol> <li>.. Default: `"My button"`. 
 - `type`: required `enum`. The type of the button. Default: `"button"`. Values: `button`, `submit`, `reset` 
@@ -344,7 +351,7 @@ Props:
 - `hidden`: optional `object`.  
   - `desktop`: required `boolean`.  
   - `mobile`: required `boolean`.  
-- `preset`: optional `enum` (see docs)
+- `preset`: optional `string` (see docs)
 - `icon`: required `string`. Icon to display (iconify reference). 
 - `size`: required `string`. Size of the icon. Default: `"1em"`. 
 
@@ -355,7 +362,7 @@ Props:
 - `hidden`: optional `object`.  
   - `desktop`: required `boolean`.  
   - `mobile`: required `boolean`.  
-- `preset`: optional `enum` (see docs)
+- `preset`: optional `string` (see docs)
 - `links`: required `object[]`.  
   - `href`: required `string`.  
   - `label`: optional `string`.  
@@ -402,7 +409,7 @@ Props:
 - `hidden`: optional `object`.  
   - `desktop`: required `boolean`.  
   - `mobile`: required `boolean`.  
-- `preset`: optional `enum` (see docs)
+- `preset`: optional `string` (see docs)
 - `layout`: required `object`.  
   - `type`: required `enum`. Type of the container. Flex layout arranges items in a one-dimensional line. Grid layout arranges items in a two-dimensional grid. Default: `"flex"`. Values: `flex`, `grid` 
   - `gap`: optional `enum`. Space between items. Values: `gap-0`, `gap-1`, `gap-2`, `gap-4`, `gap-8`, `gap-16` 
@@ -428,7 +435,7 @@ Props:
 - `hidden`: optional `object`.  
   - `desktop`: required `boolean`.  
   - `mobile`: required `boolean`.  
-- `preset`: optional `enum` (see docs)
+- `preset`: optional `string` (see docs)
 - `orientation`: optional `enum`. Orientation of the divider. Default: `"horizontal"`. Values: `horizontal`, `vertical` 
 - `size`: optional `string`. Size of the divider. Default: `"100%"`. 
 
@@ -439,7 +446,7 @@ Props:
 - `hidden`: optional `object`.  
   - `desktop`: required `boolean`.  
   - `mobile`: required `boolean`.  
-- `preset`: optional `enum` (see docs)
+- `preset`: optional `string` (see docs)
 - `orientation`: optional `enum`.  Default: `"horizontal"`. Values: `horizontal`, `vertical` 
 - `testimonials`: required `object[]`.  
   - `author`: required `string`.  Default: `"John Doe"`. 
@@ -463,7 +470,7 @@ Props:
 - `hidden`: optional `object`.  
   - `desktop`: required `boolean`.  
   - `mobile`: required `boolean`.  
-- `preset`: optional `enum` (see docs)
+- `preset`: optional `string` (see docs)
 - `container`: optional `object`.  
 - `items`: required `object[]`.  
   - `date`: required `string`. Date or time period for this event. Default: `"2024"`. 
@@ -493,7 +500,7 @@ Props:
 - `hidden`: optional `object`.  
   - `desktop`: required `boolean`.  
   - `mobile`: required `boolean`.  
-- `preset`: optional `enum` (see docs)
+- `preset`: optional `string` (see docs)
 - `container`: optional `object`.  
 - `items`: required `object[]`.  
   - `title`: required `string`. Text content. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists <ul> <ol> <li>.. Default: `"Section title"`. 
