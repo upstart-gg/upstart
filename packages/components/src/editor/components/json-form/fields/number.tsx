@@ -1,8 +1,6 @@
 import type { FieldProps } from "./types";
-import { IconButton, Slider, Tooltip } from "@upstart.gg/style-system/system";
-import { TextField, Text } from "@upstart.gg/style-system/system";
-import { fieldLabel } from "../form-class";
-import { IoIosHelpCircleOutline } from "react-icons/io";
+import { Slider } from "@upstart.gg/style-system/system";
+import { TextField } from "@upstart.gg/style-system/system";
 import { FieldTitle } from "../field-factory";
 
 export const SliderField: React.FC<FieldProps<number>> = (props) => {

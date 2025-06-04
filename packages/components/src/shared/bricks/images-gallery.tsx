@@ -5,9 +5,9 @@ import {
   manifest,
 } from "@upstart.gg/sdk/shared/bricks/manifests/images-gallery.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { tx, css } from "@upstart.gg/style-system/twind";
 import { useDatasource } from "../hooks/use-datasource";
 import { useBrickStyle } from "../hooks/use-brick-style";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 /**
  * Containers can operate in two modes: Static and Dynamic.
@@ -17,7 +17,7 @@ import { useBrickStyle } from "../hooks/use-brick-style";
 const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, ref) => {
   const { props } = brick;
   const styles = useBrickStyle<Manifest>(brick);
-  const { datasourceId, data, isSample } = useDatasource(props.content, manifest.datasource);
+  const { datasourceId, data, isSample } = useDatasource(props.datasource, manifest.datasource);
   // const children = props.childrenBricks;
   return (
     <div

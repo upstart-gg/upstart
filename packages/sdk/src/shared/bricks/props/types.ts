@@ -7,10 +7,11 @@ export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export type BrickProps<T extends BrickManifest> = {
   brick: Omit<Brick, "props" | "mobileProps"> & {
     props: Static<T["props"]>;
-    mobileProps: Partial<Static<T["props"]>>;
+    mobileProps?: Partial<Static<T["props"]>>;
   };
   editable?: boolean;
   selected?: boolean;
+  isContainerChild?: boolean;
 };
 
 export type BrickPropCategory = "settings" | "presets" | "content";
@@ -20,6 +21,8 @@ export type { TSchema };
 
 type CommonMetadata = {
   "ui:responsive"?: boolean | "mobile" | "mobile-only";
+  "ui:hidden"?: boolean | "if-empty";
+  "ui:scope"?: "site" | "page";
 };
 
 export type FieldMetadata = CommonMetadata & {
@@ -39,9 +42,9 @@ export interface PropSchema extends TSchema {
 
 export type Prop<T = TSchema> = {
   title: string;
-  $id?: string;
   description?: string;
   schema: T;
+  [key: string]: unknown;
 };
 
 export type PropGroup<T extends TProperties = TProperties> = {

@@ -101,7 +101,7 @@
 
 ### Patch Changes
 
-- [#288](https://github.com/upstart-gg/upstart/pull/288) [`b59c43b`](https://github.com/upstart-gg/upstart/commit/b59c43bcd19b540118efcc23d3db5234baaa7bb3) Thanks [@mattallty](https://github.com/mattallty)! - add status to pagesMap
+- [#288](https://github.com/upstart-gg/upstart/pull/288) [`b59c43b`](https://github.com/upstart-gg/upstart/commit/b59c43bcd19b540118efcc23d3db5234baaa7bb3) Thanks [@mattallty](https://github.com/mattallty)! - add status to sitemap
 
 - Updated dependencies []:
   - @upstart.gg/style-system@0.0.85

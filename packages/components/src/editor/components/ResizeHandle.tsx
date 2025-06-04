@@ -1,4 +1,4 @@
-import { tx } from "@upstart.gg/style-system/twind";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 export default function ResizeHandle({
   direction,
@@ -8,7 +8,7 @@ export default function ResizeHandle({
   return (
     <div
       className={tx(
-        "react-resizable-handle absolute z-auto transition-opacity duration-300 delay-100 opacity-0",
+        "react-resizable-handle absolute z-auto transition-opacity opacity-0",
         "group-hover/brick:opacity-90 overflow-visible ",
         `react-resizable-handle-${direction}`,
         {

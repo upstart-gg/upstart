@@ -2,7 +2,7 @@ import { Dialog, TextField, Select, Button, Callout } from "@upstart.gg/style-sy
 import { useEditor } from "~/editor/hooks/use-editor";
 import { PiMagnifyingGlass } from "react-icons/pi";
 import { useState } from "react";
-import { css, tx } from "@upstart.gg/style-system/twind";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 type Results = {
   total_pages: number;

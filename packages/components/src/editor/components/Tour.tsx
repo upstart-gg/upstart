@@ -1,11 +1,12 @@
 import Joyride, { STATUS, type CallBackProps } from "react-joyride";
 import { tours } from "../tours";
-import { useTours } from "../hooks/use-editor";
+import { useLocalStorage } from "usehooks-ts";
 
 export default function Tour() {
-  const { seenTours, disabled, markTourAsSeen } = useTours();
+  const [seenTours, setSeenTours] = useLocalStorage<string[]>("seen_tours", []);
+  const [toursDisabled, setToursDisabled] = useLocalStorage<boolean>("tours_disabled", false);
 
-  if (disabled) {
+  if (toursDisabled) {
     return null;
   }
 
@@ -15,7 +16,7 @@ export default function Tour() {
   const handleJoyrideCallback = (data: CallBackProps) => {
     const { status } = data;
     if (tourId && (status === STATUS.FINISHED || status === STATUS.SKIPPED)) {
-      markTourAsSeen(tourId);
+      setSeenTours((prev) => [...prev, tourId]);
     }
   };
 

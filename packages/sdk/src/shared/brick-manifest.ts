@@ -1,6 +1,6 @@
-import type { TObject, TProperties, TArray, Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import type { ReactNode, FC, Component, ComponentType } from "react";
+import type { TObject, TProperties, TArray } from "@sinclair/typebox";
+import type { FC } from "react";
 import type { IconBaseProps } from "react-icons/lib";
 
 type BrickKind = "brick" | "widget" | "container";
@@ -37,10 +37,6 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
     desktop: number;
   };
   props: TObject<BProps>;
-  presets?: Record<
-    string,
-    { label: string; previewClasses: string; props: Partial<Static<TObject<BProps>>> }
-  >;
   datasource?: DSSchema;
   hideInLibrary?: boolean;
   defaultInspectorTab?: "preset" | "style" | "content";
@@ -50,6 +46,7 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
   resizable?: boolean;
   duplicatable?: boolean;
   isContainer?: boolean;
+  aiInstructions?: string;
 };
 
 export function defineBrickManifest<BProps extends TProperties, DSSchema extends TObject | TArray<TObject>>({
@@ -68,14 +65,12 @@ export function defineBrickManifest<BProps extends TProperties, DSSchema extends
   duplicatable = true,
   defaultInspectorTab = "preset",
   datasource,
-  presets,
   ...rest
 }: BrickManifestProps<BProps, DSSchema>) {
   return {
     ...rest,
     datasource: datasource as DSSchema,
     props,
-    presets,
     kind,
     defaultInspectorTab,
     hideInLibrary,
@@ -100,7 +95,7 @@ export function getBrickManifestDefaults<M extends BrickManifest>(manifest: M) {
   return {
     ...manifest,
     props: Value.Create(manifest.props),
-    mobileProps: {},
+    // mobileProps: {},
     ...(manifest.datasource ? { datasource: Value.Create(manifest.datasource) } : {}),
     // ...(manifest.datarecord ? { datarecord: Value.Create(manifest.datarecord) } : {}),
   };

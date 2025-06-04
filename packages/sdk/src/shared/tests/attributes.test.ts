@@ -1,15 +1,18 @@
 import { describe, it, expect } from "vitest";
-import { attr, type Attributes, defineAttributes, resolveAttributes } from "../attributes";
-import { typeboxSchemaToJSONSchema } from "../utils/schema";
+import { defineAttributes, resolveAttributes } from "../attributes";
+import { string, url } from "../bricks/props/string";
+import { number } from "../bricks/props/number";
+import { boolean } from "../bricks/props/boolean";
+import { date } from "../bricks/props/date";
 
 describe("Attributes test suite", () => {
   describe("defineAttributes", () => {
     it("should define custom attributes", () => {
       const attributes = defineAttributes({
-        name: attr.string("Name"),
-        age: attr.number("Age"),
-        isStudent: attr.boolean("Is Student"),
-        createdAt: attr.date("Created At"),
+        name: string("Name"),
+        age: number("Age"),
+        isStudent: boolean("Is Student"),
+        createdAt: date("Created At"),
       });
       expect(attributes.type).toBe("object");
       expect(attributes.properties).toBeTypeOf("object");
@@ -22,10 +25,10 @@ describe("Attributes test suite", () => {
   describe("resolveAttributes", () => {
     it("should resolve attributes with default values", () => {
       const attributes = defineAttributes({
-        mainButtonUrl: attr.url("Main Button URL", "https://facebook.com"),
-        testBoolTrue: attr.boolean("Test Bool True", true),
-        customerId: attr.string("Customer ID"),
-        testUrl: attr.url("Test URL", "https://upstart.gg"),
+        mainButtonUrl: url("Main Button URL", "https://facebook.com"),
+        testBoolTrue: boolean("Test Bool True", true),
+        customerId: string("Customer ID"),
+        testUrl: url("Test URL", "https://upstart.gg"),
       });
       expect(resolveAttributes(attributes)).toBeTruthy();
     });

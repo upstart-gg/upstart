@@ -39,6 +39,10 @@ export const changelogSchema = Type.Array(
       }),
     ),
   }),
+  {
+    title: "Changelog",
+    description: "Changelog items",
+  },
 );
 
 export type ChangelogSchema = Static<typeof changelogSchema>;

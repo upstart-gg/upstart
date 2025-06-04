@@ -60,6 +60,10 @@ export const blogSchema = Type.Array(
       ),
     ),
   }),
+  {
+    title: "Blog Posts",
+    description: "List of blog posts",
+  },
 );
 
 export type BlogSchema = Static<typeof blogSchema>;

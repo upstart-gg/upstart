@@ -1,4 +1,3 @@
-import { tx } from "@upstart.gg/style-system/twind";
 import { Toaster } from "@upstart.gg/style-system/system";
 import { startTransition, useEffect, useRef } from "react";
 import { generateId, type Brick } from "@upstart.gg/sdk/shared/bricks";
@@ -7,20 +6,21 @@ import {
   useDraft,
   useDraftHelpers,
   useEditorHelpers,
+  useGenerationState,
+  useImagesSearchResults,
   usePreviewMode,
   useSections,
-  useSelectedBrickId,
+  useTheme,
+  useZoom,
 } from "../hooks/use-editor";
-import { useHotkeys } from "react-hotkeys-hook";
 import Selecto from "react-selecto";
 import { useEditablePage } from "~/editor/hooks/use-editable-page";
 import { defaultProps, manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
-import { getBrickAtPosition } from "~/shared/utils/layout-utils";
 import { useFontWatcher } from "../hooks/use-font-watcher";
 import Section from "./EditableSection";
-import BrickSettingsPopover from "./BrickPopover";
-import { useEditorHotKeys } from "../hooks/use-editor-hot-keys";
+import { getBrickElementAtPosition } from "~/shared/utils/layout-utils";
+import { tx } from "@upstart.gg/style-system/twind";
 
 const ghostValid = tx("bg-upstart-100");
 const ghostInvalid = tx("bg-red-100");
@@ -34,15 +34,22 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const editorHelpers = useEditorHelpers();
   const draftHelpers = useDraftHelpers();
   const draft = useDraft();
+  const { zoom } = useZoom();
   const pageRef = useRef<HTMLDivElement>(null);
   const attributes = useAttributes();
   const sections = useSections();
   const dragOverRef = useRef<HTMLDivElement>(null);
   const typography = useFontWatcher();
   const pageClassName = usePageStyle({ attributes, typography, editable: true, previewMode, showIntro });
+  const generationState = useGenerationState();
+  const genState = useGenerationState();
 
   // on page load, set last loaded property so that the store is saved to local storage
   useEffect(draft.setLastLoaded, []);
+
+  useEffect(() => {
+    console.log("Gen state changed in EditablePage", genState);
+  }, [genState]);
 
   /**
    *  Update the ghost style based on the drop position
@@ -76,37 +83,10 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     },
     dragCallbacks: {
       onDragEnd: (updatedPositions, event) => {
-        updateDragOverGhostStyle(null);
+        // updateDragOverGhostStyle(null);
 
         updatedPositions.forEach(({ brick, gridPosition, sectionId }) => {
-          const hoveredBrick = getBrickAtPosition(gridPosition.x, gridPosition.y, draft.bricks, previewMode);
-          const hoveredBrickManifest = hoveredBrick ? manifests[hoveredBrick.type] : null;
-          if (
-            hoveredBrick &&
-            hoveredBrickManifest?.isContainer /* && event.shiftKey*/ &&
-            hoveredBrick.id !== brick.id
-          ) {
-            console.debug("Moving element(s) to parent %s", hoveredBrick.id);
-            console.log("Brick has moved", brick);
-            draftHelpers.moveBrickToParent(brick.id, hoveredBrick.id);
-          } else {
-            console.debug(
-              "Updating position of %s to x = %s, y = %s, w = %s, h = %s in section %s",
-              brick.id,
-              gridPosition.x,
-              gridPosition.y,
-              gridPosition.w,
-              gridPosition.h,
-              sectionId,
-            );
-            draft.updateBrick(brick.id, { sectionId });
-            draft.updateBrickPosition(brick.id, previewMode, {
-              x: gridPosition.x,
-              y: gridPosition.y,
-              w: gridPosition.w,
-              h: gridPosition.h,
-            });
-          }
+          // Move the brick to the new position
         });
 
         // reset the selected group
@@ -115,37 +95,38 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     },
     dropCallbacks: {
       onDropMove(event, rect, brickType) {
-        updateDragOverGhostStyle(rect);
+        // updateDragOverGhostStyle(rect);
       },
       onDropDeactivate() {
-        updateDragOverGhostStyle(null);
+        // updateDragOverGhostStyle(null);
       },
       onDrop(event, position, section, brickType) {
         console.debug("onDrop (%s)", previewMode, position, brickType);
 
-        updateDragOverGhostStyle(null);
+        // updateDragOverGhostStyle(null);
 
         if (position) {
           console.debug("New brick dropped at", position, section);
           const bricksDefaults = defaultProps[brickType];
+
+          // @ts-ignore
           const newBrick: Brick = {
             id: `brick-${generateId()}`,
             ...bricksDefaults,
-            sectionId: section.id,
             type: brickType,
-            position: {
-              desktop: position,
-              mobile: position,
-            },
           };
 
-          const hoveredBrick = getBrickAtPosition(position.x, position.y, draft.bricks, previewMode);
+          const hoveredBrickElement = getBrickElementAtPosition(position.x, position.y);
+          const hoveredBrick = hoveredBrickElement
+            ? draft.getBrick(hoveredBrickElement.dataset.brickId as string)
+            : null;
           const hoveredBrickManifest = hoveredBrick ? manifests[hoveredBrick.type] : null;
 
           // Add the new brick to the store
           // Specify the parent if we dropped on a container
           draft.addBrick(
             newBrick,
+            section.id,
             hoveredBrick && hoveredBrickManifest?.isContainer ? hoveredBrick.id : null,
           );
 
@@ -162,16 +143,8 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     resizeCallbacks: {
       onResizeEnd: (brickId, gridPos) => {
         console.debug("onResizeEnd (%s)", previewMode, brickId, gridPos);
-        updateDragOverGhostStyle(null);
-        // Update the brick position (and height if needed)
-        draftHelpers.updateBrickPosition(brickId, previewMode, {
-          ...draftHelpers.getBrick(brickId)!.position[previewMode],
-          ...gridPos,
-          // wWen resizing through the mobile view, set the manual height
-          // so that the system knows that the height is not automatic
-          ...(previewMode === "mobile" ? { manualHeight: gridPos.h } : {}),
-        });
-
+        // updateDragOverGhostStyle(null);
+        // TODO: Update the brick position
         // try to automatically adjust the mobile layout when resizing from desktop
         if (previewMode === "desktop") {
           draftHelpers.adjustMobileLayout();
@@ -179,8 +152,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       },
     },
   });
-
-  // useEditableTextManager();
 
   // listen for global click events on the document
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -200,26 +171,37 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         !target.closest("#text-editor-menubar") &&
         !target.matches("html") &&
         !target.matches("body") &&
-        !target.matches("[data-brick]") &&
-        !target.closest("[data-brick]")
+        !target.closest("[data-element-kind]") &&
+        !target.matches("[data-element-kind]")
       ) {
         console.debug("click out, hidding", event, event.target);
         editorHelpers.deselectBrick();
         // also deselect the library panel
         editorHelpers.hidePanel("library");
         editorHelpers.hidePanel("inspector");
+        editorHelpers.hidePanel("settings");
+        editorHelpers.hidePanel("theme");
         editorHelpers.setTextEditMode("default");
       }
     };
-    document.addEventListener("click", listener, true);
+    if (generationState.isReady) {
+      document.addEventListener("click", listener, true);
+    }
     return () => {
       document.removeEventListener("click", listener, true);
     };
-  }, []);
+  }, [generationState.isReady]);
 
   return (
     <>
-      <div id="page-container" ref={pageRef} className={pageClassName}>
+      <div
+        id="page-container"
+        ref={pageRef}
+        className={pageClassName}
+        style={{
+          zoom,
+        }}
+      >
         {sections.map((section) => (
           <Section key={section.id} section={section} />
         ))}
@@ -230,29 +212,30 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           )}
         />
       </div>
-      <Selecto
-        className="selecto"
-        selectableTargets={["[data-brick]:not(.container-child)"]}
-        selectFromInside={false}
-        hitRate={1}
-        selectByClick={false}
-        dragCondition={(e) => {
-          // prevent triggering a selection when clicking on sections resize handle buttons
-          return !e.inputEvent.target.closest(".section-options-buttons");
-        }}
-        onSelect={(e) => {
-          if (e.selected.length) {
-            editorHelpers.setSelectedGroup(e.selected.map((el) => el.id));
-          }
-          e.added.forEach((el) => {
-            el.classList.add("selected-group");
-          });
-          e.removed.forEach((el) => {
-            el.classList.remove("selected-group");
-          });
-        }}
-      />
-      <BrickSettingsPopover />
+      {generationState.isReady === true && (
+        <Selecto
+          className="selecto"
+          selectableTargets={["[data-brick]:not(.container-child)"]}
+          selectFromInside={false}
+          hitRate={1}
+          selectByClick={false}
+          dragCondition={(e) => {
+            // prevent triggering a selection when clicking on sections resize handle buttons
+            return !e.inputEvent.target.closest(".section-options-buttons");
+          }}
+          onSelect={(e) => {
+            if (e.selected.length) {
+              editorHelpers.setSelectedGroup(e.selected.map((el) => el.id));
+            }
+            e.added.forEach((el) => {
+              el.classList.add("selected-group");
+            });
+            e.removed.forEach((el) => {
+              el.classList.remove("selected-group");
+            });
+          }}
+        />
+      )}
       <Toaster
         toastOptions={{
           position: "bottom-center",

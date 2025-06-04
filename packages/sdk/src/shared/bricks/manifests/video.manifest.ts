@@ -1,6 +1,8 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
 import { RxVideo } from "react-icons/rx";
+import { string } from "../props/string";
+import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({
   type: "video",
@@ -9,24 +11,39 @@ export const manifest = defineBrickManifest({
   description: "Youtube video",
   repeatable: true,
   icon: RxVideo,
-  // icon: `
-  //   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  // <rect
-  //   x="5" y="15"
-  //   width="90" height="70"
-  //   rx="20" ry="20"
-  //   fill="transparent"
-  //   stroke="currentColor"
-  //   stroke-width="4"
-  // />
-  // <path
-  //   d="M35 30 L35 70 L75 50 Z"
-  //   fill="transparent"
-  //   stroke="currentColor"
-  //   stroke-width="4"
-  //   stroke-linejoin="round"
-  // /></svg>`,
-  props: defineProps({}),
+  props: defineProps({
+    url: string("Video URL", undefined, {
+      description: "URL of the video to embed. It can be a YouTube link or an embed link.",
+    }),
+  }),
 });
 
 export type Manifest = typeof manifest;
+
+export const examples: {
+  description: string;
+  type: string;
+  props: BrickProps<Manifest>["brick"]["props"];
+}[] = [
+  {
+    description: "A YouTube video",
+    type: "video",
+    props: {
+      url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    },
+  },
+  {
+    description: "An embedded YouTube video",
+    type: "video",
+    props: {
+      url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    },
+  },
+  {
+    description: "A Vimeo video",
+    type: "video",
+    props: {
+      url: "https://vimeo.com/123456789",
+    },
+  },
+];

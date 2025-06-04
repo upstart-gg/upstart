@@ -1,7 +1,6 @@
 import type { FieldProps } from "./types";
-import { Text, Select } from "@upstart.gg/style-system/system";
+import { Select } from "@upstart.gg/style-system/system";
 import { fieldLabel } from "../form-class";
-import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 import { FieldTitle } from "../field-factory";
 
 export type TempPadding = {

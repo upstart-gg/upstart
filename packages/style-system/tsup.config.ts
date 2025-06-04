@@ -6,7 +6,7 @@ export default defineConfig((options) => {
     format: ["esm"],
     dts: true,
     target: "es2020",
-    metafile: !!(process.env.CI || process.env.ANALYSE_BUNDLE),
+    metafile: !!(process.env.CI || process.env.ANALYZE_BUNDLE),
     clean: !options.watch,
     minify: !options.watch,
     sourcemap: !options.watch,

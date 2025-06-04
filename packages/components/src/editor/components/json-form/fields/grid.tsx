@@ -1,5 +1,4 @@
 import type { FieldProps } from "./types";
-import { Text, Select } from "@upstart.gg/style-system/system";
 import type { GridSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
 import { fieldLabel } from "../form-class";
 import { Slider } from "@upstart.gg/style-system/system";

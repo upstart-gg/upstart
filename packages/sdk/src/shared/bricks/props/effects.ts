@@ -1,5 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
-import { group, prop } from "./helpers";
+import { group, optional, prop } from "./helpers";
 
 type ShadowOptions = {
   title?: string;
@@ -9,7 +9,6 @@ type ShadowOptions = {
 export function shadow({ title = "Shadow", defaultValue = "shadow-none" }: ShadowOptions = {}) {
   return prop({
     title,
-    $id: "#styles:shadow",
     schema: Type.Union(
       [
         Type.Literal("shadow-none", { title: "None" }),
@@ -21,6 +20,8 @@ export function shadow({ title = "Shadow", defaultValue = "shadow-none" }: Shado
       ],
       {
         default: defaultValue,
+        "ui:styleId": "#styles:shadow",
+        "ui:placeholder": "Not specified",
         "ui:field": "enum",
         "ui:display": "select",
       },
@@ -52,6 +53,7 @@ export function textShadow({
       {
         default: defaultValue,
         "ui:field": "enum",
+        "ui:placeholder": "Not specified",
       },
     ),
   });
@@ -98,19 +100,25 @@ export function effects({ title = "Effects", defaultValue = {}, enableTextShadow
       default: defaultValue,
     },
     children: {
-      opacity: opacity({
-        title: "Opacity",
-        defaultValue: defaultValue.opacity,
-      }),
-      shadow: shadow({
-        title: "Shadow",
-        defaultValue: defaultValue.shadow,
-      }),
-      ...(enableTextShadow && {
-        textShadow: textShadow({
-          title: "Text shadow",
-          defaultValue: defaultValue.textShadow,
+      opacity: optional(
+        opacity({
+          title: "Opacity",
+          defaultValue: defaultValue.opacity,
         }),
+      ),
+      shadow: optional(
+        shadow({
+          title: "Shadow",
+          defaultValue: defaultValue.shadow,
+        }),
+      ),
+      ...(enableTextShadow && {
+        textShadow: optional(
+          textShadow({
+            title: "Text shadow",
+            defaultValue: defaultValue.textShadow,
+          }),
+        ),
       }),
     },
   });
