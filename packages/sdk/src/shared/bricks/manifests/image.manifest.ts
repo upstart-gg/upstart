@@ -1,10 +1,10 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, optional } from "../props/helpers";
-import { image } from "../props/image";
-import { backgroundColor } from "../props/background";
-import { border } from "../props/border";
+import { image, imageRef } from "../props/image";
+import { backgroundColor, backgroundColorRef } from "../props/background";
+import { border, borderRef } from "../props/border";
 import { shadow } from "../props/effects";
-import { padding } from "../props/padding";
+import { padding, paddingRef } from "../props/padding";
 import { RxImage } from "react-icons/rx";
 import { string } from "../props/string";
 import { Type } from "@sinclair/typebox";
@@ -20,10 +20,10 @@ export const manifest = defineBrickManifest({
   defaultWidth: { desktop: 3, mobile: 3 },
   icon: RxImage,
   props: defineProps({
-    image: image(),
-    backgroundColor: optional(backgroundColor()),
-    border: optional(border()),
-    padding: optional(padding()),
+    image: imageRef(),
+    backgroundColor: optional(backgroundColorRef()),
+    border: optional(borderRef),
+    padding: optional(paddingRef),
     shadow: optional(shadow()),
     blurHash: optional(
       string("Blur Hash", undefined, {
@@ -35,18 +35,18 @@ export const manifest = defineBrickManifest({
       Type.Object({
         name: string("Image Author", undefined, {
           "ui:field": "hidden",
-          description: "Image author. Use this to give credit to the author of the image.",
+          description: "Image author. Use this to give credit to the author",
         }),
         url: string("Image Author URL", undefined, {
           "ui:field": "hidden",
-          description: "Image author URL. Use this to give credit to the author of the image.",
+          description: "Image author URL. Use this to give credit to the author",
         }),
       }),
     ),
     provider: optional(
       string("Image Provider", undefined, {
         "ui:field": "hidden",
-        description: "Image provider. Use this to give credit to the author of the image.",
+        description: "Image provider. Use this to give credit to the author",
         "ai:instructions": "The provider of the image, e.g. 'unsplash', 'pexels', etc.",
       }),
     ),

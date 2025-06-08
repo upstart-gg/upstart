@@ -32,7 +32,7 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
     "[&>*]:flex-shrink-0",
 
     // Background
-    section.props.background && getBackgroundStyles(section.props.background),
+    !!section.props.background && getBackgroundStyles(section.props.background),
 
     // Section editor styles
     getSectionEditorStyles({ editable, previewMode, section, selected }),

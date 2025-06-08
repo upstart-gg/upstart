@@ -134,7 +134,7 @@ export default function NavBar() {
     <nav
       role="navigation"
       className={tx(
-        `z-[9999] h-14 gap-1 px-4 flex text-xl w-full items-center transition-opacity duration-300
+        `z-[9999] h-full gap-1 px-4 flex text-xl w-full items-center transition-opacity duration-300
         text-black/70 dark:text-dark-200 bg-white`,
         css({
           gridArea: "navbar",
@@ -318,7 +318,10 @@ export default function NavBar() {
 
         <div className={tx("flex flex-col gap-1.5 leading-none text-sm items-start px-1.5")}>
           <span
-            className={tx("inline-flex items-center gap-1", credits === 0 && "text-red-800 font-semibold")}
+            className={tx(
+              "inline-flex items-center gap-1 text-nowrap",
+              credits === 0 && "text-red-800 font-semibold",
+            )}
           >
             <BsStars className={tx("opacity-60 w-4 h-4")} /> {credits} credits
           </span>
@@ -328,7 +331,7 @@ export default function NavBar() {
                 <button
                   type="button"
                   className={tx(
-                    "hover:underline cursor-help tracking-tight underline-offset-2 text-[88%] text-upstart-700 hover:text-upstart-700",
+                    "hover:underline cursor-help tracking-tight underline-offset-2 text-[88%] text-upstart-700 hover:text-upstart-700 text-nowrap",
                   )}
                 >
                   What's this?
@@ -355,7 +358,9 @@ export default function NavBar() {
                     or{" "}
                     <button
                       type="button"
-                      className={tx("text-upstart-700 cursor-pointer font-medium hover:underline")}
+                      className={tx(
+                        "text-nowrap text-upstart-700 cursor-pointer font-medium hover:underline",
+                      )}
                       onClick={() => {
                         alert("TODO buy more");
                       }}
@@ -371,7 +376,7 @@ export default function NavBar() {
             <button
               type="button"
               className={tx(
-                "hover:underline tracking-tight underline-offset-2 text-[88%] text-upstart-700 hover:text-orange-800",
+                "text-nowrap hover:underline tracking-tight underline-offset-2 text-[88%] text-upstart-700 hover:text-orange-800",
               )}
               onClick={() => alert("buy")}
             >
@@ -447,7 +452,7 @@ export default function NavBar() {
                 textShadow: "1px 1px 0px rgba(255, 255, 255, 0.3)",
               }}
               className={tx(
-                "font-semibold inline-flex gap-1 bg-orange-100 py-2 px-3 rounded-full",
+                "font-semibold inline-flex gap-1 bg-orange-100 py-2 px-3 rounded-full text-nowrap",
                 css({ fontSize: ".94rem" }),
               )}
             >

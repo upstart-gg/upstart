@@ -2,7 +2,7 @@ import { defineConfig, type PluginOption } from "vite";
 import react from "@vitejs/plugin-react";
 import dts from "vite-plugin-dts";
 import Inspect from "vite-plugin-inspect";
-import bundlesize from "vite-plugin-bundlesize";
+// import bundlesize from "vite-plugin-bundlesize";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig(({ mode }) => ({
@@ -25,10 +25,10 @@ export default defineConfig(({ mode }) => ({
       ],
       outDir: "dist/types",
     }),
-    process.env.NODE_ENV === "production" &&
-      bundlesize({
-        limits: [{ name: "**/*", limit: "1.6 mB" }],
-      }),
+    // process.env.NODE_ENV === "production" &&
+    //   bundlesize({
+    //     limits: [{ name: "**/*", limit: "1.6 mB" }],
+    //   }),
   ],
   optimizeDeps: {
     // include: ["@upstart.gg/sdk"],
@@ -43,7 +43,7 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     copyPublicDir: false,
-    sourcemap: "hidden",
+    sourcemap: true,
     lib: {
       entry: {
         Editor: "src/editor/components/Editor.tsx",

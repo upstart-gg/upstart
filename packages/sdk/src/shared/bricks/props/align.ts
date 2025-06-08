@@ -1,5 +1,6 @@
-import { Type, type Static } from "@sinclair/typebox";
+import { type SchemaOptions, Type, type Static } from "@sinclair/typebox";
 import { optional, prop } from "./helpers";
+import { typedRef } from "~/shared/utils/typed-ref";
 
 type AlignBasicOptions = {
   title?: string;
@@ -41,6 +42,7 @@ export function basicAlign(opts: AlignBasicOptions = {}) {
         ),
       },
       {
+        $id: "styles:basicAlign",
         "ui:responsive": true,
         "ui:field": "align-basic",
         "ui:styleId": "#styles:basicAlign",
@@ -51,3 +53,7 @@ export function basicAlign(opts: AlignBasicOptions = {}) {
 }
 
 export type AlignBasicSettings = Static<ReturnType<typeof basicAlign>>;
+
+export function basicAlignRef(options: SchemaOptions = {}) {
+  return typedRef("styles:basicAlign", options);
+}

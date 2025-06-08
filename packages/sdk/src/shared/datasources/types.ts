@@ -35,7 +35,7 @@ const providersChoices = Type.Union([
   Type.Object({
     provider: Type.Literal("youtube-list"),
     options: youtubeListOptions,
-    schema: Type.Optional(schemasMap["youtube-list"]),
+    // schema: Type.Optional(schemasMap["youtube-list"]),
   }),
   // Type.Object({
   //   provider: Type.Literal("facebook-posts"),
@@ -70,7 +70,7 @@ const providersChoices = Type.Union([
   Type.Object({
     provider: Type.Literal("rss"),
     options: rssOptions,
-    schema: Type.Optional(schemasMap.rss),
+    // schema: Type.Optional(schemasMap.rss),
   }),
   // Type.Object({
   //   provider: Type.Literal("tiktok-video"),
@@ -80,12 +80,12 @@ const providersChoices = Type.Union([
   Type.Object({
     provider: Type.Literal("internal-blog"),
     options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-    schema: Type.Optional(schemasMap["internal-blog"]),
+    // schema: Type.Optional(schemasMap["internal-blog"]),
   }),
   Type.Object({
     provider: Type.Literal("internal-changelog"),
     options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-    schema: Type.Optional(schemasMap["internal-changelog"]),
+    // schema: Type.Optional(schemasMap["internal-changelog"]),
   }),
   // Type.Object({
   //   provider: Type.Literal("internal-contact-info"),
@@ -95,17 +95,18 @@ const providersChoices = Type.Union([
   Type.Object({
     provider: Type.Literal("internal-faq"),
     options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-    schema: Type.Optional(schemasMap["internal-faq"]),
+    // schema: Type.Optional(schemasMap["internal-faq"]),
   }),
   Type.Object({
     provider: Type.Literal("internal-links"),
     options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-    schema: Type.Optional(schemasMap["internal-links"]),
+    // schema: Type.Optional(schemasMap["internal-links"]),
   }),
   Type.Object({
     provider: Type.Literal("internal-recipes"),
     options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-    schema: Type.Optional(schemasMap["internal-recipes"]),
+
+    // schema: Type.Optional(schemasMap["internal-recipes"]),
   }),
   // Type.Object({
   //   provider: Type.Literal("internal-restaurant"),
@@ -122,8 +123,16 @@ const providersChoices = Type.Union([
 const datasourceProviderManifest = Type.Composite([
   providersChoices,
   Type.Object({
+    id: Type.String({
+      title: "ID",
+      description:
+        "Unique identifier of the datasource. Used to reference the datasource in the system. Use a url-safe string like a slug.",
+    }),
     name: Type.String({ title: "Name of the datasource", comment: "For example, 'My data'" }),
     description: Type.Optional(Type.String({ title: "Description of the datasource" })),
+    schema: Type.Null({
+      description: "Always null for provider datasources. The schema is defined by the provider.",
+    }),
     sampleData: Type.Optional(Type.Any()),
     ttlMinutes: Type.Optional(
       Type.Number({
@@ -150,12 +159,38 @@ const datasourceProviderManifest = Type.Composite([
 export type DatasourceProviderManifest = Static<typeof datasourceProviderManifest>;
 
 const datasourceCustomManifest = Type.Object({
+  id: Type.String({
+    title: "ID",
+    description:
+      "Unique identifier of the datasource. Used to reference the datasource in the system. Use a url-safe string like a slug.",
+  }),
   provider: Type.Literal("custom", {
     title: "Custom",
     description: "Custom datasource saved locally in Upstart.",
   }),
   options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-  schema: Type.Array(Type.Object({}, { additionalProperties: true })),
+  schema: Type.Any({
+    title: "Schema",
+    description: "JSON Schema of datasource. Always an array of objects.",
+    examples: [
+      {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            title: { type: "string", title: "Title" },
+            firstname: { type: "string", title: "Fisrtname" },
+            lastname: { type: "string", title: "Lastname" },
+            email: { type: "string", format: "email", title: "Email" },
+          },
+          required: ["title", "firstname", "lastname", "email", "createdAt"],
+          title: "Employee",
+        },
+        title: "Employees",
+        description: "Employees list",
+      },
+    ],
+  }),
   name: Type.String({ title: "Name of the datasource", comment: "For example, 'My data'" }),
   description: Type.Optional(Type.String({ title: "Description of the datasource" })),
   sampleData: Type.Optional(
@@ -168,13 +203,41 @@ const datasourceCustomManifest = Type.Object({
 
 export type DatasourceCustomManifest = Static<typeof datasourceCustomManifest>;
 
-const datasourceJsonArrayManifest = Type.Object({
+const datasourceJsonManifest = Type.Object({
+  id: Type.String({
+    title: "ID",
+    description:
+      "Unique identifier of the datasource. Used to reference the datasource in the system. Use a url-safe string like a slug.",
+  }),
   provider: Type.Literal("http-json", {
     title: "JSON Array",
     description: "JSON array datasource.",
   }),
   options: httpJsonOptions,
-  schema: jsonArraySchema,
+  schema: Type.Any({
+    title: "Schema",
+    description: "JSON Schema of datasource. Always an array of objects.",
+    examples: [
+      {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            id: { type: "string", title: "ID" },
+            title: { type: "string", title: "Title" },
+            firstname: { type: "string", title: "Firstname" },
+            lastname: { type: "string", title: "Lastname" },
+            createdAt: { type: "string", format: "date-time", title: "Created at" },
+            email: { type: "string", format: "email", title: "Email" },
+          },
+          required: ["id", "title", "firstname", "lastname", "email", "createdAt"],
+          title: "Employee",
+        },
+        title: "Employees",
+        description: "Employees list",
+      },
+    ],
+  }),
   name: Type.String({ title: "Name of the datasource", comment: "For example, 'My data'" }),
   description: Type.Optional(Type.String({ title: "Description of the datasource" })),
   sampleData: Type.Optional(
@@ -185,21 +248,26 @@ const datasourceJsonArrayManifest = Type.Object({
   ),
 });
 
-export type DatasourceJsonArrayManifest = Static<typeof datasourceJsonArrayManifest>;
+export type DatasourceJsonArrayManifest = Static<typeof datasourceJsonManifest>;
 
-export const datasourcesMap = Type.Record(
-  Type.String(),
-  Type.Union([datasourceCustomManifest, datasourceJsonArrayManifest, datasourceProviderManifest]),
-  { title: "Datasources map", description: "The map of datasources available in the system" },
-);
+export const datasourceManifest = Type.Union([
+  datasourceCustomManifest,
+  datasourceJsonManifest,
+  datasourceProviderManifest,
+]);
+
+export const datasourcesMap = Type.Record(Type.String(), datasourceManifest, {
+  title: "Datasources map",
+  description: "The map of datasources available in the system",
+});
 
 export type DatasourcesMap = Record<
   string,
   | (Omit<Static<typeof datasourceCustomManifest>, "schema"> & {
       schema: (typeof datasourceCustomManifest)["schema"];
     })
-  | (Omit<Static<typeof datasourceJsonArrayManifest>, "schema"> & {
-      schema: (typeof datasourceJsonArrayManifest)["schema"];
+  | (Omit<Static<typeof datasourceJsonManifest>, "schema"> & {
+      schema: (typeof datasourceJsonManifest)["schema"];
     })
   | (Omit<Static<typeof datasourceProviderManifest>, "schema"> & {
       schema?: (typeof datasourceProviderManifest)["schema"];

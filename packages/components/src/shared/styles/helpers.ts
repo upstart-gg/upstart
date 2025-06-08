@@ -8,8 +8,8 @@ import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border"
 import type { FixedPositionedSettings, PositionSettings } from "@upstart.gg/sdk/shared/bricks/props/position";
 import type { PaddingSettings } from "@upstart.gg/sdk/shared/bricks/props/padding";
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
-import type { ColorSettings } from "@upstart.gg/sdk/shared/bricks/props/text";
-import type { ContainerLayoutSettings, FlexSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
+import type { ColorSettings } from "@upstart.gg/sdk/shared/bricks/props/color";
+import type { ContainerLayoutSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
 import { css } from "@upstart.gg/style-system/twind";
 
 export function getBackgroundStyles(props?: BackgroundSettings) {
@@ -71,7 +71,6 @@ function getBorderStyles(props?: Partial<BorderSettings>) {
   if (!props) {
     return null;
   }
-  console.log("getBorderStyles", props);
   const {
     width = "border-0",
     sides = [],

@@ -1,63 +1,45 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { group, optional, prop } from "./helpers";
+import { StringEnum } from "~/shared/utils/schema";
 
-type BorderOptions = {
-  defaultValue?: {
-    style?: string;
-    color?: string;
-    width?: string;
-    sides?: string[];
-    rounding?: string;
-  };
-};
-
-export function border({ defaultValue = {} }: BorderOptions = {}, title = "Border") {
+export function border(title = "Border") {
   return group({
     title,
     options: {
       "ui:styleId": "#styles:border",
-      default: defaultValue,
+      $id: "styles:border",
     },
     children: {
       rounding: optional(
-        Type.Union(
+        StringEnum(
           [
-            Type.Literal("rounded-auto", { title: "Auto" }),
-            Type.Literal("rounded-none", { title: "None" }),
-            Type.Literal("rounded-sm", { title: "Small" }),
-            Type.Literal("rounded-md", { title: "Medium" }),
-            Type.Literal("rounded-lg", { title: "Large" }),
-            Type.Literal("rounded-xl", { title: "Extra large" }),
-            Type.Literal("rounded-2xl", { title: "2xl" }),
-            Type.Literal("rounded-3xl", { title: "3xl" }),
-            Type.Literal("rounded-full", { title: "Full" }),
+            "rounded-auto",
+            "rounded-none",
+            "rounded-sm",
+            "rounded-md",
+            "rounded-lg",
+            "rounded-xl",
+            "rounded-2xl",
+            "rounded-3xl",
+            "rounded-full",
           ],
           {
             title: "Corner rounding",
-            default: defaultValue.rounding,
+            enumNames: ["Auto", "None", "Small", "Medium", "Large", "Extra large", "2xl", "3xl", "Full"],
+            "ui:placeholder": "Not specified",
             "ui:field": "enum",
             "ui:display": "select",
-            "ui:placeholder": "Not specified",
           },
         ),
       ),
       width: optional(
-        Type.Union(
-          [
-            Type.Literal("border-0", { title: "None" }),
-            Type.Literal("border", { title: "S" }),
-            Type.Literal("border-2", { title: "M" }),
-            Type.Literal("border-4", { title: "L" }),
-            Type.Literal("border-8", { title: "XL" }),
-          ],
-          {
-            default: defaultValue.width,
-            title: "Width",
-            "ai:instructions": "Don't specify width if you want no border.",
-            "ui:field": "enum",
-            "ui:placeholder": "None",
-          },
-        ),
+        StringEnum(["border-0", "border", "border-2", "border-4", "border-8"], {
+          title: "Width",
+          enumNames: ["None", "S", "M", "L", "XL"],
+          "ai:instructions": "Don't specify width if you want no border.",
+          "ui:field": "enum",
+          "ui:placeholder": "None",
+        }),
       ),
       color: Type.Optional(
         Type.String({
@@ -71,42 +53,31 @@ export function border({ defaultValue = {} }: BorderOptions = {}, title = "Borde
       ),
       sides: Type.Optional(
         Type.Array(
-          Type.Union([
-            Type.Literal("border-l", { title: "Left" }),
-            Type.Literal("border-t", { title: "Top" }),
-            Type.Literal("border-r", { title: "Right" }),
-            Type.Literal("border-b", { title: "Bottom" }),
-          ]),
-          {
-            default: defaultValue.sides,
+          StringEnum(["border-l", "border-t", "border-r", "border-b"], {
             title: "Sides",
+            enumNames: ["Left", "Top", "Right", "Bottom"],
             description:
               "The specific sides where to apply the border. Not specifying sides will apply the border to all sides.",
             "ui:field": "border-side",
             "ai:instructions":
               "Use this to apply the border to specific sides. Not specifying sides will apply the border to all sides.",
-          },
+          }),
         ),
       ),
       style: optional(
-        Type.Union(
-          [
-            Type.Literal("border-solid", { title: "Solid" }),
-            Type.Literal("border-dashed", { title: "Dashed" }),
-            Type.Literal("border-dotted", { title: "Dotted" }),
-          ],
-          {
-            default: defaultValue.style ?? "border-solid",
-            title: "Style",
-            description: "The brick border style",
-            "ai:instructions": "Use only when width is different than border-0.",
-            "ui:field": "enum",
-            "ui:display": "button-group",
-          },
-        ),
+        StringEnum(["border-solid", "border-dashed", "border-dotted"], {
+          title: "Style",
+          description: "The brick border style",
+          enumNames: ["Solid", "Dashed", "Dotted"],
+          "ai:instructions": "Use only when width is different than border-0.",
+          "ui:field": "enum",
+          "ui:display": "button-group",
+        }),
       ),
     },
   });
 }
+
+export const borderRef = Type.Ref("styles:border");
 
 export type BorderSettings = Static<ReturnType<typeof border>>;

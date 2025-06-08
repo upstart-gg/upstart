@@ -1,19 +1,10 @@
 import FormNavigator from "./json-form/FormNavigator";
-import { Brick, type Section, sectionSchema } from "@upstart.gg/sdk/shared/bricks";
-import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
-import type { TArray, TObject, TSchema } from "@sinclair/typebox";
-import type { NavItem } from "./json-form/types";
+import { sectionSchema } from "@upstart.gg/sdk/shared/bricks";
+import { getSchemaDefaults } from "@upstart.gg/sdk/shared/ajv";
 import { useCallback, useMemo } from "react";
-import { merge, set } from "lodash-es";
-import {
-  useAttributes,
-  useDraftHelpers,
-  useGetBrick,
-  usePreviewMode,
-  useSection,
-} from "~/editor/hooks/use-editor";
+import { merge } from "lodash-es";
+import { useAttributes, usePreviewMode } from "~/editor/hooks/use-editor";
 import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
-import { Value } from "@sinclair/typebox/value";
 import type { AttributesSchema } from "@upstart.gg/sdk/shared/attributes";
 
 type AttributesSettingsViewProps = {
@@ -43,7 +34,7 @@ export default function AttributesSettingsView({
   const navItems = getNavItemsFromManifest(attributesSchema, filter);
 
   const formData = useMemo(() => {
-    const defProps = Value.Create(attributesSchema);
+    const defProps = getSchemaDefaults(attributesSchema);
     return merge({}, defProps, attr ?? {});
   }, [attr, attributesSchema]);
 

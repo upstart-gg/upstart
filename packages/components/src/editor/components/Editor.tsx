@@ -193,8 +193,7 @@ function getEditorCss(generationState: GenerationState, chatVisible: boolean) {
   return css({
     gridTemplateAreas: chatVisible ? `"navbar navbar" "chat main"` : `"navbar" "main"`,
     gridTemplateRows: "64px 1fr",
-    gridTemplateColumns:
-      generationState.isReady === false ? "1fr 0px" : chatVisible ? "clamp(280px, 25%, 410px) 1fr" : "1fr",
+    gridTemplateColumns: generationState.isReady === false ? "1fr 0px" : chatVisible ? "360px 1fr" : "1fr",
     // maxWidth: generationState.isReady === false ? "clamp(500px, 40dvw, 650px)" : "none",
   });
 }

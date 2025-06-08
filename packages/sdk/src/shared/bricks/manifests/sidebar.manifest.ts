@@ -2,12 +2,11 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, group, optional, prop } from "../props/helpers";
 import { VscLayoutSidebarLeftOff } from "react-icons/vsc";
 import { Type } from "@sinclair/typebox";
-import { color } from "../props/text";
 import { datasourceRef } from "../props/datasource";
-import { urlOrPageId } from "../props/string";
-import { backgroundColor } from "../props/background";
+import { string, urlOrPageId, urlOrPageIdRef } from "../props/string";
+import { backgroundColor, backgroundColorRef } from "../props/background";
 import { shadow } from "../props/effects";
-import { border } from "../props/border";
+import { border, borderRef } from "../props/border";
 import { fixedPositioned } from "../props/position";
 import { preset } from "../props/preset";
 import type { BrickProps } from "../props/types";
@@ -28,8 +27,8 @@ export const manifest = defineBrickManifest({
       group({
         title: "Main element",
         children: {
-          backgroundColor: optional(backgroundColor()),
-          border: optional(border()),
+          backgroundColor: optional(backgroundColorRef()),
+          border: optional(borderRef),
           shadow: optional(shadow()),
           fixedPositioned: optional(fixedPositioned()),
         },
@@ -48,10 +47,8 @@ export const manifest = defineBrickManifest({
               title: "Nav items",
               schema: Type.Array(
                 Type.Object({
-                  urlOrPageId: urlOrPageId(),
-                  label: Type.String({
-                    title: "Label",
-                  }),
+                  urlOrPageId: urlOrPageIdRef(),
+                  label: optional(string("Label")),
                 }),
                 { title: "Navigation items", default: [] },
               ),

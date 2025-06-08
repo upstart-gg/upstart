@@ -3,9 +3,10 @@ import { defineProps, optional, prop } from "../props/helpers";
 import { PiConfetti } from "react-icons/pi";
 import { string } from "../props/string";
 import { Type } from "@sinclair/typebox";
-import { backgroundColor } from "../props/background";
+import { backgroundColor, backgroundColorRef } from "../props/background";
 import { RxDividerHorizontal } from "react-icons/rx";
 import type { BrickProps } from "../props/types";
+import { StringEnum } from "~/shared/utils/schema";
 
 export const manifest = defineBrickManifest({
   type: "divider",
@@ -16,20 +17,8 @@ export const manifest = defineBrickManifest({
   icon: RxDividerHorizontal,
   props: defineProps(
     {
-      orientation: optional(
-        prop({
-          title: "Orientation",
-          description: "Orientation of the divider",
-          schema: Type.Union(
-            [
-              Type.Literal("horizontal", { title: "Horizontal" }),
-              Type.Literal("vertical", { title: "Vertical" }),
-            ],
-            { default: "horizontal" },
-          ),
-        }),
-      ),
-      color: optional(backgroundColor("bg-base-300", "Divider color")),
+      orientation: optional(StringEnum(["horizontal", "vertical"], { title: "Orientation" })),
+      color: optional(backgroundColorRef({ default: "bg-base-300", title: "Divider color" })),
       size: optional(
         prop({
           title: "Size",
@@ -42,7 +31,6 @@ export const manifest = defineBrickManifest({
     },
     {
       default: {
-        orientation: "horizontal",
         size: "100%",
         color: "bg-base-300",
       },

@@ -22,7 +22,6 @@ import SectionSettingsView from "./SectionSettingsView";
 import PageHierarchy from "./PageHierarchy";
 
 type TabType = "preset" | "settings" | "content";
-const presets = preset().anyOf;
 
 export default function PanelSectionInspector({ section }: { section: Section }) {
   const previewMode = usePreviewMode();
@@ -76,6 +75,7 @@ export default function PanelSectionInspector({ section }: { section: Section })
 function PresetsTab({ section }: { section: Section }) {
   const { updateSectionProps } = useDraftHelpers();
   const previewMode = usePreviewMode();
+  const presets = preset();
   return (
     <div className="flex flex-col h-full">
       <div className="basis-1/2 grow-0">
@@ -87,25 +87,24 @@ function PresetsTab({ section }: { section: Section }) {
           </Callout.Text>
         </Callout.Root>
         <div className="grid grid-cols-3 gap-2 mx-2 auto-rows-[3rem]">
-          {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
-          {presets.map((preset: any) => (
+          {(presets.enum as string[]).map((preset, index) => (
             <button
               type="button"
               onClick={() => {
-                console.debug("setting preset to %s", preset.const);
-                updateSectionProps(section.id, { preset: preset.const }, previewMode === "mobile");
+                // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+                updateSectionProps(section.id, { preset: preset as any }, previewMode === "mobile");
                 // updateBrickProps(brick.id, { preset: preset.const }, previewMode === "mobile");
               }}
-              key={preset.const}
+              key={preset}
               className={tx(
-                `${preset.const}`,
-                preset.const === "preset-none" && "border-gray-200 col-span-3",
+                `${preset}`,
+                preset === "preset-none" && "border-gray-200 col-span-3",
                 `text-xs flex items-center justify-center text-center p-2 border
                    rounded-md hover:opacity-80`,
-                section.props.preset === preset.const && "outline outline-2 outline-upstart-400",
+                section.props.preset === preset && "outline outline-2 outline-upstart-400",
               )}
             >
-              {preset.title}
+              {presets.enumNames[index].title}
             </button>
           ))}
         </div>

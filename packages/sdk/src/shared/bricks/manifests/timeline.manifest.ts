@@ -2,14 +2,16 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, optional, group, prop } from "../props/helpers";
 import { Type } from "@sinclair/typebox";
 import { MdTimeline } from "react-icons/md";
-import { backgroundColor } from "../props/background";
-import { color, textContent } from "../props/text";
+import { backgroundColor, backgroundColorRef } from "../props/background";
+import { textContent, textContentRef } from "../props/text";
 import { string } from "../props/string";
-import { padding } from "../props/padding";
-import { border } from "../props/border";
+import { padding, paddingRef } from "../props/padding";
+import { border, borderRef } from "../props/border";
 import { shadow } from "../props/effects";
 import { RiMapPinTimeLine } from "react-icons/ri";
 import type { BrickProps } from "../props/types";
+import { colorRef } from "../props/color";
+import { StringEnum } from "~/shared/utils/schema";
 
 export const manifest = defineBrickManifest({
   type: "timeline",
@@ -32,9 +34,9 @@ export const manifest = defineBrickManifest({
         group({
           title: "Container",
           children: {
-            backgroundColor: optional(backgroundColor()),
-            padding: optional(padding("p-4")),
-            border: optional(border()),
+            backgroundColor: optional(backgroundColorRef()),
+            padding: optional(paddingRef),
+            border: optional(borderRef),
             shadow: optional(shadow()),
           },
         }),
@@ -46,8 +48,8 @@ export const manifest = defineBrickManifest({
             date: string("Date", "2024", {
               description: "Date or time period for this event",
             }),
-            title: textContent("Title", "Event title", { disableSizing: true }),
-            description: textContent("Description", "Event description"),
+            title: textContentRef({ title: "Title", default: "Event title", disableSizing: true }),
+            description: textContentRef({ title: "Description", default: "Event description" }),
             icon: optional(
               prop({
                 title: "Icon",
@@ -56,21 +58,6 @@ export const manifest = defineBrickManifest({
                   description: "Icon for this timeline item",
                   "ui:widget": "iconify",
                 }),
-              }),
-            ),
-            color: optional(
-              prop({
-                title: "Accent color",
-                description: "Color for the timeline dot/line",
-                schema: Type.Union(
-                  [
-                    Type.Literal("bg-primary", { title: "Primary" }),
-                    Type.Literal("bg-secondary", { title: "Secondary" }),
-                    Type.Literal("bg-accent", { title: "Accent" }),
-                    Type.Literal("bg-base-content", { title: "Base" }),
-                  ],
-                  { default: "bg-primary" },
-                ),
               }),
             ),
           }),
@@ -115,7 +102,16 @@ export const manifest = defineBrickManifest({
         group({
           title: "Appearance",
           children: {
-            lineColor: optional(backgroundColor("bg-base-300", "Timeline line color")),
+            lineColor: optional(
+              prop({
+                title: "Line color",
+                description: "Color for the timeline dot/line",
+                schema: StringEnum(["primary", "secondary", "accent"], {
+                  default: "primary",
+                  enumNames: ["Primary", "Secondary", "Accent"],
+                }),
+              }),
+            ),
             lineWidth: optional(
               prop({
                 title: "Line width",
@@ -134,11 +130,12 @@ export const manifest = defineBrickManifest({
                 title: "Dot size",
                 schema: Type.Union(
                   [
-                    Type.Literal("w-3 h-3", { title: "Small" }),
-                    Type.Literal("w-4 h-4", { title: "Medium" }),
-                    Type.Literal("w-6 h-6", { title: "Large" }),
+                    Type.Literal("w-3", { title: "S" }),
+                    Type.Literal("w-4", { title: "M" }),
+                    Type.Literal("w-6", { title: "L" }),
+                    Type.Literal("w-8", { title: "XL" }),
                   ],
-                  { default: "w-4 h-4" },
+                  { default: "w-4" },
                 ),
               }),
             ),
@@ -162,9 +159,11 @@ export const manifest = defineBrickManifest({
         group({
           title: "Text styles",
           children: {
-            dateColor: optional(color("text-base-content/70", "Date color")),
-            titleColor: optional(color("text-base-content", "Title color")),
-            descriptionColor: optional(color("text-base-content/80", "Description color")),
+            dateColor: optional(colorRef({ default: "text-base-content/70", title: "Date color" })),
+            titleColor: optional(colorRef({ default: "text-base-content", title: "Title color" })),
+            descriptionColor: optional(
+              colorRef({ default: "text-base-content/80", title: "Description color" }),
+            ),
           },
         }),
       ),
@@ -177,7 +176,7 @@ export const manifest = defineBrickManifest({
         },
         variants: ["vertical", "with-connectors"],
         appearance: {
-          lineColor: "bg-base-300",
+          lineColor: "primary",
           lineWidth: "border-2",
           dotSize: "w-4 h-4",
           datePosition: "above",
@@ -209,9 +208,9 @@ export const examples: {
       },
       variants: ["vertical", "alternating", "with-connectors"],
       appearance: {
-        lineColor: "bg-primary",
+        lineColor: "primary",
         lineWidth: "border-4",
-        dotSize: "w-6 h-6",
+        dotSize: "w-6",
         datePosition: "above",
       },
       items: [
@@ -220,35 +219,30 @@ export const examples: {
           title: "Company Founded",
           description: "Started our journey with a vision to revolutionize the industry",
           icon: "mdi:rocket-launch",
-          color: "bg-primary",
         },
         {
           date: "2020",
           title: "First Product Launch",
           description: "Released our flagship product to the market with overwhelming response",
           icon: "mdi:product-hunt",
-          color: "bg-secondary",
         },
         {
           date: "2021",
           title: "Series A Funding",
           description: "Raised $10M in Series A funding to accelerate growth and expansion",
           icon: "mdi:currency-usd",
-          color: "bg-accent",
         },
         {
           date: "2023",
           title: "Global Expansion",
           description: "Opened offices in Europe and Asia, serving customers worldwide",
           icon: "mdi:earth",
-          color: "bg-primary",
         },
         {
           date: "2024",
           title: "IPO Planning",
           description: "Preparing for initial public offering and continued growth",
           icon: "mdi:trending-up",
-          color: "bg-secondary",
         },
       ],
     },
@@ -262,9 +256,9 @@ export const examples: {
       },
       variants: ["horizontal", "with-connectors", "card-style"],
       appearance: {
-        lineColor: "bg-base-300",
+        lineColor: "accent",
         lineWidth: "border-2",
-        dotSize: "w-4 h-4",
+        dotSize: "w-4",
         datePosition: "below",
       },
       textStyles: {
@@ -278,28 +272,24 @@ export const examples: {
           title: "Planning Phase",
           description: "Requirements gathering and technical specifications",
           icon: "mdi:clipboard-text",
-          color: "bg-primary",
         },
         {
           date: "Q2 2024",
           title: "Development",
           description: "Core feature development and testing",
           icon: "mdi:code-braces",
-          color: "bg-secondary",
         },
         {
           date: "Q3 2024",
           title: "Beta Testing",
           description: "User acceptance testing and feedback collection",
           icon: "mdi:test-tube",
-          color: "bg-accent",
         },
         {
           date: "Q4 2024",
           title: "Launch",
           description: "Production deployment and go-to-market strategy",
           icon: "mdi:rocket",
-          color: "bg-primary",
         },
       ],
     },
@@ -313,9 +303,8 @@ export const examples: {
       },
       variants: ["vertical", "minimal"],
       appearance: {
-        lineColor: "bg-base-300",
+        lineColor: "secondary",
         lineWidth: "border-2",
-        dotSize: "w-3 h-3",
         datePosition: "inline",
       },
       textStyles: {
@@ -328,25 +317,21 @@ export const examples: {
           date: "2020-2024",
           title: "Senior Software Engineer",
           description: "Led development of microservices architecture at Tech Startup Inc.",
-          color: "bg-primary",
         },
         {
           date: "2018-2020",
           title: "Full Stack Developer",
           description: "Built scalable web applications using React and Node.js at Digital Agency",
-          color: "bg-secondary",
         },
         {
           date: "2016-2018",
           title: "Junior Developer",
           description: "Started career developing mobile apps and learning modern frameworks",
-          color: "bg-accent",
         },
         {
           date: "2012-2016",
           title: "Computer Science Degree",
           description: "Bachelor's degree in Computer Science from State University",
-          color: "bg-base-content",
         },
       ],
     },
@@ -361,9 +346,9 @@ export const examples: {
       },
       variants: ["vertical", "card-style", "with-connectors"],
       appearance: {
-        lineColor: "bg-accent",
+        lineColor: "accent",
         lineWidth: "border-4",
-        dotSize: "w-6 h-6",
+        dotSize: "w-6",
         datePosition: "above",
       },
       textStyles: {
@@ -377,21 +362,18 @@ export const examples: {
           title: "Research & Discovery",
           description: "Market research, user interviews, and competitive analysis to understand user needs",
           icon: "mdi:magnify",
-          color: "bg-primary",
         },
         {
           date: "Phase 2",
           title: "Design & Prototyping",
           description: "Create wireframes, mockups, and interactive prototypes for user testing",
           icon: "mdi:palette",
-          color: "bg-secondary",
         },
         {
           date: "Phase 3",
           title: "Development",
           description: "Build the product using agile methodology with continuous integration",
           icon: "mdi:hammer-wrench",
-          color: "bg-accent",
         },
         {
           date: "Phase 4",
@@ -399,7 +381,6 @@ export const examples: {
           description:
             "Comprehensive testing including unit tests, integration tests, and user acceptance testing",
           icon: "mdi:bug",
-          color: "bg-primary",
         },
         {
           date: "Phase 5",
@@ -407,7 +388,6 @@ export const examples: {
           description:
             "Product launch with monitoring, analytics, and continuous improvement based on user feedback",
           icon: "mdi:rocket-launch",
-          color: "bg-secondary",
         },
       ],
     },
@@ -422,9 +402,9 @@ export const examples: {
       },
       variants: ["vertical", "with-connectors"],
       appearance: {
-        lineColor: "bg-primary/30",
+        lineColor: "primary",
         lineWidth: "border-8",
-        dotSize: "w-6 h-6",
+        dotSize: "w-6",
         datePosition: "above",
       },
       textStyles: {
@@ -438,42 +418,36 @@ export const examples: {
           title: "Registration & Welcome",
           description: "Check-in, networking breakfast, and welcome address by the CEO",
           icon: "mdi:account-check",
-          color: "bg-primary",
         },
         {
           date: "10:00 AM",
           title: "Keynote Presentation",
           description: "Future of Technology: Trends and Innovations Shaping Tomorrow",
           icon: "mdi:presentation",
-          color: "bg-secondary",
         },
         {
           date: "11:30 AM",
           title: "Panel Discussion",
           description: "Industry leaders discuss challenges and opportunities in digital transformation",
           icon: "mdi:account-group",
-          color: "bg-accent",
         },
         {
           date: "1:00 PM",
           title: "Networking Lunch",
           description: "Catered lunch with opportunities to connect with speakers and attendees",
           icon: "mdi:food",
-          color: "bg-primary",
         },
         {
           date: "2:30 PM",
           title: "Workshop Sessions",
           description: "Hands-on workshops covering AI, cloud computing, and cybersecurity",
           icon: "mdi:school",
-          color: "bg-secondary",
         },
         {
           date: "4:00 PM",
           title: "Closing Remarks",
           description: "Summary of key insights and announcement of next year's conference",
           icon: "mdi:microphone",
-          color: "bg-accent",
         },
       ],
     },

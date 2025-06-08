@@ -429,6 +429,7 @@ export const useEditablePage = (
         .dropzone({
           accept: ".draggable-brick",
           ondrop: (event: Interact.DropEvent) => {
+            console.debug("useEditablePage:dropzone:ondrop", event);
             const type = event.relatedTarget.dataset.brickType as Brick["type"] | undefined;
             if (type) {
               const section = getSectionElementAtPosition(event.dragEvent.clientX, event.dragEvent.clientY);
@@ -453,16 +454,16 @@ export const useEditablePage = (
         .on("dragleave", (event: Interact.DropEvent) => {
           console.log("dragleave", event.target.id);
         })
-        .on("dropactivate", function (event: Interact.DropEvent) {
-          console.log("dropactivate", event.target.id);
-          event.relatedTarget.setPointerCapture(1);
-          dropCallbacks.onDropActivate?.(event);
-        })
-        .on("dropdeactivate", function (event: Interact.DropEvent) {
-          console.log("dropdeactivate", event.target?.id);
-          event.relatedTarget.releasePointerCapture(1);
-          dropCallbacks.onDropDeactivate?.(event);
-        })
+        // .on("dropactivate", function (event: Interact.DropEvent) {
+        //   console.log("dropactivate", event.target);
+        //   event.relatedTarget.setPointerCapture(1);
+        //   dropCallbacks.onDropActivate?.(event);
+        // })
+        // .on("dropdeactivate", function (event: Interact.DropEvent) {
+        //   console.log("dropdeactivate", event.target?.id);
+        //   event.relatedTarget.releasePointerCapture(1);
+        //   dropCallbacks.onDropDeactivate?.(event);
+        // })
         .on("dropmove", function (event: Interact.DropEvent) {
           const type = event.relatedTarget.dataset.brickType as Brick["type"] | undefined;
           const overElement = event.target as HTMLElement;

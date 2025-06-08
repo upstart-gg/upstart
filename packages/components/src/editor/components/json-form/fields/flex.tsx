@@ -1,20 +1,19 @@
 import type { FieldProps } from "./types";
 import { Select } from "@upstart.gg/style-system/system";
-import type { FlexSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
 import { fieldLabel } from "../form-class";
 import { SegmentedControl, Switch } from "@upstart.gg/style-system/system";
 import { HelpIcon } from "../HelpIcon";
 import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
 
-export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
+export const FlexField: React.FC<FieldProps<any>> = (props) => {
   const {
     currentValue = {
       direction: "flex-row",
       wrap: "flex-nowrap",
       alignItems: "items-stretch",
       justifyContent: "justify-stretch",
-    } satisfies Partial<FlexSettings>,
+    } satisfies Partial<any>,
     onChange,
     description,
     formData,
@@ -22,7 +21,7 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
     title,
   } = props;
 
-  const onSettingsChange = (newVal: Partial<FlexSettings>) => onChange({ ...currentValue, ...newVal });
+  const onSettingsChange = (newVal: Partial<any>) => onChange({ ...currentValue, ...newVal });
 
   return (
     <div className="flex-field">
@@ -32,7 +31,7 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
         <div className="flex flex-col gap-1 basis-2/5">
           <label className={fieldLabel}>Direction</label>
           <SegmentedControl.Root
-            onValueChange={(value) => onSettingsChange({ direction: value as FlexSettings["direction"] })}
+            onValueChange={(value) => onSettingsChange({ direction: value as any["direction"] })}
             defaultValue={currentValue.direction as string}
             size="1"
             className="w-full mt-0.5 !max-w-full"
@@ -77,9 +76,7 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
           <Select.Root
             defaultValue={currentValue.justifyContent}
             size="2"
-            onValueChange={(value) =>
-              onSettingsChange({ justifyContent: value as FlexSettings["justifyContent"] })
-            }
+            onValueChange={(value) => onSettingsChange({ justifyContent: value as any["justifyContent"] })}
           >
             <Select.Trigger radius="large" variant="ghost" />
             <Select.Content position="popper">
@@ -104,7 +101,7 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
           <Select.Root
             defaultValue={currentValue.alignItems}
             size="2"
-            onValueChange={(value) => onSettingsChange({ alignItems: value as FlexSettings["alignItems"] })}
+            onValueChange={(value) => onSettingsChange({ alignItems: value as any["alignItems"] })}
           >
             <Select.Trigger radius="large" variant="ghost" />
             <Select.Content position="popper">

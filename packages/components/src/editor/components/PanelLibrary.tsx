@@ -2,7 +2,6 @@ import { defaultProps, manifests } from "@upstart.gg/sdk/bricks/manifests/all-ma
 import { Value } from "@sinclair/typebox/value";
 import { WiStars } from "react-icons/wi";
 import { MdOutlineHelpOutline } from "react-icons/md";
-
 import {
   Tabs,
   Button,
@@ -40,13 +39,68 @@ export default function PanelLibrary() {
     interactable.current = interact(".draggable-brick", {
       styleCursor: false,
     });
-    interactable.current.draggable({
-      inertia: true,
+    interactable.current
+      .draggable({
+        inertia: false,
+        autoScroll: {
+          enabled: true,
+        },
+      })
+      .draggable({
+        listeners: {
+          // Remove manualStart - let interact.js handle the start automatically
+          start(event: Interact.DragEvent) {
+            const target = event.target as HTMLElement;
+            const computedStyle = window.getComputedStyle(target);
 
-      autoScroll: {
-        enabled: false,
-      },
-    });
+            // Create clone on drag start
+            const clone = target.cloneNode(true) as HTMLElement;
+
+            // Position clone at current mouse position
+            clone.style.position = "absolute";
+            clone.style.left = `${event.clientX - target.offsetWidth / 2}px`;
+            clone.style.top = `${event.clientY - target.offsetHeight / 2}px`;
+            clone.style.width = computedStyle.width;
+            clone.style.height = computedStyle.height;
+            clone.style.zIndex = "99999";
+            clone.style.opacity = "0.8";
+            clone.style.boxShadow = "0px 0px 24px rgba(0, 0, 0, 0.2)";
+            clone.style.border = "1px solid";
+            clone.style.borderColor = computedStyle.borderColor;
+            clone.style.pointerEvents = "none"; // Prevent interference
+
+            clone.classList.add("clone");
+
+            document.body.appendChild(clone);
+            document.body.style.cursor = "grabbing";
+
+            // Store reference to clone on the interaction
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+            (event.interaction as any).clone = clone;
+          },
+
+          move(event: Interact.DragEvent) {
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+            const clone = (event.interaction as any).clone as HTMLElement;
+
+            if (clone) {
+              // Update clone position based on mouse movement
+              clone.style.left = `${event.clientX - clone.offsetWidth / 2}px`;
+              clone.style.top = `${event.clientY - clone.offsetHeight / 2}px`;
+            }
+          },
+
+          end(event: Interact.DragEvent) {
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+            const clone = (event.interaction as any).clone as HTMLElement;
+            document.body.style.cursor = "default"; // Reset cursor style
+
+            if (clone) {
+              clone.remove();
+            }
+          },
+        },
+      });
     return () => {
       interactable.current?.unset();
       interactable.current = null;

@@ -1,15 +1,14 @@
 import type { FieldProps } from "./types";
-import type { GridSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
 import { fieldLabel } from "../form-class";
 import { Slider } from "@upstart.gg/style-system/system";
 import { HelpIcon } from "../HelpIcon";
 import { FieldTitle } from "../field-factory";
 
-export const GridField: React.FC<FieldProps<GridSettings>> = (props) => {
+export const GridField: React.FC<FieldProps<any>> = (props) => {
   const {
     currentValue = {
       columns: 2,
-    } satisfies Partial<GridSettings>,
+    } satisfies Partial<any>,
     onChange,
     description,
     schema,
@@ -21,7 +20,7 @@ export const GridField: React.FC<FieldProps<GridSettings>> = (props) => {
     return null;
   }
 
-  const onSettingsChange = (newVal: Partial<GridSettings>) => onChange({ ...currentValue, ...newVal });
+  const onSettingsChange = (newVal: Partial<any>) => onChange({ ...currentValue, ...newVal });
 
   return (
     <div className="grid-field">

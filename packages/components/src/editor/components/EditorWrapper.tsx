@@ -67,9 +67,7 @@ export function EditorWrapper({
   onReady = () => {},
 }: PropsWithChildren<EditorWrapperProps>) {
   const { site, pages } = config;
-
   const debugMode = new URLSearchParams(window.location.search).has("debug");
-  const page = pages.find((p) => p.id === pageId) ?? pages[0];
 
   const editorStore = useRef(
     createEditorStore({
@@ -81,10 +79,11 @@ export function EditorWrapper({
       onDraftChange,
       debugMode,
       panel: (new URL(self.location.href).searchParams.get("panel") as EditorState["panel"]) ?? undefined,
-      pages,
       sitePrompt: site.sitePrompt,
     }),
   ).current;
+
+  const page = pages.find((p) => p.id === pageId) ?? pages[0];
 
   const draftStore = useRef(
     createDraftStore({
@@ -103,6 +102,7 @@ export function EditorWrapper({
       siteAttributes: site.attributes,
       datasources: site.datasources,
       datarecords: site.datarecords,
+      pages: pages[0].id === "_default_" ? [] : pages,
       // todo: pass the appropriate data for the page
       data: {},
       theme: site.theme,

@@ -1,10 +1,13 @@
 import type { GenericPageConfig } from "./page";
 import type { Site } from "./site";
+import type { Sitemap } from "./sitemap";
 
 export type GenerationState = {
   isReady: boolean;
   hasSitemap: boolean;
   hasThemesGenerated: boolean;
+  pages: GenericPageConfig[];
+  sitemap: Sitemap;
 };
 
 export type CallContextProps = {

@@ -6,6 +6,7 @@ import { datasourcesMap } from "./datasources/types";
 import { datarecordsMap } from "./datarecords/types";
 import { defaultTheme, themeSchema } from "./theme";
 import { sitePrompt } from "./prompt";
+import { nanoid } from "nanoid";
 
 export const siteSchema = Type.Object({
   id: Type.String(),
@@ -49,7 +50,7 @@ export type SiteAndPagesConfig = {
 export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
   return {
     site: {
-      id: crypto.randomUUID(),
+      id: nanoid(7),
       label: "New site",
       hostname: "example.com",
       sitePrompt,
@@ -64,7 +65,28 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
         id: "_default_",
         label: "First page",
         path: "/",
-        sections: [],
+        sections: [
+          {
+            id: nanoid(7),
+            label: "Hero Section",
+            order: 1,
+            props: {},
+            bricks: [
+              {
+                id: crypto.randomUUID(),
+                type: "navbar",
+                props: {
+                  brand: {
+                    name: "My Site",
+                  },
+                  navigation: {
+                    staticItems: [{ urlOrPageId: "/about" }, { urlOrPageId: "/contact" }],
+                  },
+                },
+              },
+            ],
+          },
+        ],
         tags: [],
         attributes: defaultAttributesSchema,
         attr: resolveAttributes(),

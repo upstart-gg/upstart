@@ -2,6 +2,7 @@ import { Value } from "@sinclair/typebox/value";
 import type { TObject, TProperties, TArray } from "@sinclair/typebox";
 import type { FC } from "react";
 import type { IconBaseProps } from "react-icons/lib";
+import { ajv, getSchemaDefaults } from "./ajv";
 
 type BrickKind = "brick" | "widget" | "container";
 
@@ -94,9 +95,9 @@ export type BrickManifest = ReturnType<typeof defineBrickManifest>;
 export function getBrickManifestDefaults<M extends BrickManifest>(manifest: M) {
   return {
     ...manifest,
-    props: Value.Create(manifest.props),
+    props: getSchemaDefaults(manifest.props),
     // mobileProps: {},
-    ...(manifest.datasource ? { datasource: Value.Create(manifest.datasource) } : {}),
+    ...(manifest.datasource ? { datasource: getSchemaDefaults(manifest.datasource) } : {}),
     // ...(manifest.datarecord ? { datarecord: Value.Create(manifest.datarecord) } : {}),
   };
 }

@@ -1,38 +1,37 @@
 import { Type } from "@sinclair/typebox";
-import { preset } from "./preset";
+import { preset, presetRef } from "./preset";
+import { typedRef } from "~/shared/utils/typed-ref";
+
+export function hidden() {
+  return Type.Object(
+    {
+      desktop: Type.Boolean(),
+      mobile: Type.Boolean(),
+    },
+    {
+      $id: "styles:hidden",
+      title: "Hidden",
+      description: "Used to hide the brick on desktop or mobile.",
+      "ui:field": "hidden",
+    },
+  );
+}
 
 export const commonProps = {
-  // className: Type.Optional(
-  //   Type.String({
-  //     default: "",
-  //     "ui:field": "hidden",
-  //   }),
-  // ),
   lastTouched: Type.Optional(
     Type.Number({
       default: 0,
       "ui:field": "hidden",
-      "ai:instructions": "Do not use. It is used internally by the editor.",
+      "ai:hidden": true,
     }),
   ),
-  hidden: Type.Optional(
-    Type.Object(
-      {
-        desktop: Type.Boolean(),
-        mobile: Type.Boolean(),
-      },
-      {
-        "ui:field": "hidden",
-        "ai:instructions": "Do not use. It is used internally by the editor.",
-      },
-    ),
-  ),
+  hidden: Type.Optional(typedRef("styles:hidden")),
   editable: Type.Optional(
     Type.Boolean({
       description: "Do not use. It is used internally by the editor.",
-      default: false,
       "ui:field": "hidden",
+      "ai:hidden": true,
     }),
   ),
-  preset: Type.Optional(preset()),
+  preset: Type.Optional(presetRef),
 };

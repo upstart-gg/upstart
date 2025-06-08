@@ -1,10 +1,10 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { padding } from "../props/padding";
-import { backgroundColor } from "../props/background";
+import { padding, paddingRef } from "../props/padding";
+import { backgroundColor, backgroundColorRef } from "../props/background";
 import { defineProps, group, optional } from "../props/helpers";
-import { textContent } from "../props/text";
+import { textContent, textContentRef } from "../props/text";
 import { BsCardText } from "react-icons/bs";
-import { image } from "../props/image";
+import { image, imageRef } from "../props/image";
 import { Type } from "@sinclair/typebox";
 import type { BrickProps } from "../props/types";
 
@@ -28,8 +28,6 @@ export const manifest = defineBrickManifest({
         ],
         {
           title: "Variant",
-          description:
-            "The variants of the card. You can select multiple, for example: `image-first` and `centered`.",
         },
       ),
     ),
@@ -37,9 +35,9 @@ export const manifest = defineBrickManifest({
       group({
         title: "Title",
         children: {
-          content: textContent(),
-          padding: optional(padding()),
-          backgroundColor: optional(backgroundColor()),
+          content: textContentRef(),
+          padding: optional(paddingRef),
+          backgroundColor: optional(backgroundColorRef()),
         },
       }),
     ),
@@ -47,7 +45,7 @@ export const manifest = defineBrickManifest({
       group({
         title: "Image",
         children: {
-          image: image(),
+          image: imageRef(),
         },
       }),
     ),
@@ -55,9 +53,9 @@ export const manifest = defineBrickManifest({
       group({
         title: "Body",
         children: {
-          content: textContent(),
-          padding: optional(padding()),
-          backgroundColor: optional(backgroundColor()),
+          content: textContentRef(),
+          padding: optional(paddingRef),
+          backgroundColor: optional(backgroundColorRef()),
         },
       }),
     ),
@@ -76,7 +74,7 @@ export const examples: {
     type: "card",
     props: {
       variants: ["image-first"],
-      preset: "bold-primary",
+      preset: "prominent-primary",
       cardTitle: {
         content: "Card Title",
         padding: "p-4",

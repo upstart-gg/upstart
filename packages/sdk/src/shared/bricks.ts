@@ -1,15 +1,14 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { customAlphabet } from "nanoid";
 import { defaultProps } from "./bricks/manifests/all-manifests";
-import { background } from "./bricks/props/background";
-import { border } from "./bricks/props/border";
+import { backgroundRef } from "./bricks/props/background";
+import { border, borderRef } from "./bricks/props/border";
 import { preset } from "./bricks/props/preset";
 import { merge } from "lodash-es";
-import { cssLength } from "./bricks/props/css-length";
+import { cssLength, cssLengthRef } from "./bricks/props/css-length";
 import { enumProp } from "./bricks/props/enum";
-import { containerLayout } from "./bricks/props/container";
+import { containerLayoutRef } from "./bricks/props/container";
 import { StringEnum } from "./utils/schema";
-import { commonProps } from "./bricks/props/common";
 
 /**
  * Generates a unique identifier for bricks.
@@ -80,15 +79,19 @@ export const brickSchema = Type.Object(
       description: "A unique identifier for the brick.",
     }),
     type: brickTypeSchema,
-    props: Type.Object({
-      ...commonProps,
-      $children: Type.Optional(
-        Type.Array(Type.Ref("brick"), {
-          title: "Children",
-          description: "The children of the brick. Only used when the brick is a container.",
-        }),
-      ),
+    props: Type.Any({
+      title: "Props",
+      description: "The props of the brick. The available props depends on the brick type.",
     }),
+    // props: Type.Object({
+    //   ...commonProps,
+    //   $children: Type.Optional(
+    //     Type.Array(Type.Ref("brick"), {
+    //       title: "Children",
+    //       description: "The children of the brick. Only used when the brick is a container.",
+    //     }),
+    //   ),
+    // }),
     mobileProps: Type.Optional(
       Type.Object(
         {},
@@ -127,7 +130,7 @@ export type Brick = Static<typeof brickSchema>;
 export const sectionProps = Type.Object(
   {
     layout: Type.Optional(
-      containerLayout({
+      containerLayoutRef({
         options: { disableGrid: true },
         defaults: {
           gap: "gap-4",
@@ -138,14 +141,11 @@ export const sectionProps = Type.Object(
         },
       }),
     ),
-    background: Type.Optional(background()),
+    background: Type.Optional(backgroundRef()),
     preset: Type.Optional(preset("preset-none")),
-    border: Type.Optional(border()),
+    border: Type.Optional(borderRef),
     minHeight: Type.Optional(
-      cssLength("Minimum height", "0px", {
-        description: "The min height of the section",
-        units: "height-only",
-      }),
+      cssLengthRef({ title: "Minimum height", default: "0px", description: "The min height of the section" }),
     ),
     maxWidth: Type.Optional(
       enumProp("Maximum width", "max-w-full", {
@@ -164,16 +164,14 @@ export const sectionProps = Type.Object(
       }),
     ),
     horizontalPadding: Type.Optional(
-      cssLength("Horizontal padding", "20px", {
+      cssLengthRef({
+        title: "Horizontal padding",
+        default: "20px",
         description: "Horizontal padding. Desktop only",
-        units: "width-only",
       }),
     ),
     verticalPadding: Type.Optional(
-      cssLength("Vertical padding", "20px", {
-        description: "Vertical padding.",
-        units: "height-only",
-      }),
+      cssLengthRef({ title: "Vertical padding", default: "20px", description: "Vertical padding." }),
     ),
     lastTouched: Type.Optional(
       Type.Number({

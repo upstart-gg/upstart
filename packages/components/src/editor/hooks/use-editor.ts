@@ -17,9 +17,12 @@ import type { CallContextProps, GenerationState } from "@upstart.gg/sdk/shared/c
 import { generateId } from "@upstart.gg/sdk/shared/bricks";
 import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
 import type { Site, SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
+import { add } from "date-fns";
 export { type Immer } from "immer";
 
 enableMapSet();
+
+type ValueOfObj<T> = T[keyof T];
 
 /*
 Zustand rules:
@@ -72,7 +75,7 @@ export interface EditorStateProps {
   planIndex: number;
 
   sitePrompt: SitePrompt;
-  pages: GenericPageConfig[];
+  // pages: GenericPageConfig[];
 
   previewMode: Resolution;
   textEditMode?: "default" | "large";
@@ -111,7 +114,7 @@ export interface EditorState extends EditorStateProps {
   toggleSettings: () => void;
   toggleTextEditMode: () => void;
   toggleEditorEnabled: () => void;
-  createPage: (page: GenericPageConfig) => void;
+
   setTextEditMode: (mode: EditorStateProps["textEditMode"]) => void;
   setIsEditingText: (forBrickId: string | false) => void;
   setLastTextEditPosition: (position?: number) => void;
@@ -208,11 +211,6 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                 state.panel = undefined;
                 state.panelPosition = "right";
               }
-            }),
-
-          createPage: (page) =>
-            set((state) => {
-              state.pages.push(page);
             }),
 
           setImagesSearchResults: (images) =>
@@ -377,6 +375,9 @@ export interface DraftStateProps {
   dirty?: boolean;
   lastLoaded?: Date;
   brickMap: Map<string, { brick: Brick; sectionId: string; parentId: string | null }>;
+
+  // All pages in the site, used when in setup mode
+  pages: GenericPageConfig[];
 }
 
 export interface DraftState extends DraftStateProps {
@@ -407,6 +408,10 @@ export interface DraftState extends DraftStateProps {
   setLastLoaded: () => void;
   setVersion(version: string): void;
   adjustMobileLayout(): void;
+
+  addPage: (page: GenericPageConfig) => void;
+  addDatasource: (datasource: ValueOfObj<NonNullable<Site["datasources"]>>) => void;
+  addDatarecord: (datarecord: ValueOfObj<NonNullable<Site["datarecords"]>>) => void;
 
   setSitemap(sitemap: Site["sitemap"]): void;
 
@@ -460,6 +465,7 @@ export const createDraftStore = (
     mode: "local" as const,
     brickMap: buildBrickMap(initProps.sections),
     themes: [],
+    pages: [],
     // themes: [defaultTheme, { ...defaultTheme, id: "t2" }, { ...defaultTheme, id: "t3" }],
   };
   return createStore<DraftState>()(
@@ -468,6 +474,21 @@ export const createDraftStore = (
         immer((set, _get) => ({
           ...DEFAULT_PROPS,
           ...initProps,
+
+          addPage: (page) =>
+            set((state) => {
+              state.pages.push(page);
+              //  Overwrite the default page if it exists
+              if (state.id === "_default_") {
+                state.id = page.id;
+                state.path = page.path;
+                state.label = page.label;
+                state.sections = page.sections;
+                if (page.attr) {
+                  state.attr = page.attr;
+                }
+              }
+            }),
 
           isFirstSection: (sectionId) => {
             const state = _get();
@@ -522,6 +543,32 @@ export const createDraftStore = (
             const state = _get();
             return state.sections.find((s) => s.order === state.sections.length - 1)?.id === sectionId;
           },
+
+          addDatasource: (datasource) =>
+            set((state) => {
+              if (!state.datasources) {
+                state.datasources = {};
+              }
+              const existing = Object.values(state.datasources).find((ds) => ds.id === datasource.id);
+              if (existing) {
+                console.error("Cannot add datasource %s, it already exists", datasource.id);
+                return;
+              }
+              state.datasources[datasource.id] = datasource;
+            }),
+
+          addDatarecord: (datarecord) =>
+            set((state) => {
+              if (!state.datarecords) {
+                state.datarecords = {};
+              }
+              const existing = Object.values(state.datarecords).find((dr) => dr.id === datarecord.id);
+              if (existing) {
+                console.error("Cannot add datarecord %s, it already exists", datarecord.id);
+                return;
+              }
+              state.datarecords[datarecord.id] = datarecord;
+            }),
 
           addSection: (section) =>
             set((state) => {
@@ -1133,19 +1180,20 @@ export const usePreviewMode = () => {
 export const useGenerationState = () => {
   const draft = useDraftStoreContext();
   const editorCtx = useEditorStoreContext();
-  const baseState = useStore(draft, (state) => {
+  return useStore(draft, (state) => {
     const hasSitemap = state.sitemap.length > 0;
     const hasThemesGenerated = state.themes.length > 0;
+    const isReady =
+      hasSitemap &&
+      hasThemesGenerated &&
+      state.sitemap.length > 0 &&
+      state.sitemap.every((page) => state.pages.some((p) => p.id === page.id));
     return {
       hasSitemap,
       hasThemesGenerated,
-    };
-  });
-  return useStore(editorCtx, (state) => {
-    const isReady = baseState.hasSitemap && baseState.hasThemesGenerated && !!state.genFlowDone;
-    return {
-      ...baseState,
-      isReady,
+      sitemap: state.sitemap,
+      pages: state.pages,
+      isReady: isReady || import.meta.env.DEV,
     } satisfies GenerationState;
   });
 };
@@ -1213,7 +1261,7 @@ export const useEditorMode = () => {
 };
 
 export const useSiteAndPages = () => {
-  const ctx = useEditorStoreContext();
+  const ctx = useDraftStoreContext();
   const pages = useStore(ctx, (state) => state.pages);
   const site = useSite();
   return {
@@ -1341,7 +1389,6 @@ export const useDatasourcesSchemas = () => {
 export const useEditorHelpers = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => ({
-    createPage: state.createPage,
     setPreviewMode: state.setPreviewMode,
     setSettingsVisible: state.setSettingsVisible,
     toggleSettings: state.toggleSettings,
@@ -1379,6 +1426,9 @@ export const useDraftHelpers = () => {
     setTheme: state.setTheme,
     pickTheme: state.pickTheme,
     setSitemap: state.setSitemap,
+    addPage: state.addPage,
+    addDatasource: state.addDatasource,
+    addDatarecord: state.addDatarecord,
     duplicateBrick: state.duplicateBrick,
     getBrick: state.getBrick,
     validatePreviewTheme: state.validatePreviewTheme,

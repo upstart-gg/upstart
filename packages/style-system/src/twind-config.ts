@@ -173,7 +173,7 @@ export default defineConfig({
 
     // presets preview
     ["surface-", ({ $$ }) => `@(bg-base-${$$}00 text-base${$$}00 border-base-${$$}00)`],
-    ["bold-", ({ $$ }) => `@(bg-${$$}-700 text-${$$} border-${$$}-800)`],
+    ["prominent-", ({ $$ }) => `@(bg-${$$}-700 text-${$$} border-${$$}-800)`],
     ["medium-", ({ $$ }) => `@(bg-${$$}-200 text-${$$}-800 border-${$$}-300)`],
     ["subtle-", ({ $$ }) => `@(bg-${$$}-50 text-${$$}-800 border-${$$}-100)`],
   ],

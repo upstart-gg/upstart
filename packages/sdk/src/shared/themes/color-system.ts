@@ -123,7 +123,5 @@ export function generateColorsVars(theme: Theme) {
     });
   });
 
-  console.log("theme", theme.colors, shades);
-
   return shades;
 }

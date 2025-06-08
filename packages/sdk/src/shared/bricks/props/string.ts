@@ -2,6 +2,7 @@ import { type Static, Type, type StringOptions } from "@sinclair/typebox";
 import { prop } from "./helpers";
 import type { jsonStringsSupportedFormats } from "../../ajv";
 import type { FieldMetadata } from "./types";
+import { typedRef } from "~/shared/utils/typed-ref";
 
 type StrFieldOptions = StringOptions &
   FieldMetadata & {
@@ -41,6 +42,7 @@ export function urlOrPageId(title = "URL or Page ID", defaultValue?: string) {
         pageIdSchema,
       ],
       {
+        $id: "content:urlOrPageId",
         default: defaultValue,
         title: "URL or Page ID",
         "ui:field": "url-page-id",
@@ -52,3 +54,7 @@ export function urlOrPageId(title = "URL or Page ID", defaultValue?: string) {
 }
 
 export type UrlOrPageIdSettings = Static<ReturnType<typeof urlOrPageId>>;
+
+export function urlOrPageIdRef(options: { title?: string; default?: string } = {}) {
+  return typedRef("content:urlOrPageId", options);
+}

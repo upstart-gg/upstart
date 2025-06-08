@@ -1,5 +1,7 @@
-import { Type, type Static } from "@sinclair/typebox";
+import { type SchemaOptions, Type, type Static } from "@sinclair/typebox";
 import { group, optional, prop } from "./helpers";
+import { StringEnum } from "~/shared/utils/schema";
+import { typedRef } from "~/shared/utils/typed-ref";
 
 type ShadowOptions = {
   title?: string;
@@ -9,23 +11,14 @@ type ShadowOptions = {
 export function shadow({ title = "Shadow", defaultValue = "shadow-none" }: ShadowOptions = {}) {
   return prop({
     title,
-    schema: Type.Union(
-      [
-        Type.Literal("shadow-none", { title: "None" }),
-        Type.Literal("shadow-sm", { title: "Small" }),
-        Type.Literal("shadow-md", { title: "Medium" }),
-        Type.Literal("shadow-lg", { title: "Large" }),
-        Type.Literal("shadow-xl", { title: "Extra large" }),
-        Type.Literal("shadow-2xl", { title: "Extra large (2x)" }),
-      ],
-      {
-        default: defaultValue,
-        "ui:styleId": "#styles:shadow",
-        "ui:placeholder": "Not specified",
-        "ui:field": "enum",
-        "ui:display": "select",
-      },
-    ),
+    schema: StringEnum(["shadow-none", "shadow-sm", "shadow-md", "shadow-lg", "shadow-xl", "shadow-2xl"], {
+      title,
+      default: defaultValue,
+      enumNames: ["None", "Small", "Medium", "Large", "Extra large", "Extra large (2x)"],
+      "ui:placeholder": "Not specified",
+      "ui:field": "enum",
+      "ui:display": "select",
+    }),
   });
 }
 
@@ -42,18 +35,13 @@ export function textShadow({
 }: TextShadowOptions = {}) {
   return prop({
     title,
-    schema: Type.Union(
-      [
-        Type.Literal("text-shadow-none", { title: "None" }),
-        Type.Literal("text-shadow-sm", { title: "S" }),
-        Type.Literal("text-shadow-md", { title: "M" }),
-        Type.Literal("text-shadow-lg", { title: "L" }),
-        Type.Literal("text-shadow-xl", { title: "XL" }),
-      ],
+    schema: StringEnum(
+      ["text-shadow-none", "text-shadow-sm", "text-shadow-md", "text-shadow-lg", "text-shadow-xl"],
       {
         default: defaultValue,
-        "ui:field": "enum",
+        enumNames: ["None", "Small", "Medium", "Large", "Extra large"],
         "ui:placeholder": "Not specified",
+        "ui:field": "enum",
       },
     ),
   });
@@ -98,6 +86,7 @@ export function effects({ title = "Effects", defaultValue = {}, enableTextShadow
     title,
     options: {
       default: defaultValue,
+      $id: "styles:effects",
     },
     children: {
       opacity: optional(
@@ -122,4 +111,8 @@ export function effects({ title = "Effects", defaultValue = {}, enableTextShadow
       }),
     },
   });
+}
+
+export function effectsRef(options: SchemaOptions & EffectsOptions = {}) {
+  return typedRef("styles:effects", options);
 }

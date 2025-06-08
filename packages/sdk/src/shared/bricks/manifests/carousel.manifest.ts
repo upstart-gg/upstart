@@ -4,6 +4,10 @@ import { TbCarouselHorizontal } from "react-icons/tb";
 import { Type } from "@sinclair/typebox";
 import { makeContainerProps } from "../props/container";
 import type { BrickProps } from "../props/types";
+import { background, backgroundRef } from "../props/background";
+import { border, borderRef } from "../props/border";
+import { padding, paddingRef } from "../props/padding";
+import { effects, effectsRef } from "../props/effects";
 
 export const manifest = defineBrickManifest({
   type: "carousel",
@@ -26,6 +30,10 @@ export const manifest = defineBrickManifest({
         },
       ),
     ),
+    background: optional(backgroundRef()),
+    border: optional(borderRef),
+    padding: optional(paddingRef),
+    effects: optional(effectsRef()),
     ...makeContainerProps(),
   }),
 });
@@ -74,21 +82,21 @@ export const examples: {
           type: "text",
           props: {
             content: "Slide 1",
-            preset: "bold-primary",
+            preset: "prominent-primary",
           },
         },
         {
           type: "text",
           props: {
             content: "Slide 2",
-            preset: "bold-secondary",
+            preset: "prominent-secondary",
           },
         },
         {
           type: "text",
           props: {
             content: "Slide 3",
-            preset: "bold-accent",
+            preset: "prominent-accent",
           },
         },
       ],

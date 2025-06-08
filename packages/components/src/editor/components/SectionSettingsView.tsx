@@ -1,13 +1,10 @@
 import FormNavigator from "./json-form/FormNavigator";
-import { Brick, type Section, sectionSchema } from "@upstart.gg/sdk/shared/bricks";
-import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
-import type { TArray, TObject, TSchema } from "@sinclair/typebox";
-import type { NavItem } from "./json-form/types";
+import { type Section, sectionSchema } from "@upstart.gg/sdk/shared/bricks";
 import { useCallback, useMemo } from "react";
 import { merge, set } from "lodash-es";
-import { useDraftHelpers, useGetBrick, usePreviewMode, useSection } from "~/editor/hooks/use-editor";
+import { getSchemaDefaults } from "@upstart.gg/sdk/shared/ajv";
+import { useDraftHelpers, usePreviewMode } from "~/editor/hooks/use-editor";
 import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
-import { Value } from "@sinclair/typebox/value";
 
 type SectionSettingsViewProps = {
   section: Section;
@@ -33,7 +30,7 @@ export default function SectionSettingsView({ section, group }: SectionSettingsV
   const navItems = getNavItemsFromManifest(sectionSchema.properties.props, filter);
 
   const formData = useMemo(() => {
-    const defProps = Value.Create(sectionSchema.properties.props);
+    const defProps = getSchemaDefaults(sectionSchema.properties.props);
     return previewMode === "mobile"
       ? merge({}, defProps, section.props, section.mobileProps)
       : merge({}, defProps, section.props ?? {});

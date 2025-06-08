@@ -4,9 +4,9 @@ import { LiaMapMarkedAltSolid } from "react-icons/lia";
 import { Type } from "@sinclair/typebox";
 import { string } from "../props/string";
 import { number } from "../props/number";
-import { backgroundColor } from "../props/background";
-import { border } from "../props/border";
-import { padding } from "../props/padding";
+import { backgroundColor, backgroundColorRef } from "../props/background";
+import { border, borderRef } from "../props/border";
+import { padding, paddingRef } from "../props/padding";
 import { shadow } from "../props/effects";
 import type { BrickProps } from "../props/types";
 
@@ -29,9 +29,9 @@ export const manifest = defineBrickManifest({
         tooltip: optional(string("Tooltip")),
       }),
     }),
-    backgroundColor: optional(backgroundColor()),
-    border: optional(border()),
-    padding: optional(padding()),
+    backgroundColor: optional(backgroundColorRef()),
+    border: optional(borderRef),
+    padding: optional(paddingRef),
     shadow: optional(shadow()),
   }),
 });

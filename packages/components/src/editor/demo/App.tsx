@@ -8,14 +8,15 @@ import { createEmptyConfig } from "@upstart.gg/sdk/shared/site";
 
 export default function App({ path }: { path: string }) {
   const siteConfig = createEmptyConfig("a site about coffee and tea");
-
   const searchParams = new URL(`http://localhost${path}`).searchParams;
   const p = searchParams.get("p");
-  const page = siteConfig.pages.find((page) => page.id === p) ?? siteConfig.pages[0];
+  const pageId = (siteConfig.pages.find((page) => page.id === p) ?? siteConfig.pages[0]).id;
+
+  console.dir(siteConfig, { depth: null });
 
   return (
     <ClientOnly>
-      <InnerEditor config={siteConfig}>
+      <InnerEditor config={siteConfig} pageId={pageId}>
         <Editor />
       </InnerEditor>
     </ClientOnly>

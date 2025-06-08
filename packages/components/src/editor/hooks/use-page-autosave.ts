@@ -41,6 +41,7 @@ export function usePageAutoSave() {
   }, AUTO_SAVE_MIN_INTERVAL);
 
   const saveDraft = useDebounceCallback(async () => {
+    console.debug("Saving draft", { draft, siteAndPages });
     await onDraftChange?.(draft, siteAndPages);
     draft.setDirty(false);
   }, AUTO_SAVE_MIN_INTERVAL);

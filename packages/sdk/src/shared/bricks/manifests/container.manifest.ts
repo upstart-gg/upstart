@@ -1,12 +1,12 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, group, optional } from "../props/helpers";
-import { background } from "../props/background";
+import { background, backgroundRef } from "../props/background";
 import { datasourceRef } from "../props/datasource";
-import { containerLayout, makeContainerProps } from "../props/container";
+import { containerLayout, containerLayoutRef, makeContainerProps } from "../props/container";
 import { Type } from "@sinclair/typebox";
-import { border } from "../props/border";
-import { effects } from "../props/effects";
-import { padding } from "../props/padding";
+import { border, borderRef } from "../props/border";
+import { effects, effectsRef } from "../props/effects";
+import { padding, paddingRef } from "../props/padding";
 import { RxGrid } from "react-icons/rx";
 import type { BrickProps } from "../props/types";
 
@@ -31,11 +31,11 @@ export const manifest = defineBrickManifest({
   datasource,
   icon: RxGrid,
   props: defineProps({
-    layout: containerLayout(),
-    background: optional(background()),
-    border: optional(border()),
-    padding: optional(padding()),
-    effects: optional(effects()),
+    layout: containerLayoutRef(),
+    background: optional(backgroundRef()),
+    border: optional(borderRef),
+    padding: optional(paddingRef),
+    effects: optional(effectsRef()),
     datasource: optional(datasourceRef()),
     ...makeContainerProps(),
   }),
@@ -52,7 +52,7 @@ export const examples: {
     description: "Feature cards grid layout",
     type: "container",
     props: {
-      preset: "bold-primary",
+      preset: "prominent-primary",
       layout: {
         type: "grid",
         columns: 3,
@@ -106,7 +106,7 @@ export const examples: {
     description: "Horizontal hero section with image and text",
     type: "container",
     props: {
-      preset: "bold-secondary",
+      preset: "prominent-secondary",
       layout: {
         type: "flex",
         direction: "flex-row",

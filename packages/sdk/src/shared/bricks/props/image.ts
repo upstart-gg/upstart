@@ -1,4 +1,4 @@
-import { Type, type Static } from "@sinclair/typebox";
+import { type SchemaOptions, Type, type Static } from "@sinclair/typebox";
 import { prop } from "./helpers";
 // import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
 
@@ -64,12 +64,12 @@ export function image(title = "Image", options: PropImageOptions = {}) {
       ),
     },
     {
+      $id: "assets:image",
       "ui:field": "image",
       "ui:accept": "image/*",
       "ui:show-img-search": !!showImgSearch,
       "ui:no-object-options": !!options.noObjectOptions,
       default: {
-        // src: defaultImageUrl,
         alt: "Image",
         fit: "object-cover",
         position: "object-center",
@@ -80,6 +80,10 @@ export function image(title = "Image", options: PropImageOptions = {}) {
     title,
     schema,
   });
+}
+
+export function imageRef(options: PropImageOptions & SchemaOptions = {}) {
+  return Type.Ref("assets:image", options);
 }
 
 export type ImageProps = Static<ReturnType<typeof image>>;

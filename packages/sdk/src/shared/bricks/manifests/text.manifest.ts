@@ -1,12 +1,13 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { color, textContent } from "../props/text";
+import { textContent, textContentRef } from "../props/text";
 import { defineProps, optional } from "../props/helpers";
-import { backgroundColor } from "../props/background";
-import { padding } from "../props/padding";
-import { border } from "../props/border";
-import { effects } from "../props/effects";
+import { backgroundColor, backgroundColorRef } from "../props/background";
+import { padding, paddingRef } from "../props/padding";
+import { border, borderRef } from "../props/border";
+import { effects, effectsRef } from "../props/effects";
 import { RxTextAlignLeft } from "react-icons/rx";
 import type { BrickProps } from "../props/types";
+import { colorRef } from "../props/color";
 
 export const manifest = defineBrickManifest({
   type: "text",
@@ -36,12 +37,12 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
   icon: RxTextAlignLeft,
   props: defineProps(
     {
-      content: textContent(),
-      backgroundColor: optional(backgroundColor()),
-      color: optional(color()),
-      padding: optional(padding()),
-      border: optional(border()),
-      effects: optional(effects({ enableTextShadow: true })),
+      content: textContentRef(),
+      backgroundColor: optional(backgroundColorRef()),
+      color: optional(colorRef()),
+      padding: optional(paddingRef),
+      border: optional(borderRef),
+      effects: optional(effectsRef({ enableTextShadow: true })),
     },
     {
       default: {
@@ -59,9 +60,10 @@ export const examples: {
   props: BrickProps<Manifest>["brick"]["props"];
 }[] = [
   {
-    description: "Welcome paragraph with emphasis",
+    description: "Welcome paragraph with emphasis, using a preset",
     type: "text",
     props: {
+      preset: "prominent-primary",
       content:
         "Welcome to our platform! We're <strong>excited</strong> to have you here. Our mission is to <em>transform</em> the way you work with cutting-edge technology and <a href='/features'>innovative features</a>.",
       padding: "p-16",

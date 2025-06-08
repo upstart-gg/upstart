@@ -22,7 +22,6 @@ import { GridField } from "./fields/grid";
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
 import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
-import type { FlexSettings, GridSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import { fieldLabel } from "./form-class";
@@ -143,29 +142,29 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       );
     }
 
-    case "flex": {
-      const currentValue = (get(formData, id) ?? commonProps.schema.default) as FlexSettings;
-      return (
-        <FlexField
-          key={`field-${id}`}
-          currentValue={currentValue}
-          onChange={(value: FlexSettings | null) => onChange({ [id]: value }, id)}
-          {...commonProps}
-        />
-      );
-    }
+    // case "flex": {
+    //   const currentValue = (get(formData, id) ?? commonProps.schema.default) as FlexSettings;
+    //   return (
+    //     <FlexField
+    //       key={`field-${id}`}
+    //       currentValue={currentValue}
+    //       onChange={(value: FlexSettings | null) => onChange({ [id]: value }, id)}
+    //       {...commonProps}
+    //     />
+    //   );
+    // }
 
-    case "grid": {
-      const currentValue = (get(formData, id) ?? commonProps.schema.default) as GridSettings;
-      return (
-        <GridField
-          key={`field-${id}`}
-          currentValue={currentValue}
-          onChange={(value: GridSettings | null) => onChange({ [id]: value }, id)}
-          {...commonProps}
-        />
-      );
-    }
+    // case "grid": {
+    //   const currentValue = (get(formData, id) ?? commonProps.schema.default) as GridSettings;
+    //   return (
+    //     <GridField
+    //       key={`field-${id}`}
+    //       currentValue={currentValue}
+    //       onChange={(value: GridSettings | null) => onChange({ [id]: value }, id)}
+    //       {...commonProps}
+    //     />
+    //   );
+    // }
 
     case "padding": {
       const currentValue = (get(formData, id) ?? commonProps.schema.default) as TempPadding;

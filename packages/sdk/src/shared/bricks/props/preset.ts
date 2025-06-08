@@ -1,68 +1,76 @@
-import type { Static } from "@sinclair/typebox";
-import { StringEnum } from "~/shared/utils/schema";
+import { Type, type Static } from "@sinclair/typebox";
+import { typedRef } from "~/shared/utils/typed-ref";
 
 export function preset(defaultValue?: string) {
-  return StringEnum(
+  return Type.Union(
     [
-      "surface-1",
-      "surface-2",
-      "surface-3",
-      "bold-primary",
-      "bold-secondary",
-      "bold-accent",
-      "medium-primary",
-      "medium-secondary",
-      "medium-accent",
-      "subtle-primary",
-      "subtle-secondary",
-      "subtle-accent",
-      "preset-none",
+      Type.Literal("surface-1", {
+        title: "Surface 1",
+        description: "Surface elevation 1, light background with dark text.",
+      }),
+      Type.Literal("surface-2", {
+        title: "Surface 2",
+        description: "Surface elevation 2, slightly darker background with dark text.",
+      }),
+      Type.Literal("surface-3", {
+        title: "Surface 3",
+        description: "Surface elevation 3, even darker background with dark text.",
+      }),
+      Type.Literal("prominent-primary", {
+        title: "Prominent Primary",
+        description: "Prominent display on primary-700 background.",
+      }),
+      Type.Literal("prominent-secondary", {
+        title: "Prominent Secondary",
+        description: "Prominent display on secondary-700 background.",
+      }),
+      Type.Literal("prominent-accent", {
+        title: "Prominent Accent",
+        description: "Prominent display on accent-700 background.",
+      }),
+      Type.Literal("medium-primary", {
+        title: "Medium Primary",
+        description: "Filled display on primary-200 background.",
+      }),
+      Type.Literal("medium-secondary", {
+        title: "Medium Secondary",
+        description: "Medium display on secondary-200 background.",
+      }),
+      Type.Literal("medium-accent", {
+        title: "Medium Accent",
+        description: "Medium display on accent-200 background.",
+      }),
+      Type.Literal("subtle-primary", {
+        title: "Subtle Primary",
+        description: "Subtle display on primary-100 background and 1px border.",
+      }),
+      Type.Literal("subtle-secondary", {
+        title: "Subtle Secondary",
+        description: "Subtle display on secondary-100 background and 1px border.",
+      }),
+      Type.Literal("subtle-accent", {
+        title: "Subtle Accent",
+        description: "Subtle display on accent-100 background and 1px border.",
+      }),
+      Type.Literal("preset-none", {
+        title: "None",
+        description:
+          "No background and no border. Useful for bricks inside a card or a container that already have a surface/background.",
+      }),
     ],
     {
+      $id: "styles:preset",
       title: "Preset",
-      description: `The styles preset of the component, used to maintain styles consistency across the application.
-  * surface-1: Surface elevation 1, light background with dark text.
-  * surface-2: Surface elevation 2, slightly darker background with dark text.
-  * surface-3: Surface elevation 3, even darker background with dark text.
-  * bold-primary: Bold display on primary-700 background.
-  * bold-secondary: Bold display on secondary-700 background.
-  * bold-accent: Bold display on accent-700 background.
-  * medium-primary: Filled display on primary-200 background.
-  * medium-secondary: Medium display on secondary-200 background.
-  * medium-accent: Medium display on accent-200 background.
-  * subtle-primary: Subtle display on primary-100 background and 1px border.
-  * subtle-secondary: Subtle display on secondary-100 background and 1px border.
-  * subtle-accent: Subtle display on accent-100 background and 1px border.
-  * preset-none: No background and no border. Useful for bricks inside a card or a container that already have a surface/background.
-`,
+      description: "Styles presets are used to maintain styles consistency across the application.",
       default: defaultValue ?? "preset-none",
-      enumNames: [
-        "Surface 1",
-        "Surface 2",
-        "Surface 3",
-        "Bold Primary",
-        "Bold Secondary",
-        "Bold Accent",
-        "Medium Primary",
-        "Medium Secondary",
-        "Medium Accent",
-        "Subtle Primary",
-        "Subtle Secondary",
-        "Subtle Accent",
-        "None",
-      ],
     },
   );
 }
 
 export type Preset = Static<ReturnType<typeof preset>>;
 
-/*
-   ["surface-", ({ $$ }) => `@(bg-base-${$$}00 text-base${$$}00 border-base-${$$}00)`],
-    ["bold-", ({ $$ }) => `@(bg-${$$}-700 text-${$$} border-${$$}-800)`],
-    ["medium-", ({ $$ }) => `@(bg-${$$}-200 text-${$$}-800 border-${$$}-300)`],
-    ["subtle-", ({ $$ }) => `@(bg-${$$}-50 text-${$$}-800 border-${$$}-100)`],
-    */
+export const presetRef = typedRef("styles:preset");
+
 export const presetsStyleProps = {
   "surface-1": {
     "#styles:backgroundColor": "bg-base-100",
@@ -79,17 +87,17 @@ export const presetsStyleProps = {
     "#styles:color": "text-base-300",
     "#styles:border": { color: "border-base-300" },
   },
-  "bold-primary": {
+  "prominent-primary": {
     "#styles:backgroundColor": "bg-primary-700",
     "#styles:color": "text-primary",
     "#styles:border": { color: "border-primary-800" },
   },
-  "bold-secondary": {
+  "prominent-secondary": {
     "#styles:backgroundColor": "bg-secondary-700",
     "#styles:color": "text-secondary",
     "#styles:border": { color: "border-secondary-800" },
   },
-  "bold-accent": {
+  "prominent-accent": {
     "#styles:backgroundColor": "bg-accent-700",
     "#styles:color": "text-accent",
     "#styles:border": { color: "border-accent-800" },

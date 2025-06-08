@@ -20,11 +20,11 @@ export const sectionsPlanSchema = Type.Array(
       description: Type.String({
         title: "A long description of the section",
         description: `You must elaborate a clear and detailled plan that describes:
-- the section purpose in the page, in detail
-- the section structure, look & feel, and structural/design organization, in detail
-- the types of bricks (e.g. "container", "text", "video", "carousel", etc) and count that will be used and their purpose, in detail
+- The section purpose in the page, in detail.
+- The section structure, look & feel, and structural/design organization, in detail
+- the types of bricks (e.g. "container", "text", "video", "carousel", etc) that will be used and their purpose, in detail
 
-All these information will be used in a later prompt to generate the section content`,
+IMPORTANT: be very descriptive and precise in your plan. The more details you provide, the better the generated page will be.`,
       }),
     },
     { additionalProperties: false },

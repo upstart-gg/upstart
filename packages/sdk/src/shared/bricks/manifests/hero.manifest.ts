@@ -1,14 +1,15 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, group, optional } from "../props/helpers";
-import { basicAlign } from "../props/align";
-import { background } from "../props/background";
-import { border } from "../props/border";
-import { color, textContent } from "../props/text";
-import { padding } from "../props/padding";
+import { basicAlign, basicAlignRef } from "../props/align";
+import { background, backgroundRef } from "../props/background";
+import { border, borderRef } from "../props/border";
+import { textContent, textContentRef } from "../props/text";
+import { padding, paddingRef } from "../props/padding";
 import { BsAlphabetUppercase } from "react-icons/bs";
-import { effects } from "../props/effects";
+import { effects, effectsRef } from "../props/effects";
 import { preset } from "../props/preset";
 import type { BrickProps } from "../props/types";
+import { colorRef } from "../props/color";
 
 export const manifest = defineBrickManifest({
   type: "hero",
@@ -26,14 +27,14 @@ export const manifest = defineBrickManifest({
 
   props: defineProps(
     {
-      content: textContent("Hero title", "I'm a big text"),
-      tagline: optional(textContent("Hero tagline", "I'm a tagline")),
-      background: optional(background()),
-      color: optional(color()),
-      effects: optional(effects({ enableTextShadow: true })),
-      align: optional(basicAlign()),
-      padding: optional(padding("p-4")),
-      border: optional(border()),
+      content: textContentRef({ title: "Hero title", default: "I'm a big text" }),
+      tagline: optional(textContentRef({ title: "Hero tagline", default: "I'm a tagline" })),
+      background: optional(backgroundRef()),
+      color: optional(colorRef()),
+      effects: optional(effectsRef({ enableTextShadow: true })),
+      align: optional(basicAlignRef()),
+      padding: optional(paddingRef),
+      border: optional(borderRef),
     },
     {
       default: {
@@ -53,7 +54,7 @@ export const examples: {
     description: "Simple welcome hero with blue background",
     type: "hero",
     props: {
-      preset: "bold-primary",
+      preset: "prominent-primary",
       content: "Welcome to Our Platform",
       tagline: "The future of productivity starts here",
       align: {
@@ -66,7 +67,7 @@ export const examples: {
     description: "Startup hero with gradient background",
     type: "hero",
     props: {
-      preset: "bold-secondary",
+      preset: "prominent-secondary",
       content: "Build Something Amazing",
       tagline: "Turn your ideas into reality with our cutting-edge tools",
       align: {
@@ -79,7 +80,7 @@ export const examples: {
     description: "Construction company hero with bold presence",
     type: "hero",
     props: {
-      preset: "bold-primary",
+      preset: "prominent-primary",
       content: "Building Tomorrow Today",
       tagline: "Quality construction services for residential and commercial projects",
       padding: "p-16",
@@ -89,7 +90,7 @@ export const examples: {
     description: "Fashion brand hero with modern appeal",
     type: "hero",
     props: {
-      preset: "bold-accent",
+      preset: "prominent-accent",
       content: "Express Your Style",
       tagline: "Contemporary fashion that speaks to your individuality",
       align: {
@@ -106,7 +107,7 @@ export const examples: {
     description: "Law firm hero with authoritative tone",
     type: "hero",
     props: {
-      preset: "bold-secondary",
+      preset: "prominent-secondary",
       content: "Justice You Can Trust",
       tagline: "Experienced legal representation for individuals and businesses",
       padding: "p-8",

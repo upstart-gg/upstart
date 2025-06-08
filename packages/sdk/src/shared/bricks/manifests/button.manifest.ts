@@ -1,8 +1,8 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, optional, prop } from "../props/helpers";
-import { textContent } from "../props/text";
+import { textContent, textContentRef } from "../props/text";
 import { RxButton } from "react-icons/rx";
-import { string, urlOrPageId } from "../props/string";
+import { string, urlOrPageId, urlOrPageIdRef } from "../props/string";
 import { Type } from "@sinclair/typebox";
 import { StringEnum } from "~/shared/utils/schema";
 import type { BrickProps } from "../props/types";
@@ -55,7 +55,7 @@ export const manifest = defineBrickManifest({
         },
       ),
     ),
-    label: textContent("Label", "My button"),
+    label: textContentRef({ title: "Label", default: "My button" }),
     type: optional(
       prop({
         title: "Type",
@@ -78,7 +78,7 @@ export const manifest = defineBrickManifest({
         }),
       }),
     ),
-    linkToUrlOrPageId: optional(urlOrPageId("Link")),
+    linkToUrlOrPageId: optional(urlOrPageIdRef({ title: "Link" })),
   }),
 });
 

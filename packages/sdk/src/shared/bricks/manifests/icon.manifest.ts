@@ -1,7 +1,7 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, optional, prop } from "../props/helpers";
 import { PiConfetti } from "react-icons/pi";
-import { string, urlOrPageId } from "../props/string";
+import { string, urlOrPageId, urlOrPageIdRef } from "../props/string";
 import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({
@@ -28,7 +28,7 @@ export const manifest = defineBrickManifest({
         "ai:instructions": "The size of the icon can be set using 'em' or '%' unit.",
       }),
     }),
-    linkToUrlOrPageId: optional(urlOrPageId("Link")),
+    link: optional(urlOrPageIdRef({ title: "Link" })),
   }),
 });
 
@@ -61,7 +61,7 @@ export const examples: {
     props: {
       icon: "mdi:email",
       size: "1.1em",
-      linkToUrlOrPageId: "mailto:john.doe@example.com",
+      link: "mailto:john.doe@example.com",
     },
   },
   {
@@ -70,7 +70,7 @@ export const examples: {
     props: {
       icon: "mdi:phone",
       size: "1em",
-      linkToUrlOrPageId: "tel:+1234567890",
+      link: "tel:+1234567890",
     },
   },
   {
@@ -79,7 +79,7 @@ export const examples: {
     props: {
       icon: "mdi:download",
       size: "2.5em",
-      linkToUrlOrPageId: "https://example.com/file.zip",
+      link: "https://example.com/file.zip",
     },
   },
   {
@@ -104,7 +104,7 @@ export const examples: {
     props: {
       icon: "mdi:facebook",
       size: "1.4em",
-      linkToUrlOrPageId: "https://www.facebook.com/yourprofile",
+      link: "https://www.facebook.com/yourprofile",
     },
   },
   {
@@ -113,7 +113,7 @@ export const examples: {
     props: {
       icon: "mdi:twitter",
       size: "1.4em",
-      linkToUrlOrPageId: "https://twitter.com/yourprofile",
+      link: "https://twitter.com/yourprofile",
     },
   },
   {
@@ -122,7 +122,7 @@ export const examples: {
     props: {
       icon: "mdi:instagram",
       size: "1.4em",
-      linkToUrlOrPageId: "https://www.instagram.com/yourprofile",
+      link: "https://www.instagram.com/yourprofile",
     },
   },
 ];

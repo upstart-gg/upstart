@@ -1,5 +1,6 @@
-import { Type, type Static } from "@sinclair/typebox";
+import { type StringOptions, Type, type Static } from "@sinclair/typebox";
 import { prop } from "./helpers";
+import { typedRef } from "~/shared/utils/typed-ref";
 
 export function fontSize(defaultValue = "inherit", title = "Font size") {
   return prop({
@@ -31,39 +32,26 @@ export function fontSize(defaultValue = "inherit", title = "Font size") {
 
 export type FontSizeSettings = Static<ReturnType<typeof fontSize>>;
 
-export function color(defaultValue?: string, title = "Text color") {
-  return prop({
-    title,
-    schema: Type.String({
-      "ai:instructions":
-        "hex/rgb/rgba color or classes like `text-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900",
-      default: defaultValue,
-      "ui:styleId": "#styles:color",
-      "ui:field": "color",
-      "ui:color-type": "text",
-    }),
-  });
-}
-
-export type ColorSettings = Static<ReturnType<typeof color>>;
-
 type TextContentOptions = {
   showInSettings?: boolean;
   disableSizing?: boolean;
   disableAlignment?: boolean;
 };
 
-export function textContent(
+export function textContent({
   title = "Text",
-  defaultContent?: string,
-  { showInSettings, disableSizing = false, disableAlignment = false }: TextContentOptions = {},
-) {
+  default: defaults,
+  showInSettings,
+  disableSizing = false,
+  disableAlignment = false,
+}: TextContentOptions & StringOptions = {}) {
   return prop({
     title,
     description:
       "Text content. Can contain basic HTML tags like `<strong>`, `<em>`, `<br>` and `<a>` as well as `<p>` and `<span>` and lists <ul> <ol> <li>.",
     schema: Type.String({
-      default: defaultContent,
+      $id: "content:text",
+      default: defaults ?? "My text",
       "ui:disable-sizing": disableSizing,
       "ui:disable-alignment": disableAlignment,
       "ui:field": showInSettings ? "string" : "hidden",
@@ -72,3 +60,7 @@ export function textContent(
 }
 
 export type TextContentSettings = Static<ReturnType<typeof textContent>>;
+
+export function textContentRef(options: TextContentOptions & StringOptions = {}) {
+  return typedRef("content:text", options);
+}

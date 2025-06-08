@@ -4,7 +4,7 @@ import { prop } from "./helpers";
 export function datasourceRef() {
   return prop({
     title: "Database",
-    description: "Reference to a data source. Only used for dynamic websites.",
+    description: "Reference to a data source. Only used for dynamic websites",
     schema: Type.Object(
       {
         id: Type.String({
@@ -51,7 +51,7 @@ export function datasourceRef() {
       {
         "ui:field": "datasource-ref",
         "ui:meta-type": "datasource-ref",
-        description: "Datasource reference. Only used for dynamic websites. Do not use for static websites.",
+        description: "Datasource reference. Only used for dynamic websites. Do not use for static websites",
       },
     ),
   });

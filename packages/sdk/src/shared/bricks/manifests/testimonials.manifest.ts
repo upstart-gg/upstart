@@ -2,8 +2,8 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, optional, prop } from "../props/helpers";
 import { string } from "../props/string";
 import { Type } from "@sinclair/typebox";
-import { textContent } from "../props/text";
-import { image } from "../props/image";
+import { textContent, textContentRef } from "../props/text";
+import { image, imageRef } from "../props/image";
 import { HiOutlineChatBubbleBottomCenter } from "react-icons/hi2";
 import type { BrickProps } from "../props/types";
 
@@ -32,8 +32,8 @@ export const manifest = defineBrickManifest({
         Type.Object({
           author: string("Author", "John Doe"),
           company: optional(string("Company")),
-          text: textContent("Text", "Amazing product!"),
-          avatar: optional(image("Avatar")),
+          text: textContentRef({ title: "Text", default: "Amazing product!" }),
+          avatar: optional(imageRef({ title: "Avatar" })),
           socialIcon: optional(
             string("Social Icon", undefined, {
               description: "Iconify reference for the social icon",

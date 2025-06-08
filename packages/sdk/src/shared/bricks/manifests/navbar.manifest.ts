@@ -1,21 +1,22 @@
 import { Type } from "@sinclair/typebox";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, group, optional, prop } from "../props/helpers";
-import { border } from "../props/border";
-import { urlOrPageId } from "../props/string";
-import { image } from "../props/image";
-import { backgroundColor } from "../props/background";
-import { color, textContent } from "../props/text";
+import { border, borderRef } from "../props/border";
+import { string, urlOrPageId, urlOrPageIdRef } from "../props/string";
+import { image, imageRef } from "../props/image";
+import { backgroundColor, backgroundColorRef } from "../props/background";
+import { textContent, textContentRef } from "../props/text";
 import { shadow } from "../props/effects";
 import { datasourceRef } from "../props/datasource";
 import { fixedPositioned } from "../props/position";
 import { boolean } from "../props/boolean";
 import { VscLayoutPanelOff } from "react-icons/vsc";
 import type { BrickProps } from "../props/types";
+import { colorRef } from "../props/color";
 
 export const datasource = Type.Array(
   Type.Object({
-    href: urlOrPageId(),
+    href: urlOrPageIdRef(),
     label: Type.String(),
   }),
   {
@@ -63,8 +64,8 @@ export const manifest = defineBrickManifest({
       group({
         title: "Main element",
         children: {
-          backgroundColor: optional(backgroundColor()),
-          border: optional(border()),
+          backgroundColor: optional(backgroundColorRef()),
+          border: optional(borderRef),
           shadow: optional(shadow()),
           fixedPositioned: optional(fixedPositioned()),
         },
@@ -76,10 +77,10 @@ export const manifest = defineBrickManifest({
     brand: group({
       title: "Brand",
       children: {
-        name: optional(textContent("Brand name", "Acme Inc.", { disableSizing: true })),
-        logo: optional(image("Logo", { noObjectOptions: true })),
+        name: optional(textContentRef({ title: "Brand name", default: "Acme Inc.", disableSizing: true })),
+        logo: optional(imageRef({ title: "Logo", noObjectOptions: true })),
         hideText: optional(boolean("Hide text")),
-        color: optional(color()),
+        color: optional(colorRef()),
       },
     }),
     navigation: group({
@@ -96,14 +97,15 @@ export const manifest = defineBrickManifest({
             { default: "right" },
           ),
         }),
-        color: optional(color()),
+        color: optional(colorRef()),
         datasource: optional(datasourceRef()),
         staticItems: optional(
           prop({
             title: "Nav items",
             schema: Type.Array(
               Type.Object({
-                urlOrPageId: urlOrPageId(),
+                urlOrPageId: urlOrPageIdRef(),
+                label: optional(string("Label")),
               }),
               { title: "Navigation items", default: [] },
             ),
@@ -125,7 +127,7 @@ export const examples: {
     description: "Corporate navbar with logo and right-aligned navigation",
     type: "navbar",
     props: {
-      preset: "bold-primary",
+      preset: "prominent-primary",
       container: {},
       brand: {
         name: "TechCorp Solutions",
@@ -208,7 +210,7 @@ export const examples: {
     description: "E-commerce navbar",
     type: "navbar",
     props: {
-      preset: "bold-primary",
+      preset: "prominent-primary",
       brand: {
         name: "ShopEasy",
         logo: {
@@ -286,7 +288,7 @@ export const examples: {
     description: "Portfolio navbar with left-aligned navigation",
     type: "navbar",
     props: {
-      preset: "bold-secondary",
+      preset: "prominent-secondary",
       container: {
         backgroundColor: "#f1f5f9",
         border: {
@@ -314,7 +316,7 @@ export const examples: {
     description: "Non-profit navbar with mission-focused design",
     type: "navbar",
     props: {
-      preset: "bold-primary",
+      preset: "prominent-primary",
       container: {
         shadow: "shadow-md",
       },

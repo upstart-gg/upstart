@@ -2,9 +2,9 @@ import { Type } from "@sinclair/typebox";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { array, defineProps, group, optional } from "../props/helpers";
 import { number } from "../props/number";
-import { string, urlOrPageId } from "../props/string";
+import { string, urlOrPageId, urlOrPageIdRef } from "../props/string";
 import { VscLayoutPanelOff } from "react-icons/vsc";
-import { image } from "../props/image";
+import { image, imageRef } from "../props/image";
 import { preset } from "../props/preset";
 import type { BrickProps } from "../props/types";
 
@@ -34,7 +34,7 @@ export const manifest = defineBrickManifest({
       ),
     ),
     backgroundColor: optional(string("Background color")),
-    logo: optional(image("Logo")),
+    logo: optional(imageRef({ title: "Logo" })),
     linksSections: array(
       Type.Object({
         sectionTitle: string("Links Section title"),
@@ -42,7 +42,7 @@ export const manifest = defineBrickManifest({
         links: array(
           Type.Object({
             title: string("Title"),
-            url: urlOrPageId(),
+            url: urlOrPageIdRef(),
             column: optional(number("Column", 1)),
           }),
         ),

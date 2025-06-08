@@ -1,8 +1,7 @@
 import { Type, type TProperties, type Static, type TObject } from "@sinclair/typebox";
 import type { JSONSchemaType } from "ajv";
-import { ajv } from "./ajv";
-import { background } from "./bricks/props/background";
-import { Value } from "@sinclair/typebox/value";
+import { ajv, getSchemaDefaults } from "./ajv";
+import { background, backgroundRef } from "./bricks/props/background";
 import { string } from "./bricks/props/string";
 import { optional } from "./bricks/props/helpers";
 import { boolean } from "./bricks/props/boolean";
@@ -71,7 +70,7 @@ const defaultAttributes = {
   }),
 
   $bodyBackground: optional(
-    Type.Composite([background()], {
+    backgroundRef({
       default: {
         color: "#ffffff",
       },
@@ -87,7 +86,7 @@ const defaultAttributes = {
     }),
   ),
 
-  $pageBackground: optional(background({ title: "Page Background", defaultValue: { color: "base-100" } })),
+  $pageBackground: optional(backgroundRef({ title: "Page Background", defaultValue: { color: "base-100" } })),
 
   $pageOgImage: optional(
     string("Social share image", "", {
@@ -219,7 +218,7 @@ export function resolveAttributes(
     console.log("invalid custom attributes values", initialData, validateCustom.errors);
     throw new Error(`Invalid custom attributes values: ${validateCustom.errors}`);
   }
-  const defaultAttrValues = Value.Create(defaultAttributesSchema);
+  const defaultAttrValues = getSchemaDefaults(defaultAttributesSchema);
   const data = { ...defaultAttrValues, ...initialData };
   return data as Attributes<Static<typeof customAttrsSchema>>;
 }

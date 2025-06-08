@@ -38,4 +38,7 @@ export const imagesMapSchema = Type.Record(Type.String({ title: "Page id" }), im
 export type ImagesMap = Static<typeof imagesMapSchema>;
 
 export type ImageSearchResultsType = Static<typeof imageResultsSchema>;
-export type SimpleImageMetadata = Pick<ImageSearchResultsType[number], "description" | "blurHash" | "user">;
+export type SimpleImageMetadata = Pick<
+  ImageSearchResultsType[number],
+  "description" | "blurHash" | "user" | "url"
+>;

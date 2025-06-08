@@ -5,7 +5,17 @@ import { motion, AnimatePresence } from "motion/react";
 import { TbSend2 } from "react-icons/tb";
 import { IoIosAttach } from "react-icons/io";
 import { type CreateMessage, type Message, useChat } from "@ai-sdk/react";
-import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
+import {
+  type FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  lazy,
+  Suspense,
+  Fragment,
+} from "react";
 import { createIdGenerator, type ToolInvocation } from "ai";
 import {
   useDraftHelpers,
@@ -25,7 +35,7 @@ import { BiStopCircle } from "react-icons/bi";
 import { type Theme, processTheme } from "@upstart.gg/sdk/shared/theme";
 import type { CallContextProps } from "@upstart.gg/sdk/shared/context";
 import { useDeepCompareEffect } from "use-deep-compare";
-import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
+import type { ImageSearchResultsType, SimpleImageMetadata } from "@upstart.gg/sdk/shared/images";
 import type { GenericPageConfig } from "@upstart.gg/sdk/shared/page";
 import type { Sitemap } from "@upstart.gg/sdk/shared/sitemap";
 
@@ -57,6 +67,9 @@ const msgCommon = tx(
       // marginTop: "0.25rem",
       marginBottom: "0.2rem",
     },
+    "& li": {
+      marginBottom: "0.25rem",
+    },
     "& div.choices": {
       display: "flex",
       flexWrap: "wrap",
@@ -75,6 +88,7 @@ const msgCommon = tx(
         borderRadius: "0.5rem",
         border: "none",
         fontSize: "0.8rem",
+        fontWeight: "500",
         "&:hover": {
           backgroundColor: "var(--violet-9)",
         },
@@ -91,7 +105,7 @@ export default function Chat() {
   const prompt = useSitePrompt();
   const setupRef = useRef(false);
   const draftHelpers = useDraftHelpers();
-  const { setImagesSearchResults, createPage } = useEditorHelpers();
+  const { setImagesSearchResults } = useEditorHelpers();
   const generationState = useGenerationState();
   const siteAndPages = useSiteAndPages();
   const siteThemes = useThemes();
@@ -108,6 +122,14 @@ export default function Chat() {
     generationState.isReady
       ? "bg-gradient-to-tr from-upstart-200/80 to-upstart-100"
       : "bg-white/80 dark:bg-dark-800",
+  );
+
+  const onFinish = useCallback(
+    (message: Message, options: unknown) => {
+      console.log("message finished", message, options);
+      console.log("Generation state after message finish", generationState);
+    },
+    [generationState],
   );
 
   const {
@@ -206,12 +228,11 @@ Let's start by generating some color themes for your website. This will help us 
       separator: "_",
       size: 16,
     }),
-    onFinish: (message, options) => {
-      console.log("message finished", message, options);
-    },
+    onFinish,
     onError: (error) => {
-      console.error("chat onError", error);
+      console.error("ERROR", error);
     },
+    key: `chat-${flow}-${siteAndPages.site.id}`,
 
     /**
      * For tools that should be called client-side
@@ -290,6 +311,8 @@ Let's start by generating some color themes for your website. This will help us 
     return results.length > 0;
   }, [messages]);
 
+  const messagingDisabled = status === "streaming" || status === "submitted" || hasRunningTools;
+
   useDeepCompareEffect(() => {
     for (const toolInvocation of toolInvocations.filter((t) => t.state === "result")) {
       if (handledToolResults.current.has(toolInvocation.toolCallId)) {
@@ -303,30 +326,42 @@ Let's start by generating some color themes for your website. This will help us 
             console.error("Error generating page:", result.error);
             return;
           }
-          console.log("Generated page", result.page);
-          createPage(result.page);
-          // draftHelpers.setSections(result.page.sections);
+          draftHelpers.addPage(result.page);
           break;
         }
+
         case "generateThemes": {
           const themes = toolInvocation.result as Theme[];
           const themesProcessed = themes.map(processTheme);
-          console.log("Generated themes", themesProcessed);
           draftHelpers.setThemes(themesProcessed);
           break;
         }
+
+        case "generateDatasource": {
+          const datasource = toolInvocation.result as Parameters<typeof draftHelpers.addDatasource>[0];
+          draftHelpers.addDatasource(datasource);
+          break;
+        }
+
+        case "generateDatarecord": {
+          const datarecord = toolInvocation.result as Parameters<typeof draftHelpers.addDatarecord>[0];
+          draftHelpers.addDatarecord(datarecord);
+          break;
+        }
+
         case "generateSitemap": {
           const sitemap = toolInvocation.result as Sitemap;
-          console.log("Generated sitemap", sitemap);
           draftHelpers.setSitemap(sitemap);
           break;
         }
+
         case "searchImages": {
           const images = toolInvocation.result as ImageSearchResultsType;
           console.log("Generated images", images);
           setImagesSearchResults(images);
           break;
         }
+
         default:
           console.log("Default tool invocation", toolInvocation.toolName, toolInvocation);
           break;
@@ -375,7 +410,7 @@ Let's start by generating some color themes for your website. This will help us 
       >
         {messages
           // filter out the "init" messages
-          .filter((msg) => msg.id.startsWith("init-") === false)
+          .filter((msg) => msg.id.startsWith("init-") === false && msg.parts.length > 0)
           .map((msg, index) => (
             <div key={msg.id} className={tx(msg.role === "assistant" ? aiMsgClass : userMsgClass, msgCommon)}>
               {msg.parts.map((part, i) => {
@@ -386,8 +421,14 @@ Let's start by generating some color themes for your website. This will help us 
                         <Markdown content={part.text} key={i} />
                       </Suspense>
                     );
+
                   case "source":
-                    return <p key={i}>{part.source.url}</p>;
+                    // @ts-ignore
+                    if (part.source.sourceType === "images") {
+                      // @ts-ignore
+                      return <ImagesPreview key={i} images={part.source.images as SimpleImageMetadata[]} />;
+                    }
+                    return <p key={i}>{JSON.stringify(part)}</p>;
                   case "reasoning":
                     if (index !== messages.length - 1 || msg.parts.length - 1 !== i) {
                       // If the last message is not the current one, we don't show the reasoning
@@ -464,7 +505,7 @@ Let's start by generating some color themes for your website. This will help us 
       <form
         onSubmit={onSubmit}
         className={tx(
-          "flex flex-col flex-1 h-36 max-h-36 gap-1.5 p-2 justify-center ",
+          "flex flex-col flex-1 min-h-[150px] max-h-[150px] gap-1.5 p-2 justify-center ",
           "bg-upstart-100 border-t border-upstart-300 relative",
           // generationState.isReady === false && "hidden",
           generationState.isReady === false && "rounded-b-xl",
@@ -479,7 +520,7 @@ Let's start by generating some color themes for your website. This will help us 
             if (e.key === "Enter" && !e.shiftKey) onSubmit(e);
           }}
           name="prompt"
-          disabled={status === "streaming" || status === "submitted" || hasRunningTools}
+          disabled={messagingDisabled}
           spellCheck={false}
           autoComplete="off"
           autoCorrect="off"
@@ -490,12 +531,13 @@ Let's start by generating some color themes for your website. This will help us 
           }
           size="2"
           className={tx(
-            "h-full w-full scrollbar-thin p-2 !bg-white !pb-9 !border-0 !outline-0 !box-shadow-none [&>textarea]:focus:(!outline-0 !shadow-none !ring-0 !border-0)",
+            "h-full w-full scrollbar-thin p-2 bg-white !pb-9 !border-0 !outline-0 !box-shadow-none [&>textarea]:focus:(!outline-0 !shadow-none !ring-0 !border-0)",
           )}
         />
         <div
           className={tx(
-            "flex justify-between items-center h-9 bg-white tems-center text-gray-500 absolute left-[9px] right-[9px] rounded bottom-2.5 px-2 z-50",
+            "flex justify-between items-center h-9 text-gray-500 absolute left-[9px] right-[9px] rounded bottom-2.5 px-2 z-50",
+            { "bg-white": !messagingDisabled, "bg-transparent": messagingDisabled },
           )}
         >
           <button type="button" className={tx("hover:bg-upstart-200 p-1 rounded inline-flex text-sm gap-1")}>
@@ -556,6 +598,28 @@ function getToolWaitingLabel(toolInvocation: ToolInvocation) {
     default:
       return toolsWorkingLabels[toolInvocation.toolName];
   }
+}
+
+function ImagesPreview({ images }: { images: SimpleImageMetadata[] }) {
+  return (
+    <div className="grid grid-cols-3 gap-1 max-h-60 overflow-y-auto">
+      {images.map((image, index) => (
+        <img
+          key={image.url}
+          src={image.url}
+          alt={image.description}
+          className={tx(
+            "rounded-md h-auto !object-cover object-center w-full aspect-video animate-fade-in",
+            css({
+              // animation delay
+              animationDelay: `${index * 100}ms`,
+            }),
+          )}
+          loading="lazy"
+        />
+      ))}
+    </div>
+  );
 }
 
 const hiddenTools = ["setUserLanguage", "getUserLanguage"];
