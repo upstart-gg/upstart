@@ -1,6 +1,6 @@
 {
   "name": "@upstart.gg/sdk",
-  "version": "0.0.96",
+  "version": "0.0.97",
   "type": "module",
   "files": [
     "dist",
