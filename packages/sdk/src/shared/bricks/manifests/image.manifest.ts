@@ -1,15 +1,14 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, optional } from "../props/helpers";
-import { image, imageRef } from "../props/image";
-import { backgroundColor, backgroundColorRef } from "../props/background";
-import { border, borderRef } from "../props/border";
-import { shadow, shadowRef } from "../props/effects";
-import { padding, paddingRef } from "../props/padding";
+import { imageRef } from "../props/image";
+import { backgroundColorRef } from "../props/background";
+import { borderRef } from "../props/border";
+import { shadowRef } from "../props/effects";
+import { paddingRef } from "../props/padding";
 import { RxImage } from "react-icons/rx";
 import { string } from "../props/string";
 import { Type } from "@sinclair/typebox";
 import type { BrickProps } from "../props/types";
-import type { FC } from "react";
 
 export const manifest = defineBrickManifest({
   type: "image",

@@ -7,6 +7,7 @@ import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { FC } from "react";
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export const FlexField: FC<FieldProps<any>> = (props) => {
   const {
     currentValue = {
@@ -14,6 +15,7 @@ export const FlexField: FC<FieldProps<any>> = (props) => {
       wrap: "flex-nowrap",
       alignItems: "items-stretch",
       justifyContent: "justify-stretch",
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     } satisfies Partial<any>,
     onChange,
     description,
@@ -22,6 +24,7 @@ export const FlexField: FC<FieldProps<any>> = (props) => {
     title,
   } = props;
 
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const onSettingsChange = (newVal: Partial<any>) => onChange({ ...currentValue, ...newVal });
 
   return (
@@ -32,7 +35,8 @@ export const FlexField: FC<FieldProps<any>> = (props) => {
         <div className="flex flex-col gap-1 basis-2/5">
           <label className={fieldLabel}>Direction</label>
           <SegmentedControl.Root
-            onValueChange={(value) => onSettingsChange({ direction: value as any["direction"] })}
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+            onValueChange={(value) => onSettingsChange({ direction: value as any })}
             defaultValue={currentValue.direction as string}
             size="1"
             className="w-full mt-0.5 !max-w-full"
@@ -77,7 +81,7 @@ export const FlexField: FC<FieldProps<any>> = (props) => {
           <Select.Root
             defaultValue={currentValue.justifyContent}
             size="2"
-            onValueChange={(value) => onSettingsChange({ justifyContent: value as any["justifyContent"] })}
+            onValueChange={(value) => onSettingsChange({ justifyContent: value })}
           >
             <Select.Trigger radius="large" variant="ghost" />
             <Select.Content position="popper">
@@ -102,7 +106,8 @@ export const FlexField: FC<FieldProps<any>> = (props) => {
           <Select.Root
             defaultValue={currentValue.alignItems}
             size="2"
-            onValueChange={(value) => onSettingsChange({ alignItems: value as any["alignItems"] })}
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+            onValueChange={(value) => onSettingsChange({ alignItems: value as any })}
           >
             <Select.Trigger radius="large" variant="ghost" />
             <Select.Content position="popper">

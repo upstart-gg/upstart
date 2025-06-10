@@ -1,5 +1,6 @@
 import { type SchemaOptions, Type, type Static } from "@sinclair/typebox";
 import { prop } from "./helpers";
+import { typedRef } from "~/shared/utils/typed-ref";
 // import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
 
 type PropImageOptions = {
@@ -83,7 +84,7 @@ export function image(title = "Image", options: PropImageOptions = {}) {
 }
 
 export function imageRef(options: PropImageOptions & SchemaOptions = {}) {
-  return Type.Ref("assets:image", options);
+  return typedRef("assets:image", options);
 }
 
 export type ImageProps = Static<ReturnType<typeof image>>;

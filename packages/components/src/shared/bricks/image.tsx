@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/image.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { tx, css } from "@upstart.gg/style-system/twind";
+import { tx } from "@upstart.gg/style-system/twind";
 
 const Image = forwardRef<HTMLImageElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const { props } = brick;

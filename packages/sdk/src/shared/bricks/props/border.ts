@@ -1,6 +1,7 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { group, optional, prop } from "./helpers";
 import { StringEnum } from "~/shared/utils/schema";
+import { typedRef } from "~/shared/utils/typed-ref";
 
 export function border(title = "Border") {
   return group({
@@ -78,6 +79,6 @@ export function border(title = "Border") {
   });
 }
 
-export const borderRef = Type.Ref("styles:border");
+export const borderRef = typedRef("styles:border");
 
 export type BorderSettings = Static<ReturnType<typeof border>>;

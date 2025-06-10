@@ -5,10 +5,12 @@ import { HelpIcon } from "../HelpIcon";
 import { FieldTitle } from "../field-factory";
 import type { FC } from "react";
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export const GridField: FC<FieldProps<any>> = (props) => {
   const {
     currentValue = {
       columns: 2,
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     } satisfies Partial<any>,
     onChange,
     description,
@@ -21,6 +23,7 @@ export const GridField: FC<FieldProps<any>> = (props) => {
     return null;
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const onSettingsChange = (newVal: Partial<any>) => onChange({ ...currentValue, ...newVal });
 
   return (

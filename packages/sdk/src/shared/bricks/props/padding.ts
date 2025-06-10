@@ -1,5 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { prop } from "./helpers";
+import { typedRef } from "~/shared/utils/typed-ref";
 
 export function padding() {
   return prop({
@@ -15,6 +16,6 @@ export function padding() {
   });
 }
 
-export const paddingRef = Type.Ref("styles:padding");
+export const paddingRef = typedRef("styles:padding");
 
 export type PaddingSettings = Static<ReturnType<typeof padding>>;
