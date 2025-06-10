@@ -7,17 +7,14 @@ import {
   type ComponentProps,
   type MouseEvent,
   useEffect,
-  useMemo,
+  useCallback,
 } from "react";
-import { tx } from "@upstart.gg/style-system/twind";
 import {
   useDebugMode,
-  useDraft,
   useDraftHelpers,
   useEditorHelpers,
-  useGetBrick,
+  usePanel,
   usePreviewMode,
-  useSection,
   useSelectedBrickId,
 } from "../hooks/use-editor";
 import {
@@ -27,30 +24,25 @@ import {
   useMergeRefs,
   autoPlacement,
   offset,
-  Popover,
-  Inset,
   toast,
   useHover,
   useInteractions,
   safePolygon,
   autoUpdate,
   type Placement,
-  useDelayGroup,
 } from "@upstart.gg/style-system/system";
 import BaseBrick from "~/shared/components/BaseBrick";
-import { useBrickWrapperStyle, useColorsPreprocessing } from "~/shared/hooks/use-brick-style";
+import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
 import {
   menuBarBtnCls,
   menuBarBtnCommonCls,
   menuBarBtnSquareCls,
-  menuBarTooltipCls,
   menuNavBarCls,
 } from "~/shared/styles/menubar-styles";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
-import { BiSolidColor } from "react-icons/bi";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
-import { FiSettings, FiDatabase, FiTrash, FiTrash2 } from "react-icons/fi";
-import { BrickPopover } from "./BrickPopover";
+import { FiSettings, FiDatabase } from "react-icons/fi";
+import { tx } from "@upstart.gg/style-system/twind";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -59,35 +51,37 @@ type BrickWrapperProps = ComponentProps<"div"> & {
 };
 
 function useBarPlacements(brick: Brick): Placement[] {
-  const previewMode = usePreviewMode();
-  const { isLastSection } = useDraftHelpers();
-  const section = useSection(brick.sectionId);
-  const manifest = useBrickManifest(brick.type);
-  return useMemo(() => {
-    const placements: Placement[] = [];
-    if (brick.parentId || manifest.isContainer) {
-      placements.push(...(["bottom", "top"] as const));
-    } else {
-      if (!isLastSection(section.id)) {
-        placements.push("bottom-start");
-      }
-      if (
-        (typeof brick.position[previewMode].y === "number" && brick.position[previewMode].y > 2) ||
-        isLastSection(section.id)
-      ) {
-        placements.push("top-start");
-      }
-    }
-    return placements;
-  }, [brick, previewMode, manifest.isContainer, section, isLastSection]);
+  // const previewMode = usePreviewMode();
+  // const { isLastSection } = useDraftHelpers();
+  // const section = useSection(brick.sectionId);
+  // const manifest = useBrickManifest(brick.type);
+  return ["bottom", "top"] as Placement[];
+  // return useMemo(() => {
+  //   const placements: Placement[] = [];
+  // if (brick.parentId || manifest.isContainer || !section) {
+  //   placements.push(...(["bottom", "top"] as const));
+  // } else {
+  //   if (!isLastSection(section.id)) {
+  //     placements.push("bottom-start");
+  //   }
+  //   if (
+  //     (typeof brick.position[previewMode].y === "number" && brick.position[previewMode].y > 2) ||
+  //     isLastSection(section.id)
+  //   ) {
+  //     placements.push("top-start");
+  //   }
+  // }
+  //   return placements;
+  // }, [brick, previewMode, manifest.isContainer, section, isLastSection]);
 }
 
 const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
   ({ brick, children, isContainerChild, index }, ref) => {
     const hasMouseMoved = useRef(false);
     const selectedBrickId = useSelectedBrickId();
-    const { setSelectedBrickId } = useEditorHelpers();
     const previewMode = usePreviewMode();
+    const { panelPosition } = usePanel();
+    const editorHelpers = useEditorHelpers();
     const { getParentBrick } = useDraftHelpers();
     const manifest = useBrickManifest(brick.type);
     const parentBrick = getParentBrick(brick.id);
@@ -95,7 +89,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const allowedPlacements = useBarPlacements(brick);
 
     // brick = brickWithDefaults(brick);
-
     const {
       refs: barsRefs,
       floatingStyles: barsFloatingStyles,
@@ -129,9 +122,8 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       brick,
       editable: true,
       selected: selectedBrickId === brick.id,
+      isContainerChild,
     });
-
-    useColorsPreprocessing({ brick });
 
     useEffect(() => {
       if (barsRefs.reference.current) {
@@ -162,37 +154,52 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       }
     }, [barsRefs.reference, updateBarsPlacement]);
 
-    const onBrickWrapperClick = (e: MouseEvent<HTMLElement>) => {
-      const brickTarget = e.currentTarget as HTMLElement;
-      const target = e.target as HTMLElement;
-      const group = target.closest<HTMLElement>("[data-brick-group]");
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    const onBrickWrapperClick = useCallback(
+      (e: MouseEvent<HTMLElement>) => {
+        const brickTarget = e.currentTarget as HTMLElement;
+        const target = e.target as HTMLElement;
+        const group = target.closest<HTMLElement>("[data-brick-group]");
 
-      if (group) {
-        console.debug("onBrickWrapperClick: click ignored (group)");
-        return;
-      }
+        // if (group) {
+        //   console.debug("onBrickWrapperClick: click ignored (group)");
+        //   return;
+        // }
 
-      if (hasMouseMoved.current || !brickTarget.matches("[data-brick]")) {
-        return;
-      }
-
-      let selectedBrick = brick;
-
-      // If has shift key pressed, then we try to select the upper container
-      if (e.shiftKey) {
-        if (parentBrick) {
-          selectedBrick = parentBrick;
+        if (hasMouseMoved.current || !brickTarget.matches("[data-brick]")) {
+          return;
         }
-      }
 
-      setSelectedBrickId(selectedBrick.id);
+        let selectedBrick = brick;
 
-      // setPanel("inspector");
-      hasMouseMoved.current = false;
+        // If has shift key pressed, then we try to select the upper container
+        if (e.shiftKey) {
+          if (parentBrick) {
+            selectedBrick = parentBrick;
+          }
+        }
 
-      // stop propagation otherwise the click could then be handled by the container
-      e.stopPropagation();
-    };
+        //
+        // Commented fow now, e.g don't auto move the panel
+        //
+        // If brick is on the left of the screen, we need to move the panel to the right, and vice versa
+        // if (panelPosition === "right" && brickTarget.getBoundingClientRect().right > window.innerWidth / 2) {
+        //   editorHelpers.togglePanelPosition();
+        // } else if (
+        //   panelPosition === "left" &&
+        //   brickTarget.getBoundingClientRect().left < window.innerWidth / 2
+        // ) {
+        //   editorHelpers.togglePanelPosition();
+        // }
+
+        editorHelpers.setSelectedBrickId(selectedBrick.id);
+        editorHelpers.setPanel("inspector");
+        hasMouseMoved.current = false;
+        // stop propagation otherwise the click could then be handled by the container
+        e.stopPropagation();
+      },
+      [panelPosition],
+    );
 
     return (
       <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
@@ -201,10 +208,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           id={brick.id}
           data-brick
           data-brick-id={brick.id}
-          data-x={brick.position[previewMode].x ?? 0}
-          data-y={brick.position[previewMode].y ?? 0}
-          data-w={brick.position[previewMode].w ?? 0}
-          data-h={brick.position[previewMode].h ?? 0}
           data-brick-type={brick.type}
           data-element-kind={manifest.kind}
           data-last-touched={brick.props.lastTouched ?? "0"}
@@ -216,7 +219,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           {...getReferenceProps()}
         >
           <BaseBrick brick={brick} selectedBrickId={selectedBrickId} editable />
-          {/* <BrickEditLabel brick={brick} isContainerChild={isContainerChild} /> */}
+          {!manifest.isContainer && <BrickDebugLabel brick={brick} />}
           {children} {/* Make sure to include children to add resizable handle */}
           <BrickMenuBarsContainer
             ref={barsRefs.setFloating}
@@ -231,6 +234,18 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     );
   },
 );
+
+function BrickDebugLabel({ brick }: { brick: Brick }) {
+  const debug = useDebugMode();
+  if (!debug) {
+    return null;
+  }
+  return (
+    <div className="absolute hidden group-hover/brick:block bottom-1 right-1 text-xs text-black/40">
+      {brick.id}
+    </div>
+  );
+}
 
 type BrickMenuBarProps = ComponentProps<"div"> &
   PropsWithChildren<{
@@ -270,7 +285,7 @@ const BrickMenuBarsContainer = forwardRef<HTMLDivElement, BrickMenuBarProps>(
         {...rest}
       >
         {/* container for main nav bar */}
-        <BrickMainNavBar brick={brick} />
+        {/* <BrickMainNavBar brick={brick} /> */}
         {/* container for text editor buttons */}
         <BrickTextNavBar brick={brick} />
       </div>
@@ -298,35 +313,18 @@ function BrickMainNavBar({ brick }: { brick: Brick }) {
 
   return (
     <nav className={tx(menuNavBarCls)} data-ui data-ui-options-bar>
-      <span className={tx(menuBarBtnCls, menuBarBtnCommonCls, "block capitalize pointer-events-none")}>
+      {/* <span className={tx(menuBarBtnCls, menuBarBtnCommonCls, "block capitalize pointer-events-none")}>
         {manifest.type}
-      </span>
-      {manifest.presets && (
-        <BrickPopover brick={brick} view="presets">
-          <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-            <BiSolidColor className={tx("w-5 h-5")} />
-            {/* <span className={tx(menuBarTooltipCls)}>Presets</span> */}
-          </button>
-        </BrickPopover>
-      )}
+      </span> */}
+
       {/* Settings & styles */}
-      <BrickPopover brick={brick} view="settings">
-        <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-          <FiSettings className={tx("w-5 h-5")} />
-          {/* <span className={tx(menuBarTooltipCls)}>Settings</span> */}
-        </button>
-      </BrickPopover>
+      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
+        <FiSettings className={tx("w-5 h-5")} />
+        {/* <span className={tx(menuBarTooltipCls)}>Settings</span> */}
+      </button>
       {/* Content */}
       <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
         <FiDatabase className={tx("w-5 h-5")} />
-        {/* <span className={tx(menuBarTooltipCls)}>Dynamic content</span> */}
-      </button>
-      <button
-        type="button"
-        className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}
-        onClick={() => deleteBrick(brick.id)}
-      >
-        <FiTrash className={tx("w-5 h-5 hover:text-red-500/70 group-hover:text-red-500/70")} />
         {/* <span className={tx(menuBarTooltipCls)}>Dynamic content</span> */}
       </button>
     </nav>
@@ -423,7 +421,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
               <ContextMenu.SubTrigger>Visible on</ContextMenu.SubTrigger>
               <ContextMenu.SubContent>
                 <ContextMenu.CheckboxItem
-                  checked={!brick.position.mobile?.hidden}
+                  checked={!brick.props.hidden?.mobile}
                   onClick={(e) => e.stopPropagation()}
                   onCheckedChange={() => draftHelpers.toggleBrickVisibilityPerBreakpoint(brick.id, "mobile")}
                 >
@@ -431,7 +429,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                 </ContextMenu.CheckboxItem>
 
                 <ContextMenu.CheckboxItem
-                  checked={!brick.position.desktop?.hidden}
+                  checked={!brick.props.hidden?.desktop}
                   onClick={(e) => e.stopPropagation()}
                   onCheckedChange={() => draftHelpers.toggleBrickVisibilityPerBreakpoint(brick.id, "desktop")}
                 >

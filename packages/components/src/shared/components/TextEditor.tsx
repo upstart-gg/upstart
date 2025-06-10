@@ -3,30 +3,15 @@ import {
   EditorContent,
   type EditorEvents,
   type Editor,
-  ReactNodeViewRenderer,
-  Node,
-  NodeViewWrapper,
-  type NodeViewProps,
-  mergeAttributes,
-  nodeInputRule,
-  type Extension,
+  Extension,
 } from "@tiptap/react";
 import Placeholder from "@tiptap/extension-placeholder";
 import { RiArrowDownSLine, RiBracesLine } from "react-icons/ri";
-
+import TextStyle from "@tiptap/extension-text-style";
 import StarterKit from "@tiptap/starter-kit"; // define your extension array
 import TextAlign from "@tiptap/extension-text-align";
 import Heading from "@tiptap/extension-heading";
-import {
-  Callout,
-  IconButton,
-  Popover,
-  DropdownMenu,
-  Select,
-  ToggleGroup,
-  Portal,
-} from "@upstart.gg/style-system/system";
-import { tx } from "@upstart.gg/style-system/twind";
+import { Callout, Popover, DropdownMenu, Select, ToggleGroup, Portal } from "@upstart.gg/style-system/system";
 import {
   useState,
   useEffect,
@@ -48,7 +33,6 @@ import { MdOutlineFormatItalic } from "react-icons/md";
 import { MdStrikethroughS } from "react-icons/md";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { useDatasourcesSchemas, useEditor } from "~/editor/hooks/use-editor";
-import { VscDatabase } from "react-icons/vsc";
 import { JSONSchemaView } from "~/editor/components/json-form/SchemaView";
 import Mention from "@tiptap/extension-mention";
 import datasourceFieldSuggestions from "./datasourceFieldSuggestions";
@@ -58,19 +42,20 @@ import { menuBarBtnActiveCls, menuBarBtnCls, menuBarBtnCommonCls } from "../styl
 import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import type { TSchema } from "@sinclair/typebox";
+import { tx } from "@upstart.gg/style-system/twind";
 
-function DatasourceFieldNode(props: NodeViewProps) {
-  return (
-    <NodeViewWrapper
-      className="datasource-field content bg-upstart-200 px-1 rounded-sm inline-block mx-0.5"
-      as={"span"}
-    >
-      {props.node.attrs.name}
-    </NodeViewWrapper>
-  );
-}
+// function DatasourceFieldNode(props: NodeViewProps) {
+//   return (
+//     <NodeViewWrapper
+//       className="datasource-field content bg-upstart-200 px-1 rounded-sm inline-block mx-0.5"
+//       as={"span"}
+//     >
+//       {props.node.attrs.name}
+//     </NodeViewWrapper>
+//   );
+// }
 
-const fieldsRegex = /(\{\{([^}]+)\}\})/;
+// const fieldsRegex = /(\{\{([^}]+)\}\})/;
 
 const HeroHeading = Heading.extend({
   addAttributes() {
@@ -90,44 +75,44 @@ const HeroHeading = Heading.extend({
   },
 });
 
-const DatasourceFieldExtension = Node.create({
-  // configuration
-  name: "datasourceField",
-  group: "inline",
-  inline: true,
-  addAttributes() {
-    return {
-      name: {
-        default: "unknown",
-      },
-    };
-  },
-  parseHTML() {
-    return [
-      {
-        tag: "datasource-field",
-      },
-    ];
-  },
-  renderHTML({ HTMLAttributes }) {
-    return ["datasource-field", mergeAttributes(HTMLAttributes)];
-  },
+// const DatasourceFieldExtension = Node.create({
+//   // configuration
+//   name: "datasourceField",
+//   group: "inline",
+//   inline: true,
+//   addAttributes() {
+//     return {
+//       name: {
+//         default: "unknown",
+//       },
+//     };
+//   },
+//   parseHTML() {
+//     return [
+//       {
+//         tag: "datasource-field",
+//       },
+//     ];
+//   },
+//   renderHTML({ HTMLAttributes }) {
+//     return ["datasource-field", mergeAttributes(HTMLAttributes)];
+//   },
 
-  addNodeView() {
-    return ReactNodeViewRenderer(DatasourceFieldNode, {
-      as: "span",
-    });
-  },
-  addInputRules() {
-    return [
-      nodeInputRule({
-        find: fieldsRegex,
-        type: this.type,
-        getAttributes: (match) => ({ name: match[2] }),
-      }),
-    ];
-  },
-});
+//   addNodeView() {
+//     return ReactNodeViewRenderer(DatasourceFieldNode, {
+//       as: "span",
+//     });
+//   },
+//   addInputRules() {
+//     return [
+//       nodeInputRule({
+//         find: fieldsRegex,
+//         type: this.type,
+//         getAttributes: (match) => ({ name: match[2] }),
+//       }),
+//     ];
+//   },
+// });
 
 type PolymorphicProps<E extends ElementType> = PropsWithChildren<
   ComponentPropsWithoutRef<E> & {
@@ -148,6 +133,15 @@ export type TextEditorProps<E extends ElementType> = PolymorphicProps<E> & {
    */
   inline?: boolean;
 };
+
+const OverrideEscape = Extension.create({
+  name: "OverrideEscape",
+  addKeyboardShortcuts() {
+    return {
+      Escape: () => this.editor.commands.blur(),
+    };
+  },
+});
 
 const TextEditor = <T extends ElementType = "div">({
   content,
@@ -179,6 +173,9 @@ const TextEditor = <T extends ElementType = "div">({
         color: "#FF9900",
       },
       heading: textSizeMode === "hero" ? false : {},
+    }),
+    TextStyle.configure({
+      mergeNestedSpanStyles: false,
     }),
     Placeholder.configure({
       placeholder: "Write something …",
@@ -229,6 +226,7 @@ const TextEditor = <T extends ElementType = "div">({
         return `${options.suggestion.char}${field}}}`;
       },
     }),
+    OverrideEscape,
   ] as Extension[];
 
   const editor = useTextEditor(
@@ -267,17 +265,14 @@ const TextEditor = <T extends ElementType = "div">({
 
       // If there is a related target, it means the blur event was triggered by a click on the editor buttons
       if (e.event.relatedTarget) {
-        console.log("editor blured from related target", e.event.relatedTarget);
+        console.debug("Editor blur triggered by editor buttons, ignoring");
         return;
       }
 
       mainEditor.setIsEditingText(false);
-      mainEditor.setlastTextEditPosition(e.editor.state.selection.anchor);
-
-      console.log("setting selection to ", {
-        from: e.editor.state.doc.content.size,
-        to: e.editor.state.doc.content.size,
-      });
+      mainEditor.setLastTextEditPosition(e.editor.state.selection.anchor);
+      mainEditor.setSelectedBrickId();
+      mainEditor.togglePanel("inspector");
 
       // reset the selection to the end of the document
       const unselected = e.editor.commands.setTextSelection({
@@ -285,16 +280,9 @@ const TextEditor = <T extends ElementType = "div">({
         to: e.editor.state.doc.content.size,
       });
 
-      e.editor.commands.blur();
-
-      console.log("unselected", unselected);
-
       setFocused(false);
     };
 
-    editor.options.element.addEventListener("resize", () => {
-      console.log("editor resized");
-    });
     editor?.on("focus", onFocus);
     editor?.on("blur", onBlur);
 
@@ -310,7 +298,9 @@ const TextEditor = <T extends ElementType = "div">({
         autoCorrect="false"
         spellCheck="false"
         editor={editor}
-        className={tx("outline-none ring-0 min-h-full flex flex-1")}
+        // test not growing the text editor so that the brick can be more easily dragged
+        className={tx("outline-none ring-0 flex")}
+        // className={tx("outline-none ring-0 min-h-full flex flex-1")}
       />
       {focused && menuBarContainer && (
         <Portal container={menuBarContainer} asChild>
@@ -451,6 +441,7 @@ function DatasourceFieldPickerModal(props: DatasourceFieldPickerModalProps) {
             </div>
             <div className="flex items-center justify-between flex-1">
               <JSONSchemaView
+                // @ts-ignore
                 schema={selectedSchema as TSchema}
                 rootName={currentDatasourceId}
                 onFieldSelect={props.onFieldSelect}
@@ -667,7 +658,6 @@ type TextSizeHeroDropdownProps = {
 };
 
 function TextSizeHeroDropdown({ editor }: TextSizeHeroDropdownProps) {
-  console.log("heading attrs", editor.getAttributes("heading"));
   const [value, setValue] = useState(editor.getAttributes("heading").class?.toString() ?? "hero-size-1");
   const sizes = [1, 2, 3, 4, 5];
   const labels = ["M", "L", "XL", "2XL", "3XL"];

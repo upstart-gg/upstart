@@ -1,19 +1,17 @@
 import type { FieldProps } from "./types";
 import { Text } from "@upstart.gg/style-system/system";
-import { tx } from "@upstart.gg/style-system/twind";
 import { SegmentedControl, Select } from "@upstart.gg/style-system/system";
 import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import { fieldLabel } from "../form-class";
 import { type TProperties, type TSchema, Type } from "@sinclair/typebox";
-import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { useGetBrick } from "~/editor/hooks/use-editor";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
-import { MdKeyboardArrowDown } from "react-icons/md";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
-import { useCallback } from "react";
+import { type FC, useCallback } from "react";
+import { tx } from "@upstart.gg/style-system/twind";
 
-const DatasourceRefField: React.FC<FieldProps<DatasourceRefSettings>> = (props) => {
-  const { onChange, title, currentValue, brickId } = props;
+const DatasourceRefField: FC<FieldProps<DatasourceRefSettings>> = (props) => {
+  const { onChange, currentValue = {} as DatasourceRefSettings, brickId } = props;
   const getBrickInfo = useGetBrick();
   invariant(brickId, `Could not find brick info for ${brickId} in DatasourceRefField`);
 
@@ -23,11 +21,11 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRefSettings>> = (props) 
   const brickManifest = useBrickManifest(brickInfo.type);
 
   const onDataSourceChange = useCallback(
-    (data: Partial<DatasourceRefSettings["datasource"]>) => {
-      if (!currentValue.datasource?.id) {
+    (data: Partial<DatasourceRefSettings>) => {
+      if (!currentValue?.id) {
         return;
       }
-      onChange({ ...currentValue, datasource: { ...currentValue.datasource, ...data } });
+      onChange({ ...currentValue, ...data });
     },
     [currentValue, onChange],
   );
@@ -78,7 +76,10 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRefSettings>> = (props) 
 
   const datasourceSchema = brickManifest.datasource;
 
-  invariant(datasourceSchema, "Datasource schema is required for DatasourceRefField");
+  if (!datasourceSchema) {
+    console.warn("Datasource schema is not defined in the manifest");
+    return <Text>Datasource schema is not defined in the manifest</Text>;
+  }
 
   // We need to get the fields from the datasource schema. This will be used to map fields from the datasource to the schema
   // The datasource schema could be an object or an array of objects
@@ -117,7 +118,7 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRefSettings>> = (props) 
     })
     .sort((a, b) => (a.compatible === b.compatible ? 0 : a.compatible ? -1 : 1));
 
-  const externalDatasource = allDatasources.find((ds) => ds.id === currentValue.datasource?.id);
+  const externalDatasource = allDatasources.find((ds) => ds.id === currentValue.id);
   const externalFields = externalDatasource
     ? externalDatasource.schema.type === "array"
       ? externalDatasource.schema.items?.properties
@@ -130,9 +131,9 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRefSettings>> = (props) 
         <div className="flex flex-col flex-1 gap-1">
           <SegmentedControl.Root
             onValueChange={(val) => {
-              onChange({ ...currentValue, useExistingDatasource: val === "existing" });
+              // onChange({ ...currentValue, useExistingDatasource: val === "existing" });
             }}
-            defaultValue={currentValue.useExistingDatasource ? "existing" : "new"}
+            // defaultValue={currentValue.useExistingDatasource ? "existing" : "new"}
             size="1"
             className="w-full !max-w-full mt-1"
             radius="large"
@@ -144,7 +145,7 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRefSettings>> = (props) 
               <SegmentedControl.Item
                 key={option.value}
                 value={option.value}
-                className={tx("[&_.rt-SegmentedControlItemLabel]:px-1")}
+                className="[&_.rt-SegmentedControlItemLabel]:px-1"
               >
                 {option.title}
               </SegmentedControl.Item>
@@ -152,13 +153,9 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRefSettings>> = (props) 
           </SegmentedControl.Root>
         </div>
 
-        {!currentValue.useExistingDatasource && (
+        {!currentValue.id && (
           <div className="flex flex-col gap-3">
-            <h3
-              className={tx(
-                "text-sm font-semibold !dark:bg-dark-600 bg-upstart-100 px-2 py-1 sticky top-0 z-[999] -mx-3",
-              )}
-            >
+            <h3 className="text-sm font-semibold !dark:bg-dark-600 bg-upstart-100 px-2 py-1 sticky top-0 z-[999] -mx-3">
               Content
             </h3>
             <fieldset className="flex flex-col gap-2">
@@ -167,7 +164,7 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRefSettings>> = (props) 
                 {Object.entries(schemaFields).map(([fieldName, field]) => {
                   return (
                     <div className="flex gap-0.5 justify-between items-center flex-wrap" key={fieldName}>
-                      <label className={tx("text-[85%] flex-1 flex-grow")}>{field.title ?? fieldName}</label>
+                      <label className="text-[85%] flex-1 flex-grow">{field.title ?? fieldName}</label>
                       <input
                         type="text"
                         // value={currentValue.data[fieldName] ?? ""}
@@ -188,11 +185,11 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRefSettings>> = (props) 
         )}
 
         {/* If using an existing database, we need to allow the user to select a datasource and possibly fields mapping */}
-        {currentValue.useExistingDatasource && (
+        {currentValue.id && (
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-3 flex-1 mx-px">
               <Select.Root
-                value={currentValue.datasource?.id}
+                value={currentValue.id}
                 size="1"
                 onValueChange={(value) => onDataSourceChange({ id: value })}
               >
@@ -222,7 +219,7 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRefSettings>> = (props) 
                     externalFields={externalFields}
                     schemaFields={schemaFields}
                     onChange={(mapping) => onDataSourceChange({ mapping })}
-                    currentMapping={currentValue.datasource?.mapping ?? {}}
+                    currentMapping={currentValue.mapping ?? {}}
                   />
                 </div>
                 <div className="flex flex-col flex-1 gap-2">
@@ -237,7 +234,7 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRefSettings>> = (props) 
                     onValueChange={(val) => {
                       onDataSourceChange({ limit: parseInt(val) });
                     }}
-                    value={(currentValue.datasource?.limit ?? 10).toString()}
+                    value={(currentValue.limit ?? 10).toString()}
                     size="1"
                     className="w-full !max-w-full !mt-1"
                     radius="large"
@@ -252,7 +249,7 @@ const DatasourceRefField: React.FC<FieldProps<DatasourceRefSettings>> = (props) 
                       <SegmentedControl.Item
                         key={option.value}
                         value={option.value}
-                        className={tx("[&_.rt-SegmentedControlItemLabel]:px-1")}
+                        className="[&_.rt-SegmentedControlItemLabel]:px-1"
                       >
                         {option.title}
                       </SegmentedControl.Item>

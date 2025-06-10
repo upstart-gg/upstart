@@ -2,6 +2,8 @@
  * THIS COMPONENT IS REALLY REALLY DIRTY AND SLOW - We shoukd fix it.
  * I tried to use react-window for performance but encountered issues with scrolling to
  * the selected item because we use groups of items with react-select.
+ *
+ * TODO: use Combobox from @headlessui/react
  */
 
 import Select, {
@@ -12,12 +14,12 @@ import Select, {
   type OptionProps,
   type GroupBase,
 } from "react-select";
-import { tx, css } from "@upstart.gg/style-system/twind";
 import { createRef, useMemo, useState } from "react";
 import googleFonts from "../../../utils/fonts.json";
 import { useTheme } from "~/editor/hooks/use-editor";
 import { fontStacks, type FontType } from "@upstart.gg/sdk/shared/theme";
 import { type FixedSizeList, FixedSizeList as List, type ListChildComponentProps } from "react-window";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 type OptionType = {
   label: string;
@@ -48,8 +50,8 @@ const Option = (props: OptionProps<OptionType>) => {
 
   const className =
     isHovered || isPressed
-      ? tx("bg-upstart-100 px-2 py-1.5")
-      : tx("bg-white px-2 py-1.5 hover:(bg-upstart-600 text-white)");
+      ? "bg-upstart-100 px-2 py-1.5"
+      : "bg-white px-2 py-1.5 hover:(bg-upstart-600 text-white)";
 
   return (
     <div
@@ -157,16 +159,14 @@ export default function FontPicker({ initialValue, onChange, fontType }: FontPic
   const classNames: Props["classNames"] = {
     control: (state) =>
       !state.isFocused
-        ? tx("outline-none bg-white rounded !min-h-full border border-gray-300")
-        : tx("outline-none bg-white rounded !min-h-full border border-gray-300"),
-    valueContainer: () => tx("bg-white px-2.5"),
-    placeholder: () => tx("text-sm bg-white"),
+        ? "outline-none bg-white rounded !min-h-full border border-gray-300"
+        : "outline-none bg-white rounded !min-h-full border border-gray-300",
+    valueContainer: () => "bg-white px-2.5",
+    placeholder: () => "text-sm bg-white",
     input: () =>
-      tx(
-        "text-sm outline-none !focus:outline-none !focus-within:outline-none [&>input]:focus:ring-0 [&>input]:focus-within:ring-0",
-      ),
-    container: () => tx("text-sm h-8"),
-    menu: () => tx("text-sm bg-white shadow-2xl rounded py-1"),
+      "text-sm outline-none !focus:outline-none !focus-within:outline-none [&>input]:focus:ring-0 [&>input]:focus-within:ring-0",
+    container: () => "text-sm h-8",
+    menu: () => "text-sm bg-white shadow-2xl rounded py-1",
     menuList: () =>
       css({
         scrollbarColor: "var(--violet-4) var(--violet-2)",
@@ -179,7 +179,7 @@ export default function FontPicker({ initialValue, onChange, fontType }: FontPic
     loadingMessage(props) {
       return tx("text-sm py-2");
     },
-    indicatorsContainer: () => tx("text-sm pr-1.5 font-normal scale-75"),
+    indicatorsContainer: () => "text-sm pr-1.5 font-normal scale-75",
 
     option: (state) =>
       state.isSelected

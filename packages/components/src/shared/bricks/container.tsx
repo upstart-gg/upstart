@@ -1,18 +1,18 @@
 import { forwardRef } from "react";
-import { tx, apply } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { type Manifest, manifest } from "@upstart.gg/sdk/bricks/manifests/container.manifest";
 import EditableBrickWrapper from "~/editor/components/EditableBrick";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useDatasource } from "../hooks/use-datasource";
-import { defineBrick, getPositionDefaults, type Brick } from "@upstart.gg/sdk/shared/bricks";
+import { processBrick, type Brick } from "@upstart.gg/sdk/shared/bricks";
 import BrickWrapper from "../components/BrickWrapper";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const props = brick.props;
 
   const styles = useBrickStyle<Manifest>(brick);
-  const ds = useDatasource(props.datasource.ds, manifest.datasource);
+  const ds = useDatasource(props.datasource, manifest.datasource);
 
   // If this container is Dynamic
   if (ds.datasourceId && props.$childrenType) {
@@ -22,21 +22,20 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edi
     // Override childrenBricks with the data from the datasource
     props.$children =
       template && ds.data !== null
-        ? ds.data.map((data, index) => {
-            return defineBrick({
-              ...template,
-              id: `${brick.id}-${index}`,
-              parentId: brick.id,
-              sectionId: brick.sectionId,
-              props: { ...template.props, datasourceRef: props.datasource, ...data },
-            }) satisfies Brick;
-          })
+        ? ds.data.map(
+            (data, index) =>
+              processBrick({
+                ...template,
+                id: `${brick.id}-${index}`,
+                props: { ...template.props, datasourceRef: props.datasource, ...data },
+              }) satisfies Brick,
+          )
         : [];
   }
 
   return (
     // Always apply the "brick" class
-    <div className={tx(apply("brick flex-1"), Object.values(styles))} ref={ref}>
+    <div className={tx("brick flex-1", Object.values(styles))} ref={ref}>
       {props.$children?.length > 0 ? (
         props.$children.map((brick, index) => {
           return editable ? (

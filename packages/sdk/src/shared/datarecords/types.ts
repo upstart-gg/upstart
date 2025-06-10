@@ -14,7 +14,67 @@ export const connectorSchema = Type.Union([
 
 export type DatarecordConnector = Static<typeof connectorSchema>;
 
-const connectorsChoices = Type.Union([
+const internalDatarecord = Type.Object(
+  {
+    provider: Type.Literal("internal"),
+    // options: Type.Optional(Type.Any()),
+    schema: Type.Any({
+      title: "Schema",
+      description:
+        "JSON Schema of the datarecord. Always of type 'object' and representing a row that will be saved.",
+      examples: [
+        {
+          type: "object",
+          properties: {
+            firstname: { type: "string", title: "Firstname" },
+            lastname: { type: "string", title: "Lastname" },
+            email: { type: "string", format: "email", title: "Email" },
+          },
+          required: ["email"],
+          title: "Newsletter Subscription",
+        },
+      ],
+    }),
+    indexes: Type.Array(
+      Type.Object({
+        name: Type.String({ title: "Index name" }),
+        fields: Type.Array(Type.String(), { title: "Fields to index" }),
+        unique: Type.Optional(Type.Boolean({ title: "Unique index", default: false })),
+      }),
+      {
+        title: "Indexes",
+        description:
+          "IMPORTANT: Indexes to create on the datarecord. use it to enforce uniqueness or improve query performance.",
+      },
+    ),
+  },
+  {
+    examples: [
+      {
+        provider: "internal",
+        schema: {
+          type: "object",
+          properties: {
+            firstname: { type: "string", title: "Firstname" },
+            lastname: { type: "string", title: "Lastname" },
+            email: { type: "string", format: "email", title: "Email" },
+          },
+          required: ["email"],
+          title: "Newsletter Subscription",
+        },
+        indexes: [
+          {
+            name: "email_index",
+            fields: ["email"],
+            unique: true,
+          },
+        ],
+      },
+    ],
+  },
+);
+
+export const datarecordsConnectors = Type.Union([
   Type.Object({
     provider: Type.Literal("airtable"),
     options: airtableOptions,
@@ -27,26 +87,24 @@ const connectorsChoices = Type.Union([
     provider: Type.Literal("generic-webhook"),
     options: genericWebhookOptions,
   }),
-  Type.Object({
-    provider: Type.Literal("internal"),
-    options: Type.Any(),
-    schema: Type.Union([
-      Type.Array(Type.Object({}, { additionalProperties: true })),
-      Type.Object({}, { additionalProperties: true }),
-    ]),
-  }),
+  internalDatarecord,
 ]);
 
-const datarecordManifest = Type.Composite([
-  connectorsChoices,
-  Type.Object({
-    label: Type.String({
-      title: "Name of the datarecord",
-      comment: "For example, 'Newsletter Subscriptions'",
-    }),
-    description: Type.Optional(Type.String({ title: "Description of the datarecord" })),
+const datarecordMetadata = Type.Object({
+  id: Type.String({
+    title: "Datarecord ID",
+    comment: "A unique identifier for the datarecord, e.g., 'newsletter_subscriptions'",
   }),
-]);
+  label: Type.String({
+    title: "Name of the datarecord",
+    comment: "For example, 'Newsletter Subscriptions'",
+  }),
+  description: Type.Optional(Type.String({ title: "Description of the datarecord" })),
+});
+
+const datarecordManifest = Type.Composite([datarecordsConnectors, datarecordMetadata]);
+
+export const internalDatarecordManifest = Type.Composite([datarecordMetadata, internalDatarecord]);
 
 export type DatarecordManifest = Static<typeof datarecordManifest>;
 

@@ -1,8 +1,10 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps } from "../props/helpers";
-import { FaIcons } from "react-icons/fa6";
-import { TbIcons } from "react-icons/tb";
+import { defineProps, optional, prop } from "../props/helpers";
 import { PiConfetti } from "react-icons/pi";
+import { string, urlOrPageId, urlOrPageIdRef } from "../props/string";
+import type { BrickProps } from "../props/types";
+import type { FC } from "react";
+import type { Type } from "@sinclair/typebox";
 
 export const manifest = defineBrickManifest({
   type: "icon",
@@ -11,11 +13,118 @@ export const manifest = defineBrickManifest({
   description: "An icon with optional text",
   repeatable: true,
   icon: PiConfetti,
-  // icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-  //         stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-  //         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-  //         <path d="M7 12 L12 7 L17 12 L12 17 Z"></path></svg>`,
-  props: defineProps({}),
+  props: defineProps({
+    icon: prop({
+      title: "Icon",
+      description: "Icon to display (iconify reference)",
+      schema: string("Icon", undefined, {
+        description: "Icon to display (iconify reference)",
+        "ui:field": "iconify",
+      }),
+    }),
+    size: prop({
+      title: "Size",
+      description: "Size of the icon",
+      schema: string("Size", "1em", {
+        description: "Size of the icon",
+        "ai:instructions": "The size of the icon can be set using 'em' or '%' unit.",
+      }),
+    }),
+    link: optional(urlOrPageIdRef({ title: "Link" })),
+  }),
 });
 
 export type Manifest = typeof manifest;
+
+export const examples: {
+  description: string;
+  type: string;
+  props: BrickProps<Manifest>["brick"]["props"];
+}[] = [
+  {
+    description: "Large heart icon",
+    type: "icon",
+    props: {
+      icon: "mdi:heart",
+      size: "2em",
+    },
+  },
+  {
+    description: "Shopping cart icon",
+    type: "icon",
+    props: {
+      icon: "mdi:cart",
+      size: "1.2em",
+    },
+  },
+  {
+    description: "Email/message icon",
+    type: "icon",
+    props: {
+      icon: "mdi:email",
+      size: "1.1em",
+      link: "mailto:john.doe@example.com",
+    },
+  },
+  {
+    description: "Phone contact icon",
+    type: "icon",
+    props: {
+      icon: "mdi:phone",
+      size: "1em",
+      link: "tel:+1234567890",
+    },
+  },
+  {
+    description: "Large download icon",
+    type: "icon",
+    props: {
+      icon: "mdi:download",
+      size: "2.5em",
+      link: "https://example.com/file.zip",
+    },
+  },
+  {
+    description: "Menu hamburger icon",
+    type: "icon",
+    props: {
+      icon: "mdi:menu",
+      size: "1.4em",
+    },
+  },
+  {
+    description: "Close/X icon",
+    type: "icon",
+    props: {
+      icon: "mdi:close",
+      size: "1.2em",
+    },
+  },
+  {
+    description: "Social media Facebook icon",
+    type: "icon",
+    props: {
+      icon: "mdi:facebook",
+      size: "1.4em",
+      link: "https://www.facebook.com/yourprofile",
+    },
+  },
+  {
+    description: "Social media Twitter icon",
+    type: "icon",
+    props: {
+      icon: "mdi:twitter",
+      size: "1.4em",
+      link: "https://twitter.com/yourprofile",
+    },
+  },
+  {
+    description: "Social media Instagram icon",
+    type: "icon",
+    props: {
+      icon: "mdi:instagram",
+      size: "1.4em",
+      link: "https://www.instagram.com/yourprofile",
+    },
+  },
+];

@@ -1,20 +1,12 @@
 import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/layout-constants";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
-import type { ResponsiveMode } from "@upstart.gg/sdk/shared/responsive";
-import type { BrickConstraints, BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
+import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
+import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import type { GridConfig } from "../hooks/use-grid-config";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
+import type { FullRect } from "@interactjs/types/index";
 
-const defaultsPreferred = {
-  mobile: {
-    width: LAYOUT_COLS.mobile / 2,
-    height: Math.round(LAYOUT_COLS.mobile / 4),
-  },
-  desktop: {
-    width: LAYOUT_COLS.desktop / 3,
-    height: LAYOUT_COLS.desktop / 3,
-  },
-};
+const DROP_INDICATOR_WIDTH = 4;
 
 export function getClosestSection(element: Element) {
   return element.closest<HTMLElement>('[data-element-kind="section"]')!;
@@ -22,7 +14,7 @@ export function getClosestSection(element: Element) {
 
 export function getBrickPosition(
   element: HTMLElement,
-  previewMode: ResponsiveMode,
+  previewMode: Resolution,
   relatedContainer?: HTMLElement,
 ) {
   // Get element's initial position (getBoundingClientRect gives position relative to viewport)
@@ -51,21 +43,6 @@ export function getBrickPosition(
   const x = Math.max(0, gridX);
   const y = Math.max(0, gridY);
 
-  console.log("getBrickPosition", {
-    gridX,
-    gridY,
-    rect,
-    w,
-    h,
-    x,
-    y,
-    actualX,
-    actualY,
-    padX,
-    colWidth: config.colWidth,
-    rowHeight: config.rowHeight,
-  });
-
   return {
     x,
     y,
@@ -74,7 +51,7 @@ export function getBrickPosition(
   };
 }
 
-export function getGridConfig(sectionElement: HTMLElement, previewMode: ResponsiveMode) {
+export function getGridConfig(sectionElement: HTMLElement, previewMode: Resolution) {
   const colWidth = Math.round(sectionElement.clientWidth / LAYOUT_COLS[previewMode]);
   const rowHeight = LAYOUT_ROW_HEIGHT;
   return { colWidth, rowHeight };
@@ -101,263 +78,320 @@ export function getDropPosition(event: Interact.DropEvent, gridConfig: GridConfi
 }
 
 /**
- * Adjust the bricks "mobile" position based on the "desktop" position by:
- * - Setting each brick to 100% width
- * - Guess the order based on the desktop position
- * - Respecting the optional "manualHeight" that could be already set on the brick's mobile position
- * - Add a blank row between each brick
  */
-export function adjustMobileLayout(layout: Brick[]): Brick[] {
-  // Sort bricks by desktop position (top to bottom, left to right)
-  const sortedBricks = [...layout].sort((a, b) => {
-    const posA = a.position.desktop;
-    const posB = b.position.desktop;
-    if (posA.y === posB.y) return posA.x - posB.x;
-    return posA.y - posB.y;
-  });
-
-  let currentY = 0;
-  const spacing = 1; // Add 1 unit spacing between bricks
-
-  return sortedBricks.map((brick) => {
-    const newBrick = { ...brick };
-    const mobilePosition = brick.position.mobile;
-
-    // Set new mobile position
-    newBrick.position = {
-      ...brick.position,
-      mobile: {
-        ...mobilePosition,
-        x: 0,
-        y: currentY,
-        w: LAYOUT_COLS.mobile,
-        h: mobilePosition.manualHeight || mobilePosition.h,
-      },
-    };
-
-    // Update currentY for next brick
-    currentY += newBrick.position.mobile.h + spacing;
-
-    return newBrick;
-  });
-}
-
-/**
- */
-export function getSectionAtPosition(x: number, y: number) {
+export function getSectionElementAtPosition(x: number, y: number) {
   const elements = document.elementsFromPoint(x, y) as HTMLElement[];
   return elements.find((el) => el.tagName === "SECTION" && el.dataset.elementKind === "section") as
     | HTMLElement
     | undefined;
 }
 
-export function getElementCenterPoint(element: HTMLElement) {
-  const rect = element.getBoundingClientRect();
-  return {
-    x: rect.left + rect.width / 2,
-    y: rect.top + rect.height / 2,
-  };
+// TODO: check if this works with the new layout system
+export function getBrickElementAtPosition(x: number, y: number) {
+  const brick = document
+    .elementsFromPoint(x, y)
+    .find((el) => (el as HTMLElement).dataset?.brickId)
+    ?.closest<HTMLElement>("[data-brick]");
+  return brick;
+}
+
+export function getBricksHovered(brickId: string, rect: FullRect, section: HTMLElement) {
+  // return all bricks that intersect with the rect (all surface!)
+  const hoveredElements: HTMLElement[] = [];
+  const elementsToCheck = Array.from(
+    section.querySelectorAll<HTMLElement>('[data-element-kind="brick"]'),
+  ).filter((el) => el.id !== brickId);
+
+  for (const element of elementsToCheck) {
+    // Get element boundaries
+    const elementRect = element.getBoundingClientRect();
+    // Check for intersection
+    if (
+      rect.right >= elementRect.left &&
+      rect.left <= elementRect.right &&
+      rect.bottom >= elementRect.top &&
+      rect.top <= elementRect.bottom
+    ) {
+      hoveredElements.push(element);
+    }
+  }
+  return hoveredElements;
 }
 
 /**
- * Returns the brick at the given position
+ * Given a dragged Rect and a list of hovered elements, this function will return the
+ * position where the dragged element should be dropped.
+ * It should return something that can be used with insertAdjacentHTML
+ * to insert the element at the right position.
+ *
+ * type FullRect = {
+    top: number;
+    left: number;
+    bottom: number;
+    right: number;
+    width: number;
+    height: number;
+  }
  */
-export function getBrickAtPosition(
-  x: number,
-  y: number,
-  bricks: Brick[],
-  currentBp: ResponsiveMode = "desktop",
-): Brick | undefined {
-  return bricks.find((brick) => {
-    const pos = brick.position[currentBp];
-    return x >= pos.x && x < pos.x + pos.w && y >= pos.y && y < pos.y + pos.h;
-  });
-}
 
-type CollisionSide = "left" | "right" | "top" | "bottom";
-type Collision = { brick: Brick; sides: CollisionSide[]; distance: number };
-
-type GetDropOverGhostPositionParams = {
-  /**
-   * The current brick being dragged
-   */
-  brick: Brick;
-  /**
-   * The list of all bricks in the layout
-   */
-  bricks: Brick[];
-  /**
-   * The current breakpoint ("mobile" | "desktop")
-   */
-  currentBp?: ResponsiveMode;
-  /**
-   * The drop position (column-based)
-   */
-  dropPosition: { y: number; x: number };
-};
-
-function getCollisionSides(
-  draggedRect: { x: number; y: number; w: number; h: number },
-  brickOnLayout: { x: number; y: number; w: number; h: number },
-): CollisionSide[] {
-  if (
-    !(
-      draggedRect.x < brickOnLayout.x + brickOnLayout.w &&
-      draggedRect.x + draggedRect.w > brickOnLayout.x &&
-      draggedRect.y < brickOnLayout.y + brickOnLayout.h &&
-      draggedRect.y + draggedRect.h > brickOnLayout.y
-    )
-  ) {
-    return [];
+/**
+ * Given a dragged Rect and a list of hovered elements, this function will return the
+ * position where the dragged element should be dropped.
+ * It only allows dropping inside elements with data-dropzone="true".
+ *
+ * type FullRect = {
+    top: number;
+    left: number;
+    bottom: number;
+    right: number;
+    width: number;
+    height: number;
+  }
+ */
+export function getDropInstructions(
+  rect: FullRect,
+  hoveredElements: HTMLElement[],
+): {
+  dropTarget: HTMLElement | null;
+  position: InsertPosition;
+} {
+  // If no elements are hovered, return null
+  if (!hoveredElements.length) {
+    return { dropTarget: null, position: "beforeend" };
   }
 
-  const collisionSides: CollisionSide[] = [];
+  // No need to filter elements here - we'll check for data-dropzone only when inserting INSIDE
+  // Sort hovered elements by their position in the DOM
+  // This is to ensure consistent behavior when multiple elements are hovered
+  const sortedElements = [...hoveredElements].sort((a, b) => {
+    const aRect = a.getBoundingClientRect();
+    const bRect = b.getBoundingClientRect();
 
-  // Check each side for collision
-  if (draggedRect.y + draggedRect.h >= brickOnLayout.y && draggedRect.y < brickOnLayout.y) {
-    collisionSides.push("top");
-  }
+    // First compare vertical position
+    if (Math.abs(aRect.top - bRect.top) > 10) {
+      return aRect.top - bRect.top;
+    }
 
-  if (
-    draggedRect.y <= brickOnLayout.y + brickOnLayout.h &&
-    draggedRect.y + draggedRect.h > brickOnLayout.y + brickOnLayout.h
-  ) {
-    collisionSides.push("bottom");
-  }
-
-  if (draggedRect.x + draggedRect.w >= brickOnLayout.x && draggedRect.x < brickOnLayout.x) {
-    collisionSides.push("left");
-  }
-
-  if (
-    draggedRect.x <= brickOnLayout.x + brickOnLayout.w &&
-    draggedRect.x + draggedRect.w > brickOnLayout.x + brickOnLayout.w
-  ) {
-    collisionSides.push("right");
-  }
-
-  return collisionSides;
-}
-
-// Helper function to check if a position is valid
-function canTakeFullSpace(
-  currentBp: ResponsiveMode,
-  brick: Brick,
-  existingBricks: Brick[],
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-): boolean {
-  // Check if position is within grid bounds
-  if (x < 0 || x + width > LAYOUT_COLS[currentBp] || y < 0) {
-    return false;
-  }
-
-  // Check for collisions with existing bricks
-  return !existingBricks.some((brickObj) => {
-    const brickPos = brickObj.position[currentBp];
-    const horizontalOverlap = x < brickPos.x + brickPos.w && x + width > brickPos.x;
-    const verticalOverlap = y < brickPos.y + brickPos.h && y + height > brickPos.y;
-    return (
-      horizontalOverlap &&
-      verticalOverlap &&
-      // Don't consider the brick itself
-      brickObj.id !== brick.id
-    );
-  });
-}
-
-type DetectCollisionsParams = Omit<GetDropOverGhostPositionParams, "dropPosition"> & {
-  dropPosition?: { x: number; y: number };
-};
-
-export function detectCollisions({
-  brick,
-  bricks,
-  currentBp = "desktop",
-  dropPosition,
-}: DetectCollisionsParams) {
-  const draggedRect = {
-    x: dropPosition?.x ?? brick.position[currentBp].x,
-    y: dropPosition?.y ?? brick.position[currentBp].y,
-    w: brick.position[currentBp].w,
-    h: brick.position[currentBp].h,
-  };
-
-  const colisions: Collision[] = [];
-
-  bricks.forEach((b) => {
-    if (b.id === brick.id) return;
-
-    const sides = getCollisionSides(draggedRect, b.position[currentBp]);
-    if (!sides.length) return;
-
-    const distance = Math.min(
-      Math.abs(draggedRect.x - b.position[currentBp].x),
-      Math.abs(draggedRect.y - b.position[currentBp].y),
-    );
-
-    colisions.push({ brick: b, sides, distance });
+    // If vertically aligned, compare horizontal position
+    return aRect.left - bRect.left;
   });
 
-  return colisions;
+  // Get the most relevant hovered element
+  const targetElement = sortedElements[0];
+  const targetRect = targetElement.getBoundingClientRect();
+
+  // Calculate the center point of the dragged element
+  const dragCenterY = rect.top + rect.height / 2;
+  const dragCenterX = rect.left + rect.width / 2;
+
+  // Determine if we should insert before, after, or inside the target element
+
+  // Check for nesting (if dragged element is mostly inside the target)
+  const isInsideHorizontally = dragCenterX > targetRect.left && dragCenterX < targetRect.right;
+  const isInsideVertically = dragCenterY > targetRect.top && dragCenterY < targetRect.bottom;
+
+  if (isInsideHorizontally && isInsideVertically) {
+    // Only allow inserting INSIDE if target has data-dropzone="true"
+    if (targetElement.dataset.dropzone === "true") {
+      // If we're inside, check if we're closer to the top or bottom half
+      const isInTopHalf = dragCenterY < (targetRect.top + targetRect.bottom) / 2;
+
+      if (isInTopHalf) {
+        return { dropTarget: targetElement, position: "afterbegin" };
+      } else {
+        return { dropTarget: targetElement, position: "beforeend" };
+      }
+    } else {
+      // If not a dropzone but we're inside, decide whether to place before or after
+      // based on whether we're in the top/bottom or left/right half
+
+      // If the element is taller than it is wide, use vertical position to decide
+      if (targetRect.height > targetRect.width) {
+        const isInTopHalf = dragCenterY < (targetRect.top + targetRect.bottom) / 2;
+        if (isInTopHalf) {
+          return { dropTarget: targetElement, position: "beforebegin" };
+        } else {
+          return { dropTarget: targetElement, position: "afterend" };
+        }
+      }
+      // Otherwise use horizontal position
+      else {
+        const isInLeftHalf = dragCenterX < (targetRect.left + targetRect.right) / 2;
+        if (isInLeftHalf) {
+          return { dropTarget: targetElement, position: "beforebegin" };
+        } else {
+          return { dropTarget: targetElement, position: "afterend" };
+        }
+      }
+    }
+  }
+
+  // If not inside, check if we're above or below (these positions work regardless of dropzone status)
+  const isAbove = dragCenterY < targetRect.top;
+
+  if (isAbove) {
+    return { dropTarget: targetElement, position: "beforebegin" };
+  } else {
+    return { dropTarget: targetElement, position: "afterend" };
+  }
+}
+
+function createDropIndicator() {
+  let indicator = document.getElementById("drop-indicator");
+  if (!indicator) {
+    indicator = document.createElement("div");
+    indicator.id = "drop-indicator";
+    indicator.style.transition = "all 0.15s ease-out";
+    indicator.style.position = "absolute";
+    indicator.style.zIndex = "9999";
+    indicator.style.borderRadius = "9999px";
+    indicator.style.pointerEvents = "none"; // So it doesn't interfere with drop events
+  }
+  return indicator;
+}
+/**
+ * Creates and updates a visual drop indicator based on drop instructions
+ */
+export function showDropIndicator(dropInstructions: {
+  dropTarget: HTMLElement | null;
+  position: InsertPosition;
+}) {
+  // Remove any existing indicator first
+  const { dropTarget, position } = dropInstructions;
+  const indicator = createDropIndicator();
+
+  // If no target element, don't show an indicator
+  if (!dropTarget) return;
+
+  // Create the indicator element
+
+  // Get the computed style to check for flex properties
+  const targetStyle = window.getComputedStyle(dropTarget);
+  const parentElement = dropTarget.parentElement;
+  const isInHorizontalFlex =
+    parentElement &&
+    window.getComputedStyle(parentElement).display === "flex" &&
+    ["row", "row-reverse"].includes(window.getComputedStyle(parentElement).flexDirection);
+
+  const targetRect = dropTarget.getBoundingClientRect();
+
+  // Adjust indicator style based on parent layout and position
+  if (isInHorizontalFlex && (position === "beforebegin" || position === "afterend")) {
+    // For horizontal flex containers, show vertical indicators between items
+    indicator.style.width = `${DROP_INDICATOR_WIDTH}px`;
+    indicator.style.height = `${targetRect.height}px`;
+    indicator.style.backgroundColor = "var(--violet-a8)";
+
+    if (position === "beforebegin") {
+      indicator.style.left = `${targetRect.left - 2}px`;
+      indicator.style.top = `${targetRect.top}px`;
+    } else {
+      // afterend
+      indicator.style.left = `${targetRect.right}px`;
+      indicator.style.top = `${targetRect.top}px`;
+    }
+  } else {
+    // Original behavior for vertical layouts or nested positions
+    switch (position) {
+      case "beforebegin": // Insert before the element
+        indicator.style.height = `${DROP_INDICATOR_WIDTH}px`;
+        indicator.style.width = `${targetRect.width}px`;
+        indicator.style.backgroundColor = "var(--violet-a8)";
+        indicator.style.top = `${targetRect.top - 2}px`;
+        indicator.style.left = `${targetRect.left}px`;
+        break;
+
+      case "afterend": // Insert after the element
+        indicator.style.height = `${DROP_INDICATOR_WIDTH}px`;
+        indicator.style.width = `${targetRect.width}px`;
+        indicator.style.backgroundColor = "var(--violet-a8)";
+        indicator.style.top = `${targetRect.bottom}px`;
+        indicator.style.left = `${targetRect.left}px`;
+        break;
+
+      case "afterbegin": // Insert as first child
+        // Check if target is a horizontal flex container
+        // biome-ignore lint/correctness/noSwitchDeclarations: <explanation>
+        const isTargetHorizontalFlex =
+          targetStyle.display === "flex" && ["row", "row-reverse"].includes(targetStyle.flexDirection);
+
+        if (isTargetHorizontalFlex) {
+          // Vertical indicator at the start of the flex container
+          indicator.style.width = `${DROP_INDICATOR_WIDTH}px`;
+          indicator.style.height = `${targetRect.height - 10}px`;
+          indicator.style.backgroundColor = "var(--orange-a8)";
+          indicator.style.top = `${targetRect.top + 5}px`;
+
+          // Account for flex-direction
+          if (targetStyle.flexDirection === "row") {
+            indicator.style.left = `${targetRect.left + 5}px`;
+          } else {
+            indicator.style.left = `${targetRect.right - 8}px`;
+          }
+        } else {
+          // Original horizontal indicator
+          indicator.style.height = `${DROP_INDICATOR_WIDTH}px`;
+          indicator.style.width = `${targetRect.width - 20}px`;
+          indicator.style.backgroundColor = "var(--orange-a8)";
+          indicator.style.top = `${targetRect.top + 5}px`;
+          indicator.style.left = `${targetRect.left + 10}px`;
+        }
+        break;
+
+      case "beforeend": // Insert as last child
+        // Check if target is a horizontal flex container
+        // biome-ignore lint/correctness/noSwitchDeclarations: <explanation>
+        const isTargetHorizFlex =
+          targetStyle.display === "flex" && ["row", "row-reverse"].includes(targetStyle.flexDirection);
+
+        if (isTargetHorizFlex) {
+          // Vertical indicator at the end of the flex container
+          indicator.style.width = `${DROP_INDICATOR_WIDTH}px`;
+          indicator.style.height = `${targetRect.height - 10}px`;
+          indicator.style.backgroundColor = "var(--orange-a8)";
+          indicator.style.top = `${targetRect.top + 5}px`;
+
+          // Account for flex-direction
+          if (targetStyle.flexDirection === "row") {
+            indicator.style.left = `${targetRect.right - 8}px`;
+          } else {
+            indicator.style.left = `${targetRect.left + 5}px`;
+          }
+        } else {
+          // Original horizontal indicator
+          indicator.style.height = `${DROP_INDICATOR_WIDTH}px`;
+          indicator.style.width = `${targetRect.width - 20}px`;
+          indicator.style.backgroundColor = "var(--orange-a8)";
+          indicator.style.top = `${targetRect.bottom - 5}px`;
+          indicator.style.left = `${targetRect.left + 10}px`;
+        }
+        break;
+    }
+  }
+
+  // Add to DOM
+  document.body.appendChild(indicator);
 }
 
 /**
- * Returns the coords of an element relative to the #page-container
+ * Removes the drop indicator from the DOM
  */
-export function getBrickCoordsInPage(element: HTMLElement) {
-  const rect = element.getBoundingClientRect();
-  return {
-    x: rect.left,
-    y: rect.top,
-    w: rect.width,
-    h: rect.height,
-  };
+export function removeDropIndicator() {
+  const existingIndicator = document.getElementById("drop-indicator");
+  if (existingIndicator) {
+    existingIndicator.remove();
+  }
 }
 
-export function getDropOverGhostPosition({
-  brick,
-  bricks,
-  currentBp = "desktop",
-  dropPosition,
-}: GetDropOverGhostPositionParams) {
-  const draggedRect = {
-    x: dropPosition.x,
-    y: dropPosition.y,
-    w: brick.position[currentBp].w,
-    h: brick.position[currentBp].h,
-  };
-
-  const colisions = detectCollisions({ brick, bricks, currentBp, dropPosition });
-
-  // There is a collision, mark it as forbidden
-  const forbidden =
-    canTakeFullSpace(
-      currentBp,
-      brick,
-      bricks,
-      dropPosition.x,
-      dropPosition.y,
-      brick.position[currentBp].w,
-      brick.position[currentBp].h,
-    ) === false;
-
-  // return the ghost brick position
-  return {
-    ...draggedRect,
-    forbidden,
-    colisions,
-  };
-}
-
-export function getBrickResizeOptions(brick: Brick, manifest: BrickManifest, currentBp: ResponsiveMode) {
+/**
+ *  Todo
+ */
+export function getBrickResizeOptions(brick: Brick, manifest: BrickManifest, currentBp: Resolution) {
   const { maxHeight, maxWidth, minHeight, minWidth } = manifest;
   return {
-    canGrowVertical: (maxHeight?.[currentBp] ?? Infinity) > brick.position[currentBp].h,
-    canGrowHorizontal: (maxWidth?.[currentBp] ?? Infinity) > brick.position[currentBp].w,
-    canShrinkVertical: (minHeight?.[currentBp] ?? 0) < brick.position[currentBp].h,
-    canShrinkHorizontal: (minWidth?.[currentBp] ?? 0) < brick.position[currentBp].w,
+    canGrowVertical: true,
+    canGrowHorizontal: true,
+    canShrinkVertical: true,
+    canShrinkHorizontal: true,
   };
 }

@@ -1,7 +1,7 @@
 import type { FieldProps } from "./types";
 import { nanoid } from "nanoid";
-import { Button, Text, Select, Tooltip, IconButton } from "@upstart.gg/style-system/system";
-import { useMemo, useState } from "react";
+import { Button, Text, Select, IconButton } from "@upstart.gg/style-system/system";
+import { type FC, useMemo, useState } from "react";
 import ModalSearchImage from "~/editor/components/ModalSearchImage";
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
 import ColorField from "./color";
@@ -11,17 +11,20 @@ import { HelpIcon } from "../HelpIcon";
 import { IoSearch } from "react-icons/io5";
 import { fieldLabel } from "../form-class";
 import { FieldTitle } from "../field-factory";
+import { useIsPremiumPlan } from "~/editor/hooks/use-editor";
+import { tx } from "@upstart.gg/style-system/twind";
 
-const BackgroundField: React.FC<FieldProps<BackgroundSettings>> = (props) => {
+const BackgroundField: FC<FieldProps<BackgroundSettings>> = (props) => {
   const { schema, formData, onChange, required, title, description, currentValue } = props;
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);
   const { onImageUpload } = useUploader();
   const onPropsChange = (newVal: Partial<BackgroundSettings>) => onChange({ ...currentValue, ...newVal });
+  const isPremium = useIsPremiumPlan();
 
   return (
-    <>
-      <div className="background-field flex items-center justify-between flex-wrap gap-1 flex-1">
+    <div className="flex-1 flex gap-1 relative">
+      <div className={tx("background-field flex items-center justify-between flex-wrap gap-1 flex-1")}>
         <div className="flex items-center">
           <FieldTitle title={title ?? "Color / image"} description={description} />
         </div>
@@ -74,6 +77,13 @@ const BackgroundField: React.FC<FieldProps<BackgroundSettings>> = (props) => {
           </div>
         </div>
       </div>
+      {schema["ui:premium"] && !isPremium && (
+        <div className="absolute inset-0 bg-gray-500/50 rounded-md flex items-center justify-center">
+          <Text size="1" className="text-white">
+            Premium feature
+          </Text>
+        </div>
+      )}
       {currentValue.image && (
         <>
           <div className="flex justify-between items-center">
@@ -163,7 +173,7 @@ const BackgroundField: React.FC<FieldProps<BackgroundSettings>> = (props) => {
           setShowSearch(false);
         }}
       />
-    </>
+    </div>
   );
 };
 

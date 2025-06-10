@@ -1,9 +1,10 @@
 import type { UiSchema, ObjectFieldTemplateProps } from "@rjsf/utils";
-import { tx } from "@upstart.gg/style-system/twind";
+import { tx, css } from "@upstart.gg/style-system/twind";
+import type { ReactElement } from "react";
 import { Fragment } from "react/jsx-runtime";
 
 interface GroupedField {
-  content: React.ReactElement;
+  content: ReactElement;
   uiSchema?: UiSchema;
   hidden?: boolean;
 }

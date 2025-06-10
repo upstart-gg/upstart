@@ -1,24 +1,14 @@
 import type { FieldProps } from "./types";
-import { Text, Select, SegmentedControl } from "@upstart.gg/style-system/system";
+import { Select } from "@upstart.gg/style-system/system";
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import { fieldLabel } from "../form-class";
 import { ColorPill } from "./color";
-import { tx } from "@upstart.gg/style-system/twind";
-import {
-  MdBorderOuter,
-  MdBorderBottom,
-  MdBorderAll,
-  MdBorderLeft,
-  MdBorderRight,
-  MdBorderHorizontal,
-  MdBorderVertical,
-  MdBorderTop,
-  MdOutlineBorderBottom,
-} from "react-icons/md";
-import { useEffect, useState } from "react";
+import { MdBorderBottom, MdBorderLeft, MdBorderRight, MdBorderTop } from "react-icons/md";
+import { type FC, useState } from "react";
 import { FieldTitle } from "../field-factory";
+import { tx } from "@upstart.gg/style-system/twind";
 
-export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
+export const BorderField: FC<FieldProps<BorderSettings>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
   const onSettingsChange = (newVal: Partial<BorderSettings>) => onChange({ ...currentValue, ...newVal });
   const [currentSide, setSide] = useState<string[]>(currentValue.sides ?? ["all"]);
@@ -78,7 +68,11 @@ export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
           <ColorPill
             color={currentValue.color}
             elementColorType="border"
-            onChange={(e) => onChange({ ...currentValue, color: e })}
+            onChange={(color) => {
+              if (color) {
+                onChange({ ...currentValue, color });
+              }
+            }}
           />
         </div>
 

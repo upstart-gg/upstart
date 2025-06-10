@@ -1,15 +1,15 @@
 import type { FieldProps } from "./types";
-import { Text, Select } from "@upstart.gg/style-system/system";
+import { Select } from "@upstart.gg/style-system/system";
 import { fieldLabel } from "../form-class";
-import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 import { FieldTitle } from "../field-factory";
+import type { FC } from "react";
 
 export type TempPadding = {
   horizontal: string;
   vertical: string;
 };
 
-export const PagePaddingField: React.FC<FieldProps<TempPadding>> = (props) => {
+export const PagePaddingField: FC<FieldProps<TempPadding>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
   const onSettingsChange = (newVal: Partial<TempPadding>) => onChange({ ...currentValue, ...newVal });
 

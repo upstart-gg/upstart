@@ -11,22 +11,12 @@ describe("Border prop test suite", () => {
   });
 
   describe("border schema", () => {
-    it("should have correct default values", () => {
-      expect(borderSchema.default).toEqual({
-        style: "border-solid",
-        sides: [],
-        width: "border-0",
-        rounding: "rounded-auto",
-      });
-    });
-
     describe("border.style", () => {
       it("should have correct metadata", () => {
         const styleProp = borderSchema.properties.style;
         expect(styleProp.description).toBe("The brick border style");
         expect(styleProp["ui:field"]).toBe("enum");
         expect(styleProp["ui:display"]).toBe("button-group");
-        expect(styleProp.default).toBe("border-solid");
       });
     });
 
@@ -42,7 +32,6 @@ describe("Border prop test suite", () => {
       it("should have correct metadata", () => {
         const widthProp = borderSchema.properties.width;
         expect(widthProp["ui:field"]).toBe("enum");
-        expect(widthProp.default).toBe("border-0");
       });
     });
   });

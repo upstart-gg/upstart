@@ -1,20 +1,16 @@
 import type { FieldProps } from "./types";
 import { nanoid } from "nanoid";
-import { Button, TextField, Tooltip, IconButton, Select } from "@upstart.gg/style-system/system";
-import { useMemo, useState } from "react";
+import { Button, TextField, Select } from "@upstart.gg/style-system/system";
+import { type FC, useMemo, useState } from "react";
 import ModalSearchImage from "~/editor/components/ModalSearchImage";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
-import { IoIosHelpCircleOutline } from "react-icons/io";
 import { fieldLabel } from "../form-class";
 import trans from "./trans.svg?url";
 import { debounce } from "lodash-es";
-import { IoCloseCircleOutline } from "react-icons/io5";
-import { AiOutlineCloseSquare } from "react-icons/ai";
-import { CgCloseR } from "react-icons/cg";
 import { IoMdClose } from "react-icons/io";
 import { FieldTitle } from "../field-factory";
 
-const ImageField: React.FC<FieldProps<ImageProps>> = (props) => {
+const ImageField: FC<FieldProps<ImageProps>> = (props) => {
   const { schema, formData, onChange, required, title, description, currentValue } = props;
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);

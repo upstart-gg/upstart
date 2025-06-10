@@ -1,22 +1,112 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps } from "../props/helpers";
+import { defineProps, optional, prop } from "../props/helpers";
 import { FaWpforms } from "react-icons/fa6";
+import { Type } from "@sinclair/typebox";
+import { string } from "../props/string";
+import type { BrickProps } from "../props/types";
+import { StringDecoder } from "node:string_decoder";
+import { StringEnum } from "~/shared/utils/schema";
+import type { FC } from "react";
+import { paddingRef } from "../props/padding";
+import { backgroundColorRef } from "../props/background";
+import { colorRef } from "../props/color";
 
 export const manifest = defineBrickManifest({
   type: "form",
   kind: "widget",
   name: "Form",
   description: "A form element",
-  isContainer: true,
+  aiInstructions: `The form brick automatically renders form fields based on the datarecord id provided in the props.
+There is no need to define the form fields manually and the form does not accept any children`,
+  isContainer: false,
   icon: FaWpforms,
-  // icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-  //   <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-  //   <rect x="6" y="6" width="12" height="3" rx="1"></rect>
-  //   <rect x="6" y="11" width="12" height="3" rx="1"></rect>
-  //   <rect x="12" y="17" width="6" height="2" rx="1"
-  //     fill="currentColor"
-  //   ></rect></svg>`,
-  props: defineProps({}),
+  props: defineProps({
+    title: optional(string("Title", "My form", { description: "The title of the form" })),
+    intro: optional(string("Intro", undefined, { description: "The intro text of the form" })),
+    datarecordId: string("Datarecord ID", undefined, {
+      description: "The ID of the datarecord to use to generate the form fields",
+    }),
+    padding: optional(paddingRef),
+    backgroundColor: optional(backgroundColorRef()),
+    color: optional(colorRef()),
+    align: optional(
+      prop({
+        title: "Alignment",
+        description: "The alignment of the form fields. Default is vertical",
+        schema: StringEnum(["vertical", "horizontal"], {
+          default: "vertical",
+          title: "Form alignment",
+          description: "Choose between vertical or horizontal alignment for the form fields",
+        }),
+      }),
+    ),
+  }),
 });
 
 export type Manifest = typeof manifest;
+export const examples: {
+  description: string;
+  type: string;
+  props: BrickProps<Manifest>["brick"]["props"];
+}[] = [
+  {
+    description: "Basic contact form",
+    type: "form",
+    props: {
+      title: "Contact Us",
+      intro: "We'd love to hear from you. Send us a message and we'll respond as soon as possible.",
+      align: "vertical",
+      datarecordId: "contacts",
+    },
+  },
+  {
+    description: "User registration form",
+    type: "form",
+    props: {
+      title: "Create Account",
+      intro: "Join our platform and start your journey today.",
+      align: "vertical",
+      datarecordId: "user-registration",
+    },
+  },
+  {
+    description: "Newsletter subscription form (horizontal)",
+    type: "form",
+    props: {
+      title: "Stay Updated",
+      intro: "Subscribe to our newsletter for the latest updates and exclusive content.",
+      align: "horizontal",
+      datarecordId: "newsletter-subscription",
+    },
+  },
+  {
+    description: "Event registration form",
+    type: "form",
+    props: {
+      title: "Conference Registration",
+      intro: "Register for the Annual Tech Conference 2025. Early bird pricing ends soon!",
+      align: "vertical",
+      datarecordId: "event-registration",
+    },
+  },
+  {
+    description: "Job application form",
+    type: "form",
+    props: {
+      title: "Apply for Position",
+      intro: "We're excited to learn more about you! Please fill out this application form completely.",
+      align: "vertical",
+      datarecordId: "job-application",
+    },
+  },
+  {
+    description: "Customer feedback form",
+    type: "form",
+    props: {
+      title: "Share Your Feedback",
+      intro: "Your opinion matters to us. Help us improve our products and services.",
+      align: "vertical",
+      datarecordId: "customer-feedback",
+    },
+  },
+];

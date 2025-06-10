@@ -1,4 +1,4 @@
-import { type ComponentType, memo, type ForwardRefExoticComponent } from "react";
+import { type ComponentType, memo, type ForwardRefExoticComponent, type MemoExoticComponent } from "react";
 import { isEqual, set, cloneDeep } from "lodash-es";
 
 /**
@@ -11,7 +11,7 @@ import { isEqual, set, cloneDeep } from "lodash-es";
 export function memoizeIgnoringPaths<P>(
   Component: ComponentType<P> | ForwardRefExoticComponent<P>,
   ignorePaths: string[],
-): React.MemoExoticComponent<ComponentType<P> | ForwardRefExoticComponent<P>> {
+): MemoExoticComponent<ComponentType<P> | ForwardRefExoticComponent<P>> {
   // Create custom comparison function that ignores specified paths
   const propsAreEqual = (prevProps: P, nextProps: P): boolean => {
     // Early return for identical reference
@@ -51,7 +51,7 @@ export function memoizeIgnoringPaths<P>(
 export function memoizeIgnoring<P, V>(
   Component: ComponentType<P> | ForwardRefExoticComponent<P>,
   ignoreFn: (props: P) => V,
-): React.MemoExoticComponent<ComponentType<P> | ForwardRefExoticComponent<P>> {
+): MemoExoticComponent<ComponentType<P> | ForwardRefExoticComponent<P>> {
   const propsAreEqual = (prevProps: P, nextProps: P): boolean => {
     if (prevProps === nextProps) return true;
 

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Type } from "@sinclair/typebox";
 import { prop, group, defineProps, getGroupInfo, getStyleProperties } from "../helpers";
-import { manifest as sampleManifest } from "../../manifests/header.manifest";
+import { manifest as sampleManifest } from "../../manifests/navbar.manifest";
 
 describe("Props helpers test suite", () => {
   describe("prop", () => {
@@ -122,8 +122,6 @@ describe("Props helpers test suite", () => {
       const styles = getStyleProperties(sampleManifest.props);
       expect(styles).toMatchObject({
         "brand.color": "#styles:color",
-        "brand.logo.fit": "#styles:objectFit",
-        "brand.logo.position": "#styles:objectPosition",
         "container.backgroundColor": "#styles:backgroundColor",
         "container.border": "#styles:border",
         "container.fixedPositioned": "#styles:fixedPositioned",

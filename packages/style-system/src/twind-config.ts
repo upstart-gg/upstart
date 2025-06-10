@@ -6,12 +6,14 @@ import presetLineClamp from "@twind/preset-line-clamp";
 import presetForms from "@twind/preset-tailwind-forms";
 import presetTypo from "@twind/preset-typography";
 import presetContainerQueries from "@twind/preset-container-queries";
+import colors from "tailwindcss/colors";
 
 export default defineConfig({
   darkMode: "media",
+  ignorelist: [/^btn-*/],
   presets: [
     presetAutoprefix(),
-    presetTailwind({ disablePreflight: false }),
+    presetTailwind({ disablePreflight: true }),
     presetContainerQueries(),
     presetExt(),
     presetLineClamp(),
@@ -63,13 +65,18 @@ export default defineConfig({
       /^bg-color-\[([\S]+)\]$/,
       ({ 1: $1 }) => ({ "--up-bg-color": `${$1}`, backgroundColor: "var(--up-bg-color)" }),
     ],
-
+    [
+      "bg-base",
+      ({ $$ }) => ({
+        backgroundColor: `var(--up-bg-color)`,
+        "--up-bg-color": `var(--color-base${$$})`,
+      }),
+    ],
     [
       "bg-neutral-",
       ({ $$ }) => ({
         backgroundColor: `var(--up-bg-color)`,
         "--up-bg-color": `var(--color-neutral-${$$})`,
-        "--up-color-auto": `color-contrast(var(--up-bg-color) vs white, black)`,
       }),
     ],
     [
@@ -77,7 +84,6 @@ export default defineConfig({
       ({ $$ }) => ({
         backgroundColor: `var(--up-bg-color)`,
         "--up-bg-color": `var(--color-accent-${$$})`,
-        "--up-color-auto": `color-contrast(var(--up-bg-color) vs white, black)`,
       }),
     ],
     [
@@ -85,7 +91,6 @@ export default defineConfig({
       ({ $$ }) => ({
         backgroundColor: `var(--up-bg-color)`,
         "--up-bg-color": `var(--color-primary-${$$})`,
-        "--up-color-auto": `color-contrast(var(--up-bg-color) vs white, black)`,
       }),
     ],
     [
@@ -93,10 +98,10 @@ export default defineConfig({
       ({ $$ }) => ({
         backgroundColor: `var(--up-bg-color)`,
         "--up-bg-color": `var(--color-secondary-${$$})`,
-        "--up-color-auto": `color-contrast(var(--up-bg-color) vs white, black)`,
       }),
     ],
 
+    ["border-base-", ({ $$ }) => ({ borderColor: `color-mix(in lab, var(--color-base-${$$}), black 10%)` })],
     ["border-neutral-", ({ $$ }) => ({ borderColor: `var(--color-neutral-${$$})` })],
     ["border-accent-", ({ $$ }) => ({ borderColor: `var(--color-accent-${$$})` })],
     ["border-primary-", ({ $$ }) => ({ borderColor: `var(--color-primary-${$$})` })],
@@ -105,6 +110,13 @@ export default defineConfig({
     /**
      * Can be used with text-neutral-500, but also text-neutral-500-subtle, text-neutral-500-tonal-subtle, text-neutral-500-strong, etc.
      */
+    ["text-primary", "@(text-primary-content)"],
+    ["text-secondary", "@(text-secondary-content)"],
+    ["text-accent", "@(text-accent-content)"],
+    ["text-neutral", "@(text-neutral-content)"],
+    ["text-base100", "@(text-base100-content)"],
+    ["text-base200", "@(text-base200-content)"],
+    ["text-base300", "@(text-base300-content)"],
     ["text-neutral-", ({ $$ }) => ({ color: `var(--color-neutral-${$$})` })],
     ["text-accent-", ({ $$ }) => ({ color: `var(--color-accent-${$$})` })],
     ["text-primary-", ({ $$ }) => ({ color: `var(--color-primary-${$$})` })],
@@ -114,288 +126,6 @@ export default defineConfig({
     ["outline-secondary-", ({ $$ }) => ({ outlineColor: `var(--color-secondary-${$$})` })],
     ["outline-accent-", ({ $$ }) => ({ outlineColor: `var(--color-accent-${$$})` })],
     ["outline-neutral-", ({ $$ }) => ({ outlineColor: `var(--color-neutral-${$$})` })],
-
-    [
-      "preset-bg-solid-primary-1",
-      {
-        "--up-bg-color": "var(--color-primary-100)",
-        backgroundImage: "none",
-        backgroundColor: "var(--color-primary-100)",
-      },
-    ],
-    [
-      "preset-bg-solid-primary-2",
-      {
-        "--up-bg-color": "var(--color-primary-200)",
-        backgroundImage: "none",
-        backgroundColor: "var(--up-bg-color)",
-      },
-    ],
-    [
-      "preset-bg-solid-primary-3",
-      {
-        "--up-bg-color": "var(--color-primary-400)",
-        backgroundImage: "none",
-        backgroundColor: "var(--up-bg-color)",
-      },
-    ],
-    [
-      "preset-bg-solid-primary-4",
-      {
-        "--up-bg-color": "var(--color-primary-600)",
-        backgroundImage: "none",
-        backgroundColor: "var(--up-bg-color)",
-      },
-    ],
-
-    [
-      "preset-bg-solid-secondary-1",
-      {
-        "--up-bg-color": "var(--color-secondary-100)",
-        backgroundImage: "none",
-        backgroundColor: "var(--color-secondary-100)",
-      },
-    ],
-    [
-      "preset-bg-solid-secondary-2",
-      {
-        "--up-bg-color": "var(--color-secondary-200)",
-        backgroundImage: "none",
-        backgroundColor: "var(--up-bg-color)",
-      },
-    ],
-    [
-      "preset-bg-solid-secondary-3",
-      {
-        "--up-bg-color": "var(--color-secondary-400)",
-        backgroundImage: "none",
-        backgroundColor: "var(--up-bg-color)",
-      },
-    ],
-    [
-      "preset-bg-solid-secondary-4",
-      {
-        "--up-bg-color": "var(--color-secondary-600)",
-        backgroundImage: "none",
-        backgroundColor: "var(--up-bg-color)",
-      },
-    ],
-    [
-      "preset-bg-solid-accent-1",
-      {
-        "--up-bg-color": "var(--color-accent-100)",
-        backgroundImage: "none",
-        backgroundColor: "var(--color-accent-100)",
-      },
-    ],
-    [
-      "preset-bg-solid-accent-2",
-      {
-        "--up-bg-color": "var(--color-accent-200)",
-        backgroundImage: "none",
-        backgroundColor: "var(--up-bg-color)",
-      },
-    ],
-    [
-      "preset-bg-solid-accent-3",
-      {
-        "--up-bg-color": "var(--color-accent-400)",
-        backgroundImage: "none",
-        backgroundColor: "var(--up-bg-color)",
-      },
-    ],
-    [
-      "preset-bg-solid-accent-4",
-      {
-        "--up-bg-color": "var(--color-accent-600)",
-        backgroundImage: "none",
-        backgroundColor: "var(--up-bg-color)",
-      },
-    ],
-
-    [
-      "preset-bg-solid-neutral-1",
-      {
-        "--up-bg-color": "var(--color-neutral-100)",
-        backgroundImage: "none",
-        backgroundColor: "var(--color-neutral-100)",
-      },
-    ],
-    [
-      "preset-bg-solid-neutral-2",
-      {
-        "--up-bg-color": "var(--color-neutral-200)",
-        backgroundImage: "none",
-        backgroundColor: "var(--up-bg-color)",
-      },
-    ],
-    [
-      "preset-bg-solid-neutral-3",
-      {
-        "--up-bg-color": "var(--color-neutral-400)",
-        backgroundImage: "none",
-        backgroundColor: "var(--up-bg-color)",
-      },
-    ],
-    [
-      "preset-bg-solid-neutral-4",
-      {
-        "--up-bg-color": "var(--color-neutral-600)",
-        backgroundImage: "none",
-        backgroundColor: "var(--up-bg-color)",
-      },
-    ],
-
-    [
-      "preset-bg-gradient-primary-1",
-      {
-        "--up-bg-color": "var(--color-primary-200)",
-        backgroundImage: "linear-gradient(to top, var(--color-primary-200), var(--color-primary-100))",
-      },
-    ],
-    [
-      "preset-bg-gradient-primary-2",
-      {
-        "--up-bg-color": "var(--color-primary-400)",
-        backgroundImage: "linear-gradient(to top, var(--color-primary-400), var(--color-primary-300))",
-      },
-    ],
-    [
-      "preset-bg-gradient-primary-3",
-      {
-        "--up-bg-color": "var(--color-primary-600)",
-        backgroundImage: "linear-gradient(to top, var(--color-primary-600), var(--color-primary-500))",
-      },
-    ],
-    [
-      "preset-bg-gradient-primary-4",
-      {
-        "--up-bg-color": "var(--color-primary-800)",
-        backgroundImage: "linear-gradient(to top, var(--color-primary-800), var(--color-primary-700))",
-      },
-    ],
-
-    [
-      "preset-bg-gradient-secondary-1",
-      {
-        "--up-bg-color": "var(--color-secondary-200)",
-        backgroundImage: "linear-gradient(to top, var(--color-secondary-200), var(--color-secondary-100))",
-      },
-    ],
-
-    [
-      "preset-bg-gradient-secondary-2",
-      {
-        "--up-bg-color": "var(--color-secondary-400)",
-        backgroundImage: "linear-gradient(to top, var(--color-secondary-400), var(--color-secondary-300))",
-      },
-    ],
-
-    [
-      "preset-bg-gradient-secondary-3",
-      {
-        "--up-bg-color": "var(--color-secondary-600)",
-        backgroundImage: "linear-gradient(to top, var(--color-secondary-600), var(--color-secondary-500))",
-      },
-    ],
-
-    [
-      "preset-bg-gradient-secondary-4",
-      {
-        "--up-bg-color": "var(--color-secondary-800)",
-        backgroundImage: "linear-gradient(to top, var(--color-secondary-800), var(--color-secondary-700))",
-      },
-    ],
-    [
-      "preset-bg-gradient-accent-1",
-      {
-        "--up-bg-color": "var(--color-accent-200)",
-        backgroundImage: "linear-gradient(to top, var(--color-accent-200), var(--color-accent-100))",
-      },
-    ],
-
-    [
-      "preset-bg-gradient-accent-2",
-      {
-        "--up-bg-color": "var(--color-accent-400)",
-        backgroundImage: "linear-gradient(to top, var(--color-accent-400), var(--color-accent-300))",
-      },
-    ],
-
-    [
-      "preset-bg-gradient-accent-3",
-      {
-        "--up-bg-color": "var(--color-accent-600)",
-        backgroundImage: "linear-gradient(to top, var(--color-accent-600), var(--color-accent-500))",
-      },
-    ],
-
-    [
-      "preset-bg-gradient-accent-4",
-      {
-        "--up-bg-color": "var(--color-accent-800)",
-        backgroundImage: "linear-gradient(to top, var(--color-accent-800), var(--color-accent-700))",
-      },
-    ],
-
-    [
-      "preset-bg-gradient-neutral-1",
-      {
-        "--up-bg-color": "var(--color-neutral-200)",
-        backgroundImage: "linear-gradient(to top, var(--color-neutral-200), var(--color-neutral-100))",
-      },
-    ],
-
-    [
-      "preset-bg-gradient-neutral-2",
-      {
-        "--up-bg-color": "var(--color-neutral-400)",
-        backgroundImage: "linear-gradient(to top, var(--color-neutral-400), var(--color-neutral-300))",
-      },
-    ],
-
-    [
-      "preset-bg-gradient-neutral-3",
-      {
-        "--up-bg-color": "var(--color-neutral-600)",
-        backgroundImage: "linear-gradient(to top, var(--color-neutral-600), var(--color-neutral-500))",
-      },
-    ],
-
-    [
-      "preset-bg-gradient-neutral-4",
-      {
-        "--up-bg-color": "var(--color-neutral-800)",
-        backgroundImage: "linear-gradient(to top, var(--color-neutral-800), var(--color-neutral-700))",
-      },
-    ],
-
-    [
-      "preset-border-color-auto",
-      {
-        borderColor: "hsl(from var(--up-bg-color) h s calc(l - 10))",
-      },
-    ],
-
-    ["preset-border-primary-1", { borderColor: `var(--color-primary-100)` }],
-    ["preset-border-primary-2", { borderColor: `var(--color-primary-300)` }],
-    ["preset-border-primary-3", { borderColor: `var(--color-primary-500)` }],
-    ["preset-border-primary-4", { borderColor: `var(--color-primary-700)` }],
-
-    ["preset-border-secondary-1", { borderColor: `var(--color-secondary-100)` }],
-    ["preset-border-secondary-2", { borderColor: `var(--color-secondary-300)` }],
-    ["preset-border-secondary-3", { borderColor: `var(--color-secondary-500)` }],
-    ["preset-border-secondary-4", { borderColor: `var(--color-secondary-700)` }],
-
-    ["preset-border-accent-1", { borderColor: `var(--color-accent-100)` }],
-    ["preset-border-accent-2", { borderColor: `var(--color-accent-300)` }],
-    ["preset-border-accent-3", { borderColor: `var(--color-accent-500)` }],
-    ["preset-border-accent-4", { borderColor: `var(--color-accent-700)` }],
-
-    ["preset-border-neutral-1", { borderColor: `var(--color-neutral-100)` }],
-    ["preset-border-neutral-2", { borderColor: `var(--color-neutral-300)` }],
-    ["preset-border-neutral-3", { borderColor: `var(--color-neutral-500)` }],
-    ["preset-border-neutral-4", { borderColor: `var(--color-neutral-700)` }],
 
     [
       "neutral-",
@@ -417,8 +147,6 @@ export default defineConfig({
 
     ["w-fill", { width: ["fill-available", "-webkit-fill-available", "-moz-available"] }],
     ["h-fill", { height: ["fill-available", "-webkit-fill-available", "-moz-available"] }],
-    // ["color-auto", { color: "light-dark(white, black)" }],
-    ["color-auto", { color: "var(--up-color-auto)" }],
 
     ["hero", { "&::first-line": { lineHeight: "1", margin: "0" } }],
     ["hero-size-1", { fontSize: "clamp(2.25rem, 1.467rem + 3.913vw, 4.5rem)", lineHeight: "1.1" }],
@@ -435,45 +163,25 @@ export default defineConfig({
 
     ["text-pretty", { textWrap: "pretty" }],
     ["text-balance", { textWrap: "balance" }],
+    ["text-nowrap", { textWrap: "nowrap" }],
 
     ["scrollbar-thin", { scrollbarWidth: "thin" }],
-    ["scrollbar-color-", ({ $$ }) => ({ scrollbarColor: `var(--${$$}-6) var(--${$$}-surface)` })],
-    [
-      "button",
-      {
-        color: "var(--color-button-text)",
-        backgroundColor: "var(--color-button-bg)",
-        padding: "0.5rem 1rem",
-        borderRadius: "0.25rem",
-        fontSize: "1rem",
-        cursor: "pointer",
-      },
-    ],
-    [
-      "button-sm",
-      {
-        padding: "0.25rem 0.5rem",
-        fontSize: "0.875rem",
-      },
-    ],
-    [
-      "button-lg",
-      {
-        padding: "0.75rem 1.5rem",
-        fontSize: "1.25rem",
-      },
-    ],
-    [
-      "button-xl",
-      {
-        padding: "1rem 2rem",
-        fontSize: "1.5rem",
-      },
-    ],
+    ["scrollbar-none", { scrollbarWidth: "none" }],
+    ["scrollbar-gutter-stable", { scrollbarGutter: "stable" }],
+    ["scrollbar-gutter-stable-both", { scrollbarGutter: "stable both-edges" }],
+    ["scrollbar-color-", ({ $$ }) => ({ scrollbarColor: `var(--${$$}-8) var(--${$$}-surface)` })],
+
+    // presets preview
+    ["surface-", ({ $$ }) => `@(bg-base-${$$}00 text-base${$$}00 border-base-${$$}00)`],
+    ["prominent-", ({ $$ }) => `@(bg-${$$}-700 text-${$$} border-${$$}-800)`],
+    ["medium-", ({ $$ }) => `@(bg-${$$}-200 text-${$$}-800 border-${$$}-300)`],
+    ["subtle-", ({ $$ }) => `@(bg-${$$}-50 text-${$$}-800 border-${$$}-100)`],
   ],
+
   theme: {
     extend: {
       colors: {
+        ...colors,
         upstart: {
           50: "#f2f4fb",
           100: "#e7ecf8",
@@ -500,8 +208,16 @@ export default defineConfig({
           900: "#333333",
           950: "#262626",
         },
+        base100: {
+          default: "var(--color-base-100)",
+        },
+        base200: {
+          default: "var(--color-base-200)",
+        },
+        base300: {
+          default: "var(--color-base-300)",
+        },
         primary: {
-          50: "var(--color-primary-50)",
           100: "var(--color-primary-100)",
           200: "var(--color-primary-200)",
           300: "var(--color-primary-300)",
@@ -513,7 +229,6 @@ export default defineConfig({
           900: "var(--color-primary-900)",
         },
         secondary: {
-          50: "var(--color-secondary-50)",
           100: "var(--color-secondary-100)",
           200: "var(--color-secondary-200)",
           300: "var(--color-secondary-300)",
@@ -525,7 +240,6 @@ export default defineConfig({
           900: "var(--color-secondary-900)",
         },
         accent: {
-          50: "var(--color-accent-50)",
           100: "var(--color-accent-100)",
           200: "var(--color-accent-200)",
           300: "var(--color-accent-300)",
@@ -537,7 +251,6 @@ export default defineConfig({
           900: "var(--color-accent-900)",
         },
         neutral: {
-          50: "var(--color-neutral-50)",
           100: "var(--color-neutral-100)",
           200: "var(--color-neutral-200)",
           300: "var(--color-neutral-300)",
@@ -558,8 +271,22 @@ export default defineConfig({
         "elastic-pop": "elastic-pop 1s cubic-bezier(0.22, 1, 0.36, 1) forwards",
         "slide-in": "slide-in 0.15s ease-out",
         "slide-back": "slide-back 0.15s ease-out",
+        border: "border 4s linear infinite",
+        "spin-blob": "spin-blob 20s linear infinite",
+        background: "background 15s ease infinite",
       },
       keyframes: {
+        background: {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
+        "spin-blob": {
+          "0%": { transform: "rotate(0deg) scale(2)" },
+          "25%": { transform: "rotate(.5turn) scale(6)" },
+          "50%": { transform: "rotate(0turn) scale(6)" },
+          "100%": { transform: "rotate(0deg) scale(2)" },
+        },
         "elastic-pop": {
           "0%": { transform: "scale(0)", opacity: "0" },
           "50%": { transform: "scale(1.1)", opacity: "0.8" },
@@ -577,6 +304,10 @@ export default defineConfig({
         "slide-back": {
           from: { transform: "translateX(-100%)" },
           to: { transform: "translateX(0)" },
+        },
+        border: {
+          from: { "--border-angle": "0deg" },
+          to: { "--border-angle": "360deg" },
         },
       },
     },

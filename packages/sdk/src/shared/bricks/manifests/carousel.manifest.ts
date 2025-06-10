@@ -1,6 +1,14 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps } from "../props/helpers";
+import { defineProps, optional } from "../props/helpers";
 import { TbCarouselHorizontal } from "react-icons/tb";
+import { Type } from "@sinclair/typebox";
+import { makeContainerProps } from "../props/container";
+import type { BrickProps } from "../props/types";
+import { background, backgroundRef } from "../props/background";
+import { border, borderRef } from "../props/border";
+import { padding, paddingRef } from "../props/padding";
+import type { FC } from "react";
+import { shadowRef } from "../props/effects";
 
 export const manifest = defineBrickManifest({
   type: "carousel",
@@ -9,13 +17,90 @@ export const manifest = defineBrickManifest({
   description: "A carousel element",
   isContainer: true,
   icon: TbCarouselHorizontal,
-  // icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-  //   <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-  //   <rect x="6" y="6" width="12" height="8" rx="1"></rect>
-  //   <circle cx="9" cy="17" r="0.5" fill="currentColor"></circle>
-  //   <circle cx="12" cy="17" r="0.5" fill="currentColor"></circle>
-  //   <circle cx="15" cy="17" r="0.5" fill="currentColor"></circle></svg>`,
-  props: defineProps({}),
+  props: defineProps({
+    variants: Type.Array(
+      Type.Union(
+        [
+          Type.Literal("pager-arrows", { title: "With arrows pager" }),
+          Type.Literal("pager-numbers", { title: "With numbered pager" }),
+          Type.Literal("pager-dots", { title: "With dots pager" }),
+        ],
+        {
+          title: "Variant",
+          description: "Carousel variants.",
+        },
+      ),
+    ),
+    background: optional(backgroundRef()),
+    border: optional(borderRef),
+    padding: optional(paddingRef),
+    shadow: optional(shadowRef()),
+    ...makeContainerProps(),
+  }),
 });
 
 export type Manifest = typeof manifest;
+
+export const examples: {
+  description: string;
+  type: string;
+  props: BrickProps<Manifest>["brick"]["props"];
+}[] = [
+  {
+    description: "An image carousel with pager arrows",
+    type: "carousel",
+    props: {
+      variants: ["pager-arrows"],
+      $children: [
+        {
+          type: "image",
+          props: {
+            src: "https://via.placeholder.com/300x200.png?text=Image+1",
+          },
+        },
+        {
+          type: "image",
+          props: {
+            src: "https://via.placeholder.com/300x200.png?text=Image+2",
+          },
+        },
+        {
+          type: "image",
+          props: {
+            src: "https://via.placeholder.com/300x200.png?text=Image+3",
+          },
+        },
+      ],
+    },
+  },
+  {
+    description: "A carousel of text slides with numbered pager",
+    type: "carousel",
+    props: {
+      variants: ["pager-numbers"],
+      $children: [
+        {
+          type: "text",
+          props: {
+            content: "Slide 1",
+            preset: "prominent-primary",
+          },
+        },
+        {
+          type: "text",
+          props: {
+            content: "Slide 2",
+            preset: "prominent-secondary",
+          },
+        },
+        {
+          type: "text",
+          props: {
+            content: "Slide 3",
+            preset: "prominent-accent",
+          },
+        },
+      ],
+    },
+  },
+];

@@ -1,20 +1,22 @@
 import type { FieldProps } from "./types";
-import { Text, Select } from "@upstart.gg/style-system/system";
-import type { FlexSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
+import { Select } from "@upstart.gg/style-system/system";
 import { fieldLabel } from "../form-class";
 import { SegmentedControl, Switch } from "@upstart.gg/style-system/system";
-import { tx } from "@upstart.gg/style-system/twind";
 import { HelpIcon } from "../HelpIcon";
 import { FieldTitle } from "../field-factory";
+import { tx } from "@upstart.gg/style-system/twind";
+import type { FC } from "react";
 
-export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+export const FlexField: FC<FieldProps<any>> = (props) => {
   const {
     currentValue = {
       direction: "flex-row",
       wrap: "flex-nowrap",
       alignItems: "items-stretch",
       justifyContent: "justify-stretch",
-    } satisfies Partial<FlexSettings>,
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    } satisfies Partial<any>,
     onChange,
     description,
     formData,
@@ -22,7 +24,8 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
     title,
   } = props;
 
-  const onSettingsChange = (newVal: Partial<FlexSettings>) => onChange({ ...currentValue, ...newVal });
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  const onSettingsChange = (newVal: Partial<any>) => onChange({ ...currentValue, ...newVal });
 
   return (
     <div className="flex-field">
@@ -32,7 +35,8 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
         <div className="flex flex-col gap-1 basis-2/5">
           <label className={fieldLabel}>Direction</label>
           <SegmentedControl.Root
-            onValueChange={(value) => onSettingsChange({ direction: value as FlexSettings["direction"] })}
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+            onValueChange={(value) => onSettingsChange({ direction: value as any })}
             defaultValue={currentValue.direction as string}
             size="1"
             className="w-full mt-0.5 !max-w-full"
@@ -77,9 +81,7 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
           <Select.Root
             defaultValue={currentValue.justifyContent}
             size="2"
-            onValueChange={(value) =>
-              onSettingsChange({ justifyContent: value as FlexSettings["justifyContent"] })
-            }
+            onValueChange={(value) => onSettingsChange({ justifyContent: value })}
           >
             <Select.Trigger radius="large" variant="ghost" />
             <Select.Content position="popper">
@@ -104,7 +106,8 @@ export const FlexField: React.FC<FieldProps<FlexSettings>> = (props) => {
           <Select.Root
             defaultValue={currentValue.alignItems}
             size="2"
-            onValueChange={(value) => onSettingsChange({ alignItems: value as FlexSettings["alignItems"] })}
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+            onValueChange={(value) => onSettingsChange({ alignItems: value as any })}
           >
             <Select.Trigger radius="large" variant="ghost" />
             <Select.Content position="popper">

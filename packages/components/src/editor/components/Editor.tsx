@@ -1,76 +1,86 @@
 import {
+  useChatVisible,
   useDraft,
+  useDraftHelpers,
   useEditorEnabled,
+  useGenerationState,
+  useImagesSearchResults,
   usePanel,
-  usePreviewMode,
-  type DraftState,
-  type usePageInfo,
+  useSections,
+  useThemes,
 } from "../hooks/use-editor";
-import Toolbar from "./Toolbar";
-import Topbar from "./Topbar";
 import { lazy, Suspense, useEffect, useRef, useState, type ComponentProps } from "react";
-import { useDebounceCallback } from "usehooks-ts";
-import { DeviceFrame } from "./Preview";
-import EditablePage from "./EditablePage";
-import { tx, injectGlobal, css } from "@upstart.gg/style-system/twind";
-import { Button, Spinner, toast } from "@upstart.gg/style-system/system";
+import { css, tx, tw } from "@upstart.gg/style-system/twind";
+import { Button } from "@upstart.gg/style-system/system";
 import { usePageAutoSave } from "~/editor/hooks/use-page-autosave";
-import DataPanel from "./PanelData";
-import PanelSettings from "./PanelSettings";
-import PanelTheme from "./PanelTheme";
-import PanelInspector from "./PanelInspector";
-import PanelLibrary from "./PanelLibrary";
-import Tour from "./Tour";
 import { getThemeCss } from "~/shared/utils/get-theme-css";
-import Page from "~/shared/components/Page";
 import { useEditorHotKeys } from "../hooks/use-editor-hot-keys";
+import ThemesPreviewList from "./ThemesPreviewList";
+import BlankWaitPage from "./BlankWaitPage";
+import type { GenerationState } from "@upstart.gg/sdk/shared/context";
 
-type EditorProps = ComponentProps<"div"> & {
-  mode?: "local" | "live";
-};
+const Tour = lazy(() => import("./Tour"));
+const NavBar = lazy(() => import("./NavBar"));
+const Chat = lazy(() => import("./Chat"));
+const EditablePage = lazy(() => import("./EditablePage"));
+const Page = lazy(() => import("~/shared/components/Page"));
+const DeviceFrame = lazy(() => import("./DeviceFrame"));
+const Panel = lazy(() => import("./Panel"));
 
-export default function Editor({ mode = "local", ...props }: EditorProps) {
+type EditorProps = ComponentProps<"div">;
+
+export default function Editor(props: EditorProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const draft = useDraft();
-  const previewMode = usePreviewMode();
   const editorEnabled = useEditorEnabled();
-
-  // intro is a state when the site has just been created.
-  // It is used for animating the editor.
-  const [showIntro, setShowIntro] = useState(new URLSearchParams(window.location.search).has("intro"));
-  const setShowIntroDebounced = useDebounceCallback(setShowIntro, 300);
-
+  const chatVisible = useChatVisible();
+  const sections = useSections();
   const { panelPosition } = usePanel();
-
-  useEffect(() => {
-    if (showIntro) {
-      const listener = (event: AnimationEvent) => {
-        setShowIntroDebounced(false);
-      };
-      addEventListener("animationend", listener);
-      return () => {
-        removeEventListener("animationend", listener);
-      };
-    }
-  }, [showIntro, setShowIntroDebounced]);
+  const themes = useThemes();
+  const generationState = useGenerationState();
+  // const images = useImagesSearchResults();
+  // const [bgImg, setBgImg] = useState<NonNullable<typeof images>[number] | null>(null);
 
   usePageAutoSave();
   useEditorHotKeys();
 
   useEffect(() => {
     const themeUsed = draft.previewTheme ?? draft.theme;
-    injectGlobal(getThemeCss(themeUsed));
+    if (themeUsed) {
+      tw(css(getThemeCss(themeUsed)));
+    }
   }, [draft.previewTheme, draft.theme]);
+
+  // useEffect(() => {
+  //   if (generationState.isReady || !images?.length) {
+  //     return;
+  //   }
+  //   // If generation is not ready, set a random background image from the images
+  //   const randomImage = images[Math.floor(Math.random() * images.length)];
+  //   setBgImg(randomImage);
+  //   const itv = setInterval(async () => {
+  //     const randomImage = images[Math.floor(Math.random() * images.length)];
+
+  //     // preload the image to avoid flickering
+  //     const img = new Image();
+  //     img.src = randomImage.url;
+  //     await img.decode(); // Wait for the image to load
+  //     setBgImg(randomImage);
+  //   }, 10000); // Change every 10 seconds
+  //   return () => clearInterval(itv);
+  // }, [generationState.isReady, images]);
 
   if (!editorEnabled) {
     return (
       <div className="@container">
-        <Page
-          page={{
-            ...draft,
-            tags: [],
-          }}
-        />
+        <Suspense>
+          <Page
+            page={{
+              ...draft,
+              tags: [],
+            }}
+          />
+        </Suspense>
       </div>
     );
   }
@@ -79,24 +89,71 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
     <div
       id="editor"
       className={tx(
-        "min-h-[100dvh] max-h-[100dvh] grid relative overscroll-none overflow-hidden",
-        getEditorCss(showIntro, panelPosition),
+        "grid relative transition-all mx-auto w-full",
+        getEditorCss(generationState, chatVisible),
+        "min-h-[100dvh] max-h-[100dvh]",
+        /*
+.firstSection {
+    --opacity: 0.65;
+  background: linear-gradient(
+    120deg,
+    oklab(from #9291e7 l a b / var(--opacity)),
+    oklab(from #7270c6 l a b / var(--opacity)),
+    oklab(from #c050c2 l a b / var(--opacity)),
+    oklab(from #ef50a2 l a b / var(--opacity)),
+    oklab(from #ff6285 l a b / var(--opacity)),
+    oklab(from #ff806b l a b / var(--opacity)),
+    oklab(from #ffa25a l a b / var(--opacity)),
+    oklab(from #ffc358 l a b / var(--opacity))
+  );
+  padding-top: 90px;
+  display: flex;
+  flex-direction: column  ;
+  justify-content: center;
+  position: relative;
+}
+
+        */
+        generationState.isReady === false &&
+          css({
+            background: `linear-gradient(120deg,
+              oklab(from #9291e7 l a b / 0.65),
+              oklab(from #7270c6 l a b / 0.65),
+              oklab(from #c050c2 l a b / 0.65),
+              oklab(from #ef50a2 l a b / 0.65),
+              oklab(from #ff6285 l a b / 0.65),
+              oklab(from #ff806b l a b / 0.65),
+              oklab(from #ffa25a l a b / 0.65),
+              oklab(from #ffc358 l a b / 0.65)
+          )`,
+          }),
+        generationState.isReady === false && "transition-all duration-500 ease-in-out",
+        //   "my-auto h-[clamp(500px,70dvh,1000px)] max-h-[clamp(500px,70dvh,1000px)]",
       )}
       {...props}
       ref={rootRef}
     >
-      {showIntro === false && <Tour />}
-      {editorEnabled && <Topbar showIntro={showIntro} />}
-      <Panel />
-      {editorEnabled && <Toolbar showIntro={showIntro} />}
-      {draft.previewTheme && <ThemePreviewConfirmButton />}
+      {sections.length > 0 && generationState.isReady && (
+        <Suspense>
+          <Tour />
+        </Suspense>
+      )}
+      <Suspense>
+        <NavBar />
+      </Suspense>
+      {chatVisible && (
+        <Suspense>
+          <Chat />
+        </Suspense>
+      )}
+      <Suspense>
+        <Panel />
+      </Suspense>
       <main
         className={tx(
-          "editor-main flex-1 flex place-content-center z-40 overscroll-none transition-colors duration-300",
-          showIntro
-            ? "overflow-x-hidden overflow-y-hidden pointer-events-none"
-            : "overflow-x-auto overflow-y-visible ",
-          previewMode === "mobile" && "bg-gray-300",
+          "flex-1 flex place-content-center z-40 overscroll-none ",
+          "overflow-x-auto overflow-y-visible ",
+          generationState.isReady === false && "!hidden",
           css({
             gridArea: "main",
             scrollbarColor: "var(--violet-4) var(--violet-2)",
@@ -109,71 +166,50 @@ export default function Editor({ mode = "local", ...props }: EditorProps) {
           }),
         )}
       >
-        <DeviceFrame>
-          {editorEnabled ? (
-            <EditablePage showIntro={showIntro} />
+        {generationState.isReady && (
+          <Suspense>
+            <DeviceFrame>
+              <EditablePage />
+              {draft.previewTheme && <ThemePreviewConfirmButton />}
+            </DeviceFrame>
+          </Suspense>
+        )}
+        {!generationState.isReady &&
+          (themes.length > 0 ? (
+            <DeviceFrame>
+              <ThemesPreviewList themes={themes} />
+            </DeviceFrame>
           ) : (
-            <Page
-              page={{
-                ...draft,
-                tags: [],
-              }}
-            />
-          )}
-        </DeviceFrame>
+            <DeviceFrame>
+              <BlankWaitPage />
+            </DeviceFrame>
+          ))}
       </main>
     </div>
   );
 }
 
-function getEditorCss(showIntro: boolean, panelPosition: "left" | "right") {
+function getEditorCss(generationState: GenerationState, chatVisible: boolean) {
   return css({
-    gridTemplateAreas:
-      panelPosition === "left" ? `"topbar topbar" "toolbar main"` : `"topbar topbar" "main toolbar"`,
-    gridTemplateRows: "3.7rem 1fr",
-    gridTemplateColumns: panelPosition === "left" ? "3.7rem 1fr" : "1fr 3.7rem",
+    gridTemplateAreas: chatVisible ? `"navbar navbar" "chat main"` : `"navbar" "main"`,
+    gridTemplateRows: "64px 1fr",
+    gridTemplateColumns: generationState.isReady === false ? "1fr 0px" : chatVisible ? "360px 1fr" : "1fr",
+    // maxWidth: generationState.isReady === false ? "clamp(500px, 40dvw, 650px)" : "none",
   });
 }
 
 function ThemePreviewConfirmButton() {
-  return <Button>Accept theme</Button>;
-}
-
-type PanelProps = ComponentProps<"aside">;
-
-const TEMP_PANEL_DISABLED = false;
-/**
- * Panel used to display both the inspector and the library
- */
-function Panel({ className, ...props }: PanelProps) {
-  const { panel, panelPosition } = usePanel();
-  const previewMode = usePreviewMode();
-
-  if (TEMP_PANEL_DISABLED) {
-    return null;
-  }
-
+  const { validatePreviewTheme } = useDraftHelpers();
   return (
-    <aside
-      id="floating-panel"
-      className={tx(
-        `z-[9999] fixed top-[3.7rem] bottom-0 flex shadow-2xl flex-col overscroll-none \
-        min-w-[300px] w-[320px] transition-all duration-200 ease-in-out opacity-100
-        bg-gray-50 dark:bg-dark-700 border-r border-upstart-200 dark:border-dark-700 overflow-visible`,
-        {
-          "left-[3.7rem]": panelPosition === "left",
-          "right-[3.7rem]": panelPosition === "right",
-          "-translate-x-full opacity-0": !panel && panelPosition === "left",
-          "translate-x-full": !panel && panelPosition === "right",
-        },
-      )}
-      {...props}
-    >
-      {previewMode === "desktop" && panel === "library" && <PanelLibrary />}
-      {panel === "inspector" && <PanelInspector />}
-      {panel === "theme" && <PanelTheme />}
-      {panel === "settings" && <PanelSettings />}
-      {panel === "data" && <DataPanel />}
-    </aside>
+    <div className="sticky bottom-4 left-0 right-0 flex justify-center items-center z-[9999]">
+      <div className="p-3 bg-black/70 backdrop-blur-md rounded-lg max-w-fit flex gap-2 shadow-xl">
+        <Button variant="solid" color="gray" onClick={() => validatePreviewTheme(false)}>
+          Revert
+        </Button>
+        <Button onClick={() => validatePreviewTheme(true)} variant="solid">
+          Accept theme
+        </Button>
+      </div>
+    </div>
   );
 }

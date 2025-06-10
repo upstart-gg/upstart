@@ -1,7 +1,7 @@
 /**
  * Helper functions for defining and working with props and groups of props
  */
-import { type TProperties, Type, type TSchema, type TObject } from "@sinclair/typebox";
+import { type TProperties, Type, type TSchema, type TObject, type ObjectOptions } from "@sinclair/typebox";
 import { commonProps } from "./common";
 import type { PartialBy, Prop, PropGroup, GroupMetadata } from "./types";
 import { get } from "lodash-es";
@@ -43,17 +43,8 @@ export function group<T extends TProperties>({
   });
 }
 
-export function prop<T extends TSchema>({ title, schema, description, $id }: Prop<T>): T {
-  // add the title
-  schema.title = title;
-  // add the description
-  if (description) {
-    schema.description = description;
-  }
-  // add the id
-  if ($id) {
-    schema.$id = $id;
-  }
+export function prop<T extends TSchema>({ schema, ...rest }: Prop<T>): T {
+  Object.assign(schema, rest);
   return schema;
 }
 
@@ -67,9 +58,9 @@ export function getGroupInfo(schema: TSchema) {
   };
 }
 
-export function defineProps<P extends TProperties>(props: P) {
+export function defineProps<P extends TProperties>(props: P, options?: ObjectOptions) {
   const finalProps = { ...commonProps, ...props };
-  return Type.Object(finalProps);
+  return Type.Object(finalProps, options);
 }
 
 export const optional = Type.Optional;
@@ -79,15 +70,15 @@ export type PropertyPath = string;
 export type StyleId = string;
 
 // Helper function to traverse a schema and filter to get style properties
-// (properties whose $id starts with "#styles:") and return them as an object with the path to the property
+// (properties whose "ui:styleId" starts with "#styles:") and return them as an object with the path to the property
 // as the key and the $id as the value. Paths should be dot-separated.
 // The initial schema is a TObject, but nested schemas can be any type and arrays.
 export function getStyleProperties(schema: TSchema, path = "", styles: Record<PropertyPath, StyleId> = {}) {
   if (schema.type === "object") {
     for (const key in schema.properties) {
       const prop = schema.properties[key];
-      if (prop.$id?.startsWith("#styles:")) {
-        styles[`${path}${key}`] = prop.$id;
+      if (prop["ui:styleId"]) {
+        styles[`${path}${key}`] = prop["ui:styleId"];
       }
       getStyleProperties(prop, `${path}${key}.`, styles);
     }

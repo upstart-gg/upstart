@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import type { TArray, TObject, TSchema } from "@sinclair/typebox";
-import { tx } from "@upstart.gg/style-system/twind";
 import { Text } from "@upstart.gg/style-system/system";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 type ChoiceContextProps = {
   onFieldSelect: (value: string) => void;
@@ -18,7 +18,7 @@ function SchemaEntry({ schema, rootName }: { schema: TSchema; rootName: string }
   const { onFieldSelect } = useContext(ChoiceContext);
   return (
     <NestingContext.Provider value={nestingLevel + 1}>
-      <ul id={`${schema.name}_level-${nestingLevel}`} className={tx("mb-1 list-[square] pl-2")}>
+      <ul id={`${schema.name}_level-${nestingLevel}`} className="mb-1 list-[square] pl-2">
         {schema.type === "object" ? (
           <SchemaObject schema={schema as TObject} rootName={rootName} />
         ) : schema.type === "array" ? (
@@ -28,7 +28,7 @@ function SchemaEntry({ schema, rootName }: { schema: TSchema; rootName: string }
             <Text
               size="2"
               onClick={() => onFieldSelect(`${rootName}.${schema.name}`)}
-              className={tx("hover:bg-upstart-200 bg-upstart-100 cursor-pointer px-1.5 py-1 rounded")}
+              className="hover:bg-upstart-200 bg-upstart-100 cursor-pointer px-1.5 py-1 rounded"
             >
               {schema.name}
             </Text>

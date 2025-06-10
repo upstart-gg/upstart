@@ -1,19 +1,12 @@
-import {
-  Type,
-  type StringOptions,
-  type NumberOptions,
-  type SchemaOptions,
-  type ObjectOptions,
-  type TProperties,
-  type Static,
-  type TObject,
-} from "@sinclair/typebox";
-import type { ElementColor } from "./themes/color-system";
+import { Type, type TProperties, type Static, type TObject } from "@sinclair/typebox";
 import type { JSONSchemaType } from "ajv";
-import { ajv } from "./ajv";
-import { background } from "./bricks/props/background";
-import { Value } from "@sinclair/typebox/value";
-import def from "ajv/dist/vocabularies/discriminator";
+import { ajv, getSchemaDefaults } from "./ajv";
+import { background, backgroundRef } from "./bricks/props/background";
+import { string } from "./bricks/props/string";
+import { optional } from "./bricks/props/helpers";
+import { boolean } from "./bricks/props/boolean";
+import { datetime } from "./bricks/props/date";
+import { enumProp } from "./bricks/props/enum";
 
 type EnumOption = {
   title?: string;
@@ -21,16 +14,6 @@ type EnumOption = {
   value: string;
   icon?: string;
 };
-
-type AttributeOptions<T extends Record<string, unknown>> = {
-  "ui:field"?: string;
-  "ui:group"?: string;
-  "ui:group:title"?: string;
-  "ui:group:order"?: number;
-  advanced?: boolean;
-  "ui:hidden"?: boolean | "if-empty";
-  "ui:scope"?: "site" | "page";
-} & T;
 
 type GeoPoint = { lat: number; lng: number; name?: string };
 
@@ -55,142 +38,9 @@ export function processAttributesSchema(customAttributes: TObject) {
 
 export type { JSONSchemaType };
 
-export const attr = {
-  /**
-   * Define a text
-   */
-  string(name: string, defaultValue = "", opts?: AttributeOptions<Omit<StringOptions, "title" | "default">>) {
-    return Type.String({ title: name, default: defaultValue, ...opts });
-  },
-  /**
-   * Define a number attribute
-   */
-  number(name: string, defaultValue = 0, opts?: AttributeOptions<Omit<NumberOptions, "title" | "default">>) {
-    return Type.Number({ title: name, default: defaultValue, ...opts });
-  },
-  /**
-   * Define a boolean
-   */
-  boolean(
-    name: string,
-    defaultValue = false,
-    opts?: AttributeOptions<Omit<SchemaOptions, "title" | "default">>,
-  ) {
-    const defaultOpts = {
-      "ui:field": "switch",
-    };
-    return Type.Boolean({ title: name, default: defaultValue, ...defaultOpts, ...opts });
-  },
-  /**
-   * Define an enum
-   */
-  enum(
-    name: string,
-    defaultValue: string,
-    opts: AttributeOptions<
-      Omit<SchemaOptions, "title" | "default"> & {
-        options: EnumOption[] | string[];
-        displayAs?: "radio" | "select" | "button-group" | "icon-group";
-      }
-    >,
-  ) {
-    const defaultOpts = {
-      "ui:field": "enum",
-      "ui:display": opts.displayAs || "select",
-    };
-    const { options, displayAs, ...commonOpts } = opts;
-    return Type.Union(
-      options.map((opt) =>
-        Type.Literal(typeof opt === "string" ? opt : opt.value, {
-          title: typeof opt === "string" ? opt : opt.title,
-          "ui:icon": typeof opt === "string" ? undefined : opt.icon,
-        }),
-      ),
-      {
-        title: name,
-        default: defaultValue,
-        ...defaultOpts,
-        ...commonOpts,
-      },
-    );
-  },
-  /**
-   * Define a file that can be uploaded by the user
-   */
-  file(
-    name: string,
-    defaultValue = "",
-    opts: AttributeOptions<Omit<SchemaOptions, "title" | "default">> = {},
-  ) {
-    return Type.String({ title: name, default: defaultValue, ...opts, format: "data-url" });
-  },
-  /**
-   * Define a URL
-   */
-  url(
-    name: string,
-    defaultValue = "",
-    opts: AttributeOptions<Omit<SchemaOptions, "title" | "default">> = {},
-  ) {
-    return Type.String({ title: name, default: defaultValue, ...opts, format: "uri" });
-  },
-  /**
-   * Define a color attribute
-   */
-  color(
-    name: string,
-    defaultValue: ElementColor = "",
-    opts?: AttributeOptions<Omit<StringOptions, "title" | "default">>,
-  ) {
-    const defaultOpts = {
-      "ui:field": "color",
-      // important for the json schema form not to display several fields because of the union type
-      // "ui:fieldReplacesAnyOrOneOf": true,
-    };
-    return Type.String({ title: name, default: defaultValue, ...defaultOpts, ...opts });
-  },
-  /**
-   * Define a date
-   */
-  date(
-    name: string,
-    defaultValue = new Date(),
-    opts: AttributeOptions<Omit<SchemaOptions, "title" | "default">> = {},
-  ) {
-    return Type.String({ title: name, default: defaultValue.toISOString(), ...opts, format: "date" });
-  },
-  /**
-   * Define a date and time
-   */
-  datetime(
-    name: string,
-    defaultValue = new Date(),
-    opts: AttributeOptions<Omit<SchemaOptions, "title" | "default">> = {},
-  ) {
-    return Type.String({ title: name, default: defaultValue.toISOString(), ...opts, format: "date-time" });
-  },
-  /**
-   * Define a geolocation
-   */
-  geolocation(
-    name: string,
-    defaultValue: GeoPoint,
-    opts: AttributeOptions<Omit<ObjectOptions, "title" | "default">> = {},
-  ) {
-    return Type.Object(
-      {
-        lat: Type.Number({ minimum: -90, maximum: 90 }),
-        lng: Type.Number({ minimum: -180, maximum: 180 }),
-        name: Type.Optional(Type.String({ title: "Name" })),
-      },
-      { title: name, default: defaultValue, ...opts },
-    );
-  },
-};
-
 // Default attributes
 const defaultAttributes = {
-  $pageLanguage: attr.enum("Language", "en", {
+  $pageLanguage: enumProp("Language", "en", {
     options: [
       { value: "ar", title: "Arabic" },
       { value: "zh", title: "Chinese" },
@@ -214,20 +64,41 @@ const defaultAttributes = {
     ],
     "ai:guidelines":
       "Choose a value based on the site description. If the site is in multiple languages, use 'en'.",
+
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
   }),
 
-  $pageOgImage: Type.Optional(
-    attr.string("Social share image", "", {
-      description: "Image shown when page is shared on social media",
-      "ai:guidelines": "Don't generate this property/image, it is automatically generated.",
-      "ui:group": "meta",
+  $bodyBackground: optional(
+    backgroundRef({
+      default: {
+        color: "#ffffff",
+      },
+      title: "Body Background",
+      description:
+        "Applies to the body element of the page (while $pageBackground applies to the page container)",
+      "ui:field": "background",
+      // disable for now
+      // "ui:show-img-search": true,
+      "ui:group": "layout",
+      "ui:group:title": "Page Layout",
+      "ui:group:order": 3,
     }),
   ),
 
-  $robotsIndexing: Type.Optional(
-    attr.boolean("Allow search engines to index this site", true, {
+  $pageBackground: optional(backgroundRef({ title: "Page Background", defaultValue: { color: "base-100" } })),
+
+  $pageOgImage: optional(
+    string("Social share image", "", {
+      description: "Image shown when page is shared on social media",
+      "ai:guidelines": "Don't generate this property/image, it is automatically generated.",
+      "ui:group": "meta",
+      "ui:field": "image",
+    }),
+  ),
+
+  $robotsIndexing: optional(
+    boolean("Allow search engines to index this site", true, {
       description: "Disabling this will prevent search engines from indexing this site",
       "ai:guidelines": "Don't generate this property/image, it is automatically generated.",
       "ui:group": "seo",
@@ -236,8 +107,8 @@ const defaultAttributes = {
     }),
   ),
 
-  $siteOgImage: Type.Optional(
-    attr.string("Social share image", "", {
+  $siteOgImage: optional(
+    string("Social share image", "", {
       description: "Image shown when this site is shared on social media",
       "ai:guidelines": "Don't generate this image, it is automatically generated.",
       "ui:field": "image",
@@ -247,33 +118,36 @@ const defaultAttributes = {
     }),
   ),
 
-  $pagePath: attr.string("Page path", "/", {
+  $pagePath: string("Page path", "/", {
     description: "The URL path of the page",
     "ui:group": "location",
     "ui:group:title": "Location",
+    "ui:field": "path",
   }),
 
-  $pageTitle: attr.string("Title", "Untitled", {
+  $pageTitle: string("Title", "Untitled", {
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
     description: "The title of the page. Appears in the browser tab and search results",
   }),
 
-  $pageDescription: attr.string("Description", "", {
+  $pageDescription: string("Description", "", {
     "ui:widget": "textarea",
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
     description: "A short description of the page. Used by search engines",
+    "ui:multiline": true,
   }),
 
-  $pageKeywords: attr.string("Keywords", "", {
+  $pageKeywords: string("Keywords", "", {
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
     description: "Keywords related to the page. Used by search engines",
+    "ui:multiline": true,
   }),
 
-  $pageLastUpdated: Type.Optional(
-    attr.datetime("Last updated", undefined, {
+  $pageLastUpdated: optional(
+    datetime("Last updated", {
       "ui:hidden": true,
       "ai:guidelines": "Don't generate this property.",
     }),
@@ -281,72 +155,30 @@ const defaultAttributes = {
 
   // --- layout attributes ---
 
-  $bodyBackground: Type.Optional(
-    Type.Composite([background()], {
-      default: {
-        color: "#ffffff",
-      },
-      title: "Body Background",
-      description:
-        "Applies to the body element of the page (while $pageBackground applies to the page container)",
-      "ui:field": "background",
-      "ui:show-img-search": true,
-      "ui:group": "layout",
-      "ui:group:title": "Page Layout",
-      "ui:group:order": 3,
-    }),
-  ),
-
-  $pageBackground: Type.Optional(
-    Type.Composite(
-      [
-        background(),
-        Type.Object(
-          {},
-          {
-            title: "Page Background",
-          },
-        ),
-      ],
-      {
-        default: {
-          color: "#ffffff",
-        },
-        title: "Page Background",
-        "ui:field": "background",
-        "ui:show-img-search": true,
-        "ui:group": "background",
-        "ui:group:title": "Page Background",
-        "ui:group:order": 4,
-      },
-    ),
-  ),
-
-  $textColor: attr.color("Text color", "#222222", {
-    "ui:field": "color",
-    "ui:group": "layout",
-    "ui:group:title": "Page Layout",
-    "ui:color-type": "text",
-  }),
-
-  $siteHeadTags: Type.Optional(
+  $siteHeadTags: optional(
     Type.String({
       title: "Head tags",
       description:
         "Add custom tags to the <head> of your site. Useful for analytics tags, custom scripts, etc.",
       "ai:guidelines": "Don't include meta tags here, they are automatically generated.",
       "ui:multiline": true,
+      "ui:textarea-class": "h-40 !font-mono",
+      "ui:placeholder": "<script src='https://example.com/script.js'></script>",
+      "ui:premium": true,
       "ui:scope": "site",
       "ui:group": "external-scripts",
       "ui:group:title": "External scripts",
     }),
   ),
-  $siteBodyTags: Type.Optional(
+  $siteBodyTags: optional(
     Type.String({
       title: "Body tags",
       description:
         "Add custom tags to the <body> of your site. Useful for analytics tags, custom scripts, etc.",
       "ui:multiline": true,
+      "ui:premium": true,
+      "ui:textarea-class": "h-40 !font-mono",
+      "ui:placeholder": "<script src='https://example.com/script.js'></script>",
       "ui:scope": "site",
       "ui:group": "external-scripts",
       "ui:group:title": "External scripts",
@@ -356,7 +188,6 @@ const defaultAttributes = {
 
 export const defaultAttributesSchema = Type.Object(defaultAttributes, { additionalProperties: true });
 export const siteAttributesSchemaForLLM = Type.Pick(defaultAttributesSchema, [
-  "$textColor",
   "$bodyBackground",
   "$pageBackground",
 ]);
@@ -366,7 +197,6 @@ export const pageAttributesSchemaForLLM = Type.Pick(defaultAttributesSchema, [
   "$pageKeywords",
   "$pageLanguage",
   "$pagePath",
-  "$textColor",
   "$bodyBackground",
   "$pageBackground",
 ]);
@@ -378,14 +208,15 @@ export type Attributes<T extends Record<string, unknown> = Record<string, unknow
 > &
   T;
 
-export function resolveAttributes(customAttrsSchema: TObject, initialData: Record<string, unknown> = {}) {
+export function resolveAttributes(
+  customAttrsSchema: TObject = Type.Object({}),
+  initialData: Record<string, unknown> = {},
+) {
+  const dataClone = structuredClone(initialData);
   const validateCustom = ajv.compile(customAttrsSchema);
-  const valid = validateCustom(initialData);
-  if (!valid) {
-    console.log("invalid custom attributes values", initialData, validateCustom.errors);
-    throw new Error(`Invalid custom attributes values: ${validateCustom.errors}`);
-  }
-  const defaultAttrValues = Value.Create(defaultAttributesSchema);
-  const data = { ...defaultAttrValues, ...initialData };
+  // To get default values from the custom attributes schema,
+  validateCustom(dataClone);
+  const defaultAttrValues = getSchemaDefaults(defaultAttributesSchema);
+  const data = { ...defaultAttrValues, ...dataClone };
   return data as Attributes<Static<typeof customAttrsSchema>>;
 }

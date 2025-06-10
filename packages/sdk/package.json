@@ -4,7 +4,8 @@
   "type": "module",
   "files": [
     "dist",
-    "env.d.ts"
+    "env.d.ts",
+    "src"
   ],
   "sideEffects": true,
   "exports": {
@@ -21,11 +22,6 @@
     },
     "./cli/*": {
       "import": "./dist/node/cli/*.js"
-    },
-    "./env.d.ts": {
-      "types": "./env.d.ts",
-      "require": "./env.d.ts",
-      "import": "./env.d.ts"
     },
     "./*": {
       "types": "./dist/shared/*.d.ts",
@@ -56,6 +52,7 @@
     "http-errors-enhanced": "2.0.8",
     "immer": "10.1.1",
     "import-meta-resolve": "4.1.0",
+    "json-schema-default": "1.0.2",
     "lodash-es": "4.17.21",
     "nanoid": "5.0.7",
     "open": "10.1.0",
@@ -81,10 +78,11 @@
     "@types/debug": "4.1.12",
     "@types/express": "^4.17.21",
     "@types/lodash-es": "4.17.12",
-    "@types/node": "^20.14.10",
+    "@types/node": "^22.15.30",
     "@types/react": "18.3.3",
     "@types/react-dom": "^18.3.0",
     "@types/sortablejs": "1.15.8",
+    "@typescript/native-preview": "7.0.0-dev.20250607.1",
     "@vitejs/plugin-react": "^4.3.4",
     "concurrently": "8.2.2",
     "express": "^4.21.2",
@@ -99,7 +97,9 @@
   },
   "scripts": {
     "build": "tsup",
-    "build:types": "tsc --emitDeclarationOnly --declaration --declarationMap",
+    "build:watch": "tsup --watch",
+    "build:types": "tsc --extendedDiagnostics --emitDeclarationOnly --declaration --declarationMap",
+    "build:types-go": "tsgo --extendedDiagnostics --emitDeclarationOnly --declaration --declarationMap",
     "dev": "NODE_OPTIONS='--max-old-space-size=12384' tsup --watch",
     "sizetest": "pnpm build && du -sh dist",
     "lint": "biome check --write . && tsc --noEmit",

@@ -1,7 +1,7 @@
-import { tx, css } from "@upstart.gg/style-system/twind";
 import { defaultProps, manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { Value } from "@sinclair/typebox/value";
 import { WiStars } from "react-icons/wi";
+import { MdOutlineHelpOutline } from "react-icons/md";
 import {
   Tabs,
   Button,
@@ -21,6 +21,8 @@ import interact from "interactjs";
 import { IoCloseOutline } from "react-icons/io5";
 import { panelTabContentScrollClass } from "../utils/styles";
 import { useEditorHelpers } from "../hooks/use-editor";
+import { tx, css } from "@upstart.gg/style-system/twind";
+import { PanelBlockTitle } from "./PanelBlockTitle";
 
 export default function PanelLibrary() {
   const { shouldDisplay: shouldDisplayLibraryCallout } = useCalloutViewCounter("blocks-library");
@@ -37,13 +39,68 @@ export default function PanelLibrary() {
     interactable.current = interact(".draggable-brick", {
       styleCursor: false,
     });
-    interactable.current.draggable({
-      inertia: true,
+    interactable.current
+      .draggable({
+        inertia: false,
+        autoScroll: {
+          enabled: true,
+        },
+      })
+      .draggable({
+        listeners: {
+          // Remove manualStart - let interact.js handle the start automatically
+          start(event: Interact.DragEvent) {
+            const target = event.target as HTMLElement;
+            const computedStyle = window.getComputedStyle(target);
 
-      autoScroll: {
-        enabled: false,
-      },
-    });
+            // Create clone on drag start
+            const clone = target.cloneNode(true) as HTMLElement;
+
+            // Position clone at current mouse position
+            clone.style.position = "absolute";
+            clone.style.left = `${event.clientX - target.offsetWidth / 2}px`;
+            clone.style.top = `${event.clientY - target.offsetHeight / 2}px`;
+            clone.style.width = computedStyle.width;
+            clone.style.height = computedStyle.height;
+            clone.style.zIndex = "99999";
+            clone.style.opacity = "0.8";
+            clone.style.boxShadow = "0px 0px 24px rgba(0, 0, 0, 0.2)";
+            clone.style.border = "1px solid";
+            clone.style.borderColor = computedStyle.borderColor;
+            clone.style.pointerEvents = "none"; // Prevent interference
+
+            clone.classList.add("clone");
+
+            document.body.appendChild(clone);
+            document.body.style.cursor = "grabbing";
+
+            // Store reference to clone on the interaction
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+            (event.interaction as any).clone = clone;
+          },
+
+          move(event: Interact.DragEvent) {
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+            const clone = (event.interaction as any).clone as HTMLElement;
+
+            if (clone) {
+              // Update clone position based on mouse movement
+              clone.style.left = `${event.clientX - clone.offsetWidth / 2}px`;
+              clone.style.top = `${event.clientY - clone.offsetHeight / 2}px`;
+            }
+          },
+
+          end(event: Interact.DragEvent) {
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+            const clone = (event.interaction as any).clone as HTMLElement;
+            document.body.style.cursor = "default"; // Reset cursor style
+
+            if (clone) {
+              clone.remove();
+            }
+          },
+        },
+      });
     return () => {
       interactable.current?.unset();
       interactable.current = null;
@@ -60,132 +117,67 @@ export default function PanelLibrary() {
   };
 
   return (
-    <Tabs.Root defaultValue="library">
-      <Tabs.List className={tx("sticky top-0 z-50")}>
-        <Tabs.Trigger value="library" className={tx("!flex-1")}>
-          Library
-        </Tabs.Trigger>
-        <Tabs.Trigger value="ai" className={tx("!flex-1")}>
-          AI creator <BsStars className={tx("ml-1 w-4 h-4 text-upstart-500")} />
-        </Tabs.Trigger>
-        <IconButton
-          title="Close"
-          className="self-center items-center justify-center inline-flex !mr-1 !mt-2"
-          size="1"
-          variant="ghost"
-          color="gray"
-          onClick={() => hidePanel()}
-        >
-          <IoCloseOutline className="w-4 h-4 text-gray-400 hover:text-gray-700" />
-        </IconButton>
-      </Tabs.List>
-      <Tabs.Content value="library">
-        <div className="flex flex-col gap-8">
-          <div
-            className={tx(
-              "flex flex-col max-h-[calc(100dvh/2-99px)] overflow-y-auto",
-              panelTabContentScrollClass,
-            )}
-          >
-            <BlockTitle title="Base bricks" />
-            {shouldDisplayLibraryCallout && (
-              <Callout.Root size="1" color="violet" className="!rounded-none">
-                <Callout.Text size="1">Simply drag and drop those base bricks to your page.</Callout.Text>
-              </Callout.Root>
-            )}
-
-            <div
-              className={tx("grid gap-1 p-1.5")}
-              style={{
-                gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
-              }}
-            >
-              {Object.values(manifests)
-                .filter((m) => m.kind === "brick" && !m.hideInLibrary)
-                .map((brickImport) => {
-                  return (
-                    <Tooltip content={brickImport.description} key={brickImport.type}>
-                      <DraggableBrick brick={defaultProps[brickImport.type]} />
-                    </Tooltip>
-                  );
-                })}
-            </div>
-          </div>
-          <div
-            className={tx(
-              "flex flex-col max-h-[calc(100dvh/2-99px)] overflow-y-auto",
-              panelTabContentScrollClass,
-            )}
-          >
-            <BlockTitle title="Widgets" />
-            {shouldDisplayLibraryCallout && (
-              <Callout.Root size="1" color="violet" className="!rounded-none">
-                <Callout.Text size="1">
-                  Widgets are reusable components that can be added to your page.
-                </Callout.Text>
-              </Callout.Root>
-            )}
-
-            <div
-              className={tx("grid gap-1 p-1.5")}
-              style={{
-                gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
-              }}
-            >
-              {Object.values(manifests)
-                .filter((m) => m.kind === "widget" && !m.hideInLibrary)
-                .map((brickImport) => {
-                  return (
-                    <Tooltip content={brickImport.description} key={brickImport.type} delayDuration={850}>
-                      <DraggableBrick brick={defaultProps[brickImport.type]} />
-                    </Tooltip>
-                  );
-                })}
-            </div>
-          </div>
-        </div>
-      </Tabs.Content>
-      <ScrollablePanelTab tab="ai" className={tx("p-2")}>
-        <Callout.Root size="1">
-          <Callout.Icon>
-            <WiStars className={tx("w-7 h-7 mt-3")} />
-          </Callout.Icon>
-          <Callout.Text size="1">Tell AI what you want and it will generate a brick for you!</Callout.Text>
-        </Callout.Root>
-        <TextArea
-          onInput={(e) => {
-            setBrickPrompt(e.currentTarget.value);
+    <div className="flex flex-col gap-8">
+      <div
+        className={tx(
+          "flex flex-col max-h-[calc(100dvh/2-40px)] overflow-y-auto",
+          panelTabContentScrollClass,
+        )}
+      >
+        <PanelBlockTitle>Base bricks</PanelBlockTitle>
+        {shouldDisplayLibraryCallout && (
+          <Callout.Root size="1" color="violet" className="!rounded-none">
+            <Callout.Text size="1">Simply drag and drop those base bricks to your page.</Callout.Text>
+          </Callout.Root>
+        )}
+        <div
+          className={tx("grid gap-1.5 p-2")}
+          style={{
+            gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
           }}
-          className={tx("w-full my-2 h-24")}
-          size="2"
-          placeholder="Add an image of delivery guy"
-          spellCheck={false}
-        />
-        <Button
-          size="2"
-          disabled={brickPrompt.length < 10 || isGenerating}
-          className={tx("block !w-full")}
-          onClick={generateBrick}
         >
-          <Spinner loading={isGenerating}>
-            <BsStars className={tx("w-4 h-4")} />
-          </Spinner>
-          {isGenerating ? "Generating themes" : "Generate a brick"}
-        </Button>
-      </ScrollablePanelTab>
-    </Tabs.Root>
-  );
-}
+          {Object.values(manifests)
+            .filter((m) => m.kind === "brick" && !m.hideInLibrary)
+            .map((brickImport) => {
+              return (
+                <Tooltip content={brickImport.description} key={brickImport.type}>
+                  <DraggableBrick brick={defaultProps[brickImport.type]} />
+                </Tooltip>
+              );
+            })}
+        </div>
+      </div>
+      <div
+        className={tx(
+          "flex flex-col max-h-[calc(100dvh/2-40px)] overflow-y-auto",
+          panelTabContentScrollClass,
+        )}
+      >
+        <PanelBlockTitle>Widgets</PanelBlockTitle>
+        {shouldDisplayLibraryCallout && (
+          <Callout.Root size="1" color="violet" className="!rounded-none">
+            <Callout.Text size="1">Widgets are more complex components you can use.</Callout.Text>
+          </Callout.Root>
+        )}
 
-function BlockTitle({ title }: { title: string }) {
-  return (
-    <h3
-      className={tx(
-        "text-[0.9rem] font-medium bg-upstart-100 dark:bg-dark-600 px-2 py-1.5 sticky top-0 z-[999] border-b border-upstart-200 dark:border-dark-500",
-      )}
-    >
-      {title}
-    </h3>
+        <div
+          className={tx("grid gap-1.5 p-2")}
+          style={{
+            gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
+          }}
+        >
+          {Object.values(manifests)
+            .filter((m) => m.kind === "widget" && !m.hideInLibrary)
+            .map((brickImport) => {
+              return (
+                <Tooltip content={brickImport.description} key={brickImport.type} delayDuration={850}>
+                  <DraggableBrick brick={defaultProps[brickImport.type]} />
+                </Tooltip>
+              );
+            })}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -205,21 +197,21 @@ const DraggableBrick = forwardRef<HTMLButtonElement, DraggableBrickProps>(({ bri
       />
     ) : (
       <brick.icon
-        className={tx("w-6 h-6 text-upstart-600/90 group-hover:text-upstart-700", brick.iconClassName)}
+        className={tx("w-6 h-6 text-upstart-600/90 group-hovertext-upstart-700", brick.iconClassName)}
       />
     );
   return (
     <button
       ref={ref}
       data-brick-type={brick.type}
-      data-brick-min-w={brick.minWidth}
-      data-brick-min-h={brick.minHeight}
-      data-brick-default-w={brick.defaultWidth}
-      data-brick-default-h={brick.defaultHeight}
+      data-brick-min-w={brick.minWidth?.desktop}
+      data-brick-min-h={brick.minHeight?.desktop}
+      data-brick-default-w={brick.defaultWidth?.desktop}
+      data-brick-default-h={brick.defaultHeight?.desktop}
       type="button"
       className={tx(
-        `rounded border border-upstart-100 hover:(border-upstart-600 bg-upstart-50 scale-110) bg-white dark:bg-dark-700 cursor-grab
-        active:cursor-grabbing touch-none select-none pointer-events-auto transition draggable-brick group aspect-square
+        `rounded border border-upstart-100 hover:border-upstart-600 hover:bg-upstart-50 bg-white dark:bg-dark-700 !cursor-grab
+        active:!cursor-grabbing touch-none select-none pointer-events-auto transition draggable-brick group aspect-square
         z-[99999] flex flex-col items-center justify-center
         [&:is(.clone)]:(opacity-80 !bg-white)`,
       )}

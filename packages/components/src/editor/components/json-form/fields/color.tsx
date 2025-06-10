@@ -1,5 +1,4 @@
-import { IconButton, Popover, Text } from "@upstart.gg/style-system/system";
-import { tx, css } from "@upstart.gg/style-system/twind";
+import { IconButton, Popover } from "@upstart.gg/style-system/system";
 import transSvg from "./trans.svg?url";
 import {
   isStandardColor,
@@ -10,10 +9,11 @@ import {
 import BaseColorPicker, { ElementColorPicker } from "~/editor/components/ColorPicker";
 import type { FieldProps } from "./types";
 import { IoCloseOutline } from "react-icons/io5";
-import { fieldLabel } from "../form-class";
 import { FieldTitle } from "../field-factory";
+import { tx, css } from "@upstart.gg/style-system/twind";
+import type { FC } from "react";
 
-const ColorField: React.FC<FieldProps<string | undefined> & { hideColorLabel?: boolean }> = (props) => {
+const ColorField: FC<FieldProps<string | undefined> & { hideColorLabel?: boolean }> = (props) => {
   const { schema, onChange, formSchema: formContext, currentValue, title, description } = props;
   const elementColorType = (schema["ui:color-type"] ??
     "page-background") as ColorElementPreviewPillProps["elementColorType"];
@@ -37,6 +37,7 @@ type ColorFieldRowProps = {
   description?: string;
   required?: boolean;
   showReset?: boolean;
+  labelPlacement?: "left" | "right";
   hideColorLabel?: boolean;
 } & (
   | {
@@ -75,10 +76,16 @@ export function ColorFieldRow({
   showReset,
   elementColorType,
   hideColorLabel,
+  labelPlacement = "left",
 }: ColorFieldRowProps) {
   return (
-    <div className="color-field flex-1 flex items-center justify-between">
-      <FieldTitle title={name} description={description} />
+    <div
+      className={tx("color-field flex-1 flex items-center", {
+        "justify-between": labelPlacement === "left",
+        "justify-start gap-1.5": labelPlacement === "right",
+      })}
+    >
+      {labelPlacement === "left" && <FieldTitle title={name} description={description} />}
       {colorType && (
         <ColorBasePreviewPill
           onChange={onChange}
@@ -97,6 +104,7 @@ export function ColorFieldRow({
           hideColorLabel={hideColorLabel}
         />
       )}
+      {labelPlacement === "right" && <FieldTitle title={name} description={description} />}
     </div>
   );
 }
@@ -108,15 +116,12 @@ type ColorElementPreviewPillProps = {
   elementColorType: ElementColorType;
   showReset?: boolean;
   hideColorLabel?: boolean;
-  onChange: (newVal: ElementColor) => void;
+  onChange: (newVal: ElementColor | null) => void;
 };
 
 function formatColorName(color?: ElementColor) {
   if (!color) {
-    return "transparent";
-  }
-  if (color === "color-auto") {
-    return "auto";
+    return "inherited";
   }
   if (color === "#FFFFFF") {
     return "white";
@@ -146,14 +151,14 @@ function formatColorName(color?: ElementColor) {
 }
 
 function getColorPillBackgroundClass(color: string) {
+  if (isStandardColor(color)) {
+    return css({ backgroundColor: `${color}` });
+  }
   if (color.startsWith("bg-")) {
     return color;
   }
   if (color.match(/^(border|text|shadow)-/)) {
     return color.replace(/^(border|text|shadow)-/, "bg-");
-  }
-  if (isStandardColor(color)) {
-    return `bg-[${color}]`;
   }
   return `bg-${color}`;
 }
@@ -282,7 +287,7 @@ function ColorBasePopover({
   color,
   onChange,
 }: Pick<ColorBasePreviewPillProps, "align" | "side" | "color" | "colorType" | "onChange">) {
-  const width = "300px";
+  const width = "240px";
   return (
     <Popover.Content width={width} side={side} align={align} maxWidth={width}>
       <BaseColorPicker colorType={colorType} initialValue={color} onChange={onChange} />

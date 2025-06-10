@@ -1,4 +1,3 @@
-import { css, tx } from "@upstart.gg/style-system/twind";
 import { propToClass, propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
 import type {
   BackgroundSettings,
@@ -9,8 +8,9 @@ import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border"
 import type { FixedPositionedSettings, PositionSettings } from "@upstart.gg/sdk/shared/bricks/props/position";
 import type { PaddingSettings } from "@upstart.gg/sdk/shared/bricks/props/padding";
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
-import type { ColorSettings } from "@upstart.gg/sdk/shared/bricks/props/text";
-import type { ContainerLayoutSettings, FlexSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
+import type { ColorSettings } from "@upstart.gg/sdk/shared/bricks/props/color";
+import type { ContainerLayoutSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
+import { css } from "@upstart.gg/style-system/twind";
 
 export function getBackgroundStyles(props?: BackgroundSettings) {
   if (!props) {
@@ -64,7 +64,7 @@ function getFixedPositionedStyles(value: FixedPositionedSettings) {
   if (!value) {
     return null;
   }
-  return tx("fixed top-inherit left-auto right-auto self-start w-fill z-[99999] isolate");
+  return "fixed top-inherit left-auto right-auto self-start w-fill z-[99999] isolate";
 }
 
 function getBorderStyles(props?: Partial<BorderSettings>) {
@@ -100,26 +100,7 @@ export function getBasicAlignmentStyles(props: AlignBasicSettings, mobileProps?:
 }
 
 function getContainerLayoutStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {
-  return [
-    getGapStyles(props, mobileProps),
-    ...getFlexStyles(props, mobileProps),
-    ...getGridStyles(props, mobileProps),
-  ];
-}
-
-function getGapStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {
-  if (!props) {
-    return null;
-  }
-  if (mobileProps) {
-    return `@desktop:(
-      ${props.gap}
-    )
-    @mobile:(
-      ${mobileProps.gap}
-    )`;
-  }
-  return props.gap;
+  return props?.type === "grid" ? getGridStyles(props, mobileProps) : getFlexStyles(props, mobileProps);
 }
 
 /**
@@ -130,6 +111,7 @@ function getFlexStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerL
   if (!props) {
     return [];
   }
+  console.log("getFlexStyles", props);
   if (mobileProps) {
     const mobileWrap = mobileProps.wrap ?? props.wrap;
     const mobileFillSpace = mobileProps.fillSpace ?? props.fillSpace;
@@ -138,16 +120,18 @@ function getFlexStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerL
       ${props.direction ?? ""}
       ${props.justifyContent ?? ""}
       ${props.alignItems ?? ""}
+      ${props.gap ?? ""}
       ${props.wrap ? "flex-wrap" : ""}
-      ${props.fillSpace ? "[&>*]:flex-1" : ""}
+      ${props.fillSpace ? "[&>*]:grow" : ""}
     )
     @mobile:(
       ${mobileProps.type ?? props.type ?? ""}
       ${mobileProps.direction ?? props.direction ?? ""}
       ${mobileProps.justifyContent ?? props.justifyContent ?? ""}
       ${mobileProps.alignItems ?? props.alignItems ?? ""}
+      ${props.gap ?? ""}
       ${mobileWrap ? "flex-wrap" : ""}
-      ${mobileFillSpace ? "[&>*]:flex-1" : ""}
+      ${mobileFillSpace ? "[&>*]:grow" : ""}
     )`;
   }
   return [
@@ -155,8 +139,10 @@ function getFlexStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerL
     props.direction,
     props.justifyContent,
     props.alignItems,
+    props.gap ?? "",
     props.wrap && "flex-wrap",
-    props.fillSpace && "[&>*]:flex-1",
+    props.fillSpace && "[&>*]:grow",
+    // props.fillSpace && "[&>*]:flex-1",
   ];
 }
 
@@ -186,7 +172,6 @@ export const brickStylesHelpersMap = {
   "#styles:opacity": getOpacityStyles,
   "#styles:objectFit": simpleClassHandler,
   "#styles:objectPosition": simpleClassHandler,
-
   "#styles:heroSize": simpleClassHandler,
 };
 
@@ -199,3 +184,11 @@ export const brickWrapperStylesHelpersMap = {
   // "#styles:rounding": simpleClassHandler,
   "#styles:fixedPositioned": getFixedPositionedStyles,
 };
+
+// Return the upper path without the last part (the property name)
+export function extractStylePath(path: string) {
+  if (!path.includes(".")) {
+    return path;
+  }
+  return path.split(".").slice(0, -1).join(".");
+}

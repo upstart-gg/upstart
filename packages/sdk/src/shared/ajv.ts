@@ -1,12 +1,45 @@
+import { type Static, TArray, TObject, type TSchema } from "@sinclair/typebox";
 import Ajv, { type ErrorObject } from "ajv";
 import addFormats from "ajv-formats";
+import { preset } from "./bricks/props/preset";
+import { background, backgroundColor } from "./bricks/props/background";
+import { containerLayout } from "./bricks/props/container";
+import { basicAlign } from "./bricks/props/align";
+import { hidden } from "./bricks/props/common";
+import { border } from "./bricks/props/border";
+import { padding } from "./bricks/props/padding";
+import { image } from "./bricks/props/image";
+import { color } from "./bricks/props/color";
+import { shadow } from "./bricks/props/effects";
+import { textContent } from "./bricks/props/text";
+import { cssLength } from "./bricks/props/css-length";
+import { urlOrPageId } from "./bricks/props/string";
 
 export type { JSONSchemaType, AnySchemaObject, SchemaObject, JSONType } from "ajv";
 
 export const ajv = new Ajv({
   useDefaults: true,
   strictSchema: false,
+  validateSchema: false,
+  coerceTypes: true,
+  allErrors: true,
+  inlineRefs: false,
 });
+
+ajv.addSchema(preset(), "styles:preset");
+ajv.addSchema(background(), "styles:background");
+ajv.addSchema(backgroundColor(), "styles:backgroundColor");
+ajv.addSchema(basicAlign(), "styles:basicAlign");
+ajv.addSchema(containerLayout(), "styles:containerLayout");
+ajv.addSchema(hidden(), "styles:hidden");
+ajv.addSchema(border(), "styles:border");
+ajv.addSchema(padding(), "styles:padding");
+ajv.addSchema(color(), "styles:color");
+ajv.addSchema(shadow(), "styles:shadow");
+ajv.addSchema(cssLength(), "styles:cssLength");
+ajv.addSchema(image(), "assets:image");
+ajv.addSchema(textContent(), "content:textContent");
+ajv.addSchema(urlOrPageId(), "content:urlOrPageId");
 
 export const jsonStringsSupportedFormats = [
   "date-time",
@@ -44,6 +77,16 @@ ajv.addFormat("markdown", {
   async: false,
 });
 
+ajv.addFormat("multiline", {
+  validate: (data: string) => typeof data === "string",
+  async: false,
+});
+
+ajv.addFormat("password", {
+  validate: (data: string) => typeof data === "string",
+  async: false,
+});
+
 export function serializeAjvErrors(errors: ErrorObject[] | null | undefined): string {
   if (!errors || errors.length === 0) {
     return "Unknown validation error";
@@ -58,4 +101,11 @@ export function serializeAjvErrors(errors: ErrorObject[] | null | undefined): st
       return `${path} ${message} (${details})`;
     })
     .join("; ");
+}
+
+export function getSchemaDefaults<T extends TSchema>(schema: T) {
+  const data = schema.type === "object" ? {} : schema.type === "array" ? [] : null;
+  const validate = ajv.compile(schema);
+  validate(data);
+  return data as Static<T>;
 }

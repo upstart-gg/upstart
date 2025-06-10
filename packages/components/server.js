@@ -11,7 +11,13 @@ const app = express();
 // Add Vite or respective production middlewares
 const { createServer } = await import("vite");
 const vite = await createServer({
-  server: { middlewareMode: true },
+  server: {
+    middlewareMode: true,
+    warmup: true,
+    proxy: {
+      "/editor/chat": "http://localhost:8080",
+    },
+  },
   appType: "custom",
   base,
 });

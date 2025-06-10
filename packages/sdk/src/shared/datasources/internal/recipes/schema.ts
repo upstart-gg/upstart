@@ -34,7 +34,8 @@ export const recipesSchema = Type.Array(
     ),
   }),
   {
-    description: "Schema representing a collection of recipes",
+    title: "Recipes",
+    description: "Collection of recipes",
   },
 );
 

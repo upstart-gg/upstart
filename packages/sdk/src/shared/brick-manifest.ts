@@ -1,7 +1,6 @@
-import type { TObject, TProperties, TArray, Static } from "@sinclair/typebox";
-import { Value } from "@sinclair/typebox/value";
-import type { ReactNode, FC, Component, ComponentType } from "react";
-import type { IconBaseProps } from "react-icons/lib";
+import type { TObject, TProperties, TArray } from "@sinclair/typebox";
+import type { IconBase } from "react-icons/lib";
+import { ajv, getSchemaDefaults } from "./ajv";
 
 type BrickKind = "brick" | "widget" | "container";
 
@@ -9,7 +8,7 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
   type: string;
   kind?: BrickKind;
   name: string;
-  icon: string | FC<IconBaseProps>;
+  icon: typeof IconBase;
   iconClassName?: string;
   description?: string;
   minWidth?: {
@@ -37,10 +36,6 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
     desktop: number;
   };
   props: TObject<BProps>;
-  presets?: Record<
-    string,
-    { label: string; previewClasses: string; props: Partial<Static<TObject<BProps>>> }
-  >;
   datasource?: DSSchema;
   hideInLibrary?: boolean;
   defaultInspectorTab?: "preset" | "style" | "content";
@@ -50,6 +45,7 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
   resizable?: boolean;
   duplicatable?: boolean;
   isContainer?: boolean;
+  aiInstructions?: string;
 };
 
 export function defineBrickManifest<BProps extends TProperties, DSSchema extends TObject | TArray<TObject>>({
@@ -67,15 +63,15 @@ export function defineBrickManifest<BProps extends TProperties, DSSchema extends
   repeatable = false,
   duplicatable = true,
   defaultInspectorTab = "preset",
+  icon,
   datasource,
-  presets,
   ...rest
 }: BrickManifestProps<BProps, DSSchema>) {
   return {
     ...rest,
     datasource: datasource as DSSchema,
+    icon,
     props,
-    presets,
     kind,
     defaultInspectorTab,
     hideInLibrary,
@@ -99,9 +95,9 @@ export type BrickManifest = ReturnType<typeof defineBrickManifest>;
 export function getBrickManifestDefaults<M extends BrickManifest>(manifest: M) {
   return {
     ...manifest,
-    props: Value.Create(manifest.props),
-    mobileProps: {},
-    ...(manifest.datasource ? { datasource: Value.Create(manifest.datasource) } : {}),
+    props: getSchemaDefaults(manifest.props),
+    // mobileProps: {},
+    ...(manifest.datasource ? { datasource: getSchemaDefaults(manifest.datasource) } : {}),
     // ...(manifest.datarecord ? { datarecord: Value.Create(manifest.datarecord) } : {}),
   };
 }

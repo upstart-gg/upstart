@@ -314,16 +314,16 @@
 
 *::selection {
   color: white;
-  background: #5b57ab;
+  background: #5d59ad;
 }
 
 
 *::-moz-selection { /* Code for Firefox */
   color: white;
-  background: #5b57ab;
+  background: #5d59ad;
 }
 
 *::-webkit-selection {
   color: white;
-  background: #5b57ab;
+  background: #5d59ad;
 }

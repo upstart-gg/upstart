@@ -10,11 +10,11 @@ import {
   type CSSProperties,
 } from "react";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
-import { tx } from "@upstart.gg/style-system/twind";
 import type { NavItem, NavItemProperty } from "./types";
 import { processObjectSchemaToFields } from "./field-factory";
 import { type TObject, Type } from "@sinclair/typebox";
 import { useMutationObserver } from "~/editor/hooks/use-mutation-observer";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 type FormNavigatorContextType = {
   navigateTo: (item: NavItem) => void;
@@ -23,7 +23,7 @@ type FormNavigatorContextType = {
   formData: Record<string, unknown>;
   formSchema: TObject;
   isRootView: boolean;
-  brickId: string;
+  brickId?: string;
 };
 
 // Create context for navigation
@@ -39,17 +39,18 @@ export const useFormNavigation = () => {
 };
 
 // Create List component
-export const NavList: FC<{ items: NavItem[]; brickId: string }> = ({ items, brickId }) => {
+export const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
   const { navigateTo } = useFormNavigation();
   return (
-    <ul className={tx("list-none p-0 m-0")}>
+    <ul className="list-none p-0 m-0">
       {items.map((item) => {
         return (
           <li
             key={item.id}
             className={tx(
-              `select-none p-2.5 flex items-center text-[0.9rem] text-gray-600 justify-between border-b last:border-b-0 border-gray-200
-            dark:border-dark-400 transition-colors duration-200 flex-wrap`,
+              `select-none p-2.5 flex items-center text-[0.9rem]
+              justify-between border-b last:border-b-0 border-gray-100
+            dark:border-dark-800 transition-colors duration-200 flex-wrap`,
               // if empty, hide
               "[&:not(:has(*))]:hidden",
               item.children && "cursor-pointer hover:bg-upstart-50 dark:hover:bg-dark-600",
@@ -61,7 +62,7 @@ export const NavList: FC<{ items: NavItem[]; brickId: string }> = ({ items, bric
             }}
           >
             {item.schema ? <SchemaField item={item} /> : item.label}
-            {item.children && <FiChevronRight className={tx("text-gray-400")} />}
+            {item.children && <FiChevronRight className="text-gray-400 dark:text-inherit" />}
           </li>
         );
       })}
@@ -92,16 +93,16 @@ type FormNavigatorProps = {
   formData: Record<string, unknown>;
   formSchema: TObject;
   className?: string;
-  style?: CSSProperties;
+  // style?: CSSProperties;
   initialGroup?: string;
-  brickId: string;
+  brickId?: string;
 };
 
 const FormNavigator: FC<FormNavigatorProps> = ({
   title,
   navItems,
   className,
-  style,
+  // style,
   onChange,
   formData,
   formSchema,
@@ -111,7 +112,7 @@ const FormNavigator: FC<FormNavigatorProps> = ({
   // Stack of views (each with content and title)
   const [viewStack, setViewStack] = useState<{ content: ReactNode; title: string }[]>([
     {
-      content: <NavList items={navItems} brickId={brickId} />,
+      content: <NavList items={navItems} />,
       title,
     },
   ]);
@@ -122,43 +123,18 @@ const FormNavigator: FC<FormNavigatorProps> = ({
   // Direction of animation
   const [animationDirection, setAnimationDirection] = useState<"forward" | "backward" | null>(null);
 
-  // watch for overflow changes on vertical scroll
-  useMutationObserver(
-    ref,
-    (entries) => {
-      // wait for end of animation
-      setTimeout(() => {
-        for (const entry of entries) {
-          const target = (entry.target as HTMLElement)?.closest(".navigator-view");
-          if (!target?.clientHeight) return;
-          if (ref.current && target.scrollHeight - target.clientHeight > 5) {
-            ref.current.style.minHeight = `${target.scrollHeight + 2}px`;
-          }
-        }
-      }, 200);
-    },
-    {},
-  );
-
   // Navigate to a new view
-  const navigateTo = useCallback(
-    (item: NavItem, direction: typeof animationDirection = "forward") => {
-      setAnimationDirection(direction);
+  const navigateTo = useCallback((item: NavItem, direction: typeof animationDirection = "forward") => {
+    setAnimationDirection(direction);
 
-      const content = item.children ? (
-        <NavList items={item.children} brickId={brickId} />
-      ) : (
-        <div>content: {item.label}</div>
-      );
-      const title = item.label ?? "Untitled";
-      setViewStack((prev) => [...prev, { content, title }]);
-      // Reset animation direction after animation completes
-      setTimeout(() => {
-        setAnimationDirection(null);
-      }, 300);
-    },
-    [brickId],
-  );
+    const content = item.children ? <NavList items={item.children} /> : <div>content: {item.label}</div>;
+    const title = item.label ?? "Untitled";
+    setViewStack((prev) => [...prev, { content, title }]);
+    // Reset animation direction after animation completes
+    setTimeout(() => {
+      setAnimationDirection(null);
+    }, 300);
+  }, []);
 
   // Navigate back to previous view
   const navigateBack = useCallback(() => {
@@ -200,31 +176,23 @@ const FormNavigator: FC<FormNavigatorProps> = ({
         navigateBack,
         onChange,
         formData,
+        brickId,
         formSchema,
         isRootView: viewStack.length === 1,
-        brickId,
       }}
     >
       <div
         ref={ref}
-        className={tx(
-          "navigator-view transition-all relative overflow-x-hidden overflow-y-hidden rounded-md  bg-white dark:bg-dark-500",
-          className,
-        )}
+        className={tx("navigator-view transition-all relative overflow-x-hidden", className)}
         style={{
-          minHeight: "380px",
           width: "100%",
-          ...style,
+          // ...style,
         }}
       >
         {/* Current View */}
         <div className={tx("absolute inset-0 flex flex-col", getAnimationClass())}>
           {/* Header */}
-          <div
-            className={tx(
-              "flex items-center p-2.5 border-b border-gray-200 dark:border-dark-400 bg-gray-50 sticky top-0 z-10",
-            )}
-          >
+          <div className="flex items-center p-2.5 border-b border-gray-200 dark:border-dark-600 bg-gray-50 dark:bg-dark-800 sticky top-0 z-10">
             {viewStack.length > 1 ? (
               <button
                 type="button"
@@ -238,7 +206,7 @@ const FormNavigator: FC<FormNavigatorProps> = ({
                 Back
               </button>
             ) : (
-              <div className={tx("w-10")} />
+              <div className="w-10" />
             )}
             <h3
               className={tx(
@@ -247,9 +215,9 @@ const FormNavigator: FC<FormNavigatorProps> = ({
             >
               {currentView.title}
             </h3>
-            <div className={tx("w-10")} />
+            <div className="w-10" />
           </div>
-          <div className={tx("flex-1 overflow-auto min-h-max h-fit")}>{currentView.content}</div>
+          <div className="overflow-y-auto scrollbar-thin min-h-max h-fit">{currentView.content}</div>
         </div>
       </div>
     </FormNavigatorContext.Provider>

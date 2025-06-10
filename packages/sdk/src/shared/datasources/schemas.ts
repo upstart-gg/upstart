@@ -9,7 +9,7 @@ import { rssSchema } from "./external/rss/schema";
 import { threadsMediaSchema } from "./external/threads/media/schema";
 import { tiktokVideoListSchema } from "./external/tiktok/video/schema";
 import { youtubeListSchema } from "./external/youtube/list/schema";
-import { jsonArraySchema, jsonObjectSchema } from "./external/json/schema";
+import { jsonArraySchema, jsonObjectSchema } from "./external/http-json/schema";
 
 // internal
 import { blogSchema } from "./internal/blog/schema";
@@ -22,23 +22,24 @@ import { recipesSchema } from "./internal/recipes/schema";
 import { restaurantSchema } from "./internal/restaurant/schema";
 
 export const schemasMap = {
-  "facebook-posts": facebookPostSchema,
-  "instagram-feed": instagramFeedSchema,
-  "mastodon-account": mastodonAccountSchema,
-  "mastodon-status": mastodonStatusSchema,
-  "mastodon-status-list": mastodonStatusArraySchema,
+  // "facebook-posts": facebookPostSchema,
+  // "instagram-feed": instagramFeedSchema,
+  // "mastodon-account": mastodonAccountSchema,
+  // "mastodon-status": mastodonStatusSchema,
+  // "mastodon-status-list": mastodonStatusArraySchema,
   rss: rssSchema,
-  "threads-media": threadsMediaSchema,
-  "tiktok-video": tiktokVideoListSchema,
+  // "threads-media": threadsMediaSchema,
+  // "tiktok-video": tiktokVideoListSchema,
   "youtube-list": youtubeListSchema,
   "internal-blog": blogSchema,
   "internal-changelog": changelogSchema,
-  "internal-contact-info": contactInfoSchema,
+  // "internal-contact-info": contactInfoSchema,
   "internal-faq": faqSchema,
   "internal-links": linksSchema,
   "internal-recipes": recipesSchema,
-  "internal-restaurant": restaurantSchema,
-  "internal-cv": cvSchema,
-  "json-array": jsonArraySchema,
-  "json-object": jsonObjectSchema,
-} as const satisfies Record<DatasourceProvider, TObject | TArray>;
+  // "internal-restaurant": restaurantSchema,
+  // "internal-cv": cvSchema,
+  "http-json": {
+    description: "JSON array retrieved from an HTTP endpoint",
+  },
+} as const satisfies Record<DatasourceProvider, TArray | TArray[] | { description: string }>;

@@ -2,7 +2,6 @@ import type { FieldProps } from "./types";
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
 import { fieldLabel } from "../form-class";
 import { SegmentedControl } from "@upstart.gg/style-system/system";
-import { tx } from "@upstart.gg/style-system/twind";
 import {
   PiAlignCenterVertical,
   PiAlignBottom,
@@ -11,8 +10,9 @@ import {
   PiAlignRight,
   PiAlignCenterHorizontal,
 } from "react-icons/pi";
+import type { FC } from "react";
 
-export const AlignBasicField: React.FC<FieldProps<AlignBasicSettings>> = (props) => {
+export const AlignBasicField: FC<FieldProps<AlignBasicSettings>> = (props) => {
   const {
     currentValue = {
       horizontal: "justify-start",
@@ -50,7 +50,7 @@ export const AlignBasicField: React.FC<FieldProps<AlignBasicSettings>> = (props)
               <SegmentedControl.Item
                 key={option.const}
                 value={option.const}
-                className={tx("[&_.rt-SegmentedControlItemLabel]:px-1")}
+                className="[&_.rt-SegmentedControlItemLabel]:px-1"
               >
                 {option.const === "justify-start" && <PiAlignLeft className="w-4 h-4" />}
                 {option.const === "justify-center" && <PiAlignCenterHorizontal className="w-4 h-4" />}
@@ -74,7 +74,7 @@ export const AlignBasicField: React.FC<FieldProps<AlignBasicSettings>> = (props)
               <SegmentedControl.Item
                 key={option.const}
                 value={option.const}
-                className={tx("[&_.rt-SegmentedControlItemLabel]:px-1")}
+                className="[&_.rt-SegmentedControlItemLabel]:px-1"
               >
                 {option.const === "items-start" && <PiAlignTop className="w-4 h-4" />}
                 {option.const === "items-center" && <PiAlignCenterVertical className="w-4 h-4" />}

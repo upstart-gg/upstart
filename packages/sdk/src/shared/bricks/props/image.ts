@@ -1,5 +1,6 @@
-import { Type, type Static } from "@sinclair/typebox";
+import { type SchemaOptions, Type, type Static } from "@sinclair/typebox";
 import { prop } from "./helpers";
+import { typedRef } from "~/shared/utils/typed-ref";
 // import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
 
 type PropImageOptions = {
@@ -15,12 +16,12 @@ export function image(title = "Image", options: PropImageOptions = {}) {
       src: Type.String({
         default: defaultImageUrl,
         title,
-        description: "Image URL. Can be a link to an image or a data URI.",
+        description: "Image URL. Can be a link to an image or a data URI",
       }),
       alt: Type.Optional(
         Type.String({
           title: "Alternate Text",
-          description: "Alternative text for the image. Recommended for screen readers and SEO.",
+          description: "Alternative text for the image. Recommended for screen readers and SEO",
           "ui:placeholder": "Your image description",
         }),
       ),
@@ -34,10 +35,10 @@ export function image(title = "Image", options: PropImageOptions = {}) {
             Type.Literal("object-scale-down", { title: "Scale down" }),
           ],
           {
-            $id: "#styles:objectFit",
             title: "Fit",
-            description: "How the image should be resized to fit its container.",
+            description: "How the image should be resized to fit its container",
             "ui:field": "enum",
+            "ui:styleId": "#styles:objectFit",
           },
         ),
       ),
@@ -55,21 +56,21 @@ export function image(title = "Image", options: PropImageOptions = {}) {
             Type.Literal("object-right-bottom", { title: "Bottom right" }),
           ],
           {
-            $id: "#styles:objectPosition",
+            "ui:styleId": "#styles:objectPosition",
             title: "Position",
-            description: "The position of the image inside its container.",
+            description: "The position of the image inside its container",
             "ui:field": "enum",
           },
         ),
       ),
     },
     {
+      $id: "assets:image",
       "ui:field": "image",
       "ui:accept": "image/*",
       "ui:show-img-search": !!showImgSearch,
       "ui:no-object-options": !!options.noObjectOptions,
       default: {
-        // src: defaultImageUrl,
         alt: "Image",
         fit: "object-cover",
         position: "object-center",
@@ -80,6 +81,10 @@ export function image(title = "Image", options: PropImageOptions = {}) {
     title,
     schema,
   });
+}
+
+export function imageRef(options: PropImageOptions & SchemaOptions = {}) {
+  return typedRef("assets:image", { ...options, styleId: "#assets:image" });
 }
 
 export type ImageProps = Static<ReturnType<typeof image>>;

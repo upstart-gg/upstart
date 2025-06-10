@@ -1,9 +1,9 @@
 import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
-import { useEffect, useState } from "react";
+import { type RefObject, useEffect, useState } from "react";
 import { usePreviewMode } from "~/editor/hooks/use-editor";
 import { debounce } from "lodash-es";
 
-export function useGridConfig(elementRef: React.RefObject<HTMLElement>) {
+export function useGridConfig(elementRef: RefObject<HTMLElement>) {
   const [colWidth, setColWidth] = useState(0);
   const previewMode = usePreviewMode();
 

@@ -1,6 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 import type { BorderSettings } from "./border";
-import type { ColorSettings } from "./text";
+import type { ColorSettings } from "./color";
 import type { BackgroundSettings } from "./background";
 import type { ShadowSettings } from "./effects";
 

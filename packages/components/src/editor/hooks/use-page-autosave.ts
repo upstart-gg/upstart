@@ -1,7 +1,7 @@
 import { useDebounceCallback } from "usehooks-ts";
 import {
   useAttributesSubscribe,
-  useBricksSubscribe,
+  useSectionsSubscribe,
   useDraft,
   useEditorHelpers,
   useEditorMode,
@@ -10,63 +10,76 @@ import {
   useThemeSubscribe,
   type PageSavePayload,
   type SiteSavePayload,
+  useSiteAndPages,
 } from "./use-editor";
 
-const AUTO_SAVE_MIN_INTERVAL = 3000; // Auto save every N seconds
-
-const noop = async () => {
-  console.log("Skip saving page in local mode");
-  return false;
-};
+const AUTO_SAVE_MIN_INTERVAL = 1000; // Auto save every N seconds
 
 export function usePageAutoSave() {
   const draft = useDraft();
   const editorMode = useEditorMode();
+  const siteAndPages = useSiteAndPages();
   const pageConfig = usePageInfo();
-  const { onSavePage, onSaveSite } = useEditorHelpers();
-  const savePage = useDebounceCallback(
-    editorMode === "remote"
-      ? (data: PageSavePayload["data"]) => {
-          onSavePage?.({
-            pageId: pageConfig.id,
-            pageVersionId: "latest",
-            siteId: pageConfig.siteId,
-            data,
-          });
-        }
-      : noop,
-    AUTO_SAVE_MIN_INTERVAL,
-  );
-  const saveSite = useDebounceCallback(
-    editorMode === "remote"
-      ? (data: SiteSavePayload["data"]) => {
-          onSaveSite?.({
-            siteId: pageConfig.siteId,
-            data,
-          });
-        }
-      : noop,
-    AUTO_SAVE_MIN_INTERVAL,
-  );
+  const { onSavePage, onSaveSite, onDraftChange } = useEditorHelpers();
 
-  useBricksSubscribe(async (bricks) => {
-    console.debug("Bricks have changed, updating page version", bricks);
+  const savePage = useDebounceCallback(async (data: PageSavePayload["data"]) => {
+    await onSavePage?.({
+      pageId: pageConfig.id,
+      pageVersionId: "latest",
+      siteId: pageConfig.siteId,
+      data,
+    });
+    draft.setDirty(false);
+  }, AUTO_SAVE_MIN_INTERVAL);
+
+  const saveSite = useDebounceCallback(async (data: SiteSavePayload["data"]) => {
+    await onSaveSite?.({
+      siteId: pageConfig.siteId,
+      data,
+    });
+    draft.setDirty(false);
+  }, AUTO_SAVE_MIN_INTERVAL);
+
+  const saveDraft = useDebounceCallback(async () => {
+    console.debug("Saving draft", { draft, siteAndPages });
+    await onDraftChange?.(draft, siteAndPages);
+    draft.setDirty(false);
+  }, AUTO_SAVE_MIN_INTERVAL);
+
+  useSectionsSubscribe((sections) => {
+    console.debug("Sections have changed, updating page version", sections);
     draft.setDirty(true);
-    savePage({ bricks });
+    if (editorMode === "authenticated") {
+      savePage({ sections });
+    } else {
+      saveDraft();
+    }
   });
   useAttributesSubscribe((attributes) => {
     console.debug("Attributes have changed, updating page version");
     draft.setDirty(true);
-    savePage({ attr: attributes });
+    if (editorMode === "authenticated") {
+      savePage({ attr: attributes });
+    } else {
+      saveDraft();
+    }
   });
   usePagePathSubscribe((path) => {
     console.debug("pagePath has changed, updating page version");
     draft.setDirty(true);
-    savePage({ path });
+    if (editorMode === "authenticated") {
+      savePage({ path });
+    } else {
+      saveDraft();
+    }
   });
   useThemeSubscribe((theme) => {
     console.debug("theme has changed, updating page version");
     draft.setDirty(true);
-    saveSite({ theme });
+    if (editorMode === "authenticated") {
+      saveSite({ theme });
+    } else {
+      saveDraft();
+    }
   });
 }

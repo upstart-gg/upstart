@@ -1,8 +1,8 @@
 import { Dialog, TextField, Select, Button, Callout } from "@upstart.gg/style-system/system";
 import { useEditor } from "~/editor/hooks/use-editor";
 import { PiMagnifyingGlass } from "react-icons/pi";
-import { useState } from "react";
-import { css, tx } from "@upstart.gg/style-system/twind";
+import { type FormEvent, useState } from "react";
+import { tx, css } from "@upstart.gg/style-system/twind";
 
 type Results = {
   total_pages: number;
@@ -45,7 +45,7 @@ export default function ModalSearchImage({ onChoose, onClose, open }: ModalSearc
   const [orientation, setOrientation] = useState("all");
   const [loading, setLoading] = useState(false);
 
-  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     // form data

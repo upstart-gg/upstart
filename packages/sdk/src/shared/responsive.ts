@@ -1,4 +1,5 @@
-import { Type, type Static } from "@sinclair/typebox";
+import type { Static } from "@sinclair/typebox";
+import { StringEnum } from "./utils/schema";
 
-export const responsiveMode = Type.Union([Type.Literal("mobile"), Type.Literal("desktop")]);
-export type ResponsiveMode = Static<typeof responsiveMode>;
+export const resolution = StringEnum(["mobile", "desktop"]);
+export type Resolution = Static<typeof resolution>;
