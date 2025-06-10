@@ -56,5 +56,5 @@ export function urlOrPageId(title = "URL or Page ID", defaultValue?: string) {
 export type UrlOrPageIdSettings = Static<ReturnType<typeof urlOrPageId>>;
 
 export function urlOrPageIdRef(options: { title?: string; default?: string } = {}) {
-  return typedRef("content:urlOrPageId", options);
+  return typedRef("content:urlOrPageId", { ...options });
 }

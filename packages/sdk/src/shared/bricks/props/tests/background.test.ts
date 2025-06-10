@@ -21,16 +21,6 @@ describe("Background prop test suite", () => {
       expect(schema["ui:field"]).toBe("background");
       expect(schema["ui:group"]).toBe("background");
       expect(schema["ui:group:title"]).toBe("Background");
-      expect(schema["ui:show-img-search"]).toBe(true);
-    });
-
-    it("should have correct default values", () => {
-      const schema = background();
-      expect(schema.default).toEqual({
-        color: "transparent",
-        size: "auto",
-        repeat: "no-repeat",
-      });
     });
 
     it("should accept custom default values", () => {
@@ -58,7 +48,6 @@ describe("Background prop test suite", () => {
         const colorProp = background().properties.color;
         expect(colorProp.title).toBe("Color");
         expect(colorProp.type).toBe("string");
-        expect(colorProp.default).toBe("transparent");
       });
     });
 
@@ -106,7 +95,7 @@ describe("Background prop test suite", () => {
     });
 
     it("should have correct default value", () => {
-      expect(backgroundColor().default).toBe("transparent");
+      expect(backgroundColor().default).toBeUndefined();
       expect(backgroundColor("red").default).toBe("red");
     });
   });

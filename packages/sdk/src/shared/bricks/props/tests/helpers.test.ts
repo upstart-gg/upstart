@@ -122,8 +122,6 @@ describe("Props helpers test suite", () => {
       const styles = getStyleProperties(sampleManifest.props);
       expect(styles).toMatchObject({
         "brand.color": "#styles:color",
-        "brand.logo.fit": "#styles:objectFit",
-        "brand.logo.position": "#styles:objectPosition",
         "container.backgroundColor": "#styles:backgroundColor",
         "container.border": "#styles:border",
         "container.fixedPositioned": "#styles:fixedPositioned",

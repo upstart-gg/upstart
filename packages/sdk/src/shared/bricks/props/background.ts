@@ -114,5 +114,5 @@ export function backgroundColor(defaultValue?: string, title = "Background color
 export type BackgroundColorSettings = Static<ReturnType<typeof backgroundColor>>;
 
 export function backgroundColorRef(options: SchemaOptions = {}) {
-  return typedRef("styles:backgroundColor", options);
+  return typedRef("styles:backgroundColor", { ...options, "ui:styleId": "#styles:backgroundColor" });
 }

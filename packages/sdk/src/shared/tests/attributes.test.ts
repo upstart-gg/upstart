@@ -4,6 +4,7 @@ import { string, url } from "../bricks/props/string";
 import { number } from "../bricks/props/number";
 import { boolean } from "../bricks/props/boolean";
 import { date } from "../bricks/props/date";
+import { Type } from "@sinclair/typebox";
 
 describe("Attributes test suite", () => {
   describe("defineAttributes", () => {
@@ -24,7 +25,7 @@ describe("Attributes test suite", () => {
   });
   describe("resolveAttributes", () => {
     it("should resolve attributes with default values", () => {
-      const attributes = defineAttributes({
+      const attributes = Type.Object({
         mainButtonUrl: url("Main Button URL", "https://facebook.com"),
         testBoolTrue: boolean("Test Bool True", true),
         customerId: string("Customer ID"),

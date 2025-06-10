@@ -20,5 +20,5 @@ export function color(defaultValue?: string, title = "Text color") {
 export type ColorSettings = Static<ReturnType<typeof color>>;
 
 export function colorRef(options: SchemaOptions = {}) {
-  return typedRef("styles:color", options);
+  return typedRef("styles:color", { ...options, "ui:styleId": "#styles:color" });
 }

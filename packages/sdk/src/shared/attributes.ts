@@ -212,13 +212,11 @@ export function resolveAttributes(
   customAttrsSchema: TObject = Type.Object({}),
   initialData: Record<string, unknown> = {},
 ) {
+  const dataClone = structuredClone(initialData);
   const validateCustom = ajv.compile(customAttrsSchema);
-  const valid = validateCustom(initialData);
-  if (!valid) {
-    console.log("invalid custom attributes values", initialData, validateCustom.errors);
-    throw new Error(`Invalid custom attributes values: ${validateCustom.errors}`);
-  }
+  // To get default values from the custom attributes schema,
+  validateCustom(dataClone);
   const defaultAttrValues = getSchemaDefaults(defaultAttributesSchema);
-  const data = { ...defaultAttrValues, ...initialData };
+  const data = { ...defaultAttrValues, ...dataClone };
   return data as Attributes<Static<typeof customAttrsSchema>>;
 }

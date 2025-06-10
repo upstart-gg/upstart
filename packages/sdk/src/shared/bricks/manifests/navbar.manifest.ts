@@ -6,7 +6,7 @@ import { string, urlOrPageId, urlOrPageIdRef } from "../props/string";
 import { image, imageRef } from "../props/image";
 import { backgroundColor, backgroundColorRef } from "../props/background";
 import { textContent, textContentRef } from "../props/text";
-import { shadow } from "../props/effects";
+import { shadow, shadowRef } from "../props/effects";
 import { datasourceRef } from "../props/datasource";
 import { fixedPositioned } from "../props/position";
 import { boolean } from "../props/boolean";
@@ -67,7 +67,7 @@ export const manifest = defineBrickManifest({
         children: {
           backgroundColor: optional(backgroundColorRef()),
           border: optional(borderRef),
-          shadow: optional(shadow()),
+          shadow: optional(shadowRef()),
           fixedPositioned: optional(fixedPositioned()),
         },
         metadata: {

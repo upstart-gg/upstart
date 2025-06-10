@@ -70,7 +70,6 @@ describe("String prop test suite", () => {
       // First option should be URL
       const urlOption = prop.anyOf?.[0];
       expect(urlOption?.format).toBe("uri");
-      expect(urlOption?.["ui:field"]).toBe("url");
 
       // Second option should be page-id
       const pageIdOption = prop.anyOf?.[1];

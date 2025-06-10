@@ -79,6 +79,6 @@ export function border(title = "Border") {
   });
 }
 
-export const borderRef = typedRef("styles:border");
+export const borderRef = typedRef("styles:border", { "ui:styleId": "#styles:border" });
 
 export type BorderSettings = Static<ReturnType<typeof border>>;
