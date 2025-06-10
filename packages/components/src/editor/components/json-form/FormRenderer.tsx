@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { type FC, type ReactNode, useMemo } from "react";
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
 import { sortJsonSchemaProperties } from "~/shared/utils/sort-json-schema-props";
 import { processObjectSchemaToFields } from "./field-factory";
@@ -19,10 +19,10 @@ interface FormRendererProps {
 interface FormGroupProps {
   groupTitle: string;
   groupName: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-const FormGroup: React.FC<FormGroupProps> = ({ groupTitle, groupName, children }) => {
+const FormGroup: FC<FormGroupProps> = ({ groupTitle, groupName, children }) => {
   return (
     <>
       <h3 className="text-sm font-semibold !dark:bg-dark-600 bg-upstart-100 px-2 py-1 sticky top-0 z-[999] -mx-3">

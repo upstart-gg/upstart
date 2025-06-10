@@ -12,8 +12,7 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
   function mapBricks(bricks: Brick[], level = 0) {
     return bricks.map((brick) => {
       const childBricks = "$children" in brick.props ? (brick.props.$children as Brick[]) : null;
-      const icon = manifests[brick.type].icon;
-      const iconComp = typeof icon === "string" ? icon : icon({ size: 16 });
+      const Icon = manifests[brick.type].icon;
       const brickName = manifests[brick.type].name;
 
       return (
@@ -34,7 +33,7 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
           >
             <div className="flex items-center justify-between gap-px px-1">
               <span className="inline-flex items-center gap-1.5">
-                {iconComp} {brickName}
+                <Icon className="w-4 h-4" /> {brickName}
               </span>
               <span className="text-xs text-gray-400 font-mono lowercase">{brick.id}</span>
             </div>

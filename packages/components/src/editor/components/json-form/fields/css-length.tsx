@@ -1,9 +1,9 @@
 import type { FieldProps } from "./types";
 import { Select, TextField } from "@upstart.gg/style-system/system";
 import { FieldTitle } from "../field-factory";
-import { useEffect, useState } from "react";
+import { type FC, useEffect, useState } from "react";
 
-export const CssLengthField: React.FC<FieldProps<string>> = (props) => {
+export const CssLengthField: FC<FieldProps<string>> = (props) => {
   const { currentValue, onChange, schema, required, title, description, placeholder } = props;
 
   // remove leading slash

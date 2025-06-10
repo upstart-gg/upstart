@@ -2,12 +2,13 @@ import { motion } from "motion/react";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useDraftHelpers, useEditorHelpers } from "../hooks/use-editor";
+import type { FC } from "react";
 
 interface ThemePreviewProps {
   theme: Theme;
 }
 
-const ThemePreview: React.FC<ThemePreviewProps> = ({ theme }) => {
+const ThemePreview: FC<ThemePreviewProps> = ({ theme }) => {
   const colors = theme.colors;
   const { pickTheme } = useDraftHelpers();
 

@@ -5,10 +5,10 @@ import { useDebounceCallback } from "usehooks-ts";
 import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { UrlOrPageIdSettings } from "@upstart.gg/sdk/shared/bricks/props/string";
-import { useState } from "react";
+import { type FC, useState } from "react";
 import { useSitemap } from "~/editor/hooks/use-editor";
 
-export const StringField: React.FC<FieldProps<string>> = (props) => {
+export const StringField: FC<FieldProps<string>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
 
   const onChangeDebounced = useDebounceCallback(onChange, 300);
@@ -40,7 +40,7 @@ export const StringField: React.FC<FieldProps<string>> = (props) => {
   );
 };
 
-export const PathField: React.FC<FieldProps<string>> = (props) => {
+export const PathField: FC<FieldProps<string>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder } = props;
   const onChangeDebounced = useDebounceCallback(onChange, 300);
   // remove leading slash
@@ -64,7 +64,7 @@ export const PathField: React.FC<FieldProps<string>> = (props) => {
   );
 };
 
-export const UrlOrPageIdField: React.FC<FieldProps<UrlOrPageIdSettings | null>> = (props) => {
+export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
   const sitemap = useSitemap();
   const [type, setType] = useState<"url" | "pageId">(

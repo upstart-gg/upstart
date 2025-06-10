@@ -7,8 +7,9 @@ import { number } from "../props/number";
 import { backgroundColor, backgroundColorRef } from "../props/background";
 import { border, borderRef } from "../props/border";
 import { padding, paddingRef } from "../props/padding";
-import { shadow } from "../props/effects";
+import { shadow, shadowRef } from "../props/effects";
 import type { BrickProps } from "../props/types";
+import type { FC } from "react";
 
 export const manifest = defineBrickManifest({
   type: "map",
@@ -19,7 +20,6 @@ export const manifest = defineBrickManifest({
     "This brick can be used to show a location on a map. Use the 'location' prop to set the coordinates and an optional tooltip.",
   icon: LiaMapMarkedAltSolid,
   props: defineProps({
-    // preset: optional(preset()),
     location: prop({
       title: "Location",
       description: "The location to display on the map",
@@ -32,7 +32,7 @@ export const manifest = defineBrickManifest({
     backgroundColor: optional(backgroundColorRef()),
     border: optional(borderRef),
     padding: optional(paddingRef),
-    shadow: optional(shadow()),
+    shadow: optional(shadowRef()),
   }),
 });
 

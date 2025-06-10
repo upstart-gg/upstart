@@ -7,6 +7,7 @@ import { backgroundColor, backgroundColorRef } from "../props/background";
 import { RxDividerHorizontal } from "react-icons/rx";
 import type { BrickProps } from "../props/types";
 import { StringEnum } from "~/shared/utils/schema";
+import type { FC } from "react";
 
 export const manifest = defineBrickManifest({
   type: "divider",

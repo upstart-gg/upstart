@@ -1,7 +1,7 @@
 import type { FieldProps } from "./types";
 import { nanoid } from "nanoid";
 import { Button, Text, Select, IconButton } from "@upstart.gg/style-system/system";
-import { useMemo, useState } from "react";
+import { type FC, useMemo, useState } from "react";
 import ModalSearchImage from "~/editor/components/ModalSearchImage";
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
 import ColorField from "./color";
@@ -14,7 +14,7 @@ import { FieldTitle } from "../field-factory";
 import { useIsPremiumPlan } from "~/editor/hooks/use-editor";
 import { tx } from "@upstart.gg/style-system/twind";
 
-const BackgroundField: React.FC<FieldProps<BackgroundSettings>> = (props) => {
+const BackgroundField: FC<FieldProps<BackgroundSettings>> = (props) => {
   const { schema, formData, onChange, required, title, description, currentValue } = props;
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);

@@ -7,6 +7,7 @@ import { containerLayout, containerLayoutRef, makeContainerProps } from "../prop
 import { IoGridOutline } from "react-icons/io5";
 import type { BrickProps } from "../props/types";
 import { string, url } from "../props/string";
+import type { FC } from "react";
 
 export const datasource = Type.Array(
   Type.Object({
@@ -48,7 +49,6 @@ export const manifest = defineBrickManifest({
   },
   icon: IoGridOutline,
   props: defineProps({
-    // preset: optional(preset()),
     datasource: optional(datasourceRef()),
     staticImages: optional(
       prop({

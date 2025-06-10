@@ -658,7 +658,6 @@ type TextSizeHeroDropdownProps = {
 };
 
 function TextSizeHeroDropdown({ editor }: TextSizeHeroDropdownProps) {
-  console.log("heading attrs", editor.getAttributes("heading"));
   const [value, setValue] = useState(editor.getAttributes("heading").class?.toString() ?? "hero-size-1");
   const sizes = [1, 2, 3, 4, 5];
   const labels = ["M", "L", "XL", "2XL", "3XL"];

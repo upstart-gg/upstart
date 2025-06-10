@@ -14,26 +14,65 @@ export const connectorSchema = Type.Union([
 
 export type DatarecordConnector = Static<typeof connectorSchema>;
 
-const internalDatarecord = Type.Object({
-  provider: Type.Literal("internal"),
-  options: Type.Optional(Type.Any()),
-  schema: Type.Any({
-    title: "Schema",
-    description: "JSON Schema of the datarecord. Always an object representing a row that will be saved.",
+const internalDatarecord = Type.Object(
+  {
+    provider: Type.Literal("internal"),
+    // options: Type.Optional(Type.Any()),
+    schema: Type.Any({
+      title: "Schema",
+      description:
+        "JSON Schema of the datarecord. Always of type 'object' and representing a row that will be saved.",
+      examples: [
+        {
+          type: "object",
+          properties: {
+            firstname: { type: "string", title: "Firstname" },
+            lastname: { type: "string", title: "Lastname" },
+            email: { type: "string", format: "email", title: "Email" },
+          },
+          required: ["email"],
+          title: "Newsletter Subscription",
+        },
+      ],
+    }),
+    indexes: Type.Array(
+      Type.Object({
+        name: Type.String({ title: "Index name" }),
+        fields: Type.Array(Type.String(), { title: "Fields to index" }),
+        unique: Type.Optional(Type.Boolean({ title: "Unique index", default: false })),
+      }),
+      {
+        title: "Indexes",
+        description:
+          "IMPORTANT: Indexes to create on the datarecord. use it to enforce uniqueness or improve query performance.",
+      },
+    ),
+  },
+  {
     examples: [
       {
-        type: "object",
-        properties: {
-          firstname: { type: "string", title: "Firstname" },
-          lastname: { type: "string", title: "Lastname" },
-          email: { type: "string", format: "email", title: "Email" },
+        provider: "internal",
+        schema: {
+          type: "object",
+          properties: {
+            firstname: { type: "string", title: "Firstname" },
+            lastname: { type: "string", title: "Lastname" },
+            email: { type: "string", format: "email", title: "Email" },
+          },
+          required: ["email"],
+          title: "Newsletter Subscription",
         },
-        required: ["email"],
-        title: "Newsletter Subscription",
+        indexes: [
+          {
+            name: "email_index",
+            fields: ["email"],
+            unique: true,
+          },
+        ],
       },
     ],
-  }),
-});
+  },
+);
 
 export const datarecordsConnectors = Type.Union([
   Type.Object({

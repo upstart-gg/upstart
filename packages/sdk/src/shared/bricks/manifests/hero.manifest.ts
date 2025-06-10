@@ -6,10 +6,12 @@ import { border, borderRef } from "../props/border";
 import { textContent, textContentRef } from "../props/text";
 import { padding, paddingRef } from "../props/padding";
 import { BsAlphabetUppercase } from "react-icons/bs";
-import { effects, effectsRef } from "../props/effects";
 import { preset } from "../props/preset";
 import type { BrickProps } from "../props/types";
 import { colorRef } from "../props/color";
+import type { FC } from "react";
+import type { Type } from "@sinclair/typebox";
+import { shadowRef } from "../props/effects";
 
 export const manifest = defineBrickManifest({
   type: "hero",
@@ -17,8 +19,8 @@ export const manifest = defineBrickManifest({
   kind: "brick",
   description: "A big textual element for home pages",
   aiInstructions: `
-      This hero element is a large text element that can be used to display a title and an optional tagline.
-      It is typically used on home pages to grab the user's attention.
+This hero element is a large text element that can be used to display a title and an optional tagline.
+It is typically used on home pages to grab the user's attention.
   `.trim(),
   icon: BsAlphabetUppercase,
 
@@ -31,7 +33,7 @@ export const manifest = defineBrickManifest({
       tagline: optional(textContentRef({ title: "Hero tagline", default: "I'm a tagline" })),
       background: optional(backgroundRef()),
       color: optional(colorRef()),
-      effects: optional(effectsRef({ enableTextShadow: true })),
+      shadow: optional(shadowRef()),
       align: optional(basicAlignRef()),
       padding: optional(paddingRef),
       border: optional(borderRef),
@@ -98,9 +100,6 @@ export const examples: {
         vertical: "items-start",
       },
       padding: "p-16",
-      effects: {
-        textShadow: "text-shadow-sm",
-      },
     },
   },
   {

@@ -4,6 +4,10 @@ import { TiSocialFlickr } from "react-icons/ti";
 import { string } from "../props/string";
 import { Type } from "@sinclair/typebox";
 import type { BrickProps } from "../props/types";
+import { backgroundColorRef } from "../props/background";
+import { borderRef } from "../props/border";
+import { colorRef } from "../props/color";
+import { shadowRef } from "../props/effects";
 
 export const manifest = defineBrickManifest({
   type: "social-links",
@@ -28,6 +32,10 @@ export const manifest = defineBrickManifest({
         ),
       }),
     ),
+    backgroundColor: optional(backgroundColorRef()),
+    color: optional(colorRef()),
+    border: optional(borderRef),
+    shadow: optional(shadowRef()),
     variants: Type.Array(
       Type.Union(
         [

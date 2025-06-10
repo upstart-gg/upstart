@@ -4,11 +4,11 @@ import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border"
 import { fieldLabel } from "../form-class";
 import { ColorPill } from "./color";
 import { MdBorderBottom, MdBorderLeft, MdBorderRight, MdBorderTop } from "react-icons/md";
-import { useState } from "react";
+import { type FC, useState } from "react";
 import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
 
-export const BorderField: React.FC<FieldProps<BorderSettings>> = (props) => {
+export const BorderField: FC<FieldProps<BorderSettings>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
   const onSettingsChange = (newVal: Partial<BorderSettings>) => onChange({ ...currentValue, ...newVal });
   const [currentSide, setSide] = useState<string[]>(currentValue.sides ?? ["all"]);

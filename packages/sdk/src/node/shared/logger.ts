@@ -4,8 +4,10 @@ import {
   type LogOptions,
   type Logger as BaseLogger,
 } from "vite";
-import { version } from "../../../package.json";
+// import { version } from "../../../package.json";
 import chalk from "chalk";
+
+const VERSION = 0.1;
 
 type UpstartLoggerLevel = LogLevel | "debug";
 
@@ -17,7 +19,7 @@ export function createLogger(level?: UpstartLoggerLevel, allowClearScreen?: bool
   });
 
   if (showVersion) {
-    logger.info(chalk.hex("#7270c6").bold(`🚀 Upstart v${version}\n`));
+    logger.info(chalk.hex("#7270c6").bold(`🚀 Upstart v${VERSION}\n`));
   }
 
   return {

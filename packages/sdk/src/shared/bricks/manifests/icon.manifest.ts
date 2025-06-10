@@ -3,6 +3,8 @@ import { defineProps, optional, prop } from "../props/helpers";
 import { PiConfetti } from "react-icons/pi";
 import { string, urlOrPageId, urlOrPageIdRef } from "../props/string";
 import type { BrickProps } from "../props/types";
+import type { FC } from "react";
+import type { Type } from "@sinclair/typebox";
 
 export const manifest = defineBrickManifest({
   type: "icon",

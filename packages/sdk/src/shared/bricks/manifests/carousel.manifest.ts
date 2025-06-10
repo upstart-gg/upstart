@@ -7,7 +7,8 @@ import type { BrickProps } from "../props/types";
 import { background, backgroundRef } from "../props/background";
 import { border, borderRef } from "../props/border";
 import { padding, paddingRef } from "../props/padding";
-import { effects, effectsRef } from "../props/effects";
+import type { FC } from "react";
+import { shadowRef } from "../props/effects";
 
 export const manifest = defineBrickManifest({
   type: "carousel",
@@ -33,7 +34,7 @@ export const manifest = defineBrickManifest({
     background: optional(backgroundRef()),
     border: optional(borderRef),
     padding: optional(paddingRef),
-    effects: optional(effectsRef()),
+    shadow: optional(shadowRef()),
     ...makeContainerProps(),
   }),
 });

@@ -7,6 +7,8 @@ import { VscLayoutPanelOff } from "react-icons/vsc";
 import { image, imageRef } from "../props/image";
 import { preset } from "../props/preset";
 import type { BrickProps } from "../props/types";
+import type { FC } from "react";
+import { backgroundColorRef } from "../props/background";
 
 export const manifest = defineBrickManifest({
   type: "footer",
@@ -15,7 +17,6 @@ export const manifest = defineBrickManifest({
   description: "A footer with links and an optional logo",
   icon: VscLayoutPanelOff,
   props: defineProps({
-    // preset: optional(preset()),
     variants: Type.Array(
       Type.Union(
         [
@@ -33,7 +34,7 @@ export const manifest = defineBrickManifest({
         },
       ),
     ),
-    backgroundColor: optional(string("Background color")),
+    backgroundColor: optional(backgroundColorRef()),
     logo: optional(imageRef({ title: "Logo" })),
     linksSections: array(
       Type.Object({

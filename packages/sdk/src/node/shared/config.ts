@@ -7,7 +7,7 @@ import type { SiteAndPagesConfig } from "~/shared/site";
 
 export async function loadConfigFromJsFile(
   configPath: string,
-  logger = defaultLogger,
+  logger = defaultLogger as Logger,
 ): Promise<SiteAndPagesConfig> {
   if (!fs.existsSync(configPath)) {
     logger.error(

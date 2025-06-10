@@ -1,16 +1,10 @@
-import {
-  type Attributes,
-  resolveAttributes,
-  defaultAttributesSchema,
-  type AttributesSchema,
-} from "./attributes";
+import { type Attributes, defaultAttributesSchema, type AttributesSchema } from "./attributes";
 import { type Section, sectionSchema } from "./bricks";
 import invariant from "./utils/invariant";
 import type { Theme } from "./theme";
 import { Type, type Static } from "@sinclair/typebox";
 import type { DatasourcesMap, DatasourcesResolved } from "./datasources/types";
 import type { PageInfo, Sitemap } from "./sitemap";
-import type { SiteAndPagesConfig } from "./site";
 
 /**
  * The Page config represents the page configuration (datasources, attributes, etc)
@@ -39,31 +33,9 @@ export type PageConfig<D extends DatasourcesMap> = PageInfo & {
 
 export type GenericPageConfig = PageConfig<DatasourcesMap>;
 
-export function getNewPageConfig(
-  config: SiteAndPagesConfig,
-  path = "/",
-  useFixedId: false | string = false,
-): GenericPageConfig {
-  const pageConfig = config.pages.find((p) => p.path === path);
-  invariant(pageConfig, `createPageConfigFromTemplateConfig: No page config found for path ${path}`);
-
-  return {
-    id: typeof useFixedId === "boolean" ? crypto.randomUUID() : useFixedId,
-    label: pageConfig.label,
-    tags: pageConfig.tags ?? [],
-    path,
-    sections: pageConfig.sections,
-    ...(pageConfig.attributes
-      ? {
-          attributes: pageConfig.attributes,
-          attr: { ...resolveAttributes(pageConfig.attributes), ...(pageConfig.attr ?? {}) },
-        }
-      : {}),
-  } satisfies GenericPageConfig;
-}
-
 /**
- * Page context has attr but not attributes declaration, as they are not needed to render the page.
+ * Page context has attr (possibly inherited from site) but not attributes declaration, as they are not needed to render the page.
+ * It alwso have the sitemap and theme.
  */
 export type GenericPageContext = Omit<GenericPageConfig, "attr" | "attributes"> & {
   siteId: string;

@@ -3,8 +3,9 @@ import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border"
 import { MdBorderBottom, MdBorderLeft, MdBorderRight, MdBorderTop } from "react-icons/md";
 import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
+import type { FC } from "react";
 
-export const BorderSideField: React.FC<FieldProps<BorderSettings["sides"]>> = (props) => {
+export const BorderSideField: FC<FieldProps<BorderSettings["sides"]>> = (props) => {
   const { currentValue = [], onChange, title, description, schema } = props;
 
   return (

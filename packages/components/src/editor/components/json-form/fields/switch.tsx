@@ -1,8 +1,9 @@
 import type { FieldProps } from "./types";
 import { Switch } from "@upstart.gg/style-system/system";
 import { FieldTitle } from "../field-factory";
+import type { FC } from "react";
 
-const SwitchField: React.FC<FieldProps<boolean>> = (props) => {
+const SwitchField: FC<FieldProps<boolean>> = (props) => {
   const { onChange, required, title, description, currentValue, brickId } = props;
 
   return (

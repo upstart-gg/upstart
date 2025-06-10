@@ -8,12 +8,13 @@ import { fontSize, textContent, textContentRef } from "../props/text";
 import { string } from "../props/string";
 import { padding, paddingRef } from "../props/padding";
 import { border, borderRef } from "../props/border";
-import { shadow } from "../props/effects";
+import { shadow, shadowRef } from "../props/effects";
 import { boolean } from "../props/boolean";
 import { TfiLayoutAccordionSeparated } from "react-icons/tfi";
 import type { BrickProps } from "../props/types";
 import { StringEnum } from "~/shared/utils/schema";
 import { colorRef } from "../props/color";
+import type { FC } from "react";
 
 export const manifest = defineBrickManifest({
   type: "accordion",
@@ -40,7 +41,7 @@ Multiple panels can be open simultaneously or limited to one at a time.
             backgroundColor: optional(backgroundColorRef()),
             padding: optional(paddingRef),
             border: optional(borderRef),
-            shadow: optional(shadow()),
+            shadow: optional(shadowRef()),
           },
         }),
       ),

@@ -13,6 +13,7 @@ import { boolean } from "../props/boolean";
 import { VscLayoutPanelOff } from "react-icons/vsc";
 import type { BrickProps } from "../props/types";
 import { colorRef } from "../props/color";
+import type { FC } from "react";
 
 export const datasource = Type.Array(
   Type.Object({

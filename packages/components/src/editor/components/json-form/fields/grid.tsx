@@ -3,8 +3,9 @@ import { fieldLabel } from "../form-class";
 import { Slider } from "@upstart.gg/style-system/system";
 import { HelpIcon } from "../HelpIcon";
 import { FieldTitle } from "../field-factory";
+import type { FC } from "react";
 
-export const GridField: React.FC<FieldProps<any>> = (props) => {
+export const GridField: FC<FieldProps<any>> = (props) => {
   const {
     currentValue = {
       columns: 2,

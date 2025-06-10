@@ -10,8 +10,9 @@ import {
   PiAlignRight,
   PiAlignCenterHorizontal,
 } from "react-icons/pi";
+import type { FC } from "react";
 
-export const AlignBasicField: React.FC<FieldProps<AlignBasicSettings>> = (props) => {
+export const AlignBasicField: FC<FieldProps<AlignBasicSettings>> = (props) => {
   const {
     currentValue = {
       horizontal: "justify-start",

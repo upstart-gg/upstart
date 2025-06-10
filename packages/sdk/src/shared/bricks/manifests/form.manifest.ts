@@ -6,6 +6,10 @@ import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { StringDecoder } from "node:string_decoder";
 import { StringEnum } from "~/shared/utils/schema";
+import type { FC } from "react";
+import { paddingRef } from "../props/padding";
+import { backgroundColorRef } from "../props/background";
+import { colorRef } from "../props/color";
 
 export const manifest = defineBrickManifest({
   type: "form",
@@ -22,6 +26,9 @@ There is no need to define the form fields manually and the form does not accept
     datarecordId: string("Datarecord ID", undefined, {
       description: "The ID of the datarecord to use to generate the form fields",
     }),
+    padding: optional(paddingRef),
+    backgroundColor: optional(backgroundColorRef()),
+    color: optional(colorRef()),
     align: optional(
       prop({
         title: "Alignment",

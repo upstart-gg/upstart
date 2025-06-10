@@ -1,5 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
-import { type GenericPageConfig, getNewPageConfig, pageSchema } from "./page";
+import { pageSchema } from "./page";
 import { pageInfoSchema, sitemapSchema } from "./sitemap";
 import { defaultAttributesSchema, type AttributesSchema, resolveAttributes } from "./attributes";
 import { datasourcesMap } from "./datasources/types";
@@ -50,7 +50,7 @@ export type SiteAndPagesConfig = {
 export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
   return {
     site: {
-      id: nanoid(7),
+      id: crypto.randomUUID(),
       label: "New site",
       hostname: "example.com",
       sitePrompt,
@@ -60,32 +60,33 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
       attributes: defaultAttributesSchema,
       attr: resolveAttributes(),
     },
+    // we need a fake page
     pages: [
       {
         id: "_default_",
         label: "First page",
         path: "/",
         sections: [
-          {
-            id: nanoid(7),
-            label: "Hero Section",
-            order: 1,
-            props: {},
-            bricks: [
-              {
-                id: crypto.randomUUID(),
-                type: "navbar",
-                props: {
-                  brand: {
-                    name: "My Site",
-                  },
-                  navigation: {
-                    staticItems: [{ urlOrPageId: "/about" }, { urlOrPageId: "/contact" }],
-                  },
-                },
-              },
-            ],
-          },
+          // {
+          //   id: nanoid(),
+          //   label: "Hero Section",
+          //   order: 1,
+          //   props: {},
+          //   bricks: [
+          //     {
+          //       id: crypto.randomUUID(),
+          //       type: "navbar",
+          //       props: {
+          //         brand: {
+          //           name: "My Site",
+          //         },
+          //         navigation: {
+          //           staticItems: [{ urlOrPageId: "/about" }, { urlOrPageId: "/contact" }],
+          //         },
+          //       },
+          //     },
+          //   ],
+          // },
         ],
         tags: [],
         attributes: defaultAttributesSchema,
@@ -93,40 +94,4 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
       },
     ],
   };
-}
-
-/**
- * Creates the necessary config for a new site based on the given template.
- * Returns an object with property "site" and "pages", which should be used to create the site and pages in db.
- * A temporary hostname is generated for the site.
- */
-export function getNewSiteConfig(
-  config: SiteAndPagesConfig,
-  hostname: string,
-  options: { label: string } = { label: "New site" },
-  // used for testing to avoid changing the site id on every reload
-  useFixedIds = false,
-) {
-  const id = useFixedIds ? "50000000-0000-0000-0000-000000000001" : crypto.randomUUID();
-  const pages: GenericPageConfig[] = config.pages.map((p, index) =>
-    getNewPageConfig(config, p.path, useFixedIds ? `60000000-0000-0000-0000-00000000000${index}` : false),
-  );
-
-  const site = {
-    ...config.site,
-    hostname,
-    label: options.label,
-    theme: config.site.themes[0],
-    attr: { ...resolveAttributes(config.site.attributes), ...(config.site.attr ?? {}) },
-    sitemap: pages.map((p) => ({
-      id: p.id,
-      label: p.label,
-      path: p.path,
-      tags: p.tags,
-      status: "draft",
-      sectionsPlan: [],
-    })),
-  } satisfies Site;
-
-  return { site, pages };
 }

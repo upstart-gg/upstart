@@ -12,9 +12,10 @@ export function shadow({ title = "Shadow", defaultValue = "shadow-none" }: Shado
   return prop({
     title,
     schema: StringEnum(["shadow-none", "shadow-sm", "shadow-md", "shadow-lg", "shadow-xl", "shadow-2xl"], {
+      $id: "styles:shadow",
       title,
       default: defaultValue,
-      enumNames: ["None", "Small", "Medium", "Large", "Extra large", "Extra large (2x)"],
+      enumNames: ["None", "S", "M", "L", "XL", "2XL"],
       "ui:placeholder": "Not specified",
       "ui:field": "enum",
       "ui:display": "select",
@@ -23,6 +24,10 @@ export function shadow({ title = "Shadow", defaultValue = "shadow-none" }: Shado
 }
 
 export type ShadowSettings = Static<ReturnType<typeof shadow>>;
+
+export function shadowRef(options: SchemaOptions & ShadowOptions = {}) {
+  return typedRef("styles:shadow", options);
+}
 
 type TextShadowOptions = {
   title?: string;
@@ -81,38 +86,38 @@ type EffectsOptions = {
   enableTextShadow?: boolean;
 };
 
-export function effects({ title = "Effects", defaultValue = {}, enableTextShadow }: EffectsOptions = {}) {
-  return group({
-    title,
-    options: {
-      default: defaultValue,
-      $id: "styles:effects",
-    },
-    children: {
-      opacity: optional(
-        opacity({
-          title: "Opacity",
-          defaultValue: defaultValue.opacity,
-        }),
-      ),
-      shadow: optional(
-        shadow({
-          title: "Shadow",
-          defaultValue: defaultValue.shadow,
-        }),
-      ),
-      ...(enableTextShadow && {
-        textShadow: optional(
-          textShadow({
-            title: "Text shadow",
-            defaultValue: defaultValue.textShadow,
-          }),
-        ),
-      }),
-    },
-  });
-}
+// export function effects({ title = "Effects", defaultValue = {}, enableTextShadow }: EffectsOptions = {}) {
+//   return group({
+//     title,
+//     options: {
+//       default: defaultValue,
+//       $id: "styles:effects",
+//     },
+//     children: {
+//       opacity: optional(
+//         opacity({
+//           title: "Opacity",
+//           defaultValue: defaultValue.opacity,
+//         }),
+//       ),
+//       shadow: optional(
+//         shadowRef({
+//           title: "Shadow",
+//           defaultValue: defaultValue.shadow,
+//         }),
+//       ),
+//       ...(enableTextShadow && {
+//         textShadow: optional(
+//           textShadow({
+//             title: "Text shadow",
+//             defaultValue: defaultValue.textShadow,
+//           }),
+//         ),
+//       }),
+//     },
+//   });
+// }
 
-export function effectsRef(options: SchemaOptions & EffectsOptions = {}) {
-  return typedRef("styles:effects", options);
-}
+// export function effectsRef(options: SchemaOptions & EffectsOptions = {}) {
+//   return typedRef("styles:effects", options);
+// }

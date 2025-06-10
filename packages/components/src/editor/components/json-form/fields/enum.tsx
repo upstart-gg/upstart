@@ -3,6 +3,7 @@ import type { FieldProps } from "./types";
 import { Select } from "@upstart.gg/style-system/system";
 import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
+import type { FC } from "react";
 
 interface EnumOption {
   const: string;
@@ -12,7 +13,7 @@ interface EnumOption {
   "ui:hidden-option"?: boolean;
 }
 
-const EnumField: React.FC<FieldProps<string>> = (props) => {
+const EnumField: FC<FieldProps<string>> = (props) => {
   const { schema, currentValue, formData, onChange, required, title, description } = props;
   // const context = formContext as { brickId: Brick["id"] };
   // const brick = draft.getBrick(context.brickId);

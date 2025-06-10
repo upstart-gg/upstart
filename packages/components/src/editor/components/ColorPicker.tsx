@@ -1,5 +1,13 @@
 import type React from "react";
-import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type PropsWithChildren } from "react";
+import {
+  type FC,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ChangeEvent,
+  type PropsWithChildren,
+} from "react";
 import {
   chroma,
   getColorsSuggestions,
@@ -32,7 +40,7 @@ interface BaseColorPickerProps {
   steps?: number;
 }
 
-const BaseColorPicker: React.FC<BaseColorPickerProps> = ({
+const BaseColorPicker: FC<BaseColorPickerProps> = ({
   colorType,
   initialValue = 120,
   onChange = () => {},
@@ -347,7 +355,7 @@ function makeCominations(colors: string[], shades: string[]) {
   return colors.flatMap((color) => shades.map((shade) => `${color}-${shade}`));
 }
 
-export const ElementColorPicker: React.FC<ElementColorPickerProps> = ({
+export const ElementColorPicker: FC<ElementColorPickerProps> = ({
   initialValue,
   elementColorType,
   onChange = () => {},

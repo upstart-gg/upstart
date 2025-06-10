@@ -7,11 +7,12 @@ import { textContent, textContentRef } from "../props/text";
 import { string } from "../props/string";
 import { padding, paddingRef } from "../props/padding";
 import { border, borderRef } from "../props/border";
-import { shadow } from "../props/effects";
+import { shadow, shadowRef } from "../props/effects";
 import { RiMapPinTimeLine } from "react-icons/ri";
 import type { BrickProps } from "../props/types";
 import { colorRef } from "../props/color";
 import { StringEnum } from "~/shared/utils/schema";
+import type { FC } from "react";
 
 export const manifest = defineBrickManifest({
   type: "timeline",
@@ -37,7 +38,7 @@ export const manifest = defineBrickManifest({
             backgroundColor: optional(backgroundColorRef()),
             padding: optional(paddingRef),
             border: optional(borderRef),
-            shadow: optional(shadow()),
+            shadow: optional(shadowRef()),
           },
         }),
       ),

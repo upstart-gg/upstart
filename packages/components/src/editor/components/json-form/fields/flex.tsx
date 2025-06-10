@@ -5,8 +5,9 @@ import { SegmentedControl, Switch } from "@upstart.gg/style-system/system";
 import { HelpIcon } from "../HelpIcon";
 import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
+import type { FC } from "react";
 
-export const FlexField: React.FC<FieldProps<any>> = (props) => {
+export const FlexField: FC<FieldProps<any>> = (props) => {
   const {
     currentValue = {
       direction: "flex-row",

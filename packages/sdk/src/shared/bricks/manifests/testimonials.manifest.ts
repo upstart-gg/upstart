@@ -6,6 +6,11 @@ import { textContent, textContentRef } from "../props/text";
 import { image, imageRef } from "../props/image";
 import { HiOutlineChatBubbleBottomCenter } from "react-icons/hi2";
 import type { BrickProps } from "../props/types";
+import type { FC } from "react";
+import { backgroundRef } from "../props/background";
+import { borderRef } from "../props/border";
+import { paddingRef } from "../props/padding";
+import { shadowRef } from "../props/effects";
 
 export const manifest = defineBrickManifest({
   type: "testimonials",
@@ -28,6 +33,10 @@ export const manifest = defineBrickManifest({
           ),
         }),
       ),
+      background: optional(backgroundRef()),
+      border: optional(borderRef),
+      padding: optional(paddingRef),
+      shadow: optional(shadowRef()),
       testimonials: Type.Array(
         Type.Object({
           author: string("Author", "John Doe"),

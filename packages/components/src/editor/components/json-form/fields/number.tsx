@@ -2,8 +2,9 @@ import type { FieldProps } from "./types";
 import { Slider } from "@upstart.gg/style-system/system";
 import { TextField } from "@upstart.gg/style-system/system";
 import { FieldTitle } from "../field-factory";
+import type { FC } from "react";
 
-export const SliderField: React.FC<FieldProps<number>> = (props) => {
+export const SliderField: FC<FieldProps<number>> = (props) => {
   const { schema, currentValue, onChange, required, title, description } = props;
 
   const unit = schema["ui:unit"] ?? "";
@@ -31,7 +32,7 @@ export const SliderField: React.FC<FieldProps<number>> = (props) => {
   );
 };
 
-export const NumberField: React.FC<FieldProps<number>> = (props) => {
+export const NumberField: FC<FieldProps<number>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder } = props;
 
   return (

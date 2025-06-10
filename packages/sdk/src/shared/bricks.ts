@@ -3,7 +3,7 @@ import { customAlphabet } from "nanoid";
 import { defaultProps } from "./bricks/manifests/all-manifests";
 import { backgroundRef } from "./bricks/props/background";
 import { border, borderRef } from "./bricks/props/border";
-import { preset } from "./bricks/props/preset";
+import { preset, presetRef } from "./bricks/props/preset";
 import { merge } from "lodash-es";
 import { cssLength, cssLengthRef } from "./bricks/props/css-length";
 import { enumProp } from "./bricks/props/enum";
@@ -142,7 +142,7 @@ export const sectionProps = Type.Object(
       }),
     ),
     background: Type.Optional(backgroundRef()),
-    preset: Type.Optional(preset("preset-none")),
+    preset: Type.Optional(presetRef),
     border: Type.Optional(borderRef),
     minHeight: Type.Optional(
       cssLengthRef({ title: "Minimum height", default: "0px", description: "The min height of the section" }),

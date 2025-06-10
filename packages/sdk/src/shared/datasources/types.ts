@@ -158,48 +158,45 @@ const datasourceProviderManifest = Type.Composite([
 
 export type DatasourceProviderManifest = Static<typeof datasourceProviderManifest>;
 
-const datasourceCustomManifest = Type.Object({
-  id: Type.String({
-    title: "ID",
-    description:
-      "Unique identifier of the datasource. Used to reference the datasource in the system. Use a url-safe string like a slug.",
-  }),
-  provider: Type.Literal("custom", {
-    title: "Custom",
-    description: "Custom datasource saved locally in Upstart.",
-  }),
-  options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-  schema: Type.Any({
-    title: "Schema",
-    description: "JSON Schema of datasource. Always an array of objects.",
-    examples: [
-      {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            title: { type: "string", title: "Title" },
-            firstname: { type: "string", title: "Fisrtname" },
-            lastname: { type: "string", title: "Lastname" },
-            email: { type: "string", format: "email", title: "Email" },
-          },
-          required: ["title", "firstname", "lastname", "email", "createdAt"],
-          title: "Employee",
-        },
-        title: "Employees",
-        description: "Employees list",
-      },
-    ],
-  }),
-  name: Type.String({ title: "Name of the datasource", comment: "For example, 'My data'" }),
-  description: Type.Optional(Type.String({ title: "Description of the datasource" })),
-  sampleData: Type.Optional(
-    Type.Any({
-      title: "Sample data",
-      description: "Sample data for the datasource. Should match the declared schema.",
+const datasourceCustomManifest = Type.Object(
+  {
+    id: Type.String({
+      title: "ID",
+      description:
+        "Unique identifier of the datasource. Used to reference the datasource in the system. Use a url-safe string like a slug.",
     }),
-  ),
-});
+    provider: Type.Literal("custom", {
+      title: "Custom",
+      description: "Custom datasource saved locally in Upstart.",
+    }),
+    options: Type.Optional(Type.Object({}, { additionalProperties: true })),
+    schema: Type.Any({
+      title: "Schema",
+      description: "JSON Schema of datasource. Always an array of objects.",
+    }),
+    name: Type.String({ title: "Name of the datasource", comment: "For example, 'My data'" }),
+    description: Type.Optional(Type.String({ title: "Description of the datasource" })),
+    indexes: Type.Optional(
+      Type.Array(
+        Type.Object({
+          name: Type.String({ title: "Index name" }),
+          fields: Type.Array(Type.String(), { title: "Fields to index" }),
+          unique: Type.Optional(Type.Boolean({ title: "Unique index", default: false })),
+        }),
+        {
+          title: "Indexes",
+          description:
+            "IMPORTANT: Indexes to create on the datasource. use it to enforce uniqueness or improve query performance.",
+        },
+      ),
+    ),
+    sampleData: Type.Array(Type.Ref("datasource:custom"), {
+      title: "Sample data",
+      description: "Sample data (examples) for the datasource. Should match the declared schema.",
+    }),
+  },
+  { $id: "datasource:custom" },
+);
 
 export type DatasourceCustomManifest = Static<typeof datasourceCustomManifest>;
 

@@ -4,10 +4,12 @@ import { defineProps, optional } from "../props/helpers";
 import { backgroundColor, backgroundColorRef } from "../props/background";
 import { padding, paddingRef } from "../props/padding";
 import { border, borderRef } from "../props/border";
-import { effects, effectsRef } from "../props/effects";
 import { RxTextAlignLeft } from "react-icons/rx";
 import type { BrickProps } from "../props/types";
 import { colorRef } from "../props/color";
+import type { FC } from "react";
+import type { Type } from "@sinclair/typebox";
+import { shadowRef } from "../props/effects";
 
 export const manifest = defineBrickManifest({
   type: "text",
@@ -42,7 +44,7 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
       color: optional(colorRef()),
       padding: optional(paddingRef),
       border: optional(borderRef),
-      effects: optional(effectsRef({ enableTextShadow: true })),
+      shadow: optional(shadowRef()),
     },
     {
       default: {
@@ -88,9 +90,6 @@ export const examples: {
       backgroundColor: "#1e293b",
       color: "#f1f5f9",
       padding: "p-8",
-      effects: {
-        textShadow: "text-shadow-md",
-      },
     },
   },
   {

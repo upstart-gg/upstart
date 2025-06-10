@@ -7,10 +7,10 @@ import { type TProperties, type TSchema, Type } from "@sinclair/typebox";
 import { useGetBrick } from "~/editor/hooks/use-editor";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
-import { useCallback } from "react";
+import { type FC, useCallback } from "react";
 import { tx } from "@upstart.gg/style-system/twind";
 
-const DatasourceRefField: React.FC<FieldProps<DatasourceRefSettings>> = (props) => {
+const DatasourceRefField: FC<FieldProps<DatasourceRefSettings>> = (props) => {
   const { onChange, currentValue = {} as DatasourceRefSettings, brickId } = props;
   const getBrickInfo = useGetBrick();
   invariant(brickId, `Could not find brick info for ${brickId} in DatasourceRefField`);

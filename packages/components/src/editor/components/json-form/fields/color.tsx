@@ -11,8 +11,9 @@ import type { FieldProps } from "./types";
 import { IoCloseOutline } from "react-icons/io5";
 import { FieldTitle } from "../field-factory";
 import { tx, css } from "@upstart.gg/style-system/twind";
+import type { FC } from "react";
 
-const ColorField: React.FC<FieldProps<string | undefined> & { hideColorLabel?: boolean }> = (props) => {
+const ColorField: FC<FieldProps<string | undefined> & { hideColorLabel?: boolean }> = (props) => {
   const { schema, onChange, formSchema: formContext, currentValue, title, description } = props;
   const elementColorType = (schema["ui:color-type"] ??
     "page-background") as ColorElementPreviewPillProps["elementColorType"];

@@ -5,10 +5,11 @@ import { datasourceRef } from "../props/datasource";
 import { containerLayout, containerLayoutRef, makeContainerProps } from "../props/container";
 import { Type } from "@sinclair/typebox";
 import { border, borderRef } from "../props/border";
-import { effects, effectsRef } from "../props/effects";
+import { shadowRef } from "../props/effects";
 import { padding, paddingRef } from "../props/padding";
 import { RxGrid } from "react-icons/rx";
 import type { BrickProps } from "../props/types";
+import type { FC } from "react";
 
 export const datasource = Type.Array(Type.Object({}, { additionalProperties: true }));
 
@@ -35,7 +36,7 @@ export const manifest = defineBrickManifest({
     background: optional(backgroundRef()),
     border: optional(borderRef),
     padding: optional(paddingRef),
-    effects: optional(effectsRef()),
+    shadow: optional(shadowRef()),
     datasource: optional(datasourceRef()),
     ...makeContainerProps(),
   }),
@@ -114,9 +115,6 @@ export const examples: {
         gap: "gap-8",
       },
       padding: "p-16",
-      effects: {
-        shadow: "shadow-xl",
-      },
       $children: [
         {
           type: "text",
@@ -293,9 +291,7 @@ export const examples: {
         gap: "gap-4",
       },
       padding: "p-16",
-      effects: {
-        shadow: "shadow-2xl",
-      },
+
       $children: [
         {
           type: "hero",

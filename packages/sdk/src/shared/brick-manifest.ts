@@ -1,7 +1,5 @@
-import { Value } from "@sinclair/typebox/value";
 import type { TObject, TProperties, TArray } from "@sinclair/typebox";
-import type { FC } from "react";
-import type { IconBaseProps } from "react-icons/lib";
+import type { IconBase } from "react-icons/lib";
 import { ajv, getSchemaDefaults } from "./ajv";
 
 type BrickKind = "brick" | "widget" | "container";
@@ -10,7 +8,7 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
   type: string;
   kind?: BrickKind;
   name: string;
-  icon: string | FC<IconBaseProps>;
+  icon: typeof IconBase;
   iconClassName?: string;
   description?: string;
   minWidth?: {
@@ -65,12 +63,14 @@ export function defineBrickManifest<BProps extends TProperties, DSSchema extends
   repeatable = false,
   duplicatable = true,
   defaultInspectorTab = "preset",
+  icon,
   datasource,
   ...rest
 }: BrickManifestProps<BProps, DSSchema>) {
   return {
     ...rest,
     datasource: datasource as DSSchema,
+    icon,
     props,
     kind,
     defaultInspectorTab,

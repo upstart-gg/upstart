@@ -29,6 +29,7 @@
   },
   "scripts": {
     "dev": "node server",
+    "build:analyze": "vite build --debug transform",
     "build:watch": "vite build --watch",
     "build": "vite build",
     "bundle-analyze": "pnpx vite-bundle-visualizer",

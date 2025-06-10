@@ -5,11 +5,12 @@ import { Type } from "@sinclair/typebox";
 import { datasourceRef } from "../props/datasource";
 import { string, urlOrPageId, urlOrPageIdRef } from "../props/string";
 import { backgroundColor, backgroundColorRef } from "../props/background";
-import { shadow } from "../props/effects";
 import { border, borderRef } from "../props/border";
 import { fixedPositioned } from "../props/position";
 import { preset } from "../props/preset";
 import type { BrickProps } from "../props/types";
+import type { FC } from "react";
+import { shadowRef } from "../props/effects";
 
 export const manifest = defineBrickManifest({
   type: "sidebar",
@@ -22,14 +23,13 @@ export const manifest = defineBrickManifest({
   `.trim(),
   icon: VscLayoutSidebarLeftOff,
   props: defineProps({
-    // preset: optional(preset()),
     container: optional(
       group({
         title: "Main element",
         children: {
           backgroundColor: optional(backgroundColorRef()),
           border: optional(borderRef),
-          shadow: optional(shadow()),
+          shadow: optional(shadowRef()),
           fixedPositioned: optional(fixedPositioned()),
         },
         metadata: {

@@ -3,12 +3,13 @@ import { defineProps, optional } from "../props/helpers";
 import { image, imageRef } from "../props/image";
 import { backgroundColor, backgroundColorRef } from "../props/background";
 import { border, borderRef } from "../props/border";
-import { shadow } from "../props/effects";
+import { shadow, shadowRef } from "../props/effects";
 import { padding, paddingRef } from "../props/padding";
 import { RxImage } from "react-icons/rx";
 import { string } from "../props/string";
 import { Type } from "@sinclair/typebox";
 import type { BrickProps } from "../props/types";
+import type { FC } from "react";
 
 export const manifest = defineBrickManifest({
   type: "image",
@@ -24,7 +25,7 @@ export const manifest = defineBrickManifest({
     backgroundColor: optional(backgroundColorRef()),
     border: optional(borderRef),
     padding: optional(paddingRef),
-    shadow: optional(shadow()),
+    shadow: optional(shadowRef()),
     blurHash: optional(
       string("Blur Hash", undefined, {
         "ui:fied": "hidden",

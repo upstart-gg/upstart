@@ -326,6 +326,7 @@ Let's start by generating some color themes for your website. This will help us 
             console.error("Error generating page:", result.error);
             return;
           }
+          console.log("Generated page", result.page);
           draftHelpers.addPage(result.page);
           break;
         }
@@ -333,24 +334,28 @@ Let's start by generating some color themes for your website. This will help us 
         case "generateThemes": {
           const themes = toolInvocation.result as Theme[];
           const themesProcessed = themes.map(processTheme);
+          console.log("Generated themes", themesProcessed);
           draftHelpers.setThemes(themesProcessed);
           break;
         }
 
         case "generateDatasource": {
           const datasource = toolInvocation.result as Parameters<typeof draftHelpers.addDatasource>[0];
+          console.log("Generated datasource", datasource);
           draftHelpers.addDatasource(datasource);
           break;
         }
 
         case "generateDatarecord": {
           const datarecord = toolInvocation.result as Parameters<typeof draftHelpers.addDatarecord>[0];
+          console.log("Generated data record", datarecord);
           draftHelpers.addDatarecord(datarecord);
           break;
         }
 
         case "generateSitemap": {
           const sitemap = toolInvocation.result as Sitemap;
+          console.log("Generated sitemap", sitemap);
           draftHelpers.setSitemap(sitemap);
           break;
         }
