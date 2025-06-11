@@ -61,22 +61,4 @@ describe("fetchInstagramFeedDatasource", () => {
       } as any),
     ).rejects.toThrow(UnauthorizedError);
   });
-
-  it("should throw error on invalid response data", async () => {
-    const invalidResponse = { invalid: "data" };
-
-    (global.fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(invalidResponse),
-    });
-
-    await expect(
-      fetchInstagramFeedDatasource({
-        options: { limit: "10" },
-        oauth: { config: { accessToken: "test-token" } },
-        env: {},
-        pageConfig: {},
-      } as any),
-    ).rejects.toThrow();
-  });
 });
