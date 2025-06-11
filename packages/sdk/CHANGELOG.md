@@ -1,5 +1,14 @@
 # @upstart.gg/sdk
 
+## 0.0.98
+
+### Patch Changes
+
+- [#314](https://github.com/upstart-gg/upstart/pull/314) [`b8cf820`](https://github.com/upstart-gg/upstart/commit/b8cf820b596b28cda06600a90223875358828064) Thanks [@mattallty](https://github.com/mattallty)! - Use ajv.validate instead of ajv.compile
+
+- Updated dependencies []:
+  - @upstart.gg/style-system@0.0.98
+
 ## 0.0.97
 
 ### Patch Changes
