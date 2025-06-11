@@ -105,7 +105,6 @@ export function serializeAjvErrors(errors: ErrorObject[] | null | undefined): st
 
 export function getSchemaDefaults<T extends TSchema>(schema: T) {
   const data = schema.type === "object" ? {} : schema.type === "array" ? [] : null;
-  const validate = ajv.compile(schema);
-  validate(data);
+  ajv.validate(schema, data);
   return data as Static<T>;
 }

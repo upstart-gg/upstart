@@ -34,15 +34,6 @@ const fetchTiktokVideoDatasource: DatasourceFetcher<
   }
   const data = (await response.json()) as TiktokVideoListSchema;
 
-  const validate = ajv.compile<TiktokVideoListSchema>(tiktokVideoListSchema);
-  const isValid = validate(data);
-
-  if (!isValid) {
-    throw new Error(
-      `fetchTiktokVideoDatasource Error: Invalid TikTok response data: ${serializeAjvErrors(validate.errors)}`,
-    );
-  }
-
   return data;
 };
 

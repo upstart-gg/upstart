@@ -70,22 +70,4 @@ describe("fetchFacebookPostDatasource", () => {
       } as DatasourceFetcherParams<MetaOAuthConfig, MetaOptions>),
     ).rejects.toThrow(UnauthorizedError);
   });
-
-  it("should throw error on invalid response data", async () => {
-    const invalidResponse = { invalid: "data" };
-
-    (global.fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(invalidResponse),
-    });
-
-    await expect(
-      // @ts-ignore
-      fetchFacebookPostDatasource({
-        options: { limit: 10 },
-        oauth: { config: { accessToken: "test-token" } },
-        attr: {},
-      } as DatasourceFetcherParams<MetaOAuthConfig, MetaOptions>),
-    ).rejects.toThrow();
-  });
 });

@@ -47,15 +47,6 @@ const fetchFacebookPostDatasource: DatasourceFetcher<
   }
 
   const post = (await response.json()) as FacebookPostSchema;
-
-  const validate = ajv.compile<FacebookPostSchema>(facebookPostSchema);
-
-  if (!validate(post)) {
-    throw new Error(
-      `fetchFacebookPostDatasource Error: Invalid JSON object: ${serializeAjvErrors(validate.errors)}`,
-    );
-  }
-
   return post;
 };
 

@@ -31,14 +31,6 @@ const fetchYoutubeList: DatasourceFetcher<
   }
 
   const data = (await response.json()) as YoutubeListSchema;
-  const validate = ajv.compile<YoutubeListSchema>(youtubeListSchema);
-  const isValid = validate(data);
-
-  if (!isValid) {
-    throw new Error(
-      `fetchYoutubeList Error: Invalid Youtube response data: ${serializeAjvErrors(validate.errors)}`,
-    );
-  }
 
   return data;
 };

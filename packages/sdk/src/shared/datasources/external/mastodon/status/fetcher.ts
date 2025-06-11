@@ -30,15 +30,6 @@ const fetchMastodonStatus: DatasourceFetcher<
 
   const statuses = (await response.json()) as MastodonStatusArraySchema;
 
-  const validate = ajv.compile<MastodonStatusArraySchema>(mastodonStatusArraySchema);
-  const isValid = validate(statuses);
-
-  if (!isValid) {
-    throw new Error(
-      `fetchMastodonStatus Error: Invalid Mastodon status response data: ${serializeAjvErrors(validate.errors)}`,
-    );
-  }
-
   return statuses;
 };
 
