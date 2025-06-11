@@ -1,7 +1,7 @@
 import type { RssOptions } from "./options";
 import { parseFeed } from "htmlparser2";
 import { type RssSchema, rssSchema } from "./schema";
-import { ajv, serializeAjvErrors } from "~/shared/ajv";
+// import { ajv, serializeAjvErrors } from "~/shared/ajv";
 import type { DatasourceFetcher } from "../../fetcher";
 import { createPlaceholderReplacer, placeholderRx } from "../../utils";
 
@@ -17,11 +17,11 @@ const fetchRss: DatasourceFetcher<RssSchema, null, RssOptions> = async ({ option
       pubDate: item.pubDate ? item.pubDate.toISOString() : new Date().toISOString(),
     })) ?? [];
 
-  const isValid = ajv.validate<RssSchema>(rssSchema, newFeed);
+  // const isValid = ajv.validate<RssSchema>(rssSchema, newFeed);
 
-  if (!isValid) {
-    throw new Error(`fetchRss Error: Invalid Feed data (${url}): ${serializeAjvErrors(ajv.errors)}`);
-  }
+  // if (!isValid) {
+  //   throw new Error(`fetchRss Error: Invalid Feed data (${url}): ${serializeAjvErrors(ajv.errors)}`);
+  // }
 
   return newFeed;
 };

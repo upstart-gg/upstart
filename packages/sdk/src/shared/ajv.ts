@@ -1,4 +1,3 @@
-import { type Static, TArray, TObject, type TSchema } from "@sinclair/typebox";
 import Ajv, { type ErrorObject } from "ajv";
 import addFormats from "ajv-formats";
 import { preset } from "./bricks/props/preset";
@@ -14,7 +13,6 @@ import { shadow } from "./bricks/props/effects";
 import { textContent } from "./bricks/props/text";
 import { cssLength } from "./bricks/props/css-length";
 import { urlOrPageId } from "./bricks/props/string";
-import { jsonDefault } from "json-schema-default";
 
 export type { JSONSchemaType, AnySchemaObject, SchemaObject, JSONType } from "ajv";
 
@@ -102,8 +100,4 @@ export function serializeAjvErrors(errors: ErrorObject[] | null | undefined): st
       return `${path} ${message} (${details})`;
     })
     .join("; ");
-}
-
-export function getSchemaDefaults<T extends TSchema>(schema: T) {
-  return jsonDefault(schema) as Static<T>;
 }

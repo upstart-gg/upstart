@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import type { Static, TArray, TObject } from "@sinclair/typebox";
 import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
-import { getSchemaDefaults } from "@upstart.gg/sdk/shared/ajv";
+import { getSchemaDefaults } from "@upstart.gg/sdk/shared/utils/schema";
 
 type DatasourceSchema = TObject | TArray<TObject>;
 type DatasourceMap = Map<string, unknown>;

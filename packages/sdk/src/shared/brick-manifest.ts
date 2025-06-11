@@ -1,6 +1,6 @@
 import type { TObject, TProperties, TArray } from "@sinclair/typebox";
 import type { IconBase } from "react-icons/lib";
-import { ajv, getSchemaDefaults } from "./ajv";
+import { getSchemaDefaults } from "./utils/schema";
 
 type BrickKind = "brick" | "widget" | "container";
 

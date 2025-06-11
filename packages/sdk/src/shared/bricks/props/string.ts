@@ -1,13 +1,9 @@
 import { type Static, Type, type StringOptions } from "@sinclair/typebox";
 import { prop } from "./helpers";
-import type { jsonStringsSupportedFormats } from "../../ajv";
 import type { FieldMetadata } from "./types";
 import { typedRef } from "~/shared/utils/typed-ref";
 
-type StrFieldOptions = StringOptions &
-  FieldMetadata & {
-    format?: (typeof jsonStringsSupportedFormats)[number];
-  };
+type StrFieldOptions = StringOptions & FieldMetadata;
 
 export function string(title: string, defaultValue?: string, options: Omit<StrFieldOptions, "default"> = {}) {
   return prop({

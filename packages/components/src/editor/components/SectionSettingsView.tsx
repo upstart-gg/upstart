@@ -2,7 +2,7 @@ import FormNavigator from "./json-form/FormNavigator";
 import { type Section, sectionSchema } from "@upstart.gg/sdk/shared/bricks";
 import { useCallback, useMemo } from "react";
 import { merge, set } from "lodash-es";
-import { getSchemaDefaults } from "@upstart.gg/sdk/shared/ajv";
+import { getSchemaDefaults } from "@upstart.gg/sdk/shared/utils/schema";
 import { useDraftHelpers, usePreviewMode } from "~/editor/hooks/use-editor";
 import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
 

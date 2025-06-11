@@ -1,25 +1,14 @@
-import type React from "react";
-import {
-  type FC,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type ChangeEvent,
-  type PropsWithChildren,
-} from "react";
+import { type FC, useState, type PropsWithChildren } from "react";
 import {
   chroma,
-  getColorsSuggestions,
   type ColorType,
   type ElementColorType,
   type ElementColor,
   baseColorsLabels,
 } from "@upstart.gg/sdk/themes/color-system";
-import { Button, TextField, Text, Select, Tabs, Inset } from "@upstart.gg/style-system/system";
-import { useEditor, useTheme } from "~/editor/hooks/use-editor";
+import { Text, Select, Tabs, Inset } from "@upstart.gg/style-system/system";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
-import { tx, css } from "@upstart.gg/style-system/twind";
+import { tx } from "@upstart.gg/style-system/twind";
 import { colorPalette } from "@upstart.gg/style-system/colors";
 
 const gradientMixs = [
@@ -61,7 +50,7 @@ const BaseColorPicker: FC<BaseColorPickerProps> = ({
       {/* Color circles */}
       <div className="grid grid-cols-7 gap-1.5 mt-3 pr-4 max-h-[45dvh] overflow-y-scroll scrollbar-thin scrollbar-gutter-stable-both scrollbar-color-violet">
         {Object.entries(colorPalette).map(([colorName, shades], i) =>
-          Object.entries(shades)
+          Object.entries(shades as Record<string, string>)
             .filter((shade) => {
               const shadeInt = parseInt(shade[0], 10);
               return shadeInt >= 200 && shadeInt <= 800;

@@ -3,7 +3,6 @@ import type { MetaFullOAuthConfig } from "../../meta/oauth/config";
 import { UnauthorizedError } from "~/shared/errors";
 import type { MetaOptions } from "../../meta/options";
 import { stringifyObjectValues } from "../../../utils";
-import { ajv, serializeAjvErrors } from "~/shared/ajv";
 import type { DatasourceFetcher } from "~/shared/datasources/fetcher";
 
 const fetchFacebookPostDatasource: DatasourceFetcher<

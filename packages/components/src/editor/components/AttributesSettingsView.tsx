@@ -1,6 +1,6 @@
 import FormNavigator from "./json-form/FormNavigator";
 import { sectionSchema } from "@upstart.gg/sdk/shared/bricks";
-import { getSchemaDefaults } from "@upstart.gg/sdk/shared/ajv";
+import { getSchemaDefaults } from "@upstart.gg/sdk/shared/utils/schema";
 import { useCallback, useMemo } from "react";
 import { merge } from "lodash-es";
 import { useAttributes, usePreviewMode } from "~/editor/hooks/use-editor";

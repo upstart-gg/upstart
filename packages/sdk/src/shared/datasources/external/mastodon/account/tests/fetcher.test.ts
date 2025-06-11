@@ -44,22 +44,4 @@ describe("fetchMastodonAccount", () => {
       } as any),
     ).rejects.toThrow("fetchMastodonAccount Error: Response status: 404");
   });
-
-  it("should throw error on invalid response data", async () => {
-    const invalidResponse = { invalid: "data" };
-
-    (global.fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(invalidResponse),
-    });
-
-    await expect(
-      fetchMastodonAccount({
-        options: { username: "testuser" },
-        env: {},
-        pageConfig: {},
-        oauth: null,
-      } as any),
-    ).rejects.toThrow();
-  });
 });
