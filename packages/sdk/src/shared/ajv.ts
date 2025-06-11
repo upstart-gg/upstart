@@ -14,6 +14,7 @@ import { shadow } from "./bricks/props/effects";
 import { textContent } from "./bricks/props/text";
 import { cssLength } from "./bricks/props/css-length";
 import { urlOrPageId } from "./bricks/props/string";
+import { jsonDefault } from "json-schema-default";
 
 export type { JSONSchemaType, AnySchemaObject, SchemaObject, JSONType } from "ajv";
 
@@ -104,7 +105,5 @@ export function serializeAjvErrors(errors: ErrorObject[] | null | undefined): st
 }
 
 export function getSchemaDefaults<T extends TSchema>(schema: T) {
-  const data = schema.type === "object" ? {} : schema.type === "array" ? [] : null;
-  ajv.validate(schema, data);
-  return data as Static<T>;
+  return jsonDefault(schema) as Static<T>;
 }
