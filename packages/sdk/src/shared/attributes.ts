@@ -1,21 +1,13 @@
 import { Type, type TProperties, type Static, type TObject } from "@sinclair/typebox";
 import type { JSONSchemaType } from "ajv";
 import { ajv, getSchemaDefaults } from "./ajv";
-import { background, backgroundRef } from "./bricks/props/background";
+import { backgroundRef } from "./bricks/props/background";
 import { string } from "./bricks/props/string";
 import { optional } from "./bricks/props/helpers";
 import { boolean } from "./bricks/props/boolean";
 import { datetime } from "./bricks/props/date";
 import { enumProp } from "./bricks/props/enum";
-
-type EnumOption = {
-  title?: string;
-  description?: string;
-  value: string;
-  icon?: string;
-};
-
-type GeoPoint = { lat: number; lng: number; name?: string };
+import { jsonDefault } from "json-schema-default";
 
 export function defineAttributes(attrs: TProperties) {
   // Attributes starting with "$" are reserved for internal use
@@ -210,12 +202,9 @@ export type Attributes<T extends Record<string, unknown> = Record<string, unknow
 
 export function resolveAttributes(
   customAttrsSchema: TObject = Type.Object({}),
-  initialData: Record<string, unknown> = {},
+  data: Record<string, unknown> = {},
 ) {
-  const dataClone = structuredClone(initialData);
-  ajv.validate(customAttrsSchema, dataClone);
   // To get default values from the custom attributes schema,
   const defaultAttrValues = getSchemaDefaults(defaultAttributesSchema);
-  const data = { ...defaultAttrValues, ...dataClone };
-  return data as Attributes<Static<typeof customAttrsSchema>>;
+  return { ...defaultAttrValues, ...data } as Attributes<Static<typeof customAttrsSchema>>;
 }
