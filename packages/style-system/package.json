@@ -40,6 +40,7 @@
     "tailwindcss": "4.1.6"
   },
   "devDependencies": {
+    "@types/node": "22",
     "tsup": "8.2.4"
   },
   "publishConfig": {

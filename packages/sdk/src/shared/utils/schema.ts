@@ -1,5 +1,6 @@
 import type { JSONSchemaType } from "ajv";
-import { type Static, Type, type TObject, type UnsafeOptions } from "@sinclair/typebox";
+import { type Static, Type, type TSchema, type TObject, type UnsafeOptions } from "@sinclair/typebox";
+import { jsonDefault } from "json-schema-default";
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function typeboxSchemaToJSONSchema<T extends Record<string, any>>(schema: TObject): JSONSchemaType<T> {
@@ -27,4 +28,8 @@ export function getLitteralFromEnum(schema: ReturnType<typeof StringEnum>) {
     const: value,
     title: enumNames ? enumNames[index] : value,
   }));
+}
+
+export function getSchemaDefaults<T extends TSchema>(schema: T) {
+  return jsonDefault(schema) as Static<T>;
 }

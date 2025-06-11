@@ -4,7 +4,6 @@ import invariant from "~/shared/utils/invariant";
 import { UnauthorizedError } from "~/shared/errors";
 import type { MetaOptions } from "~/shared/datasources/external/meta/options";
 import { stringifyObjectValues } from "~/shared/datasources/utils";
-import { ajv, serializeAjvErrors } from "~/shared/ajv";
 import type { DatasourceFetcher } from "~/shared/datasources/fetcher";
 
 /**
@@ -47,14 +46,6 @@ const fetchThreadsMediaDatasource: DatasourceFetcher<
   }
 
   const media = (await response.json()) as ThreadsMediaSchema;
-
-  const isValid = ajv.validate<ThreadsMediaSchema>(threadsMediaSchema, media);
-
-  if (!isValid) {
-    throw new Error(
-      `fetchThreadsMediaDatasource Error: Invalid Threads response data: ${serializeAjvErrors(ajv.errors)}`,
-    );
-  }
 
   return media;
 };

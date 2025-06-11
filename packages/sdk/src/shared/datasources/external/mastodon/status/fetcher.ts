@@ -2,7 +2,6 @@ import { type MastodonStatusArraySchema, mastodonStatusArraySchema } from "./sch
 import fetchMastodonAccount from "../account/fetcher";
 import { UnauthorizedError } from "~/shared/errors";
 import type { MastodonCommonOptions } from "../options";
-import { ajv, serializeAjvErrors } from "~/shared/ajv";
 import type { DatasourceFetcher } from "~/shared/datasources/fetcher";
 
 const fetchMastodonStatus: DatasourceFetcher<

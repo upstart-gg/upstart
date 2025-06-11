@@ -27,20 +27,20 @@ export const ajv = new Ajv({
   inlineRefs: false,
 });
 
-ajv.addSchema(preset(), "styles:preset");
-ajv.addSchema(background(), "styles:background");
-ajv.addSchema(backgroundColor(), "styles:backgroundColor");
-ajv.addSchema(basicAlign(), "styles:basicAlign");
-ajv.addSchema(containerLayout(), "styles:containerLayout");
-ajv.addSchema(hidden(), "styles:hidden");
-ajv.addSchema(border(), "styles:border");
-ajv.addSchema(padding(), "styles:padding");
-ajv.addSchema(color(), "styles:color");
-ajv.addSchema(shadow(), "styles:shadow");
-ajv.addSchema(cssLength(), "styles:cssLength");
-ajv.addSchema(image(), "assets:image");
-ajv.addSchema(textContent(), "content:textContent");
-ajv.addSchema(urlOrPageId(), "content:urlOrPageId");
+// ajv.addSchema(preset(), "styles:preset");
+// ajv.addSchema(background(), "styles:background");
+// ajv.addSchema(backgroundColor(), "styles:backgroundColor");
+// ajv.addSchema(basicAlign(), "styles:basicAlign");
+// ajv.addSchema(containerLayout(), "styles:containerLayout");
+// ajv.addSchema(hidden(), "styles:hidden");
+// ajv.addSchema(border(), "styles:border");
+// ajv.addSchema(padding(), "styles:padding");
+// ajv.addSchema(color(), "styles:color");
+// ajv.addSchema(shadow(), "styles:shadow");
+// ajv.addSchema(cssLength(), "styles:cssLength");
+// ajv.addSchema(image(), "assets:image");
+// ajv.addSchema(textContent(), "content:textContent");
+// ajv.addSchema(urlOrPageId(), "content:urlOrPageId");
 
 export const jsonStringsSupportedFormats = [
   "date-time",
@@ -102,8 +102,4 @@ export function serializeAjvErrors(errors: ErrorObject[] | null | undefined): st
       return `${path} ${message} (${details})`;
     })
     .join("; ");
-}
-
-export function getSchemaDefaults<T extends TSchema>(schema: T) {
-  return jsonDefault(schema) as Static<T>;
 }

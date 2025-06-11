@@ -63,6 +63,7 @@ export default defineConfig(({ mode }) => ({
         "react-icons",
         "react",
         "react-dom",
+        "ajv",
         "react/jsx-runtime",
         "@sinclair/typebox",
         "@upstart.gg/style-system",

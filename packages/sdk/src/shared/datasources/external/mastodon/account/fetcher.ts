@@ -1,6 +1,5 @@
-import { type MastodonAccountSchema, mastodonAccountSchema } from "./schema";
+import type { MastodonAccountSchema } from "./schema";
 import type { MastodonCommonOptions } from "../options";
-import { ajv, serializeAjvErrors } from "~/shared/ajv";
 import type { DatasourceFetcher } from "~/shared/datasources/fetcher";
 
 const fetchMastodonAccount: DatasourceFetcher<MastodonAccountSchema, null, MastodonCommonOptions> = async ({
@@ -18,13 +17,6 @@ const fetchMastodonAccount: DatasourceFetcher<MastodonAccountSchema, null, Masto
   }
 
   const account = (await response.json()) as MastodonAccountSchema;
-  const isValid = ajv.validate<MastodonAccountSchema>(mastodonAccountSchema, account);
-
-  if (!isValid) {
-    throw new Error(
-      `fetchMastodonAccount Error: Invalid Mastodon account response data: ${serializeAjvErrors(ajv.errors)}`,
-    );
-  }
 
   return account;
 };

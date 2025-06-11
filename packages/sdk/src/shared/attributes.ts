@@ -1,13 +1,12 @@
 import { Type, type TProperties, type Static, type TObject } from "@sinclair/typebox";
 import type { JSONSchemaType } from "ajv";
-import { ajv, getSchemaDefaults } from "./ajv";
 import { backgroundRef } from "./bricks/props/background";
 import { string } from "./bricks/props/string";
 import { optional } from "./bricks/props/helpers";
 import { boolean } from "./bricks/props/boolean";
 import { datetime } from "./bricks/props/date";
 import { enumProp } from "./bricks/props/enum";
-import { jsonDefault } from "json-schema-default";
+import { getSchemaDefaults } from "./utils/schema";
 
 export function defineAttributes(attrs: TProperties) {
   // Attributes starting with "$" are reserved for internal use
