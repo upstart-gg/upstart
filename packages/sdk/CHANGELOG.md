@@ -1,5 +1,14 @@
 # @upstart.gg/sdk
 
+## 0.0.100
+
+### Patch Changes
+
+- [#318](https://github.com/upstart-gg/upstart/pull/318) [`30785e7`](https://github.com/upstart-gg/upstart/commit/30785e7d9529f290f3b17725c8eef688c617b8d7) Thanks [@mattallty](https://github.com/mattallty)! - Use json-schema-default instead of ajv so it can run on workers
+
+- Updated dependencies []:
+  - @upstart.gg/style-system@0.0.100
+
 ## 0.0.99
 
 ### Patch Changes
