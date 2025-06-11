@@ -6,7 +6,7 @@ import { optional } from "./bricks/props/helpers";
 import { boolean } from "./bricks/props/boolean";
 import { datetime } from "./bricks/props/date";
 import { enumProp } from "./bricks/props/enum";
-import { getSchemaDefaults } from "./utils/schema";
+import { jsonDefault } from "json-schema-default";
 
 export function defineAttributes(attrs: TProperties) {
   // Attributes starting with "$" are reserved for internal use
@@ -204,6 +204,8 @@ export function resolveAttributes(
   data: Record<string, unknown> = {},
 ) {
   // To get default values from the custom attributes schema,
-  const defaultAttrValues = getSchemaDefaults(defaultAttributesSchema);
+  const defaultAttrValues = jsonDefault(defaultAttributesSchema) as Attributes<
+    Static<typeof defaultAttributesSchema>
+  >;
   return { ...defaultAttrValues, ...data } as Attributes<Static<typeof customAttrsSchema>>;
 }
