@@ -48,12 +48,11 @@ const fetchThreadsMediaDatasource: DatasourceFetcher<
 
   const media = (await response.json()) as ThreadsMediaSchema;
 
-  const validate = ajv.compile<ThreadsMediaSchema>(threadsMediaSchema);
-  const isValid = validate(media);
+  const isValid = ajv.validate<ThreadsMediaSchema>(threadsMediaSchema, media);
 
   if (!isValid) {
     throw new Error(
-      `fetchThreadsMediaDatasource Error: Invalid Threads response data: ${serializeAjvErrors(validate.errors)}`,
+      `fetchThreadsMediaDatasource Error: Invalid Threads response data: ${serializeAjvErrors(ajv.errors)}`,
     );
   }
 

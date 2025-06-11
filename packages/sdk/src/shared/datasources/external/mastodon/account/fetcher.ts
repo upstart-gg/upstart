@@ -18,12 +18,11 @@ const fetchMastodonAccount: DatasourceFetcher<MastodonAccountSchema, null, Masto
   }
 
   const account = (await response.json()) as MastodonAccountSchema;
-  const validate = ajv.compile<MastodonAccountSchema>(mastodonAccountSchema);
-  const isValid = validate(account);
+  const isValid = ajv.validate<MastodonAccountSchema>(mastodonAccountSchema, account);
 
   if (!isValid) {
     throw new Error(
-      `fetchMastodonAccount Error: Invalid Mastodon account response data: ${serializeAjvErrors(validate.errors)}`,
+      `fetchMastodonAccount Error: Invalid Mastodon account response data: ${serializeAjvErrors(ajv.errors)}`,
     );
   }
 

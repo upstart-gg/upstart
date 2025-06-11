@@ -17,11 +17,10 @@ const fetchRss: DatasourceFetcher<RssSchema, null, RssOptions> = async ({ option
       pubDate: item.pubDate ? item.pubDate.toISOString() : new Date().toISOString(),
     })) ?? [];
 
-  const validate = ajv.compile<RssSchema>(rssSchema);
-  const isValid = validate(newFeed);
+  const isValid = ajv.validate<RssSchema>(rssSchema, newFeed);
 
   if (!isValid) {
-    throw new Error(`fetchRss Error: Invalid Feed data (${url}): ${serializeAjvErrors(validate.errors)}`);
+    throw new Error(`fetchRss Error: Invalid Feed data (${url}): ${serializeAjvErrors(ajv.errors)}`);
   }
 
   return newFeed;

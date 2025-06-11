@@ -28,12 +28,11 @@ const fetchInstagramFeedDatasource: DatasourceFetcher<
 
   const feed = (await response.json()) as InstagramFeedSchema;
 
-  const validate = ajv.compile<InstagramFeedSchema>(instagramFeedSchema);
-  const isValid = validate(feed);
+  const isValid = ajv.validate<InstagramFeedSchema>(instagramFeedSchema, feed);
 
   if (!isValid) {
     throw new Error(
-      `fetchInstagramFeedDatasource Error: Invalid Instagram response data: ${serializeAjvErrors(validate.errors)}`,
+      `fetchInstagramFeedDatasource Error: Invalid Instagram response data: ${serializeAjvErrors(ajv.errors)}`,
     );
   }
 
