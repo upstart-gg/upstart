@@ -30,7 +30,6 @@
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
-    "@headlessui/react": "2.2.1",
     "@inquirer/prompts": "5.3.8",
     "@radix-ui/react-context-menu": "2.2.2",
     "@radix-ui/react-toggle-group": "1.1.0",
@@ -67,6 +66,7 @@
     "zustand": "4.5.5"
   },
   "peerDependencies": {
+    "@headlessui/react": "2.2.1",
     "@upstart.gg/style-system": "workspace:*",
     "react": "18.3.0-canary-3d9b20132-20240124",
     "react-dom": "18.3.0-canary-3d9b20132-20240124"
@@ -82,7 +82,6 @@
     "@types/react": "18.3.3",
     "@types/react-dom": "^18.3.0",
     "@types/sortablejs": "1.15.8",
-    "@typescript/native-preview": "7.0.0-dev.20250607.1",
     "@vitejs/plugin-react": "^4.3.4",
     "concurrently": "8.2.2",
     "express": "^4.21.2",
@@ -99,7 +98,6 @@
     "build": "tsup",
     "build:watch": "tsup --watch",
     "build:types": "tsc --extendedDiagnostics --emitDeclarationOnly --declaration --declarationMap",
-    "build:types-go": "tsgo --extendedDiagnostics --emitDeclarationOnly --declaration --declarationMap",
     "dev": "NODE_OPTIONS='--max-old-space-size=12384' tsup --watch",
     "sizetest": "pnpm build && du -sh dist",
     "lint": "biome check --write . && tsc --noEmit",
