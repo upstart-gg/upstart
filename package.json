@@ -11,7 +11,6 @@
     "build:docker": "pnpm --dir packages/style-system run build && pnpm --dir packages/sdk run build && pnpm --dir packages/components run build",
     "lint": "pnpm --parallel --recursive lint",
     "ci:lint": "biome ci --changed --no-errors-on-unmatched --since=head --reporter=github --colors=off packages && pnpm --parallel --recursive ci:lint",
-    "test-create-enpage": "rimraf testing/my-template && pnpm create enpage@latest testing/my-template",
     "changeset": "changeset",
     "clean": "pnpm -r exec -- rimraf node_modules && rm -rf node_modules && pnpm install && pnpm build",
     "publish:packages": "changeset publish",
