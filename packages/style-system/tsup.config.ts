@@ -10,6 +10,7 @@ export default defineConfig((options) => {
     clean: !options.watch,
     minify: !options.watch,
     sourcemap: !options.watch,
+    bundle: true,
     // splitting: false,
     external: ["react", "react-dom"],
   };
