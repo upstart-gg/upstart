@@ -67,7 +67,6 @@
   },
   "peerDependencies": {
     "@headlessui/react": "2.2.1",
-    "@upstart.gg/style-system": "workspace:*",
     "react": "18.3.0-canary-3d9b20132-20240124",
     "react-dom": "18.3.0-canary-3d9b20132-20240124"
   },
