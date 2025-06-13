@@ -1,5 +1,13 @@
 # @upstart.gg/components
 
+## 0.0.104
+
+### Patch Changes
+
+- Updated dependencies [[`5b77887`](https://github.com/upstart-gg/upstart/commit/5b77887364b267476c618e895c0a23bb0f6d8ca7)]:
+  - @upstart.gg/style-system@0.0.104
+  - @upstart.gg/sdk@0.0.104
+
 ## 0.0.103
 
 ### Patch Changes

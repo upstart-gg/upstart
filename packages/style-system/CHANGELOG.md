@@ -1,5 +1,11 @@
 # @upstart.gg/style-system
 
+## 0.0.104
+
+### Patch Changes
+
+- [#329](https://github.com/upstart-gg/upstart/pull/329) [`5b77887`](https://github.com/upstart-gg/upstart/commit/5b77887364b267476c618e895c0a23bb0f6d8ca7) Thanks [@mattallty](https://github.com/mattallty)! - fix tailwind by removing it
+
 ## 0.0.103
 
 ### Patch Changes
