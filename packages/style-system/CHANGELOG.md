@@ -1,5 +1,15 @@
 # @upstart.gg/style-system
 
+## 0.0.101
+
+### Patch Changes
+
+- [#323](https://github.com/upstart-gg/upstart/pull/323) [`d4ebda1`](https://github.com/upstart-gg/upstart/commit/d4ebda1f94a55180b54da59fba292d80965c98e9) Thanks [@mattallty](https://github.com/mattallty)! - Bundle style system
+
+- [#324](https://github.com/upstart-gg/upstart/pull/324) [`4dbf7a6`](https://github.com/upstart-gg/upstart/commit/4dbf7a6c9e5815f4429dc5825e2c406fb05b4936) Thanks [@mattallty](https://github.com/mattallty)! - Fix deps
+
+- [#321](https://github.com/upstart-gg/upstart/pull/321) [`9af67dc`](https://github.com/upstart-gg/upstart/commit/9af67dca3c672e5c47a785b35fe957d67b932cad) Thanks [@mattallty](https://github.com/mattallty)! - Release tw changes
+
 ## 0.0.100
 
 ## 0.0.99
