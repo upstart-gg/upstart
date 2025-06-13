@@ -11,9 +11,6 @@ export default function App({ path }: { path: string }) {
   const searchParams = new URL(`http://localhost${path}`).searchParams;
   const p = searchParams.get("p");
   const pageId = (siteConfig.pages.find((page) => page.id === p) ?? siteConfig.pages[0]).id;
-
-  console.dir(siteConfig, { depth: null });
-
   return (
     <ClientOnly>
       <InnerEditor config={siteConfig} pageId={pageId}>
