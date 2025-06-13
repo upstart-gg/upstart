@@ -1,5 +1,11 @@
 # @upstart.gg/style-system
 
+## 0.0.103
+
+### Patch Changes
+
+- [#327](https://github.com/upstart-gg/upstart/pull/327) [`06a922f`](https://github.com/upstart-gg/upstart/commit/06a922f548e0b31c228435d2ca77042f1113bcaf) Thanks [@mattallty](https://github.com/mattallty)! - Remove bundling
+
 ## 0.0.102
 
 ### Patch Changes
