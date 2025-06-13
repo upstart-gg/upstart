@@ -1,5 +1,15 @@
 # @upstart.gg/components
 
+## 0.0.102
+
+### Patch Changes
+
+- [#325](https://github.com/upstart-gg/upstart/pull/325) [`83c06d7`](https://github.com/upstart-gg/upstart/commit/83c06d7bcadbe399f3d4ed370b6136358be68622) Thanks [@mattallty](https://github.com/mattallty)! - Use tailwind v4
+
+- Updated dependencies [[`83c06d7`](https://github.com/upstart-gg/upstart/commit/83c06d7bcadbe399f3d4ed370b6136358be68622)]:
+  - @upstart.gg/style-system@0.0.102
+  - @upstart.gg/sdk@0.0.102
+
 ## 0.0.101
 
 ### Patch Changes
