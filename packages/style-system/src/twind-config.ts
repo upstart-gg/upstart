@@ -6,7 +6,7 @@ import presetLineClamp from "@twind/preset-line-clamp";
 import presetForms from "@twind/preset-tailwind-forms";
 import presetTypo from "@twind/preset-typography";
 import presetContainerQueries from "@twind/preset-container-queries";
-import colors from "tailwindcss/colors";
+import { colorPalette } from "./colors";
 
 export default defineConfig({
   darkMode: "media",
@@ -181,7 +181,7 @@ export default defineConfig({
   theme: {
     extend: {
       colors: {
-        ...colors,
+        ...colorPalette,
         upstart: {
           50: "#f2f4fb",
           100: "#e7ecf8",
