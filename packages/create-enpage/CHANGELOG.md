@@ -1,5 +1,11 @@
 # create-enpage
 
+## 0.0.47
+
+### Patch Changes
+
+- [#321](https://github.com/upstart-gg/upstart/pull/321) [`9af67dc`](https://github.com/upstart-gg/upstart/commit/9af67dca3c672e5c47a785b35fe957d67b932cad) Thanks [@mattallty](https://github.com/mattallty)! - Release tw changes
+
 ## 0.0.46
 
 ### Patch Changes
