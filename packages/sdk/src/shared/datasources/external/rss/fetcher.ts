@@ -1,7 +1,6 @@
 import type { RssOptions } from "./options";
-import { parseFeed } from "htmlparser2";
-import { type RssSchema, rssSchema } from "./schema";
-// import { ajv, serializeAjvErrors } from "~/shared/ajv";
+import { parseFeed } from "@rowanmanning/feed-parser";
+import type { RssSchema } from "./schema";
 import type { DatasourceFetcher } from "../../fetcher";
 import { createPlaceholderReplacer, placeholderRx } from "../../utils";
 
@@ -14,7 +13,7 @@ const fetchRss: DatasourceFetcher<RssSchema, null, RssOptions> = async ({ option
   const newFeed: RssSchema =
     feed?.items.map((item) => ({
       ...item,
-      pubDate: item.pubDate ? item.pubDate.toISOString() : new Date().toISOString(),
+      pubDate: item.published ? item.published.toISOString() : new Date().toISOString(),
     })) ?? [];
 
   // const isValid = ajv.validate<RssSchema>(rssSchema, newFeed);
