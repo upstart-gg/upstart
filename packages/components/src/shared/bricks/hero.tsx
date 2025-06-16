@@ -11,8 +11,6 @@ const Hero = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
   const props = brick.props;
   const classes = Object.values(styles);
 
-  console.log("hero props", props);
-
   return (
     <div className={tx("flex-1", ...classes)}>
       <TextContent

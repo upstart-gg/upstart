@@ -36,10 +36,10 @@ export const manifest = defineBrickManifest({
     ),
     backgroundColor: optional(backgroundColorRef()),
     logo: optional(imageRef({ title: "Logo" })),
+    rows: optional(number("Rows", 1)),
     linksSections: array(
       Type.Object({
         sectionTitle: string("Links Section title"),
-        row: optional(number("Row", 0, { description: "Row number of the section" })),
         links: array(
           Type.Object({
             title: string("Title"),
@@ -182,7 +182,6 @@ export const examples: {
       linksSections: [
         {
           sectionTitle: "Products & Services",
-          row: 0,
           links: [
             { title: "Cloud Solutions", url: "/cloud", column: 1 },
             { title: "Data Analytics", url: "/analytics", column: 1 },
@@ -194,7 +193,6 @@ export const examples: {
         },
         {
           sectionTitle: "Industries",
-          row: 0,
           links: [
             { title: "Healthcare", url: "/industries/healthcare", column: 3 },
             { title: "Finance", url: "/industries/finance", column: 3 },
@@ -206,7 +204,6 @@ export const examples: {
         },
         {
           sectionTitle: "Resources",
-          row: 1,
           links: [
             { title: "Documentation", url: "/docs", column: 1 },
             { title: "API Reference", url: "/api", column: 1 },
@@ -218,7 +215,6 @@ export const examples: {
         },
         {
           sectionTitle: "Support & Community",
-          row: 1,
           links: [
             { title: "Help Center", url: "/help", column: 3 },
             { title: "Community Forum", url: "/forum", column: 3 },
@@ -320,7 +316,6 @@ export const examples: {
       linksSections: [
         {
           sectionTitle: "Platform",
-          row: 0,
           links: [
             { title: "Dashboard", url: "/dashboard", column: 1 },
             { title: "Analytics", url: "/analytics", column: 1 },
@@ -330,7 +325,6 @@ export const examples: {
         },
         {
           sectionTitle: "Solutions",
-          row: 0,
           links: [
             { title: "For Startups", url: "/solutions/startups", column: 2 },
             { title: "For Enterprise", url: "/solutions/enterprise", column: 2 },
@@ -340,7 +334,6 @@ export const examples: {
         },
         {
           sectionTitle: "Resources",
-          row: 1,
           links: [
             { title: "Blog", url: "/blog", column: 1 },
             { title: "Documentation", url: "/docs", column: 1 },
@@ -350,7 +343,6 @@ export const examples: {
         },
         {
           sectionTitle: "Company",
-          row: 1,
           links: [
             { title: "About Us", url: "/about", column: 2 },
             { title: "Careers", url: "/careers", column: 2 },

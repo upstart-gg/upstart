@@ -5,17 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { TbSend2 } from "react-icons/tb";
 import { IoIosAttach } from "react-icons/io";
 import { type CreateMessage, type Message, useChat } from "@ai-sdk/react";
-import {
-  type FormEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  lazy,
-  Suspense,
-  Fragment,
-} from "react";
+import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 import { createIdGenerator, type ToolInvocation } from "ai";
 import {
   useDraftHelpers,
@@ -28,7 +18,6 @@ import {
   useThemes,
 } from "../hooks/use-editor";
 import { MdDone } from "react-icons/md";
-
 import { useDebounceCallback } from "usehooks-ts";
 import { Spinner } from "@upstart.gg/style-system/system";
 import { BiStopCircle } from "react-icons/bi";
@@ -109,7 +98,7 @@ export default function Chat() {
   const generationState = useGenerationState();
   const siteAndPages = useSiteAndPages();
   const siteThemes = useThemes();
-  const theme = useTheme();
+  const [userLanguage, setUserLanguage] = useState<string>();
   const [flow, setFlow] = useState<CallContextProps["flow"]>(
     new URL(window.location.href).searchParams.get("action") === "generate" ? "setup" : "edit",
   );
@@ -221,7 +210,10 @@ Let's start by generating some color themes for your website. This will help us 
         : [],
     credentials: "include",
     experimental_prepareRequestBody({ requestData, ...rest }) {
-      return { ...rest, requestData: { ...siteAndPages, flow, generationState } satisfies CallContextProps };
+      return {
+        ...rest,
+        requestData: { ...siteAndPages, flow, generationState, userLanguage } satisfies CallContextProps,
+      };
     },
     generateId: createIdGenerator({
       prefix: "ups",
@@ -277,6 +269,14 @@ Let's start by generating some color themes for your website. This will help us 
       console.log("generation state changed", generationState);
     }
   }, [generationState]);
+
+  useDeepCompareEffect(() => {
+    data?.forEach((item) => {
+      if (typeof item === "object" && !Array.isArray(item) && item?.userLanguage) {
+        setUserLanguage(item.userLanguage as string);
+      }
+    });
+  }, [data]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -687,10 +687,6 @@ function ToolRenderer({
                         toolCallId: toolInvocation.toolCallId,
                         result: choice,
                       });
-                      // append({
-                      //   role: "user",
-                      //   content: choice,
-                      // });
                     }}
                   >
                     {choice}
