@@ -6,7 +6,7 @@ import { datasourcesMap } from "./datasources/types";
 import { datarecordsMap } from "./datarecords/types";
 import { defaultTheme, themeSchema } from "./theme";
 import { sitePrompt } from "./prompt";
-import { nanoid } from "nanoid";
+import { generateId } from "./bricks";
 
 export const siteSchema = Type.Object({
   id: Type.String(),
@@ -67,26 +67,26 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
         label: "First page",
         path: "/",
         sections: [
-          // {
-          //   id: nanoid(),
-          //   label: "Hero Section",
-          //   order: 1,
-          //   props: {},
-          //   bricks: [
-          //     {
-          //       id: crypto.randomUUID(),
-          //       type: "navbar",
-          //       props: {
-          //         brand: {
-          //           name: "My Site",
-          //         },
-          //         navigation: {
-          //           staticItems: [{ urlOrPageId: "/about" }, { urlOrPageId: "/contact" }],
-          //         },
-          //       },
-          //     },
-          //   ],
-          // },
+          {
+            id: generateId(),
+            label: "Hero Section",
+            order: 1,
+            props: {},
+            bricks: [
+              {
+                id: generateId(),
+                type: "navbar",
+                props: {
+                  brand: {
+                    name: "My Site",
+                  },
+                  navigation: {
+                    staticItems: [{ urlOrPageId: "/about" }, { urlOrPageId: "/contact" }],
+                  },
+                },
+              },
+            ],
+          },
         ],
         tags: [],
         attributes: defaultAttributesSchema,

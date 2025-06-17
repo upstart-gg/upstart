@@ -13,6 +13,8 @@ export const BorderField: FC<FieldProps<BorderSettings>> = (props) => {
   const onSettingsChange = (newVal: Partial<BorderSettings>) => onChange({ ...currentValue, ...newVal });
   const [currentSide, setSide] = useState<string[]>(currentValue.sides ?? ["all"]);
 
+  console.log("boredr schema", schema);
+
   return (
     <div className="border-field flex flex-col gap-2 flex-1">
       <FieldTitle title={title} description={description} />

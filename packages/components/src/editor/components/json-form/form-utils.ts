@@ -1,5 +1,6 @@
 import type { TArray, TObject, TSchema } from "@sinclair/typebox";
 import type { NavItem } from "./types";
+import { resolveSchema } from "@upstart.gg/sdk/shared/ajv";
 
 export type SchemaFilter = (prop: TSchema, key: string) => boolean;
 
@@ -11,6 +12,7 @@ export function getNavItemsFromManifest(
   pathsParts: string[] = [],
 ): NavItem[] {
   const items = Object.entries<TSchema>(manifest.properties)
+    .map(([key, prop]) => [key, resolveSchema(prop)] as [string, TSchema])
     .filter(([, prop]) => prop["ui:field"] !== "hidden" && prop["ui:field"] !== "ui-hidden")
     .filter(([key, prop]) => filter(prop, key))
     .map(([key, prop]) => {

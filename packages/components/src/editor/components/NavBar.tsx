@@ -19,7 +19,6 @@ import {
   usePanel,
   useChatVisible,
   useZoom,
-  useCredits,
   useGenerationState,
 } from "~/editor/hooks/use-editor";
 import { RxRocket } from "react-icons/rx";
@@ -43,6 +42,7 @@ import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import { LuPlus } from "react-icons/lu";
 import { PiPalette } from "react-icons/pi";
 import { VscSettings } from "react-icons/vsc";
+import { useCredits } from "../hooks/use-credits";
 
 export default function NavBar() {
   const editorHelpers = useEditorHelpers();

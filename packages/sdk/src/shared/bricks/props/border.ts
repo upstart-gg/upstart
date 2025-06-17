@@ -59,10 +59,12 @@ export function border(title = "Border") {
             enumNames: ["Left", "Top", "Right", "Bottom"],
             description:
               "The specific sides where to apply the border. Not specifying sides will apply the border to all sides.",
-            "ui:field": "border-side",
             "ai:instructions":
               "Use this to apply the border to specific sides. Not specifying sides will apply the border to all sides.",
           }),
+          {
+            "ui:field": "border-side",
+          },
         ),
       ),
       style: optional(

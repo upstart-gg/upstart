@@ -1,11 +1,5 @@
-import type { JSONSchemaType } from "ajv";
-import { type Static, Type, type TSchema, type TObject, type UnsafeOptions } from "@sinclair/typebox";
+import { type Static, Type, type TSchema, type UnsafeOptions } from "@sinclair/typebox";
 import { jsonDefault } from "json-schema-default";
-
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-export function typeboxSchemaToJSONSchema<T extends Record<string, any>>(schema: TObject): JSONSchemaType<T> {
-  return JSON.parse(JSON.stringify(schema));
-}
 
 type StringEnumOptions = Partial<UnsafeOptions> & {
   enumNames?: string[];
@@ -18,9 +12,9 @@ export const StringEnum = <T extends string[]>(values: [...T], options: StringEn
     ...options,
   });
 
-export function getLitteralFromEnum(schema: ReturnType<typeof StringEnum>) {
-  if (!("enum" in schema) || !("enumNames" in schema)) {
-    throw new Error("Schema does not contain enum or enumNames properties");
+export function getLitteralFromEnum(schema: ReturnType<typeof StringEnum> | TSchema) {
+  if (!("enum" in schema)) {
+    return schema.anyOf ?? schema.oneOf;
   }
   const { enum: enumValues, enumNames } = schema as unknown as { enum: string[]; enumNames?: string[] };
   // combine to key-value pairs
@@ -30,6 +24,9 @@ export function getLitteralFromEnum(schema: ReturnType<typeof StringEnum>) {
   }));
 }
 
-export function getSchemaDefaults<T extends TSchema>(schema: T) {
+/**
+ * @warning DOES NOT HANDLE ARRAYs, just OBJECTs
+ */
+export function getSchemaObjectDefaults<T extends TSchema>(schema: T) {
   return jsonDefault(schema) as Static<T>;
 }

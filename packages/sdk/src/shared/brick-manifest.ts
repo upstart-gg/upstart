@@ -1,6 +1,6 @@
 import type { TObject, TProperties, TArray } from "@sinclair/typebox";
 import type { IconBase } from "react-icons/lib";
-import { getSchemaDefaults } from "./utils/schema";
+import { getSchemaObjectDefaults } from "./utils/schema";
 
 type BrickKind = "brick" | "widget" | "container";
 
@@ -95,9 +95,9 @@ export type BrickManifest = ReturnType<typeof defineBrickManifest>;
 export function getBrickManifestDefaults<M extends BrickManifest>(manifest: M) {
   return {
     ...manifest,
-    props: getSchemaDefaults(manifest.props),
+    props: getSchemaObjectDefaults(manifest.props),
     // mobileProps: {},
-    ...(manifest.datasource ? { datasource: getSchemaDefaults(manifest.datasource) } : {}),
+    ...(manifest.datasource ? { datasource: getSchemaObjectDefaults(manifest.datasource) } : {}),
     // ...(manifest.datarecord ? { datarecord: Value.Create(manifest.datarecord) } : {}),
   };
 }

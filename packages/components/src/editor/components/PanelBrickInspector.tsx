@@ -12,6 +12,7 @@ import BrickSettingsView from "./BrickSettingsView";
 import { tx } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";
 import PageHierarchy from "./PageHierarchy";
+import { ajv, resolveSchema } from "@upstart.gg/sdk/shared/ajv";
 
 type TabType = "preset" | "settings" | "content";
 
@@ -90,6 +91,8 @@ function PresetsTab({ brick, section }: { brick: Brick; section: Section }) {
   const manifest = manifests[brick.type];
   const { updateBrickProps } = useDraftHelpers();
   const previewMode = usePreviewMode();
+  const schema = resolveSchema(manifest.props.properties.preset);
+
   return (
     <div className={tx("flex flex-col h-full")}>
       <div className="basis-1/2 grow-0">
@@ -102,7 +105,7 @@ function PresetsTab({ brick, section }: { brick: Brick; section: Section }) {
         </Callout.Root>
         <div className="grid grid-cols-3 gap-2 auto-rows-[3rem] flex-1 mx-2">
           {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
-          {manifest.props.properties.preset.anyOf.map((preset: any) => (
+          {schema.anyOf.map((preset: any) => (
             <button
               type="button"
               onClick={() => {

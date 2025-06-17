@@ -38,7 +38,7 @@ const msgCommon = tx(
     // whiteSpace: "pre-line",
     "& p": {
       marginTop: ".5rem",
-      marginBottom: ".5rem",
+      // marginBottom: ".5rem",
     },
     "& p:first-child": {
       marginTop: "0",
@@ -202,12 +202,22 @@ Let's start by generating some color themes for your website. This will help us 
             ] satisfies Message[])
           : [
               {
-                id: "init-website",
+                id: "init-generate",
                 role: "user",
                 content: `Create a website based on this prompt:\n${prompt}`,
               },
             ]
-        : [],
+        : [
+            {
+              id: "init-edit",
+              role: "assistant",
+              content: `Hey! 👋\n\nReady to keep building? You can:
+- Chat with me to make changes
+- Use the visual editor for direct editing
+
+What should we work on together? 🤖`,
+            },
+          ],
     credentials: "include",
     experimental_prepareRequestBody({ requestData, ...rest }) {
       return {
@@ -415,7 +425,7 @@ Let's start by generating some color themes for your website. This will help us 
       >
         {messages
           // filter out the "init" messages
-          .filter((msg) => msg.id.startsWith("init-") === false && msg.parts.length > 0)
+          .filter((msg) => msg.id !== "init-generate" && msg.parts.length > 0)
           .map((msg, index) => (
             <div key={msg.id} className={tx(msg.role === "assistant" ? aiMsgClass : userMsgClass, msgCommon)}>
               {msg.parts.map((part, i) => {

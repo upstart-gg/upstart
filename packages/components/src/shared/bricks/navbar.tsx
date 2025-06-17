@@ -77,7 +77,7 @@ const Navbar = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
             );
           })}
         </nav>
-        <div role="menu" className="flex @desktop:hidden items-center gap-4" data-brick-group="actions">
+        <div role="menu" className="ml-auto @desktop:hidden items-center gap-4" data-brick-group="actions">
           <RxHamburgerMenu className="w-6 h-6" />
         </div>
       </div>

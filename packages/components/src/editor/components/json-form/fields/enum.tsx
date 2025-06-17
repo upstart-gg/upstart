@@ -4,17 +4,20 @@ import { Select } from "@upstart.gg/style-system/system";
 import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { FC } from "react";
+import { getLitteralFromEnum } from "@upstart.gg/sdk/shared/utils/schema";
 
 interface EnumOption {
   const: string;
   title: string;
   description: string;
-  icon: string;
+  icon?: string;
   "ui:hidden-option"?: boolean;
 }
 
 const EnumField: FC<FieldProps<string>> = (props) => {
   const { schema, currentValue, formData, onChange, required, title, description } = props;
+
+  // console.log("EnumField props", schema);
   // const context = formContext as { brickId: Brick["id"] };
   // const brick = draft.getBrick(context.brickId);
 
@@ -23,17 +26,15 @@ const EnumField: FC<FieldProps<string>> = (props) => {
   // }
 
   // Extract options from the schema
-  const options: EnumOption[] =
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    (schema.anyOf ?? schema.oneOf)?.map((option: any) => ({
-      const: option.const,
-      title: option.title || option.const,
-      description: option.description || "",
-      icon: option.icon || "",
-      min: option.minimum,
-      max: option.maximum,
-      "ui:hidden-option": option["ui:hidden-option"],
-    })) || [];
+  const options: EnumOption[] = getLitteralFromEnum(schema) ?? [];
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // (schema.anyOf ?? schema.oneOf ?? schema.enum)?.map((option: any, index: number) => ({
+  //   const: typeof option === "string" ? option : option.const,
+  //   title: typeof option === "string" ? (schema.enumNames ?? []).at(index) : option.title || option.const,
+  //   description: option.description || "",
+  //   icon: option.icon || "",
+  //   "ui:hidden-option": option["ui:hidden-option"],
+  // })) || [];
 
   const displayAs: "select" | "radio" | "button-group" | "icon-group" =
     schema["ui:display"] ?? (options.length > 3 ? "select" : "button-group");
@@ -114,7 +115,7 @@ const EnumField: FC<FieldProps<string>> = (props) => {
                   <span
                     className="w-7 h-7 p-0.5"
                     /* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */
-                    dangerouslySetInnerHTML={{ __html: option.icon }}
+                    dangerouslySetInnerHTML={{ __html: option.icon ?? "" }}
                   />
                 </button>
               ))}
