@@ -1,5 +1,15 @@
 # @upstart.gg/components
 
+## 0.0.106
+
+### Patch Changes
+
+- [#333](https://github.com/upstart-gg/upstart/pull/333) [`f3aae0d`](https://github.com/upstart-gg/upstart/commit/f3aae0d442ad913a6c8814930f103b5303fefddf) Thanks [@mattallty](https://github.com/mattallty)! - Implement bricks
+
+- Updated dependencies [[`f3aae0d`](https://github.com/upstart-gg/upstart/commit/f3aae0d442ad913a6c8814930f103b5303fefddf)]:
+  - @upstart.gg/sdk@0.0.106
+  - @upstart.gg/style-system@0.0.106
+
 ## 0.0.105
 
 ### Patch Changes
