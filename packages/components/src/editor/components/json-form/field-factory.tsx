@@ -26,9 +26,9 @@ import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/bac
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import { fieldLabel } from "./form-class";
 import { Tooltip } from "@upstart.gg/style-system/system";
-import { tx } from "@upstart.gg/style-system/twind";
 import clsx from "clsx";
 import { CssLengthField } from "./fields/css-length";
+import { resolveSchema } from "@upstart.gg/sdk/shared/ajv";
 
 export interface FieldFactoryOptions {
   brickId?: string;
@@ -59,24 +59,22 @@ function getCommonFieldProps(options: FieldFactoryOptions, fieldSchema: TSchema)
 // Main function to create a field component based on type
 export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
   const { brickId, fieldName, fieldSchema, formSchema, formData, id, onChange } = options;
-
+  const schema = resolveSchema(fieldSchema);
   const commonProps = getCommonFieldProps(
     {
       brickId,
       fieldName,
-      fieldSchema,
+      fieldSchema: schema,
       formSchema,
       formData,
       id,
       onChange,
     },
-    fieldSchema,
+    schema,
   );
 
   // Determine field type
-  const fieldType = (fieldSchema["ui:field"] ??
-    fieldSchema.type ??
-    (fieldSchema.anyOf ? "anyOf" : "")) as string;
+  const fieldType = (schema["ui:field"] ?? schema.type ?? (schema.anyOf ? "anyOf" : "")) as string;
 
   switch (fieldType) {
     case "hidden":
@@ -309,7 +307,7 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
           currentValue={currentValue}
           onChange={(value: string | null) => onChange({ [id]: value }, id)}
           {...commonProps}
-          options={fieldSchema.anyOf}
+          options={schema.anyOf}
         />
       );
     }
@@ -319,7 +317,7 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
 
     default:
       console.warn("Unknown field type: %s", fieldType);
-      console.log("Field schema", fieldSchema);
+      console.log("Field schema", schema);
       return null;
   }
 }
@@ -348,11 +346,11 @@ export function processObjectSchemaToFields({
   const fields: ReactNode[] = [];
 
   Object.entries(schema.properties).forEach(([fieldName, fieldSchema]) => {
-    const field = fieldSchema;
+    const field = resolveSchema(fieldSchema);
 
     // Apply global filter if provided
     if (filter && field.type !== "object" && !filter(field)) {
-      console.log("processObjectSchemaToFields: filtering field", field);
+      console.warn("processObjectSchemaToFields: Ignoring field", field);
       return;
     }
 
@@ -364,6 +362,7 @@ export function processObjectSchemaToFields({
         formData: Record<string, unknown>,
       ) => boolean;
       if (!filter(formSchema, formData)) {
+        console.warn("processObjectSchemaToFields: Field filter returned false for", fieldName);
         return;
       }
     }
@@ -385,6 +384,8 @@ export function processObjectSchemaToFields({
 
     if (fieldComponent) {
       fields.push(fieldComponent);
+    } else {
+      console.warn("processObjectSchemaToFields: No field component created for", fieldName);
     }
   });
 

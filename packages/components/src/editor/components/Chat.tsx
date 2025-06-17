@@ -5,17 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { TbSend2 } from "react-icons/tb";
 import { IoIosAttach } from "react-icons/io";
 import { type CreateMessage, type Message, useChat } from "@ai-sdk/react";
-import {
-  type FormEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  lazy,
-  Suspense,
-  Fragment,
-} from "react";
+import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 import { createIdGenerator, type ToolInvocation } from "ai";
 import {
   useDraftHelpers,
@@ -28,7 +18,6 @@ import {
   useThemes,
 } from "../hooks/use-editor";
 import { MdDone } from "react-icons/md";
-
 import { useDebounceCallback } from "usehooks-ts";
 import { Spinner } from "@upstart.gg/style-system/system";
 import { BiStopCircle } from "react-icons/bi";
@@ -49,7 +38,7 @@ const msgCommon = tx(
     // whiteSpace: "pre-line",
     "& p": {
       marginTop: ".5rem",
-      marginBottom: ".5rem",
+      // marginBottom: ".5rem",
     },
     "& p:first-child": {
       marginTop: "0",
@@ -109,7 +98,7 @@ export default function Chat() {
   const generationState = useGenerationState();
   const siteAndPages = useSiteAndPages();
   const siteThemes = useThemes();
-  const theme = useTheme();
+  const [userLanguage, setUserLanguage] = useState<string>();
   const [flow, setFlow] = useState<CallContextProps["flow"]>(
     new URL(window.location.href).searchParams.get("action") === "generate" ? "setup" : "edit",
   );
@@ -213,15 +202,28 @@ Let's start by generating some color themes for your website. This will help us 
             ] satisfies Message[])
           : [
               {
-                id: "init-website",
+                id: "init-generate",
                 role: "user",
                 content: `Create a website based on this prompt:\n${prompt}`,
               },
             ]
-        : [],
+        : [
+            {
+              id: "init-edit",
+              role: "assistant",
+              content: `Hey! 👋\n\nReady to keep building? You can:
+- Chat with me to make changes
+- Use the visual editor for direct editing
+
+What should we work on together? 🤖`,
+            },
+          ],
     credentials: "include",
     experimental_prepareRequestBody({ requestData, ...rest }) {
-      return { ...rest, requestData: { ...siteAndPages, flow, generationState } satisfies CallContextProps };
+      return {
+        ...rest,
+        requestData: { ...siteAndPages, flow, generationState, userLanguage } satisfies CallContextProps,
+      };
     },
     generateId: createIdGenerator({
       prefix: "ups",
@@ -277,6 +279,14 @@ Let's start by generating some color themes for your website. This will help us 
       console.log("generation state changed", generationState);
     }
   }, [generationState]);
+
+  useDeepCompareEffect(() => {
+    data?.forEach((item) => {
+      if (typeof item === "object" && !Array.isArray(item) && item?.userLanguage) {
+        setUserLanguage(item.userLanguage as string);
+      }
+    });
+  }, [data]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -415,7 +425,7 @@ Let's start by generating some color themes for your website. This will help us 
       >
         {messages
           // filter out the "init" messages
-          .filter((msg) => msg.id.startsWith("init-") === false && msg.parts.length > 0)
+          .filter((msg) => msg.id !== "init-generate" && msg.parts.length > 0)
           .map((msg, index) => (
             <div key={msg.id} className={tx(msg.role === "assistant" ? aiMsgClass : userMsgClass, msgCommon)}>
               {msg.parts.map((part, i) => {
@@ -687,10 +697,6 @@ function ToolRenderer({
                         toolCallId: toolInvocation.toolCallId,
                         result: choice,
                       });
-                      // append({
-                      //   role: "user",
-                      //   content: choice,
-                      // });
                     }}
                   >
                     {choice}

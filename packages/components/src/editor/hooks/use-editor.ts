@@ -65,7 +65,6 @@ export interface EditorStateProps {
   disabled?: boolean;
   zoom: number;
 
-  credits: number;
   /**
    * 0 = free
    * 1 = essentials
@@ -146,7 +145,6 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
     zoom: 1,
     chatVisible: true,
     planIndex: 0,
-    credits: 0,
     imagesSearchResults: import.meta.env.DEV
       ? [
           {
@@ -1278,11 +1276,6 @@ export const useThemes = () => {
 export const useThemesLibrary = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => state.themesLibrary);
-};
-
-export const useCredits = () => {
-  const ctx = useEditorStoreContext();
-  return useStore(ctx, (state) => state.credits);
 };
 
 export const useImagesSearchResults = () => {

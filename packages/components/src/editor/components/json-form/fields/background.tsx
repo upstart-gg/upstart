@@ -15,7 +15,7 @@ import { useIsPremiumPlan } from "~/editor/hooks/use-editor";
 import { tx } from "@upstart.gg/style-system/twind";
 
 const BackgroundField: FC<FieldProps<BackgroundSettings>> = (props) => {
-  const { schema, formData, onChange, required, title, description, currentValue } = props;
+  const { schema, formData, onChange, required, title, description, currentValue = {} } = props;
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);
   const { onImageUpload } = useUploader();

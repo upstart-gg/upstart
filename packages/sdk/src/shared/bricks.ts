@@ -13,7 +13,7 @@ import { StringEnum } from "./utils/schema";
 /**
  * Generates a unique identifier for bricks.
  */
-export const generateId = customAlphabet("1234567890azertyuiopqsdfghjklmwxcvbnAZERTYUIOPQSDFGHJKLMWXCVBN", 7);
+export const generateId = customAlphabet("azertyuiopqsdfghjklmwxcvbnAZERTYUIOPQSDFGHJKLMWXCVBN", 7);
 
 const brickAbsolutePositionSchema = Type.Object({
   left: Type.Optional(

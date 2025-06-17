@@ -17,7 +17,7 @@ const Accordion = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick }
               <input type="radio" name={`accordion-${index}`} defaultChecked={index === 0} />
             )}
             <div className={tx("collapse-title font-semibold")}>{item.title}</div>
-            <div className="collapse-content text-[90%]">{item.content}</div>
+            <div className={tx("collapse-content text-[90%]")}>{item.content}</div>
           </div>
         );
       })}

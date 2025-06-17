@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import type { Static, TArray, TObject } from "@sinclair/typebox";
 import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
-import { getSchemaDefaults } from "@upstart.gg/sdk/shared/utils/schema";
+import { getSchemaObjectDefaults } from "@upstart.gg/sdk/shared/utils/schema";
 
 type DatasourceSchema = TObject | TArray<TObject>;
 type DatasourceMap = Map<string, unknown>;
@@ -41,7 +41,7 @@ export function useDatasource<
   if (!dsRef) {
     return {
       datasourceId: null,
-      data: schema !== null ? getSchemaDefaults(schema) : [],
+      data: schema?.examples ?? [],
       isSample: true,
     } as DatasourceInfo;
   }
@@ -50,7 +50,7 @@ export function useDatasource<
 
   return {
     datasourceId: dsRef?.id,
-    data: data ?? (schema !== null ? getSchemaDefaults(schema) : []),
+    data: data ?? schema?.examples ?? [],
     isSample: !data,
   } as DatasourceInfo;
 }

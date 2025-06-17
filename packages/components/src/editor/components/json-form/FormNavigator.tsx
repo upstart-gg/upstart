@@ -82,6 +82,7 @@ function SchemaField({ item }: { item: NavItemProperty }) {
       parents: item.path.split(".").slice(0, -1),
     },
   });
+
   return fields.length ? fields : null;
 }
 

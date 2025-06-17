@@ -49,7 +49,7 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
         return;
       }
       // Note: this is a weird way to update the brick props, but it'it allows us to deal with frozen trees
-      const props = JSON.parse(JSON.stringify(brickInfo?.props ?? {}));
+      const props = structuredClone(brickInfo?.props ?? {});
       // `propertyChangedPath` can take the form of `a.b.c` which means we need to update `props.a.b.c`
       // For this we use lodash.set
       set(props, propertyChangedPath, data[propertyChangedPath]);
