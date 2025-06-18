@@ -9,7 +9,7 @@ import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
 interface EnumOption {
   const: string;
   title: string;
-  description: string;
+  description?: string;
   icon?: string;
   "ui:hidden-option"?: boolean;
 }
@@ -27,7 +27,6 @@ const EnumField: FC<FieldProps<string>> = (props) => {
 
   // Extract options from the schema
   const options: EnumOption[] = normalizeSchemaEnum(schema) ?? [];
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   // (schema.anyOf ?? schema.oneOf ?? schema.enum)?.map((option: any, index: number) => ({
   //   const: typeof option === "string" ? option : option.const,
   //   title: typeof option === "string" ? (schema.enumNames ?? []).at(index) : option.title || option.const,
