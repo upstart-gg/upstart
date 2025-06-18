@@ -1,11 +1,9 @@
 import { forwardRef } from "react";
 import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/map.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { MapContainer } from "react-leaflet/MapContainer";
-import { Marker } from "react-leaflet/Marker";
-import { Tooltip } from "react-leaflet/Tooltip";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { tx } from "@upstart.gg/style-system/twind";
+import { MapContainer, Marker, Tooltip } from "../components/Leaflet.client";
 
 const WidgetMap = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
