@@ -39,12 +39,12 @@ export const manifest = defineBrickManifest({
       shadow: optional(shadowRef()),
       testimonials: Type.Array(
         Type.Object({
-          author: string("Author", "John Doe"),
+          author: string("Author", { default: "John Doe" }),
           company: optional(string("Company")),
           text: textContentRef({ title: "Text", default: "Amazing product!" }),
           avatar: optional(imageRef({ title: "Avatar" })),
           socialIcon: optional(
-            string("Social Icon", undefined, {
+            string("Social Icon", {
               description: "Iconify reference for the social icon",
               "ui:field": "iconify",
             }),

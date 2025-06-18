@@ -9,18 +9,19 @@ describe("String prop test suite", () => {
     });
 
     it("should have the correct default value when provided", () => {
-      const stringProp = string("Test String", "Default value");
+      const stringProp = string("Test String", { default: "Default value" });
       expect(stringProp.default).toBe("Default value");
     });
 
     it("should apply additional options when provided", () => {
-      const stringProp = string("Test String", undefined, { minLength: 5, maxLength: 10 });
+      const stringProp = string("Test String", { minLength: 5, maxLength: 10 });
       expect(stringProp.minLength).toBe(5);
       expect(stringProp.maxLength).toBe(10);
+      expect(stringProp.default).toBeUndefined();
     });
 
     it("should apply UI field options when provided", () => {
-      const stringProp = string("Test String", undefined, { "ui:field": "textarea" });
+      const stringProp = string("Test String", { "ui:field": "textarea" });
       expect(stringProp["ui:field"]).toBe("textarea");
     });
   });

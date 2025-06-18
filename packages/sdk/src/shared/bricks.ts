@@ -145,10 +145,10 @@ export const sectionProps = Type.Object(
     preset: Type.Optional(presetRef),
     border: Type.Optional(borderRef),
     minHeight: Type.Optional(
-      cssLengthRef({ title: "Minimum height", default: "0px", description: "The min height of the section" }),
+      cssLengthRef({ title: "Min height", default: "0px", description: "The min height of the section" }),
     ),
     maxWidth: Type.Optional(
-      enumProp("Maximum width", "max-w-full", {
+      enumProp("Max width", "max-w-full", {
         options: [
           {
             value: "max-w-screen-lg",

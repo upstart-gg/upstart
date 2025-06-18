@@ -1,27 +1,32 @@
-import { Type, type Static } from "@sinclair/typebox";
-import { prop } from "./helpers";
+import { type ObjectOptions, Type, type Static } from "@sinclair/typebox";
+import { optional, prop } from "./helpers";
+import { number } from "./number";
+import { string } from "./string";
 
-type GeolocationOptions = {
-  title?: string;
-  defaultValue?: {
-    lat: number;
-    lng: number;
-  };
-};
-
-export function geolocation(opts: GeolocationOptions = {}) {
-  const { title = "Geolocation", defaultValue = { lat: 48.864716, lng: 2.349014 } } = opts;
+export function geolocation(opts: ObjectOptions & { defaultZoom?: number } = {}) {
+  const { title = "Location", defaultZoom } = opts;
   return prop({
     title,
     schema: Type.Object(
       {
-        lat: Type.Number({ minimum: -90, maximum: 90 }),
-        lng: Type.Number({ minimum: -180, maximum: 180 }),
-        label: Type.Optional(Type.String({ title: "Tooltip" })),
+        lat: number("Latitude", { "ui:field": "hidden" }),
+        lng: number("Longitude", { "ui:field": "hidden" }),
+        address: string("Address", { "ui:field": "geoaddress" }),
+        tooltip: optional(string("Tooltip")),
+        zoom: optional(
+          number("Zoom", {
+            description: "Zoom level for the map",
+            "ui:instructions": "The zoom level should be between 0 (world view) and 21 (street view).",
+            "ui:field": "slider",
+            minimum: 12,
+            maximum: 18,
+            default: defaultZoom,
+          }),
+        ),
       },
       {
-        "ui:field": "geo-point",
-        default: defaultValue,
+        // "ui:field": "geolocation",
+        ...opts,
       },
     ),
   });

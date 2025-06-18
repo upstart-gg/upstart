@@ -8,17 +8,19 @@ import EnumField from "./fields/enum";
 import ImageField from "./fields/image";
 import { BorderField } from "./fields/border";
 import { BorderSideField } from "./fields/border-side";
-import { PathField, StringField, UrlOrPageIdField } from "./fields/string";
+import { GeoAddressField, PathField, StringField, UrlOrPageIdField } from "./fields/string";
 import { NumberField, SliderField } from "./fields/number";
 import SwitchField from "./fields/switch";
 import { PagePaddingField, type TempPadding } from "./fields/padding";
 import BackgroundField from "./fields/background";
+import GeolocationField from "./fields/geolocation";
 import { FlexField } from "./fields/flex";
 import { AlignBasicField } from "./fields/align-basic";
 import DatasourceRefField from "./fields/datasource-ref";
 import { GridField } from "./fields/grid";
 
 // Import types
+import type { GeolocationSettings } from "@upstart.gg/sdk/shared/bricks/props/geolocation";
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
 import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
@@ -87,6 +89,18 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
           key={`field-${id}`}
           currentValue={currentValue}
           onChange={(value?: string | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
+    case "geoaddress": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;
+      return (
+        <GeoAddressField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: GeolocationSettings["address"] | null) => onChange({ [id]: value }, id)}
           {...commonProps}
         />
       );

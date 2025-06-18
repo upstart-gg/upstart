@@ -92,6 +92,12 @@ export function resolveSchema(schema: TSchema) {
   if (!resolved) {
     throw new Error(`Schema not found for reference: ${schema.$ref}`);
   }
+  if (typeof resolved === "object" && schema.title) {
+    return {
+      ...(resolved as object),
+      title: schema.title,
+    } as TSchema;
+  }
   return resolved as TSchema;
 }
 

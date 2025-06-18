@@ -72,7 +72,7 @@ export const manifest = defineBrickManifest({
       prop({
         title: "Icon",
         description: "Icon to display (iconify reference)",
-        schema: string("Icon", undefined, {
+        schema: string("Icon", {
           description: "Icon to display (iconify reference)",
           "ui:field": "iconify",
         }),

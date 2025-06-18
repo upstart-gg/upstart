@@ -17,7 +17,7 @@ export const manifest = defineBrickManifest({
     icon: prop({
       title: "Icon",
       description: "Icon to display (iconify reference)",
-      schema: string("Icon", undefined, {
+      schema: string("Icon", {
         description: "Icon to display (iconify reference)",
         "ui:field": "iconify",
       }),
@@ -25,7 +25,8 @@ export const manifest = defineBrickManifest({
     size: prop({
       title: "Size",
       description: "Size of the icon",
-      schema: string("Size", "1em", {
+      schema: string("Size", {
+        default: "1em",
         description: "Size of the icon",
         "ai:instructions": "The size of the icon can be set using 'em' or '%' unit.",
       }),

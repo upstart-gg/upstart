@@ -18,7 +18,7 @@ export const manifest = defineBrickManifest({
   repeatable: true,
   icon: RxVideo,
   props: defineProps({
-    url: string("Video URL", undefined, {
+    url: string("Video URL", {
       description: "URL of the video to embed. It can be a YouTube link or an embed link.",
     }),
     background: optional(backgroundRef()),

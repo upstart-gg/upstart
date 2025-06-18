@@ -9,11 +9,9 @@ import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
 
 export const BorderField: FC<FieldProps<BorderSettings>> = (props) => {
-  const { currentValue, onChange, required, title, description, placeholder, schema } = props;
+  const { currentValue, onChange, title, description, placeholder, schema } = props;
   const onSettingsChange = (newVal: Partial<BorderSettings>) => onChange({ ...currentValue, ...newVal });
   const [currentSide, setSide] = useState<string[]>(currentValue.sides ?? ["all"]);
-
-  console.log("boredr schema", schema);
 
   return (
     <div className="border-field flex flex-col gap-2 flex-1">
@@ -27,7 +25,7 @@ export const BorderField: FC<FieldProps<BorderSettings>> = (props) => {
             size="2"
             onValueChange={(value) => onSettingsChange({ width: value as BorderSettings["width"] })}
           >
-            <Select.Trigger radius="large" variant="ghost" />
+            <Select.Trigger radius="large" variant="ghost" placeholder={placeholder} />
             <Select.Content position="popper">
               <Select.Group>
                 {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}

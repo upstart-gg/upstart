@@ -10,6 +10,7 @@ import type { FC } from "react";
 import { paddingRef } from "../props/padding";
 import { backgroundColorRef } from "../props/background";
 import { colorRef } from "../props/color";
+import def from "ajv/dist/vocabularies/discriminator";
 
 export const manifest = defineBrickManifest({
   type: "form",
@@ -21,9 +22,9 @@ There is no need to define the form fields manually and the form does not accept
   isContainer: false,
   icon: FaWpforms,
   props: defineProps({
-    title: optional(string("Title", "My form", { description: "The title of the form" })),
-    intro: optional(string("Intro", undefined, { description: "The intro text of the form" })),
-    datarecordId: string("Datarecord ID", undefined, {
+    title: optional(string("Title", { description: "The title of the form", default: "My form" })),
+    intro: optional(string("Intro", { description: "The intro text of the form" })),
+    datarecordId: string("Datarecord ID", {
       description: "The ID of the datarecord to use to generate the form fields",
     }),
     padding: optional(paddingRef),

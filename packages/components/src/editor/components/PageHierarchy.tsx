@@ -19,7 +19,7 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
         <div key={brick.id}>
           <div
             className={tx(
-              "py-1 rounded-sm user-select-none",
+              "py-1 px-1.5 rounded-md user-select-none",
               selectedBrick?.id === brick.id
                 ? "bg-upstart-50 dark:bg-white/10 font-bold cursor-default"
                 : "hover:bg-gray-50 dark:hover:bg-white/10 cursor-pointer",
@@ -35,7 +35,7 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
               <span className="inline-flex items-center gap-1.5">
                 <Icon className="w-4 h-4" /> {brickName}
               </span>
-              <span className="text-xs text-gray-400 font-mono lowercase">{brick.id}</span>
+              <span className="text-[80%] text-gray-400 font-mono font-light lowercase">{brick.id}</span>
             </div>
           </div>
 
@@ -50,13 +50,14 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
   return (
     <div className="basis-1/2 grow-0">
       <PanelBlockTitle>Hierarchy</PanelBlockTitle>
-      <div className={tx("py-2 px-2 flex flex-col gap-1 text-sm overflow-y-auto scrollbar-thin")}>
-        {/* <div className="py-2 px-2 flex flex-col gap-1 text-sm max-h-[calc((100dvh-75px)/2)] overflow-y-auto scrollbar-thin"> */}
+      <div
+        className={tx("py-2 px-1.5 flex flex-col gap-1 text-sm text-[80%] overflow-y-auto scrollbar-thin")}
+      >
         {sections.map((section) => (
           <div key={section.id} className="flex flex-col gap-px">
             <div
               className={tx(
-                "py-1 px-1 rounded-sm user-select-none",
+                "py-1 px-1.5 rounded-md user-select-none",
                 section.id === currentSectionId
                   ? "bg-upstart-50 dark:bg-white/10 font-bold cursor-default"
                   : "hover:bg-gray-50 dark:hover:bg-white/10 cursor-pointer",

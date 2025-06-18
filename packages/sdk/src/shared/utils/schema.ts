@@ -12,7 +12,9 @@ export const StringEnum = <T extends string[]>(values: [...T], options: StringEn
     ...options,
   });
 
-export function getLitteralFromEnum(schema: ReturnType<typeof StringEnum> | TSchema) {
+export function normalizeSchemaEnum(
+  schema: ReturnType<typeof StringEnum> | TSchema,
+): Array<{ const: string; title: string }> {
   if (!("enum" in schema)) {
     return schema.anyOf ?? schema.oneOf;
   }

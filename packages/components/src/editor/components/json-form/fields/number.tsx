@@ -6,7 +6,6 @@ import type { FC } from "react";
 
 export const SliderField: FC<FieldProps<number>> = (props) => {
   const { schema, currentValue, onChange, required, title, description } = props;
-
   const unit = schema["ui:unit"] ?? "";
   const multiplier = parseFloat(schema["ui:multiplier"] ?? "1");
 
@@ -23,10 +22,12 @@ export const SliderField: FC<FieldProps<number>> = (props) => {
           step={schema.multipleOf ?? 1}
           defaultValue={[currentValue]}
         />
-        <span className="text-gray-500 text-sm text-nowrap whitespace-nowrap">
-          {currentValue * multiplier}
-          {unit}
-        </span>
+        {typeof currentValue === "number" && (
+          <span className="text-gray-500 text-sm text-nowrap whitespace-nowrap">
+            {currentValue * multiplier}
+            {unit}
+          </span>
+        )}
       </div>
     </div>
   );
