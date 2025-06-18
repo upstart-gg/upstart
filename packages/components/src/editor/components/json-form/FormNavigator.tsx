@@ -199,7 +199,7 @@ const FormNavigator: FC<FormNavigatorProps> = ({
                 type="button"
                 className={tx(
                   `flex items-center gap-1 p-0 bg-transparent text-upstart-600 dark:text-upstart-300
-                  border-0 cursor-pointer font-medium text-sm hover:opacity-90 focus:outline-none select-none`,
+                  border-0 cursor-pointer font-medium text-sm hover:opacity-80 focus:outline-none select-none`,
                 )}
                 onClick={navigateBack}
               >

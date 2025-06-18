@@ -5,14 +5,12 @@ import { useDebounceCallback } from "usehooks-ts";
 import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { UrlOrPageIdSettings } from "@upstart.gg/sdk/shared/bricks/props/string";
-import { type FC, useState } from "react";
+import { type ChangeEvent, type FC, useRef, useState } from "react";
 import { useSitemap } from "~/editor/hooks/use-editor";
 
 export const StringField: FC<FieldProps<string>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
-
   const onChangeDebounced = useDebounceCallback(onChange, 300);
-
   return (
     <div className="field field-string basis-full">
       <FieldTitle title={title} description={description} />
@@ -24,6 +22,7 @@ export const StringField: FC<FieldProps<string>> = (props) => {
           required={required}
           placeholder={placeholder}
           resize="vertical"
+          size={"1"}
           spellCheck={!!schema["ui:spellcheck"]}
         />
       ) : (
@@ -121,3 +120,103 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (pro
     </div>
   );
 };
+
+export const GeoAddressField: FC<FieldProps<string>> = (props) => {
+  const { currentValue, onChange, required, title, description, placeholder } = props;
+
+  const [searchResults, setSearchResults] = useState<SearchResults[]>([]);
+
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  const handleAddressChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    // Check if the value matches one of our search results
+    const matchedResult = searchResults.find((result) => result.label === value);
+    if (matchedResult) {
+      // Update your state with the coordinates
+      onChange(matchedResult.label);
+      // Clear search results since user made a selection
+      setSearchResults([]);
+      return;
+    }
+
+    // Otherwise, trigger search
+    onAddressChangeDebounced(event);
+  };
+
+  const onAddressChangeDebounced = useDebounceCallback((event: ChangeEvent<HTMLInputElement>) => {
+    console.log("onChangeDebounced", event);
+
+    // if (event.nativeEvent.type !== "input") {
+    //   console.log("Selected!", event);
+    //   // If the event is not an input event, we don't want to trigger a search
+    //   return;
+    // }
+
+    const query = event.target.value.trim();
+    if (!query) {
+      setSearchResults([]);
+      return;
+    }
+
+    // Abort the previous request if it exists
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort("New search initiated");
+    }
+
+    // Create a new AbortController for this request
+    const newAbortController = new AbortController();
+    abortControllerRef.current = newAbortController;
+
+    searchGeolocation(event.target.value, abortControllerRef.current.signal)
+      .then((results) => {
+        setSearchResults(results);
+      })
+      .catch((error) => {
+        console.error("Error fetching geolocation data:", error);
+        setSearchResults([]);
+      });
+  }, 300);
+
+  return (
+    <div className="field field-address basis-full">
+      <FieldTitle title={title} description={description} />
+      <TextField.Root
+        defaultValue={currentValue}
+        onInput={handleAddressChange}
+        className="!mt-1.5"
+        required={required}
+        placeholder={placeholder}
+      />
+    </div>
+  );
+};
+
+type SearchResults = {
+  label: string;
+  placeId: string;
+  lat: string;
+  lng: string;
+};
+
+function searchGeolocation(query: string, abortSignal: AbortSignal | null = null): Promise<SearchResults[]> {
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=jsonv2&layer=address&limit=8`;
+  return fetch(url, {
+    signal: abortSignal,
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      return data.map((item: any) => ({
+        label: item.display_name,
+        placeId: item.place_id,
+        lat: item.lat,
+        lng: item.lon,
+      }));
+    });
+}

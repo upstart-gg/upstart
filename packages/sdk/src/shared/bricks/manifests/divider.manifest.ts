@@ -23,7 +23,8 @@ export const manifest = defineBrickManifest({
       size: optional(
         prop({
           title: "Size",
-          schema: string("Size", "100%", {
+          schema: string("Size", {
+            default: "100%",
             description: "Size of the divider",
             "ai:instructions": "The size of the divider must be in % unit, like 50%",
           }),

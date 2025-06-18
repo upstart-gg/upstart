@@ -5,10 +5,10 @@ import { typedRef } from "~/shared/utils/typed-ref";
 
 type StrFieldOptions = StringOptions & FieldMetadata;
 
-export function string(title: string, defaultValue?: string, options: Omit<StrFieldOptions, "default"> = {}) {
+export function string(title: string, options: Omit<StrFieldOptions, "default"> = {}) {
   return prop({
     title,
-    schema: Type.String({ default: defaultValue, ...options }),
+    schema: Type.String(options),
   });
 }
 

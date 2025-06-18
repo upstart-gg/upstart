@@ -1,39 +1,54 @@
-import { forwardRef, lazy, Suspense, useEffect, useRef } from "react";
-import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/map.manifest";
+import { useEffect, useMemo, useRef } from "react";
+import { type Manifest, DEFAULTS } from "@upstart.gg/sdk/bricks/manifests/map.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { tx } from "@upstart.gg/style-system/twind";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-const WidgetMap = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, ref) => {
+export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
   const styles = useBrickStyle<Manifest>(brick);
   const props = brick.props;
+
+  const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  const lat = useMemo(() => props.location?.lat ?? DEFAULTS.lat, [props.location?.lat]);
+  const lng = useMemo(() => props.location?.lng ?? DEFAULTS.lng, [props.location?.lng]);
+
   useEffect(() => {
     if (!mapRef.current) return;
 
     // Initialize the map
-    const map = L.map(mapRef.current).setView([props.location.lat, props.location.lng], 13);
+    const map = L.map(mapRef.current, {
+      zoomControl: false,
+      attributionControl: false,
+      dragging: false, // Disable dragging for static maps
+      touchZoom: false, // Disable touch zoom for static maps
+      scrollWheelZoom: false, // Disable scroll wheel zoom for static maps
+      doubleClickZoom: false, // Disable double click zoom for static maps
+      boxZoom: false, // Disable box zoom for static maps
+      keyboard: false, // Disable keyboard controls for static maps
+    }).setView([lat, lng], props.location.zoom ?? DEFAULTS.zoom);
 
     // Add tile layer
     L.tileLayer("https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png", {
-      attribution:
-        '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+      // attribution:
+      //   '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
     }).addTo(map);
 
     // Add marker with tooltip
-    const marker = L.marker([props.location.lat, props.location.lng]).addTo(map);
+    const marker = L.marker([lat, lng]).addTo(map);
 
     if (props.location.tooltip) {
       marker
         .bindTooltip(props.location.tooltip, {
           permanent: true,
-          direction: "top",
+          direction: "bottom",
+          sticky: true, // Keep the tooltip open
+          offset: L.point(0, 10), // Adjust tooltip position
         })
         .openTooltip();
     }
@@ -52,12 +67,12 @@ const WidgetMap = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, r
         markerRef.current = null;
       }
     };
-  }, []); // Empty dependency array for initial setup
+  }, [lat, lng, props.location]); // Empty dependency array for initial setup
 
   // Update map when location changes
   useEffect(() => {
     if (mapInstanceRef.current && markerRef.current) {
-      const newLatLng = L.latLng(props.location.lat, props.location.lng);
+      const newLatLng = L.latLng(lat, lng);
 
       // Update map center
       mapInstanceRef.current.setView(newLatLng, mapInstanceRef.current.getZoom());
@@ -70,17 +85,33 @@ const WidgetMap = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, r
         markerRef.current
           .bindTooltip(props.location.tooltip, {
             permanent: true,
-            direction: "top",
+            direction: "bottom",
+            sticky: true, // Keep the tooltip open
+            offset: L.point(0, 10), // Adjust tooltip position
           })
           .openTooltip();
       } else {
         markerRef.current.unbindTooltip();
       }
     }
-  }, [props.location]);
+  }, [lat, lng, props.location.tooltip]);
+
+  useEffect(() => {
+    if (containerRef.current && editable) {
+      const resizeObserver = new ResizeObserver(() => {
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.invalidateSize();
+        }
+      });
+      resizeObserver.observe(containerRef.current);
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [editable]);
 
   return (
-    <div className={tx("flex-1 flex", props.preset, Object.values(styles))} ref={ref}>
+    <div className={tx("flex-1 flex", props.preset, Object.values(styles))} ref={containerRef}>
       <div
         ref={mapRef}
         className={tx("w-full h-full")}
@@ -88,6 +119,6 @@ const WidgetMap = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, r
       />
     </div>
   );
-});
+}
 
 export default WidgetMap;

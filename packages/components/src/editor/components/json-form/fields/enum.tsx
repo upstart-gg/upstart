@@ -4,7 +4,7 @@ import { Select } from "@upstart.gg/style-system/system";
 import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { FC } from "react";
-import { getLitteralFromEnum } from "@upstart.gg/sdk/shared/utils/schema";
+import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
 
 interface EnumOption {
   const: string;
@@ -26,7 +26,7 @@ const EnumField: FC<FieldProps<string>> = (props) => {
   // }
 
   // Extract options from the schema
-  const options: EnumOption[] = getLitteralFromEnum(schema) ?? [];
+  const options: EnumOption[] = normalizeSchemaEnum(schema) ?? [];
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   // (schema.anyOf ?? schema.oneOf ?? schema.enum)?.map((option: any, index: number) => ({
   //   const: typeof option === "string" ? option : option.const,

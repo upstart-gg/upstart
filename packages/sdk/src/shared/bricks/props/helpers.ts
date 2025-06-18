@@ -58,8 +58,17 @@ export function getGroupInfo(schema: TSchema) {
   };
 }
 
-export function defineProps<P extends TProperties>(props: P, options?: ObjectOptions) {
+export function defineProps<P extends TProperties>(
+  props: P,
+  options?: ObjectOptions & { noPreset?: boolean },
+) {
   const finalProps = { ...commonProps, ...props };
+  if (options?.noPreset) {
+    // If noPreset is true, we don't add the preset property
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/performance/noDelete: <explanation>
+    delete (finalProps as any).preset;
+  }
   return Type.Object(finalProps, options);
 }
 

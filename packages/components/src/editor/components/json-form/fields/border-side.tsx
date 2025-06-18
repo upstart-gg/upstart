@@ -4,9 +4,12 @@ import { MdBorderBottom, MdBorderLeft, MdBorderRight, MdBorderTop } from "react-
 import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { FC } from "react";
+import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
 
 export const BorderSideField: FC<FieldProps<BorderSettings["sides"]>> = (props) => {
   const { currentValue = [], onChange, title, description, schema } = props;
+
+  console.log("border side schema", schema);
 
   return (
     <div className="border-side-field flex flex-1">
@@ -14,7 +17,7 @@ export const BorderSideField: FC<FieldProps<BorderSettings["sides"]>> = (props) 
         <FieldTitle title={title ?? "Sides"} description={description} />
         <div className="inline-flex divide-x divide-gray-300 dark:divide-dark-500 rounded bg-gray-100 border grow-0 border-gray-300 max-w-min">
           {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
-          {schema.items.anyOf.map((option: any) => (
+          {normalizeSchemaEnum(schema.items).map((option: any) => (
             <button
               type="button"
               key={option.const}

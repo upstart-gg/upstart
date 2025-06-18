@@ -35,6 +35,8 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
     return null;
   }
 
+  const showTabsList = !!(manifest.props.properties.preset || manifest.isContainer);
+
   return (
     <div>
       <PanelBlockTitle>
@@ -59,23 +61,30 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
           setTabsMapping((prev) => ({ ...prev, [brick.id]: val as TabType }));
         }}
       >
-        <Tabs.List className="sticky top-0 z-50 bg-gray-100 dark:bg-dark-900">
-          <Tabs.Trigger value="preset" className="!flex-1">
-            Preset
-          </Tabs.Trigger>
-          <Tabs.Trigger value="settings" className="!flex-1">
-            {previewMode === "mobile" ? "Mobile settings" : "Settings"}
-          </Tabs.Trigger>
-
-          {manifest.isContainer && (
-            <Tabs.Trigger value="content" className="!flex-1">
-              Content
+        {showTabsList && (
+          <Tabs.List className="sticky top-0 z-50 bg-gray-100 dark:bg-dark-900">
+            {manifest.props.properties.preset && (
+              <Tabs.Trigger value="preset" className="!flex-1">
+                Preset
+              </Tabs.Trigger>
+            )}
+            <Tabs.Trigger value="settings" className="!flex-1">
+              {previewMode === "mobile" ? "Mobile settings" : "Settings"}
             </Tabs.Trigger>
-          )}
-        </Tabs.List>
-        <ScrollablePanelTab tab="preset">
-          <PresetsTab brick={brick} section={section} />
-        </ScrollablePanelTab>
+
+            {manifest.isContainer && (
+              <Tabs.Trigger value="content" className="!flex-1">
+                Content
+              </Tabs.Trigger>
+            )}
+          </Tabs.List>
+        )}
+        {manifest.props.properties.preset && (
+          <ScrollablePanelTab tab="preset">
+            <PresetsTab brick={brick} section={section} />
+          </ScrollablePanelTab>
+        )}
+
         <ScrollablePanelTab tab="settings">
           <SettingsTab brick={brick} section={section} />
         </ScrollablePanelTab>

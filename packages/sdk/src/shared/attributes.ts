@@ -7,6 +7,7 @@ import { boolean } from "./bricks/props/boolean";
 import { datetime } from "./bricks/props/date";
 import { enumProp } from "./bricks/props/enum";
 import { jsonDefault } from "json-schema-default";
+import def from "ajv/dist/vocabularies/discriminator";
 
 export function defineAttributes(attrs: TProperties) {
   // Attributes starting with "$" are reserved for internal use
@@ -80,7 +81,7 @@ const defaultAttributes = {
   $pageBackground: optional(backgroundRef({ title: "Page Background", defaultValue: { color: "base-100" } })),
 
   $pageOgImage: optional(
-    string("Social share image", "", {
+    string("Social share image", {
       description: "Image shown when page is shared on social media",
       "ai:guidelines": "Don't generate this property/image, it is automatically generated.",
       "ui:group": "meta",
@@ -99,7 +100,7 @@ const defaultAttributes = {
   ),
 
   $siteOgImage: optional(
-    string("Social share image", "", {
+    string("Social share image", {
       description: "Image shown when this site is shared on social media",
       "ai:guidelines": "Don't generate this image, it is automatically generated.",
       "ui:field": "image",
@@ -109,20 +110,22 @@ const defaultAttributes = {
     }),
   ),
 
-  $pagePath: string("Page path", "/", {
+  $pagePath: string("Page path", {
+    default: "/",
     description: "The URL path of the page",
     "ui:group": "location",
     "ui:group:title": "Location",
     "ui:field": "path",
   }),
 
-  $pageTitle: string("Title", "Untitled", {
+  $pageTitle: string("Title", {
+    default: "Untitled",
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
     description: "The title of the page. Appears in the browser tab and search results",
   }),
 
-  $pageDescription: string("Description", "", {
+  $pageDescription: string("Description", {
     "ui:widget": "textarea",
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
@@ -130,7 +133,7 @@ const defaultAttributes = {
     "ui:multiline": true,
   }),
 
-  $pageKeywords: string("Keywords", "", {
+  $pageKeywords: string("Keywords", {
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
     description: "Keywords related to the page. Used by search engines",
@@ -153,7 +156,7 @@ const defaultAttributes = {
         "Add custom tags to the <head> of your site. Useful for analytics tags, custom scripts, etc.",
       "ai:guidelines": "Don't include meta tags here, they are automatically generated.",
       "ui:multiline": true,
-      "ui:textarea-class": "h-40 !font-mono",
+      "ui:textarea-class": "h-40 !font-mono !text-xs",
       "ui:placeholder": "<script src='https://example.com/script.js'></script>",
       "ui:premium": true,
       "ui:scope": "site",
@@ -168,7 +171,7 @@ const defaultAttributes = {
         "Add custom tags to the <body> of your site. Useful for analytics tags, custom scripts, etc.",
       "ui:multiline": true,
       "ui:premium": true,
-      "ui:textarea-class": "h-40 !font-mono",
+      "ui:textarea-class": "h-40 !font-mono !text-xs",
       "ui:placeholder": "<script src='https://example.com/script.js'></script>",
       "ui:scope": "site",
       "ui:group": "external-scripts",

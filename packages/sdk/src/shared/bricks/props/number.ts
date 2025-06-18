@@ -4,13 +4,9 @@ import type { FieldMetadata } from "./types";
 
 type NumberFieldOptions = NumberOptions & FieldMetadata;
 
-export function number(
-  title: string,
-  defaultValue?: number,
-  options: Omit<NumberFieldOptions, "default"> = {},
-) {
+export function number(title: string, options: NumberFieldOptions = {}) {
   return prop({
     title,
-    schema: Type.Number({ default: defaultValue, ...options }),
+    schema: Type.Number(options),
   });
 }

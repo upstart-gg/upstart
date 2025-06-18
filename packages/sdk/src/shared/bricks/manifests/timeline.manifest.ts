@@ -13,6 +13,7 @@ import type { BrickProps } from "../props/types";
 import { colorRef } from "../props/color";
 import { StringEnum } from "~/shared/utils/schema";
 import type { FC } from "react";
+import def from "ajv/dist/vocabularies/discriminator";
 
 export const manifest = defineBrickManifest({
   type: "timeline",
@@ -46,7 +47,8 @@ export const manifest = defineBrickManifest({
         title: "Timeline items",
         schema: Type.Array(
           Type.Object({
-            date: string("Date", "2024", {
+            date: string("Date", {
+              default: "2024",
               description: "Date or time period for this event",
             }),
             title: textContentRef({ title: "Title", default: "Event title", disableSizing: true }),
@@ -55,7 +57,7 @@ export const manifest = defineBrickManifest({
               prop({
                 title: "Icon",
                 description: "Icon to display (iconify reference)",
-                schema: string("Icon", undefined, {
+                schema: string("Icon", {
                   description: "Icon for this timeline item",
                   "ui:widget": "iconify",
                 }),

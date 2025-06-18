@@ -26,25 +26,25 @@ export const manifest = defineBrickManifest({
     padding: optional(paddingRef),
     shadow: optional(shadowRef()),
     blurHash: optional(
-      string("Blur Hash", undefined, {
+      string("Blur Hash", {
         "ui:fied": "hidden",
         description: "A placeholder for the image while it is loading. Use a blur hash string.",
       }),
     ),
     author: optional(
       Type.Object({
-        name: string("Image Author", undefined, {
+        name: string("Image Author", {
           "ui:field": "hidden",
           description: "Image author. Use this to give credit to the author",
         }),
-        url: string("Image Author URL", undefined, {
+        url: string("Image Author URL", {
           "ui:field": "hidden",
           description: "Image author URL. Use this to give credit to the author",
         }),
       }),
     ),
     provider: optional(
-      string("Image Provider", undefined, {
+      string("Image Provider", {
         "ui:field": "hidden",
         description: "Image provider. Use this to give credit to the author",
         "ai:instructions": "The provider of the image, e.g. 'unsplash', 'pexels', etc.",

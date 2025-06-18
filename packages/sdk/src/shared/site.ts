@@ -101,6 +101,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                     lat: 37.7749,
                     lng: -122.4194,
                     tooltip: "San Francisco, CA",
+                    address: "San Francisco, CA",
                   },
                 },
               },

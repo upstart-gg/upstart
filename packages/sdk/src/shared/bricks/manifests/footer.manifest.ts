@@ -36,7 +36,7 @@ export const manifest = defineBrickManifest({
     ),
     backgroundColor: optional(backgroundColorRef()),
     logo: optional(imageRef({ title: "Logo" })),
-    rows: optional(number("Rows", 1)),
+    rows: optional(number("Rows", { default: 1 })),
     linksSections: array(
       Type.Object({
         sectionTitle: string("Links Section title"),
@@ -44,7 +44,7 @@ export const manifest = defineBrickManifest({
           Type.Object({
             title: string("Title"),
             url: urlOrPageIdRef(),
-            column: optional(number("Column", 1)),
+            column: optional(number("Column", { default: 1 })),
           }),
         ),
       }),

@@ -20,6 +20,7 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";
 import SectionSettingsView from "./SectionSettingsView";
 import PageHierarchy from "./PageHierarchy";
+import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
 
 type TabType = "preset" | "settings" | "content";
 
@@ -87,7 +88,7 @@ function PresetsTab({ section }: { section: Section }) {
           </Callout.Text>
         </Callout.Root>
         <div className="grid grid-cols-3 gap-2 mx-2 auto-rows-[3rem]">
-          {(presets.enum as string[]).map((preset, index) => (
+          {normalizeSchemaEnum(presets).map((preset, index) => (
             <button
               type="button"
               onClick={() => {
@@ -95,16 +96,16 @@ function PresetsTab({ section }: { section: Section }) {
                 updateSectionProps(section.id, { preset: preset as any }, previewMode === "mobile");
                 // updateBrickProps(brick.id, { preset: preset.const }, previewMode === "mobile");
               }}
-              key={preset}
+              key={preset.const}
               className={tx(
-                `${preset}`,
-                preset === "preset-none" && "border-gray-200 col-span-3",
+                `${preset.const}`,
+                preset.const === "preset-none" && "border-gray-200 col-span-3",
                 `text-xs flex items-center justify-center text-center p-2 border
                    rounded-md hover:opacity-80`,
-                section.props.preset === preset && "outline outline-2 outline-upstart-400",
+                section.props.preset === preset.const && "outline outline-2 outline-upstart-400",
               )}
             >
-              {presets.enumNames[index].title}
+              {preset.title}
             </button>
           ))}
         </div>

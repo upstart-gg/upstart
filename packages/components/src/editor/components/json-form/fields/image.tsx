@@ -11,7 +11,7 @@ import { IoMdClose } from "react-icons/io";
 import { FieldTitle } from "../field-factory";
 
 const ImageField: FC<FieldProps<ImageProps>> = (props) => {
-  const { schema, formData, onChange, required, title, description, currentValue } = props;
+  const { schema, formData, onChange, required, title, description, currentValue = { src: "" } } = props;
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);
   // const [src, setSrc] = useState<string | null>(currentValue.src);
