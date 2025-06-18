@@ -51,27 +51,6 @@ const ignored = ["!**/*.md", "!**/tests/**/*", "!**/*.test.ts", "!**/sample.ts"]
 export default defineConfig((options) => {
   return [
     {
-      entry: ["src/node", ...ignored],
-      outDir: "dist/node",
-      target: "node22.11",
-      format: ["esm"],
-      dts: false,
-      clean: !options.watch,
-      minify: !options.watch,
-      metafile: !!process.env.ANALYZE_BUNDLE,
-      sourcemap: !options.watch,
-      // Important: force splitting to false to avoid issues with dynamic imports and __dirname resolutions
-      splitting: false,
-      external,
-      // Force bundling of lodash-es for the CLI
-      // noExternal: ["lodash-es"],
-      esbuildOptions(input) {
-        input.banner = banner;
-      },
-      loader,
-      removeNodeProtocol: false,
-    },
-    {
       entry: [
         "src/shared/ajv.ts",
         "src/shared/analytics",
