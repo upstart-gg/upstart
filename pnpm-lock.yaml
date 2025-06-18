@@ -173,9 +173,6 @@ importers:
       react-joyride:
         specifier: 2.9.3
         version: 2.9.3(@types/react@18.3.3)(react-dom@18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124))(react@18.3.0-canary-3d9b20132-20240124)
-      react-leaflet:
-        specifier: 5.0.0
-        version: 5.0.0(leaflet@1.9.4)(react-dom@18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124))(react@18.3.0-canary-3d9b20132-20240124)
       react-markdown:
         specifier: 10.1.0
         version: 10.1.0(@types/react@18.3.3)(react@18.3.0-canary-3d9b20132-20240124)
@@ -2647,13 +2644,6 @@ packages:
   '@react-aria/utils@3.28.1':
     resolution: {integrity: sha512-mnHFF4YOVu9BRFQ1SZSKfPhg3z+lBRYoW5mLcYTQihbKhz48+I1sqRkP7ahMITr8ANH3nb34YaMME4XWmK2Mgg==}
     peerDependencies:
-      react: 18.3.0-canary-3d9b20132-20240124
-      react-dom: 18.3.0-canary-3d9b20132-20240124
-
-  '@react-leaflet/core@3.0.0':
-    resolution: {integrity: sha512-3EWmekh4Nz+pGcr+xjf0KNyYfC3U2JjnkWsh0zcqaexYqmmB5ZhH37kz41JXGmKzpaMZCnPofBBm64i+YrEvGQ==}
-    peerDependencies:
-      leaflet: ^1.9.0
       react: 18.3.0-canary-3d9b20132-20240124
       react-dom: 18.3.0-canary-3d9b20132-20240124
 
@@ -6309,13 +6299,6 @@ packages:
       react: 18.3.0-canary-3d9b20132-20240124
       react-dom: 18.3.0-canary-3d9b20132-20240124
 
-  react-leaflet@5.0.0:
-    resolution: {integrity: sha512-CWbTpr5vcHw5bt9i4zSlPEVQdTVcML390TjeDG0cK59z1ylexpqC6M1PJFjV8jD7CF+ACBFsLIDs6DRMoLEofw==}
-    peerDependencies:
-      leaflet: ^1.9.0
-      react: 18.3.0-canary-3d9b20132-20240124
-      react-dom: 18.3.0-canary-3d9b20132-20240124
-
   react-markdown@10.1.0:
     resolution: {integrity: sha512-qKxVopLT/TyA6BX3Ue5NwabOsAzm0Q7kAPwq6L+wWDwisYs7R8vZ0nRXqq6rkueboxpkjvLGU9fWifiX/ZZFxQ==}
     peerDependencies:
@@ -9740,12 +9723,6 @@ snapshots:
       '@react-types/shared': 3.28.0(react@18.3.0-canary-3d9b20132-20240124)
       '@swc/helpers': 0.5.15
       clsx: 2.1.1
-      react: 18.3.0-canary-3d9b20132-20240124
-      react-dom: 18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124)
-
-  '@react-leaflet/core@3.0.0(leaflet@1.9.4)(react-dom@18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124))(react@18.3.0-canary-3d9b20132-20240124)':
-    dependencies:
-      leaflet: 1.9.4
       react: 18.3.0-canary-3d9b20132-20240124
       react-dom: 18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124)
 
@@ -13922,13 +13899,6 @@ snapshots:
       type-fest: 4.39.1
     transitivePeerDependencies:
       - '@types/react'
-
-  react-leaflet@5.0.0(leaflet@1.9.4)(react-dom@18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124))(react@18.3.0-canary-3d9b20132-20240124):
-    dependencies:
-      '@react-leaflet/core': 3.0.0(leaflet@1.9.4)(react-dom@18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124))(react@18.3.0-canary-3d9b20132-20240124)
-      leaflet: 1.9.4
-      react: 18.3.0-canary-3d9b20132-20240124
-      react-dom: 18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124)
 
   react-markdown@10.1.0(@types/react@18.3.3)(react@18.3.0-canary-3d9b20132-20240124):
     dependencies:

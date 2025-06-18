@@ -87,6 +87,25 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               },
             ],
           },
+          {
+            id: "content",
+            label: "Content Section",
+            order: 2,
+            props: {},
+            bricks: [
+              {
+                id: generateId(),
+                type: "map",
+                props: {
+                  location: {
+                    lat: 37.7749,
+                    lng: -122.4194,
+                    tooltip: "San Francisco, CA",
+                  },
+                },
+              },
+            ],
+          },
         ],
         tags: [],
         attributes: defaultAttributesSchema,
