@@ -1,5 +1,11 @@
 # @upstart.gg/style-system
 
+## 0.0.107
+
+### Patch Changes
+
+- [#335](https://github.com/upstart-gg/upstart/pull/335) [`6d85db0`](https://github.com/upstart-gg/upstart/commit/6d85db0fbede34ab15bcd977ed26d6370ca059fb) Thanks [@mattallty](https://github.com/mattallty)! - Clean packages
+
 ## 0.0.106
 
 ## 0.0.105
