@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => ({
         "src/editor/components/Editor.tsx",
         "src/editor/components/EditorWrapper.tsx",
         // "src/editor/hooks/use-editor.ts",
-        // "src/shared/hooks/use-datasource.tsx",
+        "src/shared/hooks/use-datasource.tsx",
         "src/shared/components/Page.tsx",
         "src/shared/utils/get-theme-css.ts",
       ],
