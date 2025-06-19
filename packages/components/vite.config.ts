@@ -25,10 +25,6 @@ export default defineConfig(({ mode }) => ({
       ],
       outDir: "dist/types",
     }),
-    // process.env.NODE_ENV === "production" &&
-    //   bundlesize({
-    //     limits: [{ name: "**/*", limit: "1.6 mB" }],
-    //   }),
   ],
   optimizeDeps: {
     // include: ["@upstart.gg/sdk"],
