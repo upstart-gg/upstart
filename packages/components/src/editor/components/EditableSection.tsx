@@ -166,7 +166,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const draftHelpers = useDraftHelpers();
-  const { setSelectedSectionId, setPanel } = useEditorHelpers();
+  const { setSelectedSectionId, setPanel, setSelectedBrickId } = useEditorHelpers();
   const sections = useSections();
   const isLastSection = section.order === sections.length - 1;
   const isFirstSection = section.order === 0;
@@ -246,7 +246,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
           </DropdownMenu.Group>
           <DropdownMenu.Separator />
           <DropdownMenu.Group>
-            <DropdownMenu.Item onClick={() => draftHelpers.moveSectionDown(section.id)}>
+            <DropdownMenu.Item onClick={() => draftHelpers.duplicateSection(section.id)}>
               <div className="flex items-center justify-start gap-2">
                 <span>Duplicate</span>
               </div>
@@ -263,7 +263,16 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
             </DropdownMenu.Item>
           </DropdownMenu.Group>
           <DropdownMenu.Separator />
-          <DropdownMenu.Item color="red" onClick={() => draftHelpers.deleteSection(section.id)}>
+          <DropdownMenu.Item
+            color="red"
+            onClick={(e) => {
+              e.stopPropagation();
+              draftHelpers.deleteSection(section.id);
+              setSelectedSectionId();
+              setSelectedBrickId();
+              setPanel();
+            }}
+          >
             <div className="flex items-center justify-start gap-2.5">
               <span>Delete</span>
             </div>

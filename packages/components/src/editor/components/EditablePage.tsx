@@ -109,9 +109,9 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           console.debug("New brick dropped at", position, section);
           const bricksDefaults = defaultProps[brickType];
 
-          // @ts-ignore
+          // @ts-igneore
           const newBrick: Brick = {
-            id: `brick-${generateId()}`,
+            id: `b_${generateId()}`,
             ...bricksDefaults,
             type: brickType,
           };
@@ -201,6 +201,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         style={{
           zoom,
         }}
+        data-dropzone
       >
         {sections.map((section) => (
           <Section key={section.id} section={section} />

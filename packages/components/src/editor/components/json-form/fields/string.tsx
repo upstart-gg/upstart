@@ -6,7 +6,8 @@ import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { UrlOrPageIdSettings } from "@upstart.gg/sdk/shared/bricks/props/string";
 import { type ChangeEvent, type FC, useRef, useState } from "react";
-import { useSitemap } from "~/editor/hooks/use-editor";
+import { useDraftHelpers, useSitemap } from "~/editor/hooks/use-editor";
+import { tooltip } from "leaflet";
 
 export const StringField: FC<FieldProps<string>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
@@ -122,8 +123,8 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (pro
 };
 
 export const GeoAddressField: FC<FieldProps<string>> = (props) => {
-  const { currentValue, onChange, required, title, description, placeholder } = props;
-
+  const { currentValue, onChange, required, title, description, placeholder, formData, brickId } = props;
+  const { updateBrickProps } = useDraftHelpers();
   const [searchResults, setSearchResults] = useState<SearchResults[]>([]);
 
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -133,26 +134,47 @@ export const GeoAddressField: FC<FieldProps<string>> = (props) => {
     // Check if the value matches one of our search results
     const matchedResult = searchResults.find((result) => result.label === value);
     if (matchedResult) {
+      console.log("Matched result:", matchedResult);
       // Update your state with the coordinates
       onChange(matchedResult.label);
+
+      console.log("address changed for brick %s", brickId);
+
+      if (brickId) {
+        updateBrickProps(brickId, {
+          location: {
+            address: matchedResult.label,
+            lat: matchedResult.lat,
+            lng: matchedResult.lng,
+            tooltip: "",
+          },
+        });
+      }
+
+      // Create a custom event containing the result with address and coordinates
+      const customEvent = new CustomEvent("geoAddressSelected", {
+        detail: {
+          address: matchedResult.label,
+          placeId: matchedResult.placeId,
+          lat: matchedResult.lat,
+          lng: matchedResult.lng,
+        },
+      });
+      // Dispatch the custom event
+      window.dispatchEvent(customEvent);
+
       // Clear search results since user made a selection
       setSearchResults([]);
       return;
     }
+
+    console.log("No match found for %s, continuing search...", value);
 
     // Otherwise, trigger search
     onAddressChangeDebounced(event);
   };
 
   const onAddressChangeDebounced = useDebounceCallback((event: ChangeEvent<HTMLInputElement>) => {
-    console.log("onChangeDebounced", event);
-
-    // if (event.nativeEvent.type !== "input") {
-    //   console.log("Selected!", event);
-    //   // If the event is not an input event, we don't want to trigger a search
-    //   return;
-    // }
-
     const query = event.target.value.trim();
     if (!query) {
       setSearchResults([]);
@@ -181,12 +203,17 @@ export const GeoAddressField: FC<FieldProps<string>> = (props) => {
   return (
     <div className="field field-address basis-full">
       <FieldTitle title={title} description={description} />
+      <datalist id="search-results">
+        {searchResults.map((result) => (
+          <option key={result.placeId} value={result.label} />
+        ))}
+      </datalist>
       <TextField.Root
         defaultValue={currentValue}
-        onInput={handleAddressChange}
-        className="!mt-1.5"
-        required={required}
+        onChange={handleAddressChange}
+        className="!mt-1"
         placeholder={placeholder}
+        list="search-results"
       />
     </div>
   );
