@@ -47,7 +47,7 @@ export default defineConfig(({ mode }) => ({
         Page: "src/shared/components/Page.tsx",
         // Brick: "src/shared/components/Brick.tsx",
         // "use-editor": "src/editor/hooks/use-editor.ts",
-        // "use-datasource": "src/shared/hooks/use-datasource.tsx",
+        "use-datasource": "src/shared/hooks/use-datasource.tsx",
         "get-theme-css": "src/shared/utils/get-theme-css.ts",
       },
       formats: ["es"],

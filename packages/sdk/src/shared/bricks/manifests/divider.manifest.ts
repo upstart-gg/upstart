@@ -7,7 +7,6 @@ import { backgroundColor, backgroundColorRef } from "../props/background";
 import { RxDividerHorizontal } from "react-icons/rx";
 import type { BrickProps } from "../props/types";
 import { StringEnum } from "~/shared/utils/schema";
-import type { FC } from "react";
 
 export const manifest = defineBrickManifest({
   type: "divider",
@@ -18,7 +17,12 @@ export const manifest = defineBrickManifest({
   icon: RxDividerHorizontal,
   props: defineProps(
     {
-      orientation: optional(StringEnum(["horizontal", "vertical"], { title: "Orientation" })),
+      orientation: optional(
+        StringEnum(["horizontal", "vertical"], {
+          title: "Orientation",
+          enumNames: ["Horizontal", "Vertical"],
+        }),
+      ),
       color: optional(backgroundColorRef({ default: "bg-base-300", title: "Divider color" })),
       size: optional(
         prop({

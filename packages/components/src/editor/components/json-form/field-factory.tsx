@@ -76,7 +76,10 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
   );
 
   // Determine field type
-  const fieldType = (schema["ui:field"] ?? schema.type ?? (schema.anyOf ? "anyOf" : "")) as string;
+  const fieldType = (schema["ui:field"] ??
+    (schema.enum ? "enum" : null) ??
+    schema.type ??
+    (schema.anyOf ? "anyOf" : "")) as string;
 
   switch (fieldType) {
     case "hidden":

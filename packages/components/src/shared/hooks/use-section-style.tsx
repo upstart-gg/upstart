@@ -24,7 +24,7 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
 
     section.props.layout?.alignItems,
     section.props.layout?.justifyContent,
-    section.props.layout?.gap,
+    section.props.layout?.gap ?? "gap-2",
     typeof section.props.layout?.wrap === "undefined" || section.props.layout?.wrap === true
       ? "flex-wrap"
       : "flex-nowrap",

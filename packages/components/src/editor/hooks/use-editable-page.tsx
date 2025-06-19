@@ -3,8 +3,16 @@ import { useCallback, useEffect, useRef, type RefObject } from "react";
 import type { RestrictOptions } from "@interactjs/modifiers/restrict/pointer";
 import type { DraggableOptions } from "@interactjs/actions/drag/plugin";
 import type { ResizableOptions } from "@interactjs/actions/resize/plugin";
-import { useGenerationState, useGetBrick, usePreviewMode, useSelectedGroup, useZoom } from "./use-editor";
-import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
+import {
+  useDraftHelpers,
+  useGenerationState,
+  useGetBrick,
+  usePreviewMode,
+  useSections,
+  useSelectedGroup,
+  useZoom,
+} from "./use-editor";
+import { generateId, type Brick, type Section } from "@upstart.gg/sdk/shared/bricks";
 import type { BrickConstraints } from "@upstart.gg/sdk/shared/brick-manifest";
 import { defaultProps, manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
@@ -40,8 +48,8 @@ interface DropCallbacks {
   ) => void;
   onDrop: (
     event: Interact.DropEvent,
-    gridPosition: { x: number; y: number; w: number; h: number },
-    section: HTMLElement,
+    gridPosition: { x: number; y: number },
+    section: HTMLElement | Section,
     brickType: Brick["type"],
   ) => void;
   onDropActivate?: (event: Interact.DropEvent) => void;
@@ -89,9 +97,11 @@ export const useEditablePage = (
   const getBrick = useGetBrick();
   const selectedGroup = useSelectedGroup();
   const previewMode = usePreviewMode();
+  const sections = useSections();
   const interactable = useRef<Interact.Interactable | null>(null);
   const dropzone = useRef<Interact.Interactable | null>(null);
   const dropTargetRef = useRef<HTMLElement | null>(null);
+  const { addSection } = useDraftHelpers();
   const { zoom } = useZoom();
   const generationState = useGenerationState();
 
@@ -430,21 +440,44 @@ export const useEditablePage = (
           accept: ".draggable-brick",
           ondrop: (event: Interact.DropEvent) => {
             console.debug("useEditablePage:dropzone:ondrop", event);
-            const type = event.relatedTarget.dataset.brickType as Brick["type"] | undefined;
-            if (type) {
-              const section = getSectionElementAtPosition(event.dragEvent.clientX, event.dragEvent.clientY);
-              invariant(section, "Section not found");
+            const brickType = event.relatedTarget.dataset.brickType as Brick["type"] | undefined;
+            if (brickType) {
+              const bricksDefaults = defaultProps[brickType];
+              let section: HTMLElement | Section | undefined = getSectionElementAtPosition(
+                event.dragEvent.clientX,
+                event.dragEvent.clientY,
+              );
+
+              if (!section) {
+                console.log("sections", { sections });
+                // Brick was dragged outside of a section, so we need to create a new section
+                const lastSection = sections.toSorted((a, b) => a.order - b.order).at(-1);
+                const newBrick: Brick = {
+                  id: `b_${generateId()}`,
+                  ...bricksDefaults,
+                  type: brickType,
+                };
+                section = {
+                  id: `s_${generateId()}`,
+                  label: `Section ${sections.length + 1}`,
+                  props: {},
+                  bricks: [newBrick],
+                  order: (lastSection?.order ?? 0) + 1,
+                };
+
+                addSection(section);
+                return;
+              }
 
               const gridConfig = getGridConfig(section, previewMode);
               const dropPosition = getDropPosition(event, gridConfig);
-              const { defaultWidth, defaultHeight } = defaultProps[type];
+              const { defaultWidth, defaultHeight } = bricksDefaults;
               const w = defaultWidth?.[previewMode] ?? 20;
               const h = defaultHeight?.[previewMode] ?? 10;
               const x = Math.max(Math.round(dropPosition.x - w / 2), 1);
               const y = Math.max(Math.round(dropPosition.y - h / 2), 1);
               const position = { x, y, w, h };
-
-              dropCallbacks.onDrop(event, position, section, type);
+              dropCallbacks.onDrop(event, position, section, brickType);
             }
           },
         })
@@ -472,7 +505,9 @@ export const useEditablePage = (
 
           if (type) {
             const section = getSectionElementAtPosition(event.dragEvent.clientX, event.dragEvent.clientY);
-            invariant(section, "Section not found");
+            if (!section) {
+              return;
+            }
             const gridConfig = getGridConfig(section, previewMode);
             const constraints: BrickConstraints = defaultProps[type];
             const w = (constraints.defaultWidth?.[previewMode] ?? 20) * gridConfig.colWidth;
@@ -490,5 +525,5 @@ export const useEditablePage = (
       dropzone.current?.unset();
       dropzone.current = null;
     };
-  }, [pageRef, dropCallbacks, generationState.isReady, previewMode]);
+  }, [pageRef, dropCallbacks, generationState.isReady, previewMode, addSection, sections]);
 };

@@ -19,23 +19,25 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
         <div key={brick.id}>
           <div
             className={tx(
-              "py-1 px-1.5 rounded-md user-select-none",
+              "py-1 px-2 rounded-md user-select-none",
               selectedBrick?.id === brick.id
                 ? "bg-upstart-50 dark:bg-white/10 font-bold cursor-default"
                 : "hover:bg-gray-50 dark:hover:bg-white/10 cursor-pointer",
             )}
-            style={{ paddingLeft: `${level * 16}px` }}
+            style={{ marginLeft: `${level * 10}px` }}
             onClick={(e) => {
               e.stopPropagation();
               console.log("clicking on brick %s", brick.id);
               setSelectedBrickId(brick.id);
             }}
           >
-            <div className="flex items-center justify-between gap-px px-1">
+            <div className="flex items-center justify-between group transition-all">
               <span className="inline-flex items-center gap-1.5">
                 <Icon className="w-4 h-4" /> {brickName}
               </span>
-              <span className="text-[80%] text-gray-400 font-mono font-light lowercase">{brick.id}</span>
+              <span className="text-[80%] text-gray-400 font-mono font-light lowercase opacity-0 group-hover:opacity-70">
+                {brick.id}
+              </span>
             </div>
           </div>
 
@@ -57,7 +59,7 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
           <div key={section.id} className="flex flex-col gap-px">
             <div
               className={tx(
-                "py-1 px-1.5 rounded-md user-select-none",
+                "py-1 px-2 rounded-md user-select-none",
                 section.id === currentSectionId
                   ? "bg-upstart-50 dark:bg-white/10 font-bold cursor-default"
                   : "hover:bg-gray-50 dark:hover:bg-white/10 cursor-pointer",

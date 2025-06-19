@@ -593,17 +593,30 @@ export const createDraftStore = (
               }
               const newSection = {
                 ...section,
-                id: `section-${generateId()}`,
+                id: `s_${generateId()}`,
                 order: state.sections.length,
                 label: `${section.label} (copy)`,
+                // generate new bricks with new IDs
+                bricks: section.bricks.map((brick) => ({
+                  ...brick,
+                  id: `b_${generateId()}`,
+                  props: mergeIgnoringArrays({}, brick.props, {
+                    $children: (brick.props.$children as Brick[] | undefined)?.map((child) => ({
+                      ...child,
+                      id: `b_${generateId()}`,
+                    })),
+                  }),
+                })),
               };
               state.sections.push(newSection);
+              state.brickMap = buildBrickMap(state.sections);
             }),
 
           deleteSection: (id) =>
             set((state) => {
               const section = state.sections.find((s) => s.id === id);
-              if (section) {
+              if (!section) {
+                console.warn("Cannot delete section %s: not found", id);
                 return null;
               }
               // delete all bricks in this section in the brickMap reference
@@ -1497,7 +1510,9 @@ export const useSectionsSubscribe = (callback: (sections: DraftState["sections"]
   const ctx = useDraftStoreContext();
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    return ctx.subscribe((state) => state.sections, debounce(callback, 200), { fireImmediately: false });
+    return ctx.subscribe((state) => state?.sections ?? [], debounce(callback, 200), {
+      fireImmediately: false,
+    });
   }, []);
 };
 
@@ -1505,7 +1520,7 @@ export const useAttributesSubscribe = (callback: (attr: DraftState["attr"]) => v
   const ctx = useDraftStoreContext();
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    return ctx.subscribe((state) => state.attr, callback);
+    return ctx.subscribe((state) => state.attr, callback, { equalityFn: isEqual });
   }, []);
 };
 

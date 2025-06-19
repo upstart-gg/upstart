@@ -7,7 +7,7 @@ import { tx } from "@upstart.gg/style-system/twind";
 const Image = forwardRef<HTMLImageElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const { props } = brick;
   const { image: imageStyles, ...containerStyles } = useBrickStyle(brick);
-  const { src, alt } = props.image;
+  const { src, alt } = props.image ?? {};
 
   return (
     <div

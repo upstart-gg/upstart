@@ -542,7 +542,7 @@ What should we work on together? 🤖`,
           placeholder={
             messages.some((m) => m.role === "user")
               ? undefined
-              : "Add a section just below the navbar showing a large photo of space"
+              : "Add a section just below the navbar containing a paragraph with a short description of the site."
           }
           size="2"
           className={tx(

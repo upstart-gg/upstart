@@ -5,7 +5,13 @@ import { TextContent } from "../components/TextContent";
 import { tx, css } from "@upstart.gg/style-system/twind";
 
 const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
-  const props = brick.props;
+  const props = structuredClone(brick.props);
+
+  if (!props.cardTitle?.content && !props.cardBody?.content) {
+    // Put some sample content in the card if both title and body are empty
+    props.cardTitle = { content: "Card Title" };
+    props.cardBody = { content: "This is the body of the card. You can edit this content." };
+  }
   return (
     <div className={tx("card flex flex-col")} ref={ref}>
       {props.cardTitle?.content && (
@@ -20,7 +26,7 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
       )}
       {props.cardBody?.content && (
         <TextContent
-          propPath="cardTitle.content"
+          propPath="cardBody.content"
           className="card-body flex-1"
           brickId={brick.id}
           content={props.cardBody.content}
