@@ -96,6 +96,14 @@ export default function EditableSection({ section }: EditableSectionProps) {
             </EditableBrickWrapper>
           );
         })}
+
+      {bricks.length === 0 && (
+        <div className="absolute h-40 text-center inset-2 rounded bg-gray-100 flex justify-center items-center text-base text-black/50 font-medium">
+          This is a section.
+          <br />
+          Drag bricks here to stack them inside.
+        </div>
+      )}
     </section>
   );
 }
@@ -188,7 +196,9 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
         "bg-white/70 backdrop-blur-md transition-opacity duration-500  group-hover/section:opacity-80 flex",
       )}
     >
-      <div className={tx(btnCls, "cursor-default flex-col items-start justify-center gap-0")}>
+      <div
+        className={tx(btnCls, "cursor-pointer flex-col items-start justify-center gap-0 hover:text-black")}
+      >
         <div className="text-xs font-light leading-[0.9] ">Section</div>
         <div className="text-sm font-semibold -mt-1.5">{section.label ?? `${section.order + 1}`}</div>
       </div>
@@ -221,7 +231,11 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
         </Tooltip>
       )}
       <DropdownMenu.Root modal={false} onOpenChange={setDropdownOpen}>
-        <DropdownMenu.Trigger>
+        <DropdownMenu.Trigger
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
           <button type="button" className={tx(btnCls)}>
             <TbDots className="w-6 h-6" />
           </button>
@@ -246,12 +260,22 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
           </DropdownMenu.Group>
           <DropdownMenu.Separator />
           <DropdownMenu.Group>
+            <DropdownMenu.Item
+              onClick={(e) => {
+                e.stopPropagation();
+                draftHelpers.createEmptySection(section.id);
+              }}
+            >
+              <div className="flex items-center justify-start gap-2">
+                <span>Create new section below</span>
+              </div>
+            </DropdownMenu.Item>
             <DropdownMenu.Item onClick={() => draftHelpers.duplicateSection(section.id)}>
               <div className="flex items-center justify-start gap-2">
                 <span>Duplicate</span>
               </div>
             </DropdownMenu.Item>
-            <DropdownMenu.Item
+            {/* <DropdownMenu.Item
               onClick={() => {
                 setSelectedSectionId(section.id);
                 setPanel("inspector");
@@ -260,7 +284,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
               <div className="flex items-center justify-start gap-2">
                 <span>Settings</span>
               </div>
-            </DropdownMenu.Item>
+            </DropdownMenu.Item> */}
           </DropdownMenu.Group>
           <DropdownMenu.Separator />
           <DropdownMenu.Item

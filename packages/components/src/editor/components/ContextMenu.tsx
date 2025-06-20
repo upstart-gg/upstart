@@ -16,7 +16,7 @@ const ContextMenuWrapper = ({ children }: ComponentProps<"div">) => {
       const target = e.target as HTMLElement | null;
       const isBrick = target?.matches("[data-brick]");
       const isBrickChild = target?.closest("[data-brick]");
-      const brickElement = (isBrick ? target : isBrickChild ?? null) as HTMLElement | null;
+      const brickElement = (isBrick ? target : (isBrickChild ?? null)) as HTMLElement | null;
 
       if (brickElement) {
         const brickId = brickElement.getAttribute("id");

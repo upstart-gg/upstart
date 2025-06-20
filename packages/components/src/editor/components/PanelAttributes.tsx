@@ -8,20 +8,11 @@ import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import FormNavigator from "./json-form/FormNavigator";
 import AttributesSettingsView from "./AttributesSettingsView";
-import { TObject } from "@sinclair/typebox";
 
 export default function SettingsForm() {
-  const draft = useDraft();
-  const attributes = useAttributes();
   const attrSchema = useAttributesSchema();
   const [shouldRender, setShouldRender] = useState(false);
   const [currentTab, setCurrentTab] = useState("page-settings");
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: draft.updateAttributes is a stable function
-  const onChange = useCallback((data: Record<string, unknown>, propertyChanged: string) => {
-    console.log("changed attr %o", data);
-    draft.updateAttributes(data as Attributes);
-  }, []);
 
   const filteredAttrSchema = useMemo(() => {
     const filteredSchema = {

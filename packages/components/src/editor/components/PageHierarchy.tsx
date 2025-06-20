@@ -3,11 +3,17 @@ import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
 import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { tx } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";
+import { useEffect, useState } from "react";
 
 export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick; section: Section }) {
   const { setSelectedBrickId, setSelectedSectionId } = useEditorHelpers();
   const sections = useSections();
   const currentSectionId = useSelectedSectionId();
+  const [hoverElement, setHoverElement] = useState<{ type: string; id: string }>();
+
+  useEffect(() => {
+    console.log("hoverElement changed", hoverElement);
+  }, [hoverElement]);
 
   function mapBricks(bricks: Brick[], level = 0) {
     return bricks.map((brick) => {
@@ -30,6 +36,8 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
               console.log("clicking on brick %s", brick.id);
               setSelectedBrickId(brick.id);
             }}
+            onMouseEnter={() => setHoverElement({ type: "brick", id: brick.id })}
+            onMouseLeave={() => setHoverElement(undefined)}
           >
             <div className="flex items-center justify-between group transition-all">
               <span className="inline-flex items-center gap-1.5">

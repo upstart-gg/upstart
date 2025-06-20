@@ -3,9 +3,9 @@ import { sectionSchema } from "@upstart.gg/sdk/shared/bricks";
 import { getSchemaObjectDefaults } from "@upstart.gg/sdk/shared/utils/schema";
 import { useCallback, useMemo } from "react";
 import { merge } from "lodash-es";
-import { useAttributes, usePreviewMode } from "~/editor/hooks/use-editor";
+import { useAttributes, useDraft, useDraftHelpers, usePreviewMode } from "~/editor/hooks/use-editor";
 import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
-import type { AttributesSchema } from "@upstart.gg/sdk/shared/attributes";
+import type { Attributes, AttributesSchema } from "@upstart.gg/sdk/shared/attributes";
 
 type AttributesSettingsViewProps = {
   attributesSchema: AttributesSchema;
@@ -20,6 +20,7 @@ export default function AttributesSettingsView({
 }: AttributesSettingsViewProps) {
   const previewMode = usePreviewMode();
   const attr = useAttributes();
+  const draft = useDraft();
   const filter: SchemaFilter = (prop) => {
     return (
       (typeof prop.metadata?.["ui:responsive"] === "undefined" ||
@@ -38,8 +39,10 @@ export default function AttributesSettingsView({
     return merge({}, defProps, attr ?? {});
   }, [attr, attributesSchema]);
 
-  const onChange = useCallback((data: Record<string, unknown>, propertyChangedPath: string) => {
-    console.log("onChange", data, propertyChangedPath);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: draft.updateAttributes is a stable function
+  const onChange = useCallback((data: Record<string, unknown>, propertyChanged: string) => {
+    console.log("changed attr %o", data);
+    draft.updateAttributes(data as Attributes);
   }, []);
 
   return (

@@ -9,6 +9,7 @@ import { useDraftHelpers, useGetBrick, usePreviewMode } from "~/editor/hooks/use
 import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
 import { tx } from "@upstart.gg/style-system/twind";
+import { useLocalStorage } from "usehooks-ts";
 
 type BrickSettingsViewProps = {
   brick: Brick;
@@ -18,6 +19,7 @@ type BrickSettingsViewProps = {
 export default function BrickSettingsView({ brick, group }: BrickSettingsViewProps) {
   const { updateBrickProps } = useDraftHelpers();
   const manifest = useBrickManifest(brick.type);
+  const [showAdvanced, setShowAdvanced] = useLocalStorage("upstart:editor:show-advanced", false);
   const previewMode = usePreviewMode();
   const getBrickInfo = useGetBrick();
   const brickInfo = getBrickInfo(brick.id);
@@ -26,7 +28,8 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
       (typeof prop.metadata?.["ui:responsive"] === "undefined" ||
         prop.metadata?.["ui:responsive"] === true ||
         prop.metadata?.["ui:responsive"] === previewMode) &&
-      (!prop.metadata?.category || prop.metadata?.category === "settings")
+      (!prop.metadata?.category || prop.metadata?.category === "settings") &&
+      (!prop["ui:advanced"] || showAdvanced)
       /* &&
       (!group || !prop.metadata?.group || (prop.metadata?.group && key === group))*/
     );

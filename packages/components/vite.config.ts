@@ -2,6 +2,8 @@ import { defineConfig, type PluginOption } from "vite";
 import react from "@vitejs/plugin-react";
 import dts from "vite-plugin-dts";
 import Inspect from "vite-plugin-inspect";
+import devtoolsJson from "vite-plugin-devtools-json";
+
 // import bundlesize from "vite-plugin-bundlesize";
 import tsconfigPaths from "vite-tsconfig-paths";
 
@@ -10,6 +12,7 @@ export default defineConfig(({ mode }) => ({
   base: "./",
   plugins: [
     tsconfigPaths() as PluginOption,
+    devtoolsJson(),
     Inspect({
       open: true,
     }),

@@ -106,7 +106,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         // updateDragOverGhostStyle(null);
 
         if (position) {
-          console.debug("New brick dropped at", position, section);
           const bricksDefaults = defaultProps[brickType];
 
           // @ts-igneore
@@ -122,6 +121,8 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
             : null;
           const hoveredBrickManifest = hoveredBrick ? manifests[hoveredBrick.type] : null;
 
+          console.debug("New brick dropped at", { position, section, hoveredBrick });
+
           // Add the new brick to the store
           // Specify the parent if we dropped on a container
           draft.addBrick(
@@ -129,6 +130,8 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
             section.id,
             hoveredBrick && hoveredBrickManifest?.isContainer ? hoveredBrick.id : null,
           );
+
+          console.log("New brick added", newBrick, section.id);
 
           if (previewMode === "desktop") {
             startTransition(() => {

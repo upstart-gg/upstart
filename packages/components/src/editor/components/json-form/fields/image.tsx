@@ -52,9 +52,9 @@ const ImageField: FC<FieldProps<ImageProps>> = (props) => {
           </Button>
           {schema["ui:show-img-search"] && (
             <Button variant="soft" size="1" radius="full" type="button" onClick={() => setShowSearch(true)}>
-              <label className="!leading-[inherit] !mb-0 !font-medium !text-inherit cursor-[inherit]">
+              <span className="!leading-[inherit] !mb-0 !font-medium !text-inherit cursor-[inherit]">
                 Search
-              </label>
+              </span>
             </Button>
           )}
         </div>

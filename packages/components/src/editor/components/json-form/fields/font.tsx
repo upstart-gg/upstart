@@ -56,8 +56,6 @@ const Option = (props: OptionProps<OptionType>) => {
   return (
     <div
       className={className}
-      // style={customStyles as React.CSSProperties}
-      role="button"
       id={innerProps.id}
       tabIndex={innerProps.tabIndex}
       onMouseEnter={() => setIsHovered(true)}

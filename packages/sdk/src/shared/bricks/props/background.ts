@@ -106,6 +106,7 @@ export function backgroundColor(defaultValue?: string, title = "Background color
       default: defaultValue,
       "ui:field": "color",
       "ui:color-type": "background",
+      "ui:advanced": true,
       "ui:styleId": "#styles:backgroundColor",
     }),
   });

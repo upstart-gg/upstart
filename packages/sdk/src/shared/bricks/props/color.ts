@@ -13,6 +13,7 @@ export function color(defaultValue?: string, title = "Text color") {
       "ui:styleId": "#styles:color",
       "ui:field": "color",
       "ui:color-type": "text",
+      "ui:advanced": true,
     }),
   });
 }

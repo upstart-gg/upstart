@@ -20,7 +20,7 @@ const Text = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
         propPath="content"
         className="first-child:first-line:leading-[100%]"
         brickId={brick.id}
-        content={props.content}
+        content={props.content ?? "Your text here..."}
         editable={editable}
       />
     </div>

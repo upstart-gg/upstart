@@ -42,7 +42,7 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
       content: textContentRef(),
       backgroundColor: optional(backgroundColorRef()),
       color: optional(colorRef()),
-      padding: optional(paddingRef),
+      padding: optional(paddingRef({ default: "p-2" })),
       border: optional(borderRef),
       shadow: optional(shadowRef()),
     },

@@ -30,10 +30,10 @@ export default function PanelSectionInspector({ section }: { section: Section })
   const selectedTab = tabsMapping[section.id] ?? "settings";
 
   return (
-    <div>
+    <div key={`section-inspector-${section.id}`}>
       <PanelBlockTitle>
         <div className="flex justify-between items-center group">
-          {section.label ?? "unnamed"} Section
+          {section.label ?? "unnamed"}
           <span
             className={tx(
               "text-xs font-mono lowercase opacity-0 group-hover:opacity-70 transition-opacity delay-1000",

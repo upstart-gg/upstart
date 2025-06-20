@@ -45,18 +45,16 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edi
           );
         })
       ) : ds.datasourceId ? (
-        <div className="bg-gradient-to-tr from-gray-300/80 to-gray-200/80 text-black flex justify-center items-center flex-1 text-lg font-bold">
+        <div className="bg-gradient-to-tr from-gray-200/80 to-gray-100/80 text-black flex justify-center items-center flex-1 text-lg font-bold">
           This container is dynamic.
           <pre className="text-xs font-mono">{JSON.stringify(props, null, 2)}</pre>
         </div>
       ) : (
-        <>
-          <div className="absolute text-center inset-2 rounded-inherit bg-black/30 flex justify-center items-center text-xl text-white font-semibold">
-            This a a container
-            <br />
-            Drag bricks here
-          </div>
-        </>
+        <div className="absolute text-center inset-2 rounded bg-gray-100 flex justify-center items-center text-base text-black/50 font-medium">
+          This is a container.
+          <br />
+          Drag bricks here to stack them inside.
+        </div>
       )}
     </div>
   );

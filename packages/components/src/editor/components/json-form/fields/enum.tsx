@@ -127,7 +127,11 @@ const EnumField: FC<FieldProps<string>> = (props) => {
         <div className="flex justify-between flex-1 pr-1 gap-1">
           <FieldTitle title={title} description={description} />
           <Select.Root defaultValue={currentValue} size="2" onValueChange={(value) => onChange(value)}>
-            <Select.Trigger radius="large" variant="ghost" placeholder={schema["ui:placeholder"]} />
+            <Select.Trigger
+              radius="large"
+              variant="ghost"
+              placeholder={schema["ui:placeholder"] ?? "Not specified"}
+            />
             <Select.Content position="popper">
               <Select.Group>
                 {options

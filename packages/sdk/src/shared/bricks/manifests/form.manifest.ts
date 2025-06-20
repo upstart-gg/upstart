@@ -1,16 +1,12 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, optional, prop } from "../props/helpers";
 import { FaWpforms } from "react-icons/fa6";
-import { Type } from "@sinclair/typebox";
 import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
-import { StringDecoder } from "node:string_decoder";
-import { StringEnum } from "~/shared/utils/schema";
-import type { FC } from "react";
+import { StringEnum } from "~/shared/utils/string-enum";
 import { paddingRef } from "../props/padding";
 import { backgroundColorRef } from "../props/background";
 import { colorRef } from "../props/color";
-import def from "ajv/dist/vocabularies/discriminator";
 
 export const manifest = defineBrickManifest({
   type: "form",
@@ -27,7 +23,7 @@ There is no need to define the form fields manually and the form does not accept
     datarecordId: string("Datarecord ID", {
       description: "The ID of the datarecord to use to generate the form fields",
     }),
-    padding: optional(paddingRef),
+    padding: optional(paddingRef()),
     backgroundColor: optional(backgroundColorRef()),
     color: optional(colorRef()),
     align: optional(

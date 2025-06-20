@@ -30,7 +30,7 @@ import { fieldLabel } from "./form-class";
 import { Tooltip } from "@upstart.gg/style-system/system";
 import clsx from "clsx";
 import { CssLengthField } from "./fields/css-length";
-import { resolveSchema } from "@upstart.gg/sdk/shared/ajv";
+import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 
 export interface FieldFactoryOptions {
   brickId?: string;
@@ -333,7 +333,7 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       return null;
 
     default:
-      console.warn("Unknown field type: %s", fieldType);
+      console.log("!!! Unknown field type: %s", fieldType);
       console.log("Field schema", schema);
       return null;
   }
@@ -402,7 +402,7 @@ export function processObjectSchemaToFields({
     if (fieldComponent) {
       fields.push(fieldComponent);
     } else {
-      console.warn("processObjectSchemaToFields: No field component created for", fieldName);
+      console.log("!!! No field component created for", fieldName);
     }
   });
 

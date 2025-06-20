@@ -13,7 +13,6 @@ import { shadow } from "./bricks/props/effects";
 import { textContent } from "./bricks/props/text";
 import { cssLength } from "./bricks/props/css-length";
 import { urlOrPageId } from "./bricks/props/string";
-import type { TSchema } from "@sinclair/typebox";
 
 export type { JSONSchemaType, AnySchemaObject, SchemaObject, JSONType } from "ajv";
 
@@ -86,20 +85,6 @@ ajv.addFormat("password", {
   validate: (data: string) => typeof data === "string",
   async: false,
 });
-
-export function resolveSchema(schema: TSchema) {
-  const resolved = schema.$ref ? ajv.getSchema(schema.$ref!)?.schema : schema;
-  if (!resolved) {
-    throw new Error(`Schema not found for reference: ${schema.$ref}`);
-  }
-  if (typeof resolved === "object" && schema.title) {
-    return {
-      ...(resolved as object),
-      title: schema.title,
-    } as TSchema;
-  }
-  return resolved as TSchema;
-}
 
 export function serializeAjvErrors(errors: ErrorObject[] | null | undefined): string {
   if (!errors || errors.length === 0) {

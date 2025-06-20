@@ -28,19 +28,21 @@ export function useBodyStyle({ attributes }: { attributes: Attributes }) {
 }
 
 export function usePageStyle({ attributes, editable, typography, showIntro }: UsePageStyleProps) {
+  console.log("usePageStyle", { attributes, editable });
   return tx(
     "flex flex-col group/page mx-auto relative max-w-full w-full p-0 antialiased",
     editable && "overflow-hidden min-h-full transition-all duration-300",
     isStandardColor(attributes.$pageBackground?.color) &&
       css({ backgroundColor: attributes.$pageBackground?.color as string }),
-    !isStandardColor(attributes.$pageBackground?.color) && (attributes.$pageBackground?.color as string),
+    attributes.$pageBackground?.color &&
+      !isStandardColor(attributes.$pageBackground?.color) &&
+      (attributes.$pageBackground?.color as string),
     isStandardColor(attributes.$textColor) && css({ color: attributes.$textColor as string }),
     !isStandardColor(attributes.$textColor) && (attributes.$textColor as string),
     typeof attributes.$pageBackground?.image === "string" &&
       css({
         backgroundImage: `url(${attributes.$pageBackground.image})`,
-        //todo: make it dynamic, by using attributes
-        backgroundRepeat: "no-repeat",
+        backgroundRepeat: attributes.$pageBackground.repeat ?? "no-repeat",
         backgroundSize: attributes.$pageBackground.size ?? "cover",
         backgroundPosition: "center top",
       }),
