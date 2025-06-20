@@ -1,13 +1,14 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { group, optional, prop } from "./helpers";
-import { StringEnum } from "~/shared/utils/schema";
 import { typedRef } from "~/shared/utils/typed-ref";
+import { StringEnum } from "~/shared/utils/string-enum";
 
 export function border(title = "Border") {
   return group({
     title,
     options: {
       "ui:styleId": "#styles:border",
+      "ui:advanced": true,
       $id: "styles:border",
     },
     children: {

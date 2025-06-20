@@ -6,7 +6,7 @@ import { Type } from "@sinclair/typebox";
 import { backgroundColor, backgroundColorRef } from "../props/background";
 import { RxDividerHorizontal } from "react-icons/rx";
 import type { BrickProps } from "../props/types";
-import { StringEnum } from "~/shared/utils/schema";
+import { StringEnum } from "~/shared/utils/string-enum";
 
 export const manifest = defineBrickManifest({
   type: "divider",

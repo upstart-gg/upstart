@@ -23,7 +23,7 @@ const BackgroundField: FC<FieldProps<BackgroundSettings>> = (props) => {
   const isPremium = useIsPremiumPlan();
 
   return (
-    <div className="flex-1 flex gap-1 relative">
+    <div className="flex-1 flex flex-col gap-1 relative">
       <div className={tx("background-field flex items-center justify-between flex-wrap gap-1 flex-1")}>
         <div className="flex items-center">
           <FieldTitle title={title ?? "Color / image"} description={description} />
@@ -144,6 +144,7 @@ const BackgroundField: FC<FieldProps<BackgroundSettings>> = (props) => {
               </div>
             </div>
           </div>
+          <div className="basis-full w-0 h-2" />
           {/* image preview */}
           <div className="border border-upstart-200 p-1.5 self-end relative">
             <img src={currentValue.image} alt={id} className="max-w-full h-auto" />

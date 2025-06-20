@@ -5,6 +5,7 @@ import { type TProperties, Type, type TSchema, type TObject, type ObjectOptions 
 import { commonProps } from "./common";
 import type { PartialBy, Prop, PropGroup, GroupMetadata } from "./types";
 import { get } from "lodash-es";
+import { resolveSchema } from "~/shared/utils/schema-resolver";
 
 function isTObject(schema: TSchema | TProperties): schema is TObject {
   return schema.type === "object";
@@ -83,16 +84,17 @@ export type StyleId = string;
 // as the key and the $id as the value. Paths should be dot-separated.
 // The initial schema is a TObject, but nested schemas can be any type and arrays.
 export function getStyleProperties(schema: TSchema, path = "", styles: Record<PropertyPath, StyleId> = {}) {
-  if (schema.type === "object") {
-    for (const key in schema.properties) {
-      const prop = schema.properties[key];
+  const resolvedSchema = resolveSchema(schema);
+  if (resolvedSchema.type === "object") {
+    for (const key in resolvedSchema.properties) {
+      const prop = resolvedSchema.properties[key];
       if (prop["ui:styleId"]) {
         styles[`${path}${key}`] = prop["ui:styleId"];
       }
       getStyleProperties(prop, `${path}${key}.`, styles);
     }
-  } else if (schema.type === "array") {
-    getStyleProperties(schema.items, `${path}[].`, styles);
+  } else if (resolvedSchema.type === "array") {
+    getStyleProperties(resolvedSchema.items, `${path}[].`, styles);
   }
   return styles;
 }

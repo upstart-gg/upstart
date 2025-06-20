@@ -18,11 +18,18 @@ function getClassesFromStyleProps<T extends BrickManifest>(
   const classes = Object.entries(stylesProps).reduce(
     (acc, [path, styleId]) => {
       const helper = helpers[styleId as keyof typeof helpers];
+      if (!helper) {
+        // console.warn(`No helper found for styleId: ${styleId} in path: ${path} for type: ${type}`);
+        return acc;
+      }
       const part = extractStylePath(path);
       acc[part] = acc[part] ?? [];
+
+      const resolvedProps = get(mergedProps, path);
+      const resolvedMobileProps = get(mobileProps, path);
       acc[part].push(
         // @ts-expect-error
-        tx(helper?.(get(mergedProps, path), get(mobileProps, path))),
+        tx(helper?.(resolvedProps, resolvedMobileProps)),
       );
       return acc;
     },

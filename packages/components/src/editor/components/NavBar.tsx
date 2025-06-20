@@ -132,7 +132,6 @@ export default function NavBar() {
 
   return (
     <nav
-      role="navigation"
       className={tx(
         `z-[9999] h-full gap-1 px-4 flex text-xl w-full items-center transition-opacity duration-300
         text-black/70 dark:text-dark-200 bg-white`,

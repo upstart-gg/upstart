@@ -1,5 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
-import { StringEnum } from "./utils/schema";
+import { StringEnum } from "./utils/string-enum";
 
 export const pageInfoSchema = Type.Object(
   {

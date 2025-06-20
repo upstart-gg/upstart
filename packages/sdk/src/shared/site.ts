@@ -69,7 +69,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
         sections: [
           {
             id: generateId(),
-            label: "Hero Section",
+            label: "Top",
             order: 1,
             props: {},
             bricks: [
@@ -89,7 +89,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           },
           {
             id: "content",
-            label: "Content Section",
+            label: "Content",
             order: 2,
             props: {},
             bricks: [
@@ -103,6 +103,15 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                     tooltip: "San Francisco, CA",
                     address: "San Francisco, CA",
                   },
+                },
+              },
+              {
+                id: generateId(),
+                type: "card",
+                props: {
+                  cardTitle: { content: "Welcome to My Site" },
+                  cardBody: { content: "This is a sample card body. You can edit this content." },
+                  backgroundColor: "bg-primary",
                 },
               },
             ],

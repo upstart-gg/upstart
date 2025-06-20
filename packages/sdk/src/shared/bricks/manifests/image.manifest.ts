@@ -23,7 +23,7 @@ export const manifest = defineBrickManifest({
     image: imageRef(),
     backgroundColor: optional(backgroundColorRef()),
     border: optional(borderRef),
-    padding: optional(paddingRef),
+    padding: optional(paddingRef()),
     shadow: optional(shadowRef()),
     blurHash: optional(
       string("Blur Hash", {
@@ -82,6 +82,7 @@ export const examples: {
       shadow: "shadow-md",
       border: {
         rounding: "rounded-full",
+        width: "border-2",
       },
     },
   },
@@ -109,6 +110,7 @@ export const examples: {
         url: "https://example.com/john",
       },
       provider: "unsplash",
+      shadow: "shadow-md",
     },
   },
   {
@@ -132,6 +134,7 @@ export const examples: {
         alt: "Company logo",
       },
       padding: "p-8",
+      shadow: "shadow-sm",
     },
   },
   {
@@ -144,6 +147,7 @@ export const examples: {
       },
       border: {
         rounding: "rounded-xl",
+        width: "border-2",
       },
       shadow: "shadow-lg",
       padding: "p-2",
@@ -160,6 +164,7 @@ export const examples: {
       },
       border: {
         rounding: "rounded-lg",
+        width: "border-2",
       },
       shadow: "shadow-xl",
       author: {
@@ -181,6 +186,7 @@ export const examples: {
       padding: "p-8",
       border: {
         rounding: "rounded-lg",
+        width: "border-2",
       },
       shadow: "shadow-sm",
     },
@@ -195,6 +201,7 @@ export const examples: {
       },
       border: {
         rounding: "rounded-lg",
+        width: "border-2",
       },
       shadow: "shadow-md",
       blurHash: "L6PZfSi_.AyE_3t7t7R**0o#DgR4",

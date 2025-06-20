@@ -1,20 +1,7 @@
-import { type Static, Type, type TSchema, type UnsafeOptions } from "@sinclair/typebox";
+import type { Static, TSchema } from "@sinclair/typebox";
 import { jsonDefault } from "json-schema-default";
 
-type StringEnumOptions = Partial<UnsafeOptions> & {
-  enumNames?: string[];
-};
-
-export const StringEnum = <T extends string[]>(values: [...T], options: StringEnumOptions = {}) =>
-  Type.Unsafe<T[number]>({
-    type: "string",
-    enum: values,
-    ...options,
-  });
-
-export function normalizeSchemaEnum(
-  schema: ReturnType<typeof StringEnum> | TSchema,
-): Array<{ const: string; title: string }> {
+export function normalizeSchemaEnum(schema: TSchema): Array<{ const: string; title: string }> {
   if (!("enum" in schema)) {
     return schema.anyOf ?? schema.oneOf;
   }

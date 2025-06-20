@@ -63,6 +63,7 @@ export function preset(defaultValue?: string) {
       title: "Preset",
       description: "Styles presets are used to maintain styles consistency across the application.",
       default: defaultValue ?? "preset-none",
+      "ui:field": "hidden",
     },
   );
 }

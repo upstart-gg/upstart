@@ -98,9 +98,14 @@ export function getBrickElementAtPosition(x: number, y: number) {
 export function getBricksHovered(brickId: string, rect: FullRect, section: HTMLElement) {
   // return all bricks that intersect with the rect (all surface!)
   const hoveredElements: HTMLElement[] = [];
-  const elementsToCheck = Array.from(
-    section.querySelectorAll<HTMLElement>('[data-element-kind="brick"]'),
-  ).filter((el) => el.id !== brickId);
+  const allElements = Array.from(section.querySelectorAll<HTMLElement>("[data-brick]"));
+  const elementsToCheck = allElements.filter((el) => el.id !== brickId);
+  console.log(
+    "Checking for hovered bricks",
+    elementsToCheck.length,
+    "elements of a total of",
+    allElements.length,
+  );
 
   for (const element of elementsToCheck) {
     // Get element boundaries

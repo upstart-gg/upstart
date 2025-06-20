@@ -7,58 +7,77 @@ import { BsCardText } from "react-icons/bs";
 import { image, imageRef } from "../props/image";
 import { Type } from "@sinclair/typebox";
 import type { BrickProps } from "../props/types";
+import { borderRef } from "../props/border";
+import { shadowRef } from "../props/effects";
+import { colorRef } from "../props/color";
 
 export const manifest = defineBrickManifest({
   type: "card",
   name: "Card",
-  description: "A multi-purpose card that can have a title, subtitle, image, and content",
+  description: "A multi-purpose card that can have a title, image, and content",
   repeatable: true,
   icon: BsCardText,
   props: defineProps({
     variants: Type.Array(
       Type.Union(
         [
-          Type.Literal("image-first", { title: "Image First" }),
-          Type.Literal("image-last", { title: "Image Last" }),
-          Type.Literal("image-overlay", { title: "Image Overlay" }),
-          Type.Literal("image-left-side", { title: "Image Left Side" }),
-          Type.Literal("image-right-side", { title: "Image Right Side" }),
-          Type.Literal("centered", { title: "Centered" }),
-          Type.Literal("large-padding", { title: "Large padding" }),
+          Type.Literal("image-first", { title: "Image First", "ui:variant-type": "image-placement" }),
+          Type.Literal("image-last", { title: "Image Last", "ui:variant-type": "image-placement" }),
+          Type.Literal("image-overlay", { title: "Image Overlay", "ui:variant-type": "image-placement" }),
+          Type.Literal("image-left-side", { title: "Image Left Side", "ui:variant-type": "image-placement" }),
+          Type.Literal("image-right-side", {
+            title: "Image Right Side",
+            "ui:variant-type": "image-placement",
+          }),
+          Type.Literal("centered", { title: "Centered", "ui:variant-type": "align" }),
+          Type.Literal("bordered", { title: "Bordered", "ui:variant-type": "border" }),
+          Type.Literal("shadow-none", { title: "No Shadow", "ui:variant-type": "shadow" }),
+          Type.Literal("shadow-small", { title: "Small Shadow", "ui:variant-type": "shadow" }),
+          Type.Literal("shadow-medium", { title: "Medium Shadow", "ui:variant-type": "shadow" }),
+          Type.Literal("shadow-large", {
+            title: "Large Shadow",
+            "ui:variant-type": "shadow",
+          }),
         ],
         {
-          title: "Variant",
+          title: "Variants",
         },
       ),
+      {
+        "ui:field": "variant",
+        "ui:variant-names": {
+          "image-placement": "Image Placement",
+          align: "Alignment",
+          border: "Border Style",
+        },
+      },
     ),
+    cardImage: optional(imageRef()),
     cardTitle: optional(
       group({
         title: "Title",
         children: {
           content: textContentRef(),
-          padding: optional(paddingRef),
+          padding: optional(paddingRef()),
           backgroundColor: optional(backgroundColorRef()),
         },
       }),
     ),
-    cardImage: optional(
-      group({
-        title: "Image",
-        children: {
-          image: imageRef(),
-        },
-      }),
-    ),
+
     cardBody: optional(
       group({
         title: "Body",
         children: {
           content: textContentRef(),
-          padding: optional(paddingRef),
+          padding: optional(paddingRef()),
           backgroundColor: optional(backgroundColorRef()),
         },
       }),
     ),
+    backgroundColor: optional(backgroundColorRef({ "ui:field": "hidden" })),
+    color: optional(colorRef()),
+    border: optional(borderRef),
+    shadow: optional(shadowRef()),
   }),
 });
 
@@ -90,10 +109,8 @@ export const examples: {
     props: {
       variants: ["image-overlay", "centered"],
       cardImage: {
-        image: {
-          src: "https://via.placeholder.com/400x300",
-          alt: "Placeholder image",
-        },
+        src: "https://via.placeholder.com/400x300",
+        alt: "Placeholder image",
       },
       cardTitle: {
         content: "Overlay Title",
@@ -113,10 +130,8 @@ export const examples: {
     props: {
       variants: ["image-left-side"],
       cardImage: {
-        image: {
-          src: "https://via.placeholder.com/200x200",
-          alt: "Product image",
-        },
+        src: "https://via.placeholder.com/200x200",
+        alt: "Product image",
       },
       cardTitle: {
         content: "Premium Headphones",
@@ -132,7 +147,7 @@ export const examples: {
     description: "Feature card with large padding and background",
     type: "card",
     props: {
-      variants: ["large-padding", "centered"],
+      variants: ["centered"],
       cardTitle: {
         content: "Key Feature",
         padding: "p-8",
@@ -160,10 +175,8 @@ export const examples: {
         padding: "p-4",
       },
       cardImage: {
-        image: {
-          src: "https://via.placeholder.com/400x200",
-          alt: "Technology concept",
-        },
+        src: "https://via.placeholder.com/400x200",
+        alt: "Technology concept",
       },
     },
   },
@@ -183,10 +196,8 @@ export const examples: {
         padding: "p-4",
       },
       cardImage: {
-        image: {
-          src: "https://via.placeholder.com/150x150",
-          alt: "Customer photo",
-        },
+        src: "https://via.placeholder.com/150x150",
+        alt: "Customer photo",
       },
     },
   },
@@ -209,12 +220,10 @@ export const examples: {
     description: "Event card with multiple variants",
     type: "card",
     props: {
-      variants: ["image-first", "large-padding", "centered"],
+      variants: ["image-first", "centered"],
       cardImage: {
-        image: {
-          src: "https://via.placeholder.com/400x250",
-          alt: "Event venue",
-        },
+        src: "https://via.placeholder.com/400x250",
+        alt: "Event venue",
       },
       cardTitle: {
         content: "Annual Conference 2025",
@@ -234,10 +243,8 @@ export const examples: {
     props: {
       variants: ["image-left-side"],
       cardImage: {
-        image: {
-          src: "https://via.placeholder.com/120x120",
-          alt: "News thumbnail",
-        },
+        src: "https://via.placeholder.com/120x120",
+        alt: "News thumbnail",
       },
       cardTitle: {
         content: "Breaking News Update",
@@ -253,7 +260,7 @@ export const examples: {
     description: "Call-to-action card with prominent styling",
     type: "card",
     props: {
-      variants: ["centered", "large-padding"],
+      variants: ["centered"],
       cardTitle: {
         content: "Get Started Today",
         padding: "p-8",

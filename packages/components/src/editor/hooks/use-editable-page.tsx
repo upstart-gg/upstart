@@ -216,7 +216,6 @@ export const useEditablePage = (
           const instructions = hoveredBricks ? getDropInstructions(event.rect, hoveredBricks) : null;
 
           if (instructions?.dropTarget) {
-            console.log("we have a drop target", instructions?.dropTarget.id);
             if (dropTargetRef.current && instructions.dropTarget.id !== dropTargetRef.current?.id) {
               dropTargetRef.current.style.backgroundColor =
                 dropTargetRef.current?.dataset.originalBackgroundColor ?? "";
@@ -228,7 +227,6 @@ export const useEditablePage = (
               dropTargetRef.current.style.backgroundColor;
             dropTargetRef.current.style.backgroundColor = "var(--violet-a3)";
           } else if (dropTargetRef.current) {
-            console.log("Resetting style of brick %s", dropTargetRef.current.id);
             dropTargetRef.current.style.backgroundColor =
               dropTargetRef.current.dataset.originalBackgroundColor ?? "";
           }
@@ -262,7 +260,14 @@ export const useEditablePage = (
           const hoveredBricks = section ? getBricksHovered(target.id, event.rect, section) : null;
           const instructions = hoveredBricks ? getDropInstructions(event.rect, hoveredBricks) : null;
 
-          console.log("DROPPED instructions", instructions);
+          console.log("DROPPED instructions", {
+            targetId: target.id,
+            rect: event.rect,
+            elements,
+            section,
+            hoveredBricks,
+            instructions,
+          });
 
           // remove all clones
           document.querySelectorAll(`[data-element-kind="clone"]`).forEach((el) => {
@@ -468,15 +473,10 @@ export const useEditablePage = (
                 addSection(section);
                 return;
               }
-
-              const gridConfig = getGridConfig(section, previewMode);
-              const dropPosition = getDropPosition(event, gridConfig);
-              const { defaultWidth, defaultHeight } = bricksDefaults;
-              const w = defaultWidth?.[previewMode] ?? 20;
-              const h = defaultHeight?.[previewMode] ?? 10;
-              const x = Math.max(Math.round(dropPosition.x - w / 2), 1);
-              const y = Math.max(Math.round(dropPosition.y - h / 2), 1);
-              const position = { x, y, w, h };
+              const position = {
+                x: event.dragEvent.clientX,
+                y: event.dragEvent.clientY,
+              };
               dropCallbacks.onDrop(event, position, section, brickType);
             }
           },

@@ -1,6 +1,6 @@
 import { createStore, useStore } from "zustand";
 import { debounce, isEqual, merge } from "lodash-es";
-import { subscribeWithSelector } from "zustand/middleware";
+import { subscribeWithSelector, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { enableMapSet } from "immer";
 import { createContext, useContext, useEffect } from "react";
@@ -17,8 +17,7 @@ import type { CallContextProps, GenerationState } from "@upstart.gg/sdk/shared/c
 import { generateId } from "@upstart.gg/sdk/shared/bricks";
 import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
 import type { Site, SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
-import { add } from "date-fns";
-export { type Immer } from "immer";
+export type { Immer } from "immer";
 
 enableMapSet();
 
@@ -194,142 +193,149 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
 
   return createStore<EditorState>()(
     subscribeWithSelector(
-      temporal(
-        immer((set, _get) => ({
-          ...DEFAULT_PROPS,
-          ...initProps,
-          toggleEditorEnabled: () =>
-            set((state) => {
-              state.disabled = !state.disabled;
-            }),
-          toggleChat: () =>
-            set((state) => {
-              state.chatVisible = !state.chatVisible;
-              if (state.chatVisible) {
-                state.panel = undefined;
-                state.panelPosition = "right";
-              }
-            }),
+      persist(
+        temporal(
+          immer((set, _get) => ({
+            ...DEFAULT_PROPS,
+            ...initProps,
+            toggleEditorEnabled: () =>
+              set((state) => {
+                state.disabled = !state.disabled;
+              }),
+            toggleChat: () =>
+              set((state) => {
+                state.chatVisible = !state.chatVisible;
+                if (state.chatVisible) {
+                  state.panel = undefined;
+                  state.panelPosition = "right";
+                }
+              }),
 
-          setImagesSearchResults: (images) =>
-            set((state) => {
-              state.imagesSearchResults = images;
-            }),
+            setImagesSearchResults: (images) =>
+              set((state) => {
+                state.imagesSearchResults = images;
+              }),
 
-          setLastTextEditPosition: (position) =>
-            set((state) => {
-              state.lastTextEditPosition = position;
-            }),
+            setLastTextEditPosition: (position) =>
+              set((state) => {
+                state.lastTextEditPosition = position;
+              }),
 
-          toggleTextEditMode: () =>
-            set((state) => {
-              state.textEditMode =
-                !state.textEditMode || state.textEditMode === "default" ? "large" : "default";
-            }),
+            toggleTextEditMode: () =>
+              set((state) => {
+                state.textEditMode =
+                  !state.textEditMode || state.textEditMode === "default" ? "large" : "default";
+              }),
 
-          setTextEditMode: (mode) =>
-            set((state) => {
-              state.textEditMode = mode;
-            }),
+            setTextEditMode: (mode) =>
+              set((state) => {
+                state.textEditMode = mode;
+              }),
 
-          setPreviewMode: (mode) =>
-            set((state) => {
-              state.previewMode = mode;
-            }),
+            setPreviewMode: (mode) =>
+              set((state) => {
+                state.previewMode = mode;
+              }),
 
-          setSettingsVisible: (visible) =>
-            set((state) => {
-              state.settingsVisible = visible;
-            }),
+            setSettingsVisible: (visible) =>
+              set((state) => {
+                state.settingsVisible = visible;
+              }),
 
-          toggleSettings: () =>
-            set((state) => {
-              state.settingsVisible = !state.settingsVisible;
-            }),
+            toggleSettings: () =>
+              set((state) => {
+                state.settingsVisible = !state.settingsVisible;
+              }),
 
-          setIsEditingText: (forBrickId: string | false) =>
-            set((state) => {
-              state.isEditingTextForBrickId = forBrickId || undefined;
-            }),
+            setIsEditingText: (forBrickId: string | false) =>
+              set((state) => {
+                state.isEditingTextForBrickId = forBrickId || undefined;
+              }),
 
-          setPanel: (panel) =>
-            set((state) => {
-              state.panel = panel;
-            }),
+            setPanel: (panel) =>
+              set((state) => {
+                state.panel = panel;
+              }),
 
-          togglePanel: (panel) =>
-            set((state) => {
-              state.panel = panel && state.panel === panel ? undefined : panel;
-            }),
+            togglePanel: (panel) =>
+              set((state) => {
+                state.panel = panel && state.panel === panel ? undefined : panel;
+              }),
 
-          hidePanel: (panel) =>
-            set((state) => {
-              if (!panel || state.panel === panel) {
-                state.panel = undefined;
-              }
-            }),
+            hidePanel: (panel) =>
+              set((state) => {
+                if (!panel || state.panel === panel) {
+                  state.panel = undefined;
+                }
+              }),
 
-          zoomIn: () =>
-            set((state) => {
-              state.zoom = Math.min(state.zoom + 0.1, 2);
-            }),
+            zoomIn: () =>
+              set((state) => {
+                state.zoom = Math.min(state.zoom + 0.1, 2);
+              }),
 
-          zoomOut: () =>
-            set((state) => {
-              state.zoom = Math.max(state.zoom - 0.1, 0.5);
-            }),
+            zoomOut: () =>
+              set((state) => {
+                state.zoom = Math.max(state.zoom - 0.1, 0.5);
+              }),
 
-          resetZoom: () =>
-            set((state) => {
-              state.zoom = 1;
-            }),
+            resetZoom: () =>
+              set((state) => {
+                state.zoom = 1;
+              }),
 
-          setSelectedGroup: (group) =>
-            set((state) => {
-              state.selectedGroup = group;
-            }),
+            setSelectedGroup: (group) =>
+              set((state) => {
+                state.selectedGroup = group;
+              }),
 
-          setSelectedBrickId: (brickId) =>
-            set((state) => {
-              state.selectedBrickId = brickId;
-              if (brickId) {
-                state.selectedSectionId = undefined;
-              }
-            }),
+            setSelectedBrickId: (brickId) =>
+              set((state) => {
+                state.selectedBrickId = brickId;
+                if (brickId) {
+                  state.selectedSectionId = undefined;
+                }
+              }),
 
-          setSelectedSectionId: (sectionId) =>
-            set((state) => {
-              state.selectedSectionId = sectionId;
-              if (sectionId) {
-                state.selectedBrickId = undefined;
-                state.selectedGroup = undefined;
-              }
-            }),
+            setSelectedSectionId: (sectionId) =>
+              set((state) => {
+                state.selectedSectionId = sectionId;
+                if (sectionId) {
+                  state.selectedBrickId = undefined;
+                  state.selectedGroup = undefined;
+                }
+              }),
 
-          deselectBrick: (brickId) =>
-            set((state) => {
-              if (state.selectedBrickId && (!brickId || state.selectedBrickId === brickId)) {
-                state.selectedBrickId = undefined;
-              }
-            }),
+            deselectBrick: (brickId) =>
+              set((state) => {
+                if (state.selectedBrickId && (!brickId || state.selectedBrickId === brickId)) {
+                  state.selectedBrickId = undefined;
+                }
+              }),
 
-          togglePanelPosition: () =>
-            set((state) => {
-              state.panelPosition = state.panelPosition === "left" ? "right" : "left";
-            }),
+            togglePanelPosition: () =>
+              set((state) => {
+                state.panelPosition = state.panelPosition === "left" ? "right" : "left";
+              }),
 
-          showModal: (modal) =>
-            set((state) => {
-              state.modal = modal;
-            }),
+            showModal: (modal) =>
+              set((state) => {
+                state.modal = modal;
+              }),
 
-          hideModal: () =>
-            set((state) => {
-              state.modal = undefined;
-            }),
-        })),
-        // limit undo history to 100
-        { limit: 100, equality: (pastState, currentState) => isEqual(pastState, currentState) },
+            hideModal: () =>
+              set((state) => {
+                state.modal = undefined;
+              }),
+          })),
+          // limit undo history to 100
+          { limit: 100, equality: (pastState, currentState) => isEqual(pastState, currentState) },
+        ),
+        {
+          name: "editor-state",
+          partialize: (state) =>
+            Object.fromEntries(Object.entries(state).filter(([key]) => ["chatVisible"].includes(key))),
+        },
       ),
     ),
   );
@@ -425,6 +431,7 @@ export interface DraftState extends DraftStateProps {
   reorderSections: (orderedIds: string[]) => void;
 
   // New section methods
+  createEmptySection: (afterSectionId?: string) => void;
   addSection: (section: Section) => void;
   updateSection: (id: string, sectionData: Partial<Section>) => void;
   updateSectionProps: (id: string, props: Partial<Section["props"]>, isMobileProps?: boolean) => void;
@@ -472,6 +479,21 @@ export const createDraftStore = (
         immer((set, _get) => ({
           ...DEFAULT_PROPS,
           ...initProps,
+
+          createEmptySection: (afterSectionId) =>
+            set((state) => {
+              const count = state.sections.length;
+              const newSection: Section = {
+                id: `s_${generateId()}`,
+                order: afterSectionId
+                  ? (state.sections.find((s) => s.id === afterSectionId)?.order ?? state.sections.length)
+                  : state.sections.length,
+                label: `Section ${count + 1}`,
+                bricks: [],
+                props: {},
+              };
+              state.sections.push(newSection);
+            }),
 
           addPage: (page) =>
             set((state) => {
@@ -1043,18 +1065,39 @@ export const createDraftStore = (
 
               // Check if this brick is being added to a container
               if (parentContainerId) {
-                const parentBrick = state.getBrick(parentContainerId);
+                console.log("Adding brick to parent container", parentContainerId);
+                const parentBrick = getBrick(parentContainerId, state);
                 if (!parentBrick) {
-                  console.error("Cannot add brick, parent container %s does not exist", parentContainerId);
+                  console.warn("Cannot add brick, parent container %s does not exist", parentContainerId);
                   return;
                 }
 
-                if (!parentBrick.props.$children) {
-                  parentBrick.props.$children = [];
+                // Find the section of the parent brick
+                const parentSection = state.sections.find((s) => s.id === sectionId);
+                if (!parentSection) {
+                  console.warn("Cannot add brick, parent section %s does not exist", sectionId);
+                  return;
+                }
+                // Find the parent brick from the section's bricks
+                const parentBrickInSection = parentSection.bricks.find((b) => b.id === parentContainerId);
+                if (!parentBrickInSection) {
+                  console.warn(
+                    "Cannot add brick, parent brick %s does not exist in section %s",
+                    parentContainerId,
+                    sectionId,
+                  );
+                  return;
+                }
+
+                console.log("PArent BRICK", parentBrickInSection);
+
+                if (!parentBrickInSection.props.$children) {
+                  console.warn("Brick added to a container without $children, initializing it");
+                  parentBrickInSection.props.$children = [];
                 }
 
                 // Add the brick to the parent container's children
-                (parentBrick.props.$children as Brick[]).push(brick);
+                (parentBrickInSection.props.$children as Brick[]).push(brick);
               } else {
                 // Add the brick directly to the section
                 section.bricks.push(brick);
@@ -1455,6 +1498,7 @@ export const useDraftHelpers = () => {
     updateSection: state.updateSection,
     updateSectionProps: state.updateSectionProps,
     addSection: state.addSection,
+    createEmptySection: state.createEmptySection,
     isFirstSection: state.isFirstSection,
     isLastSection: state.isLastSection,
   }));

@@ -5,6 +5,7 @@ import { merge, set } from "lodash-es";
 import { getSchemaObjectDefaults } from "@upstart.gg/sdk/shared/utils/schema";
 import { useDraftHelpers, usePreviewMode } from "~/editor/hooks/use-editor";
 import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
+import { useLocalStorage } from "usehooks-ts";
 
 type SectionSettingsViewProps = {
   section: Section;
@@ -14,14 +15,15 @@ type SectionSettingsViewProps = {
 export default function SectionSettingsView({ section, group }: SectionSettingsViewProps) {
   const { updateSectionProps } = useDraftHelpers();
   const previewMode = usePreviewMode();
-  console.debug("SectionSettingsView", section);
+  const [showAdvanced, setShowAdvanced] = useLocalStorage("upstart:editor:show-advanced", false);
 
   const filter: SchemaFilter = (prop) => {
     return (
       (typeof prop.metadata?.["ui:responsive"] === "undefined" ||
         prop.metadata?.["ui:responsive"] === true ||
         prop.metadata?.["ui:responsive"] === previewMode) &&
-      (!prop.metadata?.category || prop.metadata?.category === "settings")
+      (!prop.metadata?.category || prop.metadata?.category === "settings") &&
+      (!prop["ui:advanced"] || showAdvanced)
       /* &&
       (!group || !prop.metadata?.group || (prop.metadata?.group && key === group))*/
     );
