@@ -26,7 +26,7 @@ export const manifest = defineBrickManifest({
         title: "Location",
         children: geolocation({ defaultZoom: DEFAULTS.zoom }),
       }),
-      border: optional(borderRef),
+      border: optional(borderRef()),
       shadow: optional(shadowRef()),
     },
     { noPreset: true },

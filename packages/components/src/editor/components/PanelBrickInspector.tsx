@@ -1,6 +1,6 @@
 import { useDraftHelpers, useGetBrick, usePreviewMode, useSectionByBrickId } from "../hooks/use-editor";
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
-import { Callout, Select, Switch, Tabs } from "@upstart.gg/style-system/system";
+import { Callout, SegmentedControl, Select, Switch, Tabs } from "@upstart.gg/style-system/system";
 import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import { FormRenderer } from "./json-form/FormRenderer";
@@ -184,11 +184,7 @@ function VariantsTab({ brick, section }: { brick: Brick; section: Section }) {
                 currentVariants={brick.props.variants}
                 onChange={(variants) => {
                   console.debug("setting variant %s to %o", variantKey, variants);
-                  // updateBrickProps(
-                  //   brick.id,
-                  //   { variants: { ...brick.props.variants, [variantKey]: variants } },
-                  //   previewMode === "mobile",
-                  // );
+                  updateBrickProps(brick.id, { variants }, previewMode === "mobile");
                 }}
               />
             </div>
@@ -211,6 +207,11 @@ function VariantSelector({
   onChange: (variants: string[]) => void;
   currentVariants: string[];
 }) {
+  const currentValue = intersection(
+    currentVariants,
+    values.map((v) => v.const),
+  ).at(0);
+
   // The variant is like a boolean, so we'll use a switch to select the variant
   if (values.length === 1) {
     return (
@@ -218,11 +219,11 @@ function VariantSelector({
         <FieldTitle title={values[0].title} />
         <Switch
           onCheckedChange={(checked) => {
-            onChange(
-              checked
-                ? currentVariants.concat(values[0].const)
-                : currentVariants.filter((v) => v !== values[0].const),
-            );
+            const newVariants = currentVariants.filter((v) => v !== currentValue);
+            if (checked) {
+              newVariants.push(values[0].const);
+            }
+            onChange(newVariants);
           }}
           size="2"
           variant="soft"
@@ -236,10 +237,6 @@ function VariantSelector({
   const totalLength = values.reduce((acc, v) => acc + v.title.length, 0);
 
   if (totalLength > 30) {
-    const currentValue = intersection(
-      currentVariants,
-      values.map((v) => v.const),
-    ).at(0);
     // If the total length is too long, we use a select
     return (
       <div className="flex items-center justify-between pr-2">
@@ -248,12 +245,11 @@ function VariantSelector({
           defaultValue={currentValue}
           size="2"
           onValueChange={(value) => {
-            const newVariants = value.split(",");
-            onChange(newVariants);
+            onChange(currentVariants.filter((v) => v !== currentValue).concat(value));
           }}
         >
           <Select.Trigger radius="medium" variant="ghost" placeholder="Not specified">
-            {currentValue}
+            {values.find((v) => v.const === currentValue)?.title}
           </Select.Trigger>
           <Select.Content position="popper">
             <Select.Group>
@@ -268,6 +264,27 @@ function VariantSelector({
       </div>
     );
   }
+
+  // Use a button group to select the variant
+  return (
+    <div className="flex items-center justify-between">
+      <FieldTitle title={label} />
+      <SegmentedControl.Root
+        value={currentValue}
+        onValueChange={(value) => {
+          onChange(currentVariants.filter((v) => v !== currentValue).concat(value));
+        }}
+        size="1"
+        radius="medium"
+      >
+        {values.map((option) => (
+          <SegmentedControl.Item key={option.const} value={option.const}>
+            {option.title}
+          </SegmentedControl.Item>
+        ))}
+      </SegmentedControl.Root>
+    </div>
+  );
 }
 
 function SettingsTab({ brick, section }: { brick: Brick; section: Section }) {

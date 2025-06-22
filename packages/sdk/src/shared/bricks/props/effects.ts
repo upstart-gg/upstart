@@ -19,7 +19,7 @@ export function shadow({ title = "Shadow", defaultValue = "shadow-none" }: Shado
       "ui:placeholder": "Not specified",
       "ui:field": "enum",
       "ui:display": "select",
-      "ui:advanced": true,
+      // "ui:advanced": true,
     }),
   });
 }

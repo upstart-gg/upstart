@@ -38,7 +38,7 @@ export const manifest = defineBrickManifest({
           children: {
             backgroundColor: optional(backgroundColorRef()),
             padding: optional(paddingRef()),
-            border: optional(borderRef),
+            border: optional(borderRef()),
             shadow: optional(shadowRef()),
           },
         }),

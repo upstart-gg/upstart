@@ -98,7 +98,7 @@ export default function EditableSection({ section }: EditableSectionProps) {
         })}
 
       {bricks.length === 0 && (
-        <div className="absolute h-40 text-center inset-2 rounded bg-gray-100 flex justify-center items-center text-base text-black/50 font-medium">
+        <div className="w-full self-stretch min-h-40 flex-1 text-center rounded bg-gray-100 flex justify-center items-center text-base text-black/50 font-medium">
           This is a section.
           <br />
           Drag bricks here to stack them inside.

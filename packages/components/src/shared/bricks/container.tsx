@@ -50,7 +50,7 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edi
           <pre className="text-xs font-mono">{JSON.stringify(props, null, 2)}</pre>
         </div>
       ) : (
-        <div className="absolute text-center inset-2 rounded bg-gray-100 flex justify-center items-center text-base text-black/50 font-medium">
+        <div className="w-full h-40 text-center rounded bg-gray-100 flex justify-center items-center text-base text-black/50 font-medium">
           This is a container.
           <br />
           Drag bricks here to stack them inside.

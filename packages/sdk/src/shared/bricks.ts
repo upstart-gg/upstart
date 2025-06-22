@@ -147,7 +147,7 @@ export const sectionProps = Type.Object(
     ),
     background: Type.Optional(backgroundRef()),
     preset: Type.Optional(presetRef),
-    border: Type.Optional(borderRef),
+    border: Type.Optional(borderRef()),
     minHeight: Type.Optional(
       cssLengthRef({
         title: "Min height",

@@ -91,13 +91,13 @@ const BackgroundField: FC<FieldProps<BackgroundSettings>> = (props) => {
               <label className={fieldLabel}>Size</label>
               <div className="flex items-center gap-4">
                 <Select.Root
-                  defaultValue={currentValue.size ?? "auto"}
+                  defaultValue={currentValue.size}
                   size="2"
                   onValueChange={(value) =>
                     onChange({ ...currentValue, size: value as BackgroundSettings["size"] })
                   }
                 >
-                  <Select.Trigger radius="large" variant="ghost" />
+                  <Select.Trigger radius="large" variant="ghost" placeholder="Not specified" />
                   <Select.Content position="popper">
                     <Select.Group>
                       {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}

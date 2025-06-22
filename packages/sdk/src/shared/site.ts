@@ -109,9 +109,12 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 id: generateId(),
                 type: "card",
                 props: {
-                  cardTitle: { content: "Welcome to My Site" },
-                  cardBody: { content: "This is a sample card body. You can edit this content." },
-                  backgroundColor: "bg-primary",
+                  cardTitle: "Welcome to My Site",
+                  cardBody: "This is a sample card body. You can edit this content.",
+                  cardImage: {
+                    src: "https://placehold.co/300x200?text=Card+Image",
+                    alt: "Sample Card Image",
+                  },
                 },
               },
             ],

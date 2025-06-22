@@ -40,7 +40,7 @@ Multiple panels can be open simultaneously or limited to one at a time.
           children: {
             backgroundColor: optional(backgroundColorRef()),
             padding: optional(paddingRef()),
-            border: optional(borderRef),
+            border: optional(borderRef()),
             shadow: optional(shadowRef()),
           },
         }),

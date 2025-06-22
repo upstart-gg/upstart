@@ -22,7 +22,7 @@ export const manifest = defineBrickManifest({
   props: defineProps({
     image: imageRef(),
     backgroundColor: optional(backgroundColorRef()),
-    border: optional(borderRef),
+    border: optional(borderRef()),
     padding: optional(paddingRef()),
     shadow: optional(shadowRef()),
     blurHash: optional(

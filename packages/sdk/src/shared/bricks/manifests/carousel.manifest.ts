@@ -32,7 +32,7 @@ export const manifest = defineBrickManifest({
       ),
     ),
     background: optional(backgroundRef()),
-    border: optional(borderRef),
+    border: optional(borderRef()),
     padding: optional(paddingRef()),
     shadow: optional(shadowRef()),
     ...makeContainerProps(),
