@@ -1335,21 +1335,17 @@ export const usePreviewMode = () => {
 
 export const useGenerationState = () => {
   const draft = useDraftStoreContext();
-  const editorCtx = useEditorStoreContext();
   return useStore(draft, (state) => {
     const hasSitemap = state.sitemap.length > 0;
     const hasThemesGenerated = state.themes.length > 0;
-    const isReady =
-      hasSitemap &&
-      hasThemesGenerated &&
-      state.sitemap.length > 0 &&
-      state.sitemap.every((page) => state.pages.some((p) => p.id === page.id));
+    const isReady = hasSitemap && hasThemesGenerated && state.sitemap.length > 0;
+    const isGenerating = new URL(window.location.href).searchParams.get("action") === "generate";
     return {
       hasSitemap,
       hasThemesGenerated,
       sitemap: state.sitemap,
       pages: state.pages,
-      isReady: isReady || import.meta.env.DEV,
+      isReady: !isGenerating || isReady || import.meta.env.DEV,
     } satisfies GenerationState;
   });
 };
