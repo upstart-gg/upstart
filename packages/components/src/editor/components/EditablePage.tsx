@@ -10,7 +10,7 @@ import {
   useSections,
   useZoom,
 } from "../hooks/use-editor";
-import { DragDropContext, Droppable, type DropResult } from "@hello-pangea/dnd";
+import { type BeforeCapture, DragDropContext, Droppable, type DropResult } from "@hello-pangea/dnd";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
 import { useFontWatcher } from "../hooks/use-font-watcher";
 import Section from "./EditableSection";
@@ -127,7 +127,10 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
 
   return (
     <>
-      <DragDropContext onDragEnd={handleDragEnd}>
+      <DragDropContext
+        onDragEnd={handleDragEnd}
+        // onBeforeCapture={handleBeforeCapture}
+      >
         <div
           id="page-container"
           ref={pageRef}

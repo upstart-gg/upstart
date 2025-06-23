@@ -215,7 +215,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           data-element-kind={manifest.kind}
           data-last-touched={brick.props.lastTouched ?? "0"}
           data-dropzone={manifest.isContainer}
-          className={tx(wrapperClass, `![animation-delay:${0.5 * (index + 1)}s]`)}
+          className={tx(wrapperClass)}
           ref={barsRefs.setReference}
           onClick={onBrickWrapperClick}
           {...getReferenceProps()}
@@ -248,12 +248,15 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
             }}
             {...provided.draggableProps}
             {...provided.dragHandleProps}
+            data-draggable-for-brick-id={brick.id}
             className={tx(
-              "relative flex-1",
-              snapshot.isDragging && "opacity-50 !z-[9999] shadow-xl max-w-[200px]",
+              "relative origin-center min-w-[100px]",
+              snapshot.isDragging &&
+                "opacity-80 !z-[9999] shadow-xl bg-upstart-600/30 rounded-2xl scale-90 overflow-hidden",
+              // snapshot.isDragging && "!max-w-[120px] !h-[120px] overflow-hidden scale-75",
             )}
           >
-            {manifest.resizable && !snapshot.isDragging ? (
+            {manifest.resizable ? (
               <Resizable
                 // defaultSize={{
                 //   width: brick.props.width || 200,
@@ -279,7 +282,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
             ) : (
               brickContent
             )}
-            {children} {/* For any additional resize handles */}
+            {!snapshot.isDragging && children} {/* Chidlren contains resizable handles and other elements */}
           </div>
         )}
       </Draggable>

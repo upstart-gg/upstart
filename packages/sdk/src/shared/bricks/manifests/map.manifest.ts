@@ -19,6 +19,10 @@ export const manifest = defineBrickManifest({
   description: "A map element showing a location",
   aiInstructions:
     "This brick can be used to show a location on a map. Use the 'location' prop to set the coordinates and an optional tooltip.",
+  minWidth: {
+    desktop: 200,
+    mobile: 200,
+  },
   icon: LiaMapMarkedAltSolid,
   props: defineProps(
     {
