@@ -1,7 +1,7 @@
 import { type SchemaOptions, Type, type Static } from "@sinclair/typebox";
-import { group, optional, prop } from "./helpers";
-import { StringEnum } from "~/shared/utils/schema";
+import { prop } from "./helpers";
 import { typedRef } from "~/shared/utils/typed-ref";
+import { StringEnum } from "~/shared/utils/string-enum";
 
 type ShadowOptions = {
   title?: string;
@@ -19,6 +19,7 @@ export function shadow({ title = "Shadow", defaultValue = "shadow-none" }: Shado
       "ui:placeholder": "Not specified",
       "ui:field": "enum",
       "ui:display": "select",
+      // "ui:advanced": true,
     }),
   });
 }

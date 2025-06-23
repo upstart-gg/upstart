@@ -43,6 +43,9 @@ import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { FiSettings, FiDatabase } from "react-icons/fi";
 import { tx } from "@upstart.gg/style-system/twind";
+import { Draggable } from "@hello-pangea/dnd";
+import { Resizable, type ResizeCallback } from "re-resizable";
+import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -82,6 +85,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const previewMode = usePreviewMode();
     const { panelPosition } = usePanel();
     const editorHelpers = useEditorHelpers();
+    const draftHelpers = useDraftHelpers();
     const { getParentBrick } = useDraftHelpers();
     const manifest = useBrickManifest(brick.type);
     const parentBrick = getParentBrick(brick.id);
@@ -116,7 +120,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     });
 
     const { getReferenceProps, getFloatingProps } = useInteractions([hover]);
-    const brickRef = useMergeRefs([ref, barsRefs.setReference]);
 
     const wrapperClass = useBrickWrapperStyle({
       brick,
@@ -159,12 +162,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       (e: MouseEvent<HTMLElement>) => {
         const brickTarget = e.currentTarget as HTMLElement;
         const target = e.target as HTMLElement;
-        const group = target.closest<HTMLElement>("[data-brick-group]");
-
-        // if (group) {
-        //   console.debug("onBrickWrapperClick: click ignored (group)");
-        //   return;
-        // }
 
         if (hasMouseMoved.current || !brickTarget.matches("[data-brick]")) {
           return;
@@ -179,19 +176,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           }
         }
 
-        //
-        // Commented fow now, e.g don't auto move the panel
-        //
-        // If brick is on the left of the screen, we need to move the panel to the right, and vice versa
-        // if (panelPosition === "right" && brickTarget.getBoundingClientRect().right > window.innerWidth / 2) {
-        //   editorHelpers.togglePanelPosition();
-        // } else if (
-        //   panelPosition === "left" &&
-        //   brickTarget.getBoundingClientRect().left < window.innerWidth / 2
-        // ) {
-        //   editorHelpers.togglePanelPosition();
-        // }
-
         editorHelpers.setSelectedBrickId(selectedBrick.id);
         editorHelpers.setPanel("inspector");
         hasMouseMoved.current = false;
@@ -201,36 +185,95 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       [panelPosition],
     );
 
+    const handleResize: ResizeCallback = (event, direction, ref, delta) => {
+      // Handle resize logic here if needed during resize
+    };
+
+    const handleResizeStop: ResizeCallback = (event, direction, ref, delta) => {
+      // Update brick size in the store
+      const newWidth = ref.offsetWidth;
+      const newHeight = ref.offsetHeight;
+
+      draftHelpers.updateBrickProps(brick.id, {
+        width: newWidth,
+        height: newHeight,
+      });
+
+      // Auto-adjust mobile layout if needed
+      if (previewMode === "desktop") {
+        draftHelpers.adjustMobileLayout();
+      }
+    };
+
     return (
-      <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
-        <div
-          // role="button"
-          id={brick.id}
-          data-brick
-          data-brick-id={brick.id}
-          data-brick-type={brick.type}
-          data-element-kind={manifest.kind}
-          data-last-touched={brick.props.lastTouched ?? "0"}
-          data-dropzone={manifest.isContainer}
-          {...(manifest.movable ? {} : { "data-no-drag": "true" })}
-          className={tx(wrapperClass, `![animation-delay:${0.5 * (index + 1)}s]`)}
-          ref={brickRef}
-          onClick={onBrickWrapperClick}
-          {...getReferenceProps()}
-        >
-          <BaseBrick brick={brick} selectedBrickId={selectedBrickId} editable />
-          {!manifest.isContainer && <BrickDebugLabel brick={brick} />}
-          {children} {/* Make sure to include children to add resizable handle */}
-          <BrickMenuBarsContainer
-            ref={barsRefs.setFloating}
-            brick={brick}
-            isContainerChild={isContainerChild}
-            style={barsFloatingStyles}
-            show={isMenuBarVisible}
-            {...getFloatingProps()}
-          />
-        </div>
-      </BrickContextMenu>
+      <Draggable draggableId={brick.id} index={index} isDragDisabled={!manifest.movable}>
+        {(provided, snapshot) => {
+          // Merge all refs properly to avoid render loops
+          const mergedRef = useMergeRefs([provided.innerRef, barsRefs.setReference, ref]);
+
+          const brickContent = (
+            <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
+              <div
+                ref={mergedRef}
+                {...provided.draggableProps}
+                {...provided.dragHandleProps}
+                {...getReferenceProps()}
+                id={brick.id}
+                data-brick
+                data-brick-id={brick.id}
+                data-brick-type={brick.type}
+                data-element-kind={manifest.kind}
+                data-last-touched={brick.props.lastTouched ?? "0"}
+                data-dropzone={manifest.isContainer}
+                data-draggable-for-brick-id={brick.id}
+                className={tx(
+                  wrapperClass,
+                  "relative origin-center min-w-[100px]",
+                  snapshot.isDragging &&
+                    "opacity-80 !z-[9999] shadow-xl bg-upstart-600/30 rounded-2xl scale-90 overflow-hidden",
+                )}
+                onClick={onBrickWrapperClick}
+              >
+                <BaseBrick brick={brick} selectedBrickId={selectedBrickId} editable />
+                {!manifest.isContainer && <BrickDebugLabel brick={brick} />}
+                <BrickMenuBarsContainer
+                  ref={barsRefs.setFloating}
+                  brick={brick}
+                  isContainerChild={isContainerChild}
+                  style={barsFloatingStyles}
+                  show={isMenuBarVisible}
+                  {...getFloatingProps()}
+                />
+                {!snapshot.isDragging && children}{" "}
+                {/* Children contains resizable handles and other elements */}
+              </div>
+            </BrickContextMenu>
+          );
+
+          return manifest.resizable ? (
+            <Resizable
+              onResize={handleResize}
+              onResizeStop={handleResizeStop}
+              grid={[20, 20]} // Grid snapping - adjust as needed
+              bounds="parent"
+              enable={{
+                top: true,
+                right: true,
+                bottom: true,
+                left: true,
+                topRight: true,
+                bottomRight: true,
+                bottomLeft: true,
+                topLeft: true,
+              }}
+            >
+              {brickContent}
+            </Resizable>
+          ) : (
+            brickContent
+          );
+        }}
+      </Draggable>
     );
   },
 );

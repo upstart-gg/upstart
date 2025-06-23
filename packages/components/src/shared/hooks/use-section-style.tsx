@@ -2,6 +2,7 @@ import type { Section } from "@upstart.gg/sdk/shared/bricks";
 import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import { getBackgroundStyles } from "../styles/helpers";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
+import { isCssLength } from "@upstart.gg/sdk/shared/bricks/props/css-length";
 import { tx, css } from "@upstart.gg/style-system/twind";
 
 type UseSectionStyleProps = {
@@ -12,8 +13,10 @@ type UseSectionStyleProps = {
 };
 
 export function useSectionStyle({ section, selected, editable, previewMode }: UseSectionStyleProps) {
-  return tx("flex w-full py-0 group/section overflow-visible relative", [
+  // console.log("useSectionStyle props", { props: section.props });
+  return tx("flex w-full py-0 group/section overflow-visible relative mx-auto", [
     section.props.preset as string,
+    section.props.maxWidth as string,
     typeof section.props.minHeight === "string" &&
       section.props.minHeight !== "full" &&
       `min-h-[${section.props.minHeight}]`,
@@ -24,7 +27,11 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
 
     section.props.layout?.alignItems,
     section.props.layout?.justifyContent,
-    section.props.layout?.gap ?? "gap-2",
+    section.props.layout?.gap && isCssLength(section.props.layout?.gap)
+      ? css({
+          gap: section.props.layout?.gap,
+        })
+      : (section.props.layout?.gap ?? "gap-2"),
     typeof section.props.layout?.wrap === "undefined" || section.props.layout?.wrap === true
       ? "flex-wrap"
       : "flex-nowrap",

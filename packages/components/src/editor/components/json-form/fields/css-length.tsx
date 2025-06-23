@@ -26,10 +26,11 @@ export const CssLengthField: FC<FieldProps<string>> = (props) => {
   const units: string[] = schema["ui:css-units"] ?? [];
 
   return (
-    <div className="field field-path basis-full flex justify-between">
+    <div className="field field-csslength basis-full flex justify-between">
       <FieldTitle title={title} description={description} />
       <TextField.Root
         type="number"
+        size="1"
         defaultValue={baseVal}
         onChange={(e) =>
           setState((prev) => ({
@@ -37,16 +38,16 @@ export const CssLengthField: FC<FieldProps<string>> = (props) => {
             value: e.target.value,
           }))
         }
-        className="!text-right !gap-0.5 !basis-2/5 focus:(!ring-0 !border-0)"
+        className="!pr-1 !basis-2/5 focus:(!ring-0 !border-0)"
         required={required}
       >
-        <TextField.Slot side="right">
+        <TextField.Slot side="right" className="!mr-px">
           <Select.Root
             defaultValue={baseUnit}
-            size="2"
+            size="1"
             onValueChange={(value) => setState((prev) => ({ ...prev, unit: value }))}
           >
-            <Select.Trigger radius="large" variant="ghost" />
+            <Select.Trigger radius="medium" variant="ghost" />
             <Select.Content position="popper">
               <Select.Group>
                 {units.map((option) => (

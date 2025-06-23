@@ -1,7 +1,8 @@
 import { type TObject, Type, type Static, type SchemaOptions } from "@sinclair/typebox";
 import { getStyleProperties, getStyleValueById, group, optional, prop } from "./helpers";
-import { StringEnum } from "~/shared/utils/schema";
 import { typedRef } from "~/shared/utils/typed-ref";
+import { StringEnum } from "~/shared/utils/string-enum";
+import { cssLength } from "./css-length";
 
 // type FlexOptions = {
 //   title?: string;
@@ -328,10 +329,7 @@ export function containerLayoutRef(options: SchemaOptions = {}) {
   return typedRef("styles:containerLayout", {
     title: "Container layout",
     description: "Settings for the layout of the container",
-    options: {
-      ...options,
-      disableGrid: options.disableGrid ?? false,
-    },
+    ...options,
   });
 }
 
@@ -353,4 +351,85 @@ export function makeContainerProps() {
       default: [],
     }),
   };
+}
+
+export function sectionLayout(options: SchemaOptions = {}) {
+  return Type.Object(
+    {
+      gap: Type.Optional(
+        // Type.String({
+        //   title: "Gap",
+        //   description:
+        //     "Space between items. Can be a tailwind gap class like 'gap-1' or 'gap-2', or a custom value like '10px'",
+        //   "ui:placeholder": "Not specified",
+        //   // todo: make a specific field for gap
+        //   // "ui:field": "enum",
+        // }),
+        cssLength({
+          title: "Gap",
+          default: "10px",
+          description:
+            "Space between items. Can be a tailwind gap class like 'gap-1' or 'gap-2', or a custom value like '10px'",
+          "ui:placeholder": "Not specified",
+          "ui:styleId": "styles:gap",
+        }),
+      ),
+      wrap: optional(
+        Type.Boolean({
+          title: "Wrap",
+          description: "Wrap items.",
+        }),
+      ),
+      fillSpace: optional(
+        Type.Boolean({
+          title: "Fill space",
+          description: "Makes items of the container fill the available space",
+        }),
+      ),
+      justifyContent: Type.Optional(
+        StringEnum(
+          [
+            "justify-start",
+            "justify-center",
+            "justify-end",
+            "justify-between",
+            "justify-around",
+            "justify-evenly",
+            "justify-stretch",
+          ],
+          {
+            enumNames: [
+              "Start",
+              "Center",
+              "End",
+              "Space between",
+              "Space around",
+              "Evenly distributed",
+              "Stretch",
+            ],
+            title: "Justify",
+            description: "Justify content along the main axis (horizontal for row, vertical for column)",
+            "ui:placeholder": "Not specified",
+          },
+        ),
+      ),
+      alignItems: optional(
+        Type.Union(
+          [
+            Type.Literal("items-start", { title: "Start" }),
+            Type.Literal("items-center", { title: "Center" }),
+            Type.Literal("items-end", { title: "End" }),
+            Type.Literal("items-stretch", { title: "Stretch" }),
+          ],
+          {
+            title: "Alignment",
+            description: "Align items along the cross axis (vertical for row, horizontal for column)",
+            "ui:placeholder": "Not specified",
+            "ui:display": "button-group",
+          },
+        ),
+      ),
+    },
+    { $id: "styles:sectionLayout" },
+  );
 }

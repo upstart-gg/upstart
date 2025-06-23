@@ -35,7 +35,10 @@
         "useSingleVarDeclarator": "off"
       },
       "a11y": {
-        "useKeyWithClickEvents": "off"
+        "useKeyWithClickEvents": "off",
+        "noLabelWithoutControl": "off",
+        "useSemanticElements": "off",
+        "noRedundantRoles": "off"
       },
       "suspicious": {
         "noArrayIndexKey": "off",

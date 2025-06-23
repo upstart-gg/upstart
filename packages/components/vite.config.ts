@@ -2,6 +2,8 @@ import { defineConfig, type PluginOption } from "vite";
 import react from "@vitejs/plugin-react";
 import dts from "vite-plugin-dts";
 import Inspect from "vite-plugin-inspect";
+import devtoolsJson from "vite-plugin-devtools-json";
+
 // import bundlesize from "vite-plugin-bundlesize";
 import tsconfigPaths from "vite-tsconfig-paths";
 
@@ -10,6 +12,7 @@ export default defineConfig(({ mode }) => ({
   base: "./",
   plugins: [
     tsconfigPaths() as PluginOption,
+    devtoolsJson(),
     Inspect({
       open: true,
     }),
@@ -18,7 +21,7 @@ export default defineConfig(({ mode }) => ({
       include: [
         "src/editor/components/Editor.tsx",
         "src/editor/components/EditorWrapper.tsx",
-        // "src/editor/hooks/use-editor.ts",
+        "src/editor/hooks/use-editor.ts",
         "src/shared/hooks/use-datasource.tsx",
         "src/shared/components/Page.tsx",
         "src/shared/utils/get-theme-css.ts",
@@ -46,7 +49,7 @@ export default defineConfig(({ mode }) => ({
         EditorWrapper: "src/editor/components/EditorWrapper.tsx",
         Page: "src/shared/components/Page.tsx",
         // Brick: "src/shared/components/Brick.tsx",
-        // "use-editor": "src/editor/hooks/use-editor.ts",
+        "use-editor": "src/editor/hooks/use-editor.ts",
         "use-datasource": "src/shared/hooks/use-datasource.tsx",
         "get-theme-css": "src/shared/utils/get-theme-css.ts",
       },

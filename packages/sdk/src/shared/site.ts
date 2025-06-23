@@ -69,7 +69,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
         sections: [
           {
             id: generateId(),
-            label: "Hero Section",
+            label: "Top",
             order: 1,
             props: {},
             bricks: [
@@ -88,8 +88,8 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             ],
           },
           {
-            id: "content",
-            label: "Content Section",
+            id: `content-${generateId()}`,
+            label: "Content",
             order: 2,
             props: {},
             bricks: [
@@ -102,6 +102,74 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                     lng: -122.4194,
                     tooltip: "San Francisco, CA",
                     address: "San Francisco, CA",
+                  },
+                },
+              },
+              {
+                id: generateId(),
+                type: "map",
+                props: {
+                  location: {
+                    lat: 37.7749,
+                    lng: -122.4194,
+                    tooltip: "San Francisco, CA",
+                    address: "San Francisco, CA",
+                  },
+                },
+              },
+              {
+                id: generateId(),
+                type: "card",
+                props: {
+                  cardTitle: "Welcome to My Site",
+                  cardBody: "This is a sample card body. You can edit this content.",
+                  cardImage: {
+                    src: "https://placehold.co/300x200?text=Card+Image",
+                    alt: "Sample Card Image",
+                  },
+                },
+              },
+            ],
+          },
+          {
+            id: `content-${generateId()}`,
+            label: "Content",
+            order: 2,
+            props: {},
+            bricks: [
+              {
+                id: generateId(),
+                type: "map",
+                props: {
+                  location: {
+                    lat: 37.7749,
+                    lng: -122.4194,
+                    tooltip: "San Francisco, CA",
+                    address: "San Francisco, CA",
+                  },
+                },
+              },
+              {
+                id: generateId(),
+                type: "map",
+                props: {
+                  location: {
+                    lat: 37.7749,
+                    lng: -122.4194,
+                    tooltip: "San Francisco, CA",
+                    address: "San Francisco, CA",
+                  },
+                },
+              },
+              {
+                id: generateId(),
+                type: "card",
+                props: {
+                  cardTitle: "Welcome to My Site",
+                  cardBody: "This is a sample card body. You can edit this content.",
+                  cardImage: {
+                    src: "https://placehold.co/300x200?text=Card+Image",
+                    alt: "Sample Card Image",
                   },
                 },
               },

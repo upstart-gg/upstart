@@ -7,7 +7,6 @@ import { tx } from "@upstart.gg/style-system/twind";
 import type { UrlOrPageIdSettings } from "@upstart.gg/sdk/shared/bricks/props/string";
 import { type ChangeEvent, type FC, useRef, useState } from "react";
 import { useDraftHelpers, useSitemap } from "~/editor/hooks/use-editor";
-import { tooltip } from "leaflet";
 
 export const StringField: FC<FieldProps<string>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
@@ -73,14 +72,14 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (pro
 
   return (
     <div className="flex-1">
-      <div className="flex justify-between flex-1 pr-1 gap-1">
+      <div className="flex justify-between flex-1 gap-1">
         <FieldTitle title={title} description={description} />
         <SegmentedControl.Root
           onValueChange={(value) => setType(value as "url" | "pageId")}
           defaultValue={type}
           size="1"
           className="mt-0.5"
-          radius="large"
+          radius="medium"
         >
           <SegmentedControl.Item value="url">External URL</SegmentedControl.Item>
           <SegmentedControl.Item value="pageId">Internal page</SegmentedControl.Item>

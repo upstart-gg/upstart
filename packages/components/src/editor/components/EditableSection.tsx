@@ -14,24 +14,28 @@ import EditableBrickWrapper from "./EditableBrick";
 import ResizeHandle from "./ResizeHandle";
 import { useSectionStyle } from "~/shared/hooks/use-section-style";
 import { TbArrowAutofitHeight, TbBorderCorners, TbDots } from "react-icons/tb";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { useGridConfig, type GridConfig } from "~/shared/hooks/use-grid-config";
 import { getBrickResizeOptions, getBrickPosition } from "~/shared/utils/layout-utils";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import SectionSettingsView from "./SectionSettingsView";
 import { tx, css } from "@upstart.gg/style-system/twind";
+import { Draggable, Droppable } from "@hello-pangea/dnd";
+import { useCmdOrCtrlPressed } from "../hooks/use-key-pressed";
 
 type EditableSectionProps = {
   section: SectionType;
+  index: number;
 };
 
-export default function EditableSection({ section }: EditableSectionProps) {
+export default function EditableSection({ section, index }: EditableSectionProps) {
   const { bricks, id } = section;
 
   const ref = useRef<HTMLDivElement>(null);
   const gridConfig = useGridConfig(ref);
   const { setSelectedSectionId, setPanel } = useEditorHelpers();
+  const isCmdOrCtrlPressed = useCmdOrCtrlPressed();
 
   useResizableSection(section, gridConfig);
 
@@ -45,58 +49,107 @@ export default function EditableSection({ section }: EditableSectionProps) {
     previewMode,
   });
 
-  const onClick = () => {
+  const onClick = (e: MouseEvent) => {
+    if (e.defaultPrevented) {
+      // If the click was handled by a child element, do not propagate
+      return;
+    }
+    console.log("Section clicked", section.id, e);
     setSelectedSectionId(section.id);
     setPanel("inspector");
   };
 
   return (
-    <section
-      key={id}
-      id={id}
-      ref={ref}
-      data-element-kind="section"
-      onClick={onClick}
-      data-dropzone
-      className={className}
-    >
-      {!selectedBrickId && <SectionOptionsButtons section={section} />}
-      {bricks
-        .filter((b) => !b.props.hidden?.[previewMode])
-        .map((brick, index) => {
-          const resizeOpts = getBrickResizeOptions(brick, manifests[brick.type], previewMode);
-          // const brickWithDef = brickWithDefaults(brick);
-          return (
-            <EditableBrickWrapper key={`${previewMode}-${brick.id}`} brick={brick} index={index}>
-              {manifests[brick.type]?.resizable && (
-                <>
-                  {(resizeOpts.canGrowVertical || resizeOpts.canShrinkVertical) && (
-                    <>
-                      <ResizeHandle direction="s" />
-                      <ResizeHandle direction="n" />
-                    </>
+    <Draggable draggableId={section.id} index={index} isDragDisabled={!isCmdOrCtrlPressed}>
+      {(provided, snapshot) => {
+        // console.log("Draggable props keys", Object.keys(provided.draggableProps));
+        return (
+          <section
+            key={id}
+            id={id}
+            ref={provided.innerRef}
+            data-element-kind="section"
+            onClick={onClick}
+            className={tx(
+              className,
+              snapshot.isDragging && "opacity-50",
+              isCmdOrCtrlPressed && "cursor-move border-2 border-blue-300 border-dashed",
+              !isCmdOrCtrlPressed && "border-2 border-transparent",
+            )}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+          >
+            {!selectedBrickId && <SectionOptionsButtons section={section} />}
+            {/* Show visual indicator when sections can be dragged */}
+            {isCmdOrCtrlPressed && (
+              <div className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded text-xs font-medium z-50">
+                Sections can be dragged
+              </div>
+            )}
+            <Droppable droppableId={section.id} type="brick" direction="horizontal">
+              {(provided, snapshot) => (
+                <div
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  className={tx(
+                    "flex flex-row gap-4 min-h-40 w-full",
+                    snapshot.isDraggingOver && "bg-blue-50 border-2 border-blue-300 border-dashed",
                   )}
-                  {(resizeOpts.canGrowHorizontal || resizeOpts.canShrinkHorizontal) && (
-                    <>
-                      <ResizeHandle direction="w" />
-                      <ResizeHandle direction="e" />
-                    </>
+                >
+                  {bricks
+                    .filter((b) => !b.props.hidden?.[previewMode])
+                    .map((brick, brickIndex) => {
+                      const resizeOpts = getBrickResizeOptions(brick, manifests[brick.type], previewMode);
+                      return (
+                        <EditableBrickWrapper
+                          key={`${previewMode}-${brick.id}`}
+                          brick={brick}
+                          index={brickIndex}
+                        >
+                          {manifests[brick.type]?.resizable && (
+                            <>
+                              {(resizeOpts.canGrowVertical || resizeOpts.canShrinkVertical) && (
+                                <>
+                                  <ResizeHandle direction="s" />
+                                  <ResizeHandle direction="n" />
+                                </>
+                              )}
+                              {(resizeOpts.canGrowHorizontal || resizeOpts.canShrinkHorizontal) && (
+                                <>
+                                  <ResizeHandle direction="w" />
+                                  <ResizeHandle direction="e" />
+                                </>
+                              )}
+                              {((resizeOpts.canGrowVertical && resizeOpts.canGrowHorizontal) ||
+                                (resizeOpts.canShrinkVertical && resizeOpts.canShrinkHorizontal)) && (
+                                <>
+                                  <ResizeHandle direction="se" />
+                                  <ResizeHandle direction="sw" />
+                                  <ResizeHandle direction="ne" />
+                                  <ResizeHandle direction="nw" />
+                                </>
+                              )}
+                            </>
+                          )}
+                        </EditableBrickWrapper>
+                      );
+                    })}
+
+                  {bricks.length === 0 && (
+                    <div className="w-full self-stretch min-h-40 flex-1 text-center rounded bg-gray-100 flex justify-center items-center text-base text-black/50 font-medium">
+                      This is a section.
+                      <br />
+                      Drag bricks here to stack them inside.
+                    </div>
                   )}
-                  {((resizeOpts.canGrowVertical && resizeOpts.canGrowHorizontal) ||
-                    (resizeOpts.canShrinkVertical && resizeOpts.canShrinkHorizontal)) && (
-                    <>
-                      <ResizeHandle direction="se" />
-                      <ResizeHandle direction="sw" />
-                      <ResizeHandle direction="ne" />
-                      <ResizeHandle direction="nw" />
-                    </>
-                  )}
-                </>
+                  {provided.placeholder}
+                </div>
               )}
-            </EditableBrickWrapper>
-          );
-        })}
-    </section>
+            </Droppable>
+          </section>
+        );
+      }}
+    </Draggable>
   );
 }
 
@@ -168,6 +221,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
   const draftHelpers = useDraftHelpers();
   const { setSelectedSectionId, setPanel, setSelectedBrickId } = useEditorHelpers();
   const sections = useSections();
+  const isCmdOrCtrlPressed = useCmdOrCtrlPressed();
   const isLastSection = section.order === sections.length - 1;
   const isFirstSection = section.order === 0;
 
@@ -186,9 +240,12 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
             absolute z-[99999] left-1/2 -translate-x-1/2 border border-gray-200 border-b-0`,
         "gap-0 rounded-t-md [&>*:first-child]:rounded-tl-md [&>*:last-child]:rounded-tr-md divide-x divide-white/80",
         "bg-white/70 backdrop-blur-md transition-opacity duration-500  group-hover/section:opacity-80 flex",
+        isCmdOrCtrlPressed && "opacity-100 ring-2 ring-blue-300",
       )}
     >
-      <div className={tx(btnCls, "cursor-default flex-col items-start justify-center gap-0")}>
+      <div
+        className={tx(btnCls, "cursor-pointer flex-col items-start justify-center gap-0 hover:text-black")}
+      >
         <div className="text-xs font-light leading-[0.9] ">Section</div>
         <div className="text-sm font-semibold -mt-1.5">{section.label ?? `${section.order + 1}`}</div>
       </div>
@@ -221,7 +278,11 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
         </Tooltip>
       )}
       <DropdownMenu.Root modal={false} onOpenChange={setDropdownOpen}>
-        <DropdownMenu.Trigger>
+        <DropdownMenu.Trigger
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
           <button type="button" className={tx(btnCls)}>
             <TbDots className="w-6 h-6" />
           </button>
@@ -246,12 +307,27 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
           </DropdownMenu.Group>
           <DropdownMenu.Separator />
           <DropdownMenu.Group>
-            <DropdownMenu.Item onClick={() => draftHelpers.duplicateSection(section.id)}>
+            <DropdownMenu.Item
+              onClick={(e) => {
+                e.stopPropagation();
+                draftHelpers.createEmptySection(section.id);
+              }}
+            >
+              <div className="flex items-center justify-start gap-2">
+                <span>Create new section below</span>
+              </div>
+            </DropdownMenu.Item>
+            <DropdownMenu.Item
+              onClick={(e) => {
+                e.stopPropagation();
+                draftHelpers.duplicateSection(section.id);
+              }}
+            >
               <div className="flex items-center justify-start gap-2">
                 <span>Duplicate</span>
               </div>
             </DropdownMenu.Item>
-            <DropdownMenu.Item
+            {/* <DropdownMenu.Item
               onClick={() => {
                 setSelectedSectionId(section.id);
                 setPanel("inspector");
@@ -260,7 +336,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
               <div className="flex items-center justify-start gap-2">
                 <span>Settings</span>
               </div>
-            </DropdownMenu.Item>
+            </DropdownMenu.Item> */}
           </DropdownMenu.Group>
           <DropdownMenu.Separator />
           <DropdownMenu.Item

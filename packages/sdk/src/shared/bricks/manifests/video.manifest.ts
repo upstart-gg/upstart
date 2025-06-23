@@ -22,8 +22,7 @@ export const manifest = defineBrickManifest({
       description: "URL of the video to embed. It can be a YouTube link or an embed link.",
     }),
     background: optional(backgroundRef()),
-    border: optional(borderRef),
-    padding: optional(paddingRef),
+    border: optional(borderRef()),
     shadow: optional(shadowRef()),
   }),
 });

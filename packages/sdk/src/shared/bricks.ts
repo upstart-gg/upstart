@@ -7,8 +7,10 @@ import { preset, presetRef } from "./bricks/props/preset";
 import { merge } from "lodash-es";
 import { cssLength, cssLengthRef } from "./bricks/props/css-length";
 import { enumProp } from "./bricks/props/enum";
-import { containerLayoutRef } from "./bricks/props/container";
-import { StringEnum } from "./utils/schema";
+import { containerLayoutRef, sectionLayout } from "./bricks/props/container";
+import { StringEnum } from "./utils/string-enum";
+import { group } from "./bricks/props/helpers";
+import { resolveSchema } from "./utils/schema-resolver";
 
 /**
  * Generates a unique identifier for bricks.
@@ -130,23 +132,32 @@ export type Brick = Static<typeof brickSchema>;
 export const sectionProps = Type.Object(
   {
     layout: Type.Optional(
-      containerLayoutRef({
-        options: { disableGrid: true },
-        defaults: {
-          gap: "gap-4",
-          wrap: true,
-          fillSpace: false,
-          alignItems: "items-stretch",
-          justifyContent: "justify-stretch",
-        },
+      group({
+        title: "Layout",
+        children: sectionLayout({
+          defaults: {
+            gap: "gap-4",
+            wrap: true,
+            fillSpace: false,
+            alignItems: "items-stretch",
+            justifyContent: "justify-stretch",
+          },
+        }),
       }),
     ),
     background: Type.Optional(backgroundRef()),
     preset: Type.Optional(presetRef),
-    border: Type.Optional(borderRef),
+    border: Type.Optional(borderRef()),
     minHeight: Type.Optional(
-      cssLengthRef({ title: "Min height", default: "0px", description: "The min height of the section" }),
+      cssLengthRef({
+        title: "Min height",
+        default: "0px",
+        description: "The min height of the section",
+        "ui:styleId": "minHeight",
+        "ui:advanced": true,
+      }),
     ),
+
     maxWidth: Type.Optional(
       enumProp("Max width", "max-w-full", {
         options: [
@@ -168,10 +179,19 @@ export const sectionProps = Type.Object(
         title: "Horizontal padding",
         default: "20px",
         description: "Horizontal padding. Desktop only",
+        "ui:styleId": "minHeight",
+        "ui:advanced": true,
       }),
     ),
     verticalPadding: Type.Optional(
-      cssLengthRef({ title: "Vertical padding", default: "20px", description: "Vertical padding." }),
+      // cssLengthRef({ title: "Vertical padding", default: "20px", description: "Vertical padding." }),
+      cssLength({
+        title: "Vertical padding",
+        default: "20px",
+        description: "Vertical padding.",
+        "ui:styleId": "verticalPadding",
+        "ui:advanced": true,
+      }),
     ),
     lastTouched: Type.Optional(
       Type.Number({

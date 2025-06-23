@@ -46,6 +46,8 @@ export const manifest = defineBrickManifest({
   aiInstructions: "This brick should be used on most sites/pages.",
   datasource,
   duplicatable: false,
+  resizable: false,
+  movable: false,
   defaultHeight: {
     desktop: 3,
     mobile: 3,
@@ -66,7 +68,7 @@ export const manifest = defineBrickManifest({
         title: "Main element",
         children: {
           backgroundColor: optional(backgroundColorRef()),
-          border: optional(borderRef),
+          border: optional(borderRef()),
           shadow: optional(shadowRef()),
           fixedPositioned: optional(fixedPositioned()),
         },

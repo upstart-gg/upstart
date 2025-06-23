@@ -1,5 +1,5 @@
 import { Type } from "@sinclair/typebox";
-import { preset, presetRef } from "./preset";
+import { presetRef } from "./preset";
 import { typedRef } from "~/shared/utils/typed-ref";
 
 export function hidden() {

@@ -1,6 +1,6 @@
 import { createStore, useStore } from "zustand";
 import { debounce, isEqual, merge } from "lodash-es";
-import { subscribeWithSelector } from "zustand/middleware";
+import { subscribeWithSelector, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { enableMapSet } from "immer";
 import { createContext, useContext, useEffect } from "react";
@@ -17,8 +17,7 @@ import type { CallContextProps, GenerationState } from "@upstart.gg/sdk/shared/c
 import { generateId } from "@upstart.gg/sdk/shared/bricks";
 import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
 import type { Site, SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
-import { add } from "date-fns";
-export { type Immer } from "immer";
+export type { Immer } from "immer";
 
 enableMapSet();
 
@@ -194,142 +193,149 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
 
   return createStore<EditorState>()(
     subscribeWithSelector(
-      temporal(
-        immer((set, _get) => ({
-          ...DEFAULT_PROPS,
-          ...initProps,
-          toggleEditorEnabled: () =>
-            set((state) => {
-              state.disabled = !state.disabled;
-            }),
-          toggleChat: () =>
-            set((state) => {
-              state.chatVisible = !state.chatVisible;
-              if (state.chatVisible) {
-                state.panel = undefined;
-                state.panelPosition = "right";
-              }
-            }),
+      persist(
+        temporal(
+          immer((set, _get) => ({
+            ...DEFAULT_PROPS,
+            ...initProps,
+            toggleEditorEnabled: () =>
+              set((state) => {
+                state.disabled = !state.disabled;
+              }),
+            toggleChat: () =>
+              set((state) => {
+                state.chatVisible = !state.chatVisible;
+                if (state.chatVisible) {
+                  state.panel = undefined;
+                  state.panelPosition = "right";
+                }
+              }),
 
-          setImagesSearchResults: (images) =>
-            set((state) => {
-              state.imagesSearchResults = images;
-            }),
+            setImagesSearchResults: (images) =>
+              set((state) => {
+                state.imagesSearchResults = images;
+              }),
 
-          setLastTextEditPosition: (position) =>
-            set((state) => {
-              state.lastTextEditPosition = position;
-            }),
+            setLastTextEditPosition: (position) =>
+              set((state) => {
+                state.lastTextEditPosition = position;
+              }),
 
-          toggleTextEditMode: () =>
-            set((state) => {
-              state.textEditMode =
-                !state.textEditMode || state.textEditMode === "default" ? "large" : "default";
-            }),
+            toggleTextEditMode: () =>
+              set((state) => {
+                state.textEditMode =
+                  !state.textEditMode || state.textEditMode === "default" ? "large" : "default";
+              }),
 
-          setTextEditMode: (mode) =>
-            set((state) => {
-              state.textEditMode = mode;
-            }),
+            setTextEditMode: (mode) =>
+              set((state) => {
+                state.textEditMode = mode;
+              }),
 
-          setPreviewMode: (mode) =>
-            set((state) => {
-              state.previewMode = mode;
-            }),
+            setPreviewMode: (mode) =>
+              set((state) => {
+                state.previewMode = mode;
+              }),
 
-          setSettingsVisible: (visible) =>
-            set((state) => {
-              state.settingsVisible = visible;
-            }),
+            setSettingsVisible: (visible) =>
+              set((state) => {
+                state.settingsVisible = visible;
+              }),
 
-          toggleSettings: () =>
-            set((state) => {
-              state.settingsVisible = !state.settingsVisible;
-            }),
+            toggleSettings: () =>
+              set((state) => {
+                state.settingsVisible = !state.settingsVisible;
+              }),
 
-          setIsEditingText: (forBrickId: string | false) =>
-            set((state) => {
-              state.isEditingTextForBrickId = forBrickId || undefined;
-            }),
+            setIsEditingText: (forBrickId: string | false) =>
+              set((state) => {
+                state.isEditingTextForBrickId = forBrickId || undefined;
+              }),
 
-          setPanel: (panel) =>
-            set((state) => {
-              state.panel = panel;
-            }),
+            setPanel: (panel) =>
+              set((state) => {
+                state.panel = panel;
+              }),
 
-          togglePanel: (panel) =>
-            set((state) => {
-              state.panel = panel && state.panel === panel ? undefined : panel;
-            }),
+            togglePanel: (panel) =>
+              set((state) => {
+                state.panel = panel && state.panel === panel ? undefined : panel;
+              }),
 
-          hidePanel: (panel) =>
-            set((state) => {
-              if (!panel || state.panel === panel) {
-                state.panel = undefined;
-              }
-            }),
+            hidePanel: (panel) =>
+              set((state) => {
+                if (!panel || state.panel === panel) {
+                  state.panel = undefined;
+                }
+              }),
 
-          zoomIn: () =>
-            set((state) => {
-              state.zoom = Math.min(state.zoom + 0.1, 2);
-            }),
+            zoomIn: () =>
+              set((state) => {
+                state.zoom = Math.min(state.zoom + 0.1, 2);
+              }),
 
-          zoomOut: () =>
-            set((state) => {
-              state.zoom = Math.max(state.zoom - 0.1, 0.5);
-            }),
+            zoomOut: () =>
+              set((state) => {
+                state.zoom = Math.max(state.zoom - 0.1, 0.5);
+              }),
 
-          resetZoom: () =>
-            set((state) => {
-              state.zoom = 1;
-            }),
+            resetZoom: () =>
+              set((state) => {
+                state.zoom = 1;
+              }),
 
-          setSelectedGroup: (group) =>
-            set((state) => {
-              state.selectedGroup = group;
-            }),
+            setSelectedGroup: (group) =>
+              set((state) => {
+                state.selectedGroup = group;
+              }),
 
-          setSelectedBrickId: (brickId) =>
-            set((state) => {
-              state.selectedBrickId = brickId;
-              if (brickId) {
-                state.selectedSectionId = undefined;
-              }
-            }),
+            setSelectedBrickId: (brickId) =>
+              set((state) => {
+                state.selectedBrickId = brickId;
+                if (brickId) {
+                  state.selectedSectionId = undefined;
+                }
+              }),
 
-          setSelectedSectionId: (sectionId) =>
-            set((state) => {
-              state.selectedSectionId = sectionId;
-              if (sectionId) {
-                state.selectedBrickId = undefined;
-                state.selectedGroup = undefined;
-              }
-            }),
+            setSelectedSectionId: (sectionId) =>
+              set((state) => {
+                state.selectedSectionId = sectionId;
+                if (sectionId) {
+                  state.selectedBrickId = undefined;
+                  state.selectedGroup = undefined;
+                }
+              }),
 
-          deselectBrick: (brickId) =>
-            set((state) => {
-              if (state.selectedBrickId && (!brickId || state.selectedBrickId === brickId)) {
-                state.selectedBrickId = undefined;
-              }
-            }),
+            deselectBrick: (brickId) =>
+              set((state) => {
+                if (state.selectedBrickId && (!brickId || state.selectedBrickId === brickId)) {
+                  state.selectedBrickId = undefined;
+                }
+              }),
 
-          togglePanelPosition: () =>
-            set((state) => {
-              state.panelPosition = state.panelPosition === "left" ? "right" : "left";
-            }),
+            togglePanelPosition: () =>
+              set((state) => {
+                state.panelPosition = state.panelPosition === "left" ? "right" : "left";
+              }),
 
-          showModal: (modal) =>
-            set((state) => {
-              state.modal = modal;
-            }),
+            showModal: (modal) =>
+              set((state) => {
+                state.modal = modal;
+              }),
 
-          hideModal: () =>
-            set((state) => {
-              state.modal = undefined;
-            }),
-        })),
-        // limit undo history to 100
-        { limit: 100, equality: (pastState, currentState) => isEqual(pastState, currentState) },
+            hideModal: () =>
+              set((state) => {
+                state.modal = undefined;
+              }),
+          })),
+          // limit undo history to 100
+          { limit: 100, equality: (pastState, currentState) => isEqual(pastState, currentState) },
+        ),
+        {
+          name: "editor-state",
+          partialize: (state) =>
+            Object.fromEntries(Object.entries(state).filter(([key]) => ["chatVisible"].includes(key))),
+        },
       ),
     ),
   );
@@ -389,7 +395,9 @@ export interface DraftState extends DraftStateProps {
   duplicateBrick: (id: string) => void;
   duplicateSection: (id: string) => void;
   moveBrickWithin: (id: string, to: "left" | "right") => void;
-  moveBrickToParent: (id: string, parentId: string) => void;
+  reorderBrickWithin: (brickId: string, fromIndex: number, toIndex: number) => void;
+  moveBrickToContainerBrick: (id: string, parentId: string) => void;
+  moveBrickToSection: (id: string, sectionId: string, index?: number) => void;
   addBrick: (brick: Brick, sectiondId: string, parentContainerId: Brick["id"] | null) => void;
   updateBrick: (id: string, brick: Partial<Brick>) => void;
   updateBrickProps: (id: string, props: Record<string, unknown>, isMobileProps?: boolean) => void;
@@ -425,6 +433,7 @@ export interface DraftState extends DraftStateProps {
   reorderSections: (orderedIds: string[]) => void;
 
   // New section methods
+  createEmptySection: (afterSectionId?: string) => void;
   addSection: (section: Section) => void;
   updateSection: (id: string, sectionData: Partial<Section>) => void;
   updateSectionProps: (id: string, props: Partial<Section["props"]>, isMobileProps?: boolean) => void;
@@ -472,6 +481,21 @@ export const createDraftStore = (
         immer((set, _get) => ({
           ...DEFAULT_PROPS,
           ...initProps,
+
+          createEmptySection: (afterSectionId) =>
+            set((state) => {
+              const count = state.sections.length;
+              const newSection: Section = {
+                id: `s_${generateId()}`,
+                order: afterSectionId
+                  ? (state.sections.find((s) => s.id === afterSectionId)?.order ?? state.sections.length)
+                  : state.sections.length,
+                label: `Section ${count + 1}`,
+                bricks: [],
+                props: {},
+              };
+              state.sections.push(newSection);
+            }),
 
           addPage: (page) =>
             set((state) => {
@@ -864,12 +888,10 @@ export const createDraftStore = (
                   });
                 }
               }
-            }),
-
-          /**
+            }) /**
            * Move abrick inside its container.
            * If the brick does not belong to a container, does nothing
-           */
+           */,
           moveBrickWithin: (id, to) =>
             set((state) => {
               const parentBrick = state.getParentBrick(id);
@@ -902,7 +924,38 @@ export const createDraftStore = (
               children.splice(newIndex, 0, brickToMove);
             }),
 
-          moveBrickToParent: (id, parentId) =>
+          /**
+           * Reorder a brick within its section using indices
+           */
+          reorderBrickWithin: (brickId, fromIndex, toIndex) =>
+            set((state) => {
+              const brickMapping = state.brickMap.get(brickId);
+              if (!brickMapping) {
+                console.error("Cannot reorder brick %s, brick mapping not found", brickId);
+                return;
+              }
+
+              const { sectionId, parentId } = brickMapping;
+
+              if (parentId) {
+                // Brick is inside a container, reorder within parent's children
+                const parentBrick = state.getBrick(parentId);
+                if (parentBrick?.props.$children) {
+                  const children = parentBrick.props.$children as Brick[];
+                  const [movedBrick] = children.splice(fromIndex, 1);
+                  children.splice(toIndex, 0, movedBrick);
+                }
+              } else {
+                // Brick is at the top level of a section
+                const section = state.sections.find((s) => s.id === sectionId);
+                if (section) {
+                  const [movedBrick] = section.bricks.splice(fromIndex, 1);
+                  section.bricks.splice(toIndex, 0, movedBrick);
+                }
+              }
+            }),
+
+          moveBrickToContainerBrick: (id, parentId) =>
             set((state) => {
               const brick = state.getBrick(id);
               const parent = state.getBrick(parentId);
@@ -969,6 +1022,77 @@ export const createDraftStore = (
 
                 updateChildMappings(id, targetMapping.sectionId);
               }
+            }),
+
+          moveBrickToSection: (id, sectionId, index) =>
+            set((state) => {
+              const brick = state.getBrick(id);
+              const targetSection = state.sections.find((s) => s.id === sectionId);
+              const brickMapping = state.brickMap.get(id);
+
+              if (!brick || !targetSection || !brickMapping) {
+                console.error(
+                  "Cannot move brick %s to section %s, brick or section not found",
+                  id,
+                  sectionId,
+                );
+                return;
+              }
+
+              const { sectionId: currentSectionId, parentId: currentParentId } = brickMapping;
+
+              // 1. Remove brick from its current location
+              if (currentParentId) {
+                // Brick is currently in a container
+                const currentParent = state.getBrick(currentParentId);
+                if (currentParent?.props.$children) {
+                  currentParent.props.$children = (currentParent.props.$children as Brick[]).filter(
+                    (child) => child.id !== id,
+                  );
+                }
+              } else {
+                // Brick is currently at the top level of a section
+                const currentSection = state.sections.find((s) => s.id === currentSectionId);
+                if (currentSection) {
+                  currentSection.bricks = currentSection.bricks.filter((b) => b.id !== id);
+                }
+              }
+
+              // 2. Add brick to target section at specified index (or end if no index)
+              if (typeof index === "number") {
+                targetSection.bricks.splice(index, 0, brick);
+              } else {
+                targetSection.bricks.push(brick);
+              }
+
+              // 3. Update the brickMap reference
+              state.brickMap.set(id, {
+                brick,
+                sectionId,
+                parentId: null, // Top level in section
+              });
+
+              // 4. Also update mappings for all children recursively to new section
+              const updateChildMappings = (
+                brickId: string,
+                newSectionId: string,
+                newParentId: string | null,
+              ) => {
+                const mapping = state.brickMap.get(brickId);
+                if (mapping?.brick.props?.$children) {
+                  const children = mapping.brick.props.$children as Brick[];
+                  children.forEach((child) => {
+                    state.brickMap.set(child.id, {
+                      brick: child,
+                      sectionId: newSectionId,
+                      parentId: brickId,
+                    });
+                    updateChildMappings(child.id, newSectionId, brickId);
+                  });
+                }
+              };
+
+              updateChildMappings(id, sectionId, null);
             }),
 
           getBrick: (id) => {
@@ -1043,18 +1167,39 @@ export const createDraftStore = (
 
               // Check if this brick is being added to a container
               if (parentContainerId) {
-                const parentBrick = state.getBrick(parentContainerId);
+                console.log("Adding brick to parent container", parentContainerId);
+                const parentBrick = getBrick(parentContainerId, state);
                 if (!parentBrick) {
-                  console.error("Cannot add brick, parent container %s does not exist", parentContainerId);
+                  console.warn("Cannot add brick, parent container %s does not exist", parentContainerId);
                   return;
                 }
 
-                if (!parentBrick.props.$children) {
-                  parentBrick.props.$children = [];
+                // Find the section of the parent brick
+                const parentSection = state.sections.find((s) => s.id === sectionId);
+                if (!parentSection) {
+                  console.warn("Cannot add brick, parent section %s does not exist", sectionId);
+                  return;
+                }
+                // Find the parent brick from the section's bricks
+                const parentBrickInSection = parentSection.bricks.find((b) => b.id === parentContainerId);
+                if (!parentBrickInSection) {
+                  console.warn(
+                    "Cannot add brick, parent brick %s does not exist in section %s",
+                    parentContainerId,
+                    sectionId,
+                  );
+                  return;
+                }
+
+                console.log("PArent BRICK", parentBrickInSection);
+
+                if (!parentBrickInSection.props.$children) {
+                  console.warn("Brick added to a container without $children, initializing it");
+                  parentBrickInSection.props.$children = [];
                 }
 
                 // Add the brick to the parent container's children
-                (parentBrick.props.$children as Brick[]).push(brick);
+                (parentBrickInSection.props.$children as Brick[]).push(brick);
               } else {
                 // Add the brick directly to the section
                 section.bricks.push(brick);
@@ -1190,21 +1335,17 @@ export const usePreviewMode = () => {
 
 export const useGenerationState = () => {
   const draft = useDraftStoreContext();
-  const editorCtx = useEditorStoreContext();
   return useStore(draft, (state) => {
     const hasSitemap = state.sitemap.length > 0;
     const hasThemesGenerated = state.themes.length > 0;
-    const isReady =
-      hasSitemap &&
-      hasThemesGenerated &&
-      state.sitemap.length > 0 &&
-      state.sitemap.every((page) => state.pages.some((p) => p.id === page.id));
+    const isReady = hasSitemap && hasThemesGenerated && state.sitemap.length > 0;
+    const isGenerating = new URL(window.location.href).searchParams.get("action") === "generate";
     return {
       hasSitemap,
       hasThemesGenerated,
       sitemap: state.sitemap,
       pages: state.pages,
-      isReady: isReady || import.meta.env.DEV,
+      isReady: !isGenerating || isReady || import.meta.env.DEV,
     } satisfies GenerationState;
   });
 };
@@ -1445,9 +1586,11 @@ export const useDraftHelpers = () => {
     updateBrick: state.updateBrick,
     updateBrickProps: state.updateBrickProps,
     moveBrickWithin: state.moveBrickWithin,
+    reorderBrickWithin: state.reorderBrickWithin,
     getPositionWithinParent: state.getPositionWithinParent,
     canMoveToWithinParent: state.canMoveToWithinParent,
-    moveBrickToParent: state.moveBrickToParent,
+    moveBrickToContainerBrick: state.moveBrickToContainerBrick,
+    moveBrickToSection: state.moveBrickToSection,
     deleteSection: state.deleteSection,
     moveSectionUp: state.moveSectionUp,
     moveSectionDown: state.moveSectionDown,
@@ -1455,6 +1598,7 @@ export const useDraftHelpers = () => {
     updateSection: state.updateSection,
     updateSectionProps: state.updateSectionProps,
     addSection: state.addSection,
+    createEmptySection: state.createEmptySection,
     isFirstSection: state.isFirstSection,
     isLastSection: state.isLastSection,
   }));

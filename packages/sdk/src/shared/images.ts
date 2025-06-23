@@ -1,5 +1,5 @@
 import { type Static, Type } from "@sinclair/typebox";
-import { StringEnum } from "./utils/schema";
+import { StringEnum } from "./utils/string-enum";
 
 export const imageSearchSchema = Type.Object({
   query: Type.String({

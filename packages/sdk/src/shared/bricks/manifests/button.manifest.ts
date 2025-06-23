@@ -4,8 +4,8 @@ import { textContentRef } from "../props/text";
 import { RxButton } from "react-icons/rx";
 import { string, urlOrPageIdRef } from "../props/string";
 import { Type } from "@sinclair/typebox";
-import { StringEnum } from "~/shared/utils/schema";
 import type { BrickProps } from "../props/types";
+import { StringEnum } from "~/shared/utils/string-enum";
 
 export const manifest = defineBrickManifest({
   type: "button",
@@ -21,32 +21,32 @@ export const manifest = defineBrickManifest({
     variants: Type.Array(
       Type.Union(
         [
-          Type.Literal("btn-neutral", { title: "Neutral", "ai:variant-type": "color" }),
-          Type.Literal("btn-primary", { title: "Primary", "ai:variant-type": "color" }),
-          Type.Literal("btn-secondary", { title: "Secondary", "ai:variant-type": "color" }),
-          Type.Literal("btn-accent", { title: "Accent", "ai:variant-type": "color" }),
-          Type.Literal("btn-info", { title: "Info", "ai:variant-type": "color" }),
-          Type.Literal("btn-success", { title: "Success", "ai:variant-type": "color" }),
-          Type.Literal("btn-warning", { title: "Warning", "ai:variant-type": "color" }),
-          Type.Literal("btn-error", { title: "Error", "ai:variant-type": "color" }),
-          Type.Literal("btn-outline", { title: "Outline", "ai:variant-type": "style" }),
-          Type.Literal("btn-dash", { title: "Dash", "ai:variant-type": "style" }),
-          Type.Literal("btn-soft", { title: "Soft", "ai:variant-type": "style" }),
-          Type.Literal("btn-ghost", { title: "Ghost", "ai:variant-type": "style" }),
-          Type.Literal("btn-link", { title: "Link", "ai:variant-type": "style" }),
-          Type.Literal("btn-active", { title: "Active", "ai:variant-type": "behavior" }),
-          Type.Literal("btn-disabled", { title: "Disabled", "ai:variant-type": "behavior" }),
-          Type.Literal("btn-icon-left", { title: "Icon left", "ai:variant-type": "icon" }),
-          Type.Literal("btn-icon-right", { title: "Icon right", "ai:variant-type": "icon" }),
-          Type.Literal("btn-xs", { title: "Extra small", "ai:variant-type": "size" }),
-          Type.Literal("btn-sm", { title: "Small", "ai:variant-type": "size" }),
-          Type.Literal("btn-md", { title: "Medium", "ai:variant-type": "size" }),
-          Type.Literal("btn-lg", { title: "Large", "ai:variant-type": "size" }),
-          Type.Literal("btn-xl", { title: "Extra large", "ai:variant-type": "size" }),
-          Type.Literal("btn-wide", { title: "Wide", "ai:variant-type": "modifier" }),
-          Type.Literal("btn-block", { title: "Block", "ai:variant-type": "modifier" }),
-          Type.Literal("btn-square", { title: "Square", "ai:variant-type": "modifier" }),
-          Type.Literal("btn-circle", { title: "Circle", "ai:variant-type": "modifier" }),
+          Type.Literal("btn-neutral", { title: "Neutral", "ui:variant-type": "color" }),
+          Type.Literal("btn-primary", { title: "Primary", "ui:variant-type": "color" }),
+          Type.Literal("btn-secondary", { title: "Secondary", "ui:variant-type": "color" }),
+          Type.Literal("btn-accent", { title: "Accent", "ui:variant-type": "color" }),
+          Type.Literal("btn-info", { title: "Info", "ui:variant-type": "color" }),
+          Type.Literal("btn-success", { title: "Success", "ui:variant-type": "color" }),
+          Type.Literal("btn-warning", { title: "Warning", "ui:variant-type": "color" }),
+          Type.Literal("btn-error", { title: "Error", "ui:variant-type": "color" }),
+          Type.Literal("btn-outline", { title: "Outline", "ui:variant-type": "style" }),
+          Type.Literal("btn-dash", { title: "Dash", "ui:variant-type": "style" }),
+          Type.Literal("btn-soft", { title: "Soft", "ui:variant-type": "style" }),
+          Type.Literal("btn-ghost", { title: "Ghost", "ui:variant-type": "style" }),
+          Type.Literal("btn-link", { title: "Link", "ui:variant-type": "style" }),
+          Type.Literal("btn-active", { title: "Active", "ui:variant-type": "behavior" }),
+          Type.Literal("btn-disabled", { title: "Disabled", "ui:variant-type": "behavior" }),
+          Type.Literal("btn-icon-left", { title: "Icon left", "ui:variant-type": "icon" }),
+          Type.Literal("btn-icon-right", { title: "Icon right", "ui:variant-type": "icon" }),
+          Type.Literal("btn-xs", { title: "Extra small", "ui:variant-type": "size" }),
+          Type.Literal("btn-sm", { title: "Small", "ui:variant-type": "size" }),
+          Type.Literal("btn-md", { title: "Medium", "ui:variant-type": "size" }),
+          Type.Literal("btn-lg", { title: "Large", "ui:variant-type": "size" }),
+          Type.Literal("btn-xl", { title: "Extra large", "ui:variant-type": "size" }),
+          Type.Literal("btn-wide", { title: "Wide", "ui:variant-type": "modifier" }),
+          Type.Literal("btn-block", { title: "Block", "ui:variant-type": "modifier" }),
+          Type.Literal("btn-square", { title: "Square", "ui:variant-type": "modifier" }),
+          Type.Literal("btn-circle", { title: "Circle", "ui:variant-type": "modifier" }),
         ],
         {
           title: "Variant",
@@ -55,7 +55,7 @@ export const manifest = defineBrickManifest({
         },
       ),
     ),
-    label: textContentRef({ title: "Label", default: "My button" }),
+    label: string("Label", { default: "My button" }),
     type: optional(
       prop({
         title: "Type",

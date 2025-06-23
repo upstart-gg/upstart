@@ -1,9 +1,7 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, group, optional, prop } from "../props/helpers";
+import { defineProps, group, optional } from "../props/helpers";
 import { LiaMapMarkedAltSolid } from "react-icons/lia";
-import { backgroundColorRef } from "../props/background";
 import { borderRef } from "../props/border";
-import { paddingRef } from "../props/padding";
 import { shadowRef } from "../props/effects";
 import type { BrickProps } from "../props/types";
 import { geolocation } from "../props/geolocation";
@@ -21,6 +19,10 @@ export const manifest = defineBrickManifest({
   description: "A map element showing a location",
   aiInstructions:
     "This brick can be used to show a location on a map. Use the 'location' prop to set the coordinates and an optional tooltip.",
+  minWidth: {
+    desktop: 200,
+    mobile: 200,
+  },
   icon: LiaMapMarkedAltSolid,
   props: defineProps(
     {
@@ -28,7 +30,7 @@ export const manifest = defineBrickManifest({
         title: "Location",
         children: geolocation({ defaultZoom: DEFAULTS.zoom }),
       }),
-      border: optional(borderRef),
+      border: optional(borderRef()),
       shadow: optional(shadowRef()),
     },
     { noPreset: true },
@@ -52,6 +54,7 @@ export const examples: {
         address: "San Francisco, CA",
         tooltip: "San Francisco, CA",
       },
+      shadow: "shadow-md",
     },
   },
   {
@@ -67,6 +70,7 @@ export const examples: {
       border: {
         color: "border-gray-300",
         width: "border",
+        rounding: "rounded-lg",
       },
       shadow: "shadow-lg",
     },

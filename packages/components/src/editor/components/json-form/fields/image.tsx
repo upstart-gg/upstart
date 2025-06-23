@@ -52,9 +52,9 @@ const ImageField: FC<FieldProps<ImageProps>> = (props) => {
           </Button>
           {schema["ui:show-img-search"] && (
             <Button variant="soft" size="1" radius="full" type="button" onClick={() => setShowSearch(true)}>
-              <label className="!leading-[inherit] !mb-0 !font-medium !text-inherit cursor-[inherit]">
+              <span className="!leading-[inherit] !mb-0 !font-medium !text-inherit cursor-[inherit]">
                 Search
-              </label>
+              </span>
             </Button>
           )}
         </div>
@@ -65,11 +65,11 @@ const ImageField: FC<FieldProps<ImageProps>> = (props) => {
           <div
             className="border border-upstart-200 p-2 mt-3 ml-auto w-full h-auto relative"
             style={{
-              backgroundImage: `url(${trans})`,
-              backgroundSize: "12px 12px",
+              backgroundImage: `url(${currentValue.src})`,
+              // backgroundSize: "12px 12px",
             }}
           >
-            <img src={currentValue.src} alt="Preview" className="max-w-full h-auto" />
+            <img src={currentValue.src} alt="Preview" className="max-w-full h-auto object-cover" />
             <div className="absolute flex items-center justify-center top-1 right-1 text-gray-500 p-0.5 bg-white cursor-pointer hover:(bg-red-800 text-white) rounded border border-gray-300 shadow-sm">
               <IoMdClose className="w-4 h-4 " onClick={() => onPropsChange({ src: "" })} />
             </div>
@@ -88,14 +88,14 @@ const ImageField: FC<FieldProps<ImageProps>> = (props) => {
           <div className="basis-full w-0" />
           {!schema["ui:no-object-options"] && (
             <div className="flex gap-12 flex-1 mt-3 pr-1.5">
-              <div className="flex flex-col gap-2 flex-1">
+              <div className="flex flex-col gap-2 flex-1 pl-1">
                 <label className={fieldLabel}>Fit</label>
                 <Select.Root
                   defaultValue={currentValue.fit}
                   size="2"
                   onValueChange={(value) => onPropsChange({ fit: value as ImageProps["fit"] })}
                 >
-                  <Select.Trigger radius="large" variant="ghost" />
+                  <Select.Trigger radius="large" variant="ghost" placeholder="Not specified" />
                   <Select.Content position="popper">
                     <Select.Group>
                       {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
@@ -115,7 +115,7 @@ const ImageField: FC<FieldProps<ImageProps>> = (props) => {
                   size="2"
                   onValueChange={(value) => onPropsChange({ position: value as ImageProps["position"] })}
                 >
-                  <Select.Trigger radius="large" variant="ghost" />
+                  <Select.Trigger radius="large" variant="ghost" placeholder="Not specified" />
                   <Select.Content position="popper">
                     <Select.Group>
                       {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}

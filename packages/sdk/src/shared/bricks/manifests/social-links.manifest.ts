@@ -34,7 +34,7 @@ export const manifest = defineBrickManifest({
     ),
     backgroundColor: optional(backgroundColorRef()),
     color: optional(colorRef()),
-    border: optional(borderRef),
+    border: optional(borderRef()),
     shadow: optional(shadowRef()),
     variants: Type.Array(
       Type.Union(

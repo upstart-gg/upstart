@@ -35,8 +35,8 @@ It is typically used on home pages to grab the user's attention.
       color: optional(colorRef()),
       shadow: optional(shadowRef()),
       align: optional(basicAlignRef()),
-      padding: optional(paddingRef),
-      border: optional(borderRef),
+      padding: optional(paddingRef()),
+      border: optional(borderRef()),
     },
     {
       default: {

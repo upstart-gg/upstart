@@ -46,6 +46,7 @@
   "dependencies": {
     "@ai-sdk/react": "1.2.12",
     "@date-fns/utc": "1.2.0",
+    "@hello-pangea/dnd": "18.0.1",
     "@radix-ui/themes": "3.2.1",
     "@sinclair/typebox": "0.34.33",
     "@tiptap/extension-code": "2.14.0",
@@ -73,6 +74,7 @@
     "lodash-es": "4.17.21",
     "motion": "12.17.0",
     "nanoid": "5.1.5",
+    "re-resizable": "6.11.2",
     "react-hotkeys-hook": "4.6.1",
     "react-joyride": "2.9.3",
     "react-markdown": "10.1.0",
@@ -115,6 +117,7 @@
     "typescript": "^5.8.3",
     "vite": "5.4.10",
     "vite-plugin-bundlesize": "0.2.0",
+    "vite-plugin-devtools-json": "0.2.0",
     "vite-plugin-dts": "4.5.4",
     "vite-plugin-inspect": "0.8.7"
   },

@@ -173,6 +173,12 @@ export const brickStylesHelpersMap = {
   "#styles:objectFit": simpleClassHandler,
   "#styles:objectPosition": simpleClassHandler,
   "#styles:heroSize": simpleClassHandler,
+
+  // new test
+  "#styles:backgroundColor": getBackgroundColorStyles,
+  "#styles:background": getBackgroundStyles,
+  "#styles:border": getBorderStyles,
+  "#styles:padding": getPaddingStyles, // test
 };
 
 export const brickWrapperStylesHelpersMap = {

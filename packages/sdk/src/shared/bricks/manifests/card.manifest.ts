@@ -1,64 +1,59 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { padding, paddingRef } from "../props/padding";
-import { backgroundColor, backgroundColorRef } from "../props/background";
+import { paddingRef } from "../props/padding";
 import { defineProps, group, optional } from "../props/helpers";
-import { textContent, textContentRef } from "../props/text";
+import { fontSize, textContentRef } from "../props/text";
 import { BsCardText } from "react-icons/bs";
-import { image, imageRef } from "../props/image";
+import { imageRef } from "../props/image";
 import { Type } from "@sinclair/typebox";
 import type { BrickProps } from "../props/types";
+import { shadowRef } from "../props/effects";
+import { borderRef } from "../props/border";
 
 export const manifest = defineBrickManifest({
   type: "card",
   name: "Card",
-  description: "A multi-purpose card that can have a title, subtitle, image, and content",
+  description: "A multi-purpose card that can have a title, image, and content",
   repeatable: true,
   icon: BsCardText,
   props: defineProps({
     variants: Type.Array(
       Type.Union(
         [
-          Type.Literal("image-first", { title: "Image First" }),
-          Type.Literal("image-last", { title: "Image Last" }),
-          Type.Literal("image-overlay", { title: "Image Overlay" }),
-          Type.Literal("image-left-side", { title: "Image Left Side" }),
-          Type.Literal("image-right-side", { title: "Image Right Side" }),
-          Type.Literal("centered", { title: "Centered" }),
-          Type.Literal("large-padding", { title: "Large padding" }),
+          Type.Literal("image-first", { title: "Image First", "ui:variant-type": "image-placement" }),
+          Type.Literal("image-between", { title: "Image Between", "ui:variant-type": "image-placement" }),
+          Type.Literal("image-last", { title: "Image Last", "ui:variant-type": "image-placement" }),
+          Type.Literal("image-overlay", { title: "Image Overlay", "ui:variant-type": "image-placement" }),
+          Type.Literal("image-left-side", { title: "Image Left Side", "ui:variant-type": "image-placement" }),
+          Type.Literal("image-right-side", {
+            title: "Image Right Side",
+            "ui:variant-type": "image-placement",
+          }),
+          Type.Literal("centered", { title: "Centered", "ui:variant-type": "align" }),
+          Type.Literal("text-sm", { title: "S", "ui:variant-type": "font-size" }),
+          Type.Literal("text-base", { title: "M", "ui:variant-type": "font-size" }),
+          Type.Literal("text-lg", { title: "L", "ui:variant-type": "font-size" }),
+          Type.Literal("text-xl", { title: "XL", "ui:variant-type": "font-size" }),
+          Type.Literal("text-2xl", { title: "2XL", "ui:variant-type": "font-size" }),
         ],
         {
-          title: "Variant",
+          title: "Variants",
         },
       ),
-    ),
-    cardTitle: optional(
-      group({
-        title: "Title",
-        children: {
-          content: textContentRef(),
-          padding: optional(paddingRef),
-          backgroundColor: optional(backgroundColorRef()),
+      {
+        "ui:field": "variant",
+        default: ["image-between", "text-base"],
+        "ui:variant-names": {
+          "image-placement": "Image Placement",
+          align: "Alignment",
+          "font-size": "Base Font Size",
         },
-      }),
+      },
     ),
-    cardImage: optional(
-      group({
-        title: "Image",
-        children: {
-          image: imageRef(),
-        },
-      }),
-    ),
-    cardBody: optional(
-      group({
-        title: "Body",
-        children: {
-          content: textContentRef(),
-          padding: optional(paddingRef),
-          backgroundColor: optional(backgroundColorRef()),
-        },
-      }),
-    ),
+    cardImage: optional(imageRef()),
+    cardTitle: optional(textContentRef({ title: "Title" })),
+    cardBody: optional(textContentRef({ title: "Body" })),
+    shadow: optional(shadowRef()),
+    border: optional(borderRef()),
   }),
 });
 
@@ -75,13 +70,8 @@ export const examples: {
     props: {
       variants: ["image-first"],
       preset: "prominent-primary",
-      cardTitle: {
-        content: "Card Title",
-        padding: "p-4",
-      },
-      cardBody: {
-        content: "This is the body of the card.",
-      },
+      cardTitle: "Card Title",
+      cardBody: "This is the body of the card.",
     },
   },
   {
@@ -90,21 +80,11 @@ export const examples: {
     props: {
       variants: ["image-overlay", "centered"],
       cardImage: {
-        image: {
-          src: "https://via.placeholder.com/400x300",
-          alt: "Placeholder image",
-        },
+        src: "https://via.placeholder.com/400x300",
+        alt: "Placeholder image",
       },
-      cardTitle: {
-        content: "Overlay Title",
-        padding: "p-8",
-        backgroundColor: "rgba(0, 0, 0, 0.7)",
-      },
-      cardBody: {
-        content: "Beautiful overlay content with semi-transparent background.",
-        padding: "p-4",
-        backgroundColor: "rgba(255, 255, 255, 0.9)",
-      },
+      cardTitle: "Overlay Title",
+      cardBody: "Beautiful overlay content with semi-transparent background.",
     },
   },
   {
@@ -113,36 +93,20 @@ export const examples: {
     props: {
       variants: ["image-left-side"],
       cardImage: {
-        image: {
-          src: "https://via.placeholder.com/200x200",
-          alt: "Product image",
-        },
+        src: "https://via.placeholder.com/200x200",
+        alt: "Product image",
       },
-      cardTitle: {
-        content: "Premium Headphones",
-        padding: "p-4",
-      },
-      cardBody: {
-        content: "High-quality wireless headphones with noise cancellation and 30-hour battery life.",
-        padding: "p-4",
-      },
+      cardTitle: "Premium Headphones",
+      cardBody: "High-quality wireless headphones with noise cancellation and 30-hour battery life.",
     },
   },
   {
     description: "Feature card with large padding and background",
     type: "card",
     props: {
-      variants: ["large-padding", "centered"],
-      cardTitle: {
-        content: "Key Feature",
-        padding: "p-8",
-        backgroundColor: "#f8f9fa",
-      },
-      cardBody: {
-        content: "This feature provides exceptional value and enhances user experience significantly.",
-        padding: "p-8",
-        backgroundColor: "#ffffff",
-      },
+      variants: ["centered"],
+      cardTitle: "Key Feature",
+      cardBody: "This feature provides exceptional value and enhances user experience significantly.",
     },
   },
   {
@@ -150,20 +114,12 @@ export const examples: {
     type: "card",
     props: {
       variants: ["image-last"],
-      cardTitle: {
-        content: "The Future of Technology",
-        padding: "p-4",
-      },
-      cardBody: {
-        content:
-          "Exploring emerging trends and innovations that will shape our digital landscape in the coming decade.",
-        padding: "p-4",
-      },
+      cardTitle: "The Future of Technology",
+      cardBody:
+        "Exploring emerging trends and innovations that will shape our digital landscape in the coming decade.",
       cardImage: {
-        image: {
-          src: "https://via.placeholder.com/400x200",
-          alt: "Technology concept",
-        },
+        src: "https://via.placeholder.com/400x200",
+        alt: "Technology concept",
       },
     },
   },
@@ -172,21 +128,12 @@ export const examples: {
     type: "card",
     props: {
       variants: ["image-right-side"],
-      cardTitle: {
-        content: "Customer Review",
-        padding: "p-4",
-        backgroundColor: "#e3f2fd",
-      },
-      cardBody: {
-        content:
-          '"This product exceeded my expectations. The quality is outstanding and the customer service is top-notch!"',
-        padding: "p-4",
-      },
+      cardTitle: "Customer Review",
+      cardBody:
+        '"This product exceeded my expectations. The quality is outstanding and the customer service is top-notch!"',
       cardImage: {
-        image: {
-          src: "https://via.placeholder.com/150x150",
-          alt: "Customer photo",
-        },
+        src: "https://via.placeholder.com/150x150",
+        alt: "Customer photo",
       },
     },
   },
@@ -195,37 +142,22 @@ export const examples: {
     type: "card",
     props: {
       variants: ["centered"],
-      cardTitle: {
-        content: "Simple Announcement",
-        padding: "p-4",
-      },
-      cardBody: {
-        content: "Important updates will be posted here regularly.",
-        padding: "p-4",
-      },
+      cardTitle: "Simple Announcement",
+      cardBody: "Important updates will be posted here regularly.",
     },
   },
   {
     description: "Event card with multiple variants",
     type: "card",
     props: {
-      variants: ["image-first", "large-padding", "centered"],
+      variants: ["image-first", "centered"],
       cardImage: {
-        image: {
-          src: "https://via.placeholder.com/400x250",
-          alt: "Event venue",
-        },
+        src: "https://via.placeholder.com/400x250",
+        alt: "Event venue",
       },
-      cardTitle: {
-        content: "Annual Conference 2025",
-        padding: "p-8",
-        backgroundColor: "#1976d2",
-      },
-      cardBody: {
-        content:
-          "Join us for three days of inspiring talks, networking opportunities, and hands-on workshops.",
-        padding: "p-8",
-      },
+      cardTitle: "Annual Conference 2025",
+      cardBody:
+        "Join us for three days of inspiring talks, networking opportunities, and hands-on workshops.",
     },
   },
   {
@@ -234,36 +166,20 @@ export const examples: {
     props: {
       variants: ["image-left-side"],
       cardImage: {
-        image: {
-          src: "https://via.placeholder.com/120x120",
-          alt: "News thumbnail",
-        },
+        src: "https://via.placeholder.com/120x120",
+        alt: "News thumbnail",
       },
-      cardTitle: {
-        content: "Breaking News Update",
-        padding: "p-2",
-      },
-      cardBody: {
-        content: "Latest developments in the ongoing story with expert analysis and community reactions.",
-        padding: "p-2",
-      },
+      cardTitle: "Breaking News Update",
+      cardBody: "Latest developments in the ongoing story with expert analysis and community reactions.",
     },
   },
   {
     description: "Call-to-action card with prominent styling",
     type: "card",
     props: {
-      variants: ["centered", "large-padding"],
-      cardTitle: {
-        content: "Get Started Today",
-        padding: "p-8",
-        backgroundColor: "#4caf50",
-      },
-      cardBody: {
-        content: "Transform your workflow with our powerful tools. Sign up now and get 30 days free!",
-        padding: "p-8",
-        backgroundColor: "#f1f8e9",
-      },
+      variants: ["centered"],
+      cardTitle: "Get Started Today",
+      cardBody: "Transform your workflow with our powerful tools. Sign up now and get 30 days free!",
     },
   },
 ];

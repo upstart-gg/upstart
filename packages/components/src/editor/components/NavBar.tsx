@@ -419,48 +419,34 @@ export default function NavBar() {
           </div>
         )}
 
-        {editorMode === "authenticated" ? (
-          <TopbarMenu
-            id="publish-menu-btn"
-            items={[
-              { label: "Publish this page", onClick: () => publish() },
-              { label: "Publish all pages", onClick: () => publish(true) },
-              { label: "Schedule publish" },
-              { label: "Publish all pages", onClick: () => publish(true) },
-              { label: "Schedule publish" },
-            ]}
-          >
-            <button type="button" className={tx(btnClass, rocketBtn, btnWithArrow)}>
-              <div>
-                <RxRocket className={tx("h-5 w-auto")} />
-              </div>
-              <span className={tx("font-bold italic px-2", css({ fontSize: "1rem" }))}>Publish</span>
-              <RiArrowDownSLine className={arrowClass} />
-            </button>
-          </TopbarMenu>
-        ) : (
-          <button
-            id="publish-menu-btn"
-            type="button"
-            className={tx(btnClass, rocketBtn)}
-            onClick={() => {
-              editorHelpers.onShowLogin();
-            }}
-          >
+        <TopbarMenu
+          id="publish-menu-btn"
+          items={[
+            { label: "Publish this page", onClick: () => publish() },
+            { label: "Publish all pages", onClick: () => publish(true) },
+            { label: "Schedule publish" },
+          ]}
+        >
+          <button type="button" className={tx(btnClass, rocketBtn, btnWithArrow)}>
             <div
               style={{
                 textShadow: "1px 1px 0px rgba(255, 255, 255, 0.3)",
               }}
               className={tx(
-                "font-semibold inline-flex gap-1 bg-orange-100 py-2 px-3 rounded-full text-nowrap",
+                "font-semibold inline-flex gap-1.5 bg-orange-100 py-2 px-3 rounded-full text-nowrap items-center cursor-pointer",
                 css({ fontSize: ".94rem" }),
               )}
             >
-              <IoIosSave className={tx("h-5 w-auto")} />
-              Save your site
+              <RxRocket className={tx("h-4 w-auto stroke-orange-600")} />
+              Publish
+              <RiArrowDownSLine className={tx(arrowClass, "!text-orange-700")} />
             </div>
+            {/* <div>
+                <RxRocket className={tx("h-5 w-auto")} />
+              </div>
+              <span className={tx("font-bold italic px-2", css({ fontSize: "1rem" }))}>Publish</span> */}
           </button>
-        )}
+        </TopbarMenu>
       </div>
     </nav>
   );

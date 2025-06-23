@@ -11,9 +11,9 @@ import { shadow, shadowRef } from "../props/effects";
 import { RiMapPinTimeLine } from "react-icons/ri";
 import type { BrickProps } from "../props/types";
 import { colorRef } from "../props/color";
-import { StringEnum } from "~/shared/utils/schema";
 import type { FC } from "react";
 import def from "ajv/dist/vocabularies/discriminator";
+import { StringEnum } from "~/shared/utils/string-enum";
 
 export const manifest = defineBrickManifest({
   type: "timeline",
@@ -37,8 +37,8 @@ export const manifest = defineBrickManifest({
           title: "Container",
           children: {
             backgroundColor: optional(backgroundColorRef()),
-            padding: optional(paddingRef),
-            border: optional(borderRef),
+            padding: optional(paddingRef()),
+            border: optional(borderRef()),
             shadow: optional(shadowRef()),
           },
         }),

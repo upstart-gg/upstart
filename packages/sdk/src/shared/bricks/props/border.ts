@@ -1,13 +1,14 @@
-import { Type, type Static } from "@sinclair/typebox";
+import { type SchemaOptions, Type, type Static } from "@sinclair/typebox";
 import { group, optional, prop } from "./helpers";
-import { StringEnum } from "~/shared/utils/schema";
 import { typedRef } from "~/shared/utils/typed-ref";
+import { StringEnum } from "~/shared/utils/string-enum";
 
 export function border(title = "Border") {
   return group({
     title,
     options: {
       "ui:styleId": "#styles:border",
+      // "ui:advanced": true,
       $id: "styles:border",
     },
     children: {
@@ -71,6 +72,7 @@ export function border(title = "Border") {
         StringEnum(["border-solid", "border-dashed", "border-dotted"], {
           title: "Style",
           description: "The brick border style",
+          default: "border-solid",
           enumNames: ["Solid", "Dashed", "Dotted"],
           "ai:instructions": "Use only when width is different than border-0.",
           "ui:field": "enum",
@@ -81,6 +83,8 @@ export function border(title = "Border") {
   });
 }
 
-export const borderRef = typedRef("styles:border", { "ui:styleId": "#styles:border" });
+export function borderRef(options: SchemaOptions = {}) {
+  return typedRef("styles:border", { ...options, "ui:styleId": "#styles:border" });
+}
 
 export type BorderSettings = Static<ReturnType<typeof border>>;
