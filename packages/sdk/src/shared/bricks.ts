@@ -157,7 +157,6 @@ export const sectionProps = Type.Object(
         "ui:advanced": true,
       }),
     ),
-
     maxWidth: Type.Optional(
       enumProp("Max width", "max-w-full", {
         options: [

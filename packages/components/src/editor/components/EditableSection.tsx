@@ -3,6 +3,7 @@ import type { Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
 import {
   useDraftHelpers,
   useEditorHelpers,
+  useGridConfig,
   usePreviewMode,
   useSection,
   useSections,
@@ -16,7 +17,7 @@ import { useSectionStyle } from "~/shared/hooks/use-section-style";
 import { TbArrowAutofitHeight, TbBorderCorners, TbDots } from "react-icons/tb";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
-import { useGridConfig, type GridConfig } from "~/shared/hooks/use-grid-config";
+import { useGridObserver, type GridConfig } from "~/shared/hooks/use-grid-observer";
 import { getBrickResizeOptions, getBrickPosition } from "~/shared/utils/layout-utils";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import SectionSettingsView from "./SectionSettingsView";
@@ -33,7 +34,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
   const { bricks, id } = section;
 
   const ref = useRef<HTMLDivElement>(null);
-  const gridConfig = useGridConfig(ref);
+  const gridConfig = useGridConfig();
   const { setSelectedSectionId, setPanel } = useEditorHelpers();
   const isCmdOrCtrlPressed = useCmdOrCtrlPressed();
 
@@ -50,11 +51,10 @@ export default function EditableSection({ section, index }: EditableSectionProps
   });
 
   const onClick = (e: MouseEvent) => {
-    if (e.defaultPrevented) {
+    if (e.defaultPrevented || (e.target as HTMLElement).closest(".section-resizable-handle")) {
       // If the click was handled by a child element, do not propagate
       return;
     }
-    console.log("Section clicked", section.id, e);
     setSelectedSectionId(section.id);
     setPanel("inspector");
   };
@@ -153,7 +153,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
   );
 }
 
-function useResizableSection(section: SectionType, gridConfig: GridConfig) {
+function useResizableSection(section: SectionType, gridConfig?: GridConfig) {
   // Use interact.js to allow resizing a section manually
   const interactable = useRef<Interact.Interactable | null>(null);
   const draftHelpers = useDraftHelpers();
@@ -181,6 +181,7 @@ function useResizableSection(section: SectionType, gridConfig: GridConfig) {
           // resizeCallbacks.onResizeStart?.(event);
         },
         move: (event) => {
+          console.log("resize section move", event);
           event.stopPropagation();
 
           const h = sectionEl.dataset.h ? parseFloat(sectionEl.dataset.h) : sectionEl.offsetHeight;
@@ -197,6 +198,9 @@ function useResizableSection(section: SectionType, gridConfig: GridConfig) {
           Object.assign(sectionEl.dataset, { h: newHeight });
         },
         end: (event) => {
+          event.stopPropagation();
+          event.preventDefault();
+          console.log("resize section end", event);
           const size = getBrickPosition(sectionEl, previewMode);
           sectionEl.style.height = "";
           sectionEl.style.maxHeight = "";
@@ -250,13 +254,12 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
         <div className="text-sm font-semibold -mt-1.5">{section.label ?? `${section.order + 1}`}</div>
       </div>
       {/* {!isLastSection && ( */}
-      <button
-        type="button"
+      <span
         id={`${section.id}-resize-handle`}
         className={tx("!cursor-ns-resize", btnCls, "section-resizable-handle")}
       >
         <TbArrowAutofitHeight className="w-6 h-6" />
-      </button>
+      </span>
       {/* )} */}
       {section.props.minHeight !== "full" && (
         <Tooltip content="Fill entire screen height" delayDuration={500}>

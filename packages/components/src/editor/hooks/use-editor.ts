@@ -17,6 +17,7 @@ import type { CallContextProps, GenerationState } from "@upstart.gg/sdk/shared/c
 import { generateId } from "@upstart.gg/sdk/shared/bricks";
 import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
 import type { Site, SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
+import type { GridConfig } from "~/shared/hooks/use-grid-observer";
 export type { Immer } from "immer";
 
 enableMapSet();
@@ -76,6 +77,10 @@ export interface EditorStateProps {
   // pages: GenericPageConfig[];
 
   previewMode: Resolution;
+  gridConfig?: {
+    colWidth: number;
+    rowHeight: number;
+  };
   textEditMode?: "default" | "large";
   lastTextEditPosition?: number;
   settingsVisible?: boolean;
@@ -112,6 +117,7 @@ export interface EditorState extends EditorStateProps {
   toggleSettings: () => void;
   toggleTextEditMode: () => void;
   toggleEditorEnabled: () => void;
+  setGridConfig: (config: EditorStateProps["gridConfig"]) => void;
 
   setTextEditMode: (mode: EditorStateProps["textEditMode"]) => void;
   setIsEditingText: (forBrickId: string | false) => void;
@@ -198,6 +204,10 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
           immer((set, _get) => ({
             ...DEFAULT_PROPS,
             ...initProps,
+            setGridConfig: (config) =>
+              set((state) => {
+                state.gridConfig = config;
+              }),
             toggleEditorEnabled: () =>
               set((state) => {
                 state.disabled = !state.disabled;
@@ -1479,6 +1489,11 @@ export function useEditingTextForBrickId() {
   return useStore(ctx, (state) => state.isEditingTextForBrickId);
 }
 
+export function useGridConfig() {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.gridConfig);
+}
+
 export function useLastSaved() {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => state.lastSaved);
@@ -1538,6 +1553,7 @@ export const useEditorHelpers = () => {
   return useStore(ctx, (state) => ({
     setPreviewMode: state.setPreviewMode,
     setSettingsVisible: state.setSettingsVisible,
+    setGridConfig: state.setGridConfig,
     toggleSettings: state.toggleSettings,
     toggleTextEditMode: state.toggleTextEditMode,
     setTextEditMode: state.setTextEditMode,

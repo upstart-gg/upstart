@@ -13,6 +13,7 @@ import {
   useDebugMode,
   useDraftHelpers,
   useEditorHelpers,
+  useGridConfig,
   usePanel,
   usePreviewMode,
   useSelectedBrickId,
@@ -85,6 +86,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const previewMode = usePreviewMode();
     const { panelPosition } = usePanel();
     const editorHelpers = useEditorHelpers();
+    const gridConfig = useGridConfig();
     const draftHelpers = useDraftHelpers();
     const { getParentBrick } = useDraftHelpers();
     const manifest = useBrickManifest(brick.type);
@@ -189,21 +191,27 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       // Handle resize logic here if needed during resize
     };
 
-    const handleResizeStop: ResizeCallback = (event, direction, ref, delta) => {
-      // Update brick size in the store
-      const newWidth = ref.offsetWidth;
-      const newHeight = ref.offsetHeight;
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    const handleResizeStop: ResizeCallback = useCallback(
+      (event, direction, ref, delta) => {
+        //
+        console.log("resize stop", brick.id, direction, ref, delta, gridConfig);
 
-      draftHelpers.updateBrickProps(brick.id, {
-        width: newWidth,
-        height: newHeight,
-      });
+        const newWidth = ref.offsetWidth;
+        const newHeight = ref.offsetHeight;
 
-      // Auto-adjust mobile layout if needed
-      if (previewMode === "desktop") {
-        draftHelpers.adjustMobileLayout();
-      }
-    };
+        draftHelpers.updateBrickProps(brick.id, {
+          width: newWidth,
+          height: newHeight,
+        });
+
+        // Auto-adjust mobile layout if needed
+        if (previewMode === "desktop") {
+          draftHelpers.adjustMobileLayout();
+        }
+      },
+      [brick.id, previewMode, gridConfig],
+    );
 
     return (
       <Draggable draggableId={brick.id} index={index} isDragDisabled={!manifest.movable}>
@@ -327,9 +335,6 @@ const BrickMenuBarsContainer = forwardRef<HTMLDivElement, BrickMenuBarProps>(
         style={style}
         {...rest}
       >
-        {/* container for main nav bar */}
-        {/* <BrickMainNavBar brick={brick} /> */}
-        {/* container for text editor buttons */}
         <BrickTextNavBar brick={brick} />
       </div>
     );

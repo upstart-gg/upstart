@@ -34,4 +34,18 @@ export const commonProps = {
     }),
   ),
   preset: Type.Optional(presetRef),
+  widthInColUnits: Type.Optional(
+    Type.Number({
+      title: "Width in column units",
+      "ui:field": "hidden",
+      "ai:hidden": true,
+    }),
+  ),
+  heightInRowUnits: Type.Optional(
+    Type.Number({
+      title: "height in row units",
+      "ui:field": "hidden",
+      "ai:hidden": true,
+    }),
+  ),
 };
