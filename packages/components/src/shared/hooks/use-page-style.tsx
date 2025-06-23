@@ -28,7 +28,7 @@ export function useBodyStyle({ attributes }: { attributes: Attributes }) {
 }
 
 export function usePageStyle({ attributes, editable, typography, showIntro }: UsePageStyleProps) {
-  console.log("usePageStyle", { attributes, editable });
+  // console.log("usePageStyle", { attributes, editable });
   return tx(
     "flex flex-col group/page mx-auto relative max-w-full w-full p-0 antialiased",
     editable && "overflow-hidden min-h-full transition-all duration-300",

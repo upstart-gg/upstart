@@ -16,11 +16,16 @@ export function useGridConfig(elementRef: RefObject<HTMLElement>) {
       }
     }, 250);
 
+    // Wait for the element to be available
+    if (!elementRef.current) {
+      return;
+    }
+
     updateCellWidth();
 
     // mutation oberver for the page container styles
     const observer = new MutationObserver(updateCellWidth);
-    observer.observe(elementRef.current as Node, {
+    observer.observe(elementRef.current, {
       attributes: true,
       attributeFilter: ["style", "class"],
     });

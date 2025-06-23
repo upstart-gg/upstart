@@ -46,6 +46,8 @@ export const manifest = defineBrickManifest({
   aiInstructions: "This brick should be used on most sites/pages.",
   datasource,
   duplicatable: false,
+  resizable: false,
+  movable: false,
   defaultHeight: {
     desktop: 3,
     mobile: 3,

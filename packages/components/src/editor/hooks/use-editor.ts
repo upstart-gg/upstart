@@ -395,7 +395,9 @@ export interface DraftState extends DraftStateProps {
   duplicateBrick: (id: string) => void;
   duplicateSection: (id: string) => void;
   moveBrickWithin: (id: string, to: "left" | "right") => void;
-  moveBrickToParent: (id: string, parentId: string) => void;
+  reorderBrickWithin: (brickId: string, fromIndex: number, toIndex: number) => void;
+  moveBrickToContainerBrick: (id: string, parentId: string) => void;
+  moveBrickToSection: (id: string, sectionId: string, index?: number) => void;
   addBrick: (brick: Brick, sectiondId: string, parentContainerId: Brick["id"] | null) => void;
   updateBrick: (id: string, brick: Partial<Brick>) => void;
   updateBrickProps: (id: string, props: Record<string, unknown>, isMobileProps?: boolean) => void;
@@ -886,12 +888,10 @@ export const createDraftStore = (
                   });
                 }
               }
-            }),
-
-          /**
+            }) /**
            * Move abrick inside its container.
            * If the brick does not belong to a container, does nothing
-           */
+           */,
           moveBrickWithin: (id, to) =>
             set((state) => {
               const parentBrick = state.getParentBrick(id);
@@ -924,7 +924,38 @@ export const createDraftStore = (
               children.splice(newIndex, 0, brickToMove);
             }),
 
-          moveBrickToParent: (id, parentId) =>
+          /**
+           * Reorder a brick within its section using indices
+           */
+          reorderBrickWithin: (brickId, fromIndex, toIndex) =>
+            set((state) => {
+              const brickMapping = state.brickMap.get(brickId);
+              if (!brickMapping) {
+                console.error("Cannot reorder brick %s, brick mapping not found", brickId);
+                return;
+              }
+
+              const { sectionId, parentId } = brickMapping;
+
+              if (parentId) {
+                // Brick is inside a container, reorder within parent's children
+                const parentBrick = state.getBrick(parentId);
+                if (parentBrick?.props.$children) {
+                  const children = parentBrick.props.$children as Brick[];
+                  const [movedBrick] = children.splice(fromIndex, 1);
+                  children.splice(toIndex, 0, movedBrick);
+                }
+              } else {
+                // Brick is at the top level of a section
+                const section = state.sections.find((s) => s.id === sectionId);
+                if (section) {
+                  const [movedBrick] = section.bricks.splice(fromIndex, 1);
+                  section.bricks.splice(toIndex, 0, movedBrick);
+                }
+              }
+            }),
+
+          moveBrickToContainerBrick: (id, parentId) =>
             set((state) => {
               const brick = state.getBrick(id);
               const parent = state.getBrick(parentId);
@@ -991,6 +1022,77 @@ export const createDraftStore = (
 
                 updateChildMappings(id, targetMapping.sectionId);
               }
+            }),
+
+          moveBrickToSection: (id, sectionId, index) =>
+            set((state) => {
+              const brick = state.getBrick(id);
+              const targetSection = state.sections.find((s) => s.id === sectionId);
+              const brickMapping = state.brickMap.get(id);
+
+              if (!brick || !targetSection || !brickMapping) {
+                console.error(
+                  "Cannot move brick %s to section %s, brick or section not found",
+                  id,
+                  sectionId,
+                );
+                return;
+              }
+
+              const { sectionId: currentSectionId, parentId: currentParentId } = brickMapping;
+
+              // 1. Remove brick from its current location
+              if (currentParentId) {
+                // Brick is currently in a container
+                const currentParent = state.getBrick(currentParentId);
+                if (currentParent?.props.$children) {
+                  currentParent.props.$children = (currentParent.props.$children as Brick[]).filter(
+                    (child) => child.id !== id,
+                  );
+                }
+              } else {
+                // Brick is currently at the top level of a section
+                const currentSection = state.sections.find((s) => s.id === currentSectionId);
+                if (currentSection) {
+                  currentSection.bricks = currentSection.bricks.filter((b) => b.id !== id);
+                }
+              }
+
+              // 2. Add brick to target section at specified index (or end if no index)
+              if (typeof index === "number") {
+                targetSection.bricks.splice(index, 0, brick);
+              } else {
+                targetSection.bricks.push(brick);
+              }
+
+              // 3. Update the brickMap reference
+              state.brickMap.set(id, {
+                brick,
+                sectionId,
+                parentId: null, // Top level in section
+              });
+
+              // 4. Also update mappings for all children recursively to new section
+              const updateChildMappings = (
+                brickId: string,
+                newSectionId: string,
+                newParentId: string | null,
+              ) => {
+                const mapping = state.brickMap.get(brickId);
+                if (mapping?.brick.props?.$children) {
+                  const children = mapping.brick.props.$children as Brick[];
+                  children.forEach((child) => {
+                    state.brickMap.set(child.id, {
+                      brick: child,
+                      sectionId: newSectionId,
+                      parentId: brickId,
+                    });
+                    updateChildMappings(child.id, newSectionId, brickId);
+                  });
+                }
+              };
+
+              updateChildMappings(id, sectionId, null);
             }),
 
           getBrick: (id) => {
@@ -1488,9 +1590,11 @@ export const useDraftHelpers = () => {
     updateBrick: state.updateBrick,
     updateBrickProps: state.updateBrickProps,
     moveBrickWithin: state.moveBrickWithin,
+    reorderBrickWithin: state.reorderBrickWithin,
     getPositionWithinParent: state.getPositionWithinParent,
     canMoveToWithinParent: state.canMoveToWithinParent,
-    moveBrickToParent: state.moveBrickToParent,
+    moveBrickToContainerBrick: state.moveBrickToContainerBrick,
+    moveBrickToSection: state.moveBrickToSection,
     deleteSection: state.deleteSection,
     moveSectionUp: state.moveSectionUp,
     moveSectionDown: state.moveSectionDown,

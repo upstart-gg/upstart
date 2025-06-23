@@ -1,29 +1,20 @@
 import { Toaster } from "@upstart.gg/style-system/system";
 import { startTransition, useEffect, useRef } from "react";
-import { generateId, type Brick } from "@upstart.gg/sdk/shared/bricks";
 import {
   useAttributes,
   useDraft,
   useDraftHelpers,
   useEditorHelpers,
   useGenerationState,
-  useImagesSearchResults,
   usePreviewMode,
   useSections,
-  useTheme,
   useZoom,
 } from "../hooks/use-editor";
-import Selecto from "react-selecto";
-import { useEditablePage } from "~/editor/hooks/use-editable-page";
-import { defaultProps, manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
+import { DragDropContext, Droppable, type DropResult } from "@hello-pangea/dnd";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
 import { useFontWatcher } from "../hooks/use-font-watcher";
 import Section from "./EditableSection";
-import { getBrickElementAtPosition } from "~/shared/utils/layout-utils";
 import { tx } from "@upstart.gg/style-system/twind";
-
-const ghostValid = tx("bg-upstart-100");
-const ghostInvalid = tx("bg-red-100");
 
 type EditablePageProps = {
   showIntro?: boolean;
@@ -38,123 +29,62 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const pageRef = useRef<HTMLDivElement>(null);
   const attributes = useAttributes();
   const sections = useSections();
-  const dragOverRef = useRef<HTMLDivElement>(null);
   const typography = useFontWatcher();
   const pageClassName = usePageStyle({ attributes, typography, editable: true, previewMode, showIntro });
   const generationState = useGenerationState();
-  const genState = useGenerationState();
 
   // on page load, set last loaded property so that the store is saved to local storage
   useEffect(draft.setLastLoaded, []);
 
   useEffect(() => {
-    console.log("Gen state changed in EditablePage", genState);
-  }, [genState]);
+    console.log("Gen state changed in EditablePage", generationState);
+  }, [generationState]);
 
-  /**
-   *  Update the ghost style based on the drop position
-   */
-  function updateDragOverGhostStyle(
-    info: {
-      x: number;
-      y: number;
-      w: number;
-      h: number;
-    } | null,
-  ) {
-    if (info) {
-      dragOverRef.current?.style.setProperty("opacity", "0.4");
-      dragOverRef.current?.style.setProperty("left", `${info.x}px`);
-      dragOverRef.current?.style.setProperty("top", `${info.y}px`);
-      dragOverRef.current?.style.setProperty("width", `${info.w}px`);
-      dragOverRef.current?.style.setProperty("height", `${info.h}px`);
-      dragOverRef.current?.style.setProperty("display", "block");
-      dragOverRef.current?.classList.toggle(ghostInvalid, false);
-      dragOverRef.current?.classList.toggle(ghostValid, true);
-    } else {
-      dragOverRef.current?.style.setProperty("opacity", "0");
-      dragOverRef.current?.style.setProperty("display", "none");
+  const handleDragEnd = (result: DropResult) => {
+    const { destination, source, draggableId, type } = result;
+
+    // If dropped outside a valid droppable area
+    if (!destination) {
+      return;
     }
-  }
 
-  useEditablePage("[data-brick]:not(.container-child):not([data-no-drag='true'])", pageRef, {
-    dragOptions: {
-      // enabled: previewMode === "desktop",
-    },
-    dragCallbacks: {
-      onDragEnd: (updatedPositions, event) => {
-        // updateDragOverGhostStyle(null);
+    // If dropped in the same position
+    if (destination.droppableId === source.droppableId && destination.index === source.index) {
+      return;
+    }
 
-        updatedPositions.forEach(({ brick, gridPosition, sectionId }) => {
-          // Move the brick to the new position
-        });
+    if (type === "section") {
+      // Reorder sections
+      const newSectionOrder = Array.from(sections);
+      const [reorderedSection] = newSectionOrder.splice(source.index, 1);
+      newSectionOrder.splice(destination.index, 0, reorderedSection);
 
-        // reset the selected group
-        editorHelpers.setSelectedGroup();
-      },
-    },
-    dropCallbacks: {
-      onDropMove(event, rect, brickType) {
-        // updateDragOverGhostStyle(rect);
-      },
-      onDropDeactivate() {
-        // updateDragOverGhostStyle(null);
-      },
-      onDrop(event, position, section, brickType) {
-        console.debug("onDrop (%s)", previewMode, position, brickType);
+      draftHelpers.reorderSections(newSectionOrder.map((section) => section.id));
+    } else if (type === "brick") {
+      // Handle brick movement
+      const sourceSectionId = source.droppableId;
+      const destinationSectionId = destination.droppableId;
 
-        // updateDragOverGhostStyle(null);
+      if (sourceSectionId === destinationSectionId) {
+        // Moving within the same section - use the new reorder function
+        draftHelpers.reorderBrickWithin(draggableId, source.index, destination.index);
+        console.log(
+          `Moving brick ${draggableId} within section from ${source.index} to ${destination.index}`,
+        );
+      } else {
+        // Moving between sections - use the new moveBrickToSection function
+        console.log(`Moving brick ${draggableId} from section ${sourceSectionId} to ${destinationSectionId}`);
+        draftHelpers.moveBrickToSection(draggableId, destinationSectionId, destination.index);
+      }
 
-        if (position) {
-          const bricksDefaults = defaultProps[brickType];
-
-          // @ts-igneore
-          const newBrick: Brick = {
-            id: `b_${generateId()}`,
-            ...bricksDefaults,
-            type: brickType,
-          };
-
-          const hoveredBrickElement = getBrickElementAtPosition(position.x, position.y);
-          const hoveredBrick = hoveredBrickElement
-            ? draft.getBrick(hoveredBrickElement.dataset.brickId as string)
-            : null;
-          const hoveredBrickManifest = hoveredBrick ? manifests[hoveredBrick.type] : null;
-
-          console.debug("New brick dropped at", { position, section, hoveredBrick });
-
-          // Add the new brick to the store
-          // Specify the parent if we dropped on a container
-          draft.addBrick(
-            newBrick,
-            section.id,
-            hoveredBrick && hoveredBrickManifest?.isContainer ? hoveredBrick.id : null,
-          );
-
-          console.log("New brick added", newBrick, section.id);
-
-          if (previewMode === "desktop") {
-            startTransition(() => {
-              draft.adjustMobileLayout();
-            });
-          }
-        } else {
-          console.warn("Can't drop here");
-        }
-      },
-    },
-    resizeCallbacks: {
-      onResizeEnd: (brickId, gridPos) => {
-        console.debug("onResizeEnd (%s)", previewMode, brickId, gridPos);
-        // updateDragOverGhostStyle(null);
-        // TODO: Update the brick position
-        // try to automatically adjust the mobile layout when resizing from desktop
-        if (previewMode === "desktop") {
+      // Auto-adjust mobile layout if needed
+      if (previewMode === "desktop") {
+        startTransition(() => {
           draftHelpers.adjustMobileLayout();
-        }
-      },
-    },
-  });
+        });
+      }
+    }
+  };
 
   // listen for global click events on the document
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -197,49 +127,28 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
 
   return (
     <>
-      <div
-        id="page-container"
-        ref={pageRef}
-        className={pageClassName}
-        style={{
-          zoom,
-        }}
-        data-dropzone
-      >
-        {sections.map((section) => (
-          <Section key={section.id} section={section} />
-        ))}
+      <DragDropContext onDragEnd={handleDragEnd}>
         <div
-          ref={dragOverRef}
-          className={tx(
-            "fixed z-[99999] isolate pointer-events-none drop-indicator bg-upstart-50 rounded opacity-0 hidden",
-          )}
-        />
-      </div>
-      {generationState.isReady === true && (
-        <Selecto
-          className="selecto"
-          selectableTargets={["[data-brick]:not(.container-child)"]}
-          selectFromInside={false}
-          hitRate={1}
-          selectByClick={false}
-          dragCondition={(e) => {
-            // prevent triggering a selection when clicking on sections resize handle buttons
-            return !e.inputEvent.target.closest(".section-options-buttons");
+          id="page-container"
+          ref={pageRef}
+          className={pageClassName}
+          style={{
+            zoom,
           }}
-          onSelect={(e) => {
-            if (e.selected.length) {
-              editorHelpers.setSelectedGroup(e.selected.map((el) => el.id));
-            }
-            e.added.forEach((el) => {
-              el.classList.add("selected-group");
-            });
-            e.removed.forEach((el) => {
-              el.classList.remove("selected-group");
-            });
-          }}
-        />
-      )}
+          data-dropzone
+        >
+          <Droppable droppableId="sections" type="section">
+            {(provided) => (
+              <div ref={provided.innerRef} {...provided.droppableProps} className={tx("contents")}>
+                {sections.map((section, index) => (
+                  <Section key={section.id} section={section} index={index} />
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </div>
+      </DragDropContext>
       <Toaster
         toastOptions={{
           position: "bottom-center",

@@ -43,6 +43,9 @@ import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { FiSettings, FiDatabase } from "react-icons/fi";
 import { tx } from "@upstart.gg/style-system/twind";
+import { Draggable } from "@hello-pangea/dnd";
+import { Resizable, type ResizeCallback } from "re-resizable";
+import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -82,6 +85,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const previewMode = usePreviewMode();
     const { panelPosition } = usePanel();
     const editorHelpers = useEditorHelpers();
+    const draftHelpers = useDraftHelpers();
     const { getParentBrick } = useDraftHelpers();
     const manifest = useBrickManifest(brick.type);
     const parentBrick = getParentBrick(brick.id);
@@ -116,7 +120,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     });
 
     const { getReferenceProps, getFloatingProps } = useInteractions([hover]);
-    const brickRef = useMergeRefs([ref, barsRefs.setReference]);
 
     const wrapperClass = useBrickWrapperStyle({
       brick,
@@ -159,12 +162,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       (e: MouseEvent<HTMLElement>) => {
         const brickTarget = e.currentTarget as HTMLElement;
         const target = e.target as HTMLElement;
-        const group = target.closest<HTMLElement>("[data-brick-group]");
-
-        // if (group) {
-        //   console.debug("onBrickWrapperClick: click ignored (group)");
-        //   return;
-        // }
 
         if (hasMouseMoved.current || !brickTarget.matches("[data-brick]")) {
           return;
@@ -179,19 +176,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           }
         }
 
-        //
-        // Commented fow now, e.g don't auto move the panel
-        //
-        // If brick is on the left of the screen, we need to move the panel to the right, and vice versa
-        // if (panelPosition === "right" && brickTarget.getBoundingClientRect().right > window.innerWidth / 2) {
-        //   editorHelpers.togglePanelPosition();
-        // } else if (
-        //   panelPosition === "left" &&
-        //   brickTarget.getBoundingClientRect().left < window.innerWidth / 2
-        // ) {
-        //   editorHelpers.togglePanelPosition();
-        // }
-
         editorHelpers.setSelectedBrickId(selectedBrick.id);
         editorHelpers.setPanel("inspector");
         hasMouseMoved.current = false;
@@ -201,10 +185,29 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       [panelPosition],
     );
 
-    return (
+    const handleResize: ResizeCallback = (event, direction, ref, delta) => {
+      // Handle resize logic here if needed during resize
+    };
+
+    const handleResizeStop: ResizeCallback = (event, direction, ref, delta) => {
+      // Update brick size in the store
+      const newWidth = ref.offsetWidth;
+      const newHeight = ref.offsetHeight;
+
+      draftHelpers.updateBrickProps(brick.id, {
+        width: newWidth,
+        height: newHeight,
+      });
+
+      // Auto-adjust mobile layout if needed
+      if (previewMode === "desktop") {
+        draftHelpers.adjustMobileLayout();
+      }
+    };
+
+    const brickContent = (
       <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
         <div
-          // role="button"
           id={brick.id}
           data-brick
           data-brick-id={brick.id}
@@ -212,15 +215,13 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           data-element-kind={manifest.kind}
           data-last-touched={brick.props.lastTouched ?? "0"}
           data-dropzone={manifest.isContainer}
-          {...(manifest.movable ? {} : { "data-no-drag": "true" })}
           className={tx(wrapperClass, `![animation-delay:${0.5 * (index + 1)}s]`)}
-          ref={brickRef}
+          ref={barsRefs.setReference}
           onClick={onBrickWrapperClick}
           {...getReferenceProps()}
         >
           <BaseBrick brick={brick} selectedBrickId={selectedBrickId} editable />
           {!manifest.isContainer && <BrickDebugLabel brick={brick} />}
-          {children} {/* Make sure to include children to add resizable handle */}
           <BrickMenuBarsContainer
             ref={barsRefs.setFloating}
             brick={brick}
@@ -231,6 +232,57 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           />
         </div>
       </BrickContextMenu>
+    );
+
+    return (
+      <Draggable draggableId={brick.id} index={index} isDragDisabled={!manifest.movable}>
+        {(provided, snapshot) => (
+          <div
+            ref={(el) => {
+              provided.innerRef(el);
+              if (ref && typeof ref === "function") {
+                ref(el);
+              } else if (ref && "current" in ref) {
+                (ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
+              }
+            }}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            className={tx(
+              "relative flex-1",
+              snapshot.isDragging && "opacity-50 !z-[9999] shadow-xl max-w-[200px]",
+            )}
+          >
+            {manifest.resizable && !snapshot.isDragging ? (
+              <Resizable
+                // defaultSize={{
+                //   width: brick.props.width || 200,
+                //   height: brick.props.height || 100,
+                // }}
+                onResize={handleResize}
+                onResizeStop={handleResizeStop}
+                grid={[20, 20]} // Grid snapping - adjust as needed
+                bounds="parent"
+                enable={{
+                  top: true,
+                  right: true,
+                  bottom: true,
+                  left: true,
+                  topRight: true,
+                  bottomRight: true,
+                  bottomLeft: true,
+                  topLeft: true,
+                }}
+              >
+                {brickContent}
+              </Resizable>
+            ) : (
+              brickContent
+            )}
+            {children} {/* For any additional resize handles */}
+          </div>
+        )}
+      </Draggable>
     );
   },
 );
