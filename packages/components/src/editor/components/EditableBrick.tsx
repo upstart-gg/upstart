@@ -205,86 +205,74 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       }
     };
 
-    const brickContent = (
-      <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
-        <div
-          id={brick.id}
-          data-brick
-          data-brick-id={brick.id}
-          data-brick-type={brick.type}
-          data-element-kind={manifest.kind}
-          data-last-touched={brick.props.lastTouched ?? "0"}
-          data-dropzone={manifest.isContainer}
-          className={tx(wrapperClass)}
-          ref={barsRefs.setReference}
-          onClick={onBrickWrapperClick}
-          {...getReferenceProps()}
-        >
-          <BaseBrick brick={brick} selectedBrickId={selectedBrickId} editable />
-          {!manifest.isContainer && <BrickDebugLabel brick={brick} />}
-          <BrickMenuBarsContainer
-            ref={barsRefs.setFloating}
-            brick={brick}
-            isContainerChild={isContainerChild}
-            style={barsFloatingStyles}
-            show={isMenuBarVisible}
-            {...getFloatingProps()}
-          />
-        </div>
-      </BrickContextMenu>
-    );
-
     return (
       <Draggable draggableId={brick.id} index={index} isDragDisabled={!manifest.movable}>
-        {(provided, snapshot) => (
-          <div
-            ref={(el) => {
-              provided.innerRef(el);
-              if (ref && typeof ref === "function") {
-                ref(el);
-              } else if (ref && "current" in ref) {
-                (ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
-              }
-            }}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-            data-draggable-for-brick-id={brick.id}
-            className={tx(
-              "relative origin-center min-w-[100px]",
-              snapshot.isDragging &&
-                "opacity-80 !z-[9999] shadow-xl bg-upstart-600/30 rounded-2xl scale-90 overflow-hidden",
-              // snapshot.isDragging && "!max-w-[120px] !h-[120px] overflow-hidden scale-75",
-            )}
-          >
-            {manifest.resizable ? (
-              <Resizable
-                // defaultSize={{
-                //   width: brick.props.width || 200,
-                //   height: brick.props.height || 100,
-                // }}
-                onResize={handleResize}
-                onResizeStop={handleResizeStop}
-                grid={[20, 20]} // Grid snapping - adjust as needed
-                bounds="parent"
-                enable={{
-                  top: true,
-                  right: true,
-                  bottom: true,
-                  left: true,
-                  topRight: true,
-                  bottomRight: true,
-                  bottomLeft: true,
-                  topLeft: true,
-                }}
+        {(provided, snapshot) => {
+          // Merge all refs properly to avoid render loops
+          const mergedRef = useMergeRefs([provided.innerRef, barsRefs.setReference, ref]);
+
+          const brickContent = (
+            <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
+              <div
+                ref={mergedRef}
+                {...provided.draggableProps}
+                {...provided.dragHandleProps}
+                {...getReferenceProps()}
+                id={brick.id}
+                data-brick
+                data-brick-id={brick.id}
+                data-brick-type={brick.type}
+                data-element-kind={manifest.kind}
+                data-last-touched={brick.props.lastTouched ?? "0"}
+                data-dropzone={manifest.isContainer}
+                data-draggable-for-brick-id={brick.id}
+                className={tx(
+                  wrapperClass,
+                  "relative origin-center min-w-[100px]",
+                  snapshot.isDragging &&
+                    "opacity-80 !z-[9999] shadow-xl bg-upstart-600/30 rounded-2xl scale-90 overflow-hidden",
+                )}
+                onClick={onBrickWrapperClick}
               >
-                {brickContent}
-              </Resizable>
-            ) : (
-              brickContent
-            )}
-            {!snapshot.isDragging && children} {/* Chidlren contains resizable handles and other elements */}
-          </div>
-        )}
+                <BaseBrick brick={brick} selectedBrickId={selectedBrickId} editable />
+                {!manifest.isContainer && <BrickDebugLabel brick={brick} />}
+                <BrickMenuBarsContainer
+                  ref={barsRefs.setFloating}
+                  brick={brick}
+                  isContainerChild={isContainerChild}
+                  style={barsFloatingStyles}
+                  show={isMenuBarVisible}
+                  {...getFloatingProps()}
+                />
+                {!snapshot.isDragging && children}{" "}
+                {/* Children contains resizable handles and other elements */}
+              </div>
+            </BrickContextMenu>
+          );
+
+          return manifest.resizable ? (
+            <Resizable
+              onResize={handleResize}
+              onResizeStop={handleResizeStop}
+              grid={[20, 20]} // Grid snapping - adjust as needed
+              bounds="parent"
+              enable={{
+                top: true,
+                right: true,
+                bottom: true,
+                left: true,
+                topRight: true,
+                bottomRight: true,
+                bottomLeft: true,
+                topLeft: true,
+              }}
+            >
+              {brickContent}
+            </Resizable>
+          ) : (
+            brickContent
+          );
+        }}
       </Draggable>
     );
   },
