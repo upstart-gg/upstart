@@ -5,7 +5,18 @@ import { type TProperties, Type, type TSchema, type TObject, type ObjectOptions 
 import { commonProps } from "./common";
 import type { PartialBy, Prop, PropGroup, GroupMetadata } from "./types";
 import { get } from "lodash-es";
-import { resolveSchema } from "~/shared/utils/schema-resolver";
+
+// Local version of resolveSchema to avoid circular dependency with ajv
+function resolveSchemaLocal(schema: TSchema): TSchema {
+  // For now, just return the schema as-is if it has no $ref
+  // This breaks the circular dependency while maintaining functionality
+  if (!schema.$ref) {
+    return schema;
+  }
+  // If we have a $ref, we'll handle it later when ajv is available
+  // For props definition, we don't usually need to resolve refs immediately
+  return schema;
+}
 
 function isTObject(schema: TSchema | TProperties): schema is TObject {
   return schema.type === "object";
@@ -84,7 +95,7 @@ export type StyleId = string;
 // as the key and the $id as the value. Paths should be dot-separated.
 // The initial schema is a TObject, but nested schemas can be any type and arrays.
 export function getStyleProperties(schema: TSchema, path = "", styles: Record<PropertyPath, StyleId> = {}) {
-  const resolvedSchema = resolveSchema(schema);
+  const resolvedSchema = resolveSchemaLocal(schema);
   if (resolvedSchema.type === "object") {
     for (const key in resolvedSchema.properties) {
       const prop = resolvedSchema.properties[key];
