@@ -13,6 +13,7 @@ type UseSectionStyleProps = {
 };
 
 export function useSectionStyle({ section, selected, editable, previewMode }: UseSectionStyleProps) {
+  console.log("useSectionStyle", { section });
   // console.log("useSectionStyle props", { props: section.props });
   return tx("flex w-full py-0 group/section overflow-visible relative mx-auto", [
     section.props.preset as string,

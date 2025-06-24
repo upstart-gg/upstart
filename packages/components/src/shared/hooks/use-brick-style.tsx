@@ -69,6 +69,11 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
     // otherwise, force the children to fill the space
     !isContainerChild && "flex-1",
 
+    css({
+      width: typeof props.width !== "undefined" ? `${props.width}` : "unset",
+      height: typeof props.height !== "undefined" ? `${props.height}` : "unset",
+    }),
+
     styleIds.includes("#styles:fixedPositioned") === false && "relative",
 
     // container children expand to fill the space
