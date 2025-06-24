@@ -1,5 +1,5 @@
 import { css, tx } from "@upstart.gg/style-system/twind";
-import { type MouseEvent, type PropsWithChildren, useCallback, useMemo } from "react";
+import { type MouseEvent, type PropsWithChildren, useCallback, useMemo, useState } from "react";
 import { BsStars } from "react-icons/bs";
 import { IoIosHelpCircleOutline } from "react-icons/io";
 import { LuRedo, LuUndo } from "react-icons/lu";
@@ -12,6 +12,7 @@ import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import { LuExternalLink } from "react-icons/lu";
 import { RiArrowDownSLine } from "react-icons/ri";
 import { RxRocket } from "react-icons/rx";
+import { ModalSchedulePublish } from "~/editor/components/ModalSchedulePublish";
 import {
   useChatVisible,
   useDraft,
@@ -53,6 +54,7 @@ export default function NavBar() {
   const canUndo = useMemo(() => pastStates.length > 0, [pastStates]);
   const currentPageLabel = pages.find((page) => page.id === draft.id)?.label;
   const generationState = useGenerationState();
+  const [showSchedulePublishing, setShowSchedulePublishing] = useState(false);
 
   const publish = useCallback(
     (wholeSite = false) => {
@@ -68,6 +70,19 @@ export default function NavBar() {
       }
     },
     [draft.siteId, draft.id, pageVersion, editorHelpers.onPublish],
+  );
+
+  const schedulePagePublish = useCallback(
+    (publishAt: string) => {
+      editorHelpers.onPublish({
+        mode: "publish-page",
+        pageId: draft.id,
+        siteId: draft.siteId,
+        pageVersionId: pageVersion ?? "latest",
+        schedulePublishedAt: publishAt,
+      });
+    },
+    [draft.id, draft.siteId, pageVersion, editorHelpers.onPublish],
   );
 
   const duplicatePage = () => {
@@ -418,7 +433,7 @@ export default function NavBar() {
           items={[
             { label: "Publish this page", onClick: () => publish() },
             { label: "Publish all pages", onClick: () => publish(true) },
-            { label: "Schedule publish" },
+            { label: "Schedule publish", onClick: () => setShowSchedulePublishing(true) },
           ]}
         >
           <button type="button" className={tx(btnClass, rocketBtn, btnWithArrow)}>
@@ -441,6 +456,16 @@ export default function NavBar() {
               <span className={tx("font-bold italic px-2", css({ fontSize: "1rem" }))}>Publish</span> */}
           </button>
         </TopbarMenu>
+        <ModalSchedulePublish
+          open={showSchedulePublishing}
+          onClose={() => {
+            setShowSchedulePublishing(false);
+          }}
+          onSchedule={(publishAt) => {
+            console.log("Schedule publishing");
+            schedulePagePublish(publishAt);
+          }}
+        />
       </div>
     </nav>
   );

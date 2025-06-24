@@ -33,7 +33,13 @@ const someField = useStore(useShallow(state => state.someField)) // optimized fo
 */
 
 export type PagePublishPayload =
-  | { siteId: string; mode: "publish-page"; pageId: string; pageVersionId: string }
+  | {
+      siteId: string;
+      mode: "publish-page";
+      pageId: string;
+      pageVersionId: string;
+      schedulePublishedAt?: string | null;
+    }
   | { siteId: string; mode: "publish-site" };
 
 export type PageSavePayload = {
