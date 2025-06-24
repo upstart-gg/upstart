@@ -1,7 +1,7 @@
+import type { PropsWithChildren } from "react";
+import Editor from "~/editor/components/Editor";
 import { EditorWrapper, type EditorWrapperProps } from "~/editor/components/EditorWrapper";
 import { ClientOnly } from "~/shared/utils/client-only";
-import Editor from "~/editor/components/Editor";
-import type { PropsWithChildren } from "react";
 // import "@upstart.gg/style-system/default-theme.css";
 // import "@upstart.gg/components/dist/assets/style.css";
 import { createEmptyConfig } from "@upstart.gg/sdk/shared/site";
@@ -22,7 +22,10 @@ export default function App({ path }: { path: string }) {
 
 function InnerEditor(
   props: PropsWithChildren<
-    Omit<EditorWrapperProps, "onImageUpload" | "onShowLogin" | "onPublish" | "onSavePage" | "onSaveSite">
+    Omit<
+      EditorWrapperProps,
+      "onImageUpload" | "onShowLogin" | "onShowPopup" | "onPublish" | "onSavePage" | "onSaveSite"
+    >
   >,
 ) {
   const onImageUpload = async (file: File) => {
@@ -42,6 +45,9 @@ function InnerEditor(
   const onSaveSite = async () => {
     alert("Out of the demo, the 'save' modal should be displayed at this time.");
   };
+  const onShowPopup = (popupId: string | false) => {
+    alert(`Out of the demo, the popup with ID ${popupId} should be displayed at this time.`);
+  };
   return (
     <EditorWrapper
       {...props}
@@ -50,6 +56,7 @@ function InnerEditor(
       onPublish={onPublish}
       onSavePage={onSavePage}
       onSaveSite={onSaveSite}
+      onShowPopup={onShowPopup}
     >
       <Editor />
     </EditorWrapper>
