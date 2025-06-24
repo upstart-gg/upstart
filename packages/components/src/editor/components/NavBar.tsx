@@ -1,43 +1,34 @@
-import { LuUndo, LuRedo } from "react-icons/lu";
-import { RxMobile, RxDesktop, RxZoomIn, RxZoomOut } from "react-icons/rx";
-import { VscCopy } from "react-icons/vsc";
+import { css, tx } from "@upstart.gg/style-system/twind";
 import { type MouseEvent, type PropsWithChildren, useCallback, useMemo } from "react";
 import { BsStars } from "react-icons/bs";
-import { tx, css } from "@upstart.gg/style-system/twind";
 import { IoIosHelpCircleOutline } from "react-icons/io";
+import { LuRedo, LuUndo } from "react-icons/lu";
+import { RxDesktop, RxMobile, RxZoomIn, RxZoomOut } from "react-icons/rx";
+import { VscCopy } from "react-icons/vsc";
 
-import {
-  useDraftUndoManager,
-  useSitemap,
-  useEditorMode,
-  usePageVersion,
-  useLastSaved,
-  useDraft,
-  useEditorHelpers,
-  usePreviewMode,
-  useLogoLink,
-  usePanel,
-  useChatVisible,
-  useZoom,
-  useGenerationState,
-} from "~/editor/hooks/use-editor";
-import { RxRocket } from "react-icons/rx";
-import logo from "../../../../../creatives/upstart.svg";
-import dark from "../../../../../creatives/upstart-dark.svg";
-import { RiArrowDownSLine } from "react-icons/ri";
-import {
-  Button,
-  DropdownMenu,
-  HoverCard,
-  Link,
-  Popover,
-  TextField,
-  Tooltip,
-} from "@upstart.gg/style-system/system";
-import { IoIosSave } from "react-icons/io";
-import { LuExternalLink } from "react-icons/lu";
+import { DropdownMenu, HoverCard, Tooltip } from "@upstart.gg/style-system/system";
 import { formatDistance } from "date-fns";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
+import { LuExternalLink } from "react-icons/lu";
+import { RiArrowDownSLine } from "react-icons/ri";
+import { RxRocket } from "react-icons/rx";
+import {
+  useChatVisible,
+  useDraft,
+  useDraftUndoManager,
+  useEditorHelpers,
+  useEditorMode,
+  useGenerationState,
+  useLastSaved,
+  useLogoLink,
+  usePageVersion,
+  usePanel,
+  usePreviewMode,
+  useSitemap,
+  useZoom,
+} from "~/editor/hooks/use-editor";
+import dark from "../../../../../creatives/upstart-dark.svg";
+import logo from "../../../../../creatives/upstart.svg";
 
 import { LuPlus } from "react-icons/lu";
 import { PiPalette } from "react-icons/pi";
@@ -362,7 +353,7 @@ export default function NavBar() {
                         "text-nowrap text-upstart-700 cursor-pointer font-medium hover:underline",
                       )}
                       onClick={() => {
-                        alert("TODO buy more");
+                        editorHelpers.onShowPopup?.("purchase-credits");
                       }}
                     >
                       buy more
@@ -378,7 +369,10 @@ export default function NavBar() {
               className={tx(
                 "text-nowrap hover:underline tracking-tight underline-offset-2 text-[88%] text-upstart-700 hover:text-orange-800",
               )}
-              onClick={() => alert("buy")}
+              onClick={() => {
+                editorHelpers.onShowPopup?.("purchase-credits");
+                // alert("buy credits");
+              }}
             >
               Buy more
             </button>

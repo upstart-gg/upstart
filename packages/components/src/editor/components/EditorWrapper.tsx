@@ -1,26 +1,26 @@
+import type { SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
+import { Theme } from "@upstart.gg/style-system/system";
+import { tx } from "@upstart.gg/style-system/twind";
+import { useEffect, useRef, type PropsWithChildren } from "react";
+import { useDarkMode } from "usehooks-ts";
+import { DatasourceProvider } from "~/shared/hooks/use-datasource";
 import {
-  EditorStoreContext,
   DraftStoreContext,
+  EditorStoreContext,
   createDraftStore,
   createEditorStore,
   type EditorState,
   type EditorStateProps,
 } from "../hooks/use-editor";
-import { useEffect, useRef, type PropsWithChildren } from "react";
-import { Theme } from "@upstart.gg/style-system/system";
-import { useDarkMode } from "usehooks-ts";
 import { UploaderProvider } from "./UploaderContext";
-import { DatasourceProvider } from "~/shared/hooks/use-datasource";
-import type { SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
-import { tx } from "@upstart.gg/style-system/twind";
 
 import "@radix-ui/themes/styles.css";
-import "@upstart.gg/style-system/radix.css";
 import "@upstart.gg/style-system/editor.css";
+import "@upstart.gg/style-system/radix.css";
 // import "@upstart.gg/components/dist/assets/style.css";
-import "@upstart.gg/style-system/tiptap-text-editor.css";
-import "@upstart.gg/style-system/react-resizable.css";
 import "@upstart.gg/style-system/default-theme.css";
+import "@upstart.gg/style-system/react-resizable.css";
+import "@upstart.gg/style-system/tiptap-text-editor.css";
 
 export type EditorWrapperProps = {
   mode?: "anonymous" | "authenticated";
@@ -39,6 +39,7 @@ export type EditorWrapperProps = {
    */
   onTourComplete?: (tourId: string) => void;
   onShowLogin: () => void;
+  onShowPopup: EditorStateProps["onShowPopup"];
   onPublish: EditorStateProps["onPublish"];
   onSavePage?: EditorStateProps["onSavePage"];
   onSaveSite?: EditorStateProps["onSaveSite"];
@@ -64,6 +65,7 @@ export function EditorWrapper({
   onSavePage,
   onDraftChange,
   onPublish,
+  onShowPopup,
   onReady = () => {},
 }: PropsWithChildren<EditorWrapperProps>) {
   const { site, pages } = config;
@@ -77,6 +79,7 @@ export function EditorWrapper({
       onSaveSite,
       onSavePage,
       onDraftChange,
+      onShowPopup,
       debugMode,
       panel: (new URL(self.location.href).searchParams.get("panel") as EditorState["panel"]) ?? undefined,
       sitePrompt: site.sitePrompt,

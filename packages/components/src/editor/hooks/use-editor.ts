@@ -1,22 +1,22 @@
-import { createStore, useStore } from "zustand";
-import { debounce, isEqual, merge } from "lodash-es";
-import { subscribeWithSelector, persist } from "zustand/middleware";
-import { immer } from "zustand/middleware/immer";
+import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
+import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
+import { generateId } from "@upstart.gg/sdk/shared/bricks";
+import type { CallContextProps, GenerationState } from "@upstart.gg/sdk/shared/context";
+import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
+import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
+import type { SitePrompt } from "@upstart.gg/sdk/shared/prompt";
+import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
+import type { Site, SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
+import type { Theme } from "@upstart.gg/sdk/shared/theme";
+import invariant from "@upstart.gg/sdk/shared/utils/invariant";
+import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
 import { enableMapSet } from "immer";
+import { debounce, isEqual } from "lodash-es";
 import { createContext, useContext, useEffect } from "react";
 import { temporal } from "zundo";
-import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
-import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
-import type { SitePrompt } from "@upstart.gg/sdk/shared/prompt";
-import invariant from "@upstart.gg/sdk/shared/utils/invariant";
-import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
-import type { Theme } from "@upstart.gg/sdk/shared/theme";
-import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
-import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
-import type { CallContextProps, GenerationState } from "@upstart.gg/sdk/shared/context";
-import { generateId } from "@upstart.gg/sdk/shared/bricks";
-import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
-import type { Site, SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
+import { createStore, useStore } from "zustand";
+import { persist, subscribeWithSelector } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 export type { Immer } from "immer";
 
 enableMapSet();
@@ -95,6 +95,7 @@ export interface EditorStateProps {
   imagesSearchResults?: ImageSearchResultsType;
 
   onShowLogin: () => void;
+  onShowPopup?: (id: string | false) => void;
   onPublish: (data: PagePublishPayload) => void;
   /**
    * Returns the updated version id
@@ -1561,6 +1562,7 @@ export const useEditorHelpers = () => {
     onSaveSite: state.onSaveSite,
     onDraftChange: state.onDraftChange,
     toggleChat: state.toggleChat,
+    onShowPopup: state.onShowPopup,
   }));
 };
 
