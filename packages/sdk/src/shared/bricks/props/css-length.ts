@@ -1,5 +1,5 @@
 import { type Static, Type, type StringOptions } from "@sinclair/typebox";
-import { prop } from "./helpers";
+import { prop } from "./prop";
 import { typedRef } from "~/shared/utils/typed-ref";
 
 export const cssUnits = ["px", "%", "em", "rem", "vh", "vw", "dvh", "dvw", "rlh", "lh", "cqh", "cqw"];

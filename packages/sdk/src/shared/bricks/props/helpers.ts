@@ -55,10 +55,8 @@ export function group<T extends TProperties>({
   });
 }
 
-export function prop<T extends TSchema>({ schema, ...rest }: Prop<T>): T {
-  Object.assign(schema, rest);
-  return schema;
-}
+// Re-export prop function from ./prop for backward compatibility
+export { prop } from "./prop";
 
 // Functions to extract metadata from schemas
 export function getGroupInfo(schema: TSchema) {
