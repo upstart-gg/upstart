@@ -131,6 +131,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     <>
       <DragDropContext
         onDragEnd={handleDragEnd}
+
         // onBeforeCapture={handleBeforeCapture}
       >
         <div

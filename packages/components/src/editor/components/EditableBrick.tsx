@@ -199,14 +199,21 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       event.stopPropagation();
       event.preventDefault();
 
-      console.log("resize offsetWidth", ref.offsetWidth, "offsetHeight", ref.offsetHeight);
+      console.log(
+        "resize offsetWidth",
+        ref.offsetWidth,
+        "offsetHeight",
+        ref.offsetHeight,
+        "firstChild",
+        ref.firstElementChild,
+      );
 
-      // Find first chld of ref
-      const firstChild = ref.firstElementChild as HTMLElement;
+      // Find child with .brick-wrapper class
+      const child = ref.closest(".brick-wrapper") as HTMLElement;
 
-      firstChild.style.setProperty("width", `${ref.offsetWidth}px`);
-      firstChild.style.setProperty("height", `${ref.offsetHeight}px`);
-      firstChild.style.setProperty("backgroundColor", `red`);
+      child.style.setProperty("width", `${ref.offsetWidth}px`);
+      child.style.setProperty("height", `${ref.offsetHeight}px`);
+      child.style.setProperty("backgroundColor", `red`);
 
       resizingDimensions.current = {
         width: ref.offsetWidth,
@@ -216,6 +223,13 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
 
     const handleResizeStop: ResizeCallback = (event, direction, ref, delta) => {
       setResizing(false);
+
+      const child = ref.closest(".brick-wrapper") as HTMLElement;
+
+      child.style.removeProperty("width");
+      child.style.removeProperty("height");
+      child.style.removeProperty("backgroundColor");
+
       // Update brick size in the store
       const newWidth = ref.offsetWidth;
       const newHeight = ref.offsetHeight;
@@ -227,10 +241,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
 
       resizingDimensions.current = null;
 
-      ref.style.removeProperty("width");
-      ref.style.removeProperty("height");
-      ref.style.removeProperty("backgroundColor");
-
       // Auto-adjust mobile layout if needed
       if (previewMode === "desktop") {
         draftHelpers.adjustMobileLayout();
@@ -238,7 +248,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     };
 
     return (
-      <Draggable draggableId={brick.id} index={index} isDragDisabled={!manifest.movable}>
+      <Draggable draggableId={brick.id} index={index} isDragDisabled={!manifest.movable || resizing}>
         {(provided, snapshot) => {
           // Merge all refs properly to avoid render loops
           const mergedRef = useMergeRefs([provided.innerRef, barsRefs.setReference, ref]);
@@ -266,54 +276,57 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 )}
                 onClick={onBrickWrapperClick}
               >
-                <BaseBrick brick={brick} selectedBrickId={selectedBrickId} editable resizing={resizing} />
-                {!manifest.isContainer && <BrickDebugLabel brick={brick} />}
-                <BrickMenuBarsContainer
-                  ref={barsRefs.setFloating}
-                  brick={brick}
-                  isContainerChild={isContainerChild}
-                  style={barsFloatingStyles}
-                  show={isMenuBarVisible}
-                  {...getFloatingProps()}
-                />
-                {!snapshot.isDragging && children}
+                <Resizable
+                  className="resizable-container"
+                  onResizeStart={handleResizeStart}
+                  onResizeStop={handleResizeStop}
+                  onResize={handleResize}
+                  grid={[gridConfig.colWidth, gridConfig.rowHeight]} // Grid snapping - adjust as needed
+                  bounds="parent"
+                  boundsByDirection={true}
+                  minWidth={manifest.minWidth ? manifest.minWidth?.[previewMode] : gridConfig.colWidth * 2}
+                  minHeight={
+                    manifest.minHeight ? manifest.minHeight?.[previewMode] : gridConfig.rowHeight * 2
+                  }
+                  enable={{
+                    top: true,
+                    right: true,
+                    bottom: true,
+                    left: true,
+                    topRight: true,
+                    bottomRight: true,
+                    bottomLeft: true,
+                    topLeft: true,
+                  }}
+                  handleClasses={{
+                    top: "resizable-handle resizable-handle-top",
+                    right: "resizable-handle resizable-handle-right",
+                    bottom: "resizable-handle resizable-handle-bottom",
+                    left: "resizable-handle resizable-handle-left",
+                    topRight: "resizable-handle resizable-handle-top-right",
+                    bottomRight: "resizable-handle resizable-handle-bottom-right",
+                    bottomLeft: "resizable-handle resizable-handle-bottom-left",
+                    topLeft: "resizable-handle resizable-handle-top-left",
+                  }}
+                >
+                  <BaseBrick brick={brick} selectedBrickId={selectedBrickId} editable resizing={resizing} />
+                  {!manifest.isContainer && <BrickDebugLabel brick={brick} />}
+                  <BrickMenuBarsContainer
+                    ref={barsRefs.setFloating}
+                    brick={brick}
+                    isContainerChild={isContainerChild}
+                    style={barsFloatingStyles}
+                    show={isMenuBarVisible}
+                    {...getFloatingProps()}
+                  />
+                  {!snapshot.isDragging && children}
+                </Resizable>
                 {/* Children contains resizable handles and other elements */}
               </div>
             </BrickContextMenu>
           );
 
-          console.log("manifest.minWidth", manifest.minWidth, "previewMode", previewMode);
-
-          return manifest.resizable ? (
-            <Resizable
-              className="resizable-container"
-              onResizeStart={handleResizeStart}
-              onResizeStop={handleResizeStop}
-              onResize={handleResize}
-              grid={[gridConfig.colWidth, gridConfig.rowHeight]} // Grid snapping - adjust as needed
-              bounds="parent"
-              boundsByDirection={true}
-              minWidth={manifest.minWidth ? manifest.minWidth?.[previewMode] : gridConfig.colWidth * 2}
-              minHeight={manifest.minHeight ? manifest.minHeight?.[previewMode] : gridConfig.rowHeight * 2}
-              enable={{
-                top: true,
-                right: true,
-                bottom: true,
-                left: true,
-                topRight: true,
-                bottomRight: true,
-                bottomLeft: true,
-                topLeft: true,
-              }}
-              handleComponent={{
-                right: undefined,
-              }}
-            >
-              {brickContent}
-            </Resizable>
-          ) : (
-            brickContent
-          );
+          return brickContent;
         }}
       </Draggable>
     );

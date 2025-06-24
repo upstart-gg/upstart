@@ -79,7 +79,7 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
           src={props.cardImage.src}
           alt={props.cardImage.alt || "Card Image"}
           className={tx(
-            "w-full h-auto select-none pointer-events-none",
+            "w-full h-auto max-h-[50%] select-none pointer-events-none object-cover",
             props.variants?.includes("image-between") && "order-2",
             props.variants?.includes("image-first") && "order-1",
             props.variants?.includes("image-last") && "order-4",
