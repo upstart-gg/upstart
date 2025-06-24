@@ -13,6 +13,7 @@ import {
   useDebugMode,
   useDraftHelpers,
   useEditorHelpers,
+  useGridConfig,
   usePanel,
   usePreviewMode,
   useSelectedBrickId,
@@ -42,10 +43,9 @@ import {
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { FiSettings, FiDatabase } from "react-icons/fi";
-import { tx } from "@upstart.gg/style-system/twind";
+import { css, tx } from "@upstart.gg/style-system/twind";
 import { Draggable } from "@hello-pangea/dnd";
-import { Resizable, type ResizeCallback } from "re-resizable";
-import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
+import { Resizable, type ResizeStartCallback, type ResizeCallback } from "re-resizable";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -91,6 +91,9 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const parentBrick = getParentBrick(brick.id);
     const [isMenuBarVisible, setMenuBarVisible] = useState(false);
     const allowedPlacements = useBarPlacements(brick);
+    const [resizing, setResizing] = useState(false);
+    const gridConfig = useGridConfig();
+    const resizingDimensions = useRef<{ width: number; height: number } | null>(null);
 
     // brick = brickWithDefaults(brick);
     const {
@@ -185,19 +188,48 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       [panelPosition],
     );
 
+    const handleResizeStart: ResizeStartCallback = (e, direction, ref) => {
+      setResizing(true);
+      console.log("Resize started", event, direction, ref);
+    };
+
     const handleResize: ResizeCallback = (event, direction, ref, delta) => {
-      // Handle resize logic here if needed during resize
+      console.log("reising", ref, delta);
+      // Prevent event propagation to avoid triggering the click event on the brick
+      event.stopPropagation();
+      event.preventDefault();
+
+      console.log("resize offsetWidth", ref.offsetWidth, "offsetHeight", ref.offsetHeight);
+
+      // Find first chld of ref
+      const firstChild = ref.firstElementChild as HTMLElement;
+
+      firstChild.style.setProperty("width", `${ref.offsetWidth}px`);
+      firstChild.style.setProperty("height", `${ref.offsetHeight}px`);
+      firstChild.style.setProperty("backgroundColor", `red`);
+
+      resizingDimensions.current = {
+        width: ref.offsetWidth,
+        height: ref.offsetHeight,
+      };
     };
 
     const handleResizeStop: ResizeCallback = (event, direction, ref, delta) => {
+      setResizing(false);
       // Update brick size in the store
       const newWidth = ref.offsetWidth;
       const newHeight = ref.offsetHeight;
 
       draftHelpers.updateBrickProps(brick.id, {
-        width: newWidth,
-        height: newHeight,
+        fixedWidth: `${newWidth}px`,
+        fixedHeight: `${newHeight}px`,
       });
+
+      resizingDimensions.current = null;
+
+      ref.style.removeProperty("width");
+      ref.style.removeProperty("height");
+      ref.style.removeProperty("backgroundColor");
 
       // Auto-adjust mobile layout if needed
       if (previewMode === "desktop") {
@@ -230,11 +262,11 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                   wrapperClass,
                   "relative origin-center min-w-[100px]",
                   snapshot.isDragging &&
-                    "opacity-80 !z-[9999] shadow-xl bg-upstart-600/30 rounded-2xl scale-90 overflow-hidden",
+                    "opacity-80 !z-[9999] shadow-xl bg-upstart-600/30 rounded-2xl overflow-hidden",
                 )}
                 onClick={onBrickWrapperClick}
               >
-                <BaseBrick brick={brick} selectedBrickId={selectedBrickId} editable />
+                <BaseBrick brick={brick} selectedBrickId={selectedBrickId} editable resizing={resizing} />
                 {!manifest.isContainer && <BrickDebugLabel brick={brick} />}
                 <BrickMenuBarsContainer
                   ref={barsRefs.setFloating}
@@ -244,18 +276,25 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                   show={isMenuBarVisible}
                   {...getFloatingProps()}
                 />
-                {!snapshot.isDragging && children}{" "}
+                {!snapshot.isDragging && children}
                 {/* Children contains resizable handles and other elements */}
               </div>
             </BrickContextMenu>
           );
 
+          console.log("manifest.minWidth", manifest.minWidth, "previewMode", previewMode);
+
           return manifest.resizable ? (
             <Resizable
-              onResize={handleResize}
+              className="resizable-container"
+              onResizeStart={handleResizeStart}
               onResizeStop={handleResizeStop}
-              grid={[20, 20]} // Grid snapping - adjust as needed
+              onResize={handleResize}
+              grid={[gridConfig.colWidth, gridConfig.rowHeight]} // Grid snapping - adjust as needed
               bounds="parent"
+              boundsByDirection={true}
+              minWidth={manifest.minWidth ? manifest.minWidth?.[previewMode] : gridConfig.colWidth * 2}
+              minHeight={manifest.minHeight ? manifest.minHeight?.[previewMode] : gridConfig.rowHeight * 2}
               enable={{
                 top: true,
                 right: true,
@@ -265,6 +304,9 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 bottomRight: true,
                 bottomLeft: true,
                 topLeft: true,
+              }}
+              handleComponent={{
+                right: undefined,
               }}
             >
               {brickContent}

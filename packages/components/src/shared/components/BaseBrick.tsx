@@ -21,11 +21,13 @@ const bricksMap = Object.entries(bricks).reduce(
 const BaseBrick = ({
   brick,
   editable,
+  resizing,
   selectedBrickId,
 }: {
   brick: Brick;
   editable?: boolean;
   selectedBrickId?: string;
+  resizing?: boolean;
 } & ComponentProps<"div">) => {
   const BrickModule = bricksMap[brick.type];
   if (!BrickModule) {
@@ -35,6 +37,7 @@ const BaseBrick = ({
   const brickProps = {
     brick,
     editable,
+    resizing,
     selected: brick.id === selectedBrickId,
   } satisfies BrickProps<BrickManifest>;
   return (

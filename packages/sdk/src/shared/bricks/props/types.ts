@@ -10,6 +10,7 @@ export type BrickProps<T extends BrickManifest> = {
     mobileProps?: Partial<Static<T["props"]>>;
   };
   editable?: boolean;
+  resizing?: boolean;
   selected?: boolean;
   isContainerChild?: boolean;
 };

@@ -15,6 +15,7 @@ import { usePageStyle } from "~/shared/hooks/use-page-style";
 import { useFontWatcher } from "../hooks/use-font-watcher";
 import Section from "./EditableSection";
 import { tx } from "@upstart.gg/style-system/twind";
+import { useGridObserver } from "../hooks/use-grid-observer";
 
 type EditablePageProps = {
   showIntro?: boolean;
@@ -35,6 +36,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
 
   // on page load, set last loaded property so that the store is saved to local storage
   useEffect(draft.setLastLoaded, []);
+  useGridObserver(pageRef);
 
   useEffect(() => {
     console.log("Gen state changed in EditablePage", generationState);
@@ -140,7 +142,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           }}
           data-dropzone
         >
-          <Droppable droppableId="sections" type="section">
+          <Droppable droppableId="sections" type="section" direction="vertical">
             {(provided) => (
               <div ref={provided.innerRef} {...provided.droppableProps} className={tx("contents")}>
                 {sections.map((section, index) => (

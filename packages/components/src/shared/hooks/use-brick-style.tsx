@@ -74,6 +74,11 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
     // container children expand to fill the space
     isContainerChild && "container-child",
 
+    css({
+      width: typeof props.fixedWidth !== "undefined" ? `${props.fixedWidth}` : "auto",
+      height: typeof props.fixedHeight !== "undefined" ? `${props.fixedHeight}` : "auto",
+    }),
+
     getBrickWrapperEditorStyles(editable === true, manifest.isContainer, isContainerChild, selected),
 
     ...Object.values(classes).flat(),

@@ -1,6 +1,7 @@
 import { Type } from "@sinclair/typebox";
 import { presetRef } from "./preset";
 import { typedRef } from "~/shared/utils/typed-ref";
+import { cssLength } from "./css-length";
 
 export function hidden() {
   return Type.Object(
@@ -31,6 +32,22 @@ export const commonProps = {
       description: "Do not use. It is used internally by the editor.",
       "ui:field": "hidden",
       "ai:hidden": true,
+    }),
+  ),
+  fixedWidth: Type.Optional(
+    cssLength({
+      title: "Fix Width",
+      description:
+        "Set a fixed width for the brick. If not set, the brick will be responsive and will follow the flex layout of its parent section.",
+      "ui:field": "hidden",
+    }),
+  ),
+  fixedHeight: Type.Optional(
+    cssLength({
+      title: "Fixed height",
+      description:
+        "Set a fixed height for the brick. If not set, the brick will be responsive and will follow the flex layout of its parent section.",
+      "ui:field": "hidden",
     }),
   ),
   preset: Type.Optional(presetRef),

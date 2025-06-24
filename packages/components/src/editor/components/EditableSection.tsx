@@ -14,15 +14,25 @@ import EditableBrickWrapper from "./EditableBrick";
 import ResizeHandle from "./ResizeHandle";
 import { useSectionStyle } from "~/shared/hooks/use-section-style";
 import { TbArrowAutofitHeight, TbBorderCorners, TbDots } from "react-icons/tb";
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import {
+  type ClassAttributes,
+  type HTMLAttributes,
+  type LegacyRef,
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent,
+  startTransition,
+} from "react";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { useGridConfig, type GridConfig } from "~/shared/hooks/use-grid-config";
 import { getBrickResizeOptions, getBrickPosition } from "~/shared/utils/layout-utils";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import SectionSettingsView from "./SectionSettingsView";
 import { tx, css } from "@upstart.gg/style-system/twind";
-import { Draggable, Droppable } from "@hello-pangea/dnd";
+import { Draggable, Droppable, type DraggableChildrenFn } from "@hello-pangea/dnd";
 import { useCmdOrCtrlPressed } from "../hooks/use-key-pressed";
+import type { JSX } from "react/jsx-runtime";
 
 type EditableSectionProps = {
   section: SectionType;
@@ -37,7 +47,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
   const { setSelectedSectionId, setPanel } = useEditorHelpers();
   const isCmdOrCtrlPressed = useCmdOrCtrlPressed();
 
-  useResizableSection(section, gridConfig);
+  const { resizing } = useResizableSection(section, gridConfig);
 
   const previewMode = usePreviewMode();
   const selectedSectionId = useSelectedSectionId();
@@ -50,13 +60,24 @@ export default function EditableSection({ section, index }: EditableSectionProps
   });
 
   const onClick = (e: MouseEvent) => {
-    if (e.defaultPrevented) {
+    if (e.defaultPrevented || resizing) {
       // If the click was handled by a child element, do not propagate
       return;
     }
     console.log("Section clicked", section.id, e);
     setSelectedSectionId(section.id);
     setPanel("inspector");
+  };
+
+  const renderItem: DraggableChildrenFn = (provided, snapshot, rubric) => {
+    return (
+      <div
+        {...provided.draggableProps}
+        {...provided.dragHandleProps}
+        ref={provided.innerRef}
+        className={tx("z-[9999] bg-upstart-500/40 rounded text-white ")}
+      />
+    );
   };
 
   return (
@@ -86,7 +107,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
                 Sections can be dragged
               </div>
             )}
-            <Droppable droppableId={section.id} type="brick" direction="horizontal">
+            <Droppable droppableId={section.id} type="brick" direction="horizontal" renderClone={renderItem}>
               {(provided, snapshot) => (
                 <div
                   ref={provided.innerRef}
@@ -153,11 +174,12 @@ export default function EditableSection({ section, index }: EditableSectionProps
   );
 }
 
-function useResizableSection(section: SectionType, gridConfig: GridConfig) {
+function useResizableSection(section: SectionType, gridConfig?: GridConfig) {
   // Use interact.js to allow resizing a section manually
   const interactable = useRef<Interact.Interactable | null>(null);
   const draftHelpers = useDraftHelpers();
   const previewMode = usePreviewMode();
+  const [resizing, setResizing] = useState(false);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -181,6 +203,7 @@ function useResizableSection(section: SectionType, gridConfig: GridConfig) {
           // resizeCallbacks.onResizeStart?.(event);
         },
         move: (event) => {
+          setResizing(true);
           event.stopPropagation();
 
           const h = sectionEl.dataset.h ? parseFloat(sectionEl.dataset.h) : sectionEl.offsetHeight;
@@ -197,6 +220,11 @@ function useResizableSection(section: SectionType, gridConfig: GridConfig) {
           Object.assign(sectionEl.dataset, { h: newHeight });
         },
         end: (event) => {
+          startTransition(() => {
+            setResizing(false);
+          });
+          event.stopPropagation();
+          event.preventDefault();
           const size = getBrickPosition(sectionEl, previewMode);
           sectionEl.style.height = "";
           sectionEl.style.maxHeight = "";
@@ -213,6 +241,10 @@ function useResizableSection(section: SectionType, gridConfig: GridConfig) {
       interactable.current = null;
     };
   }, []);
+
+  return {
+    resizing,
+  };
 }
 
 function SectionOptionsButtons({ section }: { section: SectionType }) {
