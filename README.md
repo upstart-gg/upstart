@@ -12,11 +12,6 @@ in creating templates that are responsive, accessible, and easy to customize and
 
 Visit [https://upstart.gg](https://upstart.gg) to try the Upstart Editor and create your own website for free.
 
-
-## Develop templates for Upstart
-
-Please visit the documentation at [https://developers.upstart.gg](https://developers.upstart.gg)
-
 ## Contributing
 
 Visit https://developers.upstart.gg/contribute.html for more information on how to contribute to the Upstart SDK.
@@ -25,8 +20,6 @@ Visit https://developers.upstart.gg/contribute.html for more information on how 
 ### SDK Development
 
 Run `pnpm dev` at the root of the monorepo and this will build and watch the SDK for changes.
-If you want to test the SDK in the template example, you'll also need to run `pnpm dev` in the
-`packages/template-example` directory.
 
 ### Releasing new versions
 
