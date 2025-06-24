@@ -51,6 +51,13 @@ export function getBrickPosition(
   };
 }
 
+export function getBrickDimensions(element: HTMLElement, gridConfig: GridConfig) {
+  const rect = element.getBoundingClientRect();
+  const w = Math.ceil(rect.width / gridConfig.colWidth);
+  const h = Math.ceil(rect.height / gridConfig.rowHeight);
+  return { w, h };
+}
+
 export function getGridConfig(sectionElement: HTMLElement, previewMode: Resolution) {
   const colWidth = Math.round(sectionElement.clientWidth / LAYOUT_COLS[previewMode]);
   const rowHeight = LAYOUT_ROW_HEIGHT;

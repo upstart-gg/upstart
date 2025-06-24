@@ -67,7 +67,7 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
 
     // When inside a container, let the container handle the flex
     // otherwise, force the children to fill the space
-    !isContainerChild && "flex-1",
+    // !isContainerChild && typeof props.width === "undefined" && "flex-1",
 
     styleIds.includes("#styles:fixedPositioned") === false && "relative",
 
@@ -75,8 +75,8 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
     isContainerChild && "container-child",
 
     css({
-      width: typeof props.fixedWidth !== "undefined" ? `${props.fixedWidth}` : "auto",
-      height: typeof props.fixedHeight !== "undefined" ? `${props.fixedHeight}` : "auto",
+      width: typeof props.width !== "undefined" ? `${props.width}` : "auto",
+      height: typeof props.height !== "undefined" ? `${props.height}` : "auto",
     }),
 
     getBrickWrapperEditorStyles(editable === true, manifest.isContainer, isContainerChild, selected),

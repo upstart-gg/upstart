@@ -34,7 +34,7 @@ export const commonProps = {
       "ai:hidden": true,
     }),
   ),
-  fixedWidth: Type.Optional(
+  width: Type.Optional(
     cssLength({
       title: "Fix Width",
       description:
@@ -42,7 +42,7 @@ export const commonProps = {
       "ui:field": "hidden",
     }),
   ),
-  fixedHeight: Type.Optional(
+  height: Type.Optional(
     cssLength({
       title: "Fixed height",
       description:

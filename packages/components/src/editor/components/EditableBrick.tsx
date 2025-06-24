@@ -247,6 +247,16 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       }
     };
 
+    const handleMouseDown = (e: React.MouseEvent) => {
+      // Prevent dragging when clicking on specific elements
+      const target = e.target as HTMLElement;
+      if (target.matches(".resize-handle")) {
+        console.log("DISABLED DRAGGING ON RESIZE HANDLE");
+        e.stopPropagation();
+        e.preventDefault();
+      }
+    };
+
     return (
       <Draggable draggableId={brick.id} index={index} isDragDisabled={!manifest.movable || resizing}>
         {(provided, snapshot) => {
@@ -260,6 +270,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 {...provided.draggableProps}
                 {...provided.dragHandleProps}
                 {...getReferenceProps()}
+                onMouseDown={handleMouseDown}
                 id={brick.id}
                 data-brick
                 data-brick-id={brick.id}
@@ -270,57 +281,23 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 data-draggable-for-brick-id={brick.id}
                 className={tx(
                   wrapperClass,
-                  "relative origin-center min-w-[100px]",
+                  "relative min-w-[100px]",
                   snapshot.isDragging &&
                     "opacity-80 !z-[9999] shadow-xl bg-upstart-600/30 rounded-2xl overflow-hidden",
                 )}
                 onClick={onBrickWrapperClick}
               >
-                <Resizable
-                  className="resizable-container"
-                  onResizeStart={handleResizeStart}
-                  onResizeStop={handleResizeStop}
-                  onResize={handleResize}
-                  grid={[gridConfig.colWidth, gridConfig.rowHeight]} // Grid snapping - adjust as needed
-                  bounds="parent"
-                  boundsByDirection={true}
-                  minWidth={manifest.minWidth ? manifest.minWidth?.[previewMode] : gridConfig.colWidth * 2}
-                  minHeight={
-                    manifest.minHeight ? manifest.minHeight?.[previewMode] : gridConfig.rowHeight * 2
-                  }
-                  enable={{
-                    top: true,
-                    right: true,
-                    bottom: true,
-                    left: true,
-                    topRight: true,
-                    bottomRight: true,
-                    bottomLeft: true,
-                    topLeft: true,
-                  }}
-                  handleClasses={{
-                    top: "resizable-handle resizable-handle-top",
-                    right: "resizable-handle resizable-handle-right",
-                    bottom: "resizable-handle resizable-handle-bottom",
-                    left: "resizable-handle resizable-handle-left",
-                    topRight: "resizable-handle resizable-handle-top-right",
-                    bottomRight: "resizable-handle resizable-handle-bottom-right",
-                    bottomLeft: "resizable-handle resizable-handle-bottom-left",
-                    topLeft: "resizable-handle resizable-handle-top-left",
-                  }}
-                >
-                  <BaseBrick brick={brick} selectedBrickId={selectedBrickId} editable resizing={resizing} />
-                  {!manifest.isContainer && <BrickDebugLabel brick={brick} />}
-                  <BrickMenuBarsContainer
-                    ref={barsRefs.setFloating}
-                    brick={brick}
-                    isContainerChild={isContainerChild}
-                    style={barsFloatingStyles}
-                    show={isMenuBarVisible}
-                    {...getFloatingProps()}
-                  />
-                  {!snapshot.isDragging && children}
-                </Resizable>
+                <BaseBrick brick={brick} selectedBrickId={selectedBrickId} editable resizing={resizing} />
+                {!manifest.isContainer && <BrickDebugLabel brick={brick} />}
+                <BrickMenuBarsContainer
+                  ref={barsRefs.setFloating}
+                  brick={brick}
+                  isContainerChild={isContainerChild}
+                  style={barsFloatingStyles}
+                  show={isMenuBarVisible}
+                  {...getFloatingProps()}
+                />
+                {!snapshot.isDragging && children}
                 {/* Children contains resizable handles and other elements */}
               </div>
             </BrickContextMenu>

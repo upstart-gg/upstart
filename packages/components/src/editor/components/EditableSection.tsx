@@ -32,7 +32,6 @@ import SectionSettingsView from "./SectionSettingsView";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { Draggable, Droppable, type DraggableChildrenFn } from "@hello-pangea/dnd";
 import { useCmdOrCtrlPressed } from "../hooks/use-key-pressed";
-import type { JSX } from "react/jsx-runtime";
 
 type EditableSectionProps = {
   section: SectionType;
@@ -127,7 +126,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
                           brick={brick}
                           index={brickIndex}
                         >
-                          {manifests[brick.type]?.resizable && (
+                          {/* {manifests[brick.type]?.resizable && (
                             <>
                               {(resizeOpts.canGrowVertical || resizeOpts.canShrinkVertical) && (
                                 <>
@@ -151,7 +150,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
                                 </>
                               )}
                             </>
-                          )}
+                          )} */}
                         </EditableBrickWrapper>
                       );
                     })}
