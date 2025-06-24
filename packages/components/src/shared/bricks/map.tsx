@@ -117,7 +117,7 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
     >
       <div
         ref={mapRef}
-        className={tx("w-full h-full rounded-[inherit]")}
+        className={tx("w-full h-full rounded-[inherit] z-20")}
         style={{ minHeight: "200px" }} // Ensure minimum height for map
       />
     </div>

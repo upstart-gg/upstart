@@ -16,6 +16,7 @@ import { useFontWatcher } from "../hooks/use-font-watcher";
 import Section from "./EditableSection";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useGridObserver } from "~/shared/hooks/use-grid-observer";
+import { useResizableBricks } from "../hooks/use-resizable-bricks";
 
 type EditablePageProps = {
   showIntro?: boolean;
@@ -33,6 +34,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const typography = useFontWatcher();
   const pageClassName = usePageStyle({ attributes, typography, editable: true, previewMode, showIntro });
   const generationState = useGenerationState();
+  const { resizing } = useResizableBricks();
 
   useGridObserver(pageRef);
 
@@ -143,7 +145,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
           }}
           data-dropzone
         >
-          <Droppable droppableId="sections" type="section">
+          <Droppable droppableId="sections" type="section" direction="vertical">
             {(provided) => (
               <div ref={provided.innerRef} {...provided.droppableProps} className={tx("contents")}>
                 {sections.map((section, index) => (

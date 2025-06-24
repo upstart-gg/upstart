@@ -18,6 +18,7 @@ import { generateId } from "@upstart.gg/sdk/shared/bricks";
 import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
 import type { Site, SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
 import type { GridConfig } from "~/shared/hooks/use-grid-observer";
+import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 export type { Immer } from "immer";
 
 enableMapSet();
@@ -1491,7 +1492,14 @@ export function useEditingTextForBrickId() {
 
 export function useGridConfig() {
   const ctx = useEditorStoreContext();
-  return useStore(ctx, (state) => state.gridConfig);
+  return useStore(
+    ctx,
+    (state) =>
+      state.gridConfig ?? {
+        colWidth: 20,
+        rowHeight: LAYOUT_ROW_HEIGHT,
+      },
+  );
 }
 
 export function useLastSaved() {

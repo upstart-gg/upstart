@@ -33,7 +33,7 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
           }),
-        isOverlay && "justify-center",
+        isOverlay ? "justify-center" : "justify-start",
       )}
       ref={ref}
     >
@@ -79,7 +79,7 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
           src={props.cardImage.src}
           alt={props.cardImage.alt || "Card Image"}
           className={tx(
-            "w-full h-auto select-none pointer-events-none",
+            "h-full w-auto select-none pointer-events-none",
             props.variants?.includes("image-between") && "order-2",
             props.variants?.includes("image-first") && "order-1",
             props.variants?.includes("image-last") && "order-4",

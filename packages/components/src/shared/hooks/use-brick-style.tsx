@@ -6,6 +6,7 @@ import { debounce, get, merge } from "lodash-es";
 import { useBrickManifest } from "./use-brick-manifest";
 import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { tx, css } from "@upstart.gg/style-system/twind";
+import { useGridConfig } from "~/editor/hooks/use-editor";
 
 function getClassesFromStyleProps<T extends BrickManifest>(
   stylesProps: Record<string, string>,
@@ -58,6 +59,7 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
   const stylesProps = getStyleProperties(manifest.props);
   const styleIds = Object.values(stylesProps);
   const classes = getClassesFromStyleProps(stylesProps, brick, "wrapper");
+  const gridConfig = useGridConfig();
 
   return tx(
     props.className as string,
@@ -67,12 +69,22 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
 
     // When inside a container, let the container handle the flex
     // otherwise, force the children to fill the space
-    !isContainerChild && "flex-1",
+    !isContainerChild && typeof props.widthInColUnits === "undefined" && "flex-1",
+    isContainerChild && "container-child",
 
     styleIds.includes("#styles:fixedPositioned") === false && "relative",
+    css({
+      width:
+        typeof props.widthInColUnits === "number"
+          ? `${props.widthInColUnits * gridConfig.colWidth}px`
+          : "100%",
+      height:
+        typeof props.heightInRowUnits === "number"
+          ? `${props.heightInRowUnits * gridConfig.rowHeight}px`
+          : "auto",
+    }),
 
     // container children expand to fill the space
-    isContainerChild && "container-child",
 
     getBrickWrapperEditorStyles(editable === true, manifest.isContainer, isContainerChild, selected),
 

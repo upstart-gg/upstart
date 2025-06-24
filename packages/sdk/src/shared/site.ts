@@ -107,14 +107,10 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               },
               {
                 id: generateId(),
-                type: "map",
+                type: "text",
                 props: {
-                  location: {
-                    lat: 37.7749,
-                    lng: -122.4194,
-                    tooltip: "San Francisco, CA",
-                    address: "San Francisco, CA",
-                  },
+                  content:
+                    "Welcome to our platform! We're <strong>excited</strong> to have you here. Our mission is to <em>transform</em> the way you work with cutting-edge technology and <a href='/features'>innovative features</a>.",
                 },
               },
               {

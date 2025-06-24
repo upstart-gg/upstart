@@ -10,12 +10,12 @@ import {
   useSelectedBrickId,
   useSelectedSectionId,
 } from "../hooks/use-editor";
-import { DropdownMenu, Inset, Popover, Tooltip } from "@upstart.gg/style-system/system";
+import { DropdownMenu, Inset, Popover, Tooltip, useMergeRefs } from "@upstart.gg/style-system/system";
 import EditableBrickWrapper from "./EditableBrick";
 import ResizeHandle from "./ResizeHandle";
 import { useSectionStyle } from "~/shared/hooks/use-section-style";
 import { TbArrowAutofitHeight, TbBorderCorners, TbDots } from "react-icons/tb";
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { startTransition, useEffect, useRef, useState, type MouseEvent } from "react";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { useGridObserver, type GridConfig } from "~/shared/hooks/use-grid-observer";
 import { getBrickResizeOptions, getBrickPosition } from "~/shared/utils/layout-utils";
@@ -38,7 +38,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
   const { setSelectedSectionId, setPanel } = useEditorHelpers();
   const isCmdOrCtrlPressed = useCmdOrCtrlPressed();
 
-  useResizableSection(section, gridConfig);
+  const { resizing } = useResizableSection(section, gridConfig);
 
   const previewMode = usePreviewMode();
   const selectedSectionId = useSelectedSectionId();
@@ -51,55 +51,55 @@ export default function EditableSection({ section, index }: EditableSectionProps
   });
 
   const onClick = (e: MouseEvent) => {
-    if (e.defaultPrevented || (e.target as HTMLElement).closest(".section-resizable-handle")) {
+    if (e.defaultPrevented || resizing) {
       // If the click was handled by a child element, do not propagate
       return;
     }
+    console.log("SECTION ONCLICK", e);
     setSelectedSectionId(section.id);
     setPanel("inspector");
   };
 
   return (
     <Draggable draggableId={section.id} index={index} isDragDisabled={!isCmdOrCtrlPressed}>
-      {(provided, snapshot) => {
-        // console.log("Draggable props keys", Object.keys(provided.draggableProps));
+      {(draggableProvided, draggableSnapshot) => {
         return (
-          <section
-            key={id}
-            id={id}
-            ref={provided.innerRef}
-            data-element-kind="section"
-            onClick={onClick}
-            className={tx(
-              className,
-              snapshot.isDragging && "opacity-50",
-              isCmdOrCtrlPressed && "cursor-move border-2 border-blue-300 border-dashed",
-              !isCmdOrCtrlPressed && "border-2 border-transparent",
-            )}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-          >
-            {!selectedBrickId && <SectionOptionsButtons section={section} />}
-            {/* Show visual indicator when sections can be dragged */}
-            {isCmdOrCtrlPressed && (
-              <div className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded text-xs font-medium z-50">
-                Sections can be dragged
-              </div>
-            )}
-            <Droppable droppableId={section.id} type="brick" direction="horizontal">
-              {(provided, snapshot) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
+          <Droppable droppableId={section.id} type="brick" direction="horizontal">
+            {(droppableProvided, droppableSnapshot) => {
+              // Merge the section and droppable div into one element
+              const mergedRef = useMergeRefs([draggableProvided.innerRef, droppableProvided.innerRef, ref]);
+
+              return (
+                <section
+                  key={id}
+                  id={id}
+                  ref={mergedRef}
+                  {...droppableProvided.droppableProps}
+                  {...draggableProvided.draggableProps}
+                  {...draggableProvided.dragHandleProps}
+                  data-element-kind="section"
+                  onClick={onClick}
                   className={tx(
-                    "flex flex-row gap-4 min-h-40 w-full",
-                    snapshot.isDraggingOver && "bg-blue-50 border-2 border-blue-300 border-dashed",
+                    className,
+                    "flex flex-row gap-4 min-h-40 w-full bg-green-500",
+                    draggableSnapshot.isDragging && "opacity-50",
+                    droppableSnapshot.isDraggingOver && "bg-blue-50 border-2 border-blue-300 border-dashed",
+                    isCmdOrCtrlPressed && "cursor-move border-2 border-blue-300 border-dashed",
+                    !isCmdOrCtrlPressed && "border-2 border-transparent",
                   )}
                 >
+                  {!selectedBrickId && <SectionOptionsButtons section={section} />}
+                  {/* Show visual indicator when sections can be dragged */}
+                  {isCmdOrCtrlPressed && (
+                    <div className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded text-xs font-medium z-50">
+                      Sections can be dragged
+                    </div>
+                  )}
                   {bricks
                     .filter((b) => !b.props.hidden?.[previewMode])
                     .map((brick, brickIndex) => {
                       const resizeOpts = getBrickResizeOptions(brick, manifests[brick.type], previewMode);
+                      const test = Math.random();
                       return (
                         <EditableBrickWrapper
                           key={`${previewMode}-${brick.id}`}
@@ -142,11 +142,11 @@ export default function EditableSection({ section, index }: EditableSectionProps
                       Drag bricks here to stack them inside.
                     </div>
                   )}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </section>
+                  {droppableProvided.placeholder}
+                </section>
+              );
+            }}
+          </Droppable>
         );
       }}
     </Draggable>
@@ -158,6 +158,7 @@ function useResizableSection(section: SectionType, gridConfig?: GridConfig) {
   const interactable = useRef<Interact.Interactable | null>(null);
   const draftHelpers = useDraftHelpers();
   const previewMode = usePreviewMode();
+  const [resizing, setResizing] = useState(false);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -181,7 +182,7 @@ function useResizableSection(section: SectionType, gridConfig?: GridConfig) {
           // resizeCallbacks.onResizeStart?.(event);
         },
         move: (event) => {
-          console.log("resize section move", event);
+          setResizing(true);
           event.stopPropagation();
 
           const h = sectionEl.dataset.h ? parseFloat(sectionEl.dataset.h) : sectionEl.offsetHeight;
@@ -198,9 +199,11 @@ function useResizableSection(section: SectionType, gridConfig?: GridConfig) {
           Object.assign(sectionEl.dataset, { h: newHeight });
         },
         end: (event) => {
+          startTransition(() => {
+            setResizing(false);
+          });
           event.stopPropagation();
           event.preventDefault();
-          console.log("resize section end", event);
           const size = getBrickPosition(sectionEl, previewMode);
           sectionEl.style.height = "";
           sectionEl.style.maxHeight = "";
@@ -217,6 +220,10 @@ function useResizableSection(section: SectionType, gridConfig?: GridConfig) {
       interactable.current = null;
     };
   }, []);
+
+  return {
+    resizing,
+  };
 }
 
 function SectionOptionsButtons({ section }: { section: SectionType }) {

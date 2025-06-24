@@ -8,6 +8,7 @@ import {
   type MouseEvent,
   useEffect,
   useCallback,
+  Fragment,
 } from "react";
 import {
   useDebugMode,
@@ -47,6 +48,7 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { Draggable } from "@hello-pangea/dnd";
 import { Resizable, type ResizeCallback } from "re-resizable";
 import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
+import ResizeHandle from "./ResizeHandle";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -197,12 +199,18 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
         //
         console.log("resize stop", brick.id, direction, ref, delta, gridConfig);
 
-        const newWidth = ref.offsetWidth;
-        const newHeight = ref.offsetHeight;
+        if (!gridConfig) {
+          console.warn("Grid config is not available, cannot resize properly.");
+          return;
+        }
+
+        // Compute new width and height based on the grid config
+        const newWidth = Math.round(ref.offsetWidth / gridConfig.colWidth);
+        const newHeight = Math.round(ref.offsetHeight / gridConfig.rowHeight);
 
         draftHelpers.updateBrickProps(brick.id, {
-          width: newWidth,
-          height: newHeight,
+          widthInColUnits: newWidth,
+          heightInRowUnits: newHeight,
         });
 
         // Auto-adjust mobile layout if needed
@@ -219,7 +227,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           // Merge all refs properly to avoid render loops
           const mergedRef = useMergeRefs([provided.innerRef, barsRefs.setReference, ref]);
 
-          const brickContent = (
+          return (
             <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
               <div
                 ref={mergedRef}
@@ -236,7 +244,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 data-draggable-for-brick-id={brick.id}
                 className={tx(
                   wrapperClass,
-                  "relative origin-center min-w-[100px]",
+                  "relative origin-center min-w-[100px] bg-orange-600",
                   snapshot.isDragging &&
                     "opacity-80 !z-[9999] shadow-xl bg-upstart-600/30 rounded-2xl scale-90 overflow-hidden",
                 )}
@@ -252,33 +260,10 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                   show={isMenuBarVisible}
                   {...getFloatingProps()}
                 />
-                {!snapshot.isDragging && children}{" "}
+                {!snapshot.isDragging && children}
                 {/* Children contains resizable handles and other elements */}
               </div>
             </BrickContextMenu>
-          );
-
-          return manifest.resizable ? (
-            <Resizable
-              onResize={handleResize}
-              onResizeStop={handleResizeStop}
-              grid={[20, 20]} // Grid snapping - adjust as needed
-              bounds="parent"
-              enable={{
-                top: true,
-                right: true,
-                bottom: true,
-                left: true,
-                topRight: true,
-                bottomRight: true,
-                bottomLeft: true,
-                topLeft: true,
-              }}
-            >
-              {brickContent}
-            </Resizable>
-          ) : (
-            brickContent
           );
         }}
       </Draggable>
@@ -349,33 +334,6 @@ function BrickTextNavBar({ brick }: { brick: Brick }) {
       className={tx("contents", menuNavBarCls, "!empty:hidden")}
       // className={tx("contents", menuNavBarCls, "!empty:hidden")}
     />
-  );
-}
-
-function BrickMainNavBar({ brick }: { brick: Brick }) {
-  const { deleteBrick } = useDraftHelpers();
-  const manifest = manifests[brick.type];
-  if (!manifest) {
-    return null;
-  }
-
-  return (
-    <nav className={tx(menuNavBarCls)} data-ui data-ui-options-bar>
-      {/* <span className={tx(menuBarBtnCls, menuBarBtnCommonCls, "block capitalize pointer-events-none")}>
-        {manifest.type}
-      </span> */}
-
-      {/* Settings & styles */}
-      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-        <FiSettings className={tx("w-5 h-5")} />
-        {/* <span className={tx(menuBarTooltipCls)}>Settings</span> */}
-      </button>
-      {/* Content */}
-      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-        <FiDatabase className={tx("w-5 h-5")} />
-        {/* <span className={tx(menuBarTooltipCls)}>Dynamic content</span> */}
-      </button>
-    </nav>
   );
 }
 
