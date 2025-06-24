@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 async function fetchCredits() {
   const url = "/editor/config";
   const result = await fetch(url);
-  if (result.status === 200 && result.headers.get("content-type") === "application/json") {
+  if (result.status === 200 && result.headers.get("content-type")?.startsWith("application/json")) {
     const data = await result.json();
     return (data?.credits as number) ?? 0;
   } else {
