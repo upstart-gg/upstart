@@ -1,5 +1,15 @@
 # @upstart.gg/components
 
+## 0.0.110
+
+### Patch Changes
+
+- [#341](https://github.com/upstart-gg/upstart/pull/341) [`beca463`](https://github.com/upstart-gg/upstart/commit/beca463335e283b8a5db674024905b6e17a358c6) Thanks [@mattallty](https://github.com/mattallty)! - Various fixes
+
+- Updated dependencies [[`beca463`](https://github.com/upstart-gg/upstart/commit/beca463335e283b8a5db674024905b6e17a358c6)]:
+  - @upstart.gg/sdk@0.0.110
+  - @upstart.gg/style-system@0.0.110
+
 ## 0.0.109
 
 ### Patch Changes
