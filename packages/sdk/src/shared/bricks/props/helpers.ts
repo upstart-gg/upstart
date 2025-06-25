@@ -95,7 +95,7 @@ export type PropertyPath = string;
 export type StyleId = string;
 
 // Helper function to traverse a schema and filter to get style properties
-// (properties whose "ui:styleId" starts with "#styles:") and return them as an object with the path to the property
+// (properties whose "ui:styleId" starts with "styles:") and return them as an object with the path to the property
 // as the key and the $id as the value. Paths should be dot-separated.
 // The initial schema is a TObject, but nested schemas can be any type and arrays.
 export function getStyleProperties(

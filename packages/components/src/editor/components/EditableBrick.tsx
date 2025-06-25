@@ -324,40 +324,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
 						</BrickContextMenu>
 					);
 
-					return manifest.resizable ? (
-						<Resizable
-							onResize={handleResize}
-							onResizeStop={handleResizeStop}
-							grid={[20, 20]} // Grid snapping - adjust as needed
-							bounds="parent"
-							className="resizable-brick-wrapper flex"
-							enable={{
-								top: true,
-								right: true,
-								bottom: true,
-								left: true,
-								topRight: true,
-								bottomRight: true,
-								bottomLeft: true,
-								topLeft: true,
-							}}
-							handleClasses={{
-								top: "resize-handle",
-								right: "resize-handle",
-								bottom: "resize-handle",
-								left: "resize-handle",
-								topRight: "resize-handle",
-								bottomRight: "resize-handle",
-								bottomLeft: "resize-handle",
-								topLeft: "resize-handle",
-							}}
-							handleWrapperClass="resize-handle-wrapper"
-						>
-							{brickContent}
-						</Resizable>
-					) : (
-						brickContent
-					);
+					return brickContent;
 				}}
 			</Draggable>
 		);

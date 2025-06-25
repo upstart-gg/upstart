@@ -40,12 +40,14 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
 			doubleClickZoom: false, // Disable double click zoom for static maps
 			boxZoom: false, // Disable box zoom for static maps
 			keyboard: false, // Disable keyboard controls for static maps
+			trackResize: editable, // Enable resize tracking
 		}).setView([lat, lng], props.location.zoom ?? DEFAULTS.zoom);
 
 		// Add tile layer
 		L.tileLayer(
 			"https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png",
 			{
+				zIndex: 40,
 				// attribution:
 				//   '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
 			},
@@ -111,19 +113,19 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
 		}
 	}, [lat, lng, props.location.tooltip]);
 
-	useEffect(() => {
-		if (containerRef.current && editable) {
-			const resizeObserver = new ResizeObserver(() => {
-				if (mapInstanceRef.current) {
-					mapInstanceRef.current.invalidateSize();
-				}
-			});
-			resizeObserver.observe(containerRef.current);
-			return () => {
-				resizeObserver.disconnect();
-			};
-		}
-	}, [editable]);
+	// useEffect(() => {
+	// 	if (containerRef.current && editable) {
+	// 		const resizeObserver = new ResizeObserver(() => {
+	// 			if (mapInstanceRef.current) {
+	// 				mapInstanceRef.current.invalidateSize();
+	// 			}
+	// 		});
+	// 		resizeObserver.observe(containerRef.current);
+	// 		return () => {
+	// 			resizeObserver.disconnect();
+	// 		};
+	// 	}
+	// }, [editable]);
 
 	return (
 		<div
@@ -136,8 +138,7 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
 		>
 			<div
 				ref={mapRef}
-				className={tx("h-full w-full rounded-[inherit] m-px min-h-[100px]")}
-				// style={{ minHeight: "200px" }} // Ensure minimum height for map
+				className={tx("h-full w-full rounded-[inherit] absolute inset-0 z-40")}
 			/>
 		</div>
 	);

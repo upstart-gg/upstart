@@ -392,7 +392,6 @@ function ContentTab({
 				formSchema={manifest.props}
 				formData={brickInfo.props}
 				filter={(prop) => {
-					// todo: find out how to filter out the content properties (using $id for example like styles that are prefixed by #styles:)
 					return true;
 					// return prop["ui:inspector-tab"] === "content";
 				}}

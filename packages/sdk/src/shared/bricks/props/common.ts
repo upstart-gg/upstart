@@ -21,7 +21,6 @@ export function hidden() {
 export const commonProps = {
 	lastTouched: Type.Optional(
 		Type.Number({
-			default: 0,
 			"ui:field": "hidden",
 			"ai:hidden": true,
 		}),
