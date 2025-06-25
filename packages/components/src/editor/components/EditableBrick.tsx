@@ -44,6 +44,11 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { Draggable } from "@hello-pangea/dnd";
 import { Resizable, type ResizeCallback } from "re-resizable";
 import { current } from "immer";
+import pointerEvents from "@interactjs/pointer-events/base";
+import ResizeHandle from "./ResizeHandle";
+import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
+import { getBrickResizeOptions } from "~/shared/utils/layout-utils";
+import useIsHovered from "../hooks/use-is-hovered";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
 	brick: Brick;
@@ -123,12 +128,12 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
 
 		const { getReferenceProps, getFloatingProps } = useInteractions([hover]);
 
-		const wrapperClass = useBrickWrapperStyle({
-			brick,
-			editable: true,
-			selected: selectedBrickId === brick.id,
-			isContainerChild,
-		});
+		// const wrapperClass = useBrickWrapperStyle({
+		// 	brick,
+		// 	editable: true,
+		// 	selected: selectedBrickId === brick.id,
+		// 	isContainerChild,
+		// });
 
 		useEffect(() => {
 			if (barsRefs.reference.current) {
@@ -188,6 +193,8 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
 		);
 
 		const handleResize: ResizeCallback = (event, direction, ref, delta) => {
+			event.stopPropagation();
+			event.preventDefault();
 			// Handle resize logic here if needed during resize
 			const newWidth = ref.offsetWidth;
 			const newHeight = ref.offsetHeight;
@@ -199,6 +206,8 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
 		};
 
 		const handleResizeStop: ResizeCallback = (event, direction, ref, delta) => {
+			event.stopPropagation();
+			event.preventDefault();
 			// Update brick size in the store
 			const newWidth = ref.offsetWidth;
 			const newHeight = ref.offsetHeight;
@@ -221,12 +230,28 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
 				isDragDisabled={!manifest.movable}
 			>
 				{(provided, snapshot) => {
+					const { ref: hoverRef, isHovered } = useIsHovered({ tolerance: 6 });
+
+					const wrapperClass = useBrickWrapperStyle({
+						brick,
+						editable: true,
+						selected: selectedBrickId === brick.id || isHovered,
+						isContainerChild,
+					});
+
 					// Merge all refs properly to avoid render loops
 					const mergedRef = useMergeRefs([
 						provided.innerRef,
 						barsRefs.setReference,
 						ref,
+						hoverRef,
 					]);
+
+					const resizeOpts = getBrickResizeOptions(
+						brick,
+						manifests[brick.type],
+						previewMode,
+					);
 
 					const brickContent = (
 						<BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
@@ -245,9 +270,9 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
 								data-draggable-for-brick-id={brick.id}
 								className={tx(
 									wrapperClass,
-									"relative origin-center min-w-[100px]",
+									"relative min-w-[100px]",
 									snapshot.isDragging &&
-										"opacity-80 !z-[9999] shadow-xl bg-upstart-600/30 rounded-2xl scale-90 overflow-hidden",
+										"opacity-80 !z-[9999] shadow-xl bg-upstart-600/30 overflow-hidden",
 								)}
 								onClick={onBrickWrapperClick}
 							>
@@ -265,9 +290,36 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
 									show={isMenuBarVisible}
 									{...getFloatingProps()}
 								/>
-								{children}
-								{/* {!snapshot.isDragging && children}{" "} */}
 								{/* Children contains resizable handles and other elements */}
+								{manifests[brick.type]?.resizable && (
+									<>
+										{(resizeOpts.canGrowVertical ||
+											resizeOpts.canShrinkVertical) && (
+											<>
+												<ResizeHandle direction="s" show={isHovered} />
+												<ResizeHandle direction="n" show={isHovered} />
+											</>
+										)}
+										{(resizeOpts.canGrowHorizontal ||
+											resizeOpts.canShrinkHorizontal) && (
+											<>
+												<ResizeHandle direction="w" show={isHovered} />
+												<ResizeHandle direction="e" show={isHovered} />
+											</>
+										)}
+										{((resizeOpts.canGrowVertical &&
+											resizeOpts.canGrowHorizontal) ||
+											(resizeOpts.canShrinkVertical &&
+												resizeOpts.canShrinkHorizontal)) && (
+											<>
+												<ResizeHandle direction="se" show={isHovered} />
+												<ResizeHandle direction="sw" show={isHovered} />
+												<ResizeHandle direction="ne" show={isHovered} />
+												<ResizeHandle direction="nw" show={isHovered} />
+											</>
+										)}
+									</>
+								)}
 							</div>
 						</BrickContextMenu>
 					);
@@ -278,6 +330,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
 							onResizeStop={handleResizeStop}
 							grid={[20, 20]} // Grid snapping - adjust as needed
 							bounds="parent"
+							className="resizable-brick-wrapper flex"
 							enable={{
 								top: true,
 								right: true,
@@ -288,6 +341,17 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
 								bottomLeft: true,
 								topLeft: true,
 							}}
+							handleClasses={{
+								top: "resize-handle",
+								right: "resize-handle",
+								bottom: "resize-handle",
+								left: "resize-handle",
+								topRight: "resize-handle",
+								bottomRight: "resize-handle",
+								bottomLeft: "resize-handle",
+								topLeft: "resize-handle",
+							}}
+							handleWrapperClass="resize-handle-wrapper"
 						>
 							{brickContent}
 						</Resizable>

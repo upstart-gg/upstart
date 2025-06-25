@@ -2,34 +2,36 @@ import { tx } from "@upstart.gg/style-system/twind";
 
 export default function ResizeHandle({
 	direction,
+	show,
 }: {
 	direction: "s" | "w" | "e" | "n" | "sw" | "nw" | "se" | "ne";
+	show: boolean;
 }) {
 	return (
 		<button
 			className={tx(
-				"react-resizable-handle absolute z-auto transition-opacity opacity-0",
-				"group-hover/brick:opacity-90 overflow-visible ",
-				`react-resizable-handle-${direction}`,
+				"react-resizable-handle absolute z-[9999] transition-opacity opacity-0 group-hover/brick:opacity-100",
+				"overflow-visible z-[9998]",
+				show && "opacity-100",
+				// `react-resizable-handle-${direction}`,
 				{
-					"-bottom-0 left-0 right-0 h-1 w-[inherit] cursor-s-resize":
+					"bottom-0 left-0 right-0 h-[10px] w-[inherit] cursor-ns-resize":
 						direction === "s",
-					"top-0 left-0 bottom-0 w-1 cursor-w-resize": direction === "w",
-					"top-0 right-0 bottom-0 w-1 cursor-e-resize": direction === "e",
-					"-top-0 left-0 right-0 h-1 w-[inherit] cursor-n-resize":
-						direction === "n",
+					"top-0 left-0 right-0 h-[10px] w-[inherit]": direction === "n",
+					"top-0 left-0 bottom-0 w-[10px]": direction === "w",
+					"top-0 right-0 bottom-0 w-[10px]": direction === "e",
 					// sw and nw
-					"bottom-0 left-0 w-1 h-1 cursor-sw-resize": direction === "sw",
-					"top-0 left-0 w-1 h-1 cursor-nw-resize": direction === "nw",
+					"bottom-0 left-0 w-[10px] h-[10px]": direction === "sw",
+					"top-0 left-0 w-[10px] h-[10px]": direction === "nw",
 					// se and ne
-					"bottom-0 right-0 w-1 h-1 cursor-se-resize": direction === "se",
-					"top-0 right-0 w-1 h-1 cursor-ne-resize": direction === "ne",
+					"bottom-0 right-0 w-[10px] h-[10px]": direction === "se",
+					"top-0 right-0 w-[10px] h-[10px]": direction === "ne",
 				},
 			)}
 		>
 			<div
 				className={tx(
-					"absolute w-[10px] h-[10px] border-upstart-500 bg-white border-2 rounded-sm z-auto shadow-md",
+					"absolute w-[10px] h-[10px] border-upstart-500 bg-white border-2 rounded-full z-auto shadow-md",
 					{
 						"top-1/2 -translate-y-1/2 -left-[5px]": direction === "w",
 						"top-1/2 -translate-y-1/2 -right-[5px]": direction === "e",

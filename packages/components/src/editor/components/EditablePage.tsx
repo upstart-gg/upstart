@@ -20,6 +20,7 @@ import { usePageStyle } from "~/shared/hooks/use-page-style";
 import { useFontWatcher } from "../hooks/use-font-watcher";
 import Section from "./EditableSection";
 import { tx } from "@upstart.gg/style-system/twind";
+import { processSections } from "@upstart.gg/sdk/shared/bricks";
 
 type EditablePageProps = {
 	showIntro?: boolean;
@@ -173,7 +174,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
 								{...provided.droppableProps}
 								className={tx("contents")}
 							>
-								{sections.map((section, index) => (
+								{processSections(sections).map((section, index) => (
 									<Section key={section.id} section={section} index={index} />
 								))}
 								{provided.placeholder}

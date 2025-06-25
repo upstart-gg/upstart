@@ -77,7 +77,10 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
 						id: generateId(),
 						label: "Top",
 						order: 1,
-						props: {},
+						props: {
+							verticalPadding: "0",
+							horizontalPadding: "0",
+						},
 						bricks: [
 							{
 								id: generateId(),

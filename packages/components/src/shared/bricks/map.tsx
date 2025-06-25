@@ -79,7 +79,7 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
 				markerRef.current = null;
 			}
 		};
-	}, [lat, lng, props.location]); // Empty dependency array for initial setup
+	}, []); // Empty dependency array for initial setup
 
 	// Update map when location changes
 	useEffect(() => {
@@ -128,7 +128,7 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
 	return (
 		<div
 			className={tx(
-				"flex-1 flex rounded-[inherit] relative overflow-hidden",
+				"flex-grow rounded-[inherit] relative overflow-hidden !min-w-[280px] max-sm:w-full",
 				props.preset,
 				Object.values(styles),
 			)}
@@ -136,8 +136,8 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
 		>
 			<div
 				ref={mapRef}
-				className={tx("flex-1 rounded-[inherit] m-px")}
-				style={{ minHeight: "200px" }} // Ensure minimum height for map
+				className={tx("h-full w-full rounded-[inherit] m-px min-h-[100px]")}
+				// style={{ minHeight: "200px" }} // Ensure minimum height for map
 			/>
 		</div>
 	);

@@ -22,7 +22,7 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(
 		return (
 			<div
 				className={tx(
-					"flex flex-col flex-1 relative",
+					"flex flex-col flex-1 relative overflow-hidden max-w-[100cqw]",
 					props.variants?.includes("centered") && "text-center",
 					props.variants?.includes("text-sm") && "text-sm",
 					props.variants?.includes("text-lg") && "text-lg",
@@ -43,7 +43,7 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(
 				{props.cardTitle && (
 					<div
 						className={tx(
-							"text-[120%] font-semibold z-40 my-4 mx-4",
+							"text-[120%] font-semibold z-auto my-4 mx-4",
 							props.variants?.includes("image-first") ? "order-2" : "order-1",
 						)}
 					>
@@ -60,7 +60,7 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(
 				{props.cardBody && (
 					<div
 						className={tx(
-							"z-40 pb-4 mx-4",
+							"z-auto pb-4 mx-4",
 							props.variants?.includes("image-first")
 								? "order-3"
 								: props.variants?.includes("image-between")
@@ -82,7 +82,7 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(
 						src={props.cardImage.src}
 						alt={props.cardImage.alt || "Card Image"}
 						className={tx(
-							"w-full h-auto max-h-[200px] select-none pointer-events-none object-cover",
+							"w-full h-auto max-h-[45%] select-none pointer-events-none object-cover mx-px",
 							props.variants?.includes("image-between") && "order-2",
 							props.variants?.includes("image-first") && "order-1",
 							props.variants?.includes("image-last") && "order-4",
