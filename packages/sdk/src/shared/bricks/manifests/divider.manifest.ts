@@ -14,6 +14,7 @@ export const manifest = defineBrickManifest({
   kind: "brick",
   description: "A horizontal or vertical divider",
   repeatable: true,
+  resizable: false,
   icon: RxDividerHorizontal,
   props: defineProps(
     {

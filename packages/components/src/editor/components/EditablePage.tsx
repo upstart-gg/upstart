@@ -21,6 +21,7 @@ import { useFontWatcher } from "../hooks/use-font-watcher";
 import Section from "./EditableSection";
 import { tx } from "@upstart.gg/style-system/twind";
 import { processSections } from "@upstart.gg/sdk/shared/bricks";
+import { useResizable } from "../hooks/use-resizable";
 
 type EditablePageProps = {
 	showIntro?: boolean;
@@ -47,6 +48,24 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
 
 	// on page load, set last loaded property so that the store is saved to local storage
 	useEffect(draft.setLastLoaded, []);
+
+	useResizable("[data-brick]", {
+		onResizeStart: (event) => {
+			console.log("Resize started:", event.target);
+		},
+		onResize: (event) => {
+			console.log("Resizing:", event);
+			console.log("brick id:", event.target.dataset.brickId);
+		},
+		onResizeEnd: (event) => {
+			console.log("Resize ended:", event.rect);
+			const brickId = event.target.dataset.brickId as string;
+			draftHelpers.updateBrickProps(brickId, {
+				width: `${event.rect.width}px`,
+				height: `${event.rect.height}px`,
+			});
+		},
+	});
 
 	useEffect(() => {
 		console.log("Gen state changed in EditablePage", generationState);

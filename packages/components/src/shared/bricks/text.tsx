@@ -9,29 +9,27 @@ import { tx, css } from "@upstart.gg/style-system/twind";
 /**
  * Text brick
  */
-const Text = forwardRef<HTMLDivElement, BrickProps<Manifest>>(
-	({ brick, editable }, ref) => {
-		const { props } = brick;
-		const styles = useBrickStyle<Manifest>(brick);
-		const classes = Object.values(styles);
+const Text = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+  const { props } = brick;
+  const styles = useBrickStyle<Manifest>(brick);
+  const classes = Object.values(styles);
 
-		console.log("Text brick styles:", classes);
-		console.log("Text brick default props:", defaultProps[brick.type].props);
+  console.log("Text brick styles:", classes);
+  console.log("Text brick default props:", defaultProps[brick.type].props);
 
-		return (
-			<div className={tx("flex-inherit", ...classes)}>
-				<TextContent
-					ref={ref}
-					propPath="content"
-					className="first-child:first-line:leading-[100%]"
-					brickId={brick.id}
-					content={props.content ?? "Your text here..."}
-					editable={editable}
-				/>
-			</div>
-		);
-	},
-);
+  return (
+    <div className={tx("flex-inherit", ...classes)}>
+      <TextContent
+        ref={ref}
+        propPath="content"
+        className="first-child:first-line:leading-[100%]"
+        brickId={brick.id}
+        content={props.content ?? "Your text here..."}
+        editable={editable}
+      />
+    </div>
+  );
+});
 
 // Memoize the component to avoid re-rendering when the text content changes
 export default Text;

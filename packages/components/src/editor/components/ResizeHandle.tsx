@@ -10,22 +10,28 @@ export default function ResizeHandle({
 	return (
 		<button
 			className={tx(
-				"react-resizable-handle absolute z-[9999] transition-opacity opacity-0 group-hover/brick:opacity-100",
+				"resizable-handle absolute z-[9999] transition-opacity opacity-0 group-hover/brick:opacity-100",
 				"overflow-visible z-[9998]",
 				show && "opacity-100",
-				// `react-resizable-handle-${direction}`,
+				`resizable-handle-${direction}`,
 				{
-					"bottom-0 left-0 right-0 h-[10px] w-[inherit] cursor-ns-resize":
+					"bottom-0 left-0 right-0 h-[10px] w-[inherit] cursor-row-resize":
 						direction === "s",
-					"top-0 left-0 right-0 h-[10px] w-[inherit]": direction === "n",
-					"top-0 left-0 bottom-0 w-[10px]": direction === "w",
-					"top-0 right-0 bottom-0 w-[10px]": direction === "e",
+					"top-0 left-0 right-0 h-[10px] w-[inherit] cursor-row-resize":
+						direction === "n",
+					"top-0 left-0 bottom-0 w-[10px] cursor-col-resize": direction === "w",
+					"top-0 right-0 bottom-0 w-[10px] cursor-col-resize":
+						direction === "e",
 					// sw and nw
-					"bottom-0 left-0 w-[10px] h-[10px]": direction === "sw",
-					"top-0 left-0 w-[10px] h-[10px]": direction === "nw",
+					"bottom-0 left-0 w-[10px] h-[10px] cursor-nesw-resize":
+						direction === "sw",
+					"top-0 left-0 w-[10px] h-[10px] cursor-nwse-resize":
+						direction === "nw",
 					// se and ne
-					"bottom-0 right-0 w-[10px] h-[10px]": direction === "se",
-					"top-0 right-0 w-[10px] h-[10px]": direction === "ne",
+					"bottom-0 right-0 w-[10px] h-[10px] cursor-nwse-resize":
+						direction === "se",
+					"top-0 right-0 w-[10px] h-[10px] cursor-nesw-resize":
+						direction === "ne",
 				},
 			)}
 		>

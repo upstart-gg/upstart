@@ -111,7 +111,7 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
 				markerRef.current.unbindTooltip();
 			}
 		}
-	}, [lat, lng, props.location.tooltip]);
+	}, [lat, lng, props.location.tooltip, props.location.zoom]);
 
 	// useEffect(() => {
 	// 	if (containerRef.current && editable) {
@@ -130,7 +130,7 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
 	return (
 		<div
 			className={tx(
-				"flex-grow rounded-[inherit] relative overflow-hidden !min-w-[280px] max-sm:w-full",
+				"flex-grow rounded-[inherit] relative overflow-hidden !min-w-[280px] min-h-[180px] max-sm:w-full",
 				props.preset,
 				Object.values(styles),
 			)}

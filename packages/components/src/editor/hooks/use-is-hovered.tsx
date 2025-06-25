@@ -1,54 +1,54 @@
 import { useRef, useState, useEffect } from "react";
 
 interface UseIsHoveredOptions {
-	tolerance?: number;
+  tolerance?: number;
 }
 
 interface UseIsHoveredReturn<T extends HTMLElement> {
-	ref: React.RefObject<T>;
-	isHovered: boolean;
+  ref: React.RefObject<T>;
+  isHovered: boolean;
 }
 
 function useIsHovered<T extends HTMLElement = HTMLDivElement>(
-	options: UseIsHoveredOptions = {},
+  options: UseIsHoveredOptions = {},
 ): UseIsHoveredReturn<T> {
-	const { tolerance = 0 } = options;
-	const ref = useRef<T>(null);
-	const [isHovered, setIsHovered] = useState(false);
+  const { tolerance = 0 } = options;
+  const ref = useRef<T>(null);
+  const [isHovered, setIsHovered] = useState(false);
 
-	useEffect(() => {
-		const element = ref.current;
-		if (!element) return;
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
 
-		const handleMouseMove = (event: MouseEvent) => {
-			const rect = element.getBoundingClientRect();
-			const { clientX, clientY } = event;
+    const handleMouseMove = (event: MouseEvent) => {
+      const rect = element.getBoundingClientRect();
+      const { clientX, clientY } = event;
 
-			// Calculate if mouse is within tolerance area
-			const withinBounds =
-				clientX >= rect.left - tolerance &&
-				clientX <= rect.right + tolerance &&
-				clientY >= rect.top - tolerance &&
-				clientY <= rect.bottom + tolerance;
+      // Calculate if mouse is within tolerance area
+      const withinBounds =
+        clientX >= rect.left - tolerance &&
+        clientX <= rect.right + tolerance &&
+        clientY >= rect.top - tolerance &&
+        clientY <= rect.bottom + tolerance;
 
-			setIsHovered(withinBounds);
-		};
+      setIsHovered(withinBounds);
+    };
 
-		const handleMouseLeave = () => {
-			setIsHovered(false);
-		};
+    const handleMouseLeave = () => {
+      setIsHovered(false);
+    };
 
-		// Add listeners to document to track mouse movement globally
-		document.addEventListener("mousemove", handleMouseMove);
-		element.addEventListener("mouseleave", handleMouseLeave);
+    // Add listeners to document to track mouse movement globally
+    document.addEventListener("mousemove", handleMouseMove);
+    element.addEventListener("mouseleave", handleMouseLeave);
 
-		return () => {
-			document.removeEventListener("mousemove", handleMouseMove);
-			element.removeEventListener("mouseleave", handleMouseLeave);
-		};
-	}, [tolerance]);
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      element.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, [tolerance]);
 
-	return { ref, isHovered };
+  return { ref, isHovered };
 }
 
 export default useIsHovered;

@@ -15,7 +15,7 @@ const Divider = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, ref
           "h-px": props.orientation === "horizontal",
           "w-px": props.orientation === "vertical",
         },
-        props.orientation === "horizontal" && (props.size ? `w-[${props.size}]` : "w-full"),
+        props.orientation === "horizontal" && (props.size ? `w-[${props.size}] flex-grow-0` : "w-full"),
         props.orientation === "vertical" && (props.size ? `h-[${props.size}]` : "h-full"),
         props.color,
         Object.values(styles),
