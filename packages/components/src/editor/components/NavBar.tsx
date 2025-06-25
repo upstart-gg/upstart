@@ -12,7 +12,6 @@ import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import { LuExternalLink } from "react-icons/lu";
 import { RiArrowDownSLine } from "react-icons/ri";
 import { RxRocket } from "react-icons/rx";
-import { ModalSchedulePublish } from "~/editor/components/ModalSchedulePublish";
 import {
   useChatVisible,
   useDraft,
@@ -34,7 +33,7 @@ import logo from "../../../../../creatives/upstart.svg";
 import { LuPlus } from "react-icons/lu";
 import { PiPalette } from "react-icons/pi";
 import { VscSettings } from "react-icons/vsc";
-import { useCredits } from "../hooks/use-credits";
+import { useUserConfig } from "../hooks/use-user-config";
 
 export default function NavBar() {
   const editorHelpers = useEditorHelpers();
@@ -47,14 +46,13 @@ export default function NavBar() {
   const pages = useSitemap();
   const { panel } = usePanel();
   const { canZoomIn, canZoomOut, zoomIn, zoomOut, zoom, resetZoom } = useZoom();
-  const credits = useCredits();
+  const userConfig = useUserConfig();
   const chatVisible = useChatVisible();
   const { undo, redo, futureStates, pastStates } = useDraftUndoManager();
   const canRedo = useMemo(() => futureStates.length > 0, [futureStates]);
   const canUndo = useMemo(() => pastStates.length > 0, [pastStates]);
   const currentPageLabel = pages.find((page) => page.id === draft.id)?.label;
   const generationState = useGenerationState();
-  const [showSchedulePublishing, setShowSchedulePublishing] = useState(false);
 
   const publish = useCallback(
     (wholeSite = false) => {
@@ -70,19 +68,6 @@ export default function NavBar() {
       }
     },
     [draft.siteId, draft.id, pageVersion, editorHelpers.onPublish],
-  );
-
-  const schedulePagePublish = useCallback(
-    (publishAt: string) => {
-      editorHelpers.onPublish({
-        mode: "publish-page",
-        pageId: draft.id,
-        siteId: draft.siteId,
-        pageVersionId: pageVersion ?? "latest",
-        schedulePublishedAt: publishAt,
-      });
-    },
-    [draft.id, draft.siteId, pageVersion, editorHelpers.onPublish],
   );
 
   const duplicatePage = () => {
@@ -326,10 +311,10 @@ export default function NavBar() {
           <span
             className={tx(
               "inline-flex items-center gap-1 text-nowrap",
-              credits === 0 && "text-red-800 font-semibold",
+              userConfig.credits === 0 && "text-red-800 font-semibold",
             )}
           >
-            <BsStars className={tx("opacity-60 w-4 h-4")} /> {credits} credits
+            <BsStars className={tx("opacity-60 w-4 h-4")} /> {userConfig.credits} credits
           </span>
           <div className={tx("inline-flex gap-1 items-center")}>
             <HoverCard.Root>
@@ -433,7 +418,7 @@ export default function NavBar() {
           items={[
             { label: "Publish this page", onClick: () => publish() },
             { label: "Publish all pages", onClick: () => publish(true) },
-            { label: "Schedule publish", onClick: () => setShowSchedulePublishing(true) },
+            { label: "Schedule publish", onClick: () => editorHelpers.onShowPopup?.("schedule-publish") },
           ]}
         >
           <button type="button" className={tx(btnClass, rocketBtn, btnWithArrow)}>
@@ -456,16 +441,6 @@ export default function NavBar() {
               <span className={tx("font-bold italic px-2", css({ fontSize: "1rem" }))}>Publish</span> */}
           </button>
         </TopbarMenu>
-        <ModalSchedulePublish
-          open={showSchedulePublishing}
-          onClose={() => {
-            setShowSchedulePublishing(false);
-          }}
-          onSchedule={(publishAt) => {
-            console.log("Schedule publishing");
-            schedulePagePublish(publishAt);
-          }}
-        />
       </div>
     </nav>
   );
