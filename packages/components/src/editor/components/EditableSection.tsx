@@ -92,7 +92,7 @@ export default function EditableSection({
 							{...provided.draggableProps}
 							{...provided.dragHandleProps}
 							ref={provided.innerRef}
-							className="bg-black/20"
+							className="bg-upstart-500/30"
 						/>
 					)}
 				>
