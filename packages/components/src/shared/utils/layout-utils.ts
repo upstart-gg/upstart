@@ -2,9 +2,9 @@ import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/layout-constants
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
-import type { GridConfig } from "../hooks/use-grid-config";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import type { FullRect } from "@interactjs/types/index";
+import type { GridConfig } from "~/editor/hooks/use-grid-observer";
 
 const DROP_INDICATOR_WIDTH = 4;
 
