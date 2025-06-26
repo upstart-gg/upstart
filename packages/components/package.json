@@ -1,6 +1,6 @@
 {
   "name": "@upstart.gg/components",
-  "version": "0.0.110",
+  "version": "0.0.111",
   "type": "module",
   "files": [
     "dist"
