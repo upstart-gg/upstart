@@ -1,5 +1,14 @@
 # @upstart.gg/sdk
 
+## 0.0.111
+
+### Patch Changes
+
+- [#346](https://github.com/upstart-gg/upstart/pull/346) [`288901c`](https://github.com/upstart-gg/upstart/commit/288901cdd823b1ae612af14ca67d6349ffdb534d) Thanks [@mattallty](https://github.com/mattallty)! - Working drag and drop
+
+- Updated dependencies []:
+  - @upstart.gg/style-system@0.0.111
+
 ## 0.0.110
 
 ### Patch Changes
