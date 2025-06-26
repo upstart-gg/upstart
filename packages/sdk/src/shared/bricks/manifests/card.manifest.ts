@@ -14,7 +14,8 @@ export const manifest = defineBrickManifest({
   description: "A multi-purpose card that can have a title, image, and content",
   repeatable: true,
   icon: BsCardText,
-  maxWidth: { mobile: 400, desktop: 500 },
+  maxWidth: { mobile: 400, desktop: 1024 },
+  minWidth: { mobile: 200, desktop: 250 },
   props: defineProps({
     variants: Type.Array(
       Type.Union(
@@ -82,11 +83,25 @@ export const manifest = defineBrickManifest({
         },
       },
     ),
-    cardImage: optional(imageRef()),
+    cardImage: optional(
+      imageRef({
+        default: {
+          src: "https://placehold.co/300x200?text=Card+Image",
+          alt: "Sample Card Image",
+        },
+      }),
+    ),
     cardTitle: optional(textContentRef({ title: "Title" })),
     cardBody: optional(textContentRef({ title: "Body" })),
     shadow: optional(shadowRef()),
-    border: optional(borderRef()),
+    border: optional(
+      borderRef({
+        default: {
+          width: "border",
+          rounding: "rounded",
+        },
+      }),
+    ),
   }),
 });
 

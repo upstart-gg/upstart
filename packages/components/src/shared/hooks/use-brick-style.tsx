@@ -44,13 +44,13 @@ function getClassesFromStyleProps<T extends BrickManifest>(
 export function useBrickStyle<T extends BrickManifest>(brick: BrickProps<T>["brick"]) {
   const manifest = useBrickManifest(brick.type);
   const stylesProps = getStyleProperties(manifest.props);
-
-  if (brick.type === "text") {
-    console.log("useBrickStyle called for text brick", brick.id, stylesProps);
-  }
   return getClassesFromStyleProps(stylesProps, brick, "brick");
 }
 
+/**
+ * Styles for the wrapper of the brick.
+ * IMPORTANT: do not add any transitions or animations here, as it will affect the drag-and-drop experience.
+ */
 export function useBrickWrapperStyle<T extends BrickManifest>({
   brick,
   editable,
@@ -64,19 +64,29 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
   const classes = getClassesFromStyleProps(stylesProps, brick, "wrapper");
 
   return tx(
+    manifest.staticClasses,
     props.className as string,
     props.preset as string,
-    // no transition otherwise it will slow down the drag
     "brick-wrapper group/brick flex",
 
-    // When inside a container, let the container handle the flex
-    // otherwise, force the children to fill the space
-    // !isContainerChild && "flex-1",
+    manifest.minWidth &&
+      `@mobile:min-w-[${manifest.minWidth.mobile}px] @desktop:min-w-[${manifest.minWidth.desktop}px]`,
+    manifest.minHeight &&
+      `@mobile:min-h-[${manifest.minHeight.mobile}px] @desktop:min-h-[${manifest.minHeight.desktop}px]`,
+    manifest.maxWidth &&
+      `@mobile:max-w-[${manifest.maxWidth.mobile}px] @desktop:max-w-[${manifest.maxWidth.desktop}px]`,
+    manifest.maxHeight &&
+      `@mobile:max-h-[${manifest.maxHeight.mobile}px] @desktop:max-h-[${manifest.maxHeight.desktop}px]`,
 
-    css({
-      width: typeof props.width !== "undefined" ? `${props.width}` : "unset",
-      height: typeof props.height !== "undefined" ? `${props.height}` : "unset",
-    }),
+    typeof props.width !== "undefined" &&
+      css({
+        width: `${props.width}`,
+      }),
+
+    typeof props.height !== "undefined" &&
+      css({
+        height: `${props.height}`,
+      }),
 
     styleIds.includes("styles:fixedPositioned") === false && "relative",
 

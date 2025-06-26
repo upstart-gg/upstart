@@ -161,9 +161,6 @@ importers:
       posthog-js:
         specifier: 1.242.1
         version: 1.242.1
-      re-resizable:
-        specifier: 6.11.2
-        version: 6.11.2(react-dom@18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124))(react@18.3.0-canary-3d9b20132-20240124)
       react:
         specifier: 18.3.0-canary-3d9b20132-20240124
         version: 18.3.0-canary-3d9b20132-20240124
@@ -6263,12 +6260,6 @@ packages:
   raw-body@2.5.2:
     resolution: {integrity: sha512-8zGqypfENjCIqGhgXToC8aB2r7YrBX+AQAfIPs/Mlk+BtPTztOvTS01NRW/3Eh60J+a48lt8qsCzirQ6loCVfA==}
     engines: {node: '>= 0.8'}
-
-  re-resizable@6.11.2:
-    resolution: {integrity: sha512-2xI2P3OHs5qw7K0Ud1aLILK6MQxW50TcO+DetD9eIV58j84TqYeHoZcL9H4GXFXXIh7afhH8mv5iUCXII7OW7A==}
-    peerDependencies:
-      react: 18.3.0-canary-3d9b20132-20240124
-      react-dom: 18.3.0-canary-3d9b20132-20240124
 
   react-dom@18.3.0-canary-3d9b20132-20240124:
     resolution: {integrity: sha512-aI9vs7J0RFJsStEpdCdyR9YMjFzHXdQzfF1fgBCs47PUt8HrkOxpxTp00RO2lpL5eCps8dR8SGCQJN49o3Kb5Q==}
@@ -13905,11 +13896,6 @@ snapshots:
       http-errors: 2.0.0
       iconv-lite: 0.4.24
       unpipe: 1.0.0
-
-  re-resizable@6.11.2(react-dom@18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124))(react@18.3.0-canary-3d9b20132-20240124):
-    dependencies:
-      react: 18.3.0-canary-3d9b20132-20240124
-      react-dom: 18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124)
 
   react-dom@18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124):
     dependencies:

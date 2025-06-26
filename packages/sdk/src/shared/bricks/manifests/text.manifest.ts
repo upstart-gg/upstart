@@ -1,14 +1,12 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { textContent, textContentRef } from "../props/text";
+import { textContentRef } from "../props/text";
 import { defineProps, optional } from "../props/helpers";
-import { backgroundColor, backgroundColorRef } from "../props/background";
-import { padding, paddingRef } from "../props/padding";
-import { border, borderRef } from "../props/border";
+import { backgroundColorRef } from "../props/background";
+import { paddingRef } from "../props/padding";
+import { borderRef } from "../props/border";
 import { RxTextAlignLeft } from "react-icons/rx";
 import type { BrickProps } from "../props/types";
 import { colorRef } from "../props/color";
-import type { FC } from "react";
-import type { Type } from "@sinclair/typebox";
 import { shadowRef } from "../props/effects";
 
 export const manifest = defineBrickManifest({
@@ -19,14 +17,7 @@ export const manifest = defineBrickManifest({
   aiInstructions: `Text "content" can contain minimal HTML tags like <strong>, <em>, <br> and <a> as well as <p> and <span> and lists.
 Only 'align' is supported as an inline style, so don't use other inline styles like 'font-size' or 'color' in the content prop.
 `,
-  minHeight: {
-    desktop: 2,
-    mobile: 2,
-  },
-  minWidth: {
-    desktop: 2,
-    mobile: 2,
-  },
+
   defaultHeight: {
     desktop: 7,
     mobile: 7,
@@ -35,6 +26,10 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
     desktop: 6,
     mobile: 6,
   },
+  // minWidth: {
+  //   desktop: 150,
+  //   mobile: 150,
+  // },
   repeatable: true,
   icon: RxTextAlignLeft,
   props: defineProps(

@@ -76,17 +76,17 @@ export const presetsStyleProps = {
   "surface-1": {
     "styles:backgroundColor": "bg-base-100",
     "styles:color": "text-base-100",
-    "styles:border": { color: "border-base-100" },
+    "styles:border": { color: "border-base-200" },
   },
   "surface-2": {
     "styles:backgroundColor": "bg-base-200",
     "styles:color": "text-base-200",
-    "styles:border": { color: "border-base-200" },
+    "styles:border": { color: "border-base-300" },
   },
   "surface-3": {
     "styles:backgroundColor": "bg-base-300",
     "styles:color": "text-base-300",
-    "styles:border": { color: "border-base-300" },
+    "styles:border": { color: "border-base-200" },
   },
   "prominent-primary": {
     "styles:backgroundColor": "bg-primary-700",
@@ -121,17 +121,17 @@ export const presetsStyleProps = {
   "subtle-primary": {
     "styles:backgroundColor": "bg-primary-100",
     "styles:color": "text-primary-800",
-    "styles:border": { color: "border-primary-100" },
+    "styles:border": { color: "border-primary-200" },
   },
   "subtle-secondary": {
     "styles:backgroundColor": "bg-secondary-100",
     "styles:color": "text-secondary-800",
-    "styles:border": { color: "border-secondary-100" },
+    "styles:border": { color: "border-secondary-200" },
   },
   "subtle-accent": {
     "styles:backgroundColor": "bg-accent-100",
     "styles:color": "text-accent-800",
-    "styles:border": { color: "border-accent-100" },
+    "styles:border": { color: "border-accent-200" },
   },
   "preset-none": {},
 };

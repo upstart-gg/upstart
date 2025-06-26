@@ -32,9 +32,9 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
           gap: section.props.layout?.gap,
         })
       : (section.props.layout?.gap ?? "gap-2"),
-    typeof section.props.layout?.wrap === "undefined" || section.props.layout?.wrap === true
-      ? "flex-wrap"
-      : "flex-nowrap",
+
+    section.props.layout?.wrap === true ? "flex-wrap" : "flex-nowrap",
+
     section.props.layout?.fillSpace && "[&>*]:grow",
     "[&>*]:flex-shrink-0",
 

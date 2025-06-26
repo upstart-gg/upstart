@@ -79,7 +79,9 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
           src={props.cardImage.src}
           alt={props.cardImage.alt || "Card Image"}
           className={tx(
-            "w-full h-auto max-h-[45%] select-none pointer-events-none object-cover bg-transparent px-2",
+            "w-inherit h-[clamp(200px,50%,300px)] select-none pointer-events-none bg-transparent",
+            props.cardImage.position ?? "object-center",
+            props.cardImage.fit ?? "object-cover",
             props.variants?.includes("image-between") && "order-2",
             props.variants?.includes("image-first") && "order-1",
             props.variants?.includes("image-last") && "order-4",

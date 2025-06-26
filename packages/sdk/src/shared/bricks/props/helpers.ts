@@ -70,7 +70,7 @@ export function getGroupInfo(schema: TSchema) {
 
 export function defineProps<P extends TProperties>(
   props: P,
-  options?: ObjectOptions & { noPreset?: boolean },
+  options?: ObjectOptions & { noPreset?: boolean; noAlignSelf?: boolean },
 ) {
   const finalProps = { ...commonProps, ...props };
   if (options?.noPreset) {
@@ -78,6 +78,12 @@ export function defineProps<P extends TProperties>(
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     // biome-ignore lint/performance/noDelete: <explanation>
     delete (finalProps as any).preset;
+  }
+  if (options?.noAlignSelf) {
+    // If noPreset is true, we don't add the preset property
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/performance/noDelete: <explanation>
+    delete (finalProps as any).alignSelf;
   }
   return Type.Object(finalProps, options);
 }

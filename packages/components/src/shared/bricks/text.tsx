@@ -1,7 +1,6 @@
 import { forwardRef } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/text.manifest";
-import { defaultProps } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { TextContent } from "../components/TextContent";
 import { tx, css } from "@upstart.gg/style-system/twind";
@@ -13,9 +12,6 @@ const Text = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
   const { props } = brick;
   const styles = useBrickStyle<Manifest>(brick);
   const classes = Object.values(styles);
-
-  console.log("Text brick styles:", classes);
-  console.log("Text brick default props:", defaultProps[brick.type].props);
 
   return (
     <div className={tx("flex-inherit", ...classes)}>

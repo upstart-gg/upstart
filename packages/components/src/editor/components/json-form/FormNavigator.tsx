@@ -184,7 +184,7 @@ const FormNavigator: FC<FormNavigatorProps> = ({
     >
       <div
         ref={ref}
-        className={tx("navigator-view transition-all relative overflow-x-hidden", className)}
+        className={tx("navigator-view transition-all relative overflow-x-hidden scrollbar-thin", className)}
         style={{
           width: "100%",
           // ...style,

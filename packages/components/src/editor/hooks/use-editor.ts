@@ -18,6 +18,7 @@ import { generateId } from "@upstart.gg/sdk/shared/bricks";
 import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
 import type { Site, SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
 export type { Immer } from "immer";
+import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 
 enableMapSet();
 
@@ -81,6 +82,10 @@ export interface EditorStateProps {
   // pages: GenericPageConfig[];
 
   previewMode: Resolution;
+  gridConfig?: {
+    colWidth: number;
+    rowHeight: number;
+  };
   textEditMode?: "default" | "large";
   lastTextEditPosition?: number;
   settingsVisible?: boolean;
@@ -117,7 +122,7 @@ export interface EditorState extends EditorStateProps {
   toggleSettings: () => void;
   toggleTextEditMode: () => void;
   toggleEditorEnabled: () => void;
-
+  setGridConfig: (config: EditorStateProps["gridConfig"]) => void;
   setTextEditMode: (mode: EditorStateProps["textEditMode"]) => void;
   setIsEditingText: (forBrickId: string | false) => void;
   setLastTextEditPosition: (position?: number) => void;
@@ -203,6 +208,10 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
           immer((set, _get) => ({
             ...DEFAULT_PROPS,
             ...initProps,
+            setGridConfig: (config) =>
+              set((state) => {
+                state.gridConfig = config;
+              }),
             toggleEditorEnabled: () =>
               set((state) => {
                 state.disabled = !state.disabled;
@@ -1553,6 +1562,7 @@ export const useEditorHelpers = () => {
   return useStore(ctx, (state) => ({
     setPreviewMode: state.setPreviewMode,
     setSettingsVisible: state.setSettingsVisible,
+    setGridConfig: state.setGridConfig,
     toggleSettings: state.toggleSettings,
     toggleTextEditMode: state.toggleTextEditMode,
     setTextEditMode: state.setTextEditMode,
@@ -1700,6 +1710,18 @@ export const usePagePathSubscribe = (callback: (path: DraftState["path"]) => voi
     return ctx.subscribe((state) => state.path, callback);
   }, []);
 };
+
+export function useGridConfig() {
+  const ctx = useEditorStoreContext();
+  return useStore(
+    ctx,
+    (state) =>
+      state.gridConfig ?? {
+        colWidth: 20,
+        rowHeight: LAYOUT_ROW_HEIGHT,
+      },
+  );
+}
 
 function getBrick(id: string, state: DraftState) {
   const { brick } = state.brickMap.get(id) ?? {};
