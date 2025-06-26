@@ -22,7 +22,7 @@ export function fontSize(defaultValue = "inherit", title = "Font size") {
       ],
       {
         default: defaultValue,
-        "ui:styleId": "#styles:fontSize",
+        "ui:styleId": "styles:fontSize",
         "ui:field": "enum",
         "ui:display": "select",
       },

@@ -38,7 +38,7 @@ export function image(title = "Image", options: PropImageOptions = {}) {
             title: "Fit",
             description: "How the image should be resized to fit its container",
             "ui:field": "enum",
-            "ui:styleId": "#styles:objectFit",
+            "ui:styleId": "styles:objectFit",
           },
         ),
       ),
@@ -56,7 +56,7 @@ export function image(title = "Image", options: PropImageOptions = {}) {
             Type.Literal("object-right-bottom", { title: "Bottom right" }),
           ],
           {
-            "ui:styleId": "#styles:objectPosition",
+            "ui:styleId": "styles:objectPosition",
             title: "Position",
             description: "The position of the image inside its container",
             "ui:field": "enum",

@@ -93,7 +93,7 @@ function PresetsTab({ section }: { section: Section }) {
               type="button"
               onClick={() => {
                 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-                updateSectionProps(section.id, { preset: preset as any }, previewMode === "mobile");
+                updateSectionProps(section.id, { preset: preset.const as any }, previewMode === "mobile");
                 // updateBrickProps(brick.id, { preset: preset.const }, previewMode === "mobile");
               }}
               key={preset.const}

@@ -45,7 +45,7 @@ export function basicAlign(opts: AlignBasicOptions = {}) {
         $id: "styles:basicAlign",
         "ui:responsive": true,
         "ui:field": "align-basic",
-        "ui:styleId": "#styles:basicAlign",
+        "ui:styleId": "styles:basicAlign",
         default: defaultValue,
       },
     ),

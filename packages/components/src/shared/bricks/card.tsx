@@ -19,7 +19,7 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
   return (
     <div
       className={tx(
-        "flex flex-col flex-1 relative",
+        "flex flex-col flex-1 relative overflow-hidden max-w-[100cqw]",
         props.variants?.includes("centered") && "text-center",
         props.variants?.includes("text-sm") && "text-sm",
         props.variants?.includes("text-lg") && "text-lg",
@@ -40,7 +40,7 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
       {props.cardTitle && (
         <div
           className={tx(
-            "text-[120%] font-semibold z-40 my-4 mx-4",
+            "text-[120%] font-semibold z-auto my-4 mx-4",
             props.variants?.includes("image-first") ? "order-2" : "order-1",
           )}
         >
@@ -57,7 +57,7 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
       {props.cardBody && (
         <div
           className={tx(
-            "z-40 pb-4 mx-4",
+            "z-auto pb-4 pt-2 mx-4",
             props.variants?.includes("image-first")
               ? "order-3"
               : props.variants?.includes("image-between")
@@ -79,7 +79,9 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
           src={props.cardImage.src}
           alt={props.cardImage.alt || "Card Image"}
           className={tx(
-            "w-full h-auto select-none pointer-events-none",
+            "w-inherit h-[clamp(200px,50%,300px)] select-none pointer-events-none bg-transparent",
+            props.cardImage.position ?? "object-center",
+            props.cardImage.fit ?? "object-cover",
             props.variants?.includes("image-between") && "order-2",
             props.variants?.includes("image-first") && "order-1",
             props.variants?.includes("image-last") && "order-4",

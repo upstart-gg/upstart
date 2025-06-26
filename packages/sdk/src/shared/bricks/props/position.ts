@@ -10,7 +10,7 @@ export function position(defaultValue = "flowing", title = "Position") {
         Type.Literal("fixed", { title: "Fixed" }),
         Type.Literal("sticky", { title: "Sticky" }),
       ],
-      { default: defaultValue, "ui:styleId": "#styles:position" },
+      { default: defaultValue, "ui:styleId": "styles:position" },
     ),
   });
 }
@@ -20,7 +20,10 @@ export type PositionSettings = Static<ReturnType<typeof position>>;
 export function fixedPositioned(defaultValue = false, title = "Fixed position") {
   return prop({
     title,
-    schema: Type.Boolean({ default: defaultValue, "ui:styleId": "#styles:fixedPositioned" }),
+    schema: Type.Boolean({
+      default: defaultValue,
+      "ui:styleId": "styles:fixedPositioned",
+    }),
   });
 }
 

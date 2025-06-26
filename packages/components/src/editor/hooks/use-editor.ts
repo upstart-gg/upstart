@@ -18,6 +18,7 @@ import { createStore, useStore } from "zustand";
 import { persist, subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 export type { Immer } from "immer";
+import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 
 enableMapSet();
 
@@ -38,7 +39,6 @@ export type PagePublishPayload =
       mode: "publish-page";
       pageId: string;
       pageVersionId: string;
-      schedulePublishedAt?: string | null;
     }
   | { siteId: string; mode: "publish-site" };
 
@@ -82,6 +82,10 @@ export interface EditorStateProps {
   // pages: GenericPageConfig[];
 
   previewMode: Resolution;
+  gridConfig?: {
+    colWidth: number;
+    rowHeight: number;
+  };
   textEditMode?: "default" | "large";
   lastTextEditPosition?: number;
   settingsVisible?: boolean;
@@ -119,7 +123,7 @@ export interface EditorState extends EditorStateProps {
   toggleSettings: () => void;
   toggleTextEditMode: () => void;
   toggleEditorEnabled: () => void;
-
+  setGridConfig: (config: EditorStateProps["gridConfig"]) => void;
   setTextEditMode: (mode: EditorStateProps["textEditMode"]) => void;
   setIsEditingText: (forBrickId: string | false) => void;
   setLastTextEditPosition: (position?: number) => void;
@@ -205,6 +209,10 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
           immer((set, _get) => ({
             ...DEFAULT_PROPS,
             ...initProps,
+            setGridConfig: (config) =>
+              set((state) => {
+                state.gridConfig = config;
+              }),
             toggleEditorEnabled: () =>
               set((state) => {
                 state.disabled = !state.disabled;
@@ -336,12 +344,17 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
               }),
           })),
           // limit undo history to 100
-          { limit: 100, equality: (pastState, currentState) => isEqual(pastState, currentState) },
+          {
+            limit: 100,
+            equality: (pastState, currentState) => isEqual(pastState, currentState),
+          },
         ),
         {
           name: "editor-state",
           partialize: (state) =>
-            Object.fromEntries(Object.entries(state).filter(([key]) => ["chatVisible"].includes(key))),
+            Object.fromEntries(
+              Object.entries(state).filter(([key]) => ["chatVisible", "previewMode"].includes(key)),
+            ),
         },
       ),
     ),
@@ -865,7 +878,9 @@ export const createDraftStore = (
                     lastTouched: Date.now(),
                   });
                 } else {
-                  brick.props = mergeIgnoringArrays({}, brick.props, props, { lastTouched: Date.now() });
+                  brick.props = mergeIgnoringArrays({}, brick.props, props, {
+                    lastTouched: Date.now(),
+                  });
                 }
                 for (const section of state.sections) {
                   for (const b of section.bricks) {
@@ -1401,7 +1416,10 @@ export const useDebugMode = () => {
 
 export const usePanel = () => {
   const ctx = useEditorStoreContext();
-  return useStore(ctx, (state) => ({ panel: state.panel, panelPosition: state.panelPosition }));
+  return useStore(ctx, (state) => ({
+    panel: state.panel,
+    panelPosition: state.panelPosition,
+  }));
 };
 
 export const useIsPremiumPlan = () => {
@@ -1545,6 +1563,7 @@ export const useEditorHelpers = () => {
   return useStore(ctx, (state) => ({
     setPreviewMode: state.setPreviewMode,
     setSettingsVisible: state.setSettingsVisible,
+    setGridConfig: state.setGridConfig,
     toggleSettings: state.toggleSettings,
     toggleTextEditMode: state.toggleTextEditMode,
     setTextEditMode: state.setTextEditMode,
@@ -1672,7 +1691,9 @@ export const useAttributesSubscribe = (callback: (attr: DraftState["attr"]) => v
   const ctx = useDraftStoreContext();
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    return ctx.subscribe((state) => state.attr, callback, { equalityFn: isEqual });
+    return ctx.subscribe((state) => state.attr, callback, {
+      equalityFn: isEqual,
+    });
   }, []);
 };
 
@@ -1691,6 +1712,18 @@ export const usePagePathSubscribe = (callback: (path: DraftState["path"]) => voi
     return ctx.subscribe((state) => state.path, callback);
   }, []);
 };
+
+export function useGridConfig() {
+  const ctx = useEditorStoreContext();
+  return useStore(
+    ctx,
+    (state) =>
+      state.gridConfig ?? {
+        colWidth: 20,
+        rowHeight: LAYOUT_ROW_HEIGHT,
+      },
+  );
+}
 
 function getBrick(id: string, state: DraftState) {
   const { brick } = state.brickMap.get(id) ?? {};

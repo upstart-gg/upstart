@@ -49,74 +49,84 @@ export const manifest = defineBrickManifest({
   resizable: false,
   movable: false,
   defaultHeight: {
-    desktop: 3,
-    mobile: 3,
+    desktop: 60,
+    mobile: 60,
   },
-  maxHeight: {
-    desktop: 3,
-    mobile: 3,
-  },
-  minHeight: {
-    desktop: 3,
-    mobile: 3,
-  },
+  // maxHeight: {
+  //   desktop: 90,
+  //   mobile: 90,
+  // },
+  // minHeight: {
+  //   desktop: 60,
+  //   mobile: 60,
+  // },
+  staticClasses: "flex-1",
   icon: VscLayoutPanelOff,
   iconClassName: "rotate-180",
-  props: defineProps({
-    container: optional(
-      group({
-        title: "Main element",
+  props: defineProps(
+    {
+      container: optional(
+        group({
+          title: "Main element",
+          children: {
+            backgroundColor: optional(backgroundColorRef()),
+            border: optional(borderRef()),
+            shadow: optional(shadowRef()),
+            fixedPositioned: optional(fixedPositioned()),
+          },
+          metadata: {
+            "ui:responsive": true,
+          },
+        }),
+      ),
+      brand: group({
+        title: "Brand",
         children: {
-          backgroundColor: optional(backgroundColorRef()),
-          border: optional(borderRef()),
-          shadow: optional(shadowRef()),
-          fixedPositioned: optional(fixedPositioned()),
-        },
-        metadata: {
-          "ui:responsive": true,
+          name: optional(
+            textContentRef({
+              title: "Brand name",
+              default: "Acme Inc.",
+              disableSizing: true,
+            }),
+          ),
+          logo: optional(imageRef({ title: "Logo", noObjectOptions: true })),
+          hideText: optional(boolean("Hide text")),
+          color: optional(colorRef()),
         },
       }),
-    ),
-    brand: group({
-      title: "Brand",
-      children: {
-        name: optional(textContentRef({ title: "Brand name", default: "Acme Inc.", disableSizing: true })),
-        logo: optional(imageRef({ title: "Logo", noObjectOptions: true })),
-        hideText: optional(boolean("Hide text")),
-        color: optional(colorRef()),
-      },
-    }),
-    navigation: group({
-      title: "Links",
-      children: {
-        position: prop({
-          title: "Position",
-          schema: Type.Union(
-            [
-              Type.Literal("left", { title: "Left" }),
-              Type.Literal("center", { title: "Center" }),
-              Type.Literal("right", { title: "Right" }),
-            ],
-            { default: "right" },
-          ),
-        }),
-        color: optional(colorRef()),
-        datasource: optional(datasourceRef()),
-        staticItems: optional(
-          prop({
-            title: "Nav items",
-            schema: Type.Array(
-              Type.Object({
-                urlOrPageId: urlOrPageIdRef(),
-                label: optional(string("Label")),
-              }),
-              { title: "Navigation items", default: [] },
+      navigation: group({
+        title: "Links",
+        children: {
+          position: prop({
+            title: "Position",
+            schema: Type.Union(
+              [
+                Type.Literal("left", { title: "Left" }),
+                Type.Literal("center", { title: "Center" }),
+                Type.Literal("right", { title: "Right" }),
+              ],
+              { default: "right" },
             ),
           }),
-        ),
-      },
-    }),
-  }),
+          color: optional(colorRef()),
+          datasource: optional(datasourceRef()),
+          staticItems: optional(
+            prop({
+              title: "Nav items",
+              schema: Type.Array(
+                Type.Object({
+                  urlOrPageId: urlOrPageIdRef(),
+                  label: optional(string("Label")),
+                }),
+                { title: "Navigation items", default: [] },
+              ),
+            }),
+          ),
+        },
+      }),
+    },
+    { noAlignSelf: true },
+  ),
 });
 
 export type Manifest = typeof manifest;

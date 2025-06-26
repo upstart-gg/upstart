@@ -15,13 +15,16 @@ export function padding() {
       "ui:field": "enum",
       "ui:responsive": true,
       // "ui:advanced": true,
-      "ui:styleId": "#styles:padding",
+      "ui:styleId": "styles:padding",
     }),
   });
 }
 
 export function paddingRef(options: SchemaOptions = {}) {
-  return typedRef("styles:padding", options);
+  return typedRef("styles:padding", {
+    ...options,
+    "ui:styleId": "styles:padding",
+  });
 }
 
 export type PaddingSettings = Static<ReturnType<typeof padding>>;

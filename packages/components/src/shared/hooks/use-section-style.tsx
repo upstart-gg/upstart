@@ -14,7 +14,7 @@ type UseSectionStyleProps = {
 
 export function useSectionStyle({ section, selected, editable, previewMode }: UseSectionStyleProps) {
   // console.log("useSectionStyle props", { props: section.props });
-  return tx("flex w-full py-0 group/section overflow-visible relative mx-auto", [
+  return tx("flex w-full py-0 group/section overflow-visible relative mx-auto max-sm:max-w-dvw", [
     section.props.preset as string,
     section.props.maxWidth as string,
     typeof section.props.minHeight === "string" &&
@@ -32,9 +32,9 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
           gap: section.props.layout?.gap,
         })
       : (section.props.layout?.gap ?? "gap-2"),
-    typeof section.props.layout?.wrap === "undefined" || section.props.layout?.wrap === true
-      ? "flex-wrap"
-      : "flex-nowrap",
+
+    section.props.layout?.wrap === true ? "flex-wrap" : "flex-nowrap",
+
     section.props.layout?.fillSpace && "[&>*]:grow",
     "[&>*]:flex-shrink-0",
 
@@ -65,7 +65,7 @@ function getSectionEditorStyles({ section, editable, selected, previewMode }: Us
     return null;
   }
   return [
-    "select-none hover:z-[9999] transition-colors duration-500 relative",
+    "select-none transition-colors duration-500 relative",
     "outline-dashed outline-2 -outline-offset-2 hover:(outline-upstart-500/60 shadow-upstart-500/20)",
     "self-stretch",
 

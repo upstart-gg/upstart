@@ -18,6 +18,7 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
   const lat = useMemo(() => props.location?.lat ?? DEFAULTS.lat, [props.location?.lat]);
   const lng = useMemo(() => props.location?.lng ?? DEFAULTS.lng, [props.location?.lng]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (!mapRef.current) return;
 
@@ -31,10 +32,12 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
       doubleClickZoom: false, // Disable double click zoom for static maps
       boxZoom: false, // Disable box zoom for static maps
       keyboard: false, // Disable keyboard controls for static maps
+      trackResize: editable, // Enable resize tracking
     }).setView([lat, lng], props.location.zoom ?? DEFAULTS.zoom);
 
     // Add tile layer
     L.tileLayer("https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png", {
+      zIndex: 40,
       // attribution:
       //   '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
     }).addTo(map);
@@ -67,7 +70,7 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
         markerRef.current = null;
       }
     };
-  }, [lat, lng, props.location]); // Empty dependency array for initial setup
+  }, []); // Empty dependency array for initial setup
 
   // Update map when location changes
   useEffect(() => {
@@ -75,7 +78,7 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
       const newLatLng = L.latLng(lat, lng);
 
       // Update map center
-      mapInstanceRef.current.setView(newLatLng, mapInstanceRef.current.getZoom());
+      mapInstanceRef.current.setView(newLatLng, props.location.zoom ?? DEFAULTS.zoom);
 
       // Update marker position
       markerRef.current.setLatLng(newLatLng);
@@ -94,7 +97,7 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
         markerRef.current.unbindTooltip();
       }
     }
-  }, [lat, lng, props.location.tooltip]);
+  }, [lat, lng, props.location.tooltip, props.location.zoom]);
 
   useEffect(() => {
     if (containerRef.current && editable) {
@@ -112,14 +115,14 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
 
   return (
     <div
-      className={tx("flex-1 flex rounded-[inherit]", props.preset, Object.values(styles))}
+      className={tx(
+        "flex-grow rounded-[inherit] relative overflow-hidden !min-w-[280px] min-h-[180px] max-sm:w-full",
+        props.preset,
+        Object.values(styles),
+      )}
       ref={containerRef}
     >
-      <div
-        ref={mapRef}
-        className={tx("w-full h-full rounded-[inherit]")}
-        style={{ minHeight: "200px" }} // Ensure minimum height for map
-      />
+      <div ref={mapRef} className={tx("h-full w-full rounded-[inherit] absolute inset-0 z-40")} />
     </div>
   );
 }

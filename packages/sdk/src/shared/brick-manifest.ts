@@ -10,19 +10,24 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
   name: string;
   icon: typeof IconBase;
   iconClassName?: string;
+  staticClasses?: string;
   description?: string;
+  // Min width in pixels
   minWidth?: {
     mobile: number;
     desktop: number;
   };
+  // Max width in pixels
   maxWidth?: {
     mobile: number;
     desktop: number;
   };
+  // Min height in pixels
   minHeight?: {
     mobile: number;
     desktop: number;
   };
+  // Max height in pixels
   maxHeight?: {
     mobile: number;
     desktop: number;

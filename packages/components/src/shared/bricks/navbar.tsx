@@ -17,7 +17,7 @@ const Navbar = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
     <header
       ref={ref}
       data-brick-group="container"
-      className={tx("flex-1 flex px-4 brick basis-full navbar", props.preset, styles.container)}
+      className={tx("flex-1 flex px-4 brick basis-full navbar h-[60px]", props.preset, styles.container)}
     >
       <div
         className={tx(

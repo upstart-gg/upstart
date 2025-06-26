@@ -55,10 +55,8 @@ export function group<T extends TProperties>({
   });
 }
 
-export function prop<T extends TSchema>({ schema, ...rest }: Prop<T>): T {
-  Object.assign(schema, rest);
-  return schema;
-}
+// Re-export prop function from ./prop for backward compatibility
+export { prop } from "./prop";
 
 // Functions to extract metadata from schemas
 export function getGroupInfo(schema: TSchema) {
@@ -72,7 +70,7 @@ export function getGroupInfo(schema: TSchema) {
 
 export function defineProps<P extends TProperties>(
   props: P,
-  options?: ObjectOptions & { noPreset?: boolean },
+  options?: ObjectOptions & { noPreset?: boolean; noAlignSelf?: boolean },
 ) {
   const finalProps = { ...commonProps, ...props };
   if (options?.noPreset) {
@@ -80,6 +78,12 @@ export function defineProps<P extends TProperties>(
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     // biome-ignore lint/performance/noDelete: <explanation>
     delete (finalProps as any).preset;
+  }
+  if (options?.noAlignSelf) {
+    // If noPreset is true, we don't add the preset property
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/performance/noDelete: <explanation>
+    delete (finalProps as any).alignSelf;
   }
   return Type.Object(finalProps, options);
 }
@@ -91,7 +95,7 @@ export type PropertyPath = string;
 export type StyleId = string;
 
 // Helper function to traverse a schema and filter to get style properties
-// (properties whose "ui:styleId" starts with "#styles:") and return them as an object with the path to the property
+// (properties whose "ui:styleId" starts with "styles:") and return them as an object with the path to the property
 // as the key and the $id as the value. Paths should be dot-separated.
 // The initial schema is a TObject, but nested schemas can be any type and arrays.
 export function getStyleProperties(schema: TSchema, path = "", styles: Record<PropertyPath, StyleId> = {}) {

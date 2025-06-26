@@ -2,7 +2,6 @@ import FormNavigator from "./json-form/FormNavigator";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import type { TArray, TObject, TSchema } from "@sinclair/typebox";
-import type { NavItem } from "./json-form/types";
 import { useCallback, useMemo } from "react";
 import { merge, set } from "lodash-es";
 import { useDraftHelpers, useGetBrick, usePreviewMode } from "~/editor/hooks/use-editor";

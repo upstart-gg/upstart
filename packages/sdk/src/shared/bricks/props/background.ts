@@ -71,7 +71,7 @@ export function background(opts: BackgroundOptions = {}) {
       },
       {
         $id: "styles:background",
-        "ui:styleId": "#styles:background",
+        "ui:styleId": "styles:background",
         "ui:field": "background",
         "ui:group": "background",
         "ui:group:title": "Background",
@@ -107,7 +107,7 @@ export function backgroundColor(defaultValue?: string, title = "Background color
       "ui:field": "color",
       "ui:color-type": "background",
       // "ui:advanced": true,
-      "ui:styleId": "#styles:backgroundColor",
+      "ui:styleId": "styles:backgroundColor",
     }),
   });
 }
@@ -115,5 +115,8 @@ export function backgroundColor(defaultValue?: string, title = "Background color
 export type BackgroundColorSettings = Static<ReturnType<typeof backgroundColor>>;
 
 export function backgroundColorRef(options: SchemaOptions = {}) {
-  return typedRef("styles:backgroundColor", { ...options, "ui:styleId": "#styles:backgroundColor" });
+  return typedRef("styles:backgroundColor", {
+    ...options,
+    "ui:styleId": "styles:backgroundColor",
+  });
 }

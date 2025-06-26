@@ -71,7 +71,10 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             id: generateId(),
             label: "Top",
             order: 1,
-            props: {},
+            props: {
+              verticalPadding: "0",
+              horizontalPadding: "0",
+            },
             bricks: [
               {
                 id: generateId(),
@@ -107,14 +110,23 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               },
               {
                 id: generateId(),
-                type: "map",
+                type: "text",
                 props: {
-                  location: {
-                    lat: 37.7749,
-                    lng: -122.4194,
-                    tooltip: "San Francisco, CA",
-                    address: "San Francisco, CA",
+                  preset: "subtle-accent",
+                  content: "Irure dolor sit amet, consectetur adipiscing elit.",
+                },
+              },
+              {
+                id: generateId(),
+                type: "card",
+                props: {
+                  cardTitle: "Welcome to My Site",
+                  cardBody: "This is a sample card body. You can edit this content.",
+                  cardImage: {
+                    src: "https://images.unsplash.com/photo-1636828982375-a4ec8b809e5e?q=80&w=3456&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    alt: "Sample Card Image",
                   },
+                  width: "10dvw",
                 },
               },
               {
@@ -133,32 +145,23 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           },
           {
             id: `content-${generateId()}`,
-            label: "Content",
+            label: "Bottom",
             order: 2,
             props: {},
             bricks: [
               {
                 id: generateId(),
-                type: "map",
+                type: "video",
                 props: {
-                  location: {
-                    lat: 37.7749,
-                    lng: -122.4194,
-                    tooltip: "San Francisco, CA",
-                    address: "San Francisco, CA",
-                  },
+                  url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
                 },
               },
               {
                 id: generateId(),
-                type: "map",
+                type: "divider",
                 props: {
-                  location: {
-                    lat: 37.7749,
-                    lng: -122.4194,
-                    tooltip: "San Francisco, CA",
-                    address: "San Francisco, CA",
-                  },
+                  direction: "horizontal",
+                  size: "20px",
                 },
               },
               {

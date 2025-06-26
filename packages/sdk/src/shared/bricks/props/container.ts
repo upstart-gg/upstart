@@ -93,7 +93,7 @@ import { cssLength } from "./css-length";
 //         ),
 //       },
 //       {
-//         "ui:styleId": "#styles:flex",
+//         "ui:styleId": "styles:flex",
 //         "ui:field": "flex",
 //         "ui:responsive": true,
 //         default: {
@@ -145,7 +145,7 @@ import { cssLength } from "./css-length";
 //         ),
 //       },
 //       {
-//         "ui:styleId": "#styles:grid",
+//         "ui:styleId": "styles:grid",
 //         "ui:field": "grid",
 //         "ui:responsive": true,
 //         default: defaultValue,
@@ -161,7 +161,7 @@ const isFlexLayoutFilter = (manifestProps: TObject, formData: Record<string, unk
   const currentStyle = getStyleValueById<ContainerLayoutSettings>(
     stylesProps,
     formData,
-    "#styles:containerLayout",
+    "styles:containerLayout",
   );
   return currentStyle?.type === "flex" || !currentStyle?.type;
 };
@@ -316,7 +316,7 @@ export function containerLayout({ title = "Layout", options = {} }: ContainerLay
   return group({
     title,
     options: {
-      "ui:styleId": "#styles:containerLayout",
+      "ui:styleId": "styles:containerLayout",
       $id: "styles:containerLayout",
     },
     children: containerlayoutStyle(options),

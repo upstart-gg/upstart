@@ -26,6 +26,10 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
   const selectedTab = tabsMapping[brick.id] ?? "settings";
   const manifest = manifests[brick.type];
 
+  if (brick.type === "navbar") {
+    console.log("Manifest for navbar brick", manifest);
+  }
+
   useEffect(() => {
     if (!manifest.isContainer && selectedTab === "content") {
       setTabsMapping((prev) => ({ ...prev, [brick.id]: "settings" }));
@@ -37,7 +41,7 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
     return null;
   }
 
-  const showTabsList = !!manifest.props.properties.preset && !!manifest.props.properties.variants;
+  const showTabsList = !!manifest.props.properties.preset || !!manifest.props.properties.variants;
 
   return (
     <div key={`brick-inspector-${brick.id}`}>
@@ -333,7 +337,6 @@ function ContentTab({ brick, manifest }: { brick: Brick; manifest: BrickManifest
         formSchema={manifest.props}
         formData={brickInfo.props}
         filter={(prop) => {
-          // todo: find out how to filter out the content properties (using $id for example like styles that are prefixed by #styles:)
           return true;
           // return prop["ui:inspector-tab"] === "content";
         }}

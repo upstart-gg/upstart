@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
   padding: 0;
   margin: 0;
   font-family: "system-ui", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -11,5 +12,10 @@ html, body {
 @property --border-angle {
   inherits: false;
   initial-value: 0deg;
-  syntax: '<angle>';
+  syntax: "<angle>";
 }
+
+/* When hovering but not dragging */
+/* [data-rfd-drag-handle-context-id] {
+  cursor: auto;
+} */
