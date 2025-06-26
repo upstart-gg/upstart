@@ -37,7 +37,7 @@ export default function ResizeHandle({
 		>
 			<div
 				className={tx(
-					"absolute w-[10px] h-[10px] border-upstart-500 bg-white border-2 rounded-full z-auto shadow-md",
+					"absolute w-[10px] h-[10px] border-upstart-500 bg-white border-2 rounded-full z-auto shadow-md resizable-handle-dot",
 					{
 						"top-1/2 -translate-y-1/2 -left-[5px]": direction === "w",
 						"top-1/2 -translate-y-1/2 -right-[5px]": direction === "e",

@@ -59,11 +59,17 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
 		},
 		onResizeEnd: (event) => {
 			console.log("Resize ended:", event.rect);
-			const brickId = event.target.dataset.brickId as string;
+			const target = event.target as HTMLElement;
+			const brickId = target.dataset.brickId as string;
 			draftHelpers.updateBrickProps(brickId, {
 				width: `${event.rect.width}px`,
 				height: `${event.rect.height}px`,
 			});
+			target.style.removeProperty("top");
+			target.style.removeProperty("width");
+			target.style.removeProperty("height");
+			target.style.removeProperty("min-height");
+			target.style.removeProperty("min-width");
 		},
 	});
 
