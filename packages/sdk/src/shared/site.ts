@@ -68,7 +68,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
         path: "/",
         sections: [
           {
-            id: generateId(),
+            id: `s_${generateId()}`,
             label: "Top",
             order: 1,
             props: {
@@ -91,25 +91,33 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             ],
           },
           {
-            id: `content-${generateId()}`,
+            id: `s_content-${generateId()}`,
             label: "Content",
             order: 2,
             props: {},
             bricks: [
               {
-                id: generateId(),
-                type: "map",
+                id: `b_${generateId()}`,
+                type: "container",
                 props: {
-                  location: {
-                    lat: 37.7749,
-                    lng: -122.4194,
-                    tooltip: "San Francisco, CA",
-                    address: "San Francisco, CA",
-                  },
+                  $children: [
+                    {
+                      id: `b_${generateId()}`,
+                      type: "map",
+                      props: {
+                        location: {
+                          lat: 37.7749,
+                          lng: -122.4194,
+                          tooltip: "San Francisco, CA",
+                          address: "San Francisco, CA",
+                        },
+                      },
+                    },
+                  ],
                 },
               },
               {
-                id: generateId(),
+                id: `b_${generateId()}`,
                 type: "text",
                 props: {
                   preset: "subtle-accent",
@@ -117,7 +125,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 },
               },
               {
-                id: generateId(),
+                id: `b_${generateId()}`,
                 type: "card",
                 props: {
                   cardTitle: "Welcome to My Site",
@@ -130,7 +138,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 },
               },
               {
-                id: generateId(),
+                id: `b_${generateId()}`,
                 type: "card",
                 props: {
                   cardTitle: "Welcome to My Site",
@@ -144,20 +152,20 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             ],
           },
           {
-            id: `content-${generateId()}`,
+            id: `s_content-${generateId()}`,
             label: "Bottom",
             order: 2,
             props: {},
             bricks: [
               {
-                id: generateId(),
+                id: `b_${generateId()}`,
                 type: "video",
                 props: {
                   url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
                 },
               },
               {
-                id: generateId(),
+                id: `b_${generateId()}`,
                 type: "divider",
                 props: {
                   direction: "horizontal",
@@ -165,7 +173,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 },
               },
               {
-                id: generateId(),
+                id: `b_${generateId()}`,
                 type: "card",
                 props: {
                   cardTitle: "Welcome to My Site",

@@ -7,6 +7,7 @@ import { useDatasource } from "../hooks/use-datasource";
 import { processBrick, type Brick } from "@upstart.gg/sdk/shared/bricks";
 import BrickWrapper from "../components/BrickWrapper";
 import { tx } from "@upstart.gg/style-system/twind";
+import { Droppable } from "@hello-pangea/dnd";
 
 const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const props = brick.props;
@@ -33,29 +34,54 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edi
         : [];
   }
 
+  if (editable) {
+    return (
+      <div className={tx("flex-1 flex overflow-hidden relative", Object.values(styles))} ref={ref}>
+        <Droppable droppableId={brick.id} type="brick" direction="vertical">
+          {(droppableProvided, droppableSnapshot) => (
+            <div
+              {...droppableProvided.droppableProps}
+              ref={droppableProvided.innerRef}
+              className={tx(
+                "flex-1",
+                droppableSnapshot.isDraggingOver && "!outline !outline-2 !outline-orange-300",
+              )}
+            >
+              {props.$children?.length > 0 ? (
+                props.$children.map((brick, index) => {
+                  return (
+                    <EditableBrickWrapper key={`${brick.id}`} brick={brick} isContainerChild index={index} />
+                  );
+                })
+              ) : ds.datasourceId ? (
+                <div className="bg-gradient-to-tr from-gray-200/80 to-gray-100/80 text-black flex justify-center items-center flex-1 text-lg font-bold">
+                  This container is dynamic.
+                  <pre className="text-xs font-mono">{JSON.stringify(props, null, 2)}</pre>
+                </div>
+              ) : (
+                <div
+                  className={tx(
+                    "w-full h-full text-center  border-4 border-gray-300 border-dotted p-4 rounded flex justify-center items-center text-base text-black/50 font-medium",
+                  )}
+                >
+                  This is a container.
+                  <br />
+                  Drag bricks here to stack them inside.
+                </div>
+              )}
+              {droppableProvided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </div>
+    );
+  }
+
   return (
-    // Always apply the "brick" class
-    <div className={tx("brick flex-1", Object.values(styles))} ref={ref}>
-      {props.$children?.length > 0 ? (
-        props.$children.map((brick, index) => {
-          return editable ? (
-            <EditableBrickWrapper key={`${brick.id}`} brick={brick} isContainerChild index={index} />
-          ) : (
-            <BrickWrapper key={brick.id} brick={brick} />
-          );
-        })
-      ) : ds.datasourceId ? (
-        <div className="bg-gradient-to-tr from-gray-200/80 to-gray-100/80 text-black flex justify-center items-center flex-1 text-lg font-bold">
-          This container is dynamic.
-          <pre className="text-xs font-mono">{JSON.stringify(props, null, 2)}</pre>
-        </div>
-      ) : (
-        <div className="w-full h-full text-center p-4 rounded bg-gray-100 flex justify-center items-center text-base text-black/50 font-medium">
-          This is a container.
-          <br />
-          Drag bricks here to stack them inside.
-        </div>
-      )}
+    <div className={tx("flex-1", Object.values(styles))} ref={ref}>
+      {props.$children?.map((brick) => (
+        <BrickWrapper key={brick.id} brick={brick} />
+      ))}
     </div>
   );
 });

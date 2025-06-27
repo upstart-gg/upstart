@@ -138,7 +138,7 @@ function PresetsTab({ brick, section }: { brick: Brick; section: Section }) {
               key={preset.const}
               className={tx(
                 `${preset.const}`,
-                preset.const === "preset-none" && "border-gray-200 col-span-3",
+                preset.const === "preset-none" && "border-gray-200",
                 `text-xs flex items-center justify-center text-center p-2 border
                    rounded-md hover:opacity-80`,
                 brick.props.preset === preset.const && "outline outline-2 outline-upstart-400",
@@ -165,8 +165,6 @@ function VariantsTab({ brick, section }: { brick: Brick; section: Section }) {
     console.warn("No variants defined for brick %s in section %s", brick.type, section.id);
     return null;
   }
-
-  console.log("VariantsTab for brick %s in section %s", brick.type, section.id, schema);
 
   return (
     <div className={tx("flex flex-col h-full")}>

@@ -250,7 +250,6 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
           interact.modifiers.restrictSize({
             // @ts-ignore
             min: (x, y, event) => {
-              console.log("interaction:", event);
               const element = event.element as HTMLElement;
               const manifest = manifests[element.dataset.brickType || "unknown"] || {};
               const minWidth = manifest.minWidth?.[previewMode] ?? 50;
@@ -259,7 +258,6 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
             },
             // @ts-ignore
             max: (x, y, event) => {
-              console.log("interaction:", event);
               const element = event.element as HTMLElement;
               const manifest = manifests[element.dataset.brickType || "unknown"] || {};
               const maxWidth = manifest.maxWidth?.[previewMode] ?? 10000;

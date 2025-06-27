@@ -4,13 +4,12 @@ import {
   useDraftHelpers,
   useEditorEnabled,
   useGenerationState,
-  useImagesSearchResults,
   usePanel,
   usePreviewMode,
   useSections,
   useThemes,
 } from "../hooks/use-editor";
-import { lazy, startTransition, Suspense, useEffect, useRef, useState, type ComponentProps } from "react";
+import { lazy, startTransition, Suspense, useEffect, useRef, type ComponentProps } from "react";
 import { css, tx, tw } from "@upstart.gg/style-system/twind";
 import { Button } from "@upstart.gg/style-system/system";
 import { usePageAutoSave } from "~/editor/hooks/use-page-autosave";
@@ -20,7 +19,7 @@ import ThemesPreviewList from "./ThemesPreviewList";
 import BlankWaitPage from "./BlankWaitPage";
 import type { GenerationState } from "@upstart.gg/sdk/shared/context";
 import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
-import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
+import { defaultProps, manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { type Brick, generateId } from "@upstart.gg/sdk/shared/bricks";
 
 const Tour = lazy(() => import("./Tour"));
@@ -44,8 +43,6 @@ export default function Editor(props: EditorProps) {
   const generationState = useGenerationState();
   const draftHelpers = useDraftHelpers();
   const previewMode = usePreviewMode();
-  // const images = useImagesSearchResults();
-  // const [bgImg, setBgImg] = useState<NonNullable<typeof images>[number] | null>(null);
 
   usePageAutoSave();
   useEditorHotKeys();
@@ -76,6 +73,8 @@ export default function Editor(props: EditorProps) {
     if (source.droppableId === "bricks-library" || source.droppableId === "widgets-library") {
       console.log("NEW BRICK DROPPED:", draggableId);
       const destinationSection = sections.find((section) => section.id === destination.droppableId);
+
+      // Destination is a section
       if (destinationSection) {
         // create brick from manifest
         const manifest = defaultProps[draggableId];
@@ -88,6 +87,33 @@ export default function Editor(props: EditorProps) {
         draftHelpers.addBrick(newBrick, destinationSection.id, destination.index, null);
         console.log(
           `Added new brick ${draggableId} to section ${destinationSection.id} at index ${destination.index}`,
+        );
+      }
+
+      const destinationContainer = draftHelpers.getBrick(destination.droppableId);
+      if (
+        destinationContainer &&
+        manifests[destinationContainer.type] &&
+        manifests[destinationContainer.type].isContainer
+      ) {
+        // create brick from manifest
+        const newBrick = {
+          ...defaultProps[draggableId],
+          id: `b_${generateId()}`,
+        } satisfies Brick;
+
+        // If the destination is a container, we need to find the section ID
+        const sectionId = draft.brickMap.get(destinationContainer.id)?.sectionId;
+
+        if (!sectionId) {
+          console.warn(`No section found for container ${destinationContainer.id}`);
+          return;
+        }
+
+        // Add a new brick to the container
+        draftHelpers.addBrick(newBrick, sectionId, destination.index, destinationContainer.id);
+        console.log(
+          `Added new brick ${draggableId} to container ${destinationContainer.id} at index ${destination.index} in section ${sectionId}`,
         );
       }
 
@@ -104,16 +130,42 @@ export default function Editor(props: EditorProps) {
       const sourceSectionId = source.droppableId;
       const destinationSectionId = destination.droppableId;
 
-      if (sourceSectionId === destinationSectionId) {
-        // Moving within the same section - use the new reorder function
-        draftHelpers.reorderBrickWithin(draggableId, source.index, destination.index);
-        console.log(
-          `Moving brick ${draggableId} within section from ${source.index} to ${destination.index}`,
-        );
+      const destinationSection = sections.find((section) => section.id === destination.droppableId);
+      if (destinationSection) {
+        if (sourceSectionId === destinationSectionId) {
+          console.log(
+            `Moving brick ${draggableId} within section from ${source.index} to ${destination.index}`,
+          );
+          // Moving within the same section - use the new reorder function
+          draftHelpers.reorderBrickWithin(draggableId, source.index, destination.index);
+
+          // moveBrickToContainerBrick
+        } else {
+          // Moving between sections - use the new moveBrickToSection function
+          console.log(
+            `Moving brick ${draggableId} from section ${sourceSectionId} to ${destinationSectionId}`,
+          );
+          draftHelpers.moveBrickToSection(draggableId, destinationSectionId, destination.index);
+        }
       } else {
-        // Moving between sections - use the new moveBrickToSection function
-        console.log(`Moving brick ${draggableId} from section ${sourceSectionId} to ${destinationSectionId}`);
-        draftHelpers.moveBrickToSection(draggableId, destinationSectionId, destination.index);
+        // if the destination is a container, we need to find the section ID
+        const destinationContainer = draftHelpers.getBrick(destination.droppableId);
+        if (
+          destinationContainer &&
+          manifests[destinationContainer.type] &&
+          manifests[destinationContainer.type].isContainer
+        ) {
+          // Moving to a container
+          const sectionId = draft.brickMap.get(destinationContainer.id)?.sectionId;
+          if (!sectionId) {
+            console.warn(`No section found for container ${destinationContainer.id}`);
+            return;
+          }
+          console.log(
+            `Moving brick ${draggableId} to container ${destinationContainer.id} at index ${destination.index} in section ${sectionId}`,
+          );
+          draftHelpers.moveBrickToContainerBrick(draggableId, destinationContainer.id, destination.index);
+        }
       }
 
       // Auto-adjust mobile layout if needed

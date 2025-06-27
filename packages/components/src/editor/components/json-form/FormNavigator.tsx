@@ -218,7 +218,7 @@ const FormNavigator: FC<FormNavigatorProps> = ({
             </h3>
             <div className="w-10" />
           </div>
-          <div className="overflow-y-auto scrollbar-thin min-h-max h-fit">{currentView.content}</div>
+          <div className="overflow-y-auto scrollbar-thin min-h-max h-fit pb-2">{currentView.content}</div>
         </div>
       </div>
     </FormNavigatorContext.Provider>

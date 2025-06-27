@@ -52,6 +52,16 @@ export function preset(defaultValue?: string) {
         title: "Subtle Accent",
         description: "Subtle display on accent-100 background and 1px border.",
       }),
+      Type.Literal("light", {
+        title: "Light",
+        description:
+          "Mainly white background with dark text. Useful for bricks inside a card or a container that already have a surface/background.",
+      }),
+      Type.Literal("dark", {
+        title: "Dark",
+        description:
+          "Mainly dark background with light text. Useful for bricks inside a card or a container that already have a surface/background.",
+      }),
       Type.Literal("preset-none", {
         title: "None",
         description:

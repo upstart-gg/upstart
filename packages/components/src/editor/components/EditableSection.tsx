@@ -12,7 +12,6 @@ import {
 } from "../hooks/use-editor";
 import { DropdownMenu, Inset, Popover, Tooltip } from "@upstart.gg/style-system/system";
 import EditableBrickWrapper from "./EditableBrick";
-import ResizeHandle from "./ResizeHandle";
 import { useSectionStyle } from "~/shared/hooks/use-section-style";
 import { TbArrowAutofitHeight, TbBorderCorners, TbDots } from "react-icons/tb";
 import { startTransition, useEffect, useRef, useState, type MouseEvent } from "react";
@@ -56,7 +55,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
   };
 
   return (
-    <Droppable droppableId={section.id} type="brick" direction="horizontal">
+    <Droppable droppableId={section.id} type="brick" direction="horizontal" ignoreContainerClipping>
       {(droppableProvided, droppableSnapshot) => (
         <section
           key={id}

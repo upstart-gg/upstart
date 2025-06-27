@@ -91,6 +91,7 @@ export function useEditorHotKeys() {
   useHotkeys("mod+g", (e) => {
     e.preventDefault();
     console.log("Debugging draft:");
-    console.log(draft);
+    const { sections, themes, siteAttr, sitemap, attr, brickMap } = draft;
+    console.log({ sections, themes, siteAttr, sitemap, attr, brickMap });
   });
 }

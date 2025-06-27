@@ -112,11 +112,13 @@ function getBrickWrapperEditorStyles(
   return [
     "select-none transition-colors delay-100 duration-200",
     "outline outline-transparent",
-    selected && !isContainer && "!outline-upstart-400 shadow-lg shadow-upstart-500/20",
-    selected && isContainer && "!outline-orange-300 shadow-lg",
+    selected && !isContainer && "!outline-upstart-400 shadow-xl shadow-upstart-500/20",
+    selected && isContainer && "!outline-orange-300 shadow-xl",
     !selected && !isContainerChild && !isContainer && "hover:(outline-upstart-400/60)",
     !selected && !isContainerChild && isContainer && "hover:(outline-orange-300/20)",
-    !selected && isContainerChild && "hover:(outline-upstart-400/40)",
+    !selected &&
+      isContainerChild &&
+      "hover:(outline-upstart-400/60) group-hover/brick:(outline-upstart-400/60)",
     css({
       "&.selected-group": {
         outlineColor: "var(--violet-8) !important",
