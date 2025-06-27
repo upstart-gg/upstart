@@ -509,7 +509,7 @@ function TextStyleButtonGroup({ editor, noTextStrike, textSizeMode }: TextStyleB
   const isStrike = editor.isActive("strike");
   return (
     <ToggleGroup.Root
-      className={tx("flex !shadow-none divide-x", !textSizeMode && "!rounded-l-none")}
+      className={tx("flex !shadow-none divide-x divide-gray-200", !textSizeMode && "!rounded-l-none")}
       type="multiple"
       value={
         [
@@ -643,8 +643,8 @@ function TextSizeClassicDropdown({ editor }: TextSizeClassicDropdownProps) {
         },
       ]}
     >
-      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
-        <span className="text-[0.8rem] font-medium">
+      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, "!px-3")}>
+        <span className="text-[0.85rem] font-medium">
           {value === "code" ? "Code" : value === "paragraph" ? "Paragraph" : `Title ${value}`}
         </span>
         <RiArrowDownSLine className={tx(arrowClass)} />

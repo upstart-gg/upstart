@@ -34,7 +34,7 @@ const Navbar = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
             <img
               src={props.brand.logo.src}
               alt={props.brand.logo.alt ?? "Logo"}
-              className={`h-full max-h-[${brick.position.desktop.h * LAYOUT_ROW_HEIGHT - 18}px] flex-1`}
+              className={`h-full max-h-[60px] w-auto flex-1`}
             />
           )}
           {props.brand.name && !props.brand.hideText && (

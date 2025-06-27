@@ -10,7 +10,7 @@ type PropImageOptions = {
 };
 
 export function image(title = "Image", options: PropImageOptions = {}) {
-  const { defaultImageUrl, showImgSearch = false } = options;
+  const { defaultImageUrl, showImgSearch = false, noObjectOptions } = options;
   const schema = Type.Object(
     {
       src: Type.String({
@@ -69,7 +69,7 @@ export function image(title = "Image", options: PropImageOptions = {}) {
       "ui:field": "image",
       "ui:accept": "image/*",
       "ui:show-img-search": !!showImgSearch,
-      "ui:no-object-options": !!options.noObjectOptions,
+      "ui:no-object-options": !!noObjectOptions,
       default: {
         alt: "Image",
         fit: "object-cover",
@@ -84,7 +84,7 @@ export function image(title = "Image", options: PropImageOptions = {}) {
 }
 
 export function imageRef(options: PropImageOptions & SchemaOptions = {}) {
-  return typedRef("assets:image", { ...options, styleId: "#assets:image" });
+  return typedRef("assets:image", { ...options, "ui:styleId": "assets:image" });
 }
 
 export type ImageProps = Static<ReturnType<typeof image>>;

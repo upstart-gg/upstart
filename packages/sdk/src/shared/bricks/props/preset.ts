@@ -75,17 +75,17 @@ export const presetRef = typedRef("styles:preset");
 export const presetsStyleProps = {
   "surface-1": {
     "styles:backgroundColor": "bg-base-100",
-    "styles:color": "text-base-100",
+    "styles:color": "text-base-content",
     "styles:border": { color: "border-base-200" },
   },
   "surface-2": {
     "styles:backgroundColor": "bg-base-200",
-    "styles:color": "text-base-200",
+    "styles:color": "text-base-content",
     "styles:border": { color: "border-base-300" },
   },
   "surface-3": {
     "styles:backgroundColor": "bg-base-300",
-    "styles:color": "text-base-300",
+    "styles:color": "text-base-content",
     "styles:border": { color: "border-base-200" },
   },
   "prominent-primary": {

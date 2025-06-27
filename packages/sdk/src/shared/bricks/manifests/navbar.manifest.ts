@@ -89,7 +89,13 @@ export const manifest = defineBrickManifest({
               disableSizing: true,
             }),
           ),
-          logo: optional(imageRef({ title: "Logo", noObjectOptions: true })),
+          logo: optional(
+            imageRef({
+              title: "Logo",
+              "ui:show-img-search": false,
+              "ui:no-object-options": true,
+            }),
+          ),
           hideText: optional(boolean("Hide text")),
           color: optional(colorRef()),
         },

@@ -41,7 +41,6 @@ export function useGridObserver(elementRef: RefObject<HTMLElement>) {
 
   useEffect(() => {
     if (colWidth) {
-      console.log("Setting grid config with colWidth:", colWidth);
       setGridConfig({
         colWidth,
         rowHeight: LAYOUT_ROW_HEIGHT,
