@@ -14,6 +14,8 @@ const ImageField: FC<FieldProps<ImageProps>> = (props) => {
   const { schema, formData, onChange, required, title, description, currentValue = { src: "" } } = props;
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);
+
+  console.log("ImageField", { schema, formData, currentValue });
   // const [src, setSrc] = useState<string | null>(currentValue.src);
 
   const onPropsChange = (newVal: Partial<ImageProps>) => {

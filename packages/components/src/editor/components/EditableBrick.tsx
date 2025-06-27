@@ -176,7 +176,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     );
 
     return (
-      <Draggable draggableId={brick.id} index={index} isDragDisabled={!manifest.movable}>
+      <Draggable key={brick.id} draggableId={brick.id} index={index} isDragDisabled={!manifest.movable}>
         {(provided, snapshot) => {
           const { ref: hoverRef, isHovered } = useIsHovered({ tolerance: 6 });
           const wrapperClass = useBrickWrapperStyle({
@@ -325,7 +325,6 @@ function BrickTextNavBar({ brick }: { brick: Brick }) {
       id={`text-editor-menu-${brick.id}`}
       // Hide the menu if it doesn't have any children so that the border doesn't show up
       className={tx("contents", menuNavBarCls, "!empty:hidden")}
-      // className={tx("contents", menuNavBarCls, "!empty:hidden")}
     />
   );
 }
@@ -373,7 +372,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
               </ContextMenu.Item>
             )}
 
-            <ContextMenu.Item
+            {/* <ContextMenu.Item
               shortcut="⌘C"
               onClick={(e) => {
                 navigator.clipboard
@@ -393,7 +392,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
               }}
             >
               Copy
-            </ContextMenu.Item>
+            </ContextMenu.Item> */}
             {canMoveLeft && (
               <ContextMenu.Item
                 shortcut="⌘&larr;"

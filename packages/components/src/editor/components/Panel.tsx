@@ -19,7 +19,6 @@ import PanelLibrary from "./PanelLibrary";
 
 type PanelProps = ComponentProps<"aside">;
 
-const TEMP_PANEL_DISABLED = false;
 /**
  * Panel used to display both the inspector and the library
  */
@@ -31,10 +30,6 @@ export default function Panel({ className, ...props }: PanelProps) {
   const { togglePanelPosition, hidePanel } = useEditorHelpers();
   const getBrickInfo = useGetBrick();
   const selectedBrick = selectedBrickId ? getBrickInfo(selectedBrickId) : null;
-
-  if (TEMP_PANEL_DISABLED) {
-    return null;
-  }
 
   return (
     <aside

@@ -11,14 +11,7 @@ import {
   useSections,
   useZoom,
 } from "../hooks/use-editor";
-import {
-  type BeforeCapture,
-  DragDropContext,
-  Droppable,
-  type DropResult,
-  type DragStart,
-  type OnDragStartResponder,
-} from "@hello-pangea/dnd";
+import { Droppable } from "@hello-pangea/dnd";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
 import { useFontWatcher } from "../hooks/use-font-watcher";
 import Section from "./EditableSection";
@@ -91,61 +84,54 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     },
   });
 
-  const handleDragStart: OnDragStartResponder = ({ draggableId }, provided) => {
-    console.log("drag start", draggableId, provided);
-    console.log("dragged element", document.getElementById(draggableId));
+  // const handleDragEnd = (result: DropResult) => {
+  //   const { destination, source, draggableId, type } = result;
 
-    // document.getElementById(draggableId)?.style.setProperty("cursor", "grabbing", "important");
-  };
+  //   // reset body pointer events
+  //   document.body.style.pointerEvents = "auto";
 
-  const handleDragEnd = (result: DropResult) => {
-    const { destination, source, draggableId, type } = result;
+  //   // If dropped outside a valid droppable area
+  //   if (!destination) {
+  //     return;
+  //   }
 
-    // reset body pointer events
-    document.body.style.pointerEvents = "auto";
+  //   // If dropped in the same position
+  //   if (destination.droppableId === source.droppableId && destination.index === source.index) {
+  //     return;
+  //   }
 
-    // If dropped outside a valid droppable area
-    if (!destination) {
-      return;
-    }
+  //   if (type === "section") {
+  //     // Reorder sections
+  //     const newSectionOrder = Array.from(sections);
+  //     const [reorderedSection] = newSectionOrder.splice(source.index, 1);
+  //     newSectionOrder.splice(destination.index, 0, reorderedSection);
 
-    // If dropped in the same position
-    if (destination.droppableId === source.droppableId && destination.index === source.index) {
-      return;
-    }
+  //     draftHelpers.reorderSections(newSectionOrder.map((section) => section.id));
+  //   } else if (type === "brick") {
+  //     // Handle brick movement
+  //     const sourceSectionId = source.droppableId;
+  //     const destinationSectionId = destination.droppableId;
 
-    if (type === "section") {
-      // Reorder sections
-      const newSectionOrder = Array.from(sections);
-      const [reorderedSection] = newSectionOrder.splice(source.index, 1);
-      newSectionOrder.splice(destination.index, 0, reorderedSection);
+  //     if (sourceSectionId === destinationSectionId) {
+  //       // Moving within the same section - use the new reorder function
+  //       draftHelpers.reorderBrickWithin(draggableId, source.index, destination.index);
+  //       console.log(
+  //         `Moving brick ${draggableId} within section from ${source.index} to ${destination.index}`,
+  //       );
+  //     } else {
+  //       // Moving between sections - use the new moveBrickToSection function
+  //       console.log(`Moving brick ${draggableId} from section ${sourceSectionId} to ${destinationSectionId}`);
+  //       draftHelpers.moveBrickToSection(draggableId, destinationSectionId, destination.index);
+  //     }
 
-      draftHelpers.reorderSections(newSectionOrder.map((section) => section.id));
-    } else if (type === "brick") {
-      // Handle brick movement
-      const sourceSectionId = source.droppableId;
-      const destinationSectionId = destination.droppableId;
-
-      if (sourceSectionId === destinationSectionId) {
-        // Moving within the same section - use the new reorder function
-        draftHelpers.reorderBrickWithin(draggableId, source.index, destination.index);
-        console.log(
-          `Moving brick ${draggableId} within section from ${source.index} to ${destination.index}`,
-        );
-      } else {
-        // Moving between sections - use the new moveBrickToSection function
-        console.log(`Moving brick ${draggableId} from section ${sourceSectionId} to ${destinationSectionId}`);
-        draftHelpers.moveBrickToSection(draggableId, destinationSectionId, destination.index);
-      }
-
-      // Auto-adjust mobile layout if needed
-      if (previewMode === "desktop") {
-        startTransition(() => {
-          draftHelpers.adjustMobileLayout();
-        });
-      }
-    }
-  };
+  //     // Auto-adjust mobile layout if needed
+  //     if (previewMode === "desktop") {
+  //       startTransition(() => {
+  //         draftHelpers.adjustMobileLayout();
+  //       });
+  //     }
+  //   }
+  // };
 
   // listen for global click events on the document
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -188,32 +174,26 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
 
   return (
     <>
-      <DragDropContext
-        onDragEnd={handleDragEnd}
-        onDragStart={handleDragStart}
-        // onBeforeCapture={handleBeforeCapture}
+      <div
+        id="page-container"
+        ref={pageRef}
+        className={pageClassName}
+        style={{
+          zoom,
+        }}
+        data-dropzone
       >
-        <div
-          id="page-container"
-          ref={pageRef}
-          className={pageClassName}
-          style={{
-            zoom,
-          }}
-          data-dropzone
-        >
-          <Droppable droppableId="sections" type="section">
-            {(provided) => (
-              <div ref={provided.innerRef} {...provided.droppableProps} className={tx("contents")}>
-                {processSections(sections).map((section, index) => (
-                  <Section key={section.id} section={section} index={index} />
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </div>
-      </DragDropContext>
+        <Droppable droppableId="sections" type="section" direction="vertical">
+          {(provided) => (
+            <div ref={provided.innerRef} {...provided.droppableProps} className={tx("contents")}>
+              {processSections(sections).map((section, index) => (
+                <Section key={section.id} section={section} index={index} />
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </div>
       <Toaster
         toastOptions={{
           position: "bottom-center",

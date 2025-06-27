@@ -418,7 +418,7 @@ export interface DraftState extends DraftStateProps {
   reorderBrickWithin: (brickId: string, fromIndex: number, toIndex: number) => void;
   moveBrickToContainerBrick: (id: string, parentId: string) => void;
   moveBrickToSection: (id: string, sectionId: string, index?: number) => void;
-  addBrick: (brick: Brick, sectiondId: string, parentContainerId: Brick["id"] | null) => void;
+  addBrick: (brick: Brick, sectiondId: string, index: number, parentContainerId: Brick["id"] | null) => void;
   updateBrick: (id: string, brick: Partial<Brick>) => void;
   updateBrickProps: (id: string, props: Record<string, unknown>, isMobileProps?: boolean) => void;
   toggleBrickVisibility: (id: string, resolution: Resolution) => void;
@@ -1178,7 +1178,7 @@ export const createDraftStore = (
               }
             }),
 
-          addBrick: (brick, sectionId, parentContainerId) =>
+          addBrick: (brick, sectionId, index, parentContainerId) =>
             set((state) => {
               // Find the section to add the brick to
               const section = state.sections.find((s) => s.id === sectionId);
@@ -1223,8 +1223,7 @@ export const createDraftStore = (
                 // Add the brick to the parent container's children
                 (parentBrickInSection.props.$children as Brick[]).push(brick);
               } else {
-                // Add the brick directly to the section
-                section.bricks.push(brick);
+                section.bricks.splice(index, 0, brick);
               }
 
               // Add the brick to the brick map
@@ -1604,6 +1603,7 @@ export const useDraftHelpers = () => {
     addDatasource: state.addDatasource,
     addDatarecord: state.addDatarecord,
     duplicateBrick: state.duplicateBrick,
+    addBrick: state.addBrick,
     getBrick: state.getBrick,
     validatePreviewTheme: state.validatePreviewTheme,
     adjustMobileLayout: state.adjustMobileLayout,

@@ -267,6 +267,7 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
               return { width: maxWidth, height: maxHeight };
             },
           }),
+          interact.modifiers.restrictSize({ max: "parent" }),
           ...(gridSnap?.enabled !== false && gridSnap
             ? [
                 interact.modifiers.snapSize({

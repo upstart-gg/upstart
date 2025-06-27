@@ -32,7 +32,7 @@ export const manifest = defineBrickManifest({
           title: "Size",
           schema: cssLengthRef({
             title: "Size",
-            default: "100%",
+            default: "20px",
             description: "Size of the divider",
             "ai:instructions": "The size of the divider must be in % unit, like 50%",
           }),
