@@ -28,88 +28,6 @@ import { Draggable, type DraggableStateSnapshot, type DraggableStyle, Droppable 
 
 export default function PanelLibrary() {
   const { shouldDisplay: shouldDisplayLibraryCallout } = useCalloutViewCounter("blocks-library");
-  const [brickPrompt, setBrickPrompt] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
-  const interactable = useRef<Interact.Interactable | null>(null);
-  const { hidePanel } = useEditorHelpers();
-
-  // useEffect(() => {
-  //   /**
-  //    * Initialize interactjs for draggable bricks from the library.
-  //    * The drop logic is handled in `use-draggable.ts`, not here.
-  //    */
-  //   interactable.current = interact(".draggable-brick", {
-  //     styleCursor: false,
-  //   });
-  //   interactable.current
-  //     .draggable({
-  //       inertia: false,
-  //       autoScroll: {
-  //         enabled: true,
-  //       },
-  //     })
-  //     .draggable({
-  //       listeners: {
-  //         // Remove manualStart - let interact.js handle the start automatically
-  //         start(event: Interact.DragEvent) {
-  //           const target = event.target as HTMLElement;
-  //           const computedStyle = window.getComputedStyle(target);
-
-  //           // Create clone on drag start
-  //           const clone = target.cloneNode(true) as HTMLElement;
-
-  //           // Position clone at current mouse position
-  //           clone.style.position = "absolute";
-  //           clone.style.left = `${event.clientX - target.offsetWidth / 2}px`;
-  //           clone.style.top = `${event.clientY - target.offsetHeight / 2}px`;
-  //           clone.style.width = computedStyle.width;
-  //           clone.style.height = computedStyle.height;
-  //           clone.style.zIndex = "99999";
-  //           clone.style.opacity = "0.8";
-  //           clone.style.boxShadow = "0px 0px 24px rgba(0, 0, 0, 0.2)";
-  //           clone.style.border = "1px solid";
-  //           clone.style.borderColor = computedStyle.borderColor;
-  //           clone.style.pointerEvents = "none"; // Prevent interference
-
-  //           clone.classList.add("clone");
-
-  //           document.body.appendChild(clone);
-  //           document.body.style.cursor = "grabbing";
-
-  //           // Store reference to clone on the interaction
-  //           // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  //           (event.interaction as any).clone = clone;
-  //         },
-
-  //         move(event: Interact.DragEvent) {
-  //           // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  //           const clone = (event.interaction as any).clone as HTMLElement;
-
-  //           if (clone) {
-  //             // Update clone position based on mouse movement
-  //             clone.style.left = `${event.clientX - clone.offsetWidth / 2}px`;
-  //             clone.style.top = `${event.clientY - clone.offsetHeight / 2}px`;
-  //           }
-  //         },
-
-  //         end(event: Interact.DragEvent) {
-  //           // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  //           const clone = (event.interaction as any).clone as HTMLElement;
-  //           document.body.style.cursor = "default"; // Reset cursor style
-
-  //           console.log("Drag ended", event);
-
-  //           if (clone) {
-  //             clone.remove();
-  //           }
-  //         },
-  //       },
-  //     });
-  //   return () => {
-  //     interactable.current?.unset();
-  //     interactable.current = null;
-  //   };
-  // }, []);
 
   return (
     <div className="flex flex-col gap-8">
@@ -136,9 +54,7 @@ export default function PanelLibrary() {
             type="brick"
             // isDropDisabled={true}
             renderClone={(provided, snapshot, rubric) => {
-              console.log("clone", { provided, snapshot, rubric });
               const brick = manifests[rubric.draggableId] as BrickManifest;
-
               return (
                 <button
                   {...provided.draggableProps}
@@ -200,7 +116,7 @@ export default function PanelLibrary() {
             gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
           }}
         >
-          <Droppable droppableId="widgets-library" type="library-widget" isDropDisabled={true}>
+          <Droppable droppableId="widgets-library" type="brick" isDropDisabled={true}>
             {(provided) => (
               <div ref={provided.innerRef} {...provided.droppableProps} className={tx("contents")}>
                 {Object.values(manifests)

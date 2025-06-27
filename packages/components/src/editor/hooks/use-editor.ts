@@ -416,7 +416,7 @@ export interface DraftState extends DraftStateProps {
   duplicateSection: (id: string) => void;
   moveBrickWithin: (id: string, to: "left" | "right") => void;
   reorderBrickWithin: (brickId: string, fromIndex: number, toIndex: number) => void;
-  moveBrickToContainerBrick: (id: string, parentId: string) => void;
+  moveBrickToContainerBrick: (id: string, parentId: string, index: number) => void;
   moveBrickToSection: (id: string, sectionId: string, index?: number) => void;
   addBrick: (brick: Brick, sectiondId: string, index: number, parentContainerId: Brick["id"] | null) => void;
   updateBrick: (id: string, brick: Partial<Brick>) => void;
@@ -863,7 +863,7 @@ export const createDraftStore = (
 
           updateBrick: (id, brick) =>
             set((state) => {
-              const original = getBrick(id, state);
+              const original = getBrickFromMap(id, state);
               if (original) {
                 Object.assign(original, brick);
               }
@@ -871,7 +871,8 @@ export const createDraftStore = (
 
           updateBrickProps: (id, props, isMobileProps) =>
             set((state) => {
-              const brick = getBrick(id, state);
+              // Update the brick in the brickMap
+              const brick = getBrickFromDraft(id, state);
               if (brick) {
                 if (isMobileProps) {
                   brick.mobileProps = mergeIgnoringArrays({}, brick.mobileProps, props, {
@@ -882,16 +883,18 @@ export const createDraftStore = (
                     lastTouched: Date.now(),
                   });
                 }
-                for (const section of state.sections) {
-                  for (const b of section.bricks) {
-                    if (b.id === id) {
-                      console.log("found brick to UPDATE!", brick.props);
-                      b.props = brick.props;
-                      b.mobileProps = brick.mobileProps;
-                      return;
-                    }
-                  }
+                // Also update the brick in the sections
+                // This is necessary to ensure the brick is updated in the sections as well
+                // This is necessary because the brickMap is not the source of truth for the sections
+                const brickObj = getBrickFromDraft(id, state);
+                if (!brickObj) {
+                  console.error("Cannot update brick %s, it does not exist in the draft", id);
+                  return;
                 }
+                brickObj.props = brick.props;
+                brickObj.mobileProps = brick.mobileProps;
+              } else {
+                console.error("Cannot update brick %s, it does not exist in the brick map", id);
               }
             }),
 
@@ -910,10 +913,11 @@ export const createDraftStore = (
                   });
                 }
               }
-            }) /**
-           * Move abrick inside its container.
+            }),
+          /**
+           * Move a brick inside its container.
            * If the brick does not belong to a container, does nothing
-           */,
+           */
           moveBrickWithin: (id, to) =>
             set((state) => {
               const parentBrick = state.getParentBrick(id);
@@ -977,10 +981,10 @@ export const createDraftStore = (
               }
             }),
 
-          moveBrickToContainerBrick: (id, parentId) =>
+          moveBrickToContainerBrick: (id, parentId, index) =>
             set((state) => {
               const brick = state.getBrick(id);
-              const parent = state.getBrick(parentId);
+              const parent = getBrickFromDraft(parentId, state);
               const brickMapping = state.brickMap.get(id);
               if (!brick || !parent || !brickMapping) {
                 console.error("Cannot move brick %s to new parent, brick or new parent is null", id);
@@ -1014,7 +1018,9 @@ export const createDraftStore = (
               if (!parent.props.$children) {
                 parent.props.$children = [];
               }
-              (parent.props.$children as Brick[]).push(brick);
+
+              // Use splice instead of push to insert at specific index
+              (parent.props.$children as Brick[]).splice(index, 0, brick);
 
               // 3. Update the brickMap reference
               const targetMapping = state.brickMap.get(parentId);
@@ -1171,7 +1177,7 @@ export const createDraftStore = (
 
           toggleBrickVisibility: (id, breakpoint) =>
             set((state) => {
-              const brick = getBrick(id, state);
+              const brick = getBrickFromMap(id, state);
               if (brick) {
                 brick.props.hidden ??= { desktop: false, mobile: false };
                 brick.props.hidden[breakpoint] = !brick.props.hidden?.[breakpoint];
@@ -1190,7 +1196,7 @@ export const createDraftStore = (
               // Check if this brick is being added to a container
               if (parentContainerId) {
                 console.log("Adding brick to parent container", parentContainerId);
-                const parentBrick = getBrick(parentContainerId, state);
+                const parentBrick = getBrickFromMap(parentContainerId, state);
                 if (!parentBrick) {
                   console.warn("Cannot add brick, parent container %s does not exist", parentContainerId);
                   return;
@@ -1248,7 +1254,7 @@ export const createDraftStore = (
                     }
                   });
                 };
-
+                console.log("Adding children to brick map", brick.props.$children);
                 addChildrenToBrickMap(brick.props.$children as Brick[], brick.id);
               }
             }),
@@ -1725,9 +1731,39 @@ export function useGridConfig() {
   );
 }
 
-function getBrick(id: string, state: DraftState) {
+function getBrickFromMap(id: string, state: DraftState) {
   const { brick } = state.brickMap.get(id) ?? {};
   return brick;
+}
+
+function getBrickFromDraft(id: string, state: DraftState) {
+  // Find the brick in the sections
+  for (const section of state.sections) {
+    const brick = section.bricks.find((b) => b.id === id);
+    if (brick) {
+      return brick;
+    }
+    // Check children recursively
+    const findInChildren = (children: Brick[]): Brick | undefined => {
+      for (const child of children) {
+        if (child.id === id) {
+          return child;
+        }
+        if (child.props?.$children) {
+          const found = findInChildren(child.props.$children as Brick[]);
+          if (found) {
+            return found;
+          }
+        }
+      }
+      return undefined;
+    };
+    const foundInChildren = findInChildren(section.bricks);
+    if (foundInChildren) {
+      return foundInChildren;
+    }
+  }
+  return null;
 }
 
 function buildBrickMap(sections: Section[]): DraftState["brickMap"] {

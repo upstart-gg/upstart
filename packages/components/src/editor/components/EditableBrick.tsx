@@ -176,13 +176,18 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     );
 
     return (
-      <Draggable key={brick.id} draggableId={brick.id} index={index} isDragDisabled={!manifest.movable}>
+      <Draggable
+        key={brick.id}
+        draggableId={brick.id}
+        index={index}
+        isDragDisabled={!manifest.movable || isContainerChild}
+      >
         {(provided, snapshot) => {
           const { ref: hoverRef, isHovered } = useIsHovered({ tolerance: 6 });
           const wrapperClass = useBrickWrapperStyle({
             brick,
             editable: true,
-            selected: selectedBrickId === brick.id || isHovered,
+            selected: selectedBrickId === brick.id,
             isContainerChild,
           });
 
@@ -229,23 +234,23 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                   <>
                     {(resizeOpts.canGrowVertical || resizeOpts.canShrinkVertical) && (
                       <>
-                        <ResizeHandle direction="s" show={isHovered} />
-                        <ResizeHandle direction="n" show={isHovered} />
+                        <ResizeHandle direction="s" show={isHovered} manifest={manifest} />
+                        <ResizeHandle direction="n" show={isHovered} manifest={manifest} />
                       </>
                     )}
                     {(resizeOpts.canGrowHorizontal || resizeOpts.canShrinkHorizontal) && (
                       <>
-                        <ResizeHandle direction="w" show={isHovered} />
-                        <ResizeHandle direction="e" show={isHovered} />
+                        <ResizeHandle direction="w" show={isHovered} manifest={manifest} />
+                        <ResizeHandle direction="e" show={isHovered} manifest={manifest} />
                       </>
                     )}
                     {((resizeOpts.canGrowVertical && resizeOpts.canGrowHorizontal) ||
                       (resizeOpts.canShrinkVertical && resizeOpts.canShrinkHorizontal)) && (
                       <>
-                        <ResizeHandle direction="se" show={isHovered} />
-                        <ResizeHandle direction="sw" show={isHovered} />
-                        <ResizeHandle direction="ne" show={isHovered} />
-                        <ResizeHandle direction="nw" show={isHovered} />
+                        <ResizeHandle direction="se" show={isHovered} manifest={manifest} />
+                        <ResizeHandle direction="sw" show={isHovered} manifest={manifest} />
+                        <ResizeHandle direction="ne" show={isHovered} manifest={manifest} />
+                        <ResizeHandle direction="nw" show={isHovered} manifest={manifest} />
                       </>
                     )}
                   </>
@@ -436,7 +441,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
               </ContextMenu.SubContent>
             </ContextMenu.Sub>
             <ContextMenu.Sub>
-              <ContextMenu.SubTrigger>Vertical align</ContextMenu.SubTrigger>
+              <ContextMenu.SubTrigger>Position</ContextMenu.SubTrigger>
               <ContextMenu.SubContent>
                 {Object.entries(normalizeSchemaEnum(commonProps.alignSelf)).map(([key, value]) => (
                   <ContextMenu.CheckboxItem
@@ -468,14 +473,14 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                     >
                       Duplicate container
                     </ContextMenu.Item>
-                    <ContextMenu.Item
+                    {/* <ContextMenu.Item
                       onClick={(e) => {
                         e.stopPropagation();
                         navigator.clipboard.writeText(JSON.stringify(parentContainer));
                       }}
                     >
                       Copy container
-                    </ContextMenu.Item>
+                    </ContextMenu.Item> */}
                     <ContextMenu.Item
                       onClick={(e) => {
                         e.stopPropagation();

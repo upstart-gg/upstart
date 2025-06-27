@@ -96,8 +96,8 @@ function getBorderStyles(props?: Partial<BorderSettings>) {
   return [propToStyle(color, "borderColor"), style, borderProcessedClass, rounding];
 }
 
-export function getBasicAlignmentStyles(props: AlignBasicSettings, mobileProps?: AlignBasicSettings) {
-  return [props.vertical, props.horizontal];
+export function getBasicAlignmentStyles(props?: AlignBasicSettings, mobileProps?: AlignBasicSettings) {
+  return [props?.vertical, props?.horizontal];
 }
 
 function getContainerLayoutStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {
@@ -112,7 +112,6 @@ function getFlexStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerL
   if (!props) {
     return [];
   }
-  console.log("getFlexStyles", props);
   if (mobileProps) {
     const mobileWrap = mobileProps.wrap ?? props.wrap;
     const mobileFillSpace = mobileProps.fillSpace ?? props.fillSpace;
