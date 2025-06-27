@@ -64,7 +64,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
     pages: [
       {
         id: "_default_",
-        label: "First page",
+        label: "First page with really really long name that should be truncated",
         path: "/",
         sections: [
           {
