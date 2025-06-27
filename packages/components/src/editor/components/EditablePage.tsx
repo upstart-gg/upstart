@@ -183,7 +183,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         }}
         data-dropzone
       >
-        <Droppable droppableId="sections" type="section">
+        <Droppable droppableId="sections" type="section" direction="vertical">
           {(provided) => (
             <div ref={provided.innerRef} {...provided.droppableProps} className={tx("contents")}>
               {processSections(sections).map((section, index) => (
