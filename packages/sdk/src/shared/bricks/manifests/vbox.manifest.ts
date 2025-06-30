@@ -10,6 +10,7 @@ import { padding, paddingRef } from "../props/padding";
 import { RxGrid } from "react-icons/rx";
 import type { BrickProps } from "../props/types";
 import { LuStretchVertical, LuStretchHorizontal } from "react-icons/lu";
+import { cssLengthRef } from "../props/css-length";
 
 export const datasource = Type.Array(Type.Object({}, { additionalProperties: true }));
 
@@ -28,7 +29,18 @@ export const manifest = defineBrickManifest({
   datasource,
   icon: LuStretchHorizontal,
   props: defineProps({
-    layout: containerLayoutRef({ "ui:disable-grid": true }),
+    // layout: containerLayoutRef({ "ui:disable-grid": true }),
+    gap: Type.Optional(
+      cssLengthRef({
+        title: "Gap",
+        default: "10px",
+        description: "Space between bricks.",
+        "ai:instructions":
+          "Can be a tailwind gap class like 'gap-1' or 'gap-2', or a custom value like '10px'",
+        "ui:placeholder": "Not specified",
+        "ui:styleId": "styles:gap",
+      }),
+    ),
     background: optional(backgroundRef()),
     border: optional(borderRef()),
     padding: optional(paddingRef()),

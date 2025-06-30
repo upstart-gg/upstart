@@ -9,11 +9,14 @@ import BrickWrapper from "../components/BrickWrapper";
 import { tx } from "@upstart.gg/style-system/twind";
 import { Droppable } from "@hello-pangea/dnd";
 
-const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+const Vbox = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const props = brick.props;
 
   const styles = useBrickStyle<Manifest>(brick);
+  const classes = Object.values(styles);
   const ds = useDatasource(props.datasource, manifest.datasource);
+
+  console.log("Vbox brick", brick, "with props", props, "and styles", styles);
 
   // If this container is Dynamic
   if (ds.datasourceId && props.$childrenType) {
@@ -36,10 +39,7 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edi
 
   if (editable) {
     return (
-      <div
-        className={tx("flex-1 flex flex-col relative @container/container", Object.values(styles))}
-        ref={ref}
-      >
+      <div className={tx("flex-1 flex flex-col relative @container/container", ...classes)} ref={ref}>
         <Droppable droppableId={brick.id} type="brick" direction="vertical">
           {(droppableProvided, droppableSnapshot) => (
             <div
@@ -48,6 +48,7 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edi
               className={tx(
                 "flex-1 flex flex-col relative",
                 droppableSnapshot.isDraggingOver && "!outline !outline-2 !outline-orange-300",
+                ...classes,
               )}
             >
               {props.$children?.length > 0 ? (
@@ -89,4 +90,4 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edi
   );
 });
 
-export default Container;
+export default Vbox;

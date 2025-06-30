@@ -197,7 +197,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
       <div
         className={tx(
           btnCls,
-          "cursor-pointer flex-col items-start justify-center gap-0 hover:text-upstart-700",
+          "cursor-pointer flex-col items-start justify-center gap-0 hover:text-upstart-800",
         )}
         data-trigger-section-inspector
       >

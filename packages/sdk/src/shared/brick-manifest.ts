@@ -88,7 +88,7 @@ export function defineBrickManifest<BProps extends TProperties, DSSchema extends
     duplicatable,
     isContainer,
     defaultWidth: defaultWidth ?? minWidth,
-    defaultHeight: defaultHeight ?? minHeight ?? { mobile: "100%", desktop: "100%" },
+    defaultHeight: defaultHeight ?? { mobile: "auto", desktop: "auto" },
     minWidth,
     minHeight,
   } as const;
