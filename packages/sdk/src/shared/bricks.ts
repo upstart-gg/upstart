@@ -116,20 +116,20 @@ export type Brick = Static<typeof brickSchema>;
 
 export const sectionProps = Type.Object(
   {
-    layout: Type.Optional(
-      group({
-        title: "Layout",
-        children: sectionLayout({
-          defaults: {
-            gap: "gap-4",
-            wrap: true,
-            fillSpace: false,
-            alignItems: "items-stretch",
-            justifyContent: "justify-stretch",
-          },
-        }),
-      }),
-    ),
+    // layout: Type.Optional(
+    //   group({
+    //     title: "Layout",
+    //     children: sectionLayout({
+    //       defaults: {
+    //         gap: "gap-4",
+    //         wrap: true,
+    //         fillSpace: false,
+    //         alignItems: "items-stretch",
+    //         justifyContent: "justify-stretch",
+    //       },
+    //     }),
+    //   }),
+    // ),
     background: Type.Optional(backgroundRef()),
     preset: Type.Optional(presetRef),
     minHeight: Type.Optional(
@@ -147,27 +147,68 @@ export const sectionProps = Type.Object(
         options: [
           {
             value: "max-w-screen-lg",
-            title: "Medium",
+            title: "M",
             description: "Common for text-heavy content/blog posts",
           },
           {
             value: "max-w-screen-xl",
-            title: "Large",
+            title: "L",
             description: "Usefull or some landing pages",
           },
           {
             value: "max-w-screen-2xl",
-            title: "Extra large",
+            title: "XL",
             description: "Common width",
           },
           {
             value: "max-w-full",
-            title: "Full width",
+            title: "Full",
             description: "Takes the entire space",
           },
         ],
         description: "The maximum width of the section. Desktop only",
-        displayAs: "select",
+        displayAs: "button-group",
+      }),
+    ),
+    fillSpace: Type.Optional(
+      Type.Boolean({
+        title: "Fill available space",
+        description: "Make bricks fill the available space",
+      }),
+    ),
+    justifyContent: Type.Optional(
+      StringEnum(
+        [
+          "justify-start",
+          "justify-center",
+          "justify-end",
+          "justify-between",
+          "justify-around",
+          "justify-evenly",
+          "justify-stretch",
+        ],
+        {
+          enumNames: [
+            "Left",
+            "Center",
+            "Right",
+            "Space between",
+            "Space around",
+            "Evenly distributed",
+            "Stretch",
+          ],
+          title: "Horizontal alignment",
+          "ui:placeholder": "Not specified",
+          default: "justify-stretch",
+        },
+      ),
+    ),
+    alignItems: Type.Optional(
+      StringEnum(["items-start", "items-center", "items-end", "items-stretch"], {
+        enumNames: ["Top", "Center", "Bottom", "Stretch"],
+        title: "Vertical alignment",
+        "ui:placeholder": "Not specified",
+        default: "items-stretch",
       }),
     ),
     lastTouched: Type.Optional(

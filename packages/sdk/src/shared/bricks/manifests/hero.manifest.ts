@@ -24,8 +24,7 @@ It is typically used on home pages to grab the user's attention.
   `.trim(),
   icon: BsAlphabetUppercase,
 
-  defaultHeight: { desktop: 5, mobile: 5 },
-  defaultWidth: { desktop: 12, mobile: 12 },
+  defaultWidth: { desktop: "200px", mobile: "100%" },
 
   props: defineProps(
     {

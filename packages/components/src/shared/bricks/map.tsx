@@ -8,6 +8,7 @@ import "leaflet/dist/leaflet.css";
 
 export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
   const styles = useBrickStyle<Manifest>(brick);
+  const classes = Object.values(styles);
   const props = brick.props;
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -117,8 +118,7 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
     <div
       className={tx(
         "flex-grow rounded-[inherit] relative overflow-hidden !min-w-[280px] min-h-[180px] max-sm:w-full",
-        props.preset,
-        Object.values(styles),
+        ...classes,
       )}
       ref={containerRef}
     >

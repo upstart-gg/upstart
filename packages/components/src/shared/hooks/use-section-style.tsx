@@ -27,15 +27,17 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
       section.props.minHeight === "full" && !editable && "min-h-dvh", // when in real mode
       typeof section.props.minHeight === "undefined" && "min-h-[100px]", // when in real mode
 
-      section.props.layout?.alignItems,
-      section.props.layout?.justifyContent,
+      section.props.alignItems,
+      section.props.justifyContent,
 
       // Padding and gap
       css({ gap: `${GAP}px`, paddingInline: `${GAP}px`, paddingBlock: `${GAP}px` }),
 
-      section.props.layout?.wrap === true ? "flex-wrap" : "flex-nowrap",
+      // section.props.layout?.wrap === true ? "flex-wrap" : "flex-nowrap",
 
-      section.props.layout?.fillSpace && "[&>*]:grow",
+      "flex-nowrap",
+
+      section.props.fillSpace && "[&>*]:grow",
       "[&>*]:flex-shrink-0",
 
       // Background

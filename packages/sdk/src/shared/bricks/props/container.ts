@@ -356,16 +356,16 @@ export function makeContainerProps() {
 export function sectionLayout(options: SchemaOptions = {}) {
   return Type.Object(
     {
-      wrap: optional(
-        Type.Boolean({
-          title: "Wrap",
-          description: "Wrap items.",
-        }),
-      ),
+      // wrap: optional(
+      //   Type.Boolean({
+      //     title: "Wrap",
+      //     description: "Wrap bricks.",
+      //   }),
+      // ),
       fillSpace: optional(
         Type.Boolean({
-          title: "Fill space",
-          description: "Makes items of the container fill the available space",
+          title: "Fill available space",
+          description: "Makes bricks fill the available space",
         }),
       ),
       justifyContent: Type.Optional(

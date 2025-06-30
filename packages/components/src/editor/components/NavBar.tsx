@@ -181,7 +181,7 @@ export default function NavBar() {
             <VscCopy className={tx("h-5 w-auto")} />
             <div className={tx("flex flex-col gap-1 ml-1.5 mr-2 justify-start items-start")}>
               <span className={tx("text-xs inline-block")}>Page</span>
-              <span className={tx("text-sm inline-block -mt-[8px] font-semibold max-w-[140px] truncate")}>
+              <span className={tx("text-sm inline-block -mt-[8px] font-semibold max-w-[200px] truncate")}>
                 {currentPageLabel}
               </span>
             </div>

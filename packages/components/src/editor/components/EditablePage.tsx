@@ -53,28 +53,27 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       width: gridConfig.colWidth,
       height: gridConfig.rowHeight,
     },
-    onResizeStart: (event) => {
-      console.log("Resize started:", event.target);
-      const target = event.target as HTMLElement;
-    },
-    onResize: (event) => {
-      console.log("Resizing:", event);
-      console.log("brick id:", event.target.dataset.brickId);
-    },
+    // onResizeStart: (event) => {
+    //   console.log("Resize started:", event.target);
+    //   const target = event.target as HTMLElement;
+    // },
+    // onResize: (event) => {
+    //   console.log("Resizing:", event);
+    //   console.log("brick id:", event.target.dataset.brickId);
+    // },
     onResizeEnd: (event) => {
       const target = event.target as HTMLElement;
       const brickId = target.dataset.brickId as string;
       const brickType = target.dataset.brickType as string;
       target.style.setProperty("transition", "top,margin-right,margin-bottom,height 0.3s ease-in-out");
 
-      // TODO: use % instead of pixels. We can use the pageRef to calculate the percentage
-      const pageWidth = pageRef.current?.clientWidth;
-      if (!pageWidth) {
+      const parentWidth = target.parentElement?.clientWidth || pageRef.current?.clientWidth;
+      if (!parentWidth) {
         console.warn("Page width is not available, cannot update brick props.");
         return;
       }
       draftHelpers.updateBrickProps(brickId, {
-        width: `${(event.rect.width / pageWidth) * 100}%`,
+        width: `${(event.rect.width / parentWidth) * 100}%`,
         height: `${event.rect.height}px`,
       });
 

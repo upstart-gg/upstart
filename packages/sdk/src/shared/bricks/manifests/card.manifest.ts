@@ -12,13 +12,11 @@ export const manifest = defineBrickManifest({
   type: "card",
   kind: "widget",
   name: "Card",
-  description: "A multi-purpose card that can have a title, image, and content",
+  description: "A card that can have a title, image, and content",
   repeatable: true,
   icon: BsCardText,
-  defaultHeight: { desktop: 12, mobile: 16 },
-  defaultWidth: { desktop: 12, mobile: 24 },
-  maxWidth: { mobile: 24, desktop: 12 },
-  minWidth: { mobile: 12, desktop: 6 },
+  defaultWidth: { desktop: "380px", mobile: "100%" },
+  minWidth: { mobile: 200, desktop: 200 },
   props: defineProps({
     variants: Type.Array(
       Type.Union(

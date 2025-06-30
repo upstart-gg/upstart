@@ -190,7 +190,6 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
             }
 
             // log target element and its styles
-            console.log("Resizing target:", target.dataset.brickType);
             const manifest = manifests[target.dataset.brickType || "unknown"] || {};
 
             if (manifest.minWidth) {
@@ -251,7 +250,12 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
             // @ts-ignore
             min: (x, y, event) => {
               const element = event.element as HTMLElement;
-              const manifest = manifests[element.dataset.brickType || "unknown"] || {};
+              const brickType = element.dataset.brickType;
+              if (!brickType) {
+                console.warn("Element does not have a brickType dataset attribute, using default min size.");
+                return { width: 50, height: 50 };
+              }
+              const manifest = manifests[brickType];
               const minWidth = manifest.minWidth?.[previewMode] ?? 50;
               const minHeight = manifest.minHeight?.[previewMode] ?? 50;
               return { width: minWidth, height: minHeight };
@@ -259,9 +263,14 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
             // @ts-ignore
             max: (x, y, event) => {
               const element = event.element as HTMLElement;
-              const manifest = manifests[element.dataset.brickType || "unknown"] || {};
-              const maxWidth = manifest.maxWidth?.[previewMode] ?? 10000;
-              const maxHeight = manifest.maxHeight?.[previewMode] ?? 10000;
+              const brickType = element.dataset.brickType;
+              if (!brickType) {
+                console.warn("Element does not have a brickType dataset attribute, using default max size.");
+                return { width: Infinity, height: Infinity };
+              }
+              const manifest = manifests[brickType];
+              const maxWidth = manifest.maxWidth?.[previewMode] ?? Infinity;
+              const maxHeight = manifest.maxHeight?.[previewMode] ?? Infinity;
               return { width: maxWidth, height: maxHeight };
             },
           }),

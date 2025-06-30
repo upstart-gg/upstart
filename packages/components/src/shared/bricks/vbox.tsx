@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import { type Manifest, manifest } from "@upstart.gg/sdk/bricks/manifests/container.manifest";
+import { type Manifest, manifest } from "@upstart.gg/sdk/shared/bricks/manifests/vbox.manifest";
 import EditableBrickWrapper from "~/editor/components/EditableBrick";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useDatasource } from "../hooks/use-datasource";
@@ -36,14 +36,17 @@ const Container = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edi
 
   if (editable) {
     return (
-      <div className={tx("flex-1 flex overflow-hidden relative", Object.values(styles))} ref={ref}>
+      <div
+        className={tx("flex-1 flex flex-col relative @container/container", Object.values(styles))}
+        ref={ref}
+      >
         <Droppable droppableId={brick.id} type="brick" direction="vertical">
           {(droppableProvided, droppableSnapshot) => (
             <div
               {...droppableProvided.droppableProps}
               ref={droppableProvided.innerRef}
               className={tx(
-                "flex-1",
+                "flex-1 flex flex-col relative",
                 droppableSnapshot.isDraggingOver && "!outline !outline-2 !outline-orange-300",
               )}
             >

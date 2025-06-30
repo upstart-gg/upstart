@@ -93,7 +93,19 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             bricks: [
               {
                 id: `b_${generateId()}`,
-                type: "container",
+                type: "map",
+                props: {
+                  location: {
+                    lat: 37.7749,
+                    lng: -122.4194,
+                    tooltip: "San Francisco, CA",
+                    address: "San Francisco, CA",
+                  },
+                },
+              },
+              {
+                id: `b_${generateId()}`,
+                type: "vbox",
                 props: {
                   $children: [
                     {
@@ -106,6 +118,14 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                           tooltip: "San Francisco, CA",
                           address: "San Francisco, CA",
                         },
+                      },
+                    },
+                    {
+                      id: `b_${generateId()}`,
+                      type: "text",
+                      props: {
+                        preset: "subtle-accent",
+                        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
                       },
                     },
                   ],
@@ -131,18 +151,18 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               //     },
               //   },
               // },
-              // {
-              //   id: `b_${generateId()}`,
-              //   type: "card",
-              //   props: {
-              //     cardTitle: "Welcome to My Site",
-              //     cardBody: "This is a sample card body. You can edit this content.",
-              //     cardImage: {
-              //       src: "https://placehold.co/300x200?text=Card+Image",
-              //       alt: "Sample Card Image",
-              //     },
-              //   },
-              // },
+              {
+                id: `b_${generateId()}`,
+                type: "card",
+                props: {
+                  cardTitle: "Welcome to My Site",
+                  cardBody: "This is a sample card body. You can edit this content.",
+                  cardImage: {
+                    src: "https://placehold.co/300x200?text=Card+Image",
+                    alt: "Sample Card Image",
+                  },
+                },
+              },
             ],
           },
           // {

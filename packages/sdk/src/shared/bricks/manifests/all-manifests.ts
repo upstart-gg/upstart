@@ -2,7 +2,7 @@ import { manifest as heroManifest, examples as heroExamples } from "./hero.manif
 import { manifest as imageManifest, examples as imageExamples } from "./image.manifest";
 import { manifest as videoManifest, examples as videoExamples } from "./video.manifest";
 import { manifest as textManifest, examples as textExamples } from "./text.manifest";
-import { manifest as containerManifest, examples as containerExamples } from "./container.manifest";
+import { manifest as vboxManifest, examples as vboxExamples } from "./vbox.manifest";
 import { manifest as cardManifest, examples as cardExamples } from "./card.manifest";
 import { manifest as mapManifest, examples as mapExamples } from "./map.manifest";
 import { manifest as formManifest, examples as formExamples } from "./form.manifest";
@@ -37,7 +37,7 @@ export const manifests: Record<string, BrickManifest> = {
   [buttonManifest.type]: buttonManifest,
   [iconManifest.type]: iconManifest,
   [socialLinksManifest.type]: socialLinksManifest,
-  [containerManifest.type]: containerManifest,
+  [vboxManifest.type]: vboxManifest,
   [dividerManifest.type]: dividerManifest,
   [testimonialsManifest.type]: testimonialsManifest,
   [timelineManifest.type]: timelineManifest,
@@ -60,7 +60,7 @@ export const defaultProps: Record<string, BrickDefaults> = {
   [buttonManifest.type]: getBrickManifestDefaults(buttonManifest),
   [iconManifest.type]: getBrickManifestDefaults(iconManifest),
   [socialLinksManifest.type]: getBrickManifestDefaults(socialLinksManifest),
-  [containerManifest.type]: getBrickManifestDefaults(containerManifest),
+  [vboxManifest.type]: getBrickManifestDefaults(vboxManifest),
   [dividerManifest.type]: getBrickManifestDefaults(dividerManifest),
   [testimonialsManifest.type]: getBrickManifestDefaults(testimonialsManifest),
   [timelineManifest.type]: getBrickManifestDefaults(timelineManifest),
@@ -84,7 +84,7 @@ export const examples: Record<string, { description: string; type: string; props
   [buttonManifest.type]: buttonExamples,
   [iconManifest.type]: iconExamples,
   [socialLinksManifest.type]: socialLinksExamples,
-  [containerManifest.type]: containerExamples,
+  [vboxManifest.type]: vboxExamples,
   [dividerManifest.type]: dividerExamples,
   [testimonialsManifest.type]: testimonialsExamples,
   [timelineManifest.type]: timelineExamples,

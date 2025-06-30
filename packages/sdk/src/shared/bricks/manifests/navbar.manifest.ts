@@ -48,10 +48,7 @@ export const manifest = defineBrickManifest({
   duplicatable: false,
   resizable: false,
   movable: false,
-  defaultHeight: {
-    desktop: 3,
-    mobile: 3,
-  },
+
   // maxHeight: {
   //   desktop: 90,
   //   mobile: 90,

@@ -45,8 +45,11 @@ export default function EditableSection({ section, index }: EditableSectionProps
 
   const onClick = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
-    if (e.defaultPrevented || resizing || target.nodeName !== "SECTION") {
-      console.log("Click prevented on section");
+    if (
+      !target.closest("[data-trigger-section-inspector]") &&
+      (e.defaultPrevented || resizing || target.nodeName !== "SECTION")
+    ) {
+      console.log("Click prevented on section", target);
       // If the click was handled by a child element, do not propagate
       return;
     }
@@ -192,10 +195,14 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
       )}
     >
       <div
-        className={tx(btnCls, "cursor-pointer flex-col items-start justify-center gap-0 hover:text-black")}
+        className={tx(
+          btnCls,
+          "cursor-pointer flex-col items-start justify-center gap-0 hover:text-upstart-700",
+        )}
+        data-trigger-section-inspector
       >
         <div className="text-xs font-light leading-[0.9] ">Section</div>
-        <div className="text-sm font-semibold -mt-1.5">{section.label ?? `${section.order + 1}`}</div>
+        <div className="text-sm font-semibold -mt-[8px]">{section.label ?? `${section.order + 1}`}</div>
       </div>
       {/* {!isLastSection && ( */}
       <button

@@ -83,11 +83,14 @@ export default function Editor(props: EditorProps) {
       // Destination is a section
       if (destinationSection) {
         // create brick from manifest
-        const manifest = defaultProps[draggableId];
+        const props = defaultProps[draggableId].props;
         const newBrick = {
-          ...manifest,
+          type: draggableId,
+          props,
           id: `brick-${generateId()}`,
         } satisfies Brick;
+
+        console.log("Brick object created:", newBrick);
 
         // Add a new brick to the section
         draftHelpers.addBrick(newBrick, destinationSection.id, destination.index, null);
