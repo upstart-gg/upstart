@@ -8,6 +8,7 @@ import {
   type MouseEvent,
   useEffect,
   useCallback,
+  startTransition,
 } from "react";
 import {
   useDebugMode,
@@ -166,8 +167,22 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           }
         }
 
-        editorHelpers.setSelectedBrickId(selectedBrick.id);
-        editorHelpers.setPanel("inspector");
+        editorHelpers.hidePanel();
+
+        // Check if the brick covers the first 10% of the viewport width
+        if (panelPosition === "left" && e.clientX < window.innerWidth * 0.25) {
+          // If so, we open the inspector panel
+          editorHelpers.togglePanelPosition();
+        } else if (panelPosition === "right" && e.clientX > window.innerWidth * 0.75) {
+          // If so, we open the inspector panel
+          editorHelpers.togglePanelPosition();
+        }
+
+        startTransition(() => {
+          editorHelpers.setSelectedBrickId(selectedBrick.id);
+          editorHelpers.setPanel("inspector");
+        });
+
         hasMouseMoved.current = false;
         // stop propagation otherwise the click could then be handled by the container
         e.stopPropagation();
@@ -211,6 +226,8 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 data-last-touched={brick.props.lastTouched ?? "0"}
                 data-dropzone={manifest.isContainer}
                 data-draggable-for-brick-id={brick.id}
+                data-brick-width={brick.props.width}
+                data-brick-height={brick.props.height}
                 className={tx(
                   wrapperClass,
                   snapshot.isDragging

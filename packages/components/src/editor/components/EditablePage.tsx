@@ -19,6 +19,7 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { processSections } from "@upstart.gg/sdk/shared/bricks";
 import { useResizable } from "../hooks/use-resizable";
 import { useGridObserver } from "../hooks/use-grid-observer";
+import { renderClone } from "./PanelLibrary";
 
 type EditablePageProps = {
   showIntro?: boolean;
@@ -53,24 +54,30 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       width: gridConfig.colWidth,
       height: gridConfig.rowHeight,
     },
-    onResizeStart: (event) => {
-      console.log("Resize started:", event.target);
-      const target = event.target as HTMLElement;
-    },
-    onResize: (event) => {
-      console.log("Resizing:", event);
-      console.log("brick id:", event.target.dataset.brickId);
-    },
+    // onResizeStart: (event) => {
+    //   console.log("Resize started:", event.target);
+    //   const target = event.target as HTMLElement;
+    // },
+    // onResize: (event) => {
+    //   console.log("Resizing:", event);
+    //   console.log("brick id:", event.target.dataset.brickId);
+    // },
     onResizeEnd: (event) => {
       const target = event.target as HTMLElement;
       const brickId = target.dataset.brickId as string;
       const brickType = target.dataset.brickType as string;
-      console.log("Resize ended for brick %s of type %s", brickId, brickType, event.rect);
       target.style.setProperty("transition", "top,margin-right,margin-bottom,height 0.3s ease-in-out");
+
+      const parentWidth = target.parentElement?.clientWidth || pageRef.current?.clientWidth;
+      if (!parentWidth) {
+        console.warn("Page width is not available, cannot update brick props.");
+        return;
+      }
       draftHelpers.updateBrickProps(brickId, {
-        width: `${event.rect.width}px`,
+        width: `${(event.rect.width / parentWidth) * 100}%`,
         height: `${event.rect.height}px`,
       });
+
       target.style.removeProperty("top");
       target.style.removeProperty("left");
       target.style.removeProperty("margin-bottom");
@@ -133,17 +140,32 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         style={{
           zoom,
         }}
-        data-dropzone
       >
-        <Droppable droppableId="sections" type="section" direction="vertical">
-          {(provided) => (
-            <div ref={provided.innerRef} {...provided.droppableProps} className={tx("contents")}>
-              {processSections(sections).map((section, index) => (
-                <Section key={section.id} section={section} index={index} />
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
+        <Droppable
+          droppableId="page"
+          type="brick"
+          direction="vertical"
+          // mode="virtual"
+          renderClone={renderClone}
+          // isCombineEnabled
+          // isDropDisabled
+        >
+          {(provided, snapshot) => {
+            return (
+              <div
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                className={tx("h-[100cqh]", pageClassName)}
+              >
+                {processSections(sections).map((section, index) => (
+                  <Section key={section.id} section={section} index={index} />
+                ))}
+                {/* @hello-pangea/dnd warns about not putting the snapshot.placeholder here, but it works fine without it, and more importantly, it's the only
+                trick I found to make the library not doing some free space, because we don't want free space here
+                */}
+              </div>
+            );
+          }}
         </Droppable>
       </div>
       <Toaster

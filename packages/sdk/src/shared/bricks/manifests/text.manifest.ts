@@ -17,19 +17,14 @@ export const manifest = defineBrickManifest({
   aiInstructions: `Text "content" can contain minimal HTML tags like <strong>, <em>, <br> and <a> as well as <p> and <span> and lists.
 Only 'align' is supported as an inline style, so don't use other inline styles like 'font-size' or 'color' in the content prop.
 `,
-
-  defaultHeight: {
-    desktop: 7,
-    mobile: 7,
-  },
   defaultWidth: {
-    desktop: 6,
-    mobile: 6,
+    desktop: "200px",
+    mobile: "100%",
   },
-  // minWidth: {
-  //   desktop: 150,
-  //   mobile: 150,
-  // },
+  defaultHeight: {
+    desktop: "auto",
+    mobile: "auto",
+  },
   repeatable: true,
   icon: RxTextAlignLeft,
   props: defineProps(

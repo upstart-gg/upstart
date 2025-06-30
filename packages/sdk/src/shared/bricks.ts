@@ -85,15 +85,6 @@ export const brickSchema = Type.Object(
       title: "Props",
       description: "The props of the brick. The available props depends on the brick type.",
     }),
-    // props: Type.Object({
-    //   ...commonProps,
-    //   $children: Type.Optional(
-    //     Type.Array(Type.Ref("brick"), {
-    //       title: "Children",
-    //       description: "The children of the brick. Only used when the brick is a container.",
-    //     }),
-    //   ),
-    // }),
     mobileProps: Type.Optional(
       Type.Object(
         {},
@@ -125,23 +116,22 @@ export type Brick = Static<typeof brickSchema>;
 
 export const sectionProps = Type.Object(
   {
-    layout: Type.Optional(
-      group({
-        title: "Layout",
-        children: sectionLayout({
-          defaults: {
-            gap: "gap-4",
-            wrap: true,
-            fillSpace: false,
-            alignItems: "items-stretch",
-            justifyContent: "justify-stretch",
-          },
-        }),
-      }),
-    ),
+    // layout: Type.Optional(
+    //   group({
+    //     title: "Layout",
+    //     children: sectionLayout({
+    //       defaults: {
+    //         gap: "gap-4",
+    //         wrap: true,
+    //         fillSpace: false,
+    //         alignItems: "items-stretch",
+    //         justifyContent: "justify-stretch",
+    //       },
+    //     }),
+    //   }),
+    // ),
     background: Type.Optional(backgroundRef()),
     preset: Type.Optional(presetRef),
-    border: Type.Optional(borderRef()),
     minHeight: Type.Optional(
       cssLengthRef({
         title: "Min height",
@@ -157,44 +147,68 @@ export const sectionProps = Type.Object(
         options: [
           {
             value: "max-w-screen-lg",
-            title: "Medium",
+            title: "M",
             description: "Common for text-heavy content/blog posts",
           },
           {
             value: "max-w-screen-xl",
-            title: "Large",
+            title: "L",
             description: "Usefull or some landing pages",
           },
           {
             value: "max-w-screen-2xl",
-            title: "Extra large",
+            title: "XL",
             description: "Common width",
           },
           {
             value: "max-w-full",
-            title: "Full width",
+            title: "Full",
             description: "Takes the entire space",
           },
         ],
         description: "The maximum width of the section. Desktop only",
-        displayAs: "select",
+        displayAs: "button-group",
       }),
     ),
-    horizontalPadding: Type.Optional(
-      cssLengthRef({
-        title: "Horizontal padding",
-        default: "10px",
-        description: "Horizontal padding. Desktop only",
-        "ui:styleId": "minHeight",
+    fillSpace: Type.Optional(
+      Type.Boolean({
+        title: "Fill available space",
+        description: "Make bricks fill the available space",
       }),
     ),
-    verticalPadding: Type.Optional(
-      // cssLengthRef({ title: "Vertical padding", default: "20px", description: "Vertical padding." }),
-      cssLength({
-        title: "Vertical padding",
-        default: "10px",
-        description: "Vertical padding. Default is 10px.",
-        "ui:styleId": "verticalPadding",
+    justifyContent: Type.Optional(
+      StringEnum(
+        [
+          "justify-start",
+          "justify-center",
+          "justify-end",
+          "justify-between",
+          "justify-around",
+          "justify-evenly",
+          "justify-stretch",
+        ],
+        {
+          enumNames: [
+            "Left",
+            "Center",
+            "Right",
+            "Space between",
+            "Space around",
+            "Evenly distributed",
+            "Stretch",
+          ],
+          title: "Horizontal alignment",
+          "ui:placeholder": "Not specified",
+          default: "justify-stretch",
+        },
+      ),
+    ),
+    alignItems: Type.Optional(
+      StringEnum(["items-start", "items-center", "items-end", "items-stretch"], {
+        enumNames: ["Top", "Center", "Bottom", "Stretch"],
+        title: "Vertical alignment",
+        "ui:placeholder": "Not specified",
+        default: "items-stretch",
       }),
     ),
     lastTouched: Type.Optional(

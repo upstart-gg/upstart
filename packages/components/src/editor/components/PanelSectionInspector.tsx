@@ -28,6 +28,7 @@ export default function PanelSectionInspector({ section }: { section: Section })
   const previewMode = usePreviewMode();
   const [tabsMapping, setTabsMapping] = useLocalStorage<Record<string, TabType>>("inspector_tabs_map", {});
   const selectedTab = tabsMapping[section.id] ?? "settings";
+  const showTabList = previewMode === "desktop";
 
   return (
     <div key={`section-inspector-${section.id}`}>
@@ -52,16 +53,18 @@ export default function PanelSectionInspector({ section }: { section: Section })
           setTabsMapping((prev) => ({ ...prev, [section.id]: val as TabType }));
         }}
       >
-        <Tabs.List className="sticky top-0 z-50 bg-gray-100 dark:bg-dark-900">
-          {previewMode === "desktop" && (
-            <Tabs.Trigger value="preset" className="!flex-1">
-              Color Preset
+        {showTabList && (
+          <Tabs.List className="sticky top-0 z-50 bg-gray-100 dark:bg-dark-900">
+            {previewMode === "desktop" && (
+              <Tabs.Trigger value="preset" className="!flex-1">
+                Color Preset
+              </Tabs.Trigger>
+            )}
+            <Tabs.Trigger value="settings" className="!flex-1">
+              Settings
             </Tabs.Trigger>
-          )}
-          <Tabs.Trigger value="settings" className="!flex-1">
-            {previewMode === "mobile" ? "Mobile settings" : "Settings"}
-          </Tabs.Trigger>
-        </Tabs.List>
+          </Tabs.List>
+        )}
         <ScrollablePanelTab tab="preset">
           <PresetsTab section={section} />
         </ScrollablePanelTab>

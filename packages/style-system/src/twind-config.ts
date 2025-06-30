@@ -148,6 +148,19 @@ export default defineConfig({
     ["w-fill", { width: ["fill-available", "-webkit-fill-available", "-moz-available"] }],
     ["h-fill", { height: ["fill-available", "-webkit-fill-available", "-moz-available"] }],
 
+    [
+      "striped-bg",
+      {
+        backgroundImage: `repeating-linear-gradient(
+          -45deg,
+          white 0px,
+          white 4px,
+          transparent 4px,
+          transparent 12px
+        )`,
+      },
+    ],
+
     // missing object-position presets
     ["object-bottom-left", { objectPosition: "bottom left" }],
     ["object-bottom-right", { objectPosition: "bottom right" }],

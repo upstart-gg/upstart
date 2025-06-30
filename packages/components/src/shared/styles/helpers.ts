@@ -27,6 +27,15 @@ export function getBackgroundStyles(props?: BackgroundSettings) {
   ];
 }
 
+function getGapStyles(value: string, mobileValue?: string) {
+  if (!mobileValue) {
+    return css({
+      gap: value,
+    });
+  }
+  return `@desktop:(${css({ gap: value })}) @mobile:(${css({ gap: mobileValue })})`;
+}
+
 function getBackgroundColorStyles(value: BackgroundColorSettings, mobileValue?: BackgroundColorSettings) {
   if (!mobileValue) {
     return propToClass(value, "bg");
@@ -179,6 +188,7 @@ export const brickStylesHelpersMap = {
   "styles:background": getBackgroundStyles,
   // "styles:border": getBorderStyles,
   "styles:padding": getPaddingStyles, // test
+  "styles:gap": getGapStyles,
 };
 
 export const brickWrapperStylesHelpersMap = {

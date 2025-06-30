@@ -14,13 +14,12 @@ export default function ResizeHandle({
     <button
       type="button"
       className={tx(
-        "resizable-handle absolute z-[9999] transition-opacity opacity-0 group-hover/brick:opacity-100",
+        "resizable-handle absolute",
         "overflow-visible z-[9998]",
-        show && "opacity-100",
         `resizable-handle-${direction}`,
         {
-          "bottom-0 left-0 right-0 h-[10px] w-[inherit] cursor-row-resize": direction === "s",
-          "top-0 left-0 right-0 h-[10px] w-[inherit] cursor-row-resize": direction === "n",
+          "bottom-0 left-0 right-0 h-[10px] cursor-row-resize": direction === "s",
+          "top-0 left-0 right-0 h-[10px] cursor-row-resize": direction === "n",
           "top-0 left-0 bottom-0 w-[10px] cursor-col-resize": direction === "w",
           "top-0 right-0 bottom-0 w-[10px] cursor-col-resize": direction === "e",
           // sw and nw
@@ -34,7 +33,7 @@ export default function ResizeHandle({
     >
       <div
         className={tx(
-          "opacity-0 group-hover/brick:opacity-100 transition-opacity absolute w-[10px] h-[10px] bg-white border-2 rounded-full z-auto shadow-md resizable-handle-dot",
+          "opacity-0 z-[9999] group-hover/brick:opacity-100 transition-opacity absolute w-[10px] h-[10px] bg-white border-2 rounded-full shadow-md resizable-handle-dot",
           manifest.isContainer ? "border-orange-500" : "border-upstart-500",
           show && "opacity-100",
           {

@@ -1,23 +1,28 @@
-import { forwardRef, type ComponentProps } from "react";
+import { forwardRef } from "react";
 import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/divider.manifest";
-import { tx } from "@upstart.gg/style-system/twind";
+import { css, tx } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 
-const Divider = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, ref) => {
+const Divider = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
   const { props } = brick;
   return (
     <div
       ref={ref}
       className={tx(
+        // {
+        //   "h-px": props.orientation === "horizontal",
+        //   "w-px": props.orientation === "vertical",
+        // },
+        "flex-grow flex-shrink-0",
         {
-          "h-px": props.orientation === "horizontal",
-          "w-px": props.orientation === "vertical",
+          "min-w-20": props.orientation === "horizontal",
+          "min-h-30": props.orientation === "vertical",
         },
-        props.orientation === "horizontal" && (props.size ? `w-[${props.size}] flex-grow-0` : "w-full"),
-        props.orientation === "vertical" && (props.size ? `h-[${props.size}]` : "h-full"),
-        props.color,
+        editable && "striped-bg hover:bg-gray-200 group-hover/section:bg-gray-200",
+        // props.orientation === "horizontal" && (props.size ? `w-[${props.size}] flex-grow-0` : "w-full"),
+        // props.orientation === "vertical" && (props.size ? `h-[${props.size}]` : "h-full"),
         Object.values(styles),
       )}
     />

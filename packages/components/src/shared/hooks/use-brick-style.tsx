@@ -83,10 +83,18 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
         width: `${props.width}`,
       }),
 
+    typeof props.width === "undefined" &&
+      manifest.defaultWidth &&
+      `@mobile:w-[${manifest.defaultWidth.mobile}] @desktop:w-[${manifest.defaultWidth.desktop}]`,
+
     typeof props.height !== "undefined" &&
       css({
         height: `${props.height}`,
       }),
+
+    typeof props.height === "undefined" &&
+      manifest.defaultHeight &&
+      `@mobile:h-[${manifest.defaultHeight.mobile}] @desktop:h-[${manifest.defaultHeight.desktop}]`,
 
     styleIds.includes("styles:fixedPositioned") === false && "relative",
 
@@ -110,7 +118,7 @@ function getBrickWrapperEditorStyles(
     return null;
   }
   return [
-    "select-none transition-colors delay-100 duration-200",
+    "select-none transition-[outline] delay-100 duration-[200ms]",
     "outline outline-transparent",
     selected && !isContainer && "!outline-upstart-400 shadow-xl shadow-upstart-500/20",
     selected && isContainer && "!outline-orange-300 shadow-xl",

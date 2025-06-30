@@ -16,8 +16,7 @@ export const manifest = defineBrickManifest({
   name: "Image",
   description: "An image brick",
   repeatable: true,
-  defaultHeight: { desktop: 8, mobile: 8 },
-  defaultWidth: { desktop: 3, mobile: 3 },
+  defaultWidth: { desktop: "200px", mobile: "100%" },
   icon: RxImage,
   props: defineProps({
     image: imageRef(),

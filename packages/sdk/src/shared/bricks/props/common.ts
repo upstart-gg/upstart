@@ -39,6 +39,7 @@ export const commonProps = {
       title: "Fixed Width",
       description:
         "Set a fixed width for the brick. If not set, the brick will be responsive and will follow the flex layout of its parent section.",
+      "ai:instructions": "Use percentage values to make the width responsive, like '50%'",
       "ui:field": "hidden",
     }),
   ),

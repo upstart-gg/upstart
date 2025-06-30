@@ -11,8 +11,6 @@ import { shadow, shadowRef } from "../props/effects";
 import { RiMapPinTimeLine } from "react-icons/ri";
 import type { BrickProps } from "../props/types";
 import { colorRef } from "../props/color";
-import type { FC } from "react";
-import def from "ajv/dist/vocabularies/discriminator";
 import { StringEnum } from "~/shared/utils/string-enum";
 
 export const manifest = defineBrickManifest({
@@ -26,10 +24,7 @@ export const manifest = defineBrickManifest({
     Each item has a date/time, title, description, and optional icon.
   `.trim(),
   icon: RiMapPinTimeLine,
-
-  defaultHeight: { desktop: 12, mobile: 18 },
-  defaultWidth: { desktop: 36, mobile: 24 },
-
+  defaultWidth: { desktop: "200px", mobile: "100%" },
   props: defineProps(
     {
       container: optional(

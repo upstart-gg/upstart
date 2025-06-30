@@ -29,8 +29,7 @@ Multiple panels can be open simultaneously or limited to one at a time.
   `.trim(),
   icon: TfiLayoutAccordionSeparated,
 
-  defaultHeight: { desktop: 10, mobile: 15 },
-  defaultWidth: { desktop: 36, mobile: 24 },
+  defaultWidth: { desktop: "250px", mobile: "100%" },
 
   props: defineProps(
     {

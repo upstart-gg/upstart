@@ -32,13 +32,14 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
     mobile: number;
     desktop: number;
   };
+  // default width can be in various css units, but should be a number
   defaultWidth?: {
-    mobile: number;
-    desktop: number;
+    mobile: string;
+    desktop: string;
   };
   defaultHeight?: {
-    mobile: number;
-    desktop: number;
+    mobile: string;
+    desktop: string;
   };
   props: TObject<BProps>;
   datasource?: DSSchema;
@@ -86,10 +87,8 @@ export function defineBrickManifest<BProps extends TProperties, DSSchema extends
     repeatable,
     duplicatable,
     isContainer,
-    defaultWidth:
-      defaultWidth ?? minWidth ?? ({ desktop: 8, mobile: -1 } as { desktop: number; mobile: number }),
-    defaultHeight:
-      defaultHeight ?? minHeight ?? ({ desktop: 3, mobile: 3 } as { desktop: number; mobile: number }),
+    defaultWidth: defaultWidth ?? minWidth,
+    defaultHeight: defaultHeight ?? { mobile: "auto", desktop: "auto" },
     minWidth,
     minHeight,
   } as const;

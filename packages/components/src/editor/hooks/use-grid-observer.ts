@@ -13,7 +13,7 @@ export function useGridObserver(elementRef: RefObject<HTMLElement>) {
     const updateCellWidth = debounce(() => {
       if (elementRef.current) {
         const containerWidth = elementRef.current.clientWidth;
-        setColWidth(containerWidth / LAYOUT_COLS[previewMode]);
+        setColWidth(containerWidth / LAYOUT_COLS);
       }
     }, 250);
 
@@ -37,7 +37,7 @@ export function useGridObserver(elementRef: RefObject<HTMLElement>) {
       window.removeEventListener("resize", updateCellWidth, true);
       observer.disconnect();
     };
-  }, [previewMode, elementRef]);
+  }, [elementRef]);
 
   useEffect(() => {
     if (colWidth) {
