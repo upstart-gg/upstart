@@ -10,12 +10,15 @@ import { borderRef } from "../props/border";
 
 export const manifest = defineBrickManifest({
   type: "card",
+  kind: "widget",
   name: "Card",
   description: "A multi-purpose card that can have a title, image, and content",
   repeatable: true,
   icon: BsCardText,
-  maxWidth: { mobile: 400, desktop: 1024 },
-  minWidth: { mobile: 200, desktop: 250 },
+  defaultHeight: { desktop: 12, mobile: 16 },
+  defaultWidth: { desktop: 12, mobile: 24 },
+  maxWidth: { mobile: 24, desktop: 12 },
+  minWidth: { mobile: 12, desktop: 6 },
   props: defineProps({
     variants: Type.Array(
       Type.Union(
@@ -98,7 +101,7 @@ export const manifest = defineBrickManifest({
       borderRef({
         default: {
           width: "border",
-          rounding: "rounded",
+          rounding: "rounded-md",
         },
       }),
     ),

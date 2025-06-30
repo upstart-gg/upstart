@@ -37,6 +37,7 @@ const BaseBrick = ({
     editable,
     selected: brick.id === selectedBrickId,
   } satisfies BrickProps<BrickManifest>;
+
   return (
     <Suspense>
       <BrickModule {...brickProps} />

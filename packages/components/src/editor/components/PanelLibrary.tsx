@@ -37,6 +37,43 @@ export default function PanelLibrary() {
           panelTabContentScrollClass,
         )}
       >
+        <PanelBlockTitle>Widgets</PanelBlockTitle>
+        {shouldDisplayLibraryCallout && (
+          <Callout.Root size="1" color="violet" className="!rounded-none">
+            <Callout.Text size="1">Widgets are more complex components you can use.</Callout.Text>
+          </Callout.Root>
+        )}
+
+        <div
+          className={tx("grid gap-1.5 p-2")}
+          style={{
+            gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
+          }}
+        >
+          <Droppable droppableId="widgets-library" type="brick" isDropDisabled={true}>
+            {(provided) => (
+              <div ref={provided.innerRef} {...provided.droppableProps} className={tx("contents")}>
+                {Object.values(manifests)
+                  .filter((m) => m.kind === "widget" && !m.hideInLibrary)
+                  .map((brickImport, index) => {
+                    return (
+                      <Tooltip content={brickImport.description} key={brickImport.type} delayDuration={850}>
+                        <DraggableBrick brick={defaultProps[brickImport.type]} index={index} />
+                      </Tooltip>
+                    );
+                  })}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </div>
+      </div>
+      <div
+        className={tx(
+          "flex flex-col max-h-[calc(100dvh/2-40px)] overflow-y-auto",
+          panelTabContentScrollClass,
+        )}
+      >
         <PanelBlockTitle>Base bricks</PanelBlockTitle>
         {shouldDisplayLibraryCallout && (
           <Callout.Root size="1" color="violet" className="!rounded-none">
@@ -84,43 +121,6 @@ export default function PanelLibrary() {
               <div ref={provided.innerRef} {...provided.droppableProps} className={tx("contents")}>
                 {Object.values(manifests)
                   .filter((m) => m.kind === "brick" && !m.hideInLibrary)
-                  .map((brickImport, index) => {
-                    return (
-                      <Tooltip content={brickImport.description} key={brickImport.type} delayDuration={850}>
-                        <DraggableBrick brick={defaultProps[brickImport.type]} index={index} />
-                      </Tooltip>
-                    );
-                  })}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </div>
-      </div>
-      <div
-        className={tx(
-          "flex flex-col max-h-[calc(100dvh/2-40px)] overflow-y-auto",
-          panelTabContentScrollClass,
-        )}
-      >
-        <PanelBlockTitle>Widgets</PanelBlockTitle>
-        {shouldDisplayLibraryCallout && (
-          <Callout.Root size="1" color="violet" className="!rounded-none">
-            <Callout.Text size="1">Widgets are more complex components you can use.</Callout.Text>
-          </Callout.Root>
-        )}
-
-        <div
-          className={tx("grid gap-1.5 p-2")}
-          style={{
-            gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
-          }}
-        >
-          <Droppable droppableId="widgets-library" type="brick" isDropDisabled={true}>
-            {(provided) => (
-              <div ref={provided.innerRef} {...provided.droppableProps} className={tx("contents")}>
-                {Object.values(manifests)
-                  .filter((m) => m.kind === "widget" && !m.hideInLibrary)
                   .map((brickImport, index) => {
                     return (
                       <Tooltip content={brickImport.description} key={brickImport.type} delayDuration={850}>

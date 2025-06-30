@@ -299,7 +299,7 @@ export default function NavBar() {
             type="button"
             onClick={resetZoom}
             className={tx(
-              "text-gray-500 dark:text-dark-200 text-[.85rem] mx-1 cursor-pointer hover:text-upstart-800",
+              "text-gray-500 dark:text-dark-200 text-[.85rem] text-right cursor-pointer hover:text-upstart-800 min-w-[40px]",
             )}
           >
             {(zoom * 100).toFixed(0)}%

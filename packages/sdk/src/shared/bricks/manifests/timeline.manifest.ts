@@ -28,7 +28,7 @@ export const manifest = defineBrickManifest({
   icon: RiMapPinTimeLine,
 
   defaultHeight: { desktop: 12, mobile: 18 },
-  defaultWidth: { desktop: 36, mobile: 24 },
+  defaultWidth: { desktop: 12, mobile: 24 },
 
   props: defineProps(
     {

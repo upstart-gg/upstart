@@ -85,15 +85,6 @@ export const brickSchema = Type.Object(
       title: "Props",
       description: "The props of the brick. The available props depends on the brick type.",
     }),
-    // props: Type.Object({
-    //   ...commonProps,
-    //   $children: Type.Optional(
-    //     Type.Array(Type.Ref("brick"), {
-    //       title: "Children",
-    //       description: "The children of the brick. Only used when the brick is a container.",
-    //     }),
-    //   ),
-    // }),
     mobileProps: Type.Optional(
       Type.Object(
         {},
@@ -141,7 +132,6 @@ export const sectionProps = Type.Object(
     ),
     background: Type.Optional(backgroundRef()),
     preset: Type.Optional(presetRef),
-    border: Type.Optional(borderRef()),
     minHeight: Type.Optional(
       cssLengthRef({
         title: "Min height",
@@ -178,23 +168,6 @@ export const sectionProps = Type.Object(
         ],
         description: "The maximum width of the section. Desktop only",
         displayAs: "select",
-      }),
-    ),
-    horizontalPadding: Type.Optional(
-      cssLengthRef({
-        title: "Horizontal padding",
-        default: "10px",
-        description: "Horizontal padding. Desktop only",
-        "ui:styleId": "minHeight",
-      }),
-    ),
-    verticalPadding: Type.Optional(
-      // cssLengthRef({ title: "Vertical padding", default: "20px", description: "Vertical padding." }),
-      cssLength({
-        title: "Vertical padding",
-        default: "10px",
-        description: "Vertical padding. Default is 10px.",
-        "ui:styleId": "verticalPadding",
       }),
     ),
     lastTouched: Type.Optional(

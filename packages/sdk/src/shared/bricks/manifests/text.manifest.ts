@@ -26,10 +26,6 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
     desktop: 6,
     mobile: 6,
   },
-  // minWidth: {
-  //   desktop: 150,
-  //   mobile: 150,
-  // },
   repeatable: true,
   icon: RxTextAlignLeft,
   props: defineProps(

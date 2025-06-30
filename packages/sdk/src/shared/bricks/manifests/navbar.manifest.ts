@@ -49,8 +49,8 @@ export const manifest = defineBrickManifest({
   resizable: false,
   movable: false,
   defaultHeight: {
-    desktop: 60,
-    mobile: 60,
+    desktop: 3,
+    mobile: 3,
   },
   // maxHeight: {
   //   desktop: 90,
@@ -65,41 +65,21 @@ export const manifest = defineBrickManifest({
   iconClassName: "rotate-180",
   props: defineProps(
     {
-      container: optional(
-        group({
-          title: "Main element",
-          children: {
-            backgroundColor: optional(backgroundColorRef()),
-            border: optional(borderRef()),
-            shadow: optional(shadowRef()),
-            fixedPositioned: optional(fixedPositioned()),
-          },
-          metadata: {
-            "ui:responsive": true,
-          },
+      brand: optional(
+        textContentRef({
+          title: "Brand name",
+          default: "Acme Inc.",
+          disableSizing: true,
         }),
       ),
-      brand: group({
-        title: "Brand",
-        children: {
-          name: optional(
-            textContentRef({
-              title: "Brand name",
-              default: "Acme Inc.",
-              disableSizing: true,
-            }),
-          ),
-          logo: optional(
-            imageRef({
-              title: "Logo",
-              "ui:show-img-search": false,
-              "ui:no-object-options": true,
-            }),
-          ),
-          hideText: optional(boolean("Hide text")),
-          color: optional(colorRef()),
-        },
-      }),
+      logo: optional(
+        imageRef({
+          title: "Logo",
+          "ui:show-img-search": false,
+          "ui:no-object-options": true,
+        }),
+      ),
+      hideText: optional(boolean("Hide text")),
       navigation: group({
         title: "Links",
         children: {
@@ -130,6 +110,18 @@ export const manifest = defineBrickManifest({
           ),
         },
       }),
+      advanced: optional(
+        group({
+          title: "Advanced",
+          children: {
+            fixedPositioned: optional(fixedPositioned()),
+            backgroundColor: optional(backgroundColorRef()),
+            color: optional(colorRef()),
+            border: optional(borderRef()),
+            shadow: optional(shadowRef()),
+          },
+        }),
+      ),
     },
     { noAlignSelf: true },
   ),
@@ -147,14 +139,10 @@ export const examples: {
     type: "navbar",
     props: {
       preset: "prominent-primary",
-      container: {},
-      brand: {
-        name: "TechCorp Solutions",
-        logo: {
-          src: "https://via.placeholder.com/120x40.png?text=TechCorp",
-          alt: "TechCorp Solutions logo",
-        },
-        color: "#1f2937",
+      brand: "TechCorp Solutions",
+      logo: {
+        src: "https://via.placeholder.com/120x40.png?text=TechCorp",
+        alt: "TechCorp Solutions logo",
       },
       navigation: {
         position: "right",
@@ -166,22 +154,21 @@ export const examples: {
           { urlOrPageId: "/contact" },
         ],
       },
+      advanced: {
+        color: "#1f2937",
+      },
     },
   },
   {
     description: "Dark theme navbar with centered navigation",
     type: "navbar",
     props: {
-      container: {
-        backgroundColor: "#1f2937",
-        shadow: "shadow-lg",
+      brand: "TechCorp Solutions",
+      logo: {
+        src: "https://via.placeholder.com/100x35.png?text=Studio",
+        alt: "Creative Studio logo",
       },
-      brand: {
-        name: "Creative Studio",
-        logo: {
-          src: "https://via.placeholder.com/100x35.png?text=Studio",
-          alt: "Creative Studio logo",
-        },
+      advanced: {
         color: "#ffffff",
       },
       navigation: {
@@ -200,18 +187,17 @@ export const examples: {
     description: "SaaS platform navbar with fixed positioning",
     type: "navbar",
     props: {
-      container: {
+      brand: "TechCorp Solutions",
+      advanced: {
         backgroundColor: "#3b82f6",
         fixedPositioned: true,
         shadow: "shadow-md",
-      },
-      brand: {
-        name: "CloudFlow",
-        logo: {
-          src: "https://via.placeholder.com/110x38.png?text=CloudFlow",
-          alt: "CloudFlow platform logo",
-        },
         color: "#ffffff",
+      },
+
+      logo: {
+        src: "https://via.placeholder.com/110x38.png?text=CloudFlow",
+        alt: "CloudFlow platform logo",
       },
       navigation: {
         position: "right",
@@ -229,13 +215,11 @@ export const examples: {
     description: "E-commerce navbar",
     type: "navbar",
     props: {
+      brand: "TechCorp Solutions",
       preset: "prominent-primary",
-      brand: {
-        name: "ShopEasy",
-        logo: {
-          src: "https://via.placeholder.com/130x45.png?text=ShopEasy",
-          alt: "ShopEasy store logo",
-        },
+      logo: {
+        src: "https://via.placeholder.com/130x45.png?text=ShopEasy",
+        alt: "ShopEasy store logo",
       },
       navigation: {
         position: "right",
@@ -253,16 +237,15 @@ export const examples: {
     description: "Agency navbar with logo-only brand",
     type: "navbar",
     props: {
-      container: {
+      brand: "TechCorp Solutions",
+      advanced: {
         shadow: "shadow-sm",
       },
-      brand: {
-        logo: {
-          src: "https://via.placeholder.com/140x50.png?text=Agency+Logo",
-          alt: "Digital agency logo",
-        },
-        hideText: true,
+      logo: {
+        src: "https://via.placeholder.com/140x50.png?text=Agency+Logo",
+        alt: "Digital agency logo",
       },
+      hideText: true,
       navigation: {
         position: "right",
         color: "#64748b",
@@ -279,17 +262,15 @@ export const examples: {
     description: "Restaurant navbar with warm styling",
     type: "navbar",
     props: {
-      container: {
+      brand: "TechCorp Solutions",
+      advanced: {
         backgroundColor: "#7c2d12",
         shadow: "shadow-lg",
-      },
-      brand: {
-        name: "Bella Vista",
-        logo: {
-          src: "https://via.placeholder.com/80x50.png?text=BV",
-          alt: "Bella Vista restaurant logo",
-        },
         color: "#fed7aa",
+      },
+      logo: {
+        src: "https://via.placeholder.com/80x50.png?text=BV",
+        alt: "Bella Vista restaurant logo",
       },
       navigation: {
         position: "center",
@@ -307,16 +288,14 @@ export const examples: {
     description: "Portfolio navbar with left-aligned navigation",
     type: "navbar",
     props: {
+      brand: "TechCorp Solutions",
       preset: "prominent-secondary",
-      container: {
+      advanced: {
         backgroundColor: "#f1f5f9",
         border: {
           sides: ["border-b"],
           color: "border-accent",
         },
-      },
-      brand: {
-        name: "Alex Martinez",
         color: "#334155",
       },
       navigation: {
@@ -335,21 +314,14 @@ export const examples: {
     description: "Non-profit navbar with mission-focused design",
     type: "navbar",
     props: {
+      brand: "TechCorp Solutions",
       preset: "prominent-primary",
-      container: {
-        shadow: "shadow-md",
-      },
-      brand: {
-        name: "Green Future",
-        logo: {
-          src: "https://via.placeholder.com/100x40.png?text=GF",
-          alt: "Green Future organization logo",
-        },
-        color: "#d1fae5",
+      logo: {
+        src: "https://via.placeholder.com/100x40.png?text=GF",
+        alt: "Green Future organization logo",
       },
       navigation: {
         position: "right",
-        color: "#a7f3d0",
         staticItems: [
           { urlOrPageId: "/mission" },
           { urlOrPageId: "/programs" },

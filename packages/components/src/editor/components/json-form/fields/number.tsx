@@ -2,19 +2,24 @@ import type { FieldProps } from "./types";
 import { Slider } from "@upstart.gg/style-system/system";
 import { TextField } from "@upstart.gg/style-system/system";
 import { FieldTitle } from "../field-factory";
-import type { FC } from "react";
+import { useState, type FC } from "react";
 
 export const SliderField: FC<FieldProps<number>> = (props) => {
   const { schema, currentValue, onChange, required, title, description } = props;
   const unit = schema["ui:unit"] ?? "";
-  const multiplier = parseFloat(schema["ui:multiplier"] ?? "1");
+  const multiplier = schema["ui:multiplier"] ?? 1;
+  const [val, setVal] = useState(currentValue);
 
   return (
-    <div className="slider-field flex-1 flex justify-between gap-10 items-center">
+    <div className="slider-field flex-1 flex justify-between gap-3 items-center">
       <FieldTitle title={title} description={description} />
       <div className="ml-auto basis-1/2 flex items-center gap-2">
         <Slider
-          onValueChange={(value) => onChange(value[0])}
+          onValueChange={(value) => {
+            console.log("slider value changed", value[0]);
+            setVal(value[0]);
+            onChange(value[0]);
+          }}
           size="1"
           variant="soft"
           min={schema.minimum}
@@ -24,8 +29,7 @@ export const SliderField: FC<FieldProps<number>> = (props) => {
         />
         {typeof currentValue === "number" && (
           <span className="text-gray-500 text-sm text-nowrap whitespace-nowrap">
-            {currentValue * multiplier}
-            {unit}
+            {val * multiplier} {unit}
           </span>
         )}
       </div>
@@ -34,18 +38,20 @@ export const SliderField: FC<FieldProps<number>> = (props) => {
 };
 
 export const NumberField: FC<FieldProps<number>> = (props) => {
-  const { currentValue, onChange, required, title, description, placeholder } = props;
-
+  const { currentValue, onChange, schema, required, title, description, placeholder } = props;
   return (
-    <div className="number-field flex-1 flex justify-between gap-10 items-center">
+    <div className="number-field flex-1 flex justify-between gap-3 items-center">
       <FieldTitle title={title} description={description} />
       <TextField.Root
         defaultValue={currentValue}
         type="number"
         onChange={(e) => onChange(e.target.value ? Number(e.target.value) : null)}
-        className="!mt-1.5"
+        className="min-w-[40px] text-right"
+        min={schema.minimum}
+        max={schema.maximum}
+        step={schema.multipleOf ?? 1}
         required={required}
-        placeholder={placeholder}
+        placeholder={placeholder ?? schema["ui:placeholder"]}
       />
     </div>
   );

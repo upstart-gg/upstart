@@ -33,7 +33,7 @@ export function getBrickPosition(
   const gridX = Math.round((actualX - padX) / config.colWidth);
   const gridY = Math.round(actualY / config.rowHeight);
 
-  const w = Math.min(Math.ceil(rect.width / config.colWidth), LAYOUT_COLS[previewMode]);
+  const w = Math.min(Math.ceil(rect.width / config.colWidth), LAYOUT_COLS);
   const h = Math.ceil(rect.height / config.rowHeight);
 
   const x = Math.max(0, gridX);
@@ -48,7 +48,7 @@ export function getBrickPosition(
 }
 
 export function getGridConfig(sectionElement: HTMLElement, previewMode: Resolution) {
-  const colWidth = Math.round(sectionElement.clientWidth / LAYOUT_COLS[previewMode]);
+  const colWidth = Math.round(sectionElement.clientWidth / LAYOUT_COLS);
   const rowHeight = LAYOUT_ROW_HEIGHT;
   return { colWidth, rowHeight };
 }

@@ -1,10 +1,5 @@
-/**
- * The grid on mobile is 18 columns wide, on desktop it's 36 columns wide.
- */
-export const LAYOUT_COLS = {
-  desktop: 48,
-  mobile: 24,
-};
+export const LAYOUT_COLS = 24;
+export const GAP = 10;
 
 export const LAYOUT_BREAKPOINTS = {
   desktop: 1024,
@@ -22,4 +17,4 @@ export const LAYOUT_BREAKPOINTS = {
 /**
  * This is the height of a row in the layout grid.
  */
-export const LAYOUT_ROW_HEIGHT = 20;
+export const LAYOUT_ROW_HEIGHT = 24;

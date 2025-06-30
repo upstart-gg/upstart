@@ -66,11 +66,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
           }}
           data-element-kind="section"
           onClick={onClick}
-          className={tx(
-            className,
-            "min-h-40 w-full @container/section",
-            droppableSnapshot.isDraggingOver && "bg-upstart-100/20",
-          )}
+          className={className}
           {...droppableProvided.droppableProps}
         >
           {!selectedBrickId && <SectionOptionsButtons section={section} />}
@@ -171,8 +167,11 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
   const draftHelpers = useDraftHelpers();
   const { setSelectedSectionId, setPanel, setSelectedBrickId } = useEditorHelpers();
   const sections = useSections();
-  const isLastSection = section.order === sections.length - 1;
-  const isFirstSection = section.order === 0;
+  // compare the curret section "order" to the max order of sections to determine if this is the first or last section
+  const maxOrder = sections.reduce((max, sec) => Math.max(max, sec.order), -1);
+  const minOrder = sections.reduce((min, sec) => Math.min(min, sec.order), Infinity);
+  const isLastSection = section.order === maxOrder;
+  const isFirstSection = section.order === minOrder;
 
   const btnCls = tx(
     "select-none hover:opacity-90",
