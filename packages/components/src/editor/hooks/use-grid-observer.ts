@@ -1,11 +1,12 @@
 import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import { type RefObject, useEffect, useState } from "react";
-import { usePreviewMode } from "~/editor/hooks/use-editor";
+import { useEditorHelpers, usePreviewMode } from "~/editor/hooks/use-editor";
 import { debounce } from "lodash-es";
 
-export function useGridConfig(elementRef: RefObject<HTMLElement>) {
+export function useGridObserver(elementRef: RefObject<HTMLElement>) {
   const [colWidth, setColWidth] = useState(0);
   const previewMode = usePreviewMode();
+  const { setGridConfig } = useEditorHelpers();
 
   useEffect(() => {
     // Calculate cell width on mount and window resize
@@ -38,10 +39,19 @@ export function useGridConfig(elementRef: RefObject<HTMLElement>) {
     };
   }, [previewMode, elementRef]);
 
+  useEffect(() => {
+    if (colWidth) {
+      setGridConfig({
+        colWidth,
+        rowHeight: LAYOUT_ROW_HEIGHT,
+      });
+    }
+  }, [colWidth, setGridConfig]);
+
   return {
     colWidth,
     rowHeight: LAYOUT_ROW_HEIGHT,
   };
 }
 
-export type GridConfig = ReturnType<typeof useGridConfig>;
+export type GridConfig = ReturnType<typeof useGridObserver>;

@@ -1,5 +1,4 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { paddingRef } from "../props/padding";
 import { defineProps, group, optional } from "../props/helpers";
 import { fontSize, textContentRef } from "../props/text";
 import { BsCardText } from "react-icons/bs";
@@ -15,25 +14,60 @@ export const manifest = defineBrickManifest({
   description: "A multi-purpose card that can have a title, image, and content",
   repeatable: true,
   icon: BsCardText,
+  maxWidth: { mobile: 400, desktop: 1024 },
+  minWidth: { mobile: 200, desktop: 250 },
   props: defineProps({
     variants: Type.Array(
       Type.Union(
         [
-          Type.Literal("image-first", { title: "Image First", "ui:variant-type": "image-placement" }),
-          Type.Literal("image-between", { title: "Image Between", "ui:variant-type": "image-placement" }),
-          Type.Literal("image-last", { title: "Image Last", "ui:variant-type": "image-placement" }),
-          Type.Literal("image-overlay", { title: "Image Overlay", "ui:variant-type": "image-placement" }),
-          Type.Literal("image-left-side", { title: "Image Left Side", "ui:variant-type": "image-placement" }),
+          Type.Literal("image-first", {
+            title: "Image First",
+            "ui:variant-type": "image-placement",
+          }),
+          Type.Literal("image-between", {
+            title: "Image Between",
+            "ui:variant-type": "image-placement",
+          }),
+          Type.Literal("image-last", {
+            title: "Image Last",
+            "ui:variant-type": "image-placement",
+          }),
+          Type.Literal("image-overlay", {
+            title: "Image Overlay",
+            "ui:variant-type": "image-placement",
+          }),
+          Type.Literal("image-left-side", {
+            title: "Image Left Side",
+            "ui:variant-type": "image-placement",
+          }),
           Type.Literal("image-right-side", {
             title: "Image Right Side",
             "ui:variant-type": "image-placement",
           }),
-          Type.Literal("centered", { title: "Centered", "ui:variant-type": "align" }),
-          Type.Literal("text-sm", { title: "S", "ui:variant-type": "font-size" }),
-          Type.Literal("text-base", { title: "M", "ui:variant-type": "font-size" }),
-          Type.Literal("text-lg", { title: "L", "ui:variant-type": "font-size" }),
-          Type.Literal("text-xl", { title: "XL", "ui:variant-type": "font-size" }),
-          Type.Literal("text-2xl", { title: "2XL", "ui:variant-type": "font-size" }),
+          Type.Literal("centered", {
+            title: "Centered",
+            "ui:variant-type": "align",
+          }),
+          Type.Literal("text-sm", {
+            title: "S",
+            "ui:variant-type": "font-size",
+          }),
+          Type.Literal("text-base", {
+            title: "M",
+            "ui:variant-type": "font-size",
+          }),
+          Type.Literal("text-lg", {
+            title: "L",
+            "ui:variant-type": "font-size",
+          }),
+          Type.Literal("text-xl", {
+            title: "XL",
+            "ui:variant-type": "font-size",
+          }),
+          Type.Literal("text-2xl", {
+            title: "2XL",
+            "ui:variant-type": "font-size",
+          }),
         ],
         {
           title: "Variants",
@@ -49,11 +83,25 @@ export const manifest = defineBrickManifest({
         },
       },
     ),
-    cardImage: optional(imageRef()),
+    cardImage: optional(
+      imageRef({
+        default: {
+          src: "https://placehold.co/300x200?text=Card+Image",
+          alt: "Sample Card Image",
+        },
+      }),
+    ),
     cardTitle: optional(textContentRef({ title: "Title" })),
     cardBody: optional(textContentRef({ title: "Body" })),
     shadow: optional(shadowRef()),
-    border: optional(borderRef()),
+    border: optional(
+      borderRef({
+        default: {
+          width: "border",
+          rounding: "rounded",
+        },
+      }),
+    ),
   }),
 });
 

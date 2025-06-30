@@ -10,7 +10,7 @@ type PropImageOptions = {
 };
 
 export function image(title = "Image", options: PropImageOptions = {}) {
-  const { defaultImageUrl, showImgSearch = false } = options;
+  const { defaultImageUrl, showImgSearch = false, noObjectOptions } = options;
   const schema = Type.Object(
     {
       src: Type.String({
@@ -38,7 +38,7 @@ export function image(title = "Image", options: PropImageOptions = {}) {
             title: "Fit",
             description: "How the image should be resized to fit its container",
             "ui:field": "enum",
-            "ui:styleId": "#styles:objectFit",
+            "ui:styleId": "styles:objectFit",
           },
         ),
       ),
@@ -50,13 +50,13 @@ export function image(title = "Image", options: PropImageOptions = {}) {
             Type.Literal("object-bottom", { title: "Bottom" }),
             Type.Literal("object-left", { title: "Left" }),
             Type.Literal("object-right", { title: "Right" }),
-            Type.Literal("object-left-top", { title: "Top left" }),
-            Type.Literal("object-right-top", { title: "Top right" }),
-            Type.Literal("object-left-bottom", { title: "Bottom left" }),
-            Type.Literal("object-right-bottom", { title: "Bottom right" }),
+            Type.Literal("object-top-left", { title: "Top left" }),
+            Type.Literal("object-top-right", { title: "Top right" }),
+            Type.Literal("object-bottom-left", { title: "Bottom left" }),
+            Type.Literal("object-bottom-right", { title: "Bottom right" }),
           ],
           {
-            "ui:styleId": "#styles:objectPosition",
+            "ui:styleId": "styles:objectPosition",
             title: "Position",
             description: "The position of the image inside its container",
             "ui:field": "enum",
@@ -69,7 +69,7 @@ export function image(title = "Image", options: PropImageOptions = {}) {
       "ui:field": "image",
       "ui:accept": "image/*",
       "ui:show-img-search": !!showImgSearch,
-      "ui:no-object-options": !!options.noObjectOptions,
+      "ui:no-object-options": !!noObjectOptions,
       default: {
         alt: "Image",
         fit: "object-cover",
@@ -84,7 +84,7 @@ export function image(title = "Image", options: PropImageOptions = {}) {
 }
 
 export function imageRef(options: PropImageOptions & SchemaOptions = {}) {
-  return typedRef("assets:image", { ...options, styleId: "#assets:image" });
+  return typedRef("assets:image", { ...options, "ui:styleId": "assets:image" });
 }
 
 export type ImageProps = Static<ReturnType<typeof image>>;

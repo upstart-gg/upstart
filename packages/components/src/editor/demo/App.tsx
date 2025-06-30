@@ -33,20 +33,22 @@ function InnerEditor(
     return "https://via.placeholder.com/150";
   };
   const onShowLogin = () => {
-    alert("Out of the demo, the 'login' modal should be displayed at this time.");
+    console.debug("onShowLogin: Out of the demo, the 'login' modal should be displayed at this time.");
   };
   const onPublish = () => {
-    alert("Out of the demo, the 'publish' modal should be displayed at this time.");
+    console.debug("onPublish: Out of the demo, the 'publish' modal should be displayed at this time.");
   };
   const onSavePage = async () => {
-    alert("Out of the demo, the 'save' modal should be displayed at this time.");
+    console.debug("onSavePage: Out of the demo, the 'save' modal should be displayed at this time.");
     return { pageVersionId: "latest" };
   };
   const onSaveSite = async () => {
-    alert("Out of the demo, the 'save' modal should be displayed at this time.");
+    console.debug("onSaveSite: Out of the demo, the 'save' modal should be displayed at this time.");
   };
   const onShowPopup = (popupId: string | false) => {
-    alert(`Out of the demo, the popup with ID ${popupId} should be displayed at this time.`);
+    console.debug(
+      `onShowPopup: out of the demo, the popup with ID ${popupId} should be displayed at this time.`,
+    );
   };
   return (
     <EditorWrapper

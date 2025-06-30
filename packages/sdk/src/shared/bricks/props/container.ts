@@ -2,7 +2,7 @@ import { type TObject, Type, type Static, type SchemaOptions } from "@sinclair/t
 import { getStyleProperties, getStyleValueById, group, optional, prop } from "./helpers";
 import { typedRef } from "~/shared/utils/typed-ref";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { cssLength } from "./css-length";
+import { cssLength, cssLengthRef } from "./css-length";
 
 // type FlexOptions = {
 //   title?: string;
@@ -93,7 +93,7 @@ import { cssLength } from "./css-length";
 //         ),
 //       },
 //       {
-//         "ui:styleId": "#styles:flex",
+//         "ui:styleId": "styles:flex",
 //         "ui:field": "flex",
 //         "ui:responsive": true,
 //         default: {
@@ -145,7 +145,7 @@ import { cssLength } from "./css-length";
 //         ),
 //       },
 //       {
-//         "ui:styleId": "#styles:grid",
+//         "ui:styleId": "styles:grid",
 //         "ui:field": "grid",
 //         "ui:responsive": true,
 //         default: defaultValue,
@@ -161,7 +161,7 @@ const isFlexLayoutFilter = (manifestProps: TObject, formData: Record<string, unk
   const currentStyle = getStyleValueById<ContainerLayoutSettings>(
     stylesProps,
     formData,
-    "#styles:containerLayout",
+    "styles:containerLayout",
   );
   return currentStyle?.type === "flex" || !currentStyle?.type;
 };
@@ -193,7 +193,7 @@ type ContainerLayoutOptions = {
 function containerlayoutStyle(options: SchemaOptions = {}) {
   return Type.Object(
     {
-      ...(!options.disableGrid
+      ...(!options.disableGrid || options["ui:disable-grid"]
         ? {
             type: StringEnum(["flex", "grid"], {
               enumNames: ["Flex", "Grid"],
@@ -207,13 +207,13 @@ function containerlayoutStyle(options: SchemaOptions = {}) {
         : {}),
 
       gap: Type.Optional(
-        Type.String({
+        cssLengthRef({
           title: "Gap",
+          default: "10px",
           description:
             "Space between items. Can be a tailwind gap class like 'gap-1' or 'gap-2', or a custom value like '10px'",
           "ui:placeholder": "Not specified",
-          // todo: make a specific field for gap
-          // "ui:field": "enum",
+          "ui:styleId": "styles:gap",
         }),
       ),
       direction: optional(
@@ -308,7 +308,7 @@ function containerlayoutStyle(options: SchemaOptions = {}) {
         ),
       ),
     },
-    { $id: "styles:containerLayout" },
+    { ...options, $id: "styles:containerLayout" },
   );
 }
 
@@ -316,7 +316,7 @@ export function containerLayout({ title = "Layout", options = {} }: ContainerLay
   return group({
     title,
     options: {
-      "ui:styleId": "#styles:containerLayout",
+      "ui:styleId": "styles:containerLayout",
       $id: "styles:containerLayout",
     },
     children: containerlayoutStyle(options),
@@ -357,14 +357,6 @@ export function sectionLayout(options: SchemaOptions = {}) {
   return Type.Object(
     {
       gap: Type.Optional(
-        // Type.String({
-        //   title: "Gap",
-        //   description:
-        //     "Space between items. Can be a tailwind gap class like 'gap-1' or 'gap-2', or a custom value like '10px'",
-        //   "ui:placeholder": "Not specified",
-        //   // todo: make a specific field for gap
-        //   // "ui:field": "enum",
-        // }),
         cssLength({
           title: "Gap",
           default: "10px",

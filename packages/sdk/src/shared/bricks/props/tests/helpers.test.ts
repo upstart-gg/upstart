@@ -13,7 +13,11 @@ describe("Props helpers test suite", () => {
 
     it("should add description when provided", () => {
       const schema = Type.String();
-      const result = prop({ title: "Test", schema, description: "Test description" });
+      const result = prop({
+        title: "Test",
+        schema,
+        description: "Test description",
+      });
       expect(result.description).toBe("Test description");
     });
 
@@ -121,12 +125,12 @@ describe("Props helpers test suite", () => {
     it("should extract style properties from a schema", () => {
       const styles = getStyleProperties(sampleManifest.props);
       expect(styles).toMatchObject({
-        "brand.color": "#styles:color",
-        "container.backgroundColor": "#styles:backgroundColor",
-        "container.border": "#styles:border",
-        "container.fixedPositioned": "#styles:fixedPositioned",
-        "container.shadow": "#styles:shadow",
-        "navigation.color": "#styles:color",
+        "brand.color": "styles:color",
+        "container.backgroundColor": "styles:backgroundColor",
+        "container.border": "styles:border",
+        "container.fixedPositioned": "styles:fixedPositioned",
+        "container.shadow": "styles:shadow",
+        "navigation.color": "styles:color",
       });
     });
   });

@@ -78,7 +78,12 @@ const defaultAttributes = {
     }),
   ),
 
-  $pageBackground: optional(backgroundRef({ title: "Page Background", defaultValue: { color: "base-100" } })),
+  $pageBackground: optional(
+    backgroundRef({
+      title: "Page Background",
+      defaultValue: { color: "base-100" },
+    }),
+  ),
 
   $pageOgImage: optional(
     string("Social share image", {
@@ -131,6 +136,7 @@ const defaultAttributes = {
     "ui:group:title": "Meta tags",
     description: "A short description of the page. Used by search engines",
     "ui:multiline": true,
+    "ui:textarea-class": "h-24",
   }),
 
   $pageKeywords: string("Keywords", {
@@ -180,7 +186,9 @@ const defaultAttributes = {
   ),
 };
 
-export const defaultAttributesSchema = Type.Object(defaultAttributes, { additionalProperties: true });
+export const defaultAttributesSchema = Type.Object(defaultAttributes, {
+  additionalProperties: true,
+});
 export const siteAttributesSchemaForLLM = Type.Pick(defaultAttributesSchema, [
   "$bodyBackground",
   "$pageBackground",

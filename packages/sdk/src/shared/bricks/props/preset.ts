@@ -52,6 +52,16 @@ export function preset(defaultValue?: string) {
         title: "Subtle Accent",
         description: "Subtle display on accent-100 background and 1px border.",
       }),
+      Type.Literal("light", {
+        title: "Light",
+        description:
+          "Mainly white background with dark text. Useful for bricks inside a card or a container that already have a surface/background.",
+      }),
+      Type.Literal("dark", {
+        title: "Dark",
+        description:
+          "Mainly dark background with light text. Useful for bricks inside a card or a container that already have a surface/background.",
+      }),
       Type.Literal("preset-none", {
         title: "None",
         description:
@@ -74,64 +84,64 @@ export const presetRef = typedRef("styles:preset");
 
 export const presetsStyleProps = {
   "surface-1": {
-    "#styles:backgroundColor": "bg-base-100",
-    "#styles:color": "text-base-100",
-    "#styles:border": { color: "border-base-100" },
+    "styles:backgroundColor": "bg-base-100",
+    "styles:color": "text-base-content",
+    "styles:border": { color: "border-base-200" },
   },
   "surface-2": {
-    "#styles:backgroundColor": "bg-base-200",
-    "#styles:color": "text-base-200",
-    "#styles:border": { color: "border-base-200" },
+    "styles:backgroundColor": "bg-base-200",
+    "styles:color": "text-base-content",
+    "styles:border": { color: "border-base-300" },
   },
   "surface-3": {
-    "#styles:backgroundColor": "bg-base-300",
-    "#styles:color": "text-base-300",
-    "#styles:border": { color: "border-base-300" },
+    "styles:backgroundColor": "bg-base-300",
+    "styles:color": "text-base-content",
+    "styles:border": { color: "border-base-200" },
   },
   "prominent-primary": {
-    "#styles:backgroundColor": "bg-primary-700",
-    "#styles:color": "text-primary",
-    "#styles:border": { color: "border-primary-800" },
+    "styles:backgroundColor": "bg-primary-700",
+    "styles:color": "text-primary",
+    "styles:border": { color: "border-primary-800" },
   },
   "prominent-secondary": {
-    "#styles:backgroundColor": "bg-secondary-700",
-    "#styles:color": "text-secondary",
-    "#styles:border": { color: "border-secondary-800" },
+    "styles:backgroundColor": "bg-secondary-700",
+    "styles:color": "text-secondary",
+    "styles:border": { color: "border-secondary-800" },
   },
   "prominent-accent": {
-    "#styles:backgroundColor": "bg-accent-700",
-    "#styles:color": "text-accent",
-    "#styles:border": { color: "border-accent-800" },
+    "styles:backgroundColor": "bg-accent-700",
+    "styles:color": "text-accent",
+    "styles:border": { color: "border-accent-800" },
   },
   "medium-primary": {
-    "#styles:backgroundColor": "bg-primary-200",
-    "#styles:color": "text-primary-800",
-    "#styles:border": { color: "border-primary-300" },
+    "styles:backgroundColor": "bg-primary-200",
+    "styles:color": "text-primary-800",
+    "styles:border": { color: "border-primary-300" },
   },
   "medium-secondary": {
-    "#styles:backgroundColor": "bg-secondary-200",
-    "#styles:color": "text-secondary-800",
-    "#styles:border": { color: "border-secondary-300" },
+    "styles:backgroundColor": "bg-secondary-200",
+    "styles:color": "text-secondary-800",
+    "styles:border": { color: "border-secondary-300" },
   },
   "medium-accent": {
-    "#styles:backgroundColor": "bg-accent-200",
-    "#styles:color": "text-accent-800",
-    "#styles:border": { color: "border-accent-300" },
+    "styles:backgroundColor": "bg-accent-200",
+    "styles:color": "text-accent-800",
+    "styles:border": { color: "border-accent-300" },
   },
   "subtle-primary": {
-    "#styles:backgroundColor": "bg-primary-100",
-    "#styles:color": "text-primary-800",
-    "#styles:border": { color: "border-primary-100" },
+    "styles:backgroundColor": "bg-primary-100",
+    "styles:color": "text-primary-800",
+    "styles:border": { color: "border-primary-200" },
   },
   "subtle-secondary": {
-    "#styles:backgroundColor": "bg-secondary-100",
-    "#styles:color": "text-secondary-800",
-    "#styles:border": { color: "border-secondary-100" },
+    "styles:backgroundColor": "bg-secondary-100",
+    "styles:color": "text-secondary-800",
+    "styles:border": { color: "border-secondary-200" },
   },
   "subtle-accent": {
-    "#styles:backgroundColor": "bg-accent-100",
-    "#styles:color": "text-accent-800",
-    "#styles:border": { color: "border-accent-100" },
+    "styles:backgroundColor": "bg-accent-100",
+    "styles:color": "text-accent-800",
+    "styles:border": { color: "border-accent-200" },
   },
   "preset-none": {},
 };

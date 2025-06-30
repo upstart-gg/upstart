@@ -1,20 +1,24 @@
 import { Toaster } from "@upstart.gg/style-system/system";
-import { startTransition, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
   useAttributes,
   useDraft,
   useDraftHelpers,
   useEditorHelpers,
   useGenerationState,
+  useGridConfig,
   usePreviewMode,
   useSections,
   useZoom,
 } from "../hooks/use-editor";
-import { type BeforeCapture, DragDropContext, Droppable, type DropResult } from "@hello-pangea/dnd";
+import { Droppable } from "@hello-pangea/dnd";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
 import { useFontWatcher } from "../hooks/use-font-watcher";
 import Section from "./EditableSection";
 import { tx } from "@upstart.gg/style-system/twind";
+import { processSections } from "@upstart.gg/sdk/shared/bricks";
+import { useResizable } from "../hooks/use-resizable";
+import { useGridObserver } from "../hooks/use-grid-observer";
 
 type EditablePageProps = {
   showIntro?: boolean;
@@ -27,64 +31,59 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const draft = useDraft();
   const { zoom } = useZoom();
   const pageRef = useRef<HTMLDivElement>(null);
+  useGridObserver(pageRef);
+  const gridConfig = useGridConfig();
   const attributes = useAttributes();
   const sections = useSections();
   const typography = useFontWatcher();
-  const pageClassName = usePageStyle({ attributes, typography, editable: true, previewMode, showIntro });
+  const pageClassName = usePageStyle({
+    attributes,
+    typography,
+    editable: true,
+    previewMode,
+    showIntro,
+  });
   const generationState = useGenerationState();
 
   // on page load, set last loaded property so that the store is saved to local storage
   useEffect(draft.setLastLoaded, []);
 
-  useEffect(() => {
-    console.log("Gen state changed in EditablePage", generationState);
-  }, [generationState]);
-
-  const handleDragEnd = (result: DropResult) => {
-    const { destination, source, draggableId, type } = result;
-
-    // If dropped outside a valid droppable area
-    if (!destination) {
-      return;
-    }
-
-    // If dropped in the same position
-    if (destination.droppableId === source.droppableId && destination.index === source.index) {
-      return;
-    }
-
-    if (type === "section") {
-      // Reorder sections
-      const newSectionOrder = Array.from(sections);
-      const [reorderedSection] = newSectionOrder.splice(source.index, 1);
-      newSectionOrder.splice(destination.index, 0, reorderedSection);
-
-      draftHelpers.reorderSections(newSectionOrder.map((section) => section.id));
-    } else if (type === "brick") {
-      // Handle brick movement
-      const sourceSectionId = source.droppableId;
-      const destinationSectionId = destination.droppableId;
-
-      if (sourceSectionId === destinationSectionId) {
-        // Moving within the same section - use the new reorder function
-        draftHelpers.reorderBrickWithin(draggableId, source.index, destination.index);
-        console.log(
-          `Moving brick ${draggableId} within section from ${source.index} to ${destination.index}`,
-        );
-      } else {
-        // Moving between sections - use the new moveBrickToSection function
-        console.log(`Moving brick ${draggableId} from section ${sourceSectionId} to ${destinationSectionId}`);
-        draftHelpers.moveBrickToSection(draggableId, destinationSectionId, destination.index);
-      }
-
-      // Auto-adjust mobile layout if needed
-      if (previewMode === "desktop") {
-        startTransition(() => {
-          draftHelpers.adjustMobileLayout();
-        });
-      }
-    }
-  };
+  useResizable("[data-brick]", {
+    gridSnap: {
+      width: gridConfig.colWidth,
+      height: gridConfig.rowHeight,
+    },
+    onResizeStart: (event) => {
+      console.log("Resize started:", event.target);
+      const target = event.target as HTMLElement;
+    },
+    onResize: (event) => {
+      console.log("Resizing:", event);
+      console.log("brick id:", event.target.dataset.brickId);
+    },
+    onResizeEnd: (event) => {
+      const target = event.target as HTMLElement;
+      const brickId = target.dataset.brickId as string;
+      const brickType = target.dataset.brickType as string;
+      console.log("Resize ended for brick %s of type %s", brickId, brickType, event.rect);
+      target.style.setProperty("transition", "top,margin-right,margin-bottom,height 0.3s ease-in-out");
+      draftHelpers.updateBrickProps(brickId, {
+        width: `${event.rect.width}px`,
+        height: `${event.rect.height}px`,
+      });
+      target.style.removeProperty("top");
+      target.style.removeProperty("left");
+      target.style.removeProperty("margin-bottom");
+      target.style.removeProperty("margin-right");
+      target.style.removeProperty("width");
+      target.style.removeProperty("height");
+      target.style.removeProperty("min-height");
+      target.style.removeProperty("min-width");
+      setTimeout(() => {
+        target.style.setProperty("transition", "none");
+      }, 300); // Remove transition after a short delay
+    },
+  });
 
   // listen for global click events on the document
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -127,31 +126,26 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
 
   return (
     <>
-      <DragDropContext
-        onDragEnd={handleDragEnd}
-        // onBeforeCapture={handleBeforeCapture}
+      <div
+        id="page-container"
+        ref={pageRef}
+        className={pageClassName}
+        style={{
+          zoom,
+        }}
+        data-dropzone
       >
-        <div
-          id="page-container"
-          ref={pageRef}
-          className={pageClassName}
-          style={{
-            zoom,
-          }}
-          data-dropzone
-        >
-          <Droppable droppableId="sections" type="section">
-            {(provided) => (
-              <div ref={provided.innerRef} {...provided.droppableProps} className={tx("contents")}>
-                {sections.map((section, index) => (
-                  <Section key={section.id} section={section} index={index} />
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </div>
-      </DragDropContext>
+        <Droppable droppableId="sections" type="section" direction="vertical">
+          {(provided) => (
+            <div ref={provided.innerRef} {...provided.droppableProps} className={tx("contents")}>
+              {processSections(sections).map((section, index) => (
+                <Section key={section.id} section={section} index={index} />
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </div>
       <Toaster
         toastOptions={{
           position: "bottom-center",

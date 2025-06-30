@@ -27,7 +27,10 @@ export function shadow({ title = "Shadow", defaultValue = "shadow-none" }: Shado
 export type ShadowSettings = Static<ReturnType<typeof shadow>>;
 
 export function shadowRef(options: SchemaOptions & ShadowOptions = {}) {
-  return typedRef("styles:shadow", { ...options, "ui:styleId": "#styles:shadow" });
+  return typedRef("styles:shadow", {
+    ...options,
+    "ui:styleId": "styles:shadow",
+  });
 }
 
 type TextShadowOptions = {

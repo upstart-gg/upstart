@@ -264,10 +264,13 @@ const TextEditor = <T extends ElementType = "div">({
       setContent(e.editor.getHTML());
 
       // If there is a related target, it means the blur event was triggered by a click on the editor buttons
-      if (e.event.relatedTarget) {
-        console.debug("Editor blur triggered by editor buttons, ignoring");
+      if (e.event.relatedTarget && !(e.event.relatedTarget as HTMLElement).classList.contains("tiptap")) {
+        setFocused(false);
+        console.warn("Editor blur triggered by editor buttons, ignoring", e.event.relatedTarget);
         return;
       }
+
+      console.log("Editor blur", e);
 
       mainEditor.setIsEditingText(false);
       mainEditor.setLastTextEditPosition(e.editor.state.selection.anchor);
@@ -509,7 +512,7 @@ function TextStyleButtonGroup({ editor, noTextStrike, textSizeMode }: TextStyleB
   const isStrike = editor.isActive("strike");
   return (
     <ToggleGroup.Root
-      className={tx("flex !shadow-none divide-x", !textSizeMode && "!rounded-l-none")}
+      className={tx("flex !shadow-none divide-x divide-gray-200", !textSizeMode && "!rounded-l-none")}
       type="multiple"
       value={
         [
@@ -643,8 +646,8 @@ function TextSizeClassicDropdown({ editor }: TextSizeClassicDropdownProps) {
         },
       ]}
     >
-      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
-        <span className="text-[0.8rem] font-medium">
+      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, "!px-3")}>
+        <span className="text-[0.85rem] font-medium">
           {value === "code" ? "Code" : value === "paragraph" ? "Paragraph" : `Title ${value}`}
         </span>
         <RiArrowDownSLine className={tx(arrowClass)} />

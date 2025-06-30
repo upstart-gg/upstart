@@ -18,7 +18,7 @@ export const StringField: FC<FieldProps<string>> = (props) => {
         <TextArea
           defaultValue={currentValue}
           onChange={(e) => onChangeDebounced(e.target.value)}
-          className={tx("!mt-1.5 scrollbar-thin", schema["ui:textarea-class"])}
+          className={tx("!mt-1.5 scrollbar-thin", schema["ui:textarea-class"] ?? "h-24")}
           required={required}
           placeholder={placeholder}
           resize="vertical"

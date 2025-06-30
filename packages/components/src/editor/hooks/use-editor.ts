@@ -18,6 +18,7 @@ import { createStore, useStore } from "zustand";
 import { persist, subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 export type { Immer } from "immer";
+import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 
 enableMapSet();
 
@@ -38,7 +39,6 @@ export type PagePublishPayload =
       mode: "publish-page";
       pageId: string;
       pageVersionId: string;
-      schedulePublishedAt?: string | null;
     }
   | { siteId: string; mode: "publish-site" };
 
@@ -82,6 +82,10 @@ export interface EditorStateProps {
   // pages: GenericPageConfig[];
 
   previewMode: Resolution;
+  gridConfig?: {
+    colWidth: number;
+    rowHeight: number;
+  };
   textEditMode?: "default" | "large";
   lastTextEditPosition?: number;
   settingsVisible?: boolean;
@@ -119,7 +123,7 @@ export interface EditorState extends EditorStateProps {
   toggleSettings: () => void;
   toggleTextEditMode: () => void;
   toggleEditorEnabled: () => void;
-
+  setGridConfig: (config: EditorStateProps["gridConfig"]) => void;
   setTextEditMode: (mode: EditorStateProps["textEditMode"]) => void;
   setIsEditingText: (forBrickId: string | false) => void;
   setLastTextEditPosition: (position?: number) => void;
@@ -205,6 +209,10 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
           immer((set, _get) => ({
             ...DEFAULT_PROPS,
             ...initProps,
+            setGridConfig: (config) =>
+              set((state) => {
+                state.gridConfig = config;
+              }),
             toggleEditorEnabled: () =>
               set((state) => {
                 state.disabled = !state.disabled;
@@ -336,12 +344,17 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
               }),
           })),
           // limit undo history to 100
-          { limit: 100, equality: (pastState, currentState) => isEqual(pastState, currentState) },
+          {
+            limit: 100,
+            equality: (pastState, currentState) => isEqual(pastState, currentState),
+          },
         ),
         {
           name: "editor-state",
           partialize: (state) =>
-            Object.fromEntries(Object.entries(state).filter(([key]) => ["chatVisible"].includes(key))),
+            Object.fromEntries(
+              Object.entries(state).filter(([key]) => ["chatVisible", "previewMode"].includes(key)),
+            ),
         },
       ),
     ),
@@ -403,9 +416,9 @@ export interface DraftState extends DraftStateProps {
   duplicateSection: (id: string) => void;
   moveBrickWithin: (id: string, to: "left" | "right") => void;
   reorderBrickWithin: (brickId: string, fromIndex: number, toIndex: number) => void;
-  moveBrickToContainerBrick: (id: string, parentId: string) => void;
+  moveBrickToContainerBrick: (id: string, parentId: string, index: number) => void;
   moveBrickToSection: (id: string, sectionId: string, index?: number) => void;
-  addBrick: (brick: Brick, sectiondId: string, parentContainerId: Brick["id"] | null) => void;
+  addBrick: (brick: Brick, sectiondId: string, index: number, parentContainerId: Brick["id"] | null) => void;
   updateBrick: (id: string, brick: Partial<Brick>) => void;
   updateBrickProps: (id: string, props: Record<string, unknown>, isMobileProps?: boolean) => void;
   toggleBrickVisibility: (id: string, resolution: Resolution) => void;
@@ -850,7 +863,7 @@ export const createDraftStore = (
 
           updateBrick: (id, brick) =>
             set((state) => {
-              const original = getBrick(id, state);
+              const original = getBrickFromMap(id, state);
               if (original) {
                 Object.assign(original, brick);
               }
@@ -858,25 +871,30 @@ export const createDraftStore = (
 
           updateBrickProps: (id, props, isMobileProps) =>
             set((state) => {
-              const brick = getBrick(id, state);
+              // Update the brick in the brickMap
+              const brick = getBrickFromDraft(id, state);
               if (brick) {
                 if (isMobileProps) {
                   brick.mobileProps = mergeIgnoringArrays({}, brick.mobileProps, props, {
                     lastTouched: Date.now(),
                   });
                 } else {
-                  brick.props = mergeIgnoringArrays({}, brick.props, props, { lastTouched: Date.now() });
+                  brick.props = mergeIgnoringArrays({}, brick.props, props, {
+                    lastTouched: Date.now(),
+                  });
                 }
-                for (const section of state.sections) {
-                  for (const b of section.bricks) {
-                    if (b.id === id) {
-                      console.log("found brick to UPDATE!", brick.props);
-                      b.props = brick.props;
-                      b.mobileProps = brick.mobileProps;
-                      return;
-                    }
-                  }
+                // Also update the brick in the sections
+                // This is necessary to ensure the brick is updated in the sections as well
+                // This is necessary because the brickMap is not the source of truth for the sections
+                const brickObj = getBrickFromDraft(id, state);
+                if (!brickObj) {
+                  console.error("Cannot update brick %s, it does not exist in the draft", id);
+                  return;
                 }
+                brickObj.props = brick.props;
+                brickObj.mobileProps = brick.mobileProps;
+              } else {
+                console.error("Cannot update brick %s, it does not exist in the brick map", id);
               }
             }),
 
@@ -895,10 +913,11 @@ export const createDraftStore = (
                   });
                 }
               }
-            }) /**
-           * Move abrick inside its container.
+            }),
+          /**
+           * Move a brick inside its container.
            * If the brick does not belong to a container, does nothing
-           */,
+           */
           moveBrickWithin: (id, to) =>
             set((state) => {
               const parentBrick = state.getParentBrick(id);
@@ -962,10 +981,10 @@ export const createDraftStore = (
               }
             }),
 
-          moveBrickToContainerBrick: (id, parentId) =>
+          moveBrickToContainerBrick: (id, parentId, index) =>
             set((state) => {
               const brick = state.getBrick(id);
-              const parent = state.getBrick(parentId);
+              const parent = getBrickFromDraft(parentId, state);
               const brickMapping = state.brickMap.get(id);
               if (!brick || !parent || !brickMapping) {
                 console.error("Cannot move brick %s to new parent, brick or new parent is null", id);
@@ -999,7 +1018,9 @@ export const createDraftStore = (
               if (!parent.props.$children) {
                 parent.props.$children = [];
               }
-              (parent.props.$children as Brick[]).push(brick);
+
+              // Use splice instead of push to insert at specific index
+              (parent.props.$children as Brick[]).splice(index, 0, brick);
 
               // 3. Update the brickMap reference
               const targetMapping = state.brickMap.get(parentId);
@@ -1156,14 +1177,14 @@ export const createDraftStore = (
 
           toggleBrickVisibility: (id, breakpoint) =>
             set((state) => {
-              const brick = getBrick(id, state);
+              const brick = getBrickFromMap(id, state);
               if (brick) {
                 brick.props.hidden ??= { desktop: false, mobile: false };
                 brick.props.hidden[breakpoint] = !brick.props.hidden?.[breakpoint];
               }
             }),
 
-          addBrick: (brick, sectionId, parentContainerId) =>
+          addBrick: (brick, sectionId, index, parentContainerId) =>
             set((state) => {
               // Find the section to add the brick to
               const section = state.sections.find((s) => s.id === sectionId);
@@ -1175,7 +1196,7 @@ export const createDraftStore = (
               // Check if this brick is being added to a container
               if (parentContainerId) {
                 console.log("Adding brick to parent container", parentContainerId);
-                const parentBrick = getBrick(parentContainerId, state);
+                const parentBrick = getBrickFromMap(parentContainerId, state);
                 if (!parentBrick) {
                   console.warn("Cannot add brick, parent container %s does not exist", parentContainerId);
                   return;
@@ -1208,8 +1229,7 @@ export const createDraftStore = (
                 // Add the brick to the parent container's children
                 (parentBrickInSection.props.$children as Brick[]).push(brick);
               } else {
-                // Add the brick directly to the section
-                section.bricks.push(brick);
+                section.bricks.splice(index, 0, brick);
               }
 
               // Add the brick to the brick map
@@ -1234,7 +1254,7 @@ export const createDraftStore = (
                     }
                   });
                 };
-
+                console.log("Adding children to brick map", brick.props.$children);
                 addChildrenToBrickMap(brick.props.$children as Brick[], brick.id);
               }
             }),
@@ -1401,7 +1421,10 @@ export const useDebugMode = () => {
 
 export const usePanel = () => {
   const ctx = useEditorStoreContext();
-  return useStore(ctx, (state) => ({ panel: state.panel, panelPosition: state.panelPosition }));
+  return useStore(ctx, (state) => ({
+    panel: state.panel,
+    panelPosition: state.panelPosition,
+  }));
 };
 
 export const useIsPremiumPlan = () => {
@@ -1545,6 +1568,7 @@ export const useEditorHelpers = () => {
   return useStore(ctx, (state) => ({
     setPreviewMode: state.setPreviewMode,
     setSettingsVisible: state.setSettingsVisible,
+    setGridConfig: state.setGridConfig,
     toggleSettings: state.toggleSettings,
     toggleTextEditMode: state.toggleTextEditMode,
     setTextEditMode: state.setTextEditMode,
@@ -1585,6 +1609,7 @@ export const useDraftHelpers = () => {
     addDatasource: state.addDatasource,
     addDatarecord: state.addDatarecord,
     duplicateBrick: state.duplicateBrick,
+    addBrick: state.addBrick,
     getBrick: state.getBrick,
     validatePreviewTheme: state.validatePreviewTheme,
     adjustMobileLayout: state.adjustMobileLayout,
@@ -1672,7 +1697,9 @@ export const useAttributesSubscribe = (callback: (attr: DraftState["attr"]) => v
   const ctx = useDraftStoreContext();
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    return ctx.subscribe((state) => state.attr, callback, { equalityFn: isEqual });
+    return ctx.subscribe((state) => state.attr, callback, {
+      equalityFn: isEqual,
+    });
   }, []);
 };
 
@@ -1692,9 +1719,51 @@ export const usePagePathSubscribe = (callback: (path: DraftState["path"]) => voi
   }, []);
 };
 
-function getBrick(id: string, state: DraftState) {
+export function useGridConfig() {
+  const ctx = useEditorStoreContext();
+  return useStore(
+    ctx,
+    (state) =>
+      state.gridConfig ?? {
+        colWidth: 20,
+        rowHeight: LAYOUT_ROW_HEIGHT,
+      },
+  );
+}
+
+function getBrickFromMap(id: string, state: DraftState) {
   const { brick } = state.brickMap.get(id) ?? {};
   return brick;
+}
+
+function getBrickFromDraft(id: string, state: DraftState) {
+  // Find the brick in the sections
+  for (const section of state.sections) {
+    const brick = section.bricks.find((b) => b.id === id);
+    if (brick) {
+      return brick;
+    }
+    // Check children recursively
+    const findInChildren = (children: Brick[]): Brick | undefined => {
+      for (const child of children) {
+        if (child.id === id) {
+          return child;
+        }
+        if (child.props?.$children) {
+          const found = findInChildren(child.props.$children as Brick[]);
+          if (found) {
+            return found;
+          }
+        }
+      }
+      return undefined;
+    };
+    const foundInChildren = findInChildren(section.bricks);
+    if (foundInChildren) {
+      return foundInChildren;
+    }
+  }
+  return null;
 }
 
 function buildBrickMap(sections: Section[]): DraftState["brickMap"] {

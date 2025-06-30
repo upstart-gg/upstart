@@ -26,6 +26,10 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
   const selectedTab = tabsMapping[brick.id] ?? "settings";
   const manifest = manifests[brick.type];
 
+  if (brick.type === "navbar") {
+    console.log("Manifest for navbar brick", manifest);
+  }
+
   useEffect(() => {
     if (!manifest.isContainer && selectedTab === "content") {
       setTabsMapping((prev) => ({ ...prev, [brick.id]: "settings" }));
@@ -37,7 +41,7 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
     return null;
   }
 
-  const showTabsList = !!manifest.props.properties.preset && !!manifest.props.properties.variants;
+  const showTabsList = !!manifest.props.properties.preset || !!manifest.props.properties.variants;
 
   return (
     <div key={`brick-inspector-${brick.id}`}>
@@ -134,7 +138,7 @@ function PresetsTab({ brick, section }: { brick: Brick; section: Section }) {
               key={preset.const}
               className={tx(
                 `${preset.const}`,
-                preset.const === "preset-none" && "border-gray-200 col-span-3",
+                preset.const === "preset-none" && "border-gray-200",
                 `text-xs flex items-center justify-center text-center p-2 border
                    rounded-md hover:opacity-80`,
                 brick.props.preset === preset.const && "outline outline-2 outline-upstart-400",
@@ -161,8 +165,6 @@ function VariantsTab({ brick, section }: { brick: Brick; section: Section }) {
     console.warn("No variants defined for brick %s in section %s", brick.type, section.id);
     return null;
   }
-
-  console.log("VariantsTab for brick %s in section %s", brick.type, section.id, schema);
 
   return (
     <div className={tx("flex flex-col h-full")}>
@@ -333,7 +335,6 @@ function ContentTab({ brick, manifest }: { brick: Brick; manifest: BrickManifest
         formSchema={manifest.props}
         formData={brickInfo.props}
         filter={(prop) => {
-          // todo: find out how to filter out the content properties (using $id for example like styles that are prefixed by #styles:)
           return true;
           // return prop["ui:inspector-tab"] === "content";
         }}

@@ -148,6 +148,12 @@ export default defineConfig({
     ["w-fill", { width: ["fill-available", "-webkit-fill-available", "-moz-available"] }],
     ["h-fill", { height: ["fill-available", "-webkit-fill-available", "-moz-available"] }],
 
+    // missing object-position presets
+    ["object-bottom-left", { objectPosition: "bottom left" }],
+    ["object-bottom-right", { objectPosition: "bottom right" }],
+    ["object-top-left", { objectPosition: "top left" }],
+    ["object-top-right", { objectPosition: "top right" }],
+
     ["hero", { "&::first-line": { lineHeight: "1", margin: "0" } }],
     ["hero-size-1", { fontSize: "clamp(2.25rem, 1.467rem + 3.913vw, 4.5rem)", lineHeight: "1.1" }],
     ["hero-size-2", { fontSize: "clamp(3.5rem, 2.717rem + 3.913vw, 5.75rem)", lineHeight: "1.1" }],
@@ -176,6 +182,8 @@ export default defineConfig({
     ["prominent-", ({ $$ }) => `@(bg-${$$}-700 text-${$$} border-${$$}-800)`],
     ["medium-", ({ $$ }) => `@(bg-${$$}-200 text-${$$}-800 border-${$$}-300)`],
     ["subtle-", ({ $$ }) => `@(bg-${$$}-50 text-${$$}-800 border-${$$}-100)`],
+    ["light", `@(bg-white text-base-content border-base-300)`],
+    ["dark", `@(bg-neutral-800 text-white/90 border-base-800)`],
   ],
 
   theme: {

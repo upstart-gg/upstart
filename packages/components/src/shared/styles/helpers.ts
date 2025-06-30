@@ -64,7 +64,7 @@ function getFixedPositionedStyles(value: FixedPositionedSettings) {
   if (!value) {
     return null;
   }
-  return "fixed top-inherit left-auto right-auto self-start w-fill z-[99999] isolate";
+  return "sticky top-0 left-0 right-0 self-start w-fill z-[99999] isolate";
 }
 
 function getBorderStyles(props?: Partial<BorderSettings>) {
@@ -74,7 +74,8 @@ function getBorderStyles(props?: Partial<BorderSettings>) {
   const {
     width = "border-0",
     sides = [],
-    color = "border-transparent",
+    color,
+    // color = "border-transparent",
     style = "border-solid",
     rounding = "",
   } = props;
@@ -95,8 +96,8 @@ function getBorderStyles(props?: Partial<BorderSettings>) {
   return [propToStyle(color, "borderColor"), style, borderProcessedClass, rounding];
 }
 
-export function getBasicAlignmentStyles(props: AlignBasicSettings, mobileProps?: AlignBasicSettings) {
-  return [props.vertical, props.horizontal];
+export function getBasicAlignmentStyles(props?: AlignBasicSettings, mobileProps?: AlignBasicSettings) {
+  return [props?.vertical, props?.horizontal];
 }
 
 function getContainerLayoutStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {
@@ -111,7 +112,6 @@ function getFlexStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerL
   if (!props) {
     return [];
   }
-  console.log("getFlexStyles", props);
   if (mobileProps) {
     const mobileWrap = mobileProps.wrap ?? props.wrap;
     const mobileFillSpace = mobileProps.fillSpace ?? props.fillSpace;
@@ -165,30 +165,31 @@ function getGridStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerL
 }
 
 export const brickStylesHelpersMap = {
-  "#styles:color": getColorStyles,
-  "#styles:basicAlign": getBasicAlignmentStyles,
-  "#styles:containerLayout": getContainerLayoutStyles,
-  "#styles:textShadow": simpleClassHandler,
-  "#styles:opacity": getOpacityStyles,
-  "#styles:objectFit": simpleClassHandler,
-  "#styles:objectPosition": simpleClassHandler,
-  "#styles:heroSize": simpleClassHandler,
+  "styles:color": getColorStyles,
+  "styles:basicAlign": getBasicAlignmentStyles,
+  "styles:containerLayout": getContainerLayoutStyles,
+  "styles:textShadow": simpleClassHandler,
+  "styles:opacity": getOpacityStyles,
+  "styles:objectFit": simpleClassHandler,
+  "styles:objectPosition": simpleClassHandler,
+  "styles:heroSize": simpleClassHandler,
 
   // new test
-  "#styles:backgroundColor": getBackgroundColorStyles,
-  "#styles:background": getBackgroundStyles,
-  "#styles:border": getBorderStyles,
-  "#styles:padding": getPaddingStyles, // test
+  "styles:backgroundColor": getBackgroundColorStyles,
+  "styles:background": getBackgroundStyles,
+  // "styles:border": getBorderStyles,
+  "styles:padding": getPaddingStyles, // test
 };
 
 export const brickWrapperStylesHelpersMap = {
-  "#styles:border": getBorderStyles,
-  "#styles:padding": getPaddingStyles, // test
-  "#styles:backgroundColor": getBackgroundColorStyles,
-  "#styles:background": getBackgroundStyles,
-  "#styles:shadow": simpleClassHandler,
-  // "#styles:rounding": simpleClassHandler,
-  "#styles:fixedPositioned": getFixedPositionedStyles,
+  "styles:border": getBorderStyles,
+  "styles:padding": getPaddingStyles, // test
+  "styles:backgroundColor": getBackgroundColorStyles,
+  "styles:background": getBackgroundStyles,
+  "styles:shadow": simpleClassHandler,
+  // "styles:rounding": simpleClassHandler,
+  "styles:fixedPositioned": getFixedPositionedStyles,
+  "styles:alignSelf": simpleClassHandler,
 };
 
 // Return the upper path without the last part (the property name)

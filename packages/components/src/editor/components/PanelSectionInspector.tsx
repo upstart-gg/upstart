@@ -55,7 +55,7 @@ export default function PanelSectionInspector({ section }: { section: Section })
         <Tabs.List className="sticky top-0 z-50 bg-gray-100 dark:bg-dark-900">
           {previewMode === "desktop" && (
             <Tabs.Trigger value="preset" className="!flex-1">
-              Preset
+              Color Preset
             </Tabs.Trigger>
           )}
           <Tabs.Trigger value="settings" className="!flex-1">
@@ -93,13 +93,13 @@ function PresetsTab({ section }: { section: Section }) {
               type="button"
               onClick={() => {
                 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-                updateSectionProps(section.id, { preset: preset as any }, previewMode === "mobile");
+                updateSectionProps(section.id, { preset: preset.const as any }, previewMode === "mobile");
                 // updateBrickProps(brick.id, { preset: preset.const }, previewMode === "mobile");
               }}
               key={preset.const}
               className={tx(
                 `${preset.const}`,
-                preset.const === "preset-none" && "border-gray-200 col-span-3",
+                preset.const === "preset-none" && "border-gray-200",
                 `text-xs flex items-center justify-center text-center p-2 border
                    rounded-md hover:opacity-80`,
                 section.props.preset === preset.const && "outline outline-2 outline-upstart-400",

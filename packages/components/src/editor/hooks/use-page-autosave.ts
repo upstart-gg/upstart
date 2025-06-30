@@ -17,8 +17,6 @@ const AUTO_SAVE_MIN_INTERVAL = 1000; // Auto save every N seconds
 
 export function usePageAutoSave() {
   const draft = useDraft();
-  const editorMode = useEditorMode();
-  const siteAndPages = useSiteAndPages();
   const pageConfig = usePageInfo();
   const { onSavePage, onSaveSite, onDraftChange } = useEditorHelpers();
 
@@ -40,46 +38,24 @@ export function usePageAutoSave() {
     draft.setDirty(false);
   }, AUTO_SAVE_MIN_INTERVAL);
 
-  const saveDraft = useDebounceCallback(async () => {
-    console.debug("Saving draft", { draft, siteAndPages });
-    await onDraftChange?.(draft, siteAndPages);
-    draft.setDirty(false);
-  }, AUTO_SAVE_MIN_INTERVAL);
-
   useSectionsSubscribe((sections) => {
     console.debug("Sections have changed, updating page version", sections);
     draft.setDirty(true);
-    if (editorMode === "authenticated") {
-      savePage({ sections });
-    } else {
-      saveDraft();
-    }
+    savePage({ sections });
   });
   useAttributesSubscribe((attributes) => {
     console.debug("Attributes have changed, updating page version");
     draft.setDirty(true);
-    if (editorMode === "authenticated") {
-      savePage({ attr: attributes });
-    } else {
-      saveDraft();
-    }
+    savePage({ attr: attributes });
   });
   usePagePathSubscribe((path) => {
     console.debug("pagePath has changed, updating page version");
     draft.setDirty(true);
-    if (editorMode === "authenticated") {
-      savePage({ path });
-    } else {
-      saveDraft();
-    }
+    savePage({ path });
   });
   useThemeSubscribe((theme) => {
     console.debug("theme has changed, updating page version");
     draft.setDirty(true);
-    if (editorMode === "authenticated") {
-      saveSite({ theme });
-    } else {
-      saveDraft();
-    }
+    saveSite({ theme });
   });
 }

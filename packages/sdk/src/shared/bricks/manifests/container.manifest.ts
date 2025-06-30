@@ -21,18 +21,18 @@ export const manifest = defineBrickManifest({
   description: "A container that can hold other bricks and align them horizontally or vertically",
   aiInstructions: `A container acts as a flexbox (default) or a grid and allows you to align bricks horizontally, vertically, or in a grid. `,
   isContainer: true,
-  defaultHeight: {
-    desktop: 6,
-    mobile: 6,
-  },
   defaultWidth: {
-    desktop: 12,
-    mobile: 12,
+    desktop: 120,
+    mobile: 120,
+  },
+  minWidth: {
+    desktop: 200,
+    mobile: 200,
   },
   datasource,
   icon: RxGrid,
   props: defineProps({
-    layout: containerLayoutRef(),
+    layout: containerLayoutRef({ "ui:disable-grid": true }),
     background: optional(backgroundRef()),
     border: optional(borderRef()),
     padding: optional(paddingRef()),

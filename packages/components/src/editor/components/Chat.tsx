@@ -411,7 +411,7 @@ What should we work on together? 🤖`,
         ref={messagesListRef}
         className={tx(
           // h-full max-h-[calc(100cqh-250px)]
-          ` overflow-y-auto h-full max-h-[inherit] p-2 pr-4
+          ` overflow-y-auto h-full max-h-[inherit] p-2
             flex flex-col gap-y-2.5 flex-grow scroll-smooth scrollbar-thin relative`,
           {
             "rounded-tr-xl shadow-inner": generationState.isReady === true,
@@ -419,7 +419,7 @@ What should we work on together? 🤖`,
           css({
             scrollbarColor: "var(--violet-a8) var(--violet-a2)",
             // scrollbarColor: "var(--violet-4) var(--violet-2)",
-            scrollbarGutter: "stable",
+            // scrollbarGutter: "stable",
           }),
         )}
       >

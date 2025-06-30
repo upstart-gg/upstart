@@ -39,14 +39,7 @@ export const manifest = defineBrickManifest({
   aiInstructions: "This brick should mostly be used for image galleries and collections.",
   defaultInspectorTab: "content",
   isContainer: false,
-  minWidth: {
-    mobile: 10,
-    desktop: 10,
-  },
-  minHeight: {
-    mobile: 10,
-    desktop: 10,
-  },
+
   icon: IoGridOutline,
   props: defineProps({
     datasource: optional(datasourceRef()),

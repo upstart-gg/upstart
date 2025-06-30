@@ -14,6 +14,7 @@ const ImageField: FC<FieldProps<ImageProps>> = (props) => {
   const { schema, formData, onChange, required, title, description, currentValue = { src: "" } } = props;
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);
+
   // const [src, setSrc] = useState<string | null>(currentValue.src);
 
   const onPropsChange = (newVal: Partial<ImageProps>) => {
@@ -42,7 +43,13 @@ const ImageField: FC<FieldProps<ImageProps>> = (props) => {
             required={required}
           />
           <span className="flex-1">&nbsp;</span>
-          <Button variant="soft" size="1" radius="full">
+          <Button
+            variant="soft"
+            size="1"
+            radius="full"
+            type="button"
+            // onClick={(e) => e.preventDefault()}
+          >
             <label
               className="!leading-[inherit] !mb-0 !font-medium !text-inherit cursor-[inherit]"
               htmlFor={id}
@@ -63,13 +70,15 @@ const ImageField: FC<FieldProps<ImageProps>> = (props) => {
         <>
           <div className="basis-full w-0" />
           <div
-            className="border border-upstart-200 p-2 mt-3 ml-auto w-full h-auto relative"
-            style={{
-              backgroundImage: `url(${currentValue.src})`,
-              // backgroundSize: "12px 12px",
-            }}
+            className="border border-upstart-200 p-1.5 bg-white mt-3 ml-auto w-full h-auto max-h-[120px] relative"
+            style={
+              {
+                // backgroundImage: `url(${currentValue.src})`,
+                // backgroundSize: "12px 12px",
+              }
+            }
           >
-            <img src={currentValue.src} alt="Preview" className="max-w-full h-auto object-cover" />
+            <img src={currentValue.src} alt="Preview" className="w-full h-auto max-h-[100px] object-cover" />
             <div className="absolute flex items-center justify-center top-1 right-1 text-gray-500 p-0.5 bg-white cursor-pointer hover:(bg-red-800 text-white) rounded border border-gray-300 shadow-sm">
               <IoMdClose className="w-4 h-4 " onClick={() => onPropsChange({ src: "" })} />
             </div>

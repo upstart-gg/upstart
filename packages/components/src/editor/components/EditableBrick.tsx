@@ -32,6 +32,7 @@ import {
   type Placement,
 } from "@upstart.gg/style-system/system";
 import BaseBrick from "~/shared/components/BaseBrick";
+import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
 import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
 import {
   menuBarBtnCls,
@@ -39,13 +40,14 @@ import {
   menuBarBtnSquareCls,
   menuNavBarCls,
 } from "~/shared/styles/menubar-styles";
-import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
-import { FiSettings, FiDatabase } from "react-icons/fi";
 import { tx } from "@upstart.gg/style-system/twind";
 import { Draggable } from "@hello-pangea/dnd";
-import { Resizable, type ResizeCallback } from "re-resizable";
-import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
+import ResizeHandle from "./ResizeHandle";
+import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
+import { commonProps } from "@upstart.gg/sdk/shared/bricks/props/common";
+import { getBrickResizeOptions } from "~/shared/utils/layout-utils";
+import useIsHovered from "../hooks/use-is-hovered";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -85,7 +87,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const previewMode = usePreviewMode();
     const { panelPosition } = usePanel();
     const editorHelpers = useEditorHelpers();
-    const draftHelpers = useDraftHelpers();
     const { getParentBrick } = useDraftHelpers();
     const manifest = useBrickManifest(brick.type);
     const parentBrick = getParentBrick(brick.id);
@@ -121,13 +122,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
 
     const { getReferenceProps, getFloatingProps } = useInteractions([hover]);
 
-    const wrapperClass = useBrickWrapperStyle({
-      brick,
-      editable: true,
-      selected: selectedBrickId === brick.id,
-      isContainerChild,
-    });
-
     useEffect(() => {
       if (barsRefs.reference.current) {
         const onMouseMove = () => {
@@ -161,14 +155,10 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const onBrickWrapperClick = useCallback(
       (e: MouseEvent<HTMLElement>) => {
         const brickTarget = e.currentTarget as HTMLElement;
-        const target = e.target as HTMLElement;
-
         if (hasMouseMoved.current || !brickTarget.matches("[data-brick]")) {
           return;
         }
-
         let selectedBrick = brick;
-
         // If has shift key pressed, then we try to select the upper container
         if (e.shiftKey) {
           if (parentBrick) {
@@ -185,31 +175,26 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       [panelPosition],
     );
 
-    const handleResize: ResizeCallback = (event, direction, ref, delta) => {
-      // Handle resize logic here if needed during resize
-    };
-
-    const handleResizeStop: ResizeCallback = (event, direction, ref, delta) => {
-      // Update brick size in the store
-      const newWidth = ref.offsetWidth;
-      const newHeight = ref.offsetHeight;
-
-      draftHelpers.updateBrickProps(brick.id, {
-        width: newWidth,
-        height: newHeight,
-      });
-
-      // Auto-adjust mobile layout if needed
-      if (previewMode === "desktop") {
-        draftHelpers.adjustMobileLayout();
-      }
-    };
-
     return (
-      <Draggable draggableId={brick.id} index={index} isDragDisabled={!manifest.movable}>
+      <Draggable
+        key={brick.id}
+        draggableId={brick.id}
+        index={index}
+        isDragDisabled={!manifest.movable || isContainerChild}
+      >
         {(provided, snapshot) => {
+          const { ref: hoverRef, isHovered } = useIsHovered({ tolerance: 6 });
+          const wrapperClass = useBrickWrapperStyle({
+            brick,
+            editable: true,
+            selected: selectedBrickId === brick.id,
+            isContainerChild,
+          });
+
           // Merge all refs properly to avoid render loops
-          const mergedRef = useMergeRefs([provided.innerRef, barsRefs.setReference, ref]);
+          const mergedRef = useMergeRefs([provided.innerRef, barsRefs.setReference, ref, hoverRef]);
+
+          const resizeOpts = getBrickResizeOptions(brick, manifests[brick.type], previewMode);
 
           const brickContent = (
             <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
@@ -228,9 +213,9 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 data-draggable-for-brick-id={brick.id}
                 className={tx(
                   wrapperClass,
-                  "relative origin-center min-w-[100px]",
-                  snapshot.isDragging &&
-                    "opacity-80 !z-[9999] shadow-xl bg-upstart-600/30 rounded-2xl scale-90 overflow-hidden",
+                  snapshot.isDragging
+                    ? "opacity-90 !z-[9999] shadow-xl overflow-hidden !cursor-grabbing outline-red-700 outline-2"
+                    : "hover:cursor-auto",
                 )}
                 onClick={onBrickWrapperClick}
               >
@@ -244,34 +229,37 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                   show={isMenuBarVisible}
                   {...getFloatingProps()}
                 />
-                {!snapshot.isDragging && children}{" "}
                 {/* Children contains resizable handles and other elements */}
+                {manifests[brick.type]?.resizable && !snapshot.isDragging && (
+                  <>
+                    {(resizeOpts.canGrowVertical || resizeOpts.canShrinkVertical) && (
+                      <>
+                        <ResizeHandle direction="s" show={isHovered} manifest={manifest} />
+                        <ResizeHandle direction="n" show={isHovered} manifest={manifest} />
+                      </>
+                    )}
+                    {(resizeOpts.canGrowHorizontal || resizeOpts.canShrinkHorizontal) && (
+                      <>
+                        <ResizeHandle direction="w" show={isHovered} manifest={manifest} />
+                        <ResizeHandle direction="e" show={isHovered} manifest={manifest} />
+                      </>
+                    )}
+                    {((resizeOpts.canGrowVertical && resizeOpts.canGrowHorizontal) ||
+                      (resizeOpts.canShrinkVertical && resizeOpts.canShrinkHorizontal)) && (
+                      <>
+                        <ResizeHandle direction="se" show={isHovered} manifest={manifest} />
+                        <ResizeHandle direction="sw" show={isHovered} manifest={manifest} />
+                        <ResizeHandle direction="ne" show={isHovered} manifest={manifest} />
+                        <ResizeHandle direction="nw" show={isHovered} manifest={manifest} />
+                      </>
+                    )}
+                  </>
+                )}
               </div>
             </BrickContextMenu>
           );
 
-          return manifest.resizable ? (
-            <Resizable
-              onResize={handleResize}
-              onResizeStop={handleResizeStop}
-              grid={[20, 20]} // Grid snapping - adjust as needed
-              bounds="parent"
-              enable={{
-                top: true,
-                right: true,
-                bottom: true,
-                left: true,
-                topRight: true,
-                bottomRight: true,
-                bottomLeft: true,
-                topLeft: true,
-              }}
-            >
-              {brickContent}
-            </Resizable>
-          ) : (
-            brickContent
-          );
+          return brickContent;
         }}
       </Draggable>
     );
@@ -342,35 +330,7 @@ function BrickTextNavBar({ brick }: { brick: Brick }) {
       id={`text-editor-menu-${brick.id}`}
       // Hide the menu if it doesn't have any children so that the border doesn't show up
       className={tx("contents", menuNavBarCls, "!empty:hidden")}
-      // className={tx("contents", menuNavBarCls, "!empty:hidden")}
     />
-  );
-}
-
-function BrickMainNavBar({ brick }: { brick: Brick }) {
-  const { deleteBrick } = useDraftHelpers();
-  const manifest = manifests[brick.type];
-  if (!manifest) {
-    return null;
-  }
-
-  return (
-    <nav className={tx(menuNavBarCls)} data-ui data-ui-options-bar>
-      {/* <span className={tx(menuBarBtnCls, menuBarBtnCommonCls, "block capitalize pointer-events-none")}>
-        {manifest.type}
-      </span> */}
-
-      {/* Settings & styles */}
-      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-        <FiSettings className={tx("w-5 h-5")} />
-        {/* <span className={tx(menuBarTooltipCls)}>Settings</span> */}
-      </button>
-      {/* Content */}
-      <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls, menuBarBtnSquareCls)}>
-        <FiDatabase className={tx("w-5 h-5")} />
-        {/* <span className={tx(menuBarTooltipCls)}>Dynamic content</span> */}
-      </button>
-    </nav>
   );
 }
 
@@ -417,7 +377,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
               </ContextMenu.Item>
             )}
 
-            <ContextMenu.Item
+            {/* <ContextMenu.Item
               shortcut="⌘C"
               onClick={(e) => {
                 navigator.clipboard
@@ -437,7 +397,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
               }}
             >
               Copy
-            </ContextMenu.Item>
+            </ContextMenu.Item> */}
             {canMoveLeft && (
               <ContextMenu.Item
                 shortcut="⌘&larr;"
@@ -480,6 +440,25 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                 </ContextMenu.CheckboxItem>
               </ContextMenu.SubContent>
             </ContextMenu.Sub>
+            <ContextMenu.Sub>
+              <ContextMenu.SubTrigger>Position</ContextMenu.SubTrigger>
+              <ContextMenu.SubContent>
+                {Object.entries(normalizeSchemaEnum(commonProps.alignSelf)).map(([key, value]) => (
+                  <ContextMenu.CheckboxItem
+                    key={key}
+                    checked={brick.props.alignSelf === value.const}
+                    onClick={(e) => e.stopPropagation()}
+                    onCheckedChange={() =>
+                      draftHelpers.updateBrickProps(brick.id, {
+                        alignSelf: value.const,
+                      })
+                    }
+                  >
+                    {value.title}
+                  </ContextMenu.CheckboxItem>
+                ))}
+              </ContextMenu.SubContent>
+            </ContextMenu.Sub>
             {parentContainer && (
               <>
                 <ContextMenu.Separator />
@@ -494,14 +473,14 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                     >
                       Duplicate container
                     </ContextMenu.Item>
-                    <ContextMenu.Item
+                    {/* <ContextMenu.Item
                       onClick={(e) => {
                         e.stopPropagation();
                         navigator.clipboard.writeText(JSON.stringify(parentContainer));
                       }}
                     >
                       Copy container
-                    </ContextMenu.Item>
+                    </ContextMenu.Item> */}
                     <ContextMenu.Item
                       onClick={(e) => {
                         e.stopPropagation();

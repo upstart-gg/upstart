@@ -7,7 +7,7 @@ export function border(title = "Border") {
   return group({
     title,
     options: {
-      "ui:styleId": "#styles:border",
+      "ui:styleId": "styles:border",
       // "ui:advanced": true,
       $id: "styles:border",
     },
@@ -84,7 +84,7 @@ export function border(title = "Border") {
 }
 
 export function borderRef(options: SchemaOptions = {}) {
-  return typedRef("styles:border", { ...options, "ui:styleId": "#styles:border" });
+  return typedRef("styles:border", options);
 }
 
 export type BorderSettings = Static<ReturnType<typeof border>>;

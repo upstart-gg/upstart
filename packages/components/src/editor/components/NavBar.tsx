@@ -51,7 +51,8 @@ export default function NavBar() {
   const { undo, redo, futureStates, pastStates } = useDraftUndoManager();
   const canRedo = useMemo(() => futureStates.length > 0, [futureStates]);
   const canUndo = useMemo(() => pastStates.length > 0, [pastStates]);
-  const currentPageLabel = pages.find((page) => page.id === draft.id)?.label;
+  const currentPageLabel =
+    pages.find((page) => page.id === draft.id)?.label ?? draft.label ?? "Untitled Page";
   const generationState = useGenerationState();
 
   const publish = useCallback(
@@ -130,6 +131,12 @@ export default function NavBar() {
       </button>
 
       <div className={tx("flex items-center gap-1 flex-1", !generationState.isReady && "hidden")}>
+        <TopbarMenu
+          id="switch-page-menu-btn"
+          items={[
+            { label: "New page", onClick: createPage },
+            { label: "Duplicate page", onClick: duplicatePage },
+            { type: "separator" as const },
         {(editorMode === "authenticated" || (editorMode === "anonymous" && pages.length > 1)) && (
           <TopbarMenu
             id="switch-page-menu-btn"
@@ -139,36 +146,37 @@ export default function NavBar() {
               { label: "Add form schema", onClick: () => editorHelpers.onShowPopup?.("add-form-schema") },
               { type: "separator" as const },
 
-              ...(pages.length > 1 ? [{ type: "label", label: "Switch to page" } as const] : []),
-              ...(pages.length > 1
-                ? pages.map((page) => ({
-                    label: page.label,
-                    type: "checkbox" as const,
-                    checked: draft.id === page.id || draft.path === page.path,
-                    onClick: () => {
-                      if (editorMode === "anonymous") {
-                        window.location.href = `/editor/sites/${draft.siteId}/edit?p=${page.id}&r=${Date.now()}`;
-                      } else {
-                        const currentURL = new URL(window.location.href);
-                        currentURL.searchParams.set("p", page.id);
-                        currentURL.searchParams.set("r", `${Date.now()}`);
-                        window.location.href = currentURL.href;
-                      }
-                    },
-                  }))
-                : []),
-            ]}
-          >
-            <button type="button" className={tx(btnClass, commonCls, btnWithArrow, "!px-1.5 ml-4")}>
-              <VscCopy className={tx("h-5 w-auto")} />
-              <div className={tx("flex flex-col gap-1 ml-1.5 mr-2 justify-start items-start")}>
-                <span className={tx("text-xs inline-block")}>Page</span>
-                <span className={tx("text-sm inline-block -mt-[8px] font-semibold")}>{currentPageLabel}</span>
-              </div>
-              <RiArrowDownSLine className={tx(arrowClass)} />
-            </button>
-          </TopbarMenu>
-        )}
+            ...(pages.length > 1 ? [{ type: "label", label: "Switch to page" } as const] : []),
+            ...(pages.length > 1
+              ? pages.map((page) => ({
+                  label: page.label,
+                  type: "checkbox" as const,
+                  checked: draft.id === page.id || draft.path === page.path,
+                  onClick: () => {
+                    if (editorMode === "anonymous") {
+                      window.location.href = `/editor/sites/${draft.siteId}/edit?p=${page.id}&r=${Date.now()}`;
+                    } else {
+                      const currentURL = new URL(window.location.href);
+                      currentURL.searchParams.set("p", page.id);
+                      currentURL.searchParams.set("r", `${Date.now()}`);
+                      window.location.href = currentURL.href;
+                    }
+                  },
+                }))
+              : []),
+          ]}
+        >
+          <button type="button" className={tx(btnClass, commonCls, btnWithArrow, "!px-1.5 ml-4")}>
+            <VscCopy className={tx("h-5 w-auto")} />
+            <div className={tx("flex flex-col gap-1 ml-1.5 mr-2 justify-start items-start")}>
+              <span className={tx("text-xs inline-block")}>Page</span>
+              <span className={tx("text-sm inline-block -mt-[8px] font-semibold max-w-[140px] truncate")}>
+                {currentPageLabel}
+              </span>
+            </div>
+            <RiArrowDownSLine className={tx(arrowClass)} />
+          </button>
+        </TopbarMenu>
 
         {/* spacer */}
         <div className={tx(baseCls, "max-lg:hidden flex-1")} />

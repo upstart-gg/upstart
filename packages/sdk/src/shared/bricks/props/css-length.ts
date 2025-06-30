@@ -1,5 +1,5 @@
 import { type Static, Type, type StringOptions } from "@sinclair/typebox";
-import { prop } from "./helpers";
+import { prop } from "./prop";
 import { typedRef } from "~/shared/utils/typed-ref";
 
 export const cssUnits = ["px", "%", "em", "rem", "vh", "vw", "dvh", "dvw", "rlh", "lh", "cqh", "cqw"];
@@ -12,9 +12,9 @@ export function cssLength(options: StringOptions = {}) {
       description: `A CSS length value. Must be a number with a unit (e.g. "10px", "50%"). The unit can be one of the following: ${cssUnits?.join(", ")}.`,
       title: "Length",
       default: options.default,
-      ...options,
       "ui:field": "css-length",
       "ui:css-units": cssUnits,
+      ...options,
     }),
   });
 }

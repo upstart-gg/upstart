@@ -11,9 +11,9 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
   const currentSectionId = useSelectedSectionId();
   const [hoverElement, setHoverElement] = useState<{ type: string; id: string }>();
 
-  useEffect(() => {
-    console.log("hoverElement changed", hoverElement);
-  }, [hoverElement]);
+  // useEffect(() => {
+  //   console.log("hoverElement changed", hoverElement);
+  // }, [hoverElement]);
 
   function mapBricks(bricks: Brick[], level = 0) {
     return bricks.map((brick) => {
