@@ -16,8 +16,6 @@ const Vbox = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
   const classes = Object.values(styles);
   const ds = useDatasource(props.datasource, manifest.datasource);
 
-  console.log("Vbox brick", brick, "with props", props, "and styles", styles);
-
   // If this container is Dynamic
   if (ds.datasourceId && props.$childrenType) {
     console.log("override childrenBricks with data from datasource", ds.data);

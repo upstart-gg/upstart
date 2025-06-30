@@ -19,6 +19,7 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { processSections } from "@upstart.gg/sdk/shared/bricks";
 import { useResizable } from "../hooks/use-resizable";
 import { useGridObserver } from "../hooks/use-grid-observer";
+import { renderClone } from "./PanelLibrary";
 
 type EditablePageProps = {
   showIntro?: boolean;
@@ -139,17 +140,32 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         style={{
           zoom,
         }}
-        data-dropzone
       >
-        <Droppable droppableId="sections" type="section" direction="vertical">
-          {(provided) => (
-            <div ref={provided.innerRef} {...provided.droppableProps} className={tx("contents")}>
-              {processSections(sections).map((section, index) => (
-                <Section key={section.id} section={section} index={index} />
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
+        <Droppable
+          droppableId="page"
+          type="brick"
+          direction="vertical"
+          // mode="virtual"
+          renderClone={renderClone}
+          // isCombineEnabled
+          // isDropDisabled
+        >
+          {(provided, snapshot) => {
+            return (
+              <div
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                className={tx("h-[100cqh]", pageClassName)}
+              >
+                {processSections(sections).map((section, index) => (
+                  <Section key={section.id} section={section} index={index} />
+                ))}
+                {/* @hello-pangea/dnd warns about not putting the snapshot.placeholder here, but it works fine without it, and more importantly, it's the only
+                trick I found to make the library not doing some free space, because we don't want free space here
+                */}
+              </div>
+            );
+          }}
         </Droppable>
       </div>
       <Toaster

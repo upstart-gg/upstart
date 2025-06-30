@@ -118,7 +118,7 @@ function getBrickWrapperEditorStyles(
     return null;
   }
   return [
-    "select-none transition-colors delay-100 duration-200",
+    "select-none transition-[outline] delay-100 duration-[200ms]",
     "outline outline-transparent",
     selected && !isContainer && "!outline-upstart-400 shadow-xl shadow-upstart-500/20",
     selected && isContainer && "!outline-orange-300 shadow-xl",

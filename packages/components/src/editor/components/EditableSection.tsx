@@ -1,5 +1,5 @@
 import interact from "interactjs";
-import type { Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
+import { generateId, type Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
 import {
   useDraftHelpers,
   useEditorHelpers,
@@ -32,7 +32,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
 
   const { setSelectedSectionId, setPanel } = useEditorHelpers();
   const { resizing } = useResizableSection(section);
-
+  const draftHelpers = useDraftHelpers();
   const previewMode = usePreviewMode();
   const selectedSectionId = useSelectedSectionId();
   const selectedBrickId = useSelectedBrickId();
@@ -59,7 +59,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
   };
 
   return (
-    <Droppable droppableId={section.id} type="brick" direction="horizontal" ignoreContainerClipping>
+    <Droppable droppableId={section.id} type="brick" direction="horizontal">
       {(droppableProvided, droppableSnapshot) => (
         <section
           key={id}
@@ -81,10 +81,19 @@ export default function EditableSection({ section, index }: EditableSectionProps
             ))}
 
           {bricks.length === 0 && (
-            <div className="w-full self-stretch min-h-40 flex-1 text-center rounded bg-gray-100 flex justify-center items-center text-base text-black/50 font-medium">
-              This is a section.
-              <br />
-              Drag bricks here to stack them inside.
+            <div className="w-full self-stretch h-full flex-grow text-center rounded bg-gray-50 hover:bg-upstart-50 flex flex-col justify-center items-center text-base text-black/50 font-medium">
+              This section is empty.
+              <span>
+                Drag bricks here to stack them inside, or{" "}
+                <button
+                  type="button"
+                  onClick={() => draftHelpers.deleteSection(section.id)}
+                  className="text-red-800 inline-block hover:underline"
+                >
+                  delete it
+                </button>
+                .
+              </span>
             </div>
           )}
           {droppableProvided.placeholder}
@@ -271,7 +280,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
             <DropdownMenu.Item
               onClick={(e) => {
                 e.stopPropagation();
-                draftHelpers.createEmptySection(section.id);
+                draftHelpers.createEmptySection(`s_${generateId()}`, section.id);
               }}
             >
               <div className="flex items-center justify-start gap-2">

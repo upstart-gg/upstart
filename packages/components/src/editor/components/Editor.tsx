@@ -66,6 +66,7 @@ export default function Editor(props: EditorProps) {
 
     // If dropped outside a valid droppable area
     if (!destination) {
+      console.warn("Dropped outside a valid droppable area, no action taken.");
       return;
     }
 
@@ -124,6 +125,18 @@ export default function Editor(props: EditorProps) {
         console.log(
           `Added new brick ${draggableId} to container ${destinationContainer.id} at index ${destination.index} in section ${sectionId}`,
         );
+      }
+
+      if (destination.droppableId === "page") {
+        console.log("Brick has been dropped on page!");
+        const newSectionId = `s_${generateId()}`;
+        draftHelpers.createEmptySection(newSectionId);
+        const newBrick = {
+          ...defaultProps[draggableId],
+          id: `b_${generateId()}`,
+        } satisfies Brick;
+        // Add a new brick to the page
+        draftHelpers.addBrick(newBrick, newSectionId, 0, null);
       }
 
       // Handle adding a new brick to a section
@@ -185,25 +198,6 @@ export default function Editor(props: EditorProps) {
       }
     }
   };
-
-  // useEffect(() => {
-  //   if (generationState.isReady || !images?.length) {
-  //     return;
-  //   }
-  //   // If generation is not ready, set a random background image from the images
-  //   const randomImage = images[Math.floor(Math.random() * images.length)];
-  //   setBgImg(randomImage);
-  //   const itv = setInterval(async () => {
-  //     const randomImage = images[Math.floor(Math.random() * images.length)];
-
-  //     // preload the image to avoid flickering
-  //     const img = new Image();
-  //     img.src = randomImage.url;
-  //     await img.decode(); // Wait for the image to load
-  //     setBgImg(randomImage);
-  //   }, 10000); // Change every 10 seconds
-  //   return () => clearInterval(itv);
-  // }, [generationState.isReady, images]);
 
   if (!editorEnabled) {
     return (

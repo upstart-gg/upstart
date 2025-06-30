@@ -25,7 +25,6 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
       // full height
       section.props.minHeight === "full" && editable && "min-h-[calc(100dvh-60px)]", // when in editor mode
       section.props.minHeight === "full" && !editable && "min-h-dvh", // when in real mode
-      typeof section.props.minHeight === "undefined" && "min-h-[100px]", // when in real mode
 
       section.props.alignItems,
       section.props.justifyContent,
@@ -57,11 +56,13 @@ function getSectionEditorStyles({ section, editable, selected, previewMode }: Us
     return null;
   }
   return [
-    "select-none transition-colors duration-500 relative",
+    "select-none transition-[outline] duration-[200ms] delay-100 relative",
     "outline-dashed outline-2 -outline-offset-2 hover:(outline-upstart-500/60 shadow-upstart-500/20)",
     "self-stretch",
 
     selected ? "outline-upstart-500" : "outline-transparent",
+
+    "min-h-[120px]",
 
     // this is the grid overlay shown when dragging
     editable &&
