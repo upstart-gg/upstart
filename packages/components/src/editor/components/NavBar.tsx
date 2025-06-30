@@ -134,18 +134,10 @@ export default function NavBar() {
         <TopbarMenu
           id="switch-page-menu-btn"
           items={[
-            { label: "New page", onClick: createPage },
-            { label: "Duplicate page", onClick: duplicatePage },
-            { type: "separator" as const },
-        {(editorMode === "authenticated" || (editorMode === "anonymous" && pages.length > 1)) && (
-          <TopbarMenu
-            id="switch-page-menu-btn"
-            items={[
-              { label: "New page", onClick: () => editorHelpers.onShowPopup?.("add-page") },
+            { label: "New page", onClick: () => editorHelpers.onShowPopup?.("add-page") },
               { label: "Duplicate page", onClick: () => editorHelpers.onShowPopup?.("duplicate-page") },
               { label: "Add form schema", onClick: () => editorHelpers.onShowPopup?.("add-form-schema") },
               { type: "separator" as const },
-
             ...(pages.length > 1 ? [{ type: "label", label: "Switch to page" } as const] : []),
             ...(pages.length > 1
               ? pages.map((page) => ({
