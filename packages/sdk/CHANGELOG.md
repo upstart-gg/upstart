@@ -1,5 +1,14 @@
 # @upstart.gg/sdk
 
+## 0.0.114
+
+### Patch Changes
+
+- [#353](https://github.com/upstart-gg/upstart/pull/353) [`e709fcb`](https://github.com/upstart-gg/upstart/commit/e709fcbe493df3808ea1b1996d5ce6484f2cde8d) Thanks [@mattallty](https://github.com/mattallty)! - More elements
+
+- Updated dependencies [[`e709fcb`](https://github.com/upstart-gg/upstart/commit/e709fcbe493df3808ea1b1996d5ce6484f2cde8d)]:
+  - @upstart.gg/style-system@0.0.114
+
 ## 0.0.113
 
 ### Patch Changes
