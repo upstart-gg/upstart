@@ -174,7 +174,10 @@ export default function NavBar() {
               : []),
           ]}
         >
-          <button type="button" className={tx(btnClass, commonCls, btnWithArrow, "!px-1.5 ml-4")}>
+          <button
+            type="button"
+            className={tx(btnClass, commonCls, btnWithArrow, "!px-1.5 ml-4 cursor-pointer")}
+          >
             <VscCopy className={tx("h-5 w-auto")} />
             <div className={tx("flex flex-col gap-1 ml-1.5 mr-2 justify-start items-start")}>
               <span className={tx("text-xs inline-block")}>Page</span>

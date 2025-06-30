@@ -356,16 +356,6 @@ export function makeContainerProps() {
 export function sectionLayout(options: SchemaOptions = {}) {
   return Type.Object(
     {
-      gap: Type.Optional(
-        cssLength({
-          title: "Gap",
-          default: "10px",
-          description:
-            "Space between items. Can be a tailwind gap class like 'gap-1' or 'gap-2', or a custom value like '10px'",
-          "ui:placeholder": "Not specified",
-          "ui:styleId": "styles:gap",
-        }),
-      ),
       wrap: optional(
         Type.Boolean({
           title: "Wrap",
@@ -399,27 +389,19 @@ export function sectionLayout(options: SchemaOptions = {}) {
               "Evenly distributed",
               "Stretch",
             ],
-            title: "Justify",
-            description: "Justify content along the main axis (horizontal for row, vertical for column)",
+            title: "Justify bricks",
+            description: "Justify bricks horizontally",
             "ui:placeholder": "Not specified",
           },
         ),
       ),
-      alignItems: optional(
-        Type.Union(
-          [
-            Type.Literal("items-start", { title: "Start" }),
-            Type.Literal("items-center", { title: "Center" }),
-            Type.Literal("items-end", { title: "End" }),
-            Type.Literal("items-stretch", { title: "Stretch" }),
-          ],
-          {
-            title: "Alignment",
-            description: "Align items along the cross axis (vertical for row, horizontal for column)",
-            "ui:placeholder": "Not specified",
-            "ui:display": "button-group",
-          },
-        ),
+      alignItems: Type.Optional(
+        StringEnum(["items-start", "items-center", "items-end", "items-stretch"], {
+          enumNames: ["Start", "Center", "End", "Stretch"],
+          title: "Align bricks",
+          description: "Align bricks vertically",
+          "ui:placeholder": "Not specified",
+        }),
       ),
     },
     { $id: "styles:sectionLayout" },

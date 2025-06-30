@@ -65,12 +65,19 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       const target = event.target as HTMLElement;
       const brickId = target.dataset.brickId as string;
       const brickType = target.dataset.brickType as string;
-      console.log("Resize ended for brick %s of type %s", brickId, brickType, event.rect);
       target.style.setProperty("transition", "top,margin-right,margin-bottom,height 0.3s ease-in-out");
+
+      // TODO: use % instead of pixels. We can use the pageRef to calculate the percentage
+      const pageWidth = pageRef.current?.clientWidth;
+      if (!pageWidth) {
+        console.warn("Page width is not available, cannot update brick props.");
+        return;
+      }
       draftHelpers.updateBrickProps(brickId, {
-        width: `${event.rect.width}px`,
+        width: `${(event.rect.width / pageWidth) * 100}%`,
         height: `${event.rect.height}px`,
       });
+
       target.style.removeProperty("top");
       target.style.removeProperty("left");
       target.style.removeProperty("margin-bottom");

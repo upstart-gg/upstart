@@ -18,7 +18,7 @@ import { useEditorHotKeys } from "../hooks/use-editor-hot-keys";
 import ThemesPreviewList from "./ThemesPreviewList";
 import BlankWaitPage from "./BlankWaitPage";
 import type { GenerationState } from "@upstart.gg/sdk/shared/context";
-import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
+import { DragDropContext, type OnDragStartResponder, type DropResult } from "@hello-pangea/dnd";
 import { defaultProps, manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { type Brick, generateId } from "@upstart.gg/sdk/shared/bricks";
 
@@ -54,6 +54,11 @@ export default function Editor(props: EditorProps) {
     }
   }, [draft.previewTheme, draft.theme]);
 
+  const handleDragStart: OnDragStartResponder = (result) => {
+    const { draggableId, type } = result;
+    console.log("DragStart result:", result);
+  };
+
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId, type } = result;
 
@@ -66,6 +71,7 @@ export default function Editor(props: EditorProps) {
 
     // If dropped in the same position
     if (destination.droppableId === source.droppableId && destination.index === source.index) {
+      console.log("Dropped in the same position, no action taken.");
       return;
     }
 
@@ -212,7 +218,7 @@ export default function Editor(props: EditorProps) {
   }
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
+    <DragDropContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
       <div
         id="editor"
         className={tx(

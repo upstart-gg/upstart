@@ -46,6 +46,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
   const onClick = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
     if (e.defaultPrevented || resizing || target.nodeName !== "SECTION") {
+      console.log("Click prevented on section");
       // If the click was handled by a child element, do not propagate
       return;
     }
@@ -66,7 +67,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
           }}
           data-element-kind="section"
           onClick={onClick}
-          className={className}
+          className={tx(className)}
           {...droppableProvided.droppableProps}
         >
           {!selectedBrickId && <SectionOptionsButtons section={section} />}

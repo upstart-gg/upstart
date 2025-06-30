@@ -18,8 +18,8 @@ export default function ResizeHandle({
         "overflow-visible z-[9998]",
         `resizable-handle-${direction}`,
         {
-          "bottom-0 left-0 right-0 h-[10px] w-[inherit] cursor-row-resize": direction === "s",
-          "top-0 left-0 right-0 h-[10px] w-[inherit] cursor-row-resize": direction === "n",
+          "bottom-0 left-0 right-0 h-[10px] cursor-row-resize": direction === "s",
+          "top-0 left-0 right-0 h-[10px] cursor-row-resize": direction === "n",
           "top-0 left-0 bottom-0 w-[10px] cursor-col-resize": direction === "w",
           "top-0 right-0 bottom-0 w-[10px] cursor-col-resize": direction === "e",
           // sw and nw
