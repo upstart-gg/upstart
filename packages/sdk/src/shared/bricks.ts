@@ -211,6 +211,14 @@ export const sectionProps = Type.Object(
         default: "items-stretch",
       }),
     ),
+    gap: Type.Optional(
+      cssLengthRef({
+        title: "Gap",
+        description: "The gap between the bricks in the section.",
+        default: "12px",
+        "ui:styleId": "gap",
+      }),
+    ),
     lastTouched: Type.Optional(
       Type.Number({
         description: "Do not use this field. It is used internally by the editor.",

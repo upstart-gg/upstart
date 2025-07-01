@@ -1,5 +1,4 @@
 export const LAYOUT_COLS = 24;
-export const GAP = 12;
 
 export const LAYOUT_BREAKPOINTS = {
   desktop: 1024,
