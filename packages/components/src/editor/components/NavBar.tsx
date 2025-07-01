@@ -96,7 +96,7 @@ export default function NavBar() {
   );
 
   // bg-upstart-600
-  const baseCls = tx(`transition-opacity duration-300 px-3 min-w-[2.5rem]`);
+  const baseCls = tx(`transition-opacity duration-300 px-2 min-w-[2.5rem]`);
 
   const commonCls = `${baseCls}
     hover:bg-upstart-100 dark:hover:bg-white/10
@@ -120,7 +120,7 @@ export default function NavBar() {
 
   const squareBtn = "aspect-square";
   const arrowClass = "h-4 w-4 opacity-60 -ml-0.5";
-  const separator = tx("h-[70%] w-px bg-black/10 mx-1.5");
+  const separator = tx("h-[70%] w-px bg-black/10 mx-1");
 
   return (
     <nav
@@ -176,12 +176,12 @@ export default function NavBar() {
         >
           <button
             type="button"
-            className={tx(btnClass, commonCls, btnWithArrow, "!px-1.5 ml-4 cursor-pointer")}
+            className={tx(btnClass, commonCls, btnWithArrow, "!px-1.5 ml-4 cursor-pointer !py-2")}
           >
             <VscCopy className={tx("h-5 w-auto")} />
             <div className={tx("flex flex-col gap-1 ml-1.5 mr-2 justify-start items-start")}>
-              <span className={tx("text-xs inline-block")}>Page</span>
-              <span className={tx("text-sm inline-block -mt-[8px] font-semibold max-w-[200px] truncate")}>
+              <span className={tx("text-xs inline-block font-thiner")}>Page</span>
+              <span className={tx("text-sm inline-block -mt-[7px] font-medium max-w-[10dvw] truncate")}>
                 {currentPageLabel}
               </span>
             </div>
@@ -190,7 +190,7 @@ export default function NavBar() {
         </TopbarMenu>
 
         {/* spacer */}
-        <div className={tx(baseCls, "max-lg:hidden flex-1")} />
+        <div className={tx("max-lg:hidden flex-1")} />
 
         <Tooltip content="Toggle chat" side="bottom" align="center">
           <button

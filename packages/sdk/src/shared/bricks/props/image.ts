@@ -1,4 +1,4 @@
-import { type SchemaOptions, Type, type Static } from "@sinclair/typebox";
+import { type SchemaOptions, Type, type Static, type ObjectOptions } from "@sinclair/typebox";
 import { prop } from "./helpers";
 import { typedRef } from "~/shared/utils/typed-ref";
 // import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
@@ -7,7 +7,7 @@ type PropImageOptions = {
   defaultImageUrl?: string;
   showImgSearch?: boolean;
   noObjectOptions?: boolean;
-};
+} & ObjectOptions;
 
 export function image(title = "Image", options: PropImageOptions = {}) {
   const { defaultImageUrl, showImgSearch = false, noObjectOptions } = options;
@@ -75,6 +75,7 @@ export function image(title = "Image", options: PropImageOptions = {}) {
         fit: "object-cover",
         position: "object-center",
       },
+      ...options,
     },
   );
   return prop({

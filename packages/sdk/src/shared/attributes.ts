@@ -7,8 +7,8 @@ import { boolean } from "./bricks/props/boolean";
 import { datetime } from "./bricks/props/date";
 import { enumProp } from "./bricks/props/enum";
 import { jsonDefault } from "json-schema-default";
-import { manifest as siderbarManifest } from "./bricks/manifests/sidebar.manifest";
 import { StringEnum } from "./utils/string-enum";
+import { image, imageRef } from "./bricks/props/image";
 
 export function defineAttributes(attrs: TProperties) {
   // Attributes starting with "$" are reserved for internal use
@@ -106,12 +106,10 @@ const defaultAttributes = {
   ),
 
   $siteOgImage: optional(
-    string("Social share image", {
+    imageRef({
+      title: "Social share image",
       description: "Image shown when this site is shared on social media",
       "ai:guidelines": "Don't generate this image, it is automatically generated.",
-      "ui:field": "image",
-      "ui:group": "meta",
-      "ui:group:title": "Meta tags",
       "ui:scope": "site",
     }),
   ),

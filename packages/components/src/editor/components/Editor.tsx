@@ -55,18 +55,6 @@ export default function Editor(props: EditorProps) {
   usePageAutoSave();
   useEditorHotKeys();
 
-  // listen for window error
-  useEffect(() => {
-    const handleError = (event: ErrorEvent) => {
-      console.error("Window error:", event);
-      // You can also send this error to your logging service
-    };
-    window.addEventListener("error", handleError);
-    return () => {
-      window.removeEventListener("error", handleError);
-    };
-  }, []);
-
   useEffect(() => {
     const themeUsed = draft.previewTheme ?? draft.theme;
     if (themeUsed) {
