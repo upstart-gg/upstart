@@ -22,27 +22,27 @@ export const manifest = defineBrickManifest({
       Type.Union(
         [
           Type.Literal("image-first", {
-            title: "Image First",
+            title: "Top",
             "ui:variant-type": "image-placement",
           }),
           Type.Literal("image-between", {
-            title: "Image Between",
+            title: "Middle",
             "ui:variant-type": "image-placement",
           }),
           Type.Literal("image-last", {
-            title: "Image Last",
+            title: "Bottom",
             "ui:variant-type": "image-placement",
           }),
           Type.Literal("image-overlay", {
-            title: "Image Overlay",
+            title: "Overlay",
             "ui:variant-type": "image-placement",
           }),
           Type.Literal("image-left-side", {
-            title: "Image Left Side",
+            title: "Left",
             "ui:variant-type": "image-placement",
           }),
           Type.Literal("image-right-side", {
-            title: "Image Right Side",
+            title: "Right",
             "ui:variant-type": "image-placement",
           }),
           Type.Literal("centered", {

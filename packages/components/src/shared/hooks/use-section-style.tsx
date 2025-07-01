@@ -62,8 +62,6 @@ function getSectionEditorStyles({ section, editable, selected, previewMode }: Us
 
     selected ? "outline-upstart-500" : "outline-transparent",
 
-    "min-h-[120px]",
-
     // this is the grid overlay shown when dragging
     editable &&
       previewMode &&

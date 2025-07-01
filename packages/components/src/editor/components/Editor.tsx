@@ -21,6 +21,7 @@ import type { GenerationState } from "@upstart.gg/sdk/shared/context";
 import { DragDropContext, type OnDragStartResponder, type DropResult } from "@hello-pangea/dnd";
 import { defaultProps, manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { type Brick, generateId } from "@upstart.gg/sdk/shared/bricks";
+import { Toaster } from "@upstart.gg/style-system/system";
 
 const Tour = lazy(() => import("./Tour"));
 const NavBar = lazy(() => import("./NavBar"));
@@ -293,6 +294,24 @@ export default function Editor(props: EditorProps) {
                 <BlankWaitPage />
               </DeviceFrame>
             ))}
+          <Toaster
+            toastOptions={{
+              position: "bottom-center",
+              style: {
+                padding: "0.5rem 1rem",
+                borderRadius: "0.5rem",
+                background: "rgba(0, 0, 0, 0.9)",
+                color: "white",
+                fontSize: "0.85rem",
+                fontWeight: "500",
+              },
+              error: {
+                style: {
+                  background: "#880808",
+                },
+              },
+            }}
+          />
         </main>
       </div>
     </DragDropContext>

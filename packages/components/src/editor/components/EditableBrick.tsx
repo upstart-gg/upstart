@@ -224,7 +224,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 data-brick-type={brick.type}
                 data-element-kind={manifest.kind}
                 data-last-touched={brick.props.lastTouched ?? "0"}
-                data-dropzone={manifest.isContainer}
+                data-container-child={isContainerChild}
                 data-draggable-for-brick-id={brick.id}
                 data-brick-width={brick.props.width}
                 data-brick-height={brick.props.height}
@@ -247,7 +247,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                   {...getFloatingProps()}
                 />
                 {/* Children contains resizable handles and other elements */}
-                {manifests[brick.type]?.resizable && !snapshot.isDragging && (
+                {manifests[brick.type]?.resizable && !isContainerChild && !snapshot.isDragging && (
                   <>
                     {(resizeOpts.canGrowVertical || resizeOpts.canShrinkVertical) && (
                       <>

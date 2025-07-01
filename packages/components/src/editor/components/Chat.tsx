@@ -28,6 +28,8 @@ import type { ImageSearchResultsType, SimpleImageMetadata } from "@upstart.gg/sd
 import type { GenericPageConfig } from "@upstart.gg/sdk/shared/page";
 import type { Sitemap } from "@upstart.gg/sdk/shared/sitemap";
 
+const WEB_SEARCH_ENABLED = false;
+
 // Lazy import "Markdown"
 // import Markdown from "./Markdown";
 const Markdown = lazy(() => import("./Markdown"));
@@ -558,7 +560,7 @@ What should we work on together? 🤖`,
           <button type="button" className={tx("hover:bg-upstart-200 p-1 rounded inline-flex text-sm gap-1")}>
             <IoIosAttach className="h-5 w-5" />
           </button>
-          {generationState.isReady && (
+          {generationState.isReady && WEB_SEARCH_ENABLED && (
             <label className={tx("inline-flex items-center gap-1 text-[80%] select-none")}>
               <Switch
                 name="allow_web_search"

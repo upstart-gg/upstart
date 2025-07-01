@@ -41,7 +41,6 @@ export const useFormNavigation = () => {
 // Create List component
 export const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
   const { navigateTo } = useFormNavigation();
-  console.log("navlist items", items);
   return (
     <ul className="list-none p-0 m-0">
       {items.map((item) => {
