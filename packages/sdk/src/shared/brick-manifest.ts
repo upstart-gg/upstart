@@ -19,27 +19,27 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
   };
   // Max width in pixels
   maxWidth?: {
-    mobile: number;
-    desktop: number;
+    mobile?: number;
+    desktop?: number;
   };
   // Min height in pixels
   minHeight?: {
-    mobile: number;
-    desktop: number;
+    mobile?: number;
+    desktop?: number;
   };
   // Max height in pixels
   maxHeight?: {
-    mobile: number;
-    desktop: number;
+    mobile?: number;
+    desktop?: number;
   };
   // default width can be in various css units, but should be a number
   defaultWidth?: {
-    mobile: string;
-    desktop: string;
+    mobile?: string;
+    desktop?: string;
   };
   defaultHeight?: {
-    mobile: string;
-    desktop: string;
+    mobile?: string;
+    desktop?: string;
   };
   props: TObject<BProps>;
   datasource?: DSSchema;

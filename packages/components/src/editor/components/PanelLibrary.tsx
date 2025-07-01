@@ -21,7 +21,7 @@ import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import interact from "interactjs";
 import { IoCloseOutline } from "react-icons/io5";
 import { panelTabContentScrollClass } from "../utils/styles";
-import { useEditorHelpers } from "../hooks/use-editor";
+import { useAttributes, useEditorHelpers } from "../hooks/use-editor";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";
 import {
@@ -62,6 +62,7 @@ export const renderClone: DraggableChildrenFn = (provided, snapshot, rubric) => 
 export default function PanelLibrary() {
   const { shouldDisplay: shouldDisplayLibraryCallout } = useCalloutViewCounter("blocks-library");
   const [currentManifest, setCurrentManifest] = useState<BrickManifest | null>(null);
+  const attr = useAttributes();
 
   return (
     <div className="flex flex-col h-full">
@@ -96,6 +97,7 @@ export default function PanelLibrary() {
                 <div ref={provided.innerRef} {...provided.droppableProps} className={tx("contents")}>
                   {Object.values(manifests)
                     .filter((m) => m.kind === "widget" && !m.hideInLibrary)
+                    .filter((m) => !m.inlineDragDisabled)
                     .map((brickImport, index) => {
                       return (
                         <DraggableBrick

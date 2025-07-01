@@ -15,7 +15,15 @@ import { DropdownMenu, Inset, Popover, Tooltip } from "@upstart.gg/style-system/
 import EditableBrickWrapper from "./EditableBrick";
 import { useSectionStyle } from "~/shared/hooks/use-section-style";
 import { TbArrowAutofitHeight, TbBorderCorners, TbDots } from "react-icons/tb";
-import { startTransition, useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from "react";
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type MouseEvent,
+} from "react";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { getBrickResizeOptions, getBrickPosition } from "~/shared/utils/layout-utils";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
@@ -49,7 +57,6 @@ export default function EditableSection({ section, index }: EditableSectionProps
 
   useDeepCompareEffect(() => {
     // This effect runs when the section object changes, which includes props updates
-    console.log("EditableSection useDeepCompareEffect", sectionObj?.section.id);
     // Check if the section is overflowing vertically
     const sectionEl = document.getElementById(section.id);
     invariant(sectionEl, `Section element with id ${section.id} not found`);
@@ -64,28 +71,32 @@ export default function EditableSection({ section, index }: EditableSectionProps
     }
   }, [sectionObj]);
 
-  const onClick = (e: MouseEvent) => {
-    const target = e.target as HTMLElement;
-    if (
-      !target.closest("[data-trigger-section-inspector]") &&
-      (e.defaultPrevented || resizing || target.nodeName !== "SECTION")
-    ) {
-      console.log("Click prevented on section", target);
-      // If the click was handled by a child element, do not propagate
-      return;
-    }
-    console.log("Section clicked", section.id, target, e);
-    setSelectedSectionId(section.id);
-    setPanel("inspector");
-  };
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  const onClick = useCallback(
+    (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        !target.closest("[data-trigger-section-inspector]") &&
+        (e.defaultPrevented || resizing || target.nodeName !== "SECTION" || draggingBrickType)
+      ) {
+        console.log("Click prevented on section", target);
+        // If the click was handled by a child element, do not propagate
+        return;
+      }
+      console.log("Section clicked", section.id, target, e);
+      setSelectedSectionId(section.id);
+      setPanel("inspector");
+    },
+    [resizing, draggingBrickType, section.id],
+  );
+
+  const dropDisabled =
+    /* Not DnD on mobile */ previewMode === "mobile" ||
+    /* No DnD when dragging a brick that has inline drag disabled */
+    (!!draggingBrickType && manifests[draggingBrickType]?.inlineDragDisabled);
 
   return (
-    <Droppable
-      droppableId={section.id}
-      type="brick"
-      direction="horizontal"
-      isDropDisabled={!!draggingBrickType && manifests[draggingBrickType]?.inlineDragDisabled}
-    >
+    <Droppable droppableId={section.id} type="brick" direction="horizontal" isDropDisabled={dropDisabled}>
       {(droppableProvided, droppableSnapshot) => {
         if (droppableSnapshot.isDraggingOver) {
           console.log("Droppable provided:", droppableProvided, "Snapshot:", droppableSnapshot);

@@ -40,7 +40,7 @@ export default function Panel({ className, ...props }: PanelProps) {
         bg-white dark:bg-dark-900 border-upstart-200 dark:border-dark-700 overflow-visible`,
         {
           // "transition-transform duration-150": !!panel,
-          "transition-opacity duration-100": !panel,
+          "transition-all duration-100": !panel,
           "left-0 border-r": panelPosition === "left",
           "right-0 border-l": panelPosition === "right",
           "-translate-x-full opacity-0": !panel && panelPosition === "left",

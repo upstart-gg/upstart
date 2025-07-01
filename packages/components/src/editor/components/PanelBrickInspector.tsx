@@ -292,7 +292,6 @@ function VariantSelector({
 
 function SettingsTab({ brick, section }: { brick: Brick; section: Section }) {
   const previewMode = usePreviewMode();
-  console.log("SettingsTab for brick %s in section %s", brick.type, section.id);
   return (
     <form className={tx("flex flex-col justify-between h-full")}>
       {previewMode === "mobile" && (

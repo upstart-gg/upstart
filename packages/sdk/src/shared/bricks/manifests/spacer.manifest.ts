@@ -12,7 +12,14 @@ export const manifest = defineBrickManifest({
   repeatable: true,
   minWidth: {
     desktop: 50,
-    mobile: 50,
+    mobile: 20,
+  },
+  defaultWidth: {
+    mobile: "100%",
+    desktop: "50px",
+  },
+  minHeight: {
+    mobile: 30,
   },
   icon: CgSpaceBetween,
   props: defineProps(

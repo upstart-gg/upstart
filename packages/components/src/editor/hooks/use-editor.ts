@@ -780,11 +780,12 @@ export const createDraftStore = (
 
               if (parentId) {
                 // Brick is inside a container, remove from parent's $children
-                const parentBrick = state.getBrick(parentId);
+                const parentBrick = getBrickFromDraft(parentId, state);
+                // const parentBrick = state.getBrick(parentId);
                 if (parentBrick?.props.$children) {
-                  parentBrick.props.$children = (parentBrick.props.$children as Brick[]).filter(
-                    (b) => b.id !== id,
-                  );
+                  const index = (parentBrick.props.$children as Brick[]).findIndex((b) => b.id === id);
+                  // delete the brick from parent's $children
+                  (parentBrick.props.$children as Brick[]).splice(index, 1);
                 }
               } else if (section) {
                 // Brick is at the top level of a section

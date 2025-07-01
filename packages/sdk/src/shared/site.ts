@@ -157,6 +157,9 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 props: {
                   width: "20px",
                 },
+                mobileProps: {
+                  width: "100%",
+                },
               },
               {
                 id: `b_${generateId()}`,

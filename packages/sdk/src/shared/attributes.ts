@@ -189,6 +189,9 @@ const defaultAttributes = {
     group({
       title: "Sidebar configuration",
       children: {
+        enabled: boolean("Enable sidebar", true, {
+          description: "Enable or disable the sidebar on this site",
+        }),
         showSidebar: boolean("Show sidebar", true, {
           description: "Enable or disable the sidebar on this site",
           "ui:group": "layout",
