@@ -39,6 +39,7 @@ export type PagePublishPayload =
       mode: "publish-page";
       pageId: string;
       pageVersionId: string;
+      schedulePublishedAt?: string | null;
     }
   | { siteId: string; mode: "publish-site" };
 
