@@ -55,6 +55,18 @@ export default function Editor(props: EditorProps) {
   usePageAutoSave();
   useEditorHotKeys();
 
+  // listen for window error
+  useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      console.error("Window error:", event);
+      // You can also send this error to your logging service
+    };
+    window.addEventListener("error", handleError);
+    return () => {
+      window.removeEventListener("error", handleError);
+    };
+  }, []);
+
   useEffect(() => {
     const themeUsed = draft.previewTheme ?? draft.theme;
     if (themeUsed) {
@@ -69,6 +81,12 @@ export default function Editor(props: EditorProps) {
 
   const onBeforeCapture: OnBeforeCaptureResponder = (before) => {
     setDraggingBrickType(before.draggableId);
+    console.log("BeforeCapture:", before);
+    // const element = document.querySelector<HTMLDivElement>(`#${before.draggableId}`);
+    // if (element) {
+    //   console.log("Element found for draggableId:", before.draggableId, element);
+    //   element.style.setProperty("transform", "scale(0.8)");
+    // }
     // You can use this to prevent certain drags, e.g. if you want to disable dragging in some cases
     // if (beforeCapture.draggableId === "some-id") {
     //   return false; // Prevent the drag

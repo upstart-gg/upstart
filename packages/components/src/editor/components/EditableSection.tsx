@@ -98,9 +98,6 @@ export default function EditableSection({ section, index }: EditableSectionProps
   return (
     <Droppable droppableId={section.id} type="brick" direction="horizontal" isDropDisabled={dropDisabled}>
       {(droppableProvided, droppableSnapshot) => {
-        if (droppableSnapshot.isDraggingOver) {
-          console.log("Droppable provided:", droppableProvided, "Snapshot:", droppableSnapshot);
-        }
         return (
           <section
             key={id}
@@ -240,10 +237,10 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
       role="toolbar"
       className={tx(
         dropdownOpen ? "opacity-100" : "opacity-0",
-        `section-options-buttons bottom-0
+        `section-options-buttons bottom-[3px]
             absolute z-[99999] left-1/2 -translate-x-1/2 border border-gray-200 border-b-0`,
         "gap-0 rounded-t-md [&>*:first-child]:rounded-tl-md [&>*:last-child]:rounded-tr-md divide-x divide-white/80",
-        "bg-white/70 backdrop-blur-md transition-opacity duration-500  group-hover/section:opacity-80 flex",
+        "bg-white/90 backdrop-blur-md transition-opacity duration-500  group-hover/section:opacity-100 flex",
       )}
     >
       <div

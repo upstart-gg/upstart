@@ -31,6 +31,8 @@ import {
   type DraggableStyle,
   Droppable,
 } from "@hello-pangea/dnd";
+import { getDraggableStyle } from "../utils/dnd";
+import { IconRender } from "./IconRender";
 
 export const renderClone: DraggableChildrenFn = (provided, snapshot, rubric) => {
   const brick = manifests[rubric.draggableId] as BrickManifest;
@@ -188,35 +190,6 @@ type DraggableBrickProps = {
   brick: BrickDefaults;
   index: number;
 } & ComponentProps<"div">;
-
-function IconRender(props: BrickManifest) {
-  const icon =
-    typeof props.icon === "string" ? (
-      <span
-        className={tx(
-          "w-7 h-7 text-upstart-600 dark:text-upstart-400 [&>svg]:w-auto [&>svg]:h-7 inline-block",
-        )}
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-        dangerouslySetInnerHTML={{ __html: props.icon }}
-      />
-    ) : (
-      <props.icon
-        className={tx("w-6 h-6 text-upstart-600/90 group-hovertext-upstart-700", props.iconClassName)}
-      />
-    );
-  return icon;
-}
-
-function getDraggableStyle(style: DraggableStyle, snapshot: DraggableStateSnapshot): CSSProperties {
-  if (!snapshot.isDropAnimating) {
-    return style;
-  }
-  return {
-    ...style,
-    // cannot be 0, but make it super tiny
-    transitionDuration: `0.001s`,
-  };
-}
 
 type InnerProps = ComponentProps<"div"> & { brick: BrickDefaults; index: number };
 const InnerDraggableBrick = forwardRef<HTMLDivElement, InnerProps>((props, ref) => {

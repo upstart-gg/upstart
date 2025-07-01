@@ -8,6 +8,7 @@ import { datetime } from "./bricks/props/date";
 import { enumProp } from "./bricks/props/enum";
 import { jsonDefault } from "json-schema-default";
 import { manifest as siderbarManifest } from "./bricks/manifests/sidebar.manifest";
+import { StringEnum } from "./utils/string-enum";
 
 export function defineAttributes(attrs: TProperties) {
   // Attributes starting with "$" are reserved for internal use
@@ -189,19 +190,13 @@ const defaultAttributes = {
     group({
       title: "Sidebar configuration",
       children: {
-        enabled: boolean("Enable sidebar", true, {
+        enabled: boolean("Enabled", true, {
           description: "Enable or disable the sidebar on this site",
         }),
-        showSidebar: boolean("Show sidebar", true, {
-          description: "Enable or disable the sidebar on this site",
-          "ui:group": "layout",
-          "ui:group:title": "Page Layout",
-        }),
-        sidebarPosition: enumProp("Sidebar position", "left", {
-          options: [
-            { value: "left", title: "Left" },
-            { value: "right", title: "Right" },
-          ],
+        sidebarPosition: StringEnum(["left", "right"], {
+          title: "Position",
+          default: "left",
+          enumNames: ["Left", "Right"],
           description: "Position of the sidebar on the page",
           "ui:group": "layout",
           "ui:group:title": "Page Layout",
