@@ -93,31 +93,47 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             bricks: [
               {
                 id: `b_${generateId()}`,
-                type: "map",
+                type: "text",
                 props: {
-                  location: {
-                    lat: 37.7749,
-                    lng: -122.4194,
-                    tooltip: "San Francisco, CA",
-                    address: "San Francisco, CA",
-                  },
+                  preset: "subtle-accent",
+                  content: "Irure dolor sit amet, consectetur adipiscing elit.",
                 },
               },
+              // {
+              //   id: `b_${generateId()}`,
+              //   type: "map",
+              //   props: {
+              //     location: {
+              //       lat: 37.7749,
+              //       lng: -122.4194,
+              //       tooltip: "San Francisco, CA",
+              //       address: "San Francisco, CA",
+              //     },
+              //   },
+              // },
               {
                 id: `b_${generateId()}`,
                 type: "vbox",
                 props: {
                   $children: [
+                    // {
+                    //   id: `b_${generateId()}`,
+                    //   type: "map",
+                    //   props: {
+                    //     location: {
+                    //       lat: 37.7749,
+                    //       lng: -122.4194,
+                    //       tooltip: "San Francisco, CA",
+                    //       address: "San Francisco, CA",
+                    //     },
+                    //   },
+                    // },
                     {
                       id: `b_${generateId()}`,
-                      type: "map",
+                      type: "text",
                       props: {
-                        location: {
-                          lat: 37.7749,
-                          lng: -122.4194,
-                          tooltip: "San Francisco, CA",
-                          address: "San Francisco, CA",
-                        },
+                        preset: "subtle-accent",
+                        content: "Irure dolor sit amet, consectetur adipiscing elit.",
                       },
                     },
                     {
@@ -151,6 +167,16 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               //     },
               //   },
               // },
+              {
+                id: `b_${generateId()}`,
+                type: "spacer",
+                props: {
+                  width: "20px",
+                },
+                mobileProps: {
+                  width: "100%",
+                },
+              },
               {
                 id: `b_${generateId()}`,
                 type: "card",

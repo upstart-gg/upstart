@@ -7,9 +7,7 @@ import { string, urlOrPageId, urlOrPageIdRef } from "../props/string";
 import { backgroundColor, backgroundColorRef } from "../props/background";
 import { border, borderRef } from "../props/border";
 import { fixedPositioned } from "../props/position";
-import { preset } from "../props/preset";
 import type { BrickProps } from "../props/types";
-import type { FC } from "react";
 import { shadowRef } from "../props/effects";
 
 export const manifest = defineBrickManifest({
@@ -17,6 +15,7 @@ export const manifest = defineBrickManifest({
   kind: "widget",
   name: "Sidebar",
   description: "A sidebard element",
+  inlineDragDisabled: true,
   aiInstructions: `
     This brick should be used on most sites/pages for navigation. By deault, it will display links
     to the main pages of the site. You can customize the links by using the 'navigation.navItems' prop.

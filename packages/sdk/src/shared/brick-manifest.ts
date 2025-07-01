@@ -19,27 +19,27 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
   };
   // Max width in pixels
   maxWidth?: {
-    mobile: number;
-    desktop: number;
+    mobile?: number;
+    desktop?: number;
   };
   // Min height in pixels
   minHeight?: {
-    mobile: number;
-    desktop: number;
+    mobile?: number;
+    desktop?: number;
   };
   // Max height in pixels
   maxHeight?: {
-    mobile: number;
-    desktop: number;
+    mobile?: number;
+    desktop?: number;
   };
   // default width can be in various css units, but should be a number
   defaultWidth?: {
-    mobile: string;
-    desktop: string;
+    mobile?: string;
+    desktop?: string;
   };
   defaultHeight?: {
-    mobile: string;
-    desktop: string;
+    mobile?: string;
+    desktop?: string;
   };
   props: TObject<BProps>;
   datasource?: DSSchema;
@@ -50,6 +50,10 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
   repeatable?: boolean;
   resizable?: boolean;
   duplicatable?: boolean;
+  /**
+   * Some specific bricks like sidebar or header may not be draggable inline, as we want to place them manually in the layout.
+   */
+  inlineDragDisabled?: boolean;
   isContainer?: boolean;
   aiInstructions?: string;
 };

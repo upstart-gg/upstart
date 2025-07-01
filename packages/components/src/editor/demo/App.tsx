@@ -1,6 +1,10 @@
-import type { PropsWithChildren } from "react";
+import { useEffect, useRef, type PropsWithChildren } from "react";
 import Editor from "~/editor/components/Editor";
-import { EditorWrapper, type EditorWrapperProps } from "~/editor/components/EditorWrapper";
+import {
+  EditorWrapper,
+  type EditorWrapperRef,
+  type EditorWrapperProps,
+} from "~/editor/components/EditorWrapper";
 import { ClientOnly } from "~/shared/utils/client-only";
 // import "@upstart.gg/style-system/default-theme.css";
 // import "@upstart.gg/components/dist/assets/style.css";
@@ -50,8 +54,19 @@ function InnerEditor(
       `onShowPopup: out of the demo, the popup with ID ${popupId} should be displayed at this time.`,
     );
   };
+  const editorWrapperRef = useRef<EditorWrapperRef>(null);
+
+  useEffect(() => {
+    if (editorWrapperRef.current) {
+      // EXAMPLE USAGE OF THE EDITOR REF
+      // const { editorStore, draftStore } = editorWrapperRef.current;
+      // editorStore.getState().setPreviewMode("mobile");
+    }
+  }, []);
+
   return (
     <EditorWrapper
+      ref={editorWrapperRef}
       {...props}
       onShowLogin={onShowLogin}
       onImageUpload={onImageUpload}

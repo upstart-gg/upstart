@@ -52,6 +52,15 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       width: gridConfig.colWidth,
       height: gridConfig.rowHeight,
     },
+    // On desktop, we allow resizing in all directions
+    enabledDirections:
+      previewMode === "desktop"
+        ? undefined
+        : // on mobile, we only allow resizing vertically
+          {
+            n: true,
+            s: true,
+          },
     // onResizeStart: (event) => {
     //   console.log("Resize started:", event.target);
     //   const target = event.target as HTMLElement;
@@ -67,18 +76,25 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       const manifest = manifests[brickType];
       const parentBrick = draftHelpers.getParentBrick(brickId);
 
-      console.log("resized in parentBrick", parentBrick);
-
       // target.style.setProperty("transition", "top,margin-right,margin-bottom,height 0.3s ease-in-out");
 
-      const parentWidth = target.parentElement?.clientWidth || pageRef.current?.clientWidth;
+      const parentElement = target.parentElement as HTMLElement;
+      const parentWidth = parentElement.clientWidth;
       if (!parentWidth) {
         console.warn("Page width is not available, cannot update brick props.");
         return;
       }
 
+      console.log("Parent element width:", parentWidth, "px");
+      console.log("Parent element offsetWidth:", parentElement.offsetWidth, "px");
+
       draftHelpers.updateBrickProps(brickId, {
-        width: parentBrick ? `${event.rect.width}px` : `${(event.rect.width / parentWidth) * 100}%`,
+        width:
+          previewMode === "mobile"
+            ? "auto"
+            : parentBrick
+              ? `${event.rect.width}px`
+              : `${(event.rect.width / parentWidth) * 100}%`,
         height: `${event.rect.height}px`,
       });
 

@@ -21,7 +21,7 @@ import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import interact from "interactjs";
 import { IoCloseOutline } from "react-icons/io5";
 import { panelTabContentScrollClass } from "../utils/styles";
-import { useEditorHelpers } from "../hooks/use-editor";
+import { useAttributes, useEditorHelpers } from "../hooks/use-editor";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";
 import {
@@ -31,6 +31,8 @@ import {
   type DraggableStyle,
   Droppable,
 } from "@hello-pangea/dnd";
+import { getDraggableStyle } from "../utils/dnd";
+import { IconRender } from "./IconRender";
 
 export const renderClone: DraggableChildrenFn = (provided, snapshot, rubric) => {
   const brick = manifests[rubric.draggableId] as BrickManifest;
@@ -62,6 +64,7 @@ export const renderClone: DraggableChildrenFn = (provided, snapshot, rubric) => 
 export default function PanelLibrary() {
   const { shouldDisplay: shouldDisplayLibraryCallout } = useCalloutViewCounter("blocks-library");
   const [currentManifest, setCurrentManifest] = useState<BrickManifest | null>(null);
+  const attr = useAttributes();
 
   return (
     <div className="flex flex-col h-full">
@@ -89,27 +92,31 @@ export default function PanelLibrary() {
             type="brick"
             renderClone={renderClone}
             isDropDisabled={true}
+            direction="horizontal"
           >
-            {(provided) => (
-              <div ref={provided.innerRef} {...provided.droppableProps} className={tx("contents")}>
-                {Object.values(manifests)
-                  .filter((m) => m.kind === "widget" && !m.hideInLibrary)
-                  .map((brickImport, index) => {
-                    return (
-                      <DraggableBrick
-                        key={brickImport.type}
-                        brick={defaultProps[brickImport.type]}
-                        index={index}
-                        onMouseOver={(e) => {
-                          setCurrentManifest(brickImport);
-                        }}
-                        onMouseLeave={() => setCurrentManifest(null)}
-                      />
-                    );
-                  })}
-                {provided.placeholder}
-              </div>
-            )}
+            {(provided, snapshot) => {
+              return (
+                <div ref={provided.innerRef} {...provided.droppableProps} className={tx("contents")}>
+                  {Object.values(manifests)
+                    .filter((m) => m.kind === "widget" && !m.hideInLibrary)
+                    .filter((m) => !m.inlineDragDisabled)
+                    .map((brickImport, index) => {
+                      return (
+                        <DraggableBrick
+                          key={brickImport.type}
+                          brick={defaultProps[brickImport.type]}
+                          index={index}
+                          onMouseOver={(e) => {
+                            setCurrentManifest(brickImport);
+                          }}
+                          onMouseLeave={() => setCurrentManifest(null)}
+                        />
+                      );
+                    })}
+                  {provided.placeholder}
+                </div>
+              );
+            }}
           </Droppable>
         </div>
       </div>
@@ -184,34 +191,32 @@ type DraggableBrickProps = {
   index: number;
 } & ComponentProps<"div">;
 
-function IconRender(props: BrickManifest) {
-  const icon =
-    typeof props.icon === "string" ? (
-      <span
+type InnerProps = ComponentProps<"div"> & { brick: BrickDefaults; index: number };
+const InnerDraggableBrick = forwardRef<HTMLDivElement, InnerProps>((props, ref) => {
+  const { brick, index, ...rest } = props;
+  return (
+    <div
+      ref={ref}
+      {...rest}
+      className={tx(
+        `rounded border border-upstart-100 hover:border-upstart-600 hover:bg-upstart-50 bg-white dark:bg-dark-700 !cursor-grab
+        active:!cursor-grabbing touch-none select-none pointer-events-auto draggable-brick group aspect-square
+        z-[99999] flex flex-col items-center justify-center
+        [&:is(.clone)]:(opacity-80 !bg-white)`,
+      )}
+      {...props}
+    >
+      <div
         className={tx(
-          "w-7 h-7 text-upstart-600 dark:text-upstart-400 [&>svg]:w-auto [&>svg]:h-7 inline-block",
+          "flex-1 flex flex-col justify-center text-upstart-700 dark:text-upstart-400 items-center gap-1 rounded-[inherit]",
         )}
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-        dangerouslySetInnerHTML={{ __html: props.icon }}
-      />
-    ) : (
-      <props.icon
-        className={tx("w-6 h-6 text-upstart-600/90 group-hovertext-upstart-700", props.iconClassName)}
-      />
-    );
-  return icon;
-}
-
-function getDraggableStyle(style: DraggableStyle, snapshot: DraggableStateSnapshot): CSSProperties {
-  if (!snapshot.isDropAnimating) {
-    return style;
-  }
-  return {
-    ...style,
-    // cannot be 0, but make it super tiny
-    transitionDuration: `0.001s`,
-  };
-}
+      >
+        <IconRender {...brick} />
+        <span className={tx("whitespace-nowrap text-xs")}>{brick.name}</span>
+      </div>
+    </div>
+  );
+});
 
 const DraggableBrick = forwardRef<HTMLDivElement, DraggableBrickProps>(({ brick, index, ...props }, ref) => {
   return (
@@ -227,27 +232,35 @@ const DraggableBrick = forwardRef<HTMLDivElement, DraggableBrickProps>(({ brick,
       {(provided, snapshot) => {
         const mergedRef = useMergeRefs([provided.innerRef, ref]);
         return (
-          <div
+          <InnerDraggableBrick
             ref={mergedRef}
+            brick={brick}
+            index={index}
             {...provided.draggableProps}
             {...provided.dragHandleProps}
-            className={tx(
-              `rounded border border-upstart-100 hover:border-upstart-600 hover:bg-upstart-50 bg-white dark:bg-dark-700 !cursor-grab
-        active:!cursor-grabbing touch-none select-none pointer-events-auto draggable-brick group aspect-square
-        z-[99999] flex flex-col items-center justify-center
-        [&:is(.clone)]:(opacity-80 !bg-white)`,
-            )}
             {...props}
-          >
-            <div
-              className={tx(
-                "flex-1 flex flex-col justify-center text-upstart-700 dark:text-upstart-400 items-center gap-1 rounded-[inherit]",
-              )}
-            >
-              <IconRender {...brick} />
-              <span className={tx("whitespace-nowrap text-xs")}>{brick.name}</span>
-            </div>
-          </div>
+          />
+          //   <div
+          //     ref={mergedRef}
+          //     {...provided.draggableProps}
+          //     {...provided.dragHandleProps}
+          //     className={tx(
+          //       `rounded border border-upstart-100 hover:border-upstart-600 hover:bg-upstart-50 bg-white dark:bg-dark-700 !cursor-grab
+          // active:!cursor-grabbing touch-none select-none pointer-events-auto draggable-brick group aspect-square
+          // z-[99999] flex flex-col items-center justify-center
+          // [&:is(.clone)]:(opacity-80 !bg-white)`,
+          //     )}
+          //     {...props}
+          //   >
+          //     <div
+          //       className={tx(
+          //         "flex-1 flex flex-col justify-center text-upstart-700 dark:text-upstart-400 items-center gap-1 rounded-[inherit]",
+          //       )}
+          //     >
+          //       <IconRender {...brick} />
+          //       <span className={tx("whitespace-nowrap text-xs")}>{brick.name}</span>
+          //     </div>
+          //   </div>
         );
       }}
     </Draggable>
