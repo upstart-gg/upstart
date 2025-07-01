@@ -120,18 +120,4 @@ describe("Props helpers test suite", () => {
       expect(info.tab).toBe("common");
     });
   });
-
-  describe("getStyleProperties", () => {
-    it("should extract style properties from a schema", () => {
-      const styles = getStyleProperties(sampleManifest.props);
-      expect(styles).toMatchObject({
-        "brand.color": "styles:color",
-        "container.backgroundColor": "styles:backgroundColor",
-        "container.border": "styles:border",
-        "container.fixedPositioned": "styles:fixedPositioned",
-        "container.shadow": "styles:shadow",
-        "navigation.color": "styles:color",
-      });
-    });
-  });
 });

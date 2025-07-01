@@ -20,8 +20,12 @@ export const manifest = defineBrickManifest({
   aiInstructions:
     "This brick can be used to show a location on a map. Use the 'location' prop to set the coordinates and an optional tooltip.",
   minWidth: {
-    desktop: 200,
-    mobile: 200,
+    desktop: 280,
+    mobile: 280,
+  },
+  minHeight: {
+    desktop: 120,
+    mobile: 120,
   },
   icon: LiaMapMarkedAltSolid,
   props: defineProps(
@@ -30,6 +34,7 @@ export const manifest = defineBrickManifest({
         title: "Location",
         children: geolocation({ defaultZoom: DEFAULTS.zoom }),
       }),
+      // location: geolocation({ defaultZoom: DEFAULTS.zoom }),
       border: optional(borderRef()),
       shadow: optional(shadowRef()),
     },

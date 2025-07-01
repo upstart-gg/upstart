@@ -10,38 +10,39 @@ import { borderRef } from "../props/border";
 
 export const manifest = defineBrickManifest({
   type: "card",
+  kind: "widget",
   name: "Card",
-  description: "A multi-purpose card that can have a title, image, and content",
+  description: "A card that can have a title, image, and content",
   repeatable: true,
   icon: BsCardText,
-  maxWidth: { mobile: 400, desktop: 1024 },
-  minWidth: { mobile: 200, desktop: 250 },
+  defaultWidth: { desktop: "380px", mobile: "100%" },
+  minWidth: { mobile: 200, desktop: 200 },
   props: defineProps({
     variants: Type.Array(
       Type.Union(
         [
           Type.Literal("image-first", {
-            title: "Image First",
+            title: "Top",
             "ui:variant-type": "image-placement",
           }),
           Type.Literal("image-between", {
-            title: "Image Between",
+            title: "Middle",
             "ui:variant-type": "image-placement",
           }),
           Type.Literal("image-last", {
-            title: "Image Last",
+            title: "Bottom",
             "ui:variant-type": "image-placement",
           }),
           Type.Literal("image-overlay", {
-            title: "Image Overlay",
+            title: "Overlay",
             "ui:variant-type": "image-placement",
           }),
           Type.Literal("image-left-side", {
-            title: "Image Left Side",
+            title: "Left",
             "ui:variant-type": "image-placement",
           }),
           Type.Literal("image-right-side", {
-            title: "Image Right Side",
+            title: "Right",
             "ui:variant-type": "image-placement",
           }),
           Type.Literal("centered", {
@@ -98,7 +99,7 @@ export const manifest = defineBrickManifest({
       borderRef({
         default: {
           width: "border",
-          rounding: "rounded",
+          rounding: "rounded-md",
         },
       }),
     ),

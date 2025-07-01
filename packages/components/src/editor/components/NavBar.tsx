@@ -158,11 +158,14 @@ export default function NavBar() {
               : []),
           ]}
         >
-          <button type="button" className={tx(btnClass, commonCls, btnWithArrow, "!px-1.5 ml-4")}>
+          <button
+            type="button"
+            className={tx(btnClass, commonCls, btnWithArrow, "!px-1.5 ml-4 cursor-pointer")}
+          >
             <VscCopy className={tx("h-5 w-auto")} />
             <div className={tx("flex flex-col gap-1 ml-1.5 mr-2 justify-start items-start")}>
               <span className={tx("text-xs inline-block")}>Page</span>
-              <span className={tx("text-sm inline-block -mt-[8px] font-semibold max-w-[140px] truncate")}>
+              <span className={tx("text-sm inline-block -mt-[8px] font-semibold max-w-[200px] truncate")}>
                 {currentPageLabel}
               </span>
             </div>
@@ -283,7 +286,7 @@ export default function NavBar() {
             type="button"
             onClick={resetZoom}
             className={tx(
-              "text-gray-500 dark:text-dark-200 text-[.85rem] mx-1 cursor-pointer hover:text-upstart-800",
+              "text-gray-500 dark:text-dark-200 text-[.85rem] text-right cursor-pointer hover:text-upstart-800 min-w-[40px]",
             )}
           >
             {(zoom * 100).toFixed(0)}%

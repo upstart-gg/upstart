@@ -68,25 +68,38 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
     props.className as string,
     props.preset as string,
     "brick-wrapper group/brick flex",
+    isContainerChild && "flex-1",
 
-    manifest.minWidth &&
+    !isContainerChild &&
+      manifest.minWidth &&
       `@mobile:min-w-[${manifest.minWidth.mobile}px] @desktop:min-w-[${manifest.minWidth.desktop}px]`,
     manifest.minHeight &&
       `@mobile:min-h-[${manifest.minHeight.mobile}px] @desktop:min-h-[${manifest.minHeight.desktop}px]`,
-    manifest.maxWidth &&
+    !isContainerChild &&
+      manifest.maxWidth &&
       `@mobile:max-w-[${manifest.maxWidth.mobile}px] @desktop:max-w-[${manifest.maxWidth.desktop}px]`,
     manifest.maxHeight &&
       `@mobile:max-h-[${manifest.maxHeight.mobile}px] @desktop:max-h-[${manifest.maxHeight.desktop}px]`,
 
-    typeof props.width !== "undefined" &&
+    !isContainerChild &&
+      typeof props.width !== "undefined" &&
       css({
         width: `${props.width}`,
       }),
+
+    !isContainerChild &&
+      typeof props.width === "undefined" &&
+      manifest.defaultWidth &&
+      `@mobile:w-[${manifest.defaultWidth.mobile}] @desktop:w-[${manifest.defaultWidth.desktop}]`,
 
     typeof props.height !== "undefined" &&
       css({
         height: `${props.height}`,
       }),
+
+    typeof props.height === "undefined" &&
+      manifest.defaultHeight &&
+      `@mobile:h-[${manifest.defaultHeight.mobile}] @desktop:h-[${manifest.defaultHeight.desktop}]`,
 
     styleIds.includes("styles:fixedPositioned") === false && "relative",
 
@@ -110,7 +123,7 @@ function getBrickWrapperEditorStyles(
     return null;
   }
   return [
-    "select-none transition-colors delay-100 duration-200",
+    "select-none transition-[outline] delay-100 duration-[200ms]",
     "outline outline-transparent",
     selected && !isContainer && "!outline-upstart-400 shadow-xl shadow-upstart-500/20",
     selected && isContainer && "!outline-orange-300 shadow-xl",

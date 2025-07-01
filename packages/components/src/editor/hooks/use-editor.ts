@@ -454,7 +454,7 @@ export interface DraftState extends DraftStateProps {
   reorderSections: (orderedIds: string[]) => void;
 
   // New section methods
-  createEmptySection: (afterSectionId?: string) => void;
+  createEmptySection: (id: string, afterSectionId?: string) => void;
   addSection: (section: Section) => void;
   updateSection: (id: string, sectionData: Partial<Section>) => void;
   updateSectionProps: (id: string, props: Partial<Section["props"]>, isMobileProps?: boolean) => void;
@@ -503,11 +503,11 @@ export const createDraftStore = (
           ...DEFAULT_PROPS,
           ...initProps,
 
-          createEmptySection: (afterSectionId) =>
+          createEmptySection: (id, afterSectionId) =>
             set((state) => {
               const count = state.sections.length;
               const newSection: Section = {
-                id: `s_${generateId()}`,
+                id,
                 order: afterSectionId
                   ? (state.sections.find((s) => s.id === afterSectionId)?.order ?? state.sections.length)
                   : state.sections.length,

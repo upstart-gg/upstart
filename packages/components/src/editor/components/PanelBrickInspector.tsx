@@ -41,7 +41,8 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
     return null;
   }
 
-  const showTabsList = !!manifest.props.properties.preset || !!manifest.props.properties.variants;
+  const showTabsList =
+    (!!manifest.props.properties.preset && previewMode === "desktop") || !!manifest.props.properties.variants;
 
   return (
     <div key={`brick-inspector-${brick.id}`}>
@@ -90,7 +91,7 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
             )} */}
           </Tabs.List>
         )}
-        {manifest.props.properties.preset && (
+        {manifest.props.properties.preset && previewMode === "desktop" && (
           <ScrollablePanelTab tab="preset">
             <PresetsTab brick={brick} section={section} />
           </ScrollablePanelTab>

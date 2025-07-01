@@ -25,7 +25,6 @@ export function geolocation(opts: ObjectOptions & { defaultZoom?: number } = {})
         ),
       },
       {
-        // "ui:field": "geolocation",
         ...opts,
       },
     ),

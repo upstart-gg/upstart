@@ -38,7 +38,7 @@ export const CssLengthField: FC<FieldProps<string>> = (props) => {
             value: e.target.value,
           }))
         }
-        className="!pr-1 !basis-2/5 focus:(!ring-0 !border-0)"
+        className="!pr-1 !basis-[90px] focus:(!ring-0 !border-0)"
         required={required}
       >
         <TextField.Slot side="right" className="!mr-px">

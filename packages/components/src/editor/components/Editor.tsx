@@ -18,9 +18,10 @@ import { useEditorHotKeys } from "../hooks/use-editor-hot-keys";
 import ThemesPreviewList from "./ThemesPreviewList";
 import BlankWaitPage from "./BlankWaitPage";
 import type { GenerationState } from "@upstart.gg/sdk/shared/context";
-import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
+import { DragDropContext, type OnDragStartResponder, type DropResult } from "@hello-pangea/dnd";
 import { defaultProps, manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { type Brick, generateId } from "@upstart.gg/sdk/shared/bricks";
+import { Toaster } from "@upstart.gg/style-system/system";
 
 const Tour = lazy(() => import("./Tour"));
 const NavBar = lazy(() => import("./NavBar"));
@@ -54,6 +55,11 @@ export default function Editor(props: EditorProps) {
     }
   }, [draft.previewTheme, draft.theme]);
 
+  const handleDragStart: OnDragStartResponder = (result) => {
+    const { draggableId, type } = result;
+    console.log("DragStart result:", result);
+  };
+
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId, type } = result;
 
@@ -61,11 +67,13 @@ export default function Editor(props: EditorProps) {
 
     // If dropped outside a valid droppable area
     if (!destination) {
+      console.warn("Dropped outside a valid droppable area, no action taken.");
       return;
     }
 
     // If dropped in the same position
     if (destination.droppableId === source.droppableId && destination.index === source.index) {
+      console.log("Dropped in the same position, no action taken.");
       return;
     }
 
@@ -77,11 +85,14 @@ export default function Editor(props: EditorProps) {
       // Destination is a section
       if (destinationSection) {
         // create brick from manifest
-        const manifest = defaultProps[draggableId];
+        const props = defaultProps[draggableId].props;
         const newBrick = {
-          ...manifest,
+          type: draggableId,
+          props,
           id: `brick-${generateId()}`,
         } satisfies Brick;
+
+        console.log("Brick object created:", newBrick);
 
         // Add a new brick to the section
         draftHelpers.addBrick(newBrick, destinationSection.id, destination.index, null);
@@ -115,6 +126,18 @@ export default function Editor(props: EditorProps) {
         console.log(
           `Added new brick ${draggableId} to container ${destinationContainer.id} at index ${destination.index} in section ${sectionId}`,
         );
+      }
+
+      if (destination.droppableId === "page") {
+        console.log("Brick has been dropped on page!");
+        const newSectionId = `s_${generateId()}`;
+        draftHelpers.createEmptySection(newSectionId);
+        const newBrick = {
+          ...defaultProps[draggableId],
+          id: `b_${generateId()}`,
+        } satisfies Brick;
+        // Add a new brick to the page
+        draftHelpers.addBrick(newBrick, newSectionId, 0, null);
       }
 
       // Handle adding a new brick to a section
@@ -177,25 +200,6 @@ export default function Editor(props: EditorProps) {
     }
   };
 
-  // useEffect(() => {
-  //   if (generationState.isReady || !images?.length) {
-  //     return;
-  //   }
-  //   // If generation is not ready, set a random background image from the images
-  //   const randomImage = images[Math.floor(Math.random() * images.length)];
-  //   setBgImg(randomImage);
-  //   const itv = setInterval(async () => {
-  //     const randomImage = images[Math.floor(Math.random() * images.length)];
-
-  //     // preload the image to avoid flickering
-  //     const img = new Image();
-  //     img.src = randomImage.url;
-  //     await img.decode(); // Wait for the image to load
-  //     setBgImg(randomImage);
-  //   }, 10000); // Change every 10 seconds
-  //   return () => clearInterval(itv);
-  // }, [generationState.isReady, images]);
-
   if (!editorEnabled) {
     return (
       <div className="@container">
@@ -212,7 +216,7 @@ export default function Editor(props: EditorProps) {
   }
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
+    <DragDropContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
       <div
         id="editor"
         className={tx(
@@ -290,6 +294,24 @@ export default function Editor(props: EditorProps) {
                 <BlankWaitPage />
               </DeviceFrame>
             ))}
+          <Toaster
+            toastOptions={{
+              position: "bottom-center",
+              style: {
+                padding: "0.5rem 1rem",
+                borderRadius: "0.5rem",
+                background: "rgba(0, 0, 0, 0.9)",
+                color: "white",
+                fontSize: "0.85rem",
+                fontWeight: "500",
+              },
+              error: {
+                style: {
+                  background: "#880808",
+                },
+              },
+            }}
+          />
         </main>
       </div>
     </DragDropContext>

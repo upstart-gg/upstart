@@ -1,5 +1,5 @@
 import interact from "interactjs";
-import type { Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
+import { generateId, type Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
 import {
   useDraftHelpers,
   useEditorHelpers,
@@ -32,7 +32,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
 
   const { setSelectedSectionId, setPanel } = useEditorHelpers();
   const { resizing } = useResizableSection(section);
-
+  const draftHelpers = useDraftHelpers();
   const previewMode = usePreviewMode();
   const selectedSectionId = useSelectedSectionId();
   const selectedBrickId = useSelectedBrickId();
@@ -45,7 +45,11 @@ export default function EditableSection({ section, index }: EditableSectionProps
 
   const onClick = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
-    if (e.defaultPrevented || resizing || target.nodeName !== "SECTION") {
+    if (
+      !target.closest("[data-trigger-section-inspector]") &&
+      (e.defaultPrevented || resizing || target.nodeName !== "SECTION")
+    ) {
+      console.log("Click prevented on section", target);
       // If the click was handled by a child element, do not propagate
       return;
     }
@@ -55,7 +59,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
   };
 
   return (
-    <Droppable droppableId={section.id} type="brick" direction="horizontal" ignoreContainerClipping>
+    <Droppable droppableId={section.id} type="brick" direction="horizontal">
       {(droppableProvided, droppableSnapshot) => (
         <section
           key={id}
@@ -68,8 +72,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
           onClick={onClick}
           className={tx(
             className,
-            "min-h-40 w-full @container/section",
-            droppableSnapshot.isDraggingOver && "bg-upstart-100/20",
+            droppableSnapshot.isDraggingOver && "!outline-2 !outline-dashed !outline-usptart-300",
           )}
           {...droppableProvided.droppableProps}
         >
@@ -81,10 +84,19 @@ export default function EditableSection({ section, index }: EditableSectionProps
             ))}
 
           {bricks.length === 0 && (
-            <div className="w-full self-stretch min-h-40 flex-1 text-center rounded bg-gray-100 flex justify-center items-center text-base text-black/50 font-medium">
-              This is a section.
-              <br />
-              Drag bricks here to stack them inside.
+            <div className="w-full self-stretch py-6 h-full flex-grow text-center rounded bg-gray-50 hover:bg-upstart-50 flex flex-col justify-center items-center text-base text-black/50 font-medium">
+              This section is empty.
+              <span>
+                Drag bricks here to stack them inside, or{" "}
+                <button
+                  type="button"
+                  onClick={() => draftHelpers.deleteSection(section.id)}
+                  className="text-red-800 inline-block hover:underline"
+                >
+                  delete it
+                </button>
+                .
+              </span>
             </div>
           )}
           {droppableProvided.placeholder}
@@ -171,8 +183,11 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
   const draftHelpers = useDraftHelpers();
   const { setSelectedSectionId, setPanel, setSelectedBrickId } = useEditorHelpers();
   const sections = useSections();
-  const isLastSection = section.order === sections.length - 1;
-  const isFirstSection = section.order === 0;
+  // compare the curret section "order" to the max order of sections to determine if this is the first or last section
+  const maxOrder = sections.reduce((max, sec) => Math.max(max, sec.order), -1);
+  const minOrder = sections.reduce((min, sec) => Math.min(min, sec.order), Infinity);
+  const isLastSection = section.order === maxOrder;
+  const isFirstSection = section.order === minOrder;
 
   const btnCls = tx(
     "select-none hover:opacity-90",
@@ -192,10 +207,14 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
       )}
     >
       <div
-        className={tx(btnCls, "cursor-pointer flex-col items-start justify-center gap-0 hover:text-black")}
+        className={tx(
+          btnCls,
+          "cursor-pointer flex-col items-start justify-center gap-0 hover:text-upstart-800",
+        )}
+        data-trigger-section-inspector
       >
         <div className="text-xs font-light leading-[0.9] ">Section</div>
-        <div className="text-sm font-semibold -mt-1.5">{section.label ?? `${section.order + 1}`}</div>
+        <div className="text-sm font-semibold -mt-[8px]">{section.label ?? `${section.order + 1}`}</div>
       </div>
       {/* {!isLastSection && ( */}
       <button
@@ -264,7 +283,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
             <DropdownMenu.Item
               onClick={(e) => {
                 e.stopPropagation();
-                draftHelpers.createEmptySection(section.id);
+                draftHelpers.createEmptySection(`s_${generateId()}`, section.id);
               }}
             >
               <div className="flex items-center justify-start gap-2">

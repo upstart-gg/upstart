@@ -30,20 +30,20 @@ const Navbar = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
           data-brick-group="brand"
           data-brick-menu-offset="70"
         >
-          {props.brand.logo?.src && (
+          {props.logo?.src && (
             <img
-              src={props.brand.logo.src}
-              alt={props.brand.logo.alt ?? "Logo"}
+              src={props.logo.src}
+              alt={props.logo.alt ?? "Logo"}
               className={`h-full max-h-[60px] w-auto flex-1`}
             />
           )}
-          {props.brand.name && !props.brand.hideText && (
+          {props.brand && !props.hideText && (
             <TextContent
               as="h1"
               propPath="brand.name"
               className={tx("text-2xl font-bold flex-1")}
               brickId={brick.id}
-              content={props.brand.name}
+              content={props.brand}
               editable={editable}
               noTextAlign={true}
               noTextType={true}

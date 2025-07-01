@@ -24,13 +24,103 @@ import { panelTabContentScrollClass } from "../utils/styles";
 import { useEditorHelpers } from "../hooks/use-editor";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";
-import { Draggable, type DraggableStateSnapshot, type DraggableStyle, Droppable } from "@hello-pangea/dnd";
+import {
+  Draggable,
+  type DraggableChildrenFn,
+  type DraggableStateSnapshot,
+  type DraggableStyle,
+  Droppable,
+} from "@hello-pangea/dnd";
+
+export const renderClone: DraggableChildrenFn = (provided, snapshot, rubric) => {
+  const brick = manifests[rubric.draggableId] as BrickManifest;
+  return (
+    <button
+      {...provided.draggableProps}
+      {...provided.dragHandleProps}
+      ref={provided.innerRef}
+      className={tx(
+        `rounded border border-upstart-100 border-upstart-600 bg-upstart-50 bg-white dark:bg-dark-700 !cursor-grab
+        active:!cursor-grabbing touch-none select-none pointer-events-auto draggable-brick group aspect-square
+        z-[99999] flex flex-col items-center justify-center
+        [&:is(.clone)]:(opacity-80 !bg-white)`,
+      )}
+      style={getDraggableStyle(provided.draggableProps.style ?? {}, snapshot)}
+    >
+      <div
+        className={tx(
+          "flex-1 flex flex-col justify-center text-upstart-700 dark:text-upstart-400 items-center gap-1 rounded-[inherit]",
+        )}
+      >
+        <IconRender {...brick} />
+        <span className={tx("whitespace-nowrap text-xs")}>{brick.name}</span>
+      </div>
+    </button>
+  );
+};
 
 export default function PanelLibrary() {
   const { shouldDisplay: shouldDisplayLibraryCallout } = useCalloutViewCounter("blocks-library");
+  const [currentManifest, setCurrentManifest] = useState<BrickManifest | null>(null);
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col h-full">
+      <div
+        className={tx(
+          "flex flex-col max-h-[calc(100dvh/2-40px)] overflow-y-auto",
+          panelTabContentScrollClass,
+        )}
+      >
+        <PanelBlockTitle>Widgets</PanelBlockTitle>
+        {shouldDisplayLibraryCallout && (
+          <Callout.Root size="1" color="violet" className="!rounded-none">
+            <Callout.Text size="1">Widgets are more complex components you can use.</Callout.Text>
+          </Callout.Root>
+        )}
+
+        <div
+          className={tx("grid gap-1.5 p-2")}
+          style={{
+            gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
+          }}
+        >
+          <Droppable
+            droppableId="widgets-library"
+            type="brick"
+            renderClone={renderClone}
+            isDropDisabled={true}
+          >
+            {(provided) => (
+              <div ref={provided.innerRef} {...provided.droppableProps} className={tx("contents")}>
+                {Object.values(manifests)
+                  .filter((m) => m.kind === "widget" && !m.hideInLibrary)
+                  .map((brickImport, index) => {
+                    return (
+                      <DraggableBrick
+                        key={brickImport.type}
+                        brick={defaultProps[brickImport.type]}
+                        index={index}
+                        onMouseOver={(e) => {
+                          setCurrentManifest(brickImport);
+                        }}
+                        onMouseLeave={() => setCurrentManifest(null)}
+                      />
+                    );
+                  })}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </div>
+      </div>
+      <div
+        className={tx(
+          "p-2 bg-upstart-50/50 font-normal text-upstart-600 m-2 text-xs rounded transition-opacity",
+          currentManifest?.kind === "widget" && currentManifest?.description ? "opacity-100" : "opacity-0",
+        )}
+      >
+        {currentManifest?.description ?? <span>&nbsp;</span>}
+      </div>
       <div
         className={tx(
           "flex flex-col max-h-[calc(100dvh/2-40px)] overflow-y-auto",
@@ -53,32 +143,8 @@ export default function PanelLibrary() {
             droppableId="bricks-library"
             type="brick"
             // isDropDisabled={true}
-            renderClone={(provided, snapshot, rubric) => {
-              const brick = manifests[rubric.draggableId] as BrickManifest;
-              return (
-                <button
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                  ref={provided.innerRef}
-                  className={tx(
-                    `rounded border border-upstart-100 border-upstart-600 bg-upstart-50 bg-white dark:bg-dark-700 !cursor-grab
-        active:!cursor-grabbing touch-none select-none pointer-events-auto draggable-brick group aspect-square
-        z-[99999] flex flex-col items-center justify-center
-        [&:is(.clone)]:(opacity-80 !bg-white)`,
-                  )}
-                  style={getDraggableStyle(provided.draggableProps.style ?? {}, snapshot)}
-                >
-                  <div
-                    className={tx(
-                      "flex-1 flex flex-col justify-center text-upstart-700 dark:text-upstart-400 items-center gap-1 rounded-[inherit]",
-                    )}
-                  >
-                    <IconRender {...brick} />
-                    <span className={tx("whitespace-nowrap text-xs")}>{brick.name}</span>
-                  </div>
-                </button>
-              );
-            }}
+            isDropDisabled={true}
+            renderClone={renderClone}
           >
             {(provided) => (
               <div ref={provided.innerRef} {...provided.droppableProps} className={tx("contents")}>
@@ -86,9 +152,13 @@ export default function PanelLibrary() {
                   .filter((m) => m.kind === "brick" && !m.hideInLibrary)
                   .map((brickImport, index) => {
                     return (
-                      <Tooltip content={brickImport.description} key={brickImport.type} delayDuration={850}>
-                        <DraggableBrick brick={defaultProps[brickImport.type]} index={index} />
-                      </Tooltip>
+                      <DraggableBrick
+                        key={brickImport.type}
+                        brick={defaultProps[brickImport.type]}
+                        index={index}
+                        onMouseOver={(e) => setCurrentManifest(brickImport)}
+                        onMouseLeave={() => setCurrentManifest(null)}
+                      />
                     );
                   })}
                 {provided.placeholder}
@@ -99,40 +169,11 @@ export default function PanelLibrary() {
       </div>
       <div
         className={tx(
-          "flex flex-col max-h-[calc(100dvh/2-40px)] overflow-y-auto",
-          panelTabContentScrollClass,
+          "p-2 bg-upstart-50/50 font-normal text-upstart-600 mx-2 text-xs rounded transition-opacity",
+          currentManifest?.kind === "brick" && currentManifest?.description ? "opacity-100" : "opacity-0",
         )}
       >
-        <PanelBlockTitle>Widgets</PanelBlockTitle>
-        {shouldDisplayLibraryCallout && (
-          <Callout.Root size="1" color="violet" className="!rounded-none">
-            <Callout.Text size="1">Widgets are more complex components you can use.</Callout.Text>
-          </Callout.Root>
-        )}
-
-        <div
-          className={tx("grid gap-1.5 p-2")}
-          style={{
-            gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))",
-          }}
-        >
-          <Droppable droppableId="widgets-library" type="brick" isDropDisabled={true}>
-            {(provided) => (
-              <div ref={provided.innerRef} {...provided.droppableProps} className={tx("contents")}>
-                {Object.values(manifests)
-                  .filter((m) => m.kind === "widget" && !m.hideInLibrary)
-                  .map((brickImport, index) => {
-                    return (
-                      <Tooltip content={brickImport.description} key={brickImport.type} delayDuration={850}>
-                        <DraggableBrick brick={defaultProps[brickImport.type]} index={index} />
-                      </Tooltip>
-                    );
-                  })}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </div>
+        {currentManifest?.description}
       </div>
     </div>
   );
@@ -141,7 +182,7 @@ export default function PanelLibrary() {
 type DraggableBrickProps = {
   brick: BrickDefaults;
   index: number;
-};
+} & ComponentProps<"div">;
 
 function IconRender(props: BrickManifest) {
   const icon =
@@ -182,7 +223,6 @@ const DraggableBrick = forwardRef<HTMLDivElement, DraggableBrickProps>(({ brick,
       data-brick-min-h={brick.minHeight?.desktop}
       data-brick-default-w={brick.defaultWidth?.desktop}
       data-brick-default-h={brick.defaultHeight?.desktop}
-      {...props}
     >
       {(provided, snapshot) => {
         const mergedRef = useMergeRefs([provided.innerRef, ref]);
@@ -197,6 +237,7 @@ const DraggableBrick = forwardRef<HTMLDivElement, DraggableBrickProps>(({ brick,
         z-[99999] flex flex-col items-center justify-center
         [&:is(.clone)]:(opacity-80 !bg-white)`,
             )}
+            {...props}
           >
             <div
               className={tx(
