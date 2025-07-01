@@ -21,9 +21,8 @@ export const manifest = defineBrickManifest({
   name: "Vertical box",
   description: "A vertical container for stacking bricks",
   isContainer: true,
-  resizable: false,
   defaultWidth: {
-    desktop: "30%",
+    desktop: "auto",
     mobile: "100%",
   },
   datasource,

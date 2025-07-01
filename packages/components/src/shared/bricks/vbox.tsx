@@ -37,7 +37,7 @@ const Vbox = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
 
   if (editable) {
     return (
-      <div className={tx("flex-1 flex flex-col relative @container/container", ...classes)} ref={ref}>
+      <div className={tx("flex flex-1 flex-col relative", ...classes)} ref={ref}>
         <Droppable droppableId={brick.id} type="brick" direction="vertical">
           {(droppableProvided, droppableSnapshot) => (
             <div

@@ -1,4 +1,3 @@
-import { Toaster } from "@upstart.gg/style-system/system";
 import { useEffect, useRef } from "react";
 import {
   useAttributes,
@@ -11,7 +10,6 @@ import {
   useSections,
   useZoom,
 } from "../hooks/use-editor";
-import { Droppable } from "@hello-pangea/dnd";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
 import { useFontWatcher } from "../hooks/use-font-watcher";
 import Section from "./EditableSection";
@@ -19,7 +17,7 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { processSections } from "@upstart.gg/sdk/shared/bricks";
 import { useResizable } from "../hooks/use-resizable";
 import { useGridObserver } from "../hooks/use-grid-observer";
-import { renderClone } from "./PanelLibrary";
+import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 
 type EditablePageProps = {
   showIntro?: boolean;
@@ -66,15 +64,21 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       const target = event.target as HTMLElement;
       const brickId = target.dataset.brickId as string;
       const brickType = target.dataset.brickType as string;
-      target.style.setProperty("transition", "top,margin-right,margin-bottom,height 0.3s ease-in-out");
+      const manifest = manifests[brickType];
+      const parentBrick = draftHelpers.getParentBrick(brickId);
+
+      console.log("resized in parentBrick", parentBrick);
+
+      // target.style.setProperty("transition", "top,margin-right,margin-bottom,height 0.3s ease-in-out");
 
       const parentWidth = target.parentElement?.clientWidth || pageRef.current?.clientWidth;
       if (!parentWidth) {
         console.warn("Page width is not available, cannot update brick props.");
         return;
       }
+
       draftHelpers.updateBrickProps(brickId, {
-        width: `${(event.rect.width / parentWidth) * 100}%`,
+        width: parentBrick ? `${event.rect.width}px` : `${(event.rect.width / parentWidth) * 100}%`,
         height: `${event.rect.height}px`,
       });
 
@@ -87,7 +91,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       target.style.removeProperty("min-height");
       target.style.removeProperty("min-width");
       setTimeout(() => {
-        target.style.setProperty("transition", "none");
+        // target.style.setProperty("transition", "none");
       }, 300); // Remove transition after a short delay
     },
   });
@@ -132,60 +136,17 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   }, [generationState.isReady]);
 
   return (
-    <>
-      <div
-        id="page-container"
-        ref={pageRef}
-        className={pageClassName}
-        style={{
-          zoom,
-        }}
-      >
-        <Droppable
-          droppableId="page"
-          type="brick"
-          direction="vertical"
-          // mode="virtual"
-          renderClone={renderClone}
-          // isCombineEnabled
-          // isDropDisabled
-        >
-          {(provided, snapshot) => {
-            return (
-              <div
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                className={tx("h-[100cqh]", pageClassName)}
-              >
-                {processSections(sections).map((section, index) => (
-                  <Section key={section.id} section={section} index={index} />
-                ))}
-                {/* @hello-pangea/dnd warns about not putting the snapshot.placeholder here, but it works fine without it, and more importantly, it's the only
-                trick I found to make the library not doing some free space, because we don't want free space here
-                */}
-              </div>
-            );
-          }}
-        </Droppable>
-      </div>
-      <Toaster
-        toastOptions={{
-          position: "bottom-center",
-          style: {
-            padding: "0.5rem 1rem",
-            borderRadius: "0.5rem",
-            background: "rgba(0, 0, 0, 0.9)",
-            color: "white",
-            fontSize: "0.85rem",
-            fontWeight: "500",
-          },
-          error: {
-            style: {
-              background: "#880808",
-            },
-          },
-        }}
-      />
-    </>
+    <div
+      id="page-container"
+      ref={pageRef}
+      className={tx(pageClassName, "min-h-[100cqh]")}
+      style={{
+        zoom,
+      }}
+    >
+      {processSections(sections).map((section, index) => (
+        <Section key={section.id} section={section} index={index} />
+      ))}
+    </div>
   );
 }
