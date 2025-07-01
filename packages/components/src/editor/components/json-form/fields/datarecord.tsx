@@ -1,19 +1,23 @@
-import type { FieldProps } from "./types";
 import type { DatarecordSettings } from "@upstart.gg/sdk/shared/bricks/props/datarecord";
-import { fieldLabel } from "../form-class";
-import { SegmentedControl, Select } from "@upstart.gg/style-system/system";
-import {
-  PiAlignCenterVertical,
-  PiAlignBottom,
-  PiAlignTop,
-  PiAlignLeft,
-  PiAlignRight,
-  PiAlignCenterHorizontal,
-} from "react-icons/pi";
+import { Select } from "@upstart.gg/style-system/system";
 import type { FC } from "react";
+import { useDraft, useEditorHelpers } from "~/editor/hooks/use-editor";
+import { fieldLabel } from "../form-class";
+import type { FieldProps } from "./types";
 
 export const DatarecordField: FC<FieldProps<DatarecordSettings | undefined>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
+  const editorHelpers = useEditorHelpers();
+
+  const draft = useDraft();
+  // console.log("DatarecordField draft", draft.datarecords);
+  const options = draft.datarecords
+    ? Object.values(draft.datarecords).map((record) => ({
+        value: record.id,
+        label: record.label,
+      }))
+    : [];
+  // console.log("DatarecordField options", options);
 
   const onSettingsChange = (newVal: Partial<DatarecordSettings>) => {
     // onChange();
@@ -28,23 +32,31 @@ export const DatarecordField: FC<FieldProps<DatarecordSettings | undefined>> = (
             <Select.Trigger
               radius="large"
               variant="ghost"
-              placeholder={schema["ui:placeholder"] ?? "Not specified"}
+              placeholder={schema["ui:placeholder"] ?? "Select a database"}
             />
             <Select.Content position="popper">
               <Select.Group>
-                {/* {options
-                            .filter((o) => !o["ui:hidden-option"])
-                            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-                            .map((option: any) => (
-                              <Select.Item key={option.const} value={option.const}>
-                                {option.title}
-                              </Select.Item>
-                            ))} */}
+                {options
+                  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+                  .map((option: any) => (
+                    <Select.Item key={option.value} value={option.value}>
+                      {option.label}
+                    </Select.Item>
+                  ))}
               </Select.Group>
             </Select.Content>
           </Select.Root>
         </div>
-        <button type="button">create new</button>
+        <button
+          type="button"
+          onClick={() => {
+            // Handle create new action
+            // console.log("Create new datarecord action triggered");
+            editorHelpers.onShowPopup?.("add-form-schema");
+          }}
+        >
+          create new
+        </button>
       </div>
     </div>
   );

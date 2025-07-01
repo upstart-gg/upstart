@@ -136,7 +136,6 @@ export default function NavBar() {
           items={[
             { label: "New page", onClick: () => editorHelpers.onShowPopup?.("add-page") },
               { label: "Duplicate page", onClick: () => editorHelpers.onShowPopup?.("duplicate-page") },
-              { label: "Add form schema", onClick: () => editorHelpers.onShowPopup?.("add-form-schema") },
               { type: "separator" as const },
             ...(pages.length > 1 ? [{ type: "label", label: "Switch to page" } as const] : []),
             ...(pages.length > 1
