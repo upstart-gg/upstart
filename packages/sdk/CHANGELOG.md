@@ -1,5 +1,14 @@
 # @upstart.gg/sdk
 
+## 0.0.115
+
+### Patch Changes
+
+- [#355](https://github.com/upstart-gg/upstart/pull/355) [`cf9f387`](https://github.com/upstart-gg/upstart/commit/cf9f3870d3040093015632e252a9f5ebf574f4d7) Thanks [@mattallty](https://github.com/mattallty)! - Improve bricks layout
+
+- Updated dependencies []:
+  - @upstart.gg/style-system@0.0.115
+
 ## 0.0.114
 
 ### Patch Changes
