@@ -84,7 +84,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
             ))}
 
           {bricks.length === 0 && (
-            <div className="w-full self-stretch py-6 h-full flex-grow text-center rounded bg-gray-50 hover:bg-upstart-50 flex flex-col justify-center items-center text-base text-black/50 font-medium">
+            <div className="w-full self-stretch py-6 h-auto flex-grow text-center rounded bg-gray-50 hover:bg-upstart-50 flex flex-col justify-center items-center text-base text-black/50 font-medium">
               This section is empty.
               <span>
                 Drag bricks here to stack them inside, or{" "}

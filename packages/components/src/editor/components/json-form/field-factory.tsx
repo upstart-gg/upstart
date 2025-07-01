@@ -31,6 +31,7 @@ import { Tooltip } from "@upstart.gg/style-system/system";
 import clsx from "clsx";
 import { CssLengthField } from "./fields/css-length";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
+import { DatarecordField } from "./fields/datarecord";
 
 export interface FieldFactoryOptions {
   brickId?: string;
@@ -89,6 +90,18 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;
       return (
         <ColorField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value?: string | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
+    case "datarecord": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;
+      return (
+        <DatarecordField
           key={`field-${id}`}
           currentValue={currentValue}
           onChange={(value?: string | null) => onChange({ [id]: value }, id)}
