@@ -144,7 +144,7 @@ function useResizableSection(section: SectionType) {
           requestAnimationFrame(() => {
             Object.assign(sectionEl.style, {
               minHeight: `${newHeight}px`,
-              maxHeight: `${newHeight}px`,
+              // maxHeight: `${newHeight}px`,
               flex: "none",
             });
           });

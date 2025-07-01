@@ -59,7 +59,7 @@ function getSectionEditorStyles({ section, editable, selected, previewMode }: Us
   return [
     "select-none transition-[outline] duration-[200ms] delay-100 relative",
     "outline-dashed outline-2 -outline-offset-2 hover:(outline-upstart-500/60 shadow-upstart-500/20)",
-    "self-stretch overflow-x-hidden",
+    "self-stretch",
 
     selected ? "outline-upstart-500" : "outline-transparent",
 
