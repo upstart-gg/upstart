@@ -50,6 +50,10 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
   repeatable?: boolean;
   resizable?: boolean;
   duplicatable?: boolean;
+  /**
+   * Some specific bricks like sidebar or header may not be draggable inline, as we want to place them manually in the layout.
+   */
+  inlineDragDisabled?: boolean;
   isContainer?: boolean;
   aiInstructions?: string;
 };

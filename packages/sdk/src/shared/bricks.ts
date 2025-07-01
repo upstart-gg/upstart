@@ -264,7 +264,7 @@ export function processSections(sections: Section[]) {
     return {
       ...section,
       props: merge({}, sectionDefaultprops, section.props),
-      bricks: section.bricks.map(processBrick),
+      bricks: section.bricks.map(processBrick).filter(Boolean) as Brick[],
     } as const;
   });
 }
@@ -272,13 +272,19 @@ export function processSections(sections: Section[]) {
 /**
  *  process a brick and add default props
  */
-export function processBrick<T extends Brick>(brick: T): T {
+export function processBrick<T extends Brick>(brick: T): T | false {
   const defProps = defaultProps[brick.type];
+  if (!defProps) {
+    console.warn(`No default props found for brick type: ${brick.type}`);
+    return false; // or throw an error if you prefer
+  }
   const result = {
     ...brick,
     props: merge({}, defProps.props, {
       ...brick.props,
-      ...(brick.props.$children ? { $children: (brick.props.$children as T[]).map(processBrick) } : {}),
+      ...(brick.props.$children
+        ? { $children: (brick.props.$children as T[]).map(processBrick).filter(Boolean) }
+        : {}),
     }),
   };
   return result;

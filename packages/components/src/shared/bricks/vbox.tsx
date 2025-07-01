@@ -24,14 +24,15 @@ const Vbox = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
     // Override childrenBricks with the data from the datasource
     props.$children =
       template && ds.data !== null
-        ? ds.data.map(
-            (data, index) =>
+        ? ds.data
+            .map((data, index) =>
               processBrick({
                 ...template,
                 id: `${brick.id}-${index}`,
                 props: { ...template.props, datasourceRef: props.datasource, ...data },
-              }) satisfies Brick,
-          )
+              }),
+            )
+            .filter(Boolean)
         : [];
   }
 

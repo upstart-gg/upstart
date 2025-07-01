@@ -3,6 +3,7 @@ import {
   useDraft,
   useDraftHelpers,
   useEditorEnabled,
+  useEditorHelpers,
   useGenerationState,
   usePanel,
   usePreviewMode,
@@ -18,7 +19,12 @@ import { useEditorHotKeys } from "../hooks/use-editor-hot-keys";
 import ThemesPreviewList from "./ThemesPreviewList";
 import BlankWaitPage from "./BlankWaitPage";
 import type { GenerationState } from "@upstart.gg/sdk/shared/context";
-import { DragDropContext, type OnDragStartResponder, type DropResult } from "@hello-pangea/dnd";
+import {
+  DragDropContext,
+  type OnDragStartResponder,
+  type DropResult,
+  type OnBeforeCaptureResponder,
+} from "@hello-pangea/dnd";
 import { defaultProps, manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { type Brick, generateId } from "@upstart.gg/sdk/shared/bricks";
 import { Toaster } from "@upstart.gg/style-system/system";
@@ -44,6 +50,7 @@ export default function Editor(props: EditorProps) {
   const generationState = useGenerationState();
   const draftHelpers = useDraftHelpers();
   const previewMode = usePreviewMode();
+  const { setDraggingBrickType } = useEditorHelpers();
 
   usePageAutoSave();
   useEditorHotKeys();
@@ -60,8 +67,17 @@ export default function Editor(props: EditorProps) {
     console.log("DragStart result:", result);
   };
 
+  const onBeforeCapture: OnBeforeCaptureResponder = (before) => {
+    setDraggingBrickType(before.draggableId);
+    // You can use this to prevent certain drags, e.g. if you want to disable dragging in some cases
+    // if (beforeCapture.draggableId === "some-id") {
+    //   return false; // Prevent the drag
+    // }
+  };
+
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId, type } = result;
+    setDraggingBrickType(null);
 
     console.log("DragEnd result:", result);
 
@@ -216,14 +232,17 @@ export default function Editor(props: EditorProps) {
   }
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
+    <DragDropContext
+      onDragEnd={handleDragEnd}
+      onDragStart={handleDragStart}
+      onBeforeCapture={onBeforeCapture}
+    >
       <div
         id="editor"
         className={tx(
           "grid relative transition-all mx-auto w-full",
           getEditorCss(generationState, chatVisible),
           "min-h-[100dvh] max-h-[100dvh]",
-
           generationState.isReady === false &&
             css({
               background: `linear-gradient(120deg,
@@ -238,7 +257,6 @@ export default function Editor(props: EditorProps) {
           )`,
             }),
           generationState.isReady === false && "transition-all duration-500 ease-in-out",
-          //   "my-auto h-[clamp(500px,70dvh,1000px)] max-h-[clamp(500px,70dvh,1000px)]",
         )}
         {...props}
         ref={rootRef}

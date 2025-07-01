@@ -2,6 +2,7 @@ import interact from "interactjs";
 import { generateId, type Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
 import {
   useDraftHelpers,
+  useDraggingBrickType,
   useEditorHelpers,
   useGridConfig,
   usePreviewMode,
@@ -14,13 +15,15 @@ import { DropdownMenu, Inset, Popover, Tooltip } from "@upstart.gg/style-system/
 import EditableBrickWrapper from "./EditableBrick";
 import { useSectionStyle } from "~/shared/hooks/use-section-style";
 import { TbArrowAutofitHeight, TbBorderCorners, TbDots } from "react-icons/tb";
-import { startTransition, useEffect, useRef, useState, type MouseEvent } from "react";
+import { startTransition, useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from "react";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { getBrickResizeOptions, getBrickPosition } from "~/shared/utils/layout-utils";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import SectionSettingsView from "./SectionSettingsView";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { Draggable, Droppable } from "@hello-pangea/dnd";
+import { useMutationObserver } from "../hooks/use-mutation-observer";
+import { useDeepCompareEffect } from "use-deep-compare";
 
 type EditableSectionProps = {
   section: SectionType;
@@ -29,19 +32,37 @@ type EditableSectionProps = {
 
 export default function EditableSection({ section, index }: EditableSectionProps) {
   const { bricks, id } = section;
-
   const { setSelectedSectionId, setPanel } = useEditorHelpers();
   const { resizing } = useResizableSection(section);
   const draftHelpers = useDraftHelpers();
   const previewMode = usePreviewMode();
   const selectedSectionId = useSelectedSectionId();
   const selectedBrickId = useSelectedBrickId();
+  const draggingBrickType = useDraggingBrickType();
   const className = useSectionStyle({
     section,
     editable: true,
     selected: selectedSectionId === section.id,
     previewMode,
   });
+  const sectionObj = useSection(section.id);
+
+  useDeepCompareEffect(() => {
+    // This effect runs when the section object changes, which includes props updates
+    console.log("EditableSection useDeepCompareEffect", sectionObj?.section.id);
+    // Check if the section is overflowing vertically
+    const sectionEl = document.getElementById(section.id);
+    invariant(sectionEl, `Section element with id ${section.id} not found`);
+    const isOverflowing =
+      sectionEl.scrollHeight > sectionEl.clientHeight + parseFloat(section.props.gap ?? "0") * 2; // 8px for padding. Todo: fix this magic number
+    if (isOverflowing) {
+      console.warn(
+        `Section ${section.id} is overflowing vertically. Consider adjusting its height or content. sectionEl.scrollHeight = %s, sectionEl.clientHeight = %s`,
+        sectionEl.scrollHeight,
+        sectionEl.clientHeight,
+      );
+    }
+  }, [sectionObj]);
 
   const onClick = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
@@ -59,49 +80,58 @@ export default function EditableSection({ section, index }: EditableSectionProps
   };
 
   return (
-    <Droppable droppableId={section.id} type="brick" direction="horizontal">
-      {(droppableProvided, droppableSnapshot) => (
-        <section
-          key={id}
-          id={id}
-          ref={(el) => {
-            // Combine both refs
-            droppableProvided.innerRef(el);
-          }}
-          data-element-kind="section"
-          onClick={onClick}
-          className={tx(
-            className,
-            droppableSnapshot.isDraggingOver && "!outline-2 !outline-dashed !outline-usptart-300",
-          )}
-          {...droppableProvided.droppableProps}
-        >
-          {!selectedBrickId && <SectionOptionsButtons section={section} />}
-          {bricks
-            .filter((b) => !b.props.hidden?.[previewMode])
-            .map((brick, brickIndex) => (
-              <EditableBrickWrapper key={`${previewMode}-${brick.id}`} brick={brick} index={brickIndex} />
-            ))}
-
-          {bricks.length === 0 && (
-            <div className="w-full self-stretch py-6 h-auto flex-grow text-center rounded bg-gray-50 hover:bg-upstart-50 flex flex-col justify-center items-center text-base text-black/50 font-medium">
-              This section is empty.
-              <span>
-                Drag bricks here to stack them inside, or{" "}
-                <button
-                  type="button"
-                  onClick={() => draftHelpers.deleteSection(section.id)}
-                  className="text-red-800 inline-block hover:underline"
-                >
-                  delete it
-                </button>
-                .
-              </span>
-            </div>
-          )}
-          {droppableProvided.placeholder}
-        </section>
-      )}
+    <Droppable
+      droppableId={section.id}
+      type="brick"
+      direction="horizontal"
+      isDropDisabled={!!draggingBrickType && manifests[draggingBrickType]?.inlineDragDisabled}
+    >
+      {(droppableProvided, droppableSnapshot) => {
+        if (droppableSnapshot.isDraggingOver) {
+          console.log("Droppable provided:", droppableProvided, "Snapshot:", droppableSnapshot);
+        }
+        return (
+          <section
+            key={id}
+            id={id}
+            ref={(el) => {
+              // Combine both refs
+              droppableProvided.innerRef(el);
+            }}
+            data-element-kind="section"
+            onClick={onClick}
+            className={tx(
+              className,
+              droppableSnapshot.isDraggingOver && "!outline-2 !outline-dashed !outline-usptart-300",
+            )}
+            {...droppableProvided.droppableProps}
+          >
+            {!selectedBrickId && <SectionOptionsButtons section={section} />}
+            {bricks
+              .filter((b) => !b.props.hidden?.[previewMode])
+              .map((brick, brickIndex) => (
+                <EditableBrickWrapper key={`${previewMode}-${brick.id}`} brick={brick} index={brickIndex} />
+              ))}
+            {bricks.length === 0 && (
+              <div className="w-full self-stretch py-6 h-auto flex-grow text-center rounded bg-gray-50 hover:bg-upstart-50 flex flex-col justify-center items-center text-base text-black/50 font-medium">
+                This section is empty.
+                <span>
+                  Drag bricks here to stack them inside, or{" "}
+                  <button
+                    type="button"
+                    onClick={() => draftHelpers.deleteSection(section.id)}
+                    className="text-red-800 inline-block hover:underline"
+                  >
+                    delete it
+                  </button>
+                  .
+                </span>
+              </div>
+            )}
+            {droppableProvided.placeholder}
+          </section>
+        );
+      }}
     </Droppable>
   );
 }
@@ -112,7 +142,6 @@ function useResizableSection(section: SectionType) {
   const draftHelpers = useDraftHelpers();
   const previewMode = usePreviewMode();
   const [resizing, setResizing] = useState(false);
-  const gridConfig = useGridConfig();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {

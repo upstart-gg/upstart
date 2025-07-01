@@ -104,6 +104,8 @@ export interface EditorStateProps {
   themesLibrary: Theme[];
   imagesSearchResults?: ImageSearchResultsType;
 
+  draggingBrickType?: Brick["type"];
+
   onShowLogin: () => void;
   onShowPopup?: (id: string | false) => void;
   onPublish: (data: PagePublishPayload) => void;
@@ -142,6 +144,7 @@ export interface EditorState extends EditorStateProps {
   zoomIn: () => void;
   zoomOut: () => void;
   resetZoom: () => void;
+  setDraggingBrickType: (type: Brick["type"] | null) => void;
 }
 
 export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
@@ -209,6 +212,10 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
           immer((set, _get) => ({
             ...DEFAULT_PROPS,
             ...initProps,
+            setDraggingBrickType: (type) =>
+              set((state) => {
+                state.draggingBrickType = type ?? undefined;
+              }),
             setGridConfig: (config) =>
               set((state) => {
                 state.gridConfig = config;
@@ -1563,9 +1570,15 @@ export const useDatasourcesSchemas = () => {
   return useStore(ctx, (state) => state.datasources);
 };
 
+export const useDraggingBrickType = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.draggingBrickType);
+};
+
 export const useEditorHelpers = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => ({
+    setDraggingBrickType: state.setDraggingBrickType,
     setPreviewMode: state.setPreviewMode,
     setSettingsVisible: state.setSettingsVisible,
     setGridConfig: state.setGridConfig,

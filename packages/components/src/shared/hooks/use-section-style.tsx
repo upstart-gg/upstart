@@ -37,7 +37,7 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
       "flex-nowrap",
 
       section.props.fillSpace && "[&>*]:grow",
-      "[&>*]:flex-shrink-0",
+      // "[&>*]:flex-shrink-0",
 
       // Background
       !!section.props.background && getBackgroundStyles(section.props.background),
@@ -57,7 +57,7 @@ function getSectionEditorStyles({ section, editable, selected, previewMode }: Us
   }
   const GAP = section.props.gap ?? "12px"; // Default gap if not set
   return [
-    "select-none transition-[outline] duration-[200ms] delay-100 relative",
+    "select-none transition-[outline] duration-[200ms] delay-[100ms] relative",
     "outline-dashed outline-2 -outline-offset-2 hover:(outline-upstart-500/60 shadow-upstart-500/20)",
     "self-stretch",
 

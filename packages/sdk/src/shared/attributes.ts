@@ -2,12 +2,12 @@ import { Type, type TProperties, type Static, type TObject } from "@sinclair/typ
 import type { JSONSchemaType } from "ajv";
 import { backgroundRef } from "./bricks/props/background";
 import { string } from "./bricks/props/string";
-import { optional } from "./bricks/props/helpers";
+import { group, optional } from "./bricks/props/helpers";
 import { boolean } from "./bricks/props/boolean";
 import { datetime } from "./bricks/props/date";
 import { enumProp } from "./bricks/props/enum";
 import { jsonDefault } from "json-schema-default";
-import def from "ajv/dist/vocabularies/discriminator";
+import { manifest as siderbarManifest } from "./bricks/manifests/sidebar.manifest";
 
 export function defineAttributes(attrs: TProperties) {
   // Attributes starting with "$" are reserved for internal use
@@ -182,6 +182,28 @@ const defaultAttributes = {
       "ui:scope": "site",
       "ui:group": "external-scripts",
       "ui:group:title": "External scripts",
+    }),
+  ),
+
+  $sidebarConfig: optional(
+    group({
+      title: "Sidebar configuration",
+      children: {
+        showSidebar: boolean("Show sidebar", true, {
+          description: "Enable or disable the sidebar on this site",
+          "ui:group": "layout",
+          "ui:group:title": "Page Layout",
+        }),
+        sidebarPosition: enumProp("Sidebar position", "left", {
+          options: [
+            { value: "left", title: "Left" },
+            { value: "right", title: "Right" },
+          ],
+          description: "Position of the sidebar on the page",
+          "ui:group": "layout",
+          "ui:group:title": "Page Layout",
+        }),
+      },
     }),
   ),
 };

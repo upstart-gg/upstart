@@ -153,6 +153,13 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               // },
               {
                 id: `b_${generateId()}`,
+                type: "spacer",
+                props: {
+                  width: "20px",
+                },
+              },
+              {
+                id: `b_${generateId()}`,
                 type: "card",
                 props: {
                   cardTitle: "Welcome to My Site",
