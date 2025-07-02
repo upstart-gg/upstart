@@ -26,10 +26,6 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
   const selectedTab = tabsMapping[brick.id] ?? "settings";
   const manifest = manifests[brick.type];
 
-  if (brick.type === "navbar") {
-    console.log("Manifest for navbar brick", manifest);
-  }
-
   useEffect(() => {
     if (!manifest.isContainer && selectedTab === "content") {
       setTabsMapping((prev) => ({ ...prev, [brick.id]: "settings" }));
@@ -114,7 +110,7 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
 
 function PresetsTab({ brick, section }: { brick: Brick; section: Section }) {
   const manifest = manifests[brick.type];
-  const { updateBrickProps } = useDraftHelpers();
+  const { updateBrickProps, getBrick } = useDraftHelpers();
   const previewMode = usePreviewMode();
   const schema = resolveSchema(manifest.props.properties.preset);
 

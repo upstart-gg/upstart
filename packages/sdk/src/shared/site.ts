@@ -191,41 +191,52 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               },
             ],
           },
-          // {
-          //   id: `s_content-${generateId()}`,
-          //   label: "Bottom",
-          //   order: 3,
-          //   props: {},
-          //   bricks: [
-          //     {
-          //       id: `b_${generateId()}`,
-          //       type: "video",
-          //       props: {
-          //         url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-          //       },
-          //     },
-          //     {
-          //       id: `b_${generateId()}`,
-          //       type: "divider",
-          //       props: {
-          //         direction: "horizontal",
-          //         size: "20px",
-          //       },
-          //     },
-          //     {
-          //       id: `b_${generateId()}`,
-          //       type: "card",
-          //       props: {
-          //         cardTitle: "Welcome to My Site",
-          //         cardBody: "This is a sample card body. You can edit this content.",
-          //         cardImage: {
-          //           src: "https://placehold.co/300x200?text=Card+Image",
-          //           alt: "Sample Card Image",
-          //         },
-          //       },
-          //     },
-          //   ],
-          // },
+          {
+            id: `s_content-${generateId()}`,
+            label: "Bottom",
+            order: 3,
+            props: {},
+            bricks: [
+              {
+                id: `b_${generateId()}`,
+                type: "footer",
+                props: {
+                  linksSections: [
+                    {
+                      sectionTitle: "Links",
+                      links: [
+                        { title: "About", url: "/about" },
+                        { title: "Contact", url: "/contact" },
+                        { title: "Privacy Policy", url: "/privacy" },
+                      ],
+                    },
+                    {
+                      sectionTitle: "Social",
+                      links: [
+                        { title: "Twitter", url: "https://twitter.com" },
+                        { title: "Facebook", url: "https://facebook.com" },
+                        { title: "Instagram", url: "https://instagram.com" },
+                      ],
+                    },
+                    {
+                      sectionTitle: "Legal",
+                      links: [
+                        { title: "Terms of Service", url: "/terms" },
+                        { title: "Cookie Policy", url: "/cookies" },
+                      ],
+                    },
+                    {
+                      sectionTitle: "Contact",
+                      links: [
+                        { title: "Email Us", url: "mailto:" },
+                        { title: "Support", url: "/support" },
+                      ],
+                    },
+                  ],
+                },
+              },
+            ],
+          },
         ] satisfies Section[],
         tags: [],
         attributes: defaultAttributesSchema,

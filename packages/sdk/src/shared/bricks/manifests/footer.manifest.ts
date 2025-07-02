@@ -16,6 +16,12 @@ export const manifest = defineBrickManifest({
   name: "Footer",
   description: "A footer with links and an optional logo",
   icon: VscLayoutPanelOff,
+  staticClasses: "flex-1",
+  resizable: false,
+  defaultWidth: {
+    desktop: "100%",
+    mobile: "100%",
+  },
   props: defineProps({
     variants: Type.Array(
       Type.Union(
@@ -36,7 +42,7 @@ export const manifest = defineBrickManifest({
     ),
     backgroundColor: optional(backgroundColorRef()),
     logo: optional(imageRef({ title: "Logo" })),
-    rows: optional(number("Rows", { default: 1 })),
+    rows: optional(number("Rows", { default: 1, "ui:field": "slider", minimum: 1, maximum: 5 })),
     linksSections: array(
       Type.Object({
         sectionTitle: string("Links Section title"),
@@ -48,6 +54,19 @@ export const manifest = defineBrickManifest({
           }),
         ),
       }),
+      {
+        default: [
+          {
+            sectionTitle: "Links",
+            links: [
+              {
+                title: "Link",
+                url: "/",
+              },
+            ],
+          },
+        ],
+      },
     ),
   }),
 });

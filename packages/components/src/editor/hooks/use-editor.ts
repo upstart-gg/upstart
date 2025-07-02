@@ -901,6 +901,9 @@ export const createDraftStore = (
                 }
                 brickObj.props = brick.props;
                 brickObj.mobileProps = brick.mobileProps;
+
+                // rebuild map
+                state.brickMap = buildBrickMap(state.sections);
               } else {
                 console.error("Cannot update brick %s, it does not exist in the brick map", id);
               }

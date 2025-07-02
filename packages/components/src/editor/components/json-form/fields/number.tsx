@@ -13,7 +13,7 @@ export const SliderField: FC<FieldProps<number>> = (props) => {
   return (
     <div className="slider-field flex-1 flex justify-between gap-3 items-center">
       <FieldTitle title={title} description={description} />
-      <div className="ml-auto basis-1/2 flex items-center gap-2">
+      <div className="ml-auto basis-1/3 flex items-center gap-2">
         <Slider
           onValueChange={(value) => {
             console.log("slider value changed", value[0]);
@@ -46,7 +46,8 @@ export const NumberField: FC<FieldProps<number>> = (props) => {
         defaultValue={currentValue}
         type="number"
         onChange={(e) => onChange(e.target.value ? Number(e.target.value) : null)}
-        className="min-w-[40px] text-right"
+        className="!max-w-[50px] !text-right"
+        inputMode="numeric"
         min={schema.minimum}
         max={schema.maximum}
         step={schema.multipleOf ?? 1}
