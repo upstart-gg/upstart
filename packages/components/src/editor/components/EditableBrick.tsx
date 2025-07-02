@@ -369,8 +369,8 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
     const editorHelpers = useEditorHelpers();
     const debugMode = useDebugMode();
     const manifest = useBrickManifest(brick.type);
-    const canMoveLeft = isContainerChild ? draftHelpers.canMoveToWithinParent(brick.id, "left") : null;
-    const canMoveRight = isContainerChild ? draftHelpers.canMoveToWithinParent(brick.id, "right") : null;
+    const canMovePrev = draftHelpers.canMoveToWithinParent(brick.id, "previous");
+    const canMoveNext = draftHelpers.canMoveToWithinParent(brick.id, "next");
     const parentContainer = draftHelpers.getParentBrick(brick.id);
 
     return (
@@ -419,21 +419,23 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
             >
               Copy
             </ContextMenu.Item> */}
-            {canMoveLeft && (
+            {canMovePrev && (
               <ContextMenu.Item
+                shortcut={isContainerChild ? "⌘↑" : "⌘←"}
                 onClick={(e) => {
                   e.stopPropagation();
-                  draftHelpers.moveBrickWithin(brick.id, "left");
+                  draftHelpers.moveBrickWithin(brick.id, "previous");
                 }}
               >
                 {isContainerChild ? "Move up" : "Move left"}
               </ContextMenu.Item>
             )}
-            {canMoveRight && (
+            {canMoveNext && (
               <ContextMenu.Item
+                shortcut={isContainerChild ? "⌘↓" : "⌘→"}
                 onClick={(e) => {
                   e.stopPropagation();
-                  draftHelpers.moveBrickWithin(brick.id, "right");
+                  draftHelpers.moveBrickWithin(brick.id, "next");
                 }}
               >
                 {isContainerChild ? "Move down" : "Move right"}

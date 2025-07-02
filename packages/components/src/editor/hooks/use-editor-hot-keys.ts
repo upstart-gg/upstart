@@ -50,29 +50,37 @@ export function useEditorHotKeys() {
   });
 
   /**
-   * Move brick left within a container
-   * @todo
+   * Move brick to the left or up within a container
    */
-  useHotkeys("mod+left", (e) => {
-    e.preventDefault();
-    if (selectedBrickId) {
-      // console
-      console.log("Moving %s to left", selectedBrickId);
-      draftHelpers.moveBrickWithin(selectedBrickId, "left");
-    }
-  });
-  /**
-   * Move brick right within a container
-   * @todo
-   */
-  useHotkeys("mod+right", (e) => {
-    e.preventDefault();
-    if (selectedBrickId) {
-      // console
-      console.log("Moving %s to right", selectedBrickId);
-      draftHelpers.moveBrickWithin(selectedBrickId, "right");
-    }
-  });
+  useHotkeys(
+    ["mod+up", "mod+left"],
+    (e) => {
+      e.preventDefault();
+      if (selectedBrickId) {
+        // console
+        console.log("Moving %s up", selectedBrickId);
+        draftHelpers.moveBrickWithin(selectedBrickId, "previous");
+      }
+    },
+    {
+      enableOnContentEditable: true,
+    },
+  );
+
+  useHotkeys(
+    ["mod+down", "mod+right"],
+    (e) => {
+      e.preventDefault();
+      if (selectedBrickId) {
+        // console
+        console.log("Moving %s to right", selectedBrickId);
+        draftHelpers.moveBrickWithin(selectedBrickId, "next");
+      }
+    },
+    {
+      enableOnContentEditable: true,
+    },
+  );
 
   // mod+d to duplicate the selected brick
   useHotkeys("mod+d", (e) => {
