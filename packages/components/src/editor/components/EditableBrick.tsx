@@ -1,4 +1,5 @@
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
+
 import {
   forwardRef,
   type PropsWithChildren,
@@ -31,6 +32,7 @@ import {
   safePolygon,
   autoUpdate,
   type Placement,
+  FloatingPortal,
 } from "@upstart.gg/style-system/system";
 import BaseBrick from "~/shared/components/BaseBrick";
 import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
@@ -240,14 +242,16 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
               >
                 <BaseBrick brick={brick} selectedBrickId={selectedBrickId} editable />
                 {!manifest.isContainer && <BrickDebugLabel brick={brick} />}
-                <BrickMenuBarsContainer
-                  ref={barsRefs.setFloating}
-                  brick={brick}
-                  isContainerChild={isContainerChild}
-                  style={barsFloatingStyles}
-                  show={isMenuBarVisible}
-                  {...getFloatingProps()}
-                />
+                <FloatingPortal>
+                  <BrickMenuBarsContainer
+                    ref={barsRefs.setFloating}
+                    brick={brick}
+                    isContainerChild={isContainerChild}
+                    style={barsFloatingStyles}
+                    show={isMenuBarVisible}
+                    {...getFloatingProps()}
+                  />
+                </FloatingPortal>
                 {/* Children contains resizable handles and other elements */}
                 {manifests[brick.type]?.resizable && !isContainerChild && !snapshot.isDragging && (
                   <>
