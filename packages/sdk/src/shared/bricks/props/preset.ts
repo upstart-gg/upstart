@@ -1,4 +1,4 @@
-import { Type, type Static } from "@sinclair/typebox";
+import { type StringOptions, Type, type Static } from "@sinclair/typebox";
 import { typedRef } from "~/shared/utils/typed-ref";
 
 export function preset(defaultValue?: string) {
@@ -80,7 +80,9 @@ export function preset(defaultValue?: string) {
 
 export type Preset = Static<ReturnType<typeof preset>>;
 
-export const presetRef = typedRef("styles:preset");
+export function presetRef(options: StringOptions = {}) {
+  return typedRef("styles:preset", options);
+}
 
 export const presetsStyleProps = {
   "surface-1": {
