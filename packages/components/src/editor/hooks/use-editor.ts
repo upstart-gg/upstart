@@ -105,6 +105,8 @@ export interface EditorStateProps {
   themesLibrary: Theme[];
   imagesSearchResults?: ImageSearchResultsType;
 
+  draggingBrickType?: Brick["type"];
+
   onShowLogin: () => void;
   onShowPopup?: (id: string | false) => void;
   onPublish: (data: PagePublishPayload) => void;
@@ -143,6 +145,7 @@ export interface EditorState extends EditorStateProps {
   zoomIn: () => void;
   zoomOut: () => void;
   resetZoom: () => void;
+  setDraggingBrickType: (type: Brick["type"] | null) => void;
 }
 
 export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
@@ -210,6 +213,10 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
           immer((set, _get) => ({
             ...DEFAULT_PROPS,
             ...initProps,
+            setDraggingBrickType: (type) =>
+              set((state) => {
+                state.draggingBrickType = type ?? undefined;
+              }),
             setGridConfig: (config) =>
               set((state) => {
                 state.gridConfig = config;
@@ -774,11 +781,12 @@ export const createDraftStore = (
 
               if (parentId) {
                 // Brick is inside a container, remove from parent's $children
-                const parentBrick = state.getBrick(parentId);
+                const parentBrick = getBrickFromDraft(parentId, state);
+                // const parentBrick = state.getBrick(parentId);
                 if (parentBrick?.props.$children) {
-                  parentBrick.props.$children = (parentBrick.props.$children as Brick[]).filter(
-                    (b) => b.id !== id,
-                  );
+                  const index = (parentBrick.props.$children as Brick[]).findIndex((b) => b.id === id);
+                  // delete the brick from parent's $children
+                  (parentBrick.props.$children as Brick[]).splice(index, 1);
                 }
               } else if (section) {
                 // Brick is at the top level of a section
@@ -1564,9 +1572,15 @@ export const useDatasourcesSchemas = () => {
   return useStore(ctx, (state) => state.datasources);
 };
 
+export const useDraggingBrickType = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.draggingBrickType);
+};
+
 export const useEditorHelpers = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => ({
+    setDraggingBrickType: state.setDraggingBrickType,
     setPreviewMode: state.setPreviewMode,
     setSettingsVisible: state.setSettingsVisible,
     setGridConfig: state.setGridConfig,

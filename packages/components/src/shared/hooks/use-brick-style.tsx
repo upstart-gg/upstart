@@ -57,7 +57,7 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
   selected,
   isContainerChild = false,
 }: BrickProps<T>) {
-  const { props } = brick;
+  const { props, mobileProps } = brick;
   const manifest = useBrickManifest(brick.type);
   const stylesProps = getStyleProperties(manifest.props);
   const styleIds = Object.values(stylesProps);
@@ -68,24 +68,21 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
     props.className as string,
     props.preset as string,
     "brick-wrapper group/brick flex",
+
+    !mobileProps?.width && manifest.minWidth?.mobile && `@mobile:min-w-[${manifest.minWidth.mobile}px]`,
+    !props.width && manifest.minWidth?.desktop && `@desktop:min-w-[${manifest.minWidth.desktop}px]`,
+
+    manifest.minHeight?.mobile && `@mobile:min-h-[${manifest.minHeight.mobile}px]`,
+    manifest.minHeight?.desktop && `@desktop:min-h-[${manifest.minHeight.desktop}px]`,
+
+    manifest.maxHeight?.mobile && `@mobile:max-h-[${manifest.maxHeight.mobile}px]`,
+    manifest.maxHeight?.desktop && `@desktop:max-h-[${manifest.maxHeight.desktop}px]`,
+
+    // Always respect the parent container width
     isContainerChild && "flex-1",
-
-    !isContainerChild &&
-      manifest.minWidth &&
-      `@mobile:min-w-[${manifest.minWidth.mobile}px] @desktop:min-w-[${manifest.minWidth.desktop}px]`,
-    manifest.minHeight &&
-      `@mobile:min-h-[${manifest.minHeight.mobile}px] @desktop:min-h-[${manifest.minHeight.desktop}px]`,
-    !isContainerChild &&
-      manifest.maxWidth &&
-      `@mobile:max-w-[${manifest.maxWidth.mobile}px] @desktop:max-w-[${manifest.maxWidth.desktop}px]`,
-    manifest.maxHeight &&
-      `@mobile:max-h-[${manifest.maxHeight.mobile}px] @desktop:max-h-[${manifest.maxHeight.desktop}px]`,
-
-    !isContainerChild &&
-      typeof props.width !== "undefined" &&
-      css({
-        width: `${props.width}`,
-      }),
+    !isContainerChild && manifest.maxWidth?.mobile && `@mobile:max-w-[${manifest.maxWidth.mobile}px]`,
+    !isContainerChild && manifest.maxWidth?.desktop && `@desktop:max-w-[${manifest.maxWidth.desktop}px]`,
+    !isContainerChild && typeof props.width !== "undefined" && `@desktop:w-[${props.width}]`,
 
     !isContainerChild &&
       typeof props.width === "undefined" &&

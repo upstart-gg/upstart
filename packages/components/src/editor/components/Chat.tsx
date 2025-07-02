@@ -277,12 +277,6 @@ What should we work on together? 🤖`,
   useEffect(debouncedScroll, [status, data, messages]);
 
   useDeepCompareEffect(() => {
-    if (generationState) {
-      console.log("generation state changed", generationState);
-    }
-  }, [generationState]);
-
-  useDeepCompareEffect(() => {
     data?.forEach((item) => {
       if (typeof item === "object" && !Array.isArray(item) && item?.userLanguage) {
         setUserLanguage(item.userLanguage as string);

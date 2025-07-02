@@ -100,19 +100,33 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
     }
   }, [lat, lng, props.location.tooltip, props.location.zoom]);
 
+  const resizingDelayTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // This effect handles resizing the map when the container size changes
+  // It uses various timeouts to prevent some quick resize events from causing issues
+  // and to ensure the map is resized only after the container has settled.
+  // This is particularly useful when the map is inside a resizable container or when the page layout changes.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (containerRef.current && editable) {
       const resizeObserver = new ResizeObserver(() => {
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.invalidateSize();
-        }
+        clearTimeout(resizingDelayTimer.current ?? undefined);
+        resizingDelayTimer.current = setTimeout(() => {
+          // check if the observed div is still mounted
+          // else this will cause memory leak
+          if (mapInstanceRef.current) {
+            mapInstanceRef.current.invalidateSize();
+          }
+        }, 100);
       });
       resizeObserver.observe(containerRef.current);
       return () => {
-        resizeObserver.disconnect();
+        setTimeout(() => {
+          resizeObserver.disconnect();
+        }, 200);
       };
     }
-  }, [editable]);
+  }, []);
 
   return (
     <div

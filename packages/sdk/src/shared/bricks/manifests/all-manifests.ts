@@ -14,7 +14,7 @@ import { manifest as buttonManifest, examples as buttonExamples } from "./button
 import { manifest as iconManifest, examples as iconExamples } from "./icon.manifest";
 import { manifest as socialLinksManifest, examples as socialLinksExamples } from "./social-links.manifest";
 import { manifest as sidebarManifest, examples as sidebarExamples } from "./sidebar.manifest";
-import { manifest as dividerManifest, examples as dividerExamples } from "./divider.manifest";
+import { manifest as spacerManifest, examples as spacerExamples } from "./spacer.manifest";
 import { manifest as testimonialsManifest, examples as testimonialsExamples } from "./testimonials.manifest";
 import { manifest as timelineManifest, examples as timelineExamples } from "./timeline.manifest";
 import { manifest as accordionManifest, examples as accordionExamples } from "./accordion.manifest";
@@ -38,7 +38,7 @@ export const manifests: Record<string, BrickManifest> = {
   [iconManifest.type]: iconManifest,
   [socialLinksManifest.type]: socialLinksManifest,
   [vboxManifest.type]: vboxManifest,
-  [dividerManifest.type]: dividerManifest,
+  [spacerManifest.type]: spacerManifest,
   [testimonialsManifest.type]: testimonialsManifest,
   [timelineManifest.type]: timelineManifest,
   [accordionManifest.type]: accordionManifest,
@@ -61,7 +61,7 @@ export const defaultProps: Record<string, BrickDefaults> = {
   [iconManifest.type]: getBrickManifestDefaults(iconManifest),
   [socialLinksManifest.type]: getBrickManifestDefaults(socialLinksManifest),
   [vboxManifest.type]: getBrickManifestDefaults(vboxManifest),
-  [dividerManifest.type]: getBrickManifestDefaults(dividerManifest),
+  [spacerManifest.type]: getBrickManifestDefaults(spacerManifest),
   [testimonialsManifest.type]: getBrickManifestDefaults(testimonialsManifest),
   [timelineManifest.type]: getBrickManifestDefaults(timelineManifest),
   [accordionManifest.type]: getBrickManifestDefaults(accordionManifest),
@@ -85,7 +85,7 @@ export const examples: Record<string, { description: string; type: string; props
   [iconManifest.type]: iconExamples,
   [socialLinksManifest.type]: socialLinksExamples,
   [vboxManifest.type]: vboxExamples,
-  [dividerManifest.type]: dividerExamples,
+  [spacerManifest.type]: spacerExamples,
   [testimonialsManifest.type]: testimonialsExamples,
   [timelineManifest.type]: timelineExamples,
   [accordionManifest.type]: accordionExamples,

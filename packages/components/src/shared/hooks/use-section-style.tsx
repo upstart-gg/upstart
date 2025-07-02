@@ -1,8 +1,7 @@
 import type { Section } from "@upstart.gg/sdk/shared/bricks";
-import { GAP, LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
+import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import { getBackgroundStyles } from "../styles/helpers";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
-import { isCssLength } from "@upstart.gg/sdk/shared/bricks/props/css-length";
 import { tx, css } from "@upstart.gg/style-system/twind";
 
 type UseSectionStyleProps = {
@@ -13,6 +12,7 @@ type UseSectionStyleProps = {
 };
 
 export function useSectionStyle({ section, selected, editable, previewMode }: UseSectionStyleProps) {
+  const GAP = section.props.gap ?? "12px"; // Default gap if not set
   // console.log("useSectionStyle props", { props: section.props });
   return tx(
     "flex @mobile:flex-col @desktop:flex-row w-full py-0 @container/section group/section overflow-visible relative mx-auto max-sm:max-w-dvw",
@@ -30,14 +30,14 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
       section.props.justifyContent,
 
       // Padding and gap
-      css({ gap: `${GAP}px`, paddingInline: `${GAP}px`, paddingBlock: `${GAP}px` }),
+      css({ gap: `${GAP}`, paddingInline: `${GAP}`, paddingBlock: `${GAP}` }),
 
       // section.props.layout?.wrap === true ? "flex-wrap" : "flex-nowrap",
 
       "flex-nowrap",
 
       section.props.fillSpace && "[&>*]:grow",
-      "[&>*]:flex-shrink-0",
+      // "[&>*]:flex-shrink-0",
 
       // Background
       !!section.props.background && getBackgroundStyles(section.props.background),
@@ -55,8 +55,9 @@ function getSectionEditorStyles({ section, editable, selected, previewMode }: Us
   if (!editable) {
     return null;
   }
+  const GAP = section.props.gap ?? "12px"; // Default gap if not set
   return [
-    "select-none transition-[outline] duration-[200ms] delay-100 relative",
+    "select-none transition-[outline] duration-[200ms] delay-[100ms] relative",
     "outline-dashed outline-2 -outline-offset-2 hover:(outline-upstart-500/60 shadow-upstart-500/20)",
     "self-stretch",
 
@@ -71,10 +72,10 @@ function getSectionEditorStyles({ section, editable, selected, previewMode }: Us
           content: "";
           position: absolute;
           opacity: 0.7;
-          top: ${GAP}px;
-          bottom: ${GAP}px;
-          left: ${GAP}px;
-          right: ${GAP}px;
+          top: ${GAP};
+          bottom: ${GAP};
+          left: ${GAP};
+          right: ${GAP};
           z-index: 999999;
           pointer-events: none;
           background-size:

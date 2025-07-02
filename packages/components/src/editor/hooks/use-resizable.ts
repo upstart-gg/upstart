@@ -192,16 +192,16 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
             // log target element and its styles
             const manifest = manifests[target.dataset.brickType || "unknown"] || {};
 
-            if (manifest.minWidth) {
+            if (manifest.minWidth?.[previewMode]) {
               width = Math.max(width, manifest.minWidth[previewMode]);
             }
-            if (manifest.minHeight) {
+            if (manifest.minHeight?.[previewMode]) {
               height = Math.max(height, manifest.minHeight[previewMode]);
             }
-            if (manifest.maxWidth) {
+            if (manifest.maxWidth?.[previewMode]) {
               width = Math.min(width, manifest.maxWidth[previewMode]);
             }
-            if (manifest.maxHeight) {
+            if (manifest.maxHeight?.[previewMode]) {
               height = Math.min(height, manifest.maxHeight[previewMode]);
             }
 

@@ -195,7 +195,9 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
         key={brick.id}
         draggableId={brick.id}
         index={index}
-        isDragDisabled={!manifest.movable || isContainerChild}
+        isDragDisabled={
+          !manifest.movable || isContainerChild || previewMode === "mobile" || manifest.inlineDragDisabled
+        }
       >
         {(provided, snapshot) => {
           const { ref: hoverRef, isHovered } = useIsHovered({ tolerance: 6 });
@@ -255,21 +257,23 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                         <ResizeHandle direction="n" show={isHovered} manifest={manifest} />
                       </>
                     )}
-                    {(resizeOpts.canGrowHorizontal || resizeOpts.canShrinkHorizontal) && (
-                      <>
-                        <ResizeHandle direction="w" show={isHovered} manifest={manifest} />
-                        <ResizeHandle direction="e" show={isHovered} manifest={manifest} />
-                      </>
-                    )}
+                    {(resizeOpts.canGrowHorizontal || resizeOpts.canShrinkHorizontal) &&
+                      previewMode === "desktop" && (
+                        <>
+                          <ResizeHandle direction="w" show={isHovered} manifest={manifest} />
+                          <ResizeHandle direction="e" show={isHovered} manifest={manifest} />
+                        </>
+                      )}
                     {((resizeOpts.canGrowVertical && resizeOpts.canGrowHorizontal) ||
-                      (resizeOpts.canShrinkVertical && resizeOpts.canShrinkHorizontal)) && (
-                      <>
-                        <ResizeHandle direction="se" show={isHovered} manifest={manifest} />
-                        <ResizeHandle direction="sw" show={isHovered} manifest={manifest} />
-                        <ResizeHandle direction="ne" show={isHovered} manifest={manifest} />
-                        <ResizeHandle direction="nw" show={isHovered} manifest={manifest} />
-                      </>
-                    )}
+                      (resizeOpts.canShrinkVertical && resizeOpts.canShrinkHorizontal)) &&
+                      previewMode === "desktop" && (
+                        <>
+                          <ResizeHandle direction="se" show={isHovered} manifest={manifest} />
+                          <ResizeHandle direction="sw" show={isHovered} manifest={manifest} />
+                          <ResizeHandle direction="ne" show={isHovered} manifest={manifest} />
+                          <ResizeHandle direction="nw" show={isHovered} manifest={manifest} />
+                        </>
+                      )}
                   </>
                 )}
               </div>

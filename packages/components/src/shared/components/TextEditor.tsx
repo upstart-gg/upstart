@@ -178,7 +178,7 @@ const TextEditor = <T extends ElementType = "div">({
       mergeNestedSpanStyles: false,
     }),
     Placeholder.configure({
-      placeholder: "Write something …",
+      placeholder: "Write something...",
     }),
     ...(inline ? [Document.extend({ content: "paragraph" })] : []),
     ...(textSizeMode === "hero"
