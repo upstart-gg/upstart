@@ -86,17 +86,22 @@ const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
             </div>
           </div>
           <div className="basis-full w-0" />
-          <div className="flex justify-between gap-12 flex-1 items-center mt-3">
-            <label className={fieldLabel}>Alt text</label>
-            <TextField.Root
-              defaultValue={currentValue.alt}
-              className="!flex-1"
-              onChange={(e) => debouncedOnPropsChange({ alt: e.target.value })}
-              required={required}
-              spellCheck={!!schema["ui:spellcheck"]}
-            />
-          </div>
-          <div className="basis-full w-0" />
+          {!schema["ui:no-alt-text"] && (
+            <>
+              <div className="flex justify-between gap-12 flex-1 items-center mt-3">
+                <label className={fieldLabel}>Alt text</label>
+                <TextField.Root
+                  defaultValue={currentValue.alt}
+                  className="!flex-1"
+                  onChange={(e) => debouncedOnPropsChange({ alt: e.target.value })}
+                  required={required}
+                  spellCheck={!!schema["ui:spellcheck"]}
+                />
+              </div>
+              <div className="basis-full w-0" />
+            </>
+          )}
+
           {!schema["ui:no-object-options"] && (
             <div className="flex gap-12 flex-1 mt-3 pr-1.5">
               <div className="flex flex-col gap-2 flex-1 pl-1">

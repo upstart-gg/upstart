@@ -90,6 +90,7 @@ export const manifest = defineBrickManifest({
           src: "https://placehold.co/300x200?text=Card+Image",
           alt: "Sample Card Image",
         },
+        "ui:responsive": false,
       }),
     ),
     cardTitle: optional(textContentRef({ title: "Title" })),

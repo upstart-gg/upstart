@@ -18,16 +18,16 @@ export default function ResizeHandle({
         "overflow-visible z-[9998]",
         `resizable-handle-${direction}`,
         {
-          "bottom-0 left-0 right-0 h-[10px] cursor-row-resize": direction === "s",
-          "top-0 left-0 right-0 h-[10px] cursor-row-resize": direction === "n",
-          "top-0 left-0 bottom-0 w-[10px] cursor-col-resize": direction === "w",
-          "top-0 right-0 bottom-0 w-[10px] cursor-col-resize": direction === "e",
+          "-bottom-[2px] left-0 right-0 h-[6px] cursor-row-resize": direction === "s",
+          "-top-[2px] left-0 right-0 h-[6px] cursor-row-resize": direction === "n",
+          "top-0 -left-[2px] bottom-0 w-[6px] cursor-col-resize": direction === "w",
+          "top-0 -right-[2px] bottom-0 w-[6px] cursor-col-resize": direction === "e",
           // sw and nw
-          "bottom-0 left-0 w-[10px] h-[10px] cursor-nesw-resize": direction === "sw",
-          "top-0 left-0 w-[10px] h-[10px] cursor-nwse-resize": direction === "nw",
+          "-bottom-[2px] -left-[2px] w-[6px] h-[6px] cursor-nesw-resize": direction === "sw",
+          "-top-[2px] -left-[2px] w-[6px] h-[6px] cursor-nwse-resize": direction === "nw",
           // se and ne
-          "bottom-0 right-0 w-[10px] h-[10px] cursor-nwse-resize": direction === "se",
-          "top-0 right-0 w-[10px] h-[10px] cursor-nesw-resize": direction === "ne",
+          "-bottom-[2px] -right-[2px] w-[6px] h-[6px] cursor-nwse-resize": direction === "se",
+          "-top-[2px] -right-[2px] w-[6px] h-[6px] cursor-nesw-resize": direction === "ne",
         },
       )}
     >

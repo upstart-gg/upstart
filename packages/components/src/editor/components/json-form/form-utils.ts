@@ -13,7 +13,7 @@ export function getNavItemsFromManifest(
 ): NavItem[] {
   const items = Object.entries<TSchema>(manifest.properties)
     .map(([key, prop]) => [key, resolveSchema(prop)] as [string, TSchema])
-    .filter(([, prop]) => prop["ui:field"] !== "hidden" && prop["ui:field"] !== "ui-hidden")
+    .filter(([, prop]) => prop["ui:field"] !== "hidden")
     .filter(([key, prop]) => filter(prop, key))
     .map(([key, prop]) => {
       const nextPathParts = [...pathsParts, key];

@@ -26,6 +26,9 @@ export default function AttributesSettingsView({
       (typeof prop.metadata?.["ui:responsive"] === "undefined" ||
         prop.metadata?.["ui:responsive"] === true ||
         prop.metadata?.["ui:responsive"] === previewMode) &&
+      (typeof prop["ui:responsive"] === "undefined" ||
+        prop["ui:responsive"] === true ||
+        prop["ui:responsive"] === previewMode) &&
       (!prop.metadata?.category || prop.metadata?.category === "settings")
       /* &&
       (!group || !prop.metadata?.group || (prop.metadata?.group && key === group))*/
@@ -35,7 +38,7 @@ export default function AttributesSettingsView({
   const navItems = getNavItemsFromManifest(attributesSchema, filter);
 
   const formData = useMemo(() => {
-    const defProps = getSchemaObjectDefaults(attributesSchema);
+    const defProps = getSchemaObjectDefaults(structuredClone(attributesSchema));
     return merge({}, defProps, attr ?? {});
   }, [attr, attributesSchema]);
 

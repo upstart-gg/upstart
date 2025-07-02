@@ -156,7 +156,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const onBrickWrapperClick = useCallback(
       (e: MouseEvent<HTMLElement>) => {
         const brickTarget = e.currentTarget as HTMLElement;
-        if (hasMouseMoved.current || !brickTarget.matches("[data-brick]")) {
+        if (hasMouseMoved.current || !brickTarget.matches("[data-brick]") || e.defaultPrevented) {
           return;
         }
         let selectedBrick = brick;
@@ -421,24 +421,22 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
             </ContextMenu.Item> */}
             {canMoveLeft && (
               <ContextMenu.Item
-                shortcut="⌘&larr;"
                 onClick={(e) => {
                   e.stopPropagation();
                   draftHelpers.moveBrickWithin(brick.id, "left");
                 }}
               >
-                Move left
+                {isContainerChild ? "Move up" : "Move left"}
               </ContextMenu.Item>
             )}
             {canMoveRight && (
               <ContextMenu.Item
-                shortcut="⌘&rarr;"
                 onClick={(e) => {
                   e.stopPropagation();
                   draftHelpers.moveBrickWithin(brick.id, "right");
                 }}
               >
-                Move right
+                {isContainerChild ? "Move down" : "Move right"}
               </ContextMenu.Item>
             )}
             <ContextMenu.Sub>
@@ -461,25 +459,29 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                 </ContextMenu.CheckboxItem>
               </ContextMenu.SubContent>
             </ContextMenu.Sub>
-            <ContextMenu.Sub>
-              <ContextMenu.SubTrigger>Position</ContextMenu.SubTrigger>
-              <ContextMenu.SubContent>
-                {Object.entries(normalizeSchemaEnum(commonProps.alignSelf)).map(([key, value]) => (
-                  <ContextMenu.CheckboxItem
-                    key={key}
-                    checked={brick.props.alignSelf === value.const}
-                    onClick={(e) => e.stopPropagation()}
-                    onCheckedChange={() =>
-                      draftHelpers.updateBrickProps(brick.id, {
-                        alignSelf: value.const,
-                      })
-                    }
-                  >
-                    {value.title}
-                  </ContextMenu.CheckboxItem>
-                ))}
-              </ContextMenu.SubContent>
-            </ContextMenu.Sub>
+
+            {!isContainerChild && (
+              <ContextMenu.Sub>
+                <ContextMenu.SubTrigger>Position</ContextMenu.SubTrigger>
+                <ContextMenu.SubContent>
+                  {Object.entries(normalizeSchemaEnum(commonProps.alignSelf)).map(([key, value]) => (
+                    <ContextMenu.CheckboxItem
+                      key={key}
+                      checked={brick.props.alignSelf === value.const}
+                      onClick={(e) => e.stopPropagation()}
+                      onCheckedChange={() =>
+                        draftHelpers.updateBrickProps(brick.id, {
+                          alignSelf: value.const,
+                        })
+                      }
+                    >
+                      {value.title}
+                    </ContextMenu.CheckboxItem>
+                  ))}
+                </ContextMenu.SubContent>
+              </ContextMenu.Sub>
+            )}
+
             {parentContainer && (
               <>
                 <ContextMenu.Separator />
@@ -526,6 +528,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                     </ContextMenu.Item>
                   </ContextMenu.SubContent>
                 </ContextMenu.Sub>
+                <ContextMenu.Item onClick={(e) => {}}>Detach from parent</ContextMenu.Item>
               </>
             )}
 

@@ -848,7 +848,7 @@ export const createDraftStore = (
 
               if (parentId) {
                 // Brick is inside a container, add to parent's $children
-                const parentBrick = state.getBrick(parentId);
+                const parentBrick = getBrickFromDraft(parentId, state);
                 if (parentBrick?.props.$children) {
                   const children = parentBrick.props.$children as Brick[];
                   const originalIndex = children.findIndex((b) => b.id === id);
@@ -928,9 +928,15 @@ export const createDraftStore = (
            */
           moveBrickWithin: (id, to) =>
             set((state) => {
-              const parentBrick = state.getParentBrick(id);
-              if (!parentBrick || !parentBrick.props.$children) {
+              const roParentBrick = state.getParentBrick(id);
+              if (!roParentBrick || !roParentBrick.props.$children) {
                 console.error("Cannot move brick %s, it does not have a parent container", id);
+                return;
+              }
+
+              const parentBrick = getBrickFromDraft(roParentBrick.id, state);
+              if (!parentBrick) {
+                console.error("Cannot move brick %s, parent brick not found in draft", id);
                 return;
               }
 
@@ -956,6 +962,8 @@ export const createDraftStore = (
               // Remove from current position and insert at new position
               const [brickToMove] = children.splice(currentIndex, 1);
               children.splice(newIndex, 0, brickToMove);
+
+              state.brickMap = buildBrickMap(state.sections);
             }),
 
           /**
@@ -1185,7 +1193,7 @@ export const createDraftStore = (
 
           toggleBrickVisibility: (id, breakpoint) =>
             set((state) => {
-              const brick = getBrickFromMap(id, state);
+              const brick = getBrickFromDraft(id, state);
               if (brick) {
                 brick.props.hidden ??= { desktop: false, mobile: false };
                 brick.props.hidden[breakpoint] = !brick.props.hidden?.[breakpoint];

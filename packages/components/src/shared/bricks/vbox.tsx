@@ -81,13 +81,28 @@ export const renderClone: DraggableChildrenFn = (provided, snapshot, rubric) => 
     </button>
   );
 };
+
+const renderClone2: DraggableChildrenFn = (provided, snapshot, rubric) => {
+  return (
+    <div
+      {...provided.draggableProps}
+      {...provided.dragHandleProps}
+      ref={provided.innerRef}
+      style={{
+        ...provided.draggableProps.style,
+        scale: 0.2,
+      }}
+    />
+  );
+};
+
 function DroppableVbox({ brick }: BrickProps<Manifest>) {
   const props = brick.props;
   const styles = useBrickStyle<Manifest>(brick);
   const classes = Object.values(styles);
   const ds = useDatasource(props.datasource, manifest.datasource);
   return (
-    <Droppable droppableId={brick.id} type="brick" mode="virtual" renderClone={renderClone} isCombineEnabled>
+    <Droppable droppableId={brick.id} type="brick" isCombineEnabled>
       {(droppableProvided, droppableSnapshot) => (
         <div
           {...droppableProvided.droppableProps}
@@ -120,6 +135,7 @@ function DroppableVbox({ brick }: BrickProps<Manifest>) {
               Drag bricks here to stack them inside.
             </div>
           )}
+          {droppableProvided.placeholder}
         </div>
       )}
     </Droppable>
