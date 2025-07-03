@@ -38,17 +38,17 @@ export const manifest = defineBrickManifest({
               title: "Overlay",
               "ui:variant-type": "image-placement",
             }),
-            Type.Literal("image-left-side", {
-              title: "Left",
-              "ui:variant-type": "image-placement",
-            }),
-            Type.Literal("image-right-side", {
-              title: "Right",
+            Type.Literal("image-side", {
+              title: "Side",
               "ui:variant-type": "image-placement",
             }),
             Type.Literal("centered", {
               title: "Centered",
               "ui:variant-type": "align",
+            }),
+            Type.Literal("hide-title", {
+              title: "Hide title",
+              "ui:variant-type": "title",
             }),
             Type.Literal("text-sm", {
               title: "S",
@@ -73,6 +73,7 @@ export const manifest = defineBrickManifest({
           ],
           {
             title: "Variants",
+            "ui:display": "select",
           },
         ),
         {
@@ -81,6 +82,7 @@ export const manifest = defineBrickManifest({
           "ui:variant-names": {
             "image-placement": "Image Placement",
             align: "Alignment",
+            title: "Hide title",
             "font-size": "Base Font Size",
           },
         },
@@ -144,7 +146,7 @@ export const examples: {
     description: "Product card with image on the left",
     type: "card",
     props: {
-      variants: ["image-left-side"],
+      variants: ["image-side"],
       cardImage: {
         src: "https://via.placeholder.com/200x200",
         alt: "Product image",
@@ -180,7 +182,7 @@ export const examples: {
     description: "Testimonial card with right-side image",
     type: "card",
     props: {
-      variants: ["image-right-side"],
+      variants: ["image-side"],
       cardTitle: "Customer Review",
       cardBody:
         '"This product exceeded my expectations. The quality is outstanding and the customer service is top-notch!"',
@@ -217,7 +219,7 @@ export const examples: {
     description: "News article card with compact layout",
     type: "card",
     props: {
-      variants: ["image-left-side"],
+      variants: ["image-side"],
       cardImage: {
         src: "https://via.placeholder.com/120x120",
         alt: "News thumbnail",

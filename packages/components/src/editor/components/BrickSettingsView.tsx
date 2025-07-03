@@ -37,9 +37,7 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
     );
   };
 
-  console.log("brick manifest props", manifest.props);
   const navItems = getNavItemsFromManifest(manifest.props, filter);
-
   const formData = useMemo(() => {
     const defProps = defaultProps[brick.type].props;
     return previewMode === "mobile"

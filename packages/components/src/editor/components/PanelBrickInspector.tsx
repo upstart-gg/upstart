@@ -1,11 +1,11 @@
 import { useDraftHelpers, useGetBrick, usePreviewMode, useSectionByBrickId } from "../hooks/use-editor";
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
 import { Callout, SegmentedControl, Select, Switch, Tabs } from "@upstart.gg/style-system/system";
-import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
+import { defaultProps, manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import { FormRenderer } from "./json-form/FormRenderer";
 import { useLocalStorage } from "usehooks-ts";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import BrickSettingsView from "./BrickSettingsView";
@@ -16,6 +16,7 @@ import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 import { FieldTitle } from "./json-form/field-factory";
 import intersection from "lodash-es/intersection";
 import { useCalloutViewCounter } from "../hooks/use-callout-view-counter";
+import merge from "lodash-es/merge";
 
 type TabType = "preset" | "settings" | "content";
 
@@ -129,7 +130,6 @@ function PresetsTab({ brick, section }: { brick: Brick; section: Section }) {
             <button
               type="button"
               onClick={() => {
-                console.debug("setting preset to %s", preset.const);
                 updateBrickProps(brick.id, { preset: preset.const }, previewMode === "mobile");
               }}
               key={preset.const}
@@ -157,11 +157,19 @@ function VariantsTab({ brick, section }: { brick: Brick; section: Section }) {
   const schema = resolveSchema(manifest.props.properties.variants);
   const { shouldDisplay } = useCalloutViewCounter("brick-variants", 8);
   const variantsNames: Record<string, string> = schema["ui:variant-names"] ?? {};
+  const formData = useMemo(() => {
+    const defProps = defaultProps[brick.type].props;
+    return previewMode === "mobile"
+      ? merge({}, defProps, brick.props, brick.mobileProps)
+      : merge({}, defProps, brick.props ?? {});
+  }, [brick, previewMode]);
 
   if (Object.keys(variantsNames).length === 0) {
     console.warn("No variants defined for brick %s in section %s", brick.type, section.id);
     return null;
   }
+
+  console.log("current props for brick %s: %o", brick.id, brick.props);
 
   return (
     <div className={tx("flex flex-col h-full")}>
@@ -180,7 +188,7 @@ function VariantsTab({ brick, section }: { brick: Brick; section: Section }) {
                 label={variantName}
                 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
                 values={schema.items.anyOf.filter((vr: any) => vr["ui:variant-type"] === variantKey)}
-                currentVariants={brick.props.variants}
+                currentVariants={formData.variants}
                 onChange={(variants) => {
                   console.debug("setting variant %s to %o", variantKey, variants);
                   updateBrickProps(brick.id, { variants }, previewMode === "mobile");
@@ -235,7 +243,7 @@ function VariantSelector({
   // Compute the total length of options titles to either display a select or button-groups
   const totalLength = values.reduce((acc, v) => acc + v.title.length, 0);
 
-  if (totalLength > 30) {
+  if (totalLength > 10) {
     // If the total length is too long, we use a select
     return (
       <div className="flex items-center justify-between pr-2">
