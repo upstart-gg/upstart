@@ -72,8 +72,8 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
     !mobileProps?.width && manifest.minWidth?.mobile && `@mobile:min-w-[${manifest.minWidth.mobile}px]`,
     !props.width && manifest.minWidth?.desktop && `@desktop:min-w-[${manifest.minWidth.desktop}px]`,
 
-    manifest.minHeight?.mobile && `@mobile:min-h-[${manifest.minHeight.mobile}px]`,
-    manifest.minHeight?.desktop && `@desktop:min-h-[${manifest.minHeight.desktop}px]`,
+    manifest.minHeight?.mobile ? `@mobile:min-h-[${manifest.minHeight.mobile}px]` : "@mobile:min-h-fit",
+    manifest.minHeight?.desktop ? `@desktop:min-h-[${manifest.minHeight.desktop}px]` : "@desktop:min-h-fit",
 
     manifest.maxHeight?.mobile && `@mobile:max-h-[${manifest.maxHeight.mobile}px]`,
     manifest.maxHeight?.desktop && `@desktop:max-h-[${manifest.maxHeight.desktop}px]`,

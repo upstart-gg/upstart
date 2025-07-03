@@ -1,4 +1,5 @@
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
+
 import {
   forwardRef,
   type PropsWithChildren,
@@ -31,6 +32,7 @@ import {
   safePolygon,
   autoUpdate,
   type Placement,
+  FloatingPortal,
 } from "@upstart.gg/style-system/system";
 import BaseBrick from "~/shared/components/BaseBrick";
 import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
@@ -156,7 +158,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const onBrickWrapperClick = useCallback(
       (e: MouseEvent<HTMLElement>) => {
         const brickTarget = e.currentTarget as HTMLElement;
-        if (hasMouseMoved.current || !brickTarget.matches("[data-brick]")) {
+        if (hasMouseMoved.current || !brickTarget.matches("[data-brick]") || e.defaultPrevented) {
           return;
         }
         let selectedBrick = brick;
@@ -240,14 +242,16 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
               >
                 <BaseBrick brick={brick} selectedBrickId={selectedBrickId} editable />
                 {!manifest.isContainer && <BrickDebugLabel brick={brick} />}
-                <BrickMenuBarsContainer
-                  ref={barsRefs.setFloating}
-                  brick={brick}
-                  isContainerChild={isContainerChild}
-                  style={barsFloatingStyles}
-                  show={isMenuBarVisible}
-                  {...getFloatingProps()}
-                />
+                <FloatingPortal>
+                  <BrickMenuBarsContainer
+                    ref={barsRefs.setFloating}
+                    brick={brick}
+                    isContainerChild={isContainerChild}
+                    style={barsFloatingStyles}
+                    show={isMenuBarVisible}
+                    {...getFloatingProps()}
+                  />
+                </FloatingPortal>
                 {/* Children contains resizable handles and other elements */}
                 {manifests[brick.type]?.resizable && !isContainerChild && !snapshot.isDragging && (
                   <>
@@ -369,8 +373,8 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
     const editorHelpers = useEditorHelpers();
     const debugMode = useDebugMode();
     const manifest = useBrickManifest(brick.type);
-    const canMoveLeft = isContainerChild ? draftHelpers.canMoveToWithinParent(brick.id, "left") : null;
-    const canMoveRight = isContainerChild ? draftHelpers.canMoveToWithinParent(brick.id, "right") : null;
+    const canMovePrev = draftHelpers.canMoveToWithinParent(brick.id, "previous");
+    const canMoveNext = draftHelpers.canMoveToWithinParent(brick.id, "next");
     const parentContainer = draftHelpers.getParentBrick(brick.id);
 
     return (
@@ -419,26 +423,26 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
             >
               Copy
             </ContextMenu.Item> */}
-            {canMoveLeft && (
+            {canMovePrev && (
               <ContextMenu.Item
-                shortcut="⌘&larr;"
+                shortcut={isContainerChild ? "⌘↑" : "⌘←"}
                 onClick={(e) => {
                   e.stopPropagation();
-                  draftHelpers.moveBrickWithin(brick.id, "left");
+                  draftHelpers.moveBrickWithin(brick.id, "previous");
                 }}
               >
-                Move left
+                {isContainerChild ? "Move up" : "Move left"}
               </ContextMenu.Item>
             )}
-            {canMoveRight && (
+            {canMoveNext && (
               <ContextMenu.Item
-                shortcut="⌘&rarr;"
+                shortcut={isContainerChild ? "⌘↓" : "⌘→"}
                 onClick={(e) => {
                   e.stopPropagation();
-                  draftHelpers.moveBrickWithin(brick.id, "right");
+                  draftHelpers.moveBrickWithin(brick.id, "next");
                 }}
               >
-                Move right
+                {isContainerChild ? "Move down" : "Move right"}
               </ContextMenu.Item>
             )}
             <ContextMenu.Sub>
@@ -461,25 +465,29 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                 </ContextMenu.CheckboxItem>
               </ContextMenu.SubContent>
             </ContextMenu.Sub>
-            <ContextMenu.Sub>
-              <ContextMenu.SubTrigger>Position</ContextMenu.SubTrigger>
-              <ContextMenu.SubContent>
-                {Object.entries(normalizeSchemaEnum(commonProps.alignSelf)).map(([key, value]) => (
-                  <ContextMenu.CheckboxItem
-                    key={key}
-                    checked={brick.props.alignSelf === value.const}
-                    onClick={(e) => e.stopPropagation()}
-                    onCheckedChange={() =>
-                      draftHelpers.updateBrickProps(brick.id, {
-                        alignSelf: value.const,
-                      })
-                    }
-                  >
-                    {value.title}
-                  </ContextMenu.CheckboxItem>
-                ))}
-              </ContextMenu.SubContent>
-            </ContextMenu.Sub>
+
+            {!isContainerChild && (
+              <ContextMenu.Sub>
+                <ContextMenu.SubTrigger>Position</ContextMenu.SubTrigger>
+                <ContextMenu.SubContent>
+                  {Object.entries(normalizeSchemaEnum(commonProps.alignSelf)).map(([key, value]) => (
+                    <ContextMenu.CheckboxItem
+                      key={key}
+                      checked={brick.props.alignSelf === value.const}
+                      onClick={(e) => e.stopPropagation()}
+                      onCheckedChange={() =>
+                        draftHelpers.updateBrickProps(brick.id, {
+                          alignSelf: value.const,
+                        })
+                      }
+                    >
+                      {value.title}
+                    </ContextMenu.CheckboxItem>
+                  ))}
+                </ContextMenu.SubContent>
+              </ContextMenu.Sub>
+            )}
+
             {parentContainer && (
               <>
                 <ContextMenu.Separator />
@@ -526,6 +534,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                     </ContextMenu.Item>
                   </ContextMenu.SubContent>
                 </ContextMenu.Sub>
+                <ContextMenu.Item onClick={(e) => {}}>Detach from parent</ContextMenu.Item>
               </>
             )}
 

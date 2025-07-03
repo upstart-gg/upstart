@@ -265,8 +265,8 @@ const TextEditor = <T extends ElementType = "div">({
 
       // If there is a related target, it means the blur event was triggered by a click on the editor buttons
       if (e.event.relatedTarget && !(e.event.relatedTarget as HTMLElement).classList.contains("tiptap")) {
-        setFocused(false);
-        console.warn("Editor blur triggered by editor buttons, ignoring", e.event.relatedTarget);
+        // setFocused(false);
+        console.debug("Editor blur triggered by editor buttons, ignoring", e.event.relatedTarget);
         return;
       }
 

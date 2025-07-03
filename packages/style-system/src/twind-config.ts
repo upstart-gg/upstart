@@ -73,6 +73,34 @@ export default defineConfig({
       }),
     ],
     [
+      "bg-primary",
+      {
+        backgroundColor: `var(--up-bg-color)`,
+        "--up-bg-color": `var(--color-primary)`,
+      },
+    ],
+    [
+      "bg-secondary",
+      ({ $$ }) => ({
+        backgroundColor: `var(--up-bg-color)`,
+        "--up-bg-color": `var(--color-secondary)`,
+      }),
+    ],
+    [
+      "bg-accent",
+      ({ $$ }) => ({
+        backgroundColor: `var(--up-bg-color)`,
+        "--up-bg-color": `var(--color-accent)`,
+      }),
+    ],
+    // [
+    //   "bg-neutral",
+    //   ({ $$ }) => ({
+    //     backgroundColor: `var(--up-bg-color)`,
+    //     "--up-bg-color": `var(--color-neutral-${$$})`,
+    //   }),
+    // ],
+    [
       "bg-neutral-",
       ({ $$ }) => ({
         backgroundColor: `var(--up-bg-color)`,
@@ -101,7 +129,7 @@ export default defineConfig({
       }),
     ],
 
-    ["border-base-", ({ $$ }) => ({ borderColor: `color-mix(in lab, var(--color-base-${$$}), black 10%)` })],
+    ["border-base", ({ $$ }) => ({ borderColor: `color-mix(in lab, var(--color-base-${$$}), black 10%)` })],
     ["border-neutral-", ({ $$ }) => ({ borderColor: `var(--color-neutral-${$$})` })],
     ["border-accent-", ({ $$ }) => ({ borderColor: `var(--color-accent-${$$})` })],
     ["border-primary-", ({ $$ }) => ({ borderColor: `var(--color-primary-${$$})` })],
@@ -191,10 +219,15 @@ export default defineConfig({
     ["scrollbar-color-", ({ $$ }) => ({ scrollbarColor: `var(--${$$}-8) var(--${$$}-surface)` })],
 
     // presets preview
-    ["surface-", ({ $$ }) => `@(bg-base-${$$}00 text-base${$$}00 border-base-${$$}00)`],
+    ["primary", `@(bg-primary text-primary border-primary)`],
+    ["secondary", `@(bg-secondary text-secondary border-secondary)`],
+    ["accent", `@(bg-accent text-accent border-accent)`],
+
+    ["surface-", ({ $$ }) => `@(bg-base-${$$}00 text-base-content border-base-${$$}00)`],
     ["prominent-", ({ $$ }) => `@(bg-${$$}-700 text-${$$} border-${$$}-800)`],
     ["medium-", ({ $$ }) => `@(bg-${$$}-200 text-${$$}-800 border-${$$}-300)`],
     ["subtle-", ({ $$ }) => `@(bg-${$$}-50 text-${$$}-800 border-${$$}-100)`],
+
     ["light", `@(bg-white text-base-content border-base-300)`],
     ["dark", `@(bg-neutral-800 text-white/90 border-base-800)`],
   ],
@@ -229,14 +262,10 @@ export default defineConfig({
           900: "#333333",
           950: "#262626",
         },
-        base100: {
-          default: "var(--color-base-100)",
-        },
-        base200: {
-          default: "var(--color-base-200)",
-        },
-        base300: {
-          default: "var(--color-base-300)",
+        base: {
+          100: "var(--color-base-100)",
+          200: "var(--color-base-200)",
+          300: "var(--color-base-300)",
         },
         primary: {
           100: "var(--color-primary-100)",

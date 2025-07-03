@@ -55,18 +55,6 @@ export default function Editor(props: EditorProps) {
   usePageAutoSave();
   useEditorHotKeys();
 
-  // listen for window error
-  useEffect(() => {
-    const handleError = (event: ErrorEvent) => {
-      console.error("Window error:", event);
-      // You can also send this error to your logging service
-    };
-    window.addEventListener("error", handleError);
-    return () => {
-      window.removeEventListener("error", handleError);
-    };
-  }, []);
-
   useEffect(() => {
     const themeUsed = draft.previewTheme ?? draft.theme;
     if (themeUsed) {
@@ -334,13 +322,13 @@ export default function Editor(props: EditorProps) {
             toastOptions={{
               position: "bottom-center",
               style: {
-                padding: "0.5rem 1rem",
-                borderRadius: "0.5rem",
-                background: "rgba(0, 0, 0, 0.9)",
+                background: "rgba(0, 0, 0, 0.85)",
                 color: "white",
                 fontSize: "0.85rem",
                 fontWeight: "500",
+                // marginBottom: "1rem",
               },
+              className: tx("last:mb-1 px-1 py-1 rounded-lg"),
               error: {
                 style: {
                   background: "#880808",

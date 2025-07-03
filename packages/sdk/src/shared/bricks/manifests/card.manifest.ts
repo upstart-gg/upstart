@@ -17,93 +17,99 @@ export const manifest = defineBrickManifest({
   icon: BsCardText,
   defaultWidth: { desktop: "380px", mobile: "100%" },
   minWidth: { mobile: 200, desktop: 200 },
-  props: defineProps({
-    variants: Type.Array(
-      Type.Union(
-        [
-          Type.Literal("image-first", {
-            title: "Top",
-            "ui:variant-type": "image-placement",
-          }),
-          Type.Literal("image-between", {
-            title: "Middle",
-            "ui:variant-type": "image-placement",
-          }),
-          Type.Literal("image-last", {
-            title: "Bottom",
-            "ui:variant-type": "image-placement",
-          }),
-          Type.Literal("image-overlay", {
-            title: "Overlay",
-            "ui:variant-type": "image-placement",
-          }),
-          Type.Literal("image-left-side", {
-            title: "Left",
-            "ui:variant-type": "image-placement",
-          }),
-          Type.Literal("image-right-side", {
-            title: "Right",
-            "ui:variant-type": "image-placement",
-          }),
-          Type.Literal("centered", {
-            title: "Centered",
-            "ui:variant-type": "align",
-          }),
-          Type.Literal("text-sm", {
-            title: "S",
-            "ui:variant-type": "font-size",
-          }),
-          Type.Literal("text-base", {
-            title: "M",
-            "ui:variant-type": "font-size",
-          }),
-          Type.Literal("text-lg", {
-            title: "L",
-            "ui:variant-type": "font-size",
-          }),
-          Type.Literal("text-xl", {
-            title: "XL",
-            "ui:variant-type": "font-size",
-          }),
-          Type.Literal("text-2xl", {
-            title: "2XL",
-            "ui:variant-type": "font-size",
-          }),
-        ],
+  props: defineProps(
+    {
+      variants: Type.Array(
+        Type.Union(
+          [
+            Type.Literal("image-first", {
+              title: "Top",
+              "ui:variant-type": "image-placement",
+            }),
+            Type.Literal("image-between", {
+              title: "Middle",
+              "ui:variant-type": "image-placement",
+            }),
+            Type.Literal("image-last", {
+              title: "Bottom",
+              "ui:variant-type": "image-placement",
+            }),
+            Type.Literal("image-overlay", {
+              title: "Overlay",
+              "ui:variant-type": "image-placement",
+            }),
+            Type.Literal("image-side", {
+              title: "Side",
+              "ui:variant-type": "image-placement",
+            }),
+            Type.Literal("centered", {
+              title: "Centered",
+              "ui:variant-type": "align",
+            }),
+            Type.Literal("hide-title", {
+              title: "Hide title",
+              "ui:variant-type": "title",
+            }),
+            Type.Literal("text-sm", {
+              title: "S",
+              "ui:variant-type": "font-size",
+            }),
+            Type.Literal("text-base", {
+              title: "M",
+              "ui:variant-type": "font-size",
+            }),
+            Type.Literal("text-lg", {
+              title: "L",
+              "ui:variant-type": "font-size",
+            }),
+            Type.Literal("text-xl", {
+              title: "XL",
+              "ui:variant-type": "font-size",
+            }),
+            Type.Literal("text-2xl", {
+              title: "2XL",
+              "ui:variant-type": "font-size",
+            }),
+          ],
+          {
+            title: "Variants",
+            "ui:display": "select",
+          },
+        ),
         {
-          title: "Variants",
+          "ui:field": "variant",
+          default: ["image-between", "text-base"],
+          "ui:variant-names": {
+            "image-placement": "Image Placement",
+            align: "Alignment",
+            title: "Hide title",
+            "font-size": "Base Font Size",
+          },
         },
       ),
-      {
-        "ui:field": "variant",
-        default: ["image-between", "text-base"],
-        "ui:variant-names": {
-          "image-placement": "Image Placement",
-          align: "Alignment",
-          "font-size": "Base Font Size",
-        },
-      },
-    ),
-    cardImage: optional(
-      imageRef({
-        default: {
-          src: "https://placehold.co/300x200?text=Card+Image",
-          alt: "Sample Card Image",
-        },
-      }),
-    ),
-    cardTitle: optional(textContentRef({ title: "Title" })),
-    cardBody: optional(textContentRef({ title: "Body" })),
-    shadow: optional(shadowRef()),
-    border: optional(
-      borderRef({
-        default: {
-          width: "border",
-          rounding: "rounded-md",
-        },
-      }),
-    ),
-  }),
+      cardImage: optional(
+        imageRef({
+          default: {
+            src: "https://placehold.co/300x200?text=Card+Image",
+            alt: "Sample Card Image",
+          },
+          "ui:responsive": false,
+        }),
+      ),
+      cardTitle: optional(textContentRef({ title: "Title" })),
+      cardBody: optional(textContentRef({ title: "Body" })),
+      shadow: optional(shadowRef()),
+      border: optional(
+        borderRef({
+          default: {
+            width: "border",
+            rounding: "rounded-md",
+          },
+        }),
+      ),
+    },
+    { defaultPreset: "medium-primary" },
+  ),
 });
 
 export type Manifest = typeof manifest;
@@ -140,7 +146,7 @@ export const examples: {
     description: "Product card with image on the left",
     type: "card",
     props: {
-      variants: ["image-left-side"],
+      variants: ["image-side"],
       cardImage: {
         src: "https://via.placeholder.com/200x200",
         alt: "Product image",
@@ -176,7 +182,7 @@ export const examples: {
     description: "Testimonial card with right-side image",
     type: "card",
     props: {
-      variants: ["image-right-side"],
+      variants: ["image-side"],
       cardTitle: "Customer Review",
       cardBody:
         '"This product exceeded my expectations. The quality is outstanding and the customer service is top-notch!"',
@@ -213,7 +219,7 @@ export const examples: {
     description: "News article card with compact layout",
     type: "card",
     props: {
-      variants: ["image-left-side"],
+      variants: ["image-side"],
       cardImage: {
         src: "https://via.placeholder.com/120x120",
         alt: "News thumbnail",

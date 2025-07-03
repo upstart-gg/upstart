@@ -32,6 +32,14 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
       // Padding and gap
       css({ gap: `${GAP}`, paddingInline: `${GAP}`, paddingBlock: `${GAP}` }),
 
+      css({
+        "&:has(.navbar)": {
+          // This is a hack to ensure that the navbar is not affected by the section's padding
+          paddingInline: "0px !important",
+          paddingBlock: "0px !important",
+        },
+      }),
+
       // section.props.layout?.wrap === true ? "flex-wrap" : "flex-nowrap",
 
       "flex-nowrap",

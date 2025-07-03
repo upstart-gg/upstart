@@ -421,10 +421,10 @@ export interface DraftState extends DraftStateProps {
   >;
   duplicateBrick: (id: string) => void;
   duplicateSection: (id: string) => void;
-  moveBrickWithin: (id: string, to: "left" | "right") => void;
+  moveBrickWithin: (id: string, to: "previous" | "next") => void;
   reorderBrickWithin: (brickId: string, fromIndex: number, toIndex: number) => void;
   moveBrickToContainerBrick: (id: string, parentId: string, index: number) => void;
-  moveBrickToSection: (id: string, sectionId: string, index?: number) => void;
+  moveBrickToSection: (id: string, sectionId: string | null, index?: number) => void;
   addBrick: (brick: Brick, sectiondId: string, index: number, parentContainerId: Brick["id"] | null) => void;
   updateBrick: (id: string, brick: Partial<Brick>) => void;
   updateBrickProps: (id: string, props: Record<string, unknown>, isMobileProps?: boolean) => void;
@@ -449,7 +449,7 @@ export interface DraftState extends DraftStateProps {
   setSitemap(sitemap: Site["sitemap"]): void;
 
   getPositionWithinParent: (brickId: Brick["id"]) => number | undefined;
-  canMoveToWithinParent: (brickId: Brick["id"], to: "left" | "right") => boolean;
+  canMoveToWithinParent: (brickId: Brick["id"], to: "previous" | "next") => boolean;
 
   isFirstSection: (sectionId: string) => boolean;
   isLastSection: (sectionId: string) => boolean;
@@ -848,7 +848,7 @@ export const createDraftStore = (
 
               if (parentId) {
                 // Brick is inside a container, add to parent's $children
-                const parentBrick = state.getBrick(parentId);
+                const parentBrick = getBrickFromDraft(parentId, state);
                 if (parentBrick?.props.$children) {
                   const children = parentBrick.props.$children as Brick[];
                   const originalIndex = children.findIndex((b) => b.id === id);
@@ -901,6 +901,9 @@ export const createDraftStore = (
                 }
                 brickObj.props = brick.props;
                 brickObj.mobileProps = brick.mobileProps;
+
+                // rebuild map
+                state.brickMap = buildBrickMap(state.sections);
               } else {
                 console.error("Cannot update brick %s, it does not exist in the brick map", id);
               }
@@ -923,28 +926,31 @@ export const createDraftStore = (
               }
             }),
           /**
-           * Move a brick inside its container.
-           * If the brick does not belong to a container, does nothing
+           * Move a brick inside its container or its section
+           * If the brick does not belong to a container, it will be moved within its section
            */
           moveBrickWithin: (id, to) =>
             set((state) => {
-              const parentBrick = state.getParentBrick(id);
-              if (!parentBrick || !parentBrick.props.$children) {
-                console.error("Cannot move brick %s, it does not have a parent container", id);
-                return;
-              }
+              let children: Brick[] = [];
+              let currentIndex = -1;
 
-              const children = parentBrick.props.$children as Brick[];
-              const currentIndex = children.findIndex((b) => b.id === id);
+              const roParentBrick = state.getParentBrick(id);
 
-              if (currentIndex === -1) {
-                console.error("Cannot move brick %s, it is not found in its parent's children", id);
-                return;
+              // If the brick has a parent, we need to find its children in the parent's $children
+              if (roParentBrick) {
+                const parentBrick = getBrickFromDraft(roParentBrick.id, state)!;
+                children = parentBrick.props.$children as Brick[];
+                currentIndex = children.findIndex((b) => b.id === id);
+                // Otherwise we move the brick within its section
+              } else {
+                const section = getBrickSection(id, state)!;
+                children = section.bricks;
+                currentIndex = children.findIndex((b) => b.id === id);
               }
 
               // Calculate the new index based on the direction
               const newIndex =
-                to === "left"
+                to === "previous"
                   ? Math.max(0, currentIndex - 1)
                   : Math.min(children.length - 1, currentIndex + 1);
 
@@ -956,6 +962,7 @@ export const createDraftStore = (
               // Remove from current position and insert at new position
               const [brickToMove] = children.splice(currentIndex, 1);
               children.splice(newIndex, 0, brickToMove);
+              state.brickMap = buildBrickMap(state.sections);
             }),
 
           /**
@@ -1063,6 +1070,9 @@ export const createDraftStore = (
           moveBrickToSection: (id, sectionId, index) =>
             set((state) => {
               const brick = state.getBrick(id);
+              if (!sectionId) {
+                sectionId = state.brickMap.get(id)?.sectionId!;
+              }
               const targetSection = state.sections.find((s) => s.id === sectionId);
               const brickMapping = state.brickMap.get(id);
 
@@ -1155,9 +1165,11 @@ export const createDraftStore = (
             if (parent && "$children" in parent.props) {
               const children = parent.props.$children as Brick[];
               const index = children.findIndex((b: Brick) => b.id === brickId);
-              return to === "left" ? index > 0 : index < children.length - 1;
+              return to === "previous" ? index > 0 : index < children.length - 1;
             }
-            return false;
+            const section = getBrickSection(brickId, _get())!;
+            const index = section.bricks.findIndex((b) => b.id === brickId);
+            return to === "previous" ? index > 0 : index < section?.bricks.length - 1;
           },
 
           setPreviewTheme: (theme) =>
@@ -1185,7 +1197,7 @@ export const createDraftStore = (
 
           toggleBrickVisibility: (id, breakpoint) =>
             set((state) => {
-              const brick = getBrickFromMap(id, state);
+              const brick = getBrickFromDraft(id, state);
               if (brick) {
                 brick.props.hidden ??= { desktop: false, mobile: false };
                 brick.props.hidden[breakpoint] = !brick.props.hidden?.[breakpoint];
@@ -1748,6 +1760,13 @@ export function useGridConfig() {
 function getBrickFromMap(id: string, state: DraftState) {
   const { brick } = state.brickMap.get(id) ?? {};
   return brick;
+}
+
+function getBrickSection(brickId: string, state: DraftState) {
+  const mapping = state.brickMap.get(brickId);
+  if (mapping) {
+    return state.sections.find((s) => s.id === mapping.sectionId);
+  }
 }
 
 function getBrickFromDraft(id: string, state: DraftState) {

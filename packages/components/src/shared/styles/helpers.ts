@@ -5,7 +5,7 @@ import type {
 } from "@upstart.gg/sdk/shared/bricks/props/background";
 import type { OpacitySettings } from "@upstart.gg/sdk/shared/bricks/props/effects";
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
-import type { FixedPositionedSettings, PositionSettings } from "@upstart.gg/sdk/shared/bricks/props/position";
+import type { FixedPositionedSettings } from "@upstart.gg/sdk/shared/bricks/props/position";
 import type { PaddingSettings } from "@upstart.gg/sdk/shared/bricks/props/padding";
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
 import type { ColorSettings } from "@upstart.gg/sdk/shared/bricks/props/color";

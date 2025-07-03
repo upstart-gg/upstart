@@ -12,6 +12,7 @@ import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { getDraggableStyle } from "~/editor/utils/dnd";
 import { IconRender } from "~/editor/components/IconRender";
+import { useDeviceInfo } from "~/editor/hooks/use-device-info";
 
 const Vbox = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const props = brick.props;
@@ -81,13 +82,29 @@ export const renderClone: DraggableChildrenFn = (provided, snapshot, rubric) => 
     </button>
   );
 };
+
+const renderClone2: DraggableChildrenFn = (provided, snapshot, rubric) => {
+  return (
+    <div
+      {...provided.draggableProps}
+      {...provided.dragHandleProps}
+      ref={provided.innerRef}
+      style={{
+        ...provided.draggableProps.style,
+        scale: 0.2,
+      }}
+    />
+  );
+};
+
 function DroppableVbox({ brick }: BrickProps<Manifest>) {
   const props = brick.props;
   const styles = useBrickStyle<Manifest>(brick);
   const classes = Object.values(styles);
+  const { isDesktop } = useDeviceInfo();
   const ds = useDatasource(props.datasource, manifest.datasource);
   return (
-    <Droppable droppableId={brick.id} type="brick" mode="virtual" renderClone={renderClone} isCombineEnabled>
+    <Droppable droppableId={brick.id} type="brick" isCombineEnabled isDropDisabled={!isDesktop}>
       {(droppableProvided, droppableSnapshot) => (
         <div
           {...droppableProvided.droppableProps}
@@ -120,6 +137,7 @@ function DroppableVbox({ brick }: BrickProps<Manifest>) {
               Drag bricks here to stack them inside.
             </div>
           )}
+          {droppableProvided.placeholder}
         </div>
       )}
     </Droppable>

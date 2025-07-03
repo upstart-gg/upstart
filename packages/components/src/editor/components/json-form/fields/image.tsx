@@ -10,15 +10,17 @@ import { debounce } from "lodash-es";
 import { IoMdClose } from "react-icons/io";
 import { FieldTitle } from "../field-factory";
 
-const ImageField: FC<FieldProps<ImageProps>> = (props) => {
-  const { schema, formData, onChange, required, title, description, currentValue = { src: "" } } = props;
+const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
+  const { schema, formData, onChange, required, title, description, currentValue } = props;
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);
+
+  console.log("image schema", schema);
 
   // const [src, setSrc] = useState<string | null>(currentValue.src);
 
   const onPropsChange = (newVal: Partial<ImageProps>) => {
-    onChange({ ...(currentValue ?? {}), ...newVal });
+    onChange({ ...(currentValue ?? {}), ...newVal } as ImageProps);
   };
 
   const debouncedOnPropsChange = debounce(onPropsChange, 300);
@@ -66,7 +68,7 @@ const ImageField: FC<FieldProps<ImageProps>> = (props) => {
           )}
         </div>
       </div>
-      {currentValue.src && (
+      {currentValue?.src && (
         <>
           <div className="basis-full w-0" />
           <div
@@ -84,23 +86,28 @@ const ImageField: FC<FieldProps<ImageProps>> = (props) => {
             </div>
           </div>
           <div className="basis-full w-0" />
-          <div className="flex justify-between gap-12 flex-1 items-center mt-3">
-            <label className={fieldLabel}>Alt text</label>
-            <TextField.Root
-              defaultValue={currentValue.alt}
-              className="!flex-1"
-              onChange={(e) => debouncedOnPropsChange({ alt: e.target.value })}
-              required={required}
-              spellCheck={!!schema["ui:spellcheck"]}
-            />
-          </div>
-          <div className="basis-full w-0" />
+          {!schema["ui:no-alt-text"] && (
+            <>
+              <div className="flex justify-between gap-12 flex-1 items-center mt-3">
+                <label className={fieldLabel}>Alt text</label>
+                <TextField.Root
+                  defaultValue={currentValue.alt}
+                  className="!flex-1"
+                  onChange={(e) => debouncedOnPropsChange({ alt: e.target.value })}
+                  required={required}
+                  spellCheck={!!schema["ui:spellcheck"]}
+                />
+              </div>
+              <div className="basis-full w-0" />
+            </>
+          )}
+
           {!schema["ui:no-object-options"] && (
             <div className="flex gap-12 flex-1 mt-3 pr-1.5">
               <div className="flex flex-col gap-2 flex-1 pl-1">
                 <label className={fieldLabel}>Fit</label>
                 <Select.Root
-                  defaultValue={currentValue.fit}
+                  defaultValue={currentValue?.fit}
                   size="2"
                   onValueChange={(value) => onPropsChange({ fit: value as ImageProps["fit"] })}
                 >

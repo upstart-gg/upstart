@@ -1,14 +1,14 @@
 import { Type, type TProperties, type Static, type TObject } from "@sinclair/typebox";
 import type { JSONSchemaType } from "ajv";
 import { backgroundRef } from "./bricks/props/background";
-import { string } from "./bricks/props/string";
-import { group, optional } from "./bricks/props/helpers";
+import { string, urlOrPageIdRef } from "./bricks/props/string";
+import { group, optional, prop } from "./bricks/props/helpers";
 import { boolean } from "./bricks/props/boolean";
 import { datetime } from "./bricks/props/date";
 import { enumProp } from "./bricks/props/enum";
 import { jsonDefault } from "json-schema-default";
-import { manifest as siderbarManifest } from "./bricks/manifests/sidebar.manifest";
 import { StringEnum } from "./utils/string-enum";
+import { image, imageRef } from "./bricks/props/image";
 
 export function defineAttributes(attrs: TProperties) {
   // Attributes starting with "$" are reserved for internal use
@@ -33,6 +33,73 @@ export type { JSONSchemaType };
 
 // Default attributes
 const defaultAttributes = {
+  $sidebarConfig: optional(
+    group({
+      title: "Sidebar",
+      children: {
+        enabled: boolean("Enabled", true, {
+          description: "Enable or disable the sidebar on this page",
+        }),
+        sidebarPosition: StringEnum(["left", "right"], {
+          title: "Position",
+          default: "left",
+          enumNames: ["Left", "Right"],
+          "ui:group": "layout",
+          "ui:group:title": "Page Layout",
+        }),
+        staticNavItems: optional(
+          prop({
+            title: "Nav items",
+            schema: Type.Array(
+              Type.Object({
+                urlOrPageId: urlOrPageIdRef(),
+                label: optional(string("Label")),
+              }),
+              { title: "Navigation items", default: [] },
+            ),
+          }),
+        ),
+      },
+    }),
+  ),
+
+  $bodyBackground: optional(
+    backgroundRef({
+      default: {
+        color: "#ffffff",
+      },
+      title: "Body Background",
+      description:
+        "Applies to the body element of the page (while Page Background applies to the page container)",
+      "ui:field": "background",
+      "ui:no-alt-text": true,
+      // disable for now
+      // "ui:show-img-search": true,
+      "ui:group": "layout",
+      "ui:group:title": "Page Layout",
+      "ui:group:order": 3,
+    }),
+  ),
+
+  $pageBackground: optional(
+    backgroundRef({
+      title: "Page Background",
+      "ui:no-alt-text": true,
+      defaultValue: { color: "base-100" },
+    }),
+  ),
+
+  $pageOgImage: optional(
+    imageRef({
+      title: "Social share image",
+      description: "Image shown when this page is shared on social media",
+      "ai:hidden": true,
+      "ui:no-object-options": true,
+      "ui:no-alt-text": true,
+      "ui:show-img-search": false,
+    }),
+  ),
+
   $pageLanguage: enumProp("Language", "en", {
     options: [
       { value: "ar", title: "Arabic" },
@@ -62,57 +129,25 @@ const defaultAttributes = {
     "ui:group:title": "Meta tags",
   }),
 
-  $bodyBackground: optional(
-    backgroundRef({
-      default: {
-        color: "#ffffff",
-      },
-      title: "Body Background",
-      description:
-        "Applies to the body element of the page (while $pageBackground applies to the page container)",
-      "ui:field": "background",
-      // disable for now
-      // "ui:show-img-search": true,
-      "ui:group": "layout",
-      "ui:group:title": "Page Layout",
-      "ui:group:order": 3,
-    }),
-  ),
-
-  $pageBackground: optional(
-    backgroundRef({
-      title: "Page Background",
-      defaultValue: { color: "base-100" },
-    }),
-  ),
-
-  $pageOgImage: optional(
-    string("Social share image", {
-      description: "Image shown when page is shared on social media",
-      "ai:guidelines": "Don't generate this property/image, it is automatically generated.",
-      "ui:group": "meta",
-      "ui:field": "image",
-    }),
-  ),
-
   $robotsIndexing: optional(
     boolean("Allow search engines to index this site", true, {
       description: "Disabling this will prevent search engines from indexing this site",
-      "ai:guidelines": "Don't generate this property/image, it is automatically generated.",
       "ui:group": "seo",
       "ui:group:title": "SEO",
       "ui:scope": "site",
+      "ai:hidden": true,
     }),
   ),
 
   $siteOgImage: optional(
-    string("Social share image", {
+    imageRef({
+      title: "Social share image",
       description: "Image shown when this site is shared on social media",
-      "ai:guidelines": "Don't generate this image, it is automatically generated.",
-      "ui:field": "image",
-      "ui:group": "meta",
-      "ui:group:title": "Meta tags",
       "ui:scope": "site",
+      "ai:hidden": true,
+      "ui:no-object-options": true,
+      "ui:no-alt-text": true,
+      "ui:show-img-search": false,
     }),
   ),
 
@@ -183,25 +218,6 @@ const defaultAttributes = {
       "ui:scope": "site",
       "ui:group": "external-scripts",
       "ui:group:title": "External scripts",
-    }),
-  ),
-
-  $sidebarConfig: optional(
-    group({
-      title: "Sidebar configuration",
-      children: {
-        enabled: boolean("Enabled", true, {
-          description: "Enable or disable the sidebar on this site",
-        }),
-        sidebarPosition: StringEnum(["left", "right"], {
-          title: "Position",
-          default: "left",
-          enumNames: ["Left", "Right"],
-          description: "Position of the sidebar on the page",
-          "ui:group": "layout",
-          "ui:group:title": "Page Layout",
-        }),
-      },
     }),
   ),
 };
