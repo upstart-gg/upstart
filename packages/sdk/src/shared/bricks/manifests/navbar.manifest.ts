@@ -47,7 +47,6 @@ export const manifest = defineBrickManifest({
   datasource,
   duplicatable: false,
   resizable: false,
-  movable: false,
   inlineDragDisabled: true,
   deletable: false,
 

@@ -132,9 +132,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
             )}
             {...droppableProvided.droppableProps}
           >
-            {!isSpecialSection && /*!selectedBrickId &&*/ !draggingBrickType && (
-              <SectionOptionsButtons section={section} />
-            )}
+            {/*!selectedBrickId &&*/ !draggingBrickType && <SectionOptionsButtons section={section} />}
             {bricks
               .filter((b) => !b.props.hidden?.[previewMode])
               .map((brick, brickIndex) => (

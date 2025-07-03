@@ -677,10 +677,11 @@ export const createDraftStore = (
                 console.error("Cannot duplicate section %s, it does not exist", id);
                 return;
               }
+              const sectionIndex = state.sections.findIndex((s) => s.id === id);
               const newSection = {
                 ...section,
                 id: `s_${generateId()}`,
-                order: state.sections.length,
+                order: section.order + 1, // increment order to place it after the original
                 label: `${section.label} (copy)`,
                 // generate new bricks with new IDs
                 bricks: section.bricks.map((brick) => ({
@@ -694,7 +695,7 @@ export const createDraftStore = (
                   }),
                 })),
               };
-              state.sections.push(newSection);
+              state.sections.splice(sectionIndex + 1, 0, newSection);
               state.brickMap = buildBrickMap(state.sections);
             }),
 

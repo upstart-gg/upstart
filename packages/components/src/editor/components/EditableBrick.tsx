@@ -199,9 +199,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
         key={brick.id}
         draggableId={brick.id}
         index={index}
-        isDragDisabled={
-          !manifest.movable || isContainerChild || previewMode === "mobile" || manifest.inlineDragDisabled
-        }
+        isDragDisabled={!manifest.movable || isContainerChild || previewMode === "mobile"}
       >
         {(provided, snapshot) => {
           const { ref: hoverRef, isHovered } = useIsHovered({ tolerance: 6 });
