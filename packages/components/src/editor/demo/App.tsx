@@ -56,13 +56,13 @@ function InnerEditor(
   };
   const editorWrapperRef = useRef<EditorWrapperRef>(null);
 
-  useEffect(() => {
+  const demoDoSomethingInEditorState = () => {
     if (editorWrapperRef.current) {
       // EXAMPLE USAGE OF THE EDITOR REF
-      // const { editorStore, draftStore } = editorWrapperRef.current;
-      // editorStore.getState().setPreviewMode("mobile");
+      const { editorStore, draftStore } = editorWrapperRef.current;
+      editorStore.getState().setPreviewMode("mobile");
     }
-  }, []);
+  };
 
   return (
     <EditorWrapper
