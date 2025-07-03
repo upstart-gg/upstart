@@ -184,8 +184,8 @@ export const brickStylesHelpersMap = {
   "styles:heroSize": simpleClassHandler,
 
   // new test
-  "styles:backgroundColor": getBackgroundColorStyles,
-  "styles:background": getBackgroundStyles,
+  // "styles:backgroundColor": getBackgroundColorStyles,
+  // "styles:background": getBackgroundStyles,
   // "styles:border": getBorderStyles,
   "styles:padding": getPaddingStyles, // test
   "styles:gap": getGapStyles,

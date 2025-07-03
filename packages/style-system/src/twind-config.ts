@@ -65,13 +65,7 @@ export default defineConfig({
       /^bg-color-\[([\S]+)\]$/,
       ({ 1: $1 }) => ({ "--up-bg-color": `${$1}`, backgroundColor: "var(--up-bg-color)" }),
     ],
-    [
-      "bg-base",
-      ({ $$ }) => ({
-        backgroundColor: `var(--up-bg-color)`,
-        "--up-bg-color": `var(--color-base${$$})`,
-      }),
-    ],
+
     [
       "bg-primary",
       {
@@ -81,25 +75,32 @@ export default defineConfig({
     ],
     [
       "bg-secondary",
-      ({ $$ }) => ({
+      {
         backgroundColor: `var(--up-bg-color)`,
         "--up-bg-color": `var(--color-secondary)`,
-      }),
+      },
     ],
     [
       "bg-accent",
-      ({ $$ }) => ({
+      {
         backgroundColor: `var(--up-bg-color)`,
         "--up-bg-color": `var(--color-accent)`,
+      },
+    ],
+    [
+      "bg-neutral",
+      {
+        backgroundColor: `var(--up-bg-color)`,
+        "--up-bg-color": `var(--color-neutral)`,
+      },
+    ],
+    [
+      "bg-base-",
+      ({ $$ }) => ({
+        backgroundColor: `var(--up-bg-color)`,
+        "--up-bg-color": `var(--color-base-${$$})`,
       }),
     ],
-    // [
-    //   "bg-neutral",
-    //   ({ $$ }) => ({
-    //     backgroundColor: `var(--up-bg-color)`,
-    //     "--up-bg-color": `var(--color-neutral-${$$})`,
-    //   }),
-    // ],
     [
       "bg-neutral-",
       ({ $$ }) => ({
@@ -219,17 +220,17 @@ export default defineConfig({
     ["scrollbar-color-", ({ $$ }) => ({ scrollbarColor: `var(--${$$}-8) var(--${$$}-surface)` })],
 
     // presets preview
-    ["primary", `@(bg-primary text-primary border-primary)`],
-    ["secondary", `@(bg-secondary text-secondary border-secondary)`],
-    ["accent", `@(bg-accent text-accent border-accent)`],
+    ["primary", `@(bg-primary text-primary)`],
+    ["secondary", `@(bg-secondary text-secondary)`],
+    ["accent", `@(bg-accent text-accent)`],
+    ["neutral", `@(bg-neutral text-neutral-content)`],
 
-    ["surface-", ({ $$ }) => `@(bg-base-${$$}00 text-base-content border-base-${$$}00)`],
-    ["prominent-", ({ $$ }) => `@(bg-${$$}-700 text-${$$} border-${$$}-800)`],
-    ["medium-", ({ $$ }) => `@(bg-${$$}-200 text-${$$}-800 border-${$$}-300)`],
-    ["subtle-", ({ $$ }) => `@(bg-${$$}-50 text-${$$}-800 border-${$$}-100)`],
+    ["surface-", ({ $$ }) => `@(bg-base-${$$}00 text-base-content)`],
+    ["prominent-", ({ $$ }) => `@(bg-${$$}-700 text-${$$})`],
+    ["medium-", ({ $$ }) => `@(bg-${$$}-200 text-${$$}-800)`],
+    ["subtle-", ({ $$ }) => `@(bg-${$$}-50 text-${$$}-800)`],
 
     ["light", `@(bg-white text-base-content border-base-300)`],
-    ["dark", `@(bg-neutral-800 text-white/90 border-base-800)`],
   ],
 
   theme: {
@@ -268,6 +269,7 @@ export default defineConfig({
           300: "var(--color-base-300)",
         },
         primary: {
+          default: "var(--color-primary)",
           100: "var(--color-primary-100)",
           200: "var(--color-primary-200)",
           300: "var(--color-primary-300)",
@@ -279,6 +281,7 @@ export default defineConfig({
           900: "var(--color-primary-900)",
         },
         secondary: {
+          default: "var(--color-secondary)",
           100: "var(--color-secondary-100)",
           200: "var(--color-secondary-200)",
           300: "var(--color-secondary-300)",
@@ -290,6 +293,7 @@ export default defineConfig({
           900: "var(--color-secondary-900)",
         },
         accent: {
+          default: "var(--color-accent)",
           100: "var(--color-accent-100)",
           200: "var(--color-accent-200)",
           300: "var(--color-accent-300)",
@@ -301,6 +305,7 @@ export default defineConfig({
           900: "var(--color-accent-900)",
         },
         neutral: {
+          default: "var(--color-neutral)",
           100: "var(--color-neutral-100)",
           200: "var(--color-neutral-200)",
           300: "var(--color-neutral-300)",

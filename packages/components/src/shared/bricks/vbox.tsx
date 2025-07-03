@@ -6,13 +6,14 @@ import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useDatasource } from "../hooks/use-datasource";
 import { processBrick, type Brick } from "@upstart.gg/sdk/shared/bricks";
 import BrickWrapper from "../components/BrickWrapper";
-import { tx } from "@upstart.gg/style-system/twind";
+import { css, tx } from "@upstart.gg/style-system/twind";
 import { type DraggableChildrenFn, Droppable } from "@hello-pangea/dnd";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { getDraggableStyle } from "~/editor/utils/dnd";
 import { IconRender } from "~/editor/components/IconRender";
 import { useDeviceInfo } from "~/editor/hooks/use-device-info";
+import { useDraggingBrickType } from "~/editor/hooks/use-editor";
 
 const Vbox = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const props = brick.props;
@@ -85,15 +86,16 @@ export const renderClone: DraggableChildrenFn = (provided, snapshot, rubric) => 
 
 const renderClone2: DraggableChildrenFn = (provided, snapshot, rubric) => {
   return (
-    <div
-      {...provided.draggableProps}
-      {...provided.dragHandleProps}
-      ref={provided.innerRef}
-      style={{
-        ...provided.draggableProps.style,
-        scale: 0.2,
-      }}
-    />
+    // <div
+    //   {...provided.draggableProps}
+    //   {...provided.dragHandleProps}
+    //   ref={provided.innerRef}
+    //   style={{
+    //     width: "200px",
+    //     scale: 0.2,
+    //   }}
+    // />
+    null
   );
 };
 
@@ -102,9 +104,18 @@ function DroppableVbox({ brick }: BrickProps<Manifest>) {
   const styles = useBrickStyle<Manifest>(brick);
   const classes = Object.values(styles);
   const { isDesktop } = useDeviceInfo();
+  const draggingBrickType = useDraggingBrickType();
   const ds = useDatasource(props.datasource, manifest.datasource);
   return (
-    <Droppable droppableId={brick.id} type="brick" isCombineEnabled isDropDisabled={!isDesktop}>
+    <Droppable
+      droppableId={brick.id}
+      type="brick"
+      isCombineEnabled
+      isDropDisabled={!isDesktop}
+      direction="vertical"
+      mode="virtual"
+      renderClone={renderClone2}
+    >
       {(droppableProvided, droppableSnapshot) => (
         <div
           {...droppableProvided.droppableProps}
@@ -112,6 +123,8 @@ function DroppableVbox({ brick }: BrickProps<Manifest>) {
           className={tx(
             "flex-1 flex flex-col relative",
             droppableSnapshot.isDraggingOver && "!outline !outline-2 !outline-orange-300",
+            (droppableSnapshot.isDraggingOver || draggingBrickType) && "!overflow-y-hidden",
+            droppableSnapshot.isDraggingOver && "[&>*]:(!transform-none)",
             ...classes,
           )}
         >
@@ -137,7 +150,6 @@ function DroppableVbox({ brick }: BrickProps<Manifest>) {
               Drag bricks here to stack them inside.
             </div>
           )}
-          {droppableProvided.placeholder}
         </div>
       )}
     </Droppable>

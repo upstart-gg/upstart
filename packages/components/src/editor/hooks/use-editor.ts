@@ -425,6 +425,7 @@ export interface DraftState extends DraftStateProps {
   reorderBrickWithin: (brickId: string, fromIndex: number, toIndex: number) => void;
   moveBrickToContainerBrick: (id: string, parentId: string, index: number) => void;
   moveBrickToSection: (id: string, sectionId: string | null, index?: number) => void;
+  detachBrickFromContainer: (id: string) => void;
   addBrick: (brick: Brick, sectiondId: string, index: number, parentContainerId: Brick["id"] | null) => void;
   updateBrick: (id: string, brick: Partial<Brick>) => void;
   updateBrickProps: (id: string, props: Record<string, unknown>, isMobileProps?: boolean) => void;
@@ -508,6 +509,40 @@ export const createDraftStore = (
         immer((set, _get) => ({
           ...DEFAULT_PROPS,
           ...initProps,
+
+          detachBrickFromContainer: (id) =>
+            set((state) => {
+              const data = state.brickMap.get(id);
+              invariant(data, `Cannot detach brick ${id}, it does not exist in the brickMap`);
+              const { brick, sectionId, parentId } = data;
+              if (!parentId) {
+                console.warn("Cannot detach brick %s, it is not in a container", id);
+                return;
+              }
+              // Remove the brick from its parent container
+              const parentBrick = getBrickFromDraft(parentId, state);
+              if (!parentBrick) {
+                console.error("Cannot detach brick %s, its parent %s does not exist", id, parentId);
+                return;
+              }
+              const parentSection = state.sections.find((s) => s.id === sectionId);
+              if (!parentSection) {
+                console.error("Cannot detach brick %s, its parent section %s does not exist", id, sectionId);
+                return;
+              }
+              // Remove from parent brick
+              parentBrick.props.$children = (parentBrick.props.$children as Brick[] | undefined)?.filter(
+                (child) => child.id !== id,
+              );
+              // Add it directly to the section, just after the parent brick
+              const index = parentSection.bricks.findIndex((b) => b.id === parentId);
+              parentSection.bricks.splice(index + 1, 0, {
+                ...brick,
+              });
+
+              // Rebuild the brickMap
+              state.brickMap = buildBrickMap(state.sections);
+            }),
 
           createEmptySection: (id, afterSectionId) =>
             set((state) => {
@@ -980,7 +1015,7 @@ export const createDraftStore = (
 
               if (parentId) {
                 // Brick is inside a container, reorder within parent's children
-                const parentBrick = state.getBrick(parentId);
+                const parentBrick = getBrickFromDraft(parentId, state);
                 if (parentBrick?.props.$children) {
                   const children = parentBrick.props.$children as Brick[];
                   const [movedBrick] = children.splice(fromIndex, 1);
@@ -1626,6 +1661,7 @@ export const useDraftHelpers = () => {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => ({
     deleteBrick: state.deleteBrick,
+    detachBrickFromContainer: state.detachBrickFromContainer,
     setSections: state.setSections,
     setThemes: state.setThemes,
     setTheme: state.setTheme,
