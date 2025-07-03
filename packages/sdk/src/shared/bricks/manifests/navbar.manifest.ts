@@ -76,7 +76,7 @@ export const manifest = defineBrickManifest({
           "ui:no-object-options": true,
         }),
       ),
-      hideText: optional(boolean("Hide text")),
+      hideText: optional(boolean("Hide brand name")),
       navigation: group({
         title: "Links",
         children: {
@@ -88,12 +88,12 @@ export const manifest = defineBrickManifest({
                 Type.Literal("center", { title: "Center" }),
                 Type.Literal("right", { title: "Right" }),
               ],
-              { default: "right" },
+              { default: "right", "ui:responsive": "desktop" },
             ),
           }),
           color: optional(colorRef()),
           datasource: optional(datasourceRef()),
-          staticItems: optional(
+          staticNavItems: optional(
             prop({
               title: "Nav items",
               schema: Type.Array(
@@ -144,7 +144,7 @@ export const examples: {
       navigation: {
         position: "right",
         color: "#374151",
-        staticItems: [
+        staticNavItems: [
           { urlOrPageId: "/services" },
           { urlOrPageId: "/about" },
           { urlOrPageId: "/portfolio" },
@@ -171,7 +171,7 @@ export const examples: {
       navigation: {
         position: "center",
         color: "#d1d5db",
-        staticItems: [
+        staticNavItems: [
           { urlOrPageId: "/work" },
           { urlOrPageId: "/services" },
           { urlOrPageId: "/team" },
@@ -199,7 +199,7 @@ export const examples: {
       navigation: {
         position: "right",
         color: "#f1f5f9",
-        staticItems: [
+        staticNavItems: [
           { urlOrPageId: "/features" },
           { urlOrPageId: "/pricing" },
           { urlOrPageId: "/docs" },
@@ -220,7 +220,7 @@ export const examples: {
       },
       navigation: {
         position: "right",
-        staticItems: [
+        staticNavItems: [
           { urlOrPageId: "/products" },
           { urlOrPageId: "/categories" },
           { urlOrPageId: "/deals" },
@@ -246,7 +246,7 @@ export const examples: {
       navigation: {
         position: "right",
         color: "#64748b",
-        staticItems: [
+        staticNavItems: [
           { urlOrPageId: "/projects" },
           { urlOrPageId: "/capabilities" },
           { urlOrPageId: "/insights" },
@@ -272,7 +272,7 @@ export const examples: {
       navigation: {
         position: "center",
         color: "#fdba74",
-        staticItems: [
+        staticNavItems: [
           { urlOrPageId: "/menu" },
           { urlOrPageId: "/reservations" },
           { urlOrPageId: "/events" },
@@ -298,7 +298,7 @@ export const examples: {
       navigation: {
         position: "left",
         color: "#64748b",
-        staticItems: [
+        staticNavItems: [
           { urlOrPageId: "/work" },
           { urlOrPageId: "/about" },
           { urlOrPageId: "/experience" },
@@ -319,7 +319,7 @@ export const examples: {
       },
       navigation: {
         position: "right",
-        staticItems: [
+        staticNavItems: [
           { urlOrPageId: "/mission" },
           { urlOrPageId: "/programs" },
           { urlOrPageId: "/volunteer" },

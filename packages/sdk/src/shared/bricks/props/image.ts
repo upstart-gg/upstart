@@ -1,4 +1,4 @@
-import { type SchemaOptions, Type, type Static } from "@sinclair/typebox";
+import { type SchemaOptions, Type, type Static, type ObjectOptions } from "@sinclair/typebox";
 import { prop } from "./helpers";
 import { typedRef } from "~/shared/utils/typed-ref";
 // import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
@@ -7,10 +7,10 @@ type PropImageOptions = {
   defaultImageUrl?: string;
   showImgSearch?: boolean;
   noObjectOptions?: boolean;
-};
+} & ObjectOptions;
 
 export function image(title = "Image", options: PropImageOptions = {}) {
-  const { defaultImageUrl, showImgSearch = false, noObjectOptions } = options;
+  const { defaultImageUrl, showImgSearch = false, noObjectOptions = false } = options;
   const schema = Type.Object(
     {
       src: Type.String({
@@ -68,13 +68,15 @@ export function image(title = "Image", options: PropImageOptions = {}) {
       $id: "assets:image",
       "ui:field": "image",
       "ui:accept": "image/*",
-      "ui:show-img-search": !!showImgSearch,
-      "ui:no-object-options": !!noObjectOptions,
+      "ui:show-img-search": showImgSearch,
+      "ui:no-object-options": noObjectOptions,
       default: {
         alt: "Image",
         fit: "object-cover",
         position: "object-center",
       },
+      "ui:responsive": "desktop",
+      ...options,
     },
   );
   return prop({

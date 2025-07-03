@@ -5,6 +5,7 @@ import { type TProperties, Type, type TSchema, type TObject, type ObjectOptions 
 import { commonProps } from "./common";
 import type { PartialBy, Prop, PropGroup, GroupMetadata } from "./types";
 import { get } from "lodash-es";
+import { presetRef } from "./preset";
 
 // Local version of resolveSchema to avoid circular dependency with ajv
 function resolveSchemaLocal(schema: TSchema): TSchema {
@@ -70,7 +71,7 @@ export function getGroupInfo(schema: TSchema) {
 
 export function defineProps<P extends TProperties>(
   props: P,
-  options?: ObjectOptions & { noPreset?: boolean; noAlignSelf?: boolean },
+  options?: ObjectOptions & { noPreset?: boolean; noAlignSelf?: boolean; defaultPreset?: string },
 ) {
   const finalProps = { ...commonProps, ...props };
   if (options?.noPreset) {
@@ -78,6 +79,11 @@ export function defineProps<P extends TProperties>(
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     // biome-ignore lint/performance/noDelete: <explanation>
     delete (finalProps as any).preset;
+  }
+  if (options?.defaultPreset) {
+    // If defaultPreset is provided, we set it as the default value for the preset property
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    (finalProps as any).preset = Type.Optional(presetRef({ default: options.defaultPreset }));
   }
   if (options?.noAlignSelf) {
     // If noPreset is true, we don't add the preset property

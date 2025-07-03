@@ -14,7 +14,7 @@ import {
 import { DropdownMenu, Inset, Popover, Tooltip } from "@upstart.gg/style-system/system";
 import EditableBrickWrapper from "./EditableBrick";
 import { useSectionStyle } from "~/shared/hooks/use-section-style";
-import { TbArrowAutofitHeight, TbBorderCorners, TbDots } from "react-icons/tb";
+import { TbArrowAutofitHeight, TbBorderCorners, TbDots, TbCirclePlus } from "react-icons/tb";
 import {
   startTransition,
   useCallback,
@@ -32,6 +32,8 @@ import { tx, css } from "@upstart.gg/style-system/twind";
 import { Draggable, Droppable } from "@hello-pangea/dnd";
 import { useMutationObserver } from "../hooks/use-mutation-observer";
 import { useDeepCompareEffect } from "use-deep-compare";
+import { useMediaQuery } from "usehooks-ts";
+import { useDeviceInfo } from "../hooks/use-device-info";
 
 type EditableSectionProps = {
   section: SectionType;
@@ -47,6 +49,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
   const selectedSectionId = useSelectedSectionId();
   const selectedBrickId = useSelectedBrickId();
   const draggingBrickType = useDraggingBrickType();
+  const { isDesktop } = useDeviceInfo();
   const className = useSectionStyle({
     section,
     editable: true,
@@ -92,6 +95,8 @@ export default function EditableSection({ section, index }: EditableSectionProps
 
   const dropDisabled =
     /* Not DnD on mobile */ previewMode === "mobile" ||
+    /* No DnD on small screens */
+    !isDesktop ||
     /* No DnD when dragging a brick that has inline drag disabled */
     (!!draggingBrickType && manifests[draggingBrickType]?.inlineDragDisabled);
 
@@ -228,7 +233,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
 
   const btnCls = tx(
     "select-none hover:opacity-90",
-    "text-base px-2.5 h-9  ",
+    "text-base px-1.5 h-9  ",
     "text-black/80 font-bold flex items-center gap-1",
     "active:(outline-none ring-0) focus:(outline-none ring-0)",
   );
@@ -239,7 +244,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
         dropdownOpen ? "opacity-100" : "opacity-0",
         `section-options-buttons bottom-[3px]
             absolute z-[99999] left-1/2 -translate-x-1/2 border border-gray-200 border-b-0`,
-        "gap-0 rounded-t-md [&>*:first-child]:rounded-tl-md [&>*:last-child]:rounded-tr-md divide-x divide-white/80",
+        "gap-0 rounded-t-md [&>*:first-child]:rounded-tl-md [&>*:last-child]:rounded-tr-md ",
         "bg-white/90 backdrop-blur-md transition-opacity duration-500  group-hover/section:opacity-100 flex",
       )}
     >
@@ -263,7 +268,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
       </button>
       {/* )} */}
       {section.props.minHeight !== "full" && (
-        <Tooltip content="Fill entire screen height" delayDuration={500}>
+        <Tooltip content="Fill entire screen height" delayDuration={400}>
           <button
             type="button"
             onClick={() => {
@@ -287,6 +292,18 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
           </button>
         </Tooltip>
       )}
+      <Tooltip content="Create new section below" delayDuration={400}>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            draftHelpers.createEmptySection(`s_${generateId()}`, section.id);
+          }}
+          className={tx(btnCls, "cursor-pointer")}
+        >
+          <TbCirclePlus className="w-6 h-6" />
+        </button>
+      </Tooltip>
       <DropdownMenu.Root modal={false} onOpenChange={setDropdownOpen}>
         <DropdownMenu.Trigger
           onClick={(e) => {

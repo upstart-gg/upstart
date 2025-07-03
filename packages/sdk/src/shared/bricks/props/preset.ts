@@ -1,21 +1,9 @@
-import { Type, type Static } from "@sinclair/typebox";
+import { type StringOptions, Type, type Static } from "@sinclair/typebox";
 import { typedRef } from "~/shared/utils/typed-ref";
 
 export function preset(defaultValue?: string) {
   return Type.Union(
     [
-      Type.Literal("surface-1", {
-        title: "Surface 1",
-        description: "Surface elevation 1, light background with dark text.",
-      }),
-      Type.Literal("surface-2", {
-        title: "Surface 2",
-        description: "Surface elevation 2, slightly darker background with dark text.",
-      }),
-      Type.Literal("surface-3", {
-        title: "Surface 3",
-        description: "Surface elevation 3, even darker background with dark text.",
-      }),
       Type.Literal("prominent-primary", {
         title: "Prominent Primary",
         description: "Prominent display on primary-700 background.",
@@ -28,6 +16,19 @@ export function preset(defaultValue?: string) {
         title: "Prominent Accent",
         description: "Prominent display on accent-700 background.",
       }),
+      Type.Literal("primary", {
+        title: "Primary",
+        description: "Filled display on primary background with dark text.",
+      }),
+      Type.Literal("secondary", {
+        title: "Secondary",
+        description: "Filled display on secondary background with dark text.",
+      }),
+      Type.Literal("accent", {
+        title: "Accent",
+        description: "Filled display on accent background with dark text.",
+      }),
+
       Type.Literal("medium-primary", {
         title: "Medium Primary",
         description: "Filled display on primary-200 background.",
@@ -51,6 +52,18 @@ export function preset(defaultValue?: string) {
       Type.Literal("subtle-accent", {
         title: "Subtle Accent",
         description: "Subtle display on accent-100 background and 1px border.",
+      }),
+      Type.Literal("surface-1", {
+        title: "Surface 1",
+        description: "Surface elevation 1, light background with dark text.",
+      }),
+      Type.Literal("surface-2", {
+        title: "Surface 2",
+        description: "Surface elevation 2, slightly darker background with dark text.",
+      }),
+      Type.Literal("surface-3", {
+        title: "Surface 3",
+        description: "Surface elevation 3, even darker background with dark text.",
       }),
       Type.Literal("light", {
         title: "Light",
@@ -80,7 +93,9 @@ export function preset(defaultValue?: string) {
 
 export type Preset = Static<ReturnType<typeof preset>>;
 
-export const presetRef = typedRef("styles:preset");
+export function presetRef(options: StringOptions = {}) {
+  return typedRef("styles:preset", options);
+}
 
 export const presetsStyleProps = {
   "surface-1": {
@@ -113,6 +128,22 @@ export const presetsStyleProps = {
     "styles:color": "text-accent",
     "styles:border": { color: "border-accent-800" },
   },
+  primary: {
+    "styles:backgroundColor": "bg-primary",
+    "styles:color": "text-primary",
+    "styles:border": { color: "border-primary" },
+  },
+  secondary: {
+    "styles:backgroundColor": "bg-secondary",
+    "styles:color": "text-secondary",
+    "styles:border": { color: "border-secondary" },
+  },
+  accent: {
+    "styles:backgroundColor": "bg-accent",
+    "styles:color": "text-accent",
+    "styles:border": { color: "border-accent" },
+  },
+
   "medium-primary": {
     "styles:backgroundColor": "bg-primary-200",
     "styles:color": "text-primary-800",

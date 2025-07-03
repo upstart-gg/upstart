@@ -27,6 +27,9 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
       (typeof prop.metadata?.["ui:responsive"] === "undefined" ||
         prop.metadata?.["ui:responsive"] === true ||
         prop.metadata?.["ui:responsive"] === previewMode) &&
+      (typeof prop["ui:responsive"] === "undefined" ||
+        prop["ui:responsive"] === true ||
+        prop["ui:responsive"] === previewMode) &&
       (!prop.metadata?.category || prop.metadata?.category === "settings") &&
       (!prop["ui:advanced"] || showAdvanced)
       /* &&
@@ -35,7 +38,6 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
   };
 
   const navItems = getNavItemsFromManifest(manifest.props, filter);
-
   const formData = useMemo(() => {
     const defProps = defaultProps[brick.type].props;
     return previewMode === "mobile"
@@ -55,8 +57,6 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
       // `propertyChangedPath` can take the form of `a.b.c` which means we need to update `props.a.b.c`
       // For this we use lodash.set
       set(props, propertyChangedPath, data[propertyChangedPath]);
-
-      console.log("updating brick props", brick.id, props);
 
       // Update the brick props in the store
       updateBrickProps(brick.id, props, previewMode === "mobile");

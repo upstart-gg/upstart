@@ -22,6 +22,9 @@ export default function SectionSettingsView({ section, group }: SectionSettingsV
       (typeof prop.metadata?.["ui:responsive"] === "undefined" ||
         prop.metadata?.["ui:responsive"] === true ||
         prop.metadata?.["ui:responsive"] === previewMode) &&
+      (typeof prop["ui:responsive"] === "undefined" ||
+        prop["ui:responsive"] === true ||
+        prop["ui:responsive"] === previewMode) &&
       (!prop.metadata?.category || prop.metadata?.category === "settings") &&
       (!prop["ui:advanced"] || showAdvanced)
       /* &&
