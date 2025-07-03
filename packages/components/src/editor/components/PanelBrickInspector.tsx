@@ -17,6 +17,7 @@ import { FieldTitle } from "./json-form/field-factory";
 import intersection from "lodash-es/intersection";
 import { useCalloutViewCounter } from "../hooks/use-callout-view-counter";
 import merge from "lodash-es/merge";
+import { presetsStyleProps } from "@upstart.gg/sdk/shared/bricks/props/preset";
 
 type TabType = "preset" | "settings" | "content";
 
@@ -118,32 +119,38 @@ function PresetsTab({ brick, section }: { brick: Brick; section: Section }) {
   return (
     <div className={tx("flex flex-col h-full")}>
       <div className="basis-1/2 grow-0">
-        <Callout.Root size="1" className="m-2">
+        <Callout.Root size="1" className="mb-2">
           <Callout.Text size="1">
             <span className="font-semibold">Style presets</span> are pre-configured color styles that can be
             applied to your bricks to quickly change their appearance.
           </Callout.Text>
         </Callout.Root>
-        <div className="grid grid-cols-3 gap-2 auto-rows-[3rem] flex-1 mx-2">
+        <div className="grid grid-cols-3 gap-1.5 auto-rows-[3rem] flex-1 mx-2">
           {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
-          {schema.anyOf.map((preset: any) => (
-            <button
-              type="button"
-              onClick={() => {
-                updateBrickProps(brick.id, { preset: preset.const }, previewMode === "mobile");
-              }}
-              key={preset.const}
-              className={tx(
-                `${preset.const}`,
-                preset.const === "preset-none" && "border-gray-200",
-                `text-xs flex items-center justify-center text-center p-2 border
-                   rounded-md hover:opacity-80`,
-                brick.props.preset === preset.const && "outline outline-2 outline-upstart-400",
-              )}
-            >
-              {preset.title}
-            </button>
-          ))}
+          {schema.anyOf.map((preset: any) => {
+            const styles = presetsStyleProps[preset.const as keyof typeof presetsStyleProps];
+            const classes = tx(styles["styles:backgroundColor"], styles["styles:color"]);
+            return (
+              <button
+                type="button"
+                onClick={() => {
+                  updateBrickProps(brick.id, { preset: preset.const }, previewMode === "mobile");
+                }}
+                key={preset.const}
+                className={tx(
+                  // `${preset.const}`,
+                  classes,
+                  (preset.const === "preset-none" || preset.const === "light") && "border border-gray-200",
+                  preset.const === "preset-none" && "italic",
+                  `text-xs flex items-center justify-center text-center p-2
+                   rounded-md hover:opacity-80 relative overflow-hidden`,
+                  brick.props.preset === preset.const && "outline outline-2 outline-upstart-400",
+                )}
+              >
+                {preset.title}
+              </button>
+            );
+          })}
         </div>
       </div>
       <PageHierarchy brick={brick} section={section} />

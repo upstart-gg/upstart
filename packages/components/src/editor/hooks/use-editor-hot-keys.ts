@@ -26,6 +26,7 @@ export function useEditorHotKeys() {
       e.preventDefault();
       draftHelpers.deleteBrick(selectedBrickId);
       editorHelpers.deselectBrick(selectedBrickId);
+      editorHelpers.hidePanel("inspector");
     }
   });
 

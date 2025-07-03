@@ -70,11 +70,16 @@ export default function Editor(props: EditorProps) {
   const onBeforeCapture: OnBeforeCaptureResponder = (before) => {
     setDraggingBrickType(before.draggableId);
     console.log("BeforeCapture:", before);
-    // const element = document.querySelector<HTMLDivElement>(`#${before.draggableId}`);
-    // if (element) {
-    //   console.log("Element found for draggableId:", before.draggableId, element);
-    //   element.style.setProperty("transform", "scale(0.8)");
-    // }
+
+    const element = document.getElementById(before.draggableId);
+
+    if (element) {
+      const computedStyle = window.getComputedStyle(element);
+      if (computedStyle.getPropertyValue("background-color") === "rgba(0, 0, 0, 0)") {
+        console.log("Setting background color for drag element:", before.draggableId);
+        element.classList.add(tx("!bg-upstart-100"));
+      }
+    }
     // You can use this to prevent certain drags, e.g. if you want to disable dragging in some cases
     // if (beforeCapture.draggableId === "some-id") {
     //   return false; // Prevent the drag
@@ -82,10 +87,12 @@ export default function Editor(props: EditorProps) {
   };
 
   const handleDragEnd = (result: DropResult) => {
-    const { destination, source, draggableId, type } = result;
+    const { destination, source, draggableId, type, combine } = result;
     setDraggingBrickType(null);
 
     console.log("DragEnd result:", result);
+
+    const destinationBrick = destination ?? combine;
 
     // If dropped outside a valid droppable area
     if (!destination) {
@@ -204,6 +211,10 @@ export default function Editor(props: EditorProps) {
           const sectionId = draft.brickMap.get(destinationContainer.id)?.sectionId;
           if (!sectionId) {
             console.warn(`No section found for container ${destinationContainer.id}`);
+            return;
+          }
+          if (draggableId === destinationContainer.id) {
+            console.warn("Cannot move a container into itself");
             return;
           }
           console.log(

@@ -80,8 +80,8 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
 
     // Always respect the parent container width
     isContainerChild && "flex-1",
-    !isContainerChild && manifest.maxWidth?.mobile && `@mobile:max-w-[${manifest.maxWidth.mobile}px]`,
-    !isContainerChild && manifest.maxWidth?.desktop && `@desktop:max-w-[${manifest.maxWidth.desktop}px]`,
+    /*!isContainerChild &&*/ manifest.maxWidth?.mobile && `@mobile:max-w-[${manifest.maxWidth.mobile}px]`,
+    /*!isContainerChild &&*/ manifest.maxWidth?.desktop && `@desktop:max-w-[${manifest.maxWidth.desktop}px]`,
     !isContainerChild && typeof props.width !== "undefined" && `@desktop:w-[${props.width}]`,
 
     !isContainerChild &&
@@ -120,10 +120,11 @@ function getBrickWrapperEditorStyles(
     return null;
   }
   return [
-    "select-none transition-[outline] delay-100 duration-[200ms]",
-    "outline outline-transparent",
-    selected && !isContainer && "!outline-upstart-400 shadow-xl shadow-upstart-500/20",
-    selected && isContainer && "!outline-orange-300 shadow-xl",
+    "select-none transition-[outline] duration-[200ms]",
+    "outline outline-2 outline-transparent",
+    !isContainer ? "-outline-offset-1" : "outline-offset-2",
+    selected && !isContainer && "!outline-upstart-300 shadow-lg ",
+    selected && isContainer && "!outline-orange-300 shadow-lg",
     !selected && !isContainerChild && !isContainer && "hover:(outline-upstart-400/60)",
     !selected && !isContainerChild && isContainer && "hover:(outline-orange-300/20)",
     !selected &&

@@ -13,7 +13,7 @@ const Divider = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edita
       className={tx(
         "flex-grow flex-shrink-0 @mobile:w-full",
         editable &&
-          "hover:(striped-bg bg-gray-100) group-hover/section:(striped-bg bg-gray-100) transition-colors duration-[200ms] delay-[100ms]",
+          "hover:(striped-bg bg-gray-100) group-hover/section:(striped-bg bg-gray-100) transition-colors duration-150",
         selected && "striped-bg bg-gray-100",
         ...Object.values(styles),
       )}

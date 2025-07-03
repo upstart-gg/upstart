@@ -160,7 +160,8 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         zoom,
       }}
     >
-      {processSections(sections).map((section, index) => (
+      {/* If the navbar is enabled, set it statically */}
+      {sections.map((section, index) => (
         <Section key={section.id} section={section} index={index} />
       ))}
     </div>

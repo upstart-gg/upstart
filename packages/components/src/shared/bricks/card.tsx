@@ -55,17 +55,8 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
             />
           </div>
         )}
-        {props.cardBody && (
-          <div
-            className={tx(
-              "z-auto pb-4 pt-2 mx-4",
-              props.variants?.includes("image-first")
-                ? "order-3"
-                : props.variants?.includes("image-between")
-                  ? "order-4"
-                  : "order-2",
-            )}
-          >
+        {props.cardBody && !props.variants?.includes("image-between") && (
+          <div className={tx("z-auto pb-4 pt-2 mx-4")}>
             <TextContent
               propPath="cardBody.content"
               className={tx("flex-1")}
@@ -83,15 +74,26 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
             props.cardImage.position ?? "object-center",
             props.cardImage.fit ?? "object-cover",
             props.variants?.includes("image-between") && "order-2",
-            props.variants?.includes("image-first") && "order-1",
-            props.variants?.includes("image-last") && "order-4 mt-auto",
+            props.variants?.includes("image-first") && "order-first",
+            props.variants?.includes("image-last") && "order-last mt-auto",
             props.variants?.includes("image-side")
-              ? "h-inherit w-[clamp(50px,50%,300px)]"
+              ? "h-inherit w-[clamp(50px,33%,300px)]"
               : "w-inherit h-[clamp(200px,50%,300px)]",
           )}
           src={props.cardImage.src}
           alt={props.cardImage.alt || "Card Image"}
         />
+      )}
+      {props.cardBody && props.variants?.includes("image-between") && (
+        <div className={tx("z-auto pb-4 pt-2 mx-4 order-last")}>
+          <TextContent
+            propPath="cardBody.content"
+            className={tx("flex-1")}
+            brickId={brick.id}
+            content={props.cardBody}
+            editable={editable}
+          />
+        </div>
       )}
     </div>
   );

@@ -11,7 +11,7 @@ import { tx, css } from "@upstart.gg/style-system/twind";
 const Navbar = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
   const props = brick.props;
-  const ds = useDatasource(props.navigation.datasource, manifest.datasource);
+  // const ds = useDatasource(props.navigation.datasource, manifest.datasource);
 
   return (
     <header
@@ -61,7 +61,7 @@ const Navbar = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
             props.navigation.position === "center" && "mx-auto",
           )}
         >
-          {ds.data.map((item, index) => {
+          {/* {ds.data.map((item, index) => {
             return (
               <a
                 key={index}
@@ -75,7 +75,7 @@ const Navbar = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
                 {item.label}
               </a>
             );
-          })}
+          })} */}
         </nav>
         <div role="menu" className="ml-auto @desktop:hidden items-center gap-4" data-brick-group="actions">
           <RxHamburgerMenu className="w-6 h-6" />

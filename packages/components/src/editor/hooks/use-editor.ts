@@ -1,6 +1,6 @@
 import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
-import { generateId } from "@upstart.gg/sdk/shared/bricks";
+import { generateId, processSections } from "@upstart.gg/sdk/shared/bricks";
 import type { CallContextProps, GenerationState } from "@upstart.gg/sdk/shared/context";
 import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
 import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
@@ -103,7 +103,7 @@ export interface EditorStateProps {
   logoLink: string;
   themesLibrary: Theme[];
   imagesSearchResults?: ImageSearchResultsType;
-
+  contextMenuVisible: boolean;
   draggingBrickType?: Brick["type"];
 
   onShowLogin: () => void;
@@ -124,6 +124,7 @@ export interface EditorState extends EditorStateProps {
   setSettingsVisible: (visible: boolean) => void;
   toggleSettings: () => void;
   toggleTextEditMode: () => void;
+  setContextMenuVisible: (open: boolean) => void;
   toggleEditorEnabled: () => void;
   setGridConfig: (config: EditorStateProps["gridConfig"]) => void;
   setTextEditMode: (mode: EditorStateProps["textEditMode"]) => void;
@@ -157,6 +158,7 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
     logoLink: "/dashboard",
     zoom: 1,
     chatVisible: true,
+    contextMenuVisible: false,
     planIndex: 0,
     imagesSearchResults: import.meta.env.DEV
       ? [
@@ -212,6 +214,10 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
           immer((set, _get) => ({
             ...DEFAULT_PROPS,
             ...initProps,
+            setContextMenuVisible: (open) =>
+              set((state) => {
+                state.contextMenuVisible = open;
+              }),
             setDraggingBrickType: (type) =>
               set((state) => {
                 state.draggingBrickType = type ?? undefined;
@@ -425,6 +431,7 @@ export interface DraftState extends DraftStateProps {
   reorderBrickWithin: (brickId: string, fromIndex: number, toIndex: number) => void;
   moveBrickToContainerBrick: (id: string, parentId: string, index: number) => void;
   moveBrickToSection: (id: string, sectionId: string | null, index?: number) => void;
+  detachBrickFromContainer: (id: string) => void;
   addBrick: (brick: Brick, sectiondId: string, index: number, parentContainerId: Brick["id"] | null) => void;
   updateBrick: (id: string, brick: Partial<Brick>) => void;
   updateBrickProps: (id: string, props: Record<string, unknown>, isMobileProps?: boolean) => void;
@@ -508,6 +515,40 @@ export const createDraftStore = (
         immer((set, _get) => ({
           ...DEFAULT_PROPS,
           ...initProps,
+
+          detachBrickFromContainer: (id) =>
+            set((state) => {
+              const data = state.brickMap.get(id);
+              invariant(data, `Cannot detach brick ${id}, it does not exist in the brickMap`);
+              const { brick, sectionId, parentId } = data;
+              if (!parentId) {
+                console.warn("Cannot detach brick %s, it is not in a container", id);
+                return;
+              }
+              // Remove the brick from its parent container
+              const parentBrick = getBrickFromDraft(parentId, state);
+              if (!parentBrick) {
+                console.error("Cannot detach brick %s, its parent %s does not exist", id, parentId);
+                return;
+              }
+              const parentSection = state.sections.find((s) => s.id === sectionId);
+              if (!parentSection) {
+                console.error("Cannot detach brick %s, its parent section %s does not exist", id, sectionId);
+                return;
+              }
+              // Remove from parent brick
+              parentBrick.props.$children = (parentBrick.props.$children as Brick[] | undefined)?.filter(
+                (child) => child.id !== id,
+              );
+              // Add it directly to the section, just after the parent brick
+              const index = parentSection.bricks.findIndex((b) => b.id === parentId);
+              parentSection.bricks.splice(index + 1, 0, {
+                ...brick,
+              });
+
+              // Rebuild the brickMap
+              state.brickMap = buildBrickMap(state.sections);
+            }),
 
           createEmptySection: (id, afterSectionId) =>
             set((state) => {
@@ -642,10 +683,11 @@ export const createDraftStore = (
                 console.error("Cannot duplicate section %s, it does not exist", id);
                 return;
               }
+              const sectionIndex = state.sections.findIndex((s) => s.id === id);
               const newSection = {
                 ...section,
                 id: `s_${generateId()}`,
-                order: state.sections.length,
+                order: section.order + 1, // increment order to place it after the original
                 label: `${section.label} (copy)`,
                 // generate new bricks with new IDs
                 bricks: section.bricks.map((brick) => ({
@@ -659,7 +701,7 @@ export const createDraftStore = (
                   }),
                 })),
               };
-              state.sections.push(newSection);
+              state.sections.splice(sectionIndex + 1, 0, newSection);
               state.brickMap = buildBrickMap(state.sections);
             }),
 
@@ -980,7 +1022,7 @@ export const createDraftStore = (
 
               if (parentId) {
                 // Brick is inside a container, reorder within parent's children
-                const parentBrick = state.getBrick(parentId);
+                const parentBrick = getBrickFromDraft(parentId, state);
                 if (parentBrick?.props.$children) {
                   const children = parentBrick.props.$children as Brick[];
                   const [movedBrick] = children.splice(fromIndex, 1);
@@ -1536,7 +1578,8 @@ export function useLastSaved() {
 
 export const useSections = () => {
   const ctx = useDraftStoreContext();
-  return useStore(ctx, (state) => state.sections);
+  const sections = useStore(ctx, (state) => state.sections);
+  return processSections(sections);
 };
 
 export const useSection = (sectionId?: string) => {
@@ -1588,9 +1631,15 @@ export const useDraggingBrickType = () => {
   return useStore(ctx, (state) => state.draggingBrickType);
 };
 
+export const useContextMenuVisible = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.contextMenuVisible);
+};
+
 export const useEditorHelpers = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => ({
+    setContextMenuVisible: state.setContextMenuVisible,
     setDraggingBrickType: state.setDraggingBrickType,
     setPreviewMode: state.setPreviewMode,
     setSettingsVisible: state.setSettingsVisible,
@@ -1626,6 +1675,7 @@ export const useDraftHelpers = () => {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => ({
     deleteBrick: state.deleteBrick,
+    detachBrickFromContainer: state.detachBrickFromContainer,
     setSections: state.setSections,
     setThemes: state.setThemes,
     setTheme: state.setTheme,

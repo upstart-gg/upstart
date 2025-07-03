@@ -44,7 +44,7 @@ export function usePageAutoSave() {
     savePage({ sections });
   });
   useAttributesSubscribe((attributes) => {
-    console.debug("Attributes have changed, updating page version");
+    console.debug("Attributes have changed:", attributes);
     draft.setDirty(true);
     savePage({ attr: attributes });
   });
