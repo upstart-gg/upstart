@@ -57,20 +57,32 @@ export default function EditableSection({ section, index }: EditableSectionProps
     previewMode,
   });
   const sectionObj = useSection(section.id);
+  const isSpecialSection = typeof section.props.purpose !== "undefined";
 
   useDeepCompareEffect(() => {
     // This effect runs when the section object changes, which includes props updates
     // Check if the section is overflowing vertically
     const sectionEl = document.getElementById(section.id);
     invariant(sectionEl, `Section element with id ${section.id} not found`);
-    const isOverflowing =
+    const isOverflowing = () =>
       sectionEl.scrollHeight > sectionEl.clientHeight + parseFloat(section.props.gap ?? "0") * 2; // 8px for padding. Todo: fix this magic number
-    if (isOverflowing) {
+    if (isOverflowing()) {
       console.warn(
         `Section ${section.id} is overflowing vertically. Consider adjusting its height or content. sectionEl.scrollHeight = %s, sectionEl.clientHeight = %s`,
         sectionEl.scrollHeight,
         sectionEl.clientHeight,
       );
+      // let currentHeight = sectionEl.scrollHeight;
+      // let tries = 0;
+      // do {
+      //   currentHeight += 20;
+      //   console.log("Adjusting section height for overflow (try %d):", tries, section.id, currentHeight);
+      //   draftHelpers.updateSectionProps(section.id, {
+      //     minHeight: `${currentHeight}px`,
+      //   });
+      //   sectionEl.style.minHeight = `${currentHeight}px`;
+      //   tries += 1;
+      // } while (isOverflowing() && tries < 20);
     }
   }, [sectionObj]);
 
@@ -94,6 +106,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
   );
 
   const dropDisabled =
+    isSpecialSection ||
     /* Not DnD on mobile */ previewMode === "mobile" ||
     /* No DnD on small screens */
     !isDesktop ||
@@ -119,7 +132,9 @@ export default function EditableSection({ section, index }: EditableSectionProps
             )}
             {...droppableProvided.droppableProps}
           >
-            {!selectedBrickId && !draggingBrickType && <SectionOptionsButtons section={section} />}
+            {!isSpecialSection && /*!selectedBrickId &&*/ !draggingBrickType && (
+              <SectionOptionsButtons section={section} />
+            )}
             {bricks
               .filter((b) => !b.props.hidden?.[previewMode])
               .map((brick, brickIndex) => (
@@ -241,10 +256,11 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
     <div
       role="toolbar"
       className={tx(
+        // bottom-[3px]
         dropdownOpen ? "opacity-100" : "opacity-0",
-        `section-options-buttons bottom-[3px]
-            absolute z-[99999] left-1/2 -translate-x-1/2 border border-gray-200 border-b-0`,
-        "gap-0 rounded-t-md [&>*:first-child]:rounded-tl-md [&>*:last-child]:rounded-tr-md ",
+        `section-options-buttons bottom-0 translate-y-1/2 shadow
+            absolute z-[99999] left-1/2 -translate-x-1/2 border border-gray-200`,
+        "gap-0 rounded-md [&>*:first-child]:rounded-l-md [&>*:last-child]:rounded-r-md ",
         "bg-white/90 backdrop-blur-md transition-opacity duration-500  group-hover/section:opacity-100 flex",
       )}
     >

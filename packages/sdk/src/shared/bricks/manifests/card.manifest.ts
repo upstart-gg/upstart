@@ -17,6 +17,7 @@ export const manifest = defineBrickManifest({
   icon: BsCardText,
   defaultWidth: { desktop: "380px", mobile: "100%" },
   minWidth: { mobile: 200, desktop: 200 },
+  maxWidth: { desktop: 650 },
   props: defineProps(
     {
       variants: Type.Array(

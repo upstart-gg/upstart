@@ -65,7 +65,7 @@ function getSectionEditorStyles({ section, editable, selected, previewMode }: Us
   }
   const GAP = section.props.gap ?? "12px"; // Default gap if not set
   return [
-    "select-none transition-[outline] duration-[200ms] delay-[100ms] relative",
+    "select-none transition-[outline] duration-150 relative",
     "outline-dashed outline-2 -outline-offset-2 hover:(outline-upstart-500/60 shadow-upstart-500/20)",
     "self-stretch",
 

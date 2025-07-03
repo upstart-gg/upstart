@@ -549,20 +549,23 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                 </ContextMenu.Item>
               </>
             )}
-
-            <ContextMenu.Separator />
-            <ContextMenu.Item
-              shortcut="⌫"
-              color="red"
-              onClick={(e) => {
-                e.stopPropagation();
-                draftHelpers.deleteBrick(brick.id);
-                editorHelpers.deselectBrick(brick.id);
-                editorHelpers.hidePanel("inspector");
-              }}
-            >
-              Delete
-            </ContextMenu.Item>
+            {manifest.deletable && (
+              <>
+                <ContextMenu.Separator />
+                <ContextMenu.Item
+                  shortcut="⌫"
+                  color="red"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    draftHelpers.deleteBrick(brick.id);
+                    editorHelpers.deselectBrick(brick.id);
+                    editorHelpers.hidePanel("inspector");
+                  }}
+                >
+                  Delete
+                </ContextMenu.Item>
+              </>
+            )}
           </ContextMenu.Content>
         </Portal>
       </ContextMenu.Root>

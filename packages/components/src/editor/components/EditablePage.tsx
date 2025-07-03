@@ -152,17 +152,23 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   }, [generationState.isReady]);
 
   return (
-    <div
-      id="page-container"
-      ref={pageRef}
-      className={tx(pageClassName, "min-h-[100cqh]")}
-      style={{
-        zoom,
-      }}
-    >
-      {processSections(sections).map((section, index) => (
-        <Section key={section.id} section={section} index={index} />
-      ))}
+    <div className={tx(attributes?.$sidebar?.enabled ? "grid grid-cols-[200px_1fr] gap-4" : "contents")}>
+      {attributes?.$sidebar?.enabled && (
+        <nav className="flex flex-col gap-2 min-h-[100cqh]">Hello, this is the sidebar!</nav>
+      )}
+      <div
+        id="page-container"
+        ref={pageRef}
+        className={tx(pageClassName, "min-h-[100cqh]")}
+        style={{
+          zoom,
+        }}
+      >
+        {/* If the navbar is enabled, set it statically */}
+        {sections.map((section, index) => (
+          <Section key={section.id} section={section} index={index} />
+        ))}
+      </div>
     </div>
   );
 }

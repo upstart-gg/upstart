@@ -110,7 +110,7 @@ function DroppableVbox({ brick }: BrickProps<Manifest>) {
     <Droppable
       droppableId={brick.id}
       type="brick"
-      isCombineEnabled
+      // isCombineEnabled
       isDropDisabled={!isDesktop}
       direction="vertical"
       mode="virtual"

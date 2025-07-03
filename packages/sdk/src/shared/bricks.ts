@@ -135,13 +135,20 @@ export const sectionProps = Type.Object(
     minHeight: Type.Optional(
       cssLengthRef({
         title: "Min height",
-        default: "0px",
+        default: "fit-content",
         description: "The min height of the section",
         "ui:styleId": "minHeight",
         "ui:advanced": true,
       }),
     ),
-
+    purpose: Type.Optional(
+      StringEnum(["navbar", "sidebar"], {
+        title: "Specific purpose",
+        description: "The purpose of the section. Used for styling and layout.",
+        enumNames: ["Navbar", "Sidebar"],
+        "ui:field": "hidden",
+      }),
+    ),
     maxWidth: Type.Optional(
       enumProp("Max width", "max-w-full", {
         options: [

@@ -87,10 +87,12 @@ export default function Editor(props: EditorProps) {
   };
 
   const handleDragEnd = (result: DropResult) => {
-    const { destination, source, draggableId, type } = result;
+    const { destination, source, draggableId, type, combine } = result;
     setDraggingBrickType(null);
 
     console.log("DragEnd result:", result);
+
+    const destinationBrick = destination ?? combine;
 
     // If dropped outside a valid droppable area
     if (!destination) {
@@ -209,6 +211,10 @@ export default function Editor(props: EditorProps) {
           const sectionId = draft.brickMap.get(destinationContainer.id)?.sectionId;
           if (!sectionId) {
             console.warn(`No section found for container ${destinationContainer.id}`);
+            return;
+          }
+          if (draggableId === destinationContainer.id) {
+            console.warn("Cannot move a container into itself");
             return;
           }
           console.log(

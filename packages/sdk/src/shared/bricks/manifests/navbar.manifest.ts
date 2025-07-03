@@ -48,6 +48,8 @@ export const manifest = defineBrickManifest({
   duplicatable: false,
   resizable: false,
   movable: false,
+  inlineDragDisabled: true,
+  deletable: false,
 
   // maxHeight: {
   //   desktop: 90,
@@ -62,6 +64,9 @@ export const manifest = defineBrickManifest({
   iconClassName: "rotate-180",
   props: defineProps(
     {
+      enabled: boolean("Enabled", true, {
+        description: "Enable or disable the navbar on this page",
+      }),
       brand: optional(
         textContentRef({
           title: "Brand name",
@@ -77,6 +82,7 @@ export const manifest = defineBrickManifest({
         }),
       ),
       hideText: optional(boolean("Hide brand name")),
+
       navigation: group({
         title: "Links",
         children: {
@@ -92,10 +98,21 @@ export const manifest = defineBrickManifest({
             ),
           }),
           color: optional(colorRef()),
-          datasource: optional(datasourceRef()),
+          pageTagsFilter: optional(
+            prop({
+              title: "Page tags filter",
+              description:
+                "Filter pages in the navbar by tags. Only pages with all of these tags will be shown.",
+              schema: Type.Array(Type.String(), {
+                title: "Tags",
+                default: ["navbar"],
+              }),
+            }),
+          ),
           staticNavItems: optional(
             prop({
               title: "Nav items",
+              description: "Additional static navigation items to show in the navbar",
               schema: Type.Array(
                 Type.Object({
                   urlOrPageId: urlOrPageIdRef(),
@@ -135,6 +152,7 @@ export const examples: {
     description: "Corporate navbar with logo and right-aligned navigation",
     type: "navbar",
     props: {
+      enabled: true,
       preset: "prominent-primary",
       brand: "TechCorp Solutions",
       logo: {
@@ -160,6 +178,7 @@ export const examples: {
     description: "Dark theme navbar with centered navigation",
     type: "navbar",
     props: {
+      enabled: true,
       brand: "TechCorp Solutions",
       logo: {
         src: "https://via.placeholder.com/100x35.png?text=Studio",
@@ -184,6 +203,7 @@ export const examples: {
     description: "SaaS platform navbar with fixed positioning",
     type: "navbar",
     props: {
+      enabled: true,
       brand: "TechCorp Solutions",
       advanced: {
         backgroundColor: "#3b82f6",
@@ -212,6 +232,7 @@ export const examples: {
     description: "E-commerce navbar",
     type: "navbar",
     props: {
+      enabled: true,
       brand: "TechCorp Solutions",
       preset: "prominent-primary",
       logo: {
@@ -234,6 +255,7 @@ export const examples: {
     description: "Agency navbar with logo-only brand",
     type: "navbar",
     props: {
+      enabled: true,
       brand: "TechCorp Solutions",
       advanced: {
         shadow: "shadow-sm",
@@ -259,6 +281,7 @@ export const examples: {
     description: "Restaurant navbar with warm styling",
     type: "navbar",
     props: {
+      enabled: true,
       brand: "TechCorp Solutions",
       advanced: {
         backgroundColor: "#7c2d12",
@@ -285,6 +308,7 @@ export const examples: {
     description: "Portfolio navbar with left-aligned navigation",
     type: "navbar",
     props: {
+      enabled: true,
       brand: "TechCorp Solutions",
       preset: "prominent-secondary",
       advanced: {
@@ -311,6 +335,7 @@ export const examples: {
     description: "Non-profit navbar with mission-focused design",
     type: "navbar",
     props: {
+      enabled: true,
       brand: "TechCorp Solutions",
       preset: "prominent-primary",
       logo: {

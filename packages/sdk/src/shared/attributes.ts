@@ -9,6 +9,7 @@ import { enumProp } from "./bricks/props/enum";
 import { jsonDefault } from "json-schema-default";
 import { StringEnum } from "./utils/string-enum";
 import { image, imageRef } from "./bricks/props/image";
+import { manifest as navbarManifest } from "./bricks/manifests/navbar.manifest";
 
 export function defineAttributes(attrs: TProperties) {
   // Attributes starting with "$" are reserved for internal use
@@ -33,7 +34,42 @@ export type { JSONSchemaType };
 
 // Default attributes
 const defaultAttributes = {
-  $sidebarConfig: optional(
+  $navbar: optional(
+    group({
+      title: "Navbar",
+      children: navbarManifest.props,
+      // children: {
+      //   enabled: boolean("Enabled", true, {
+      //     description: "Enable or disable the navbar on this page",
+      //   }),
+      //   pageTagsFilter: optional(
+      //     prop({
+      //       title: "Page tags filter",
+      //       description:
+      //         "Filter pages in the navbar by tags. Only pages with all of these tags will be shown.",
+      //       schema: Type.Array(Type.String(), {
+      //         title: "Tags",
+      //         default: ["navbar"],
+      //       }),
+      //     }),
+      //   ),
+      //   staticNavItems: optional(
+      //     prop({
+      //       title: "Nav items",
+      //       description: "Additional static navigation items to show in the navbar",
+      //       schema: Type.Array(
+      //         Type.Object({
+      //           urlOrPageId: urlOrPageIdRef(),
+      //           label: optional(string("Label")),
+      //         }),
+      //         { title: "Navigation items", default: [] },
+      //       ),
+      //     }),
+      //   ),
+      // },
+    }),
+  ),
+  $sidebar: optional(
     group({
       title: "Sidebar",
       children: {
@@ -89,17 +125,6 @@ const defaultAttributes = {
     }),
   ),
 
-  $pageOgImage: optional(
-    imageRef({
-      title: "Social share image",
-      description: "Image shown when this page is shared on social media",
-      "ai:hidden": true,
-      "ui:no-object-options": true,
-      "ui:no-alt-text": true,
-      "ui:show-img-search": false,
-    }),
-  ),
-
   $pageLanguage: enumProp("Language", "en", {
     options: [
       { value: "ar", title: "Arabic" },
@@ -139,18 +164,6 @@ const defaultAttributes = {
     }),
   ),
 
-  $siteOgImage: optional(
-    imageRef({
-      title: "Social share image",
-      description: "Image shown when this site is shared on social media",
-      "ui:scope": "site",
-      "ai:hidden": true,
-      "ui:no-object-options": true,
-      "ui:no-alt-text": true,
-      "ui:show-img-search": false,
-    }),
-  ),
-
   $pagePath: string("Page path", {
     default: "/",
     description: "The URL path of the page",
@@ -182,14 +195,34 @@ const defaultAttributes = {
     "ui:multiline": true,
   }),
 
+  $siteOgImage: optional(
+    imageRef({
+      title: "Social share image",
+      description: "Image shown when this site is shared on social media",
+      "ui:scope": "site",
+      "ai:hidden": true,
+      "ui:no-object-options": true,
+      "ui:no-alt-text": true,
+      "ui:show-img-search": false,
+    }),
+  ),
+
+  $pageOgImage: optional(
+    imageRef({
+      title: "Social share image",
+      description: "Image shown when this page is shared on social media",
+      "ai:hidden": true,
+      "ui:no-object-options": true,
+      "ui:no-alt-text": true,
+      "ui:show-img-search": false,
+    }),
+  ),
   $pageLastUpdated: optional(
     datetime("Last updated", {
       "ui:hidden": true,
       "ai:guidelines": "Don't generate this property.",
     }),
   ),
-
-  // --- layout attributes ---
 
   $siteHeadTags: optional(
     Type.String({

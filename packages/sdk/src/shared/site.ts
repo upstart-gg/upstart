@@ -71,7 +71,9 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             id: `s_${generateId()}`,
             label: "Top",
             order: 1,
-            props: {},
+            props: {
+              purpose: "navbar",
+            },
             bricks: [
               {
                 id: generateId(),

@@ -1,6 +1,6 @@
 import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
-import { generateId } from "@upstart.gg/sdk/shared/bricks";
+import { generateId, processSections } from "@upstart.gg/sdk/shared/bricks";
 import type { CallContextProps, GenerationState } from "@upstart.gg/sdk/shared/context";
 import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
 import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
@@ -1571,7 +1571,8 @@ export function useLastSaved() {
 
 export const useSections = () => {
   const ctx = useDraftStoreContext();
-  return useStore(ctx, (state) => state.sections);
+  const sections = useStore(ctx, (state) => state.sections);
+  return processSections(sections);
 };
 
 export const useSection = (sectionId?: string) => {
