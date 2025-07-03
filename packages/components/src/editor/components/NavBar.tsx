@@ -301,11 +301,11 @@ export default function NavBar() {
               userConfig.credits === 0 && "text-red-800 font-semibold",
             )}
           >
-            <BsStars className={tx("opacity-60 w-4 h-4")} /> {userConfig.credits} credits
+            <BsStars className={tx("opacity-60 w-4 h-4")} /> {userConfig.credits.toLocaleString()} credits
           </span>
           <div className={tx("inline-flex gap-1 items-center")}>
             <HoverCard.Root>
-              <HoverCard.Trigger>
+              <HoverCard.Trigger> 
                 <button
                   type="button"
                   className={tx(

@@ -1,13 +1,13 @@
-import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, optional, prop } from "../props/helpers";
 import { FaWpforms } from "react-icons/fa6";
-import { string } from "../props/string";
-import type { BrickProps } from "../props/types";
+import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { paddingRef } from "../props/padding";
 import { backgroundColorRef } from "../props/background";
 import { colorRef } from "../props/color";
 import { datarecord } from "../props/datarecord";
+import { defineProps, optional, prop } from "../props/helpers";
+import { paddingRef } from "../props/padding";
+import { string } from "../props/string";
+import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({
   type: "form",
@@ -21,6 +21,7 @@ There is no need to define the form fields manually and the form does not accept
   props: defineProps({
     title: optional(string("Title", { description: "The title of the form", default: "My form" })),
     intro: optional(string("Intro", { description: "The intro text of the form" })),
+    buttonLabel: optional(string("Button Label", { description: "The label of the submit button" })),
     datarecordId: datarecord("Datarecord ID", {
       description: "The ID of the datarecord to use to generate the form fields",
     }),

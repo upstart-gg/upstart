@@ -2,7 +2,9 @@ import type { DatarecordSettings } from "@upstart.gg/sdk/shared/bricks/props/dat
 import { IconButton, Select } from "@upstart.gg/style-system/system";
 import type { FC } from "react";
 import { BsDatabaseAdd } from "react-icons/bs";
-import { useDraft, useEditorHelpers } from "~/editor/hooks/use-editor";
+import { useDatarecord, useDatarecords } from "~/editor/hooks/use-datarecord";
+import { useEditorHelpers } from "~/editor/hooks/use-editor";
+import { DatarecordForm } from "../DatarecordForm";
 import { fieldLabel } from "../form-class";
 import type { FieldProps } from "./types";
 
@@ -10,18 +12,14 @@ export const DatarecordField: FC<FieldProps<DatarecordSettings | undefined>> = (
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
   const editorHelpers = useEditorHelpers();
 
-  const draft = useDraft();
-  // console.log("DatarecordField draft", draft.datarecords);
-  const options = draft.datarecords
-    ? Object.values(draft.datarecords).map((record) => ({
-        value: record.id,
-        label: record.label,
-      }))
-    : [];
-  // console.log("DatarecordField options", options);
+  const { options } = useDatarecords();
+  const { datarecord, schema: datarecordSchema } = useDatarecord(currentValue);
 
-  const onSettingsChange = (newVal: Partial<DatarecordSettings>) => {
-    // onChange();
+  console.log("DatarecordField datarecordSchema", datarecordSchema);
+  console.log("DatarecordField schema", schema);
+  const onSettingsChange = (newVal: string) => {
+    // console.log("DatarecordField onSettingsChange", newVal);
+    onChange(newVal);
   };
 
   return (
@@ -29,7 +27,11 @@ export const DatarecordField: FC<FieldProps<DatarecordSettings | undefined>> = (
       <div className="flex items-start text-center flex-wrap gap-x-4 gap-y-1">
         <div className="flex justify-between gap-1 flex-1">
           <label className={fieldLabel}>Database</label>
-          <Select.Root defaultValue={currentValue} size="2" onValueChange={(value) => onChange(value)}>
+          <Select.Root
+            defaultValue={currentValue}
+            size="2"
+            onValueChange={(value: string) => onSettingsChange(value)}
+          >
             <Select.Trigger
               radius="large"
               variant="ghost"
@@ -48,16 +50,13 @@ export const DatarecordField: FC<FieldProps<DatarecordSettings | undefined>> = (
             </Select.Content>
           </Select.Root>
         </div>
-        <button
+          <IconButton
           type="button"
           onClick={() => {
             editorHelpers.onShowPopup?.("add-form-schema");
-          }}
-        >
-          <IconButton variant="ghost" size="1" mr="2" radius="large" aria-label="Create new datarecord">
+          }} variant="ghost" size="1" mr="2" radius="large" aria-label="Create new datarecord">
             <BsDatabaseAdd size={20} />
           </IconButton>
-        </button>
       </div>
     </div>
   );

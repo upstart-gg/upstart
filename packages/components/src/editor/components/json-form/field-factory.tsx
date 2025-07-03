@@ -1,37 +1,34 @@
-import type { ReactNode } from "react";
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
 import get from "lodash-es/get";
+import type { ReactNode } from "react";
 
 // Import field components
-import ColorField from "./fields/color";
-import EnumField from "./fields/enum";
-import ImageField from "./fields/image";
+import { AlignBasicField } from "./fields/align-basic";
+import BackgroundField from "./fields/background";
 import { BorderField } from "./fields/border";
 import { BorderSideField } from "./fields/border-side";
-import { GeoAddressField, PathField, StringField, UrlOrPageIdField } from "./fields/string";
-import { NumberField, SliderField } from "./fields/number";
-import SwitchField from "./fields/switch";
-import { PagePaddingField, type TempPadding } from "./fields/padding";
-import BackgroundField from "./fields/background";
-import GeolocationField from "./fields/geolocation";
-import { FlexField } from "./fields/flex";
-import { AlignBasicField } from "./fields/align-basic";
+import ColorField from "./fields/color";
 import DatasourceRefField from "./fields/datasource-ref";
-import { GridField } from "./fields/grid";
+import EnumField from "./fields/enum";
+import ImageField from "./fields/image";
+import { NumberField, SliderField } from "./fields/number";
+import { PagePaddingField, type TempPadding } from "./fields/padding";
+import { GeoAddressField, PathField, StringField, UrlOrPageIdField } from "./fields/string";
+import SwitchField from "./fields/switch";
 
 // Import types
-import type { GeolocationSettings } from "@upstart.gg/sdk/shared/bricks/props/geolocation";
-import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
-import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
+import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
+import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
+import type { GeolocationSettings } from "@upstart.gg/sdk/shared/bricks/props/geolocation";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
-import { fieldLabel } from "./form-class";
+import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 import { Tooltip } from "@upstart.gg/style-system/system";
 import clsx from "clsx";
 import { CssLengthField } from "./fields/css-length";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 import { DatarecordField } from "./fields/datarecord";
+import { fieldLabel } from "./form-class";
 
 export interface FieldFactoryOptions {
   brickId?: string;
