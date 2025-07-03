@@ -162,17 +162,17 @@ export const presetsStyleProps: Record<Preset, PresetStylesIds> = {
     "styles:border": { color: "border-accent" },
   },
   "primary-gradient": {
-    "styles:backgroundColor": "bg-gradient-to-r from-primary-500 to-primary-600",
+    "styles:backgroundColor": "bg-gradient-to-br from-primary-400 to-primary-500",
     "styles:color": "text-primary",
     "styles:border": { color: "border-primary-700" },
   },
   "secondary-gradient": {
-    "styles:backgroundColor": "bg-gradient-to-r from-secondary-500 to-secondary-600",
+    "styles:backgroundColor": "bg-gradient-to-br from-secondary-400 to-secondary-500",
     "styles:color": "text-secondary",
     "styles:border": { color: "border-secondary-700" },
   },
   "accent-gradient": {
-    "styles:backgroundColor": "bg-gradient-to-bl from-accent-400 to-accent-500",
+    "styles:backgroundColor": "bg-gradient-to-br from-accent-400 to-accent-500",
     "styles:color": "text-accent",
     "styles:border": { color: "border-accent-700" },
   },

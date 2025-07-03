@@ -81,7 +81,6 @@ export const manifest = defineBrickManifest({
         }),
       ),
       hideText: optional(boolean("Hide brand name")),
-
       navigation: group({
         title: "Links",
         children: {
@@ -136,7 +135,7 @@ export const manifest = defineBrickManifest({
         }),
       ),
     },
-    { noAlignSelf: true },
+    { noAlignSelf: true, defaultPreset: "primary" },
   ),
 });
 

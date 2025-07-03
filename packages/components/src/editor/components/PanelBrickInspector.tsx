@@ -119,13 +119,13 @@ function PresetsTab({ brick, section }: { brick: Brick; section: Section }) {
   return (
     <div className={tx("flex flex-col h-full")}>
       <div className="basis-1/2 grow-0">
-        <Callout.Root size="1" className="m-2">
+        <Callout.Root size="1" className="mb-2">
           <Callout.Text size="1">
             <span className="font-semibold">Style presets</span> are pre-configured color styles that can be
             applied to your bricks to quickly change their appearance.
           </Callout.Text>
         </Callout.Root>
-        <div className="grid grid-cols-3 gap-2 auto-rows-[3rem] flex-1 mx-2">
+        <div className="grid grid-cols-3 gap-1.5 auto-rows-[3rem] flex-1 mx-2">
           {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
           {schema.anyOf.map((preset: any) => {
             const styles = presetsStyleProps[preset.const as keyof typeof presetsStyleProps];

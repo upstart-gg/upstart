@@ -103,7 +103,7 @@ export interface EditorStateProps {
   logoLink: string;
   themesLibrary: Theme[];
   imagesSearchResults?: ImageSearchResultsType;
-
+  contextMenuVisible: boolean;
   draggingBrickType?: Brick["type"];
 
   onShowLogin: () => void;
@@ -124,6 +124,7 @@ export interface EditorState extends EditorStateProps {
   setSettingsVisible: (visible: boolean) => void;
   toggleSettings: () => void;
   toggleTextEditMode: () => void;
+  setContextMenuVisible: (open: boolean) => void;
   toggleEditorEnabled: () => void;
   setGridConfig: (config: EditorStateProps["gridConfig"]) => void;
   setTextEditMode: (mode: EditorStateProps["textEditMode"]) => void;
@@ -157,6 +158,7 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
     logoLink: "/dashboard",
     zoom: 1,
     chatVisible: true,
+    contextMenuVisible: false,
     planIndex: 0,
     imagesSearchResults: import.meta.env.DEV
       ? [
@@ -212,6 +214,10 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
           immer((set, _get) => ({
             ...DEFAULT_PROPS,
             ...initProps,
+            setContextMenuVisible: (open) =>
+              set((state) => {
+                state.contextMenuVisible = open;
+              }),
             setDraggingBrickType: (type) =>
               set((state) => {
                 state.draggingBrickType = type ?? undefined;
@@ -1625,9 +1631,15 @@ export const useDraggingBrickType = () => {
   return useStore(ctx, (state) => state.draggingBrickType);
 };
 
+export const useContextMenuVisible = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.contextMenuVisible);
+};
+
 export const useEditorHelpers = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => ({
+    setContextMenuVisible: state.setContextMenuVisible,
     setDraggingBrickType: state.setDraggingBrickType,
     setPreviewMode: state.setPreviewMode,
     setSettingsVisible: state.setSettingsVisible,

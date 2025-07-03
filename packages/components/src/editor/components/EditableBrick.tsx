@@ -12,6 +12,7 @@ import {
   startTransition,
 } from "react";
 import {
+  useContextMenuVisible,
   useDebugMode,
   useDraftHelpers,
   useDraggingBrickType,
@@ -212,10 +213,9 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
 
           // Merge all refs properly to avoid render loops
           const mergedRef = useMergeRefs([provided.innerRef, barsRefs.setReference, ref, hoverRef]);
-
           const resizeOpts = getBrickResizeOptions(brick, manifests[brick.type], previewMode);
 
-          const brickContent = (
+          return (
             <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
               <div
                 ref={mergedRef}
@@ -286,8 +286,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
               </div>
             </BrickContextMenu>
           );
-
-          return brickContent;
         }}
       </Draggable>
     );
@@ -320,12 +318,13 @@ const BrickMenuBarsContainer = forwardRef<HTMLDivElement, BrickMenuBarProps>(
   ({ brick, style, isContainerChild, show, ...rest }, ref) => {
     const selectedBrickId = useSelectedBrickId();
     const manifest = useBrickManifest(brick.type);
+    const contextMenuVisible = useContextMenuVisible();
     const visible =
       (show && manifest.isContainer && !selectedBrickId) ||
       (show && !manifest.isContainer && !isContainerChild) ||
       selectedBrickId === brick.id;
     // const visible = (show && brick.isContainer && !selectedBrickId) || selectedBrickId === brick.id;
-    if (!visible && manifest.isContainer) {
+    if (!visible || contextMenuVisible) {
       return null;
     }
     return (
@@ -381,7 +380,12 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
     const parentContainer = draftHelpers.getParentBrick(brick.id);
 
     return (
-      <ContextMenu.Root modal={false}>
+      <ContextMenu.Root
+        modal={false}
+        onOpenChange={(menuOpen) => {
+          editorHelpers.setContextMenuVisible(menuOpen);
+        }}
+      >
         <ContextMenu.Trigger disabled={debugMode} ref={ref}>
           {children}
         </ContextMenu.Trigger>

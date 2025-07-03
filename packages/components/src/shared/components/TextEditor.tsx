@@ -253,8 +253,9 @@ const TextEditor = <T extends ElementType = "div">({
       setFocused(true);
       setTimeout(() => {
         const container = document.querySelector<HTMLDivElement>(`#text-editor-menu-${brickId}`);
-        invariant(container, "Menu container not found");
-        setMenuBarContainer(container);
+        if (container) {
+          setMenuBarContainer(container);
+        }
       }, 0);
     };
 
