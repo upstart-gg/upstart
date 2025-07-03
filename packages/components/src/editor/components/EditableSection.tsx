@@ -330,7 +330,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
         </DropdownMenu.Trigger>
         <DropdownMenu.Content sideOffset={5} size="2" side="bottom" align="end">
           <DropdownMenu.Group>
-            <DropdownMenu.Label>{section.label ?? ""} section</DropdownMenu.Label>
+            <DropdownMenu.Label>{section.label ?? "Unnamed"} (section)</DropdownMenu.Label>
             {!isFirstSection && (
               <DropdownMenu.Item onClick={() => draftHelpers.moveSectionUp(section.id)}>
                 <div className="flex items-center justify-start gap-2">
@@ -391,7 +391,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
             }}
           >
             <div className="flex items-center justify-start gap-2.5">
-              <span>Delete</span>
+              <span>Delete section</span>
             </div>
           </DropdownMenu.Item>
         </DropdownMenu.Content>

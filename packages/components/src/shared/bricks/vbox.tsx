@@ -13,7 +13,7 @@ import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests
 import { getDraggableStyle } from "~/editor/utils/dnd";
 import { IconRender } from "~/editor/components/IconRender";
 import { useDeviceInfo } from "~/editor/hooks/use-device-info";
-import { useDraggingBrickType } from "~/editor/hooks/use-editor";
+import { useDraggingBrickType, usePreviewMode } from "~/editor/hooks/use-editor";
 
 const Vbox = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const props = brick.props;
@@ -105,6 +105,7 @@ function DroppableVbox({ brick }: BrickProps<Manifest>) {
   const classes = Object.values(styles);
   const { isDesktop } = useDeviceInfo();
   const draggingBrickType = useDraggingBrickType();
+  const previewMode = usePreviewMode();
   const ds = useDatasource(props.datasource, manifest.datasource);
   return (
     <Droppable
@@ -129,11 +130,13 @@ function DroppableVbox({ brick }: BrickProps<Manifest>) {
           )}
         >
           {props.$children?.length > 0 ? (
-            props.$children.map((brick, index) => {
-              return (
-                <EditableBrickWrapper key={`${brick.id}`} brick={brick} isContainerChild index={index} />
-              );
-            })
+            props.$children
+              .filter((b) => !b.props.hidden?.[previewMode])
+              .map((brick, index) => {
+                return (
+                  <EditableBrickWrapper key={`${brick.id}`} brick={brick} isContainerChild index={index} />
+                );
+              })
           ) : ds.datasourceId ? (
             <div className="bg-gradient-to-tr from-gray-200/80 to-gray-100/80 text-black flex justify-center items-center flex-1 text-lg font-bold">
               This container is dynamic.

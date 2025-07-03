@@ -5,10 +5,8 @@ import { number } from "../props/number";
 import { string, urlOrPageId, urlOrPageIdRef } from "../props/string";
 import { VscLayoutPanelOff } from "react-icons/vsc";
 import { image, imageRef } from "../props/image";
-import { preset } from "../props/preset";
 import type { BrickProps } from "../props/types";
-import type { FC } from "react";
-import { backgroundColorRef } from "../props/background";
+import { paddingRef } from "../props/padding";
 
 export const manifest = defineBrickManifest({
   type: "footer",
@@ -40,7 +38,8 @@ export const manifest = defineBrickManifest({
         },
       ),
     ),
-    backgroundColor: optional(backgroundColorRef()),
+    // backgroundColor: optional(backgroundColorRef()),
+    padding: optional(paddingRef({ default: "p-4" })),
     logo: optional(imageRef({ title: "Logo" })),
     rows: optional(number("Rows", { default: 1, "ui:field": "slider", minimum: 1, maximum: 5 })),
     linksSections: array(
@@ -83,7 +82,7 @@ export const examples: {
     type: "footer",
     props: {
       variants: ["logo-left"],
-      backgroundColor: "#f8f9fa",
+      // backgroundColor: "#f8f9fa",
       logo: {
         src: "https://via.placeholder.com/120x40.png?text=Logo",
         alt: "Company logo",
@@ -112,7 +111,7 @@ export const examples: {
     type: "footer",
     props: {
       variants: ["logo-center"],
-      backgroundColor: "#2c3e50",
+      // backgroundColor: "#2c3e50",
       logo: {
         src: "https://via.placeholder.com/150x50.png?text=Corporate",
         alt: "Corporate logo",
@@ -153,7 +152,7 @@ export const examples: {
     type: "footer",
     props: {
       variants: ["logo-right"],
-      backgroundColor: "#ffffff",
+      // backgroundColor: "#ffffff",
       logo: {
         src: "https://via.placeholder.com/140x45.png?text=Shop",
         alt: "Shop logo",
@@ -193,7 +192,7 @@ export const examples: {
     type: "footer",
     props: {
       variants: ["logo-center", "multiple-rows"],
-      backgroundColor: "#1a1a1a",
+      // backgroundColor: "#1a1a1a",
       logo: {
         src: "https://via.placeholder.com/180x60.png?text=Enterprise",
         alt: "Enterprise logo",
@@ -251,7 +250,7 @@ export const examples: {
     type: "footer",
     props: {
       variants: ["logo-left"],
-      backgroundColor: "#f5f5f5",
+      // backgroundColor: "#f5f5f5",
       logo: {
         src: "https://via.placeholder.com/100x35.png?text=Startup",
         alt: "Startup logo",
@@ -288,7 +287,7 @@ export const examples: {
     type: "footer",
     props: {
       variants: ["logo-center"],
-      backgroundColor: "#6366f1",
+      // backgroundColor: "#6366f1",
       logo: {
         src: "https://via.placeholder.com/130x45.png?text=Agency",
         alt: "Creative agency logo",
@@ -327,7 +326,6 @@ export const examples: {
     type: "footer",
     props: {
       variants: ["logo-left", "multiple-rows"],
-      backgroundColor: "#0f172a",
       logo: {
         src: "https://via.placeholder.com/160x50.png?text=SaaS+Platform",
         alt: "SaaS platform logo",
@@ -377,7 +375,6 @@ export const examples: {
     type: "footer",
     props: {
       variants: ["logo-center"],
-      backgroundColor: "#059669",
       logo: {
         src: "https://via.placeholder.com/140x50.png?text=Non+Profit",
         alt: "Non-profit organization logo",
@@ -418,7 +415,6 @@ export const examples: {
     type: "footer",
     props: {
       variants: ["logo-right"],
-      backgroundColor: "#111827",
       logo: {
         src: "https://via.placeholder.com/120x40.png?text=Tech+Blog",
         alt: "Tech blog logo",
@@ -459,7 +455,6 @@ export const examples: {
     type: "footer",
     props: {
       variants: ["logo-center"],
-      backgroundColor: "#7c2d12",
       logo: {
         src: "https://via.placeholder.com/150x60.png?text=Restaurant",
         alt: "Restaurant logo",

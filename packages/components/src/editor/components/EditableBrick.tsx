@@ -394,7 +394,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
             from handling click event coming from the menu items.
             We still need to stop the propagation for other listeners. */}
           <ContextMenu.Content className="nodrag" size="2">
-            <ContextMenu.Label className="!text-xs">
+            <ContextMenu.Label className="!text-sm">
               {manifest.name} ({manifest.kind})
             </ContextMenu.Label>
             {manifest.duplicatable && (
