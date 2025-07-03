@@ -4,19 +4,15 @@ import type { FC } from "react";
 import { BsDatabaseAdd } from "react-icons/bs";
 import { useDatarecord, useDatarecords } from "~/editor/hooks/use-datarecord";
 import { useEditorHelpers } from "~/editor/hooks/use-editor";
-import { DatarecordForm } from "../DatarecordForm";
 import { fieldLabel } from "../form-class";
 import type { FieldProps } from "./types";
 
 export const DatarecordField: FC<FieldProps<DatarecordSettings | undefined>> = (props) => {
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
   const editorHelpers = useEditorHelpers();
-
   const { options } = useDatarecords();
   const { datarecord, schema: datarecordSchema } = useDatarecord(currentValue);
 
-  console.log("DatarecordField datarecordSchema", datarecordSchema);
-  console.log("DatarecordField schema", schema);
   const onSettingsChange = (newVal: string) => {
     // console.log("DatarecordField onSettingsChange", newVal);
     onChange(newVal);
@@ -50,13 +46,19 @@ export const DatarecordField: FC<FieldProps<DatarecordSettings | undefined>> = (
             </Select.Content>
           </Select.Root>
         </div>
-          <IconButton
+        <IconButton
           type="button"
           onClick={() => {
             editorHelpers.onShowPopup?.("add-form-schema");
-          }} variant="ghost" size="1" mr="2" radius="large" aria-label="Create new datarecord">
-            <BsDatabaseAdd size={20} />
-          </IconButton>
+          }}
+          variant="ghost"
+          size="1"
+          mr="2"
+          radius="large"
+          aria-label="Create new datarecord"
+        >
+          <BsDatabaseAdd size={20} />
+        </IconButton>
       </div>
     </div>
   );

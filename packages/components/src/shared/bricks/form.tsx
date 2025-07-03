@@ -2,8 +2,8 @@ import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/form.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
 import { forwardRef } from "react";
-import { DatarecordForm } from "../../editor/components/json-form/DatarecordForm";
 import { useDatarecord } from "../../editor/hooks/use-datarecord";
+import { Form } from "./form/Form";
 
 const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
   const { brick } = props;
@@ -50,7 +50,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
       {intro && <p className="form-intro text-gray-600 mb-6">{intro}</p>}
 
       <div className={tx(align === "horizontal" ? "space-x-4" : "space-y-4")}>
-        <DatarecordForm
+        <Form
           schema={schema}
           onSubmit={(data) => {
             console.log("Form submitted:", data);

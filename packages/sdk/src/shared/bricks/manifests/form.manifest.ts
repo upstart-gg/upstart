@@ -22,6 +22,18 @@ There is no need to define the form fields manually and the form does not accept
     title: optional(string("Title", { description: "The title of the form", default: "My form" })),
     intro: optional(string("Intro", { description: "The intro text of the form" })),
     buttonLabel: optional(string("Button Label", { description: "The label of the submit button" })),
+    successMessage: optional(
+      string("Success Message", {
+        description: "The message to display when the form is successfully submitted",
+        default: "Thank you for your submission!",
+      }),
+    ),
+    errorMessage: optional(
+      string("Error Message", {
+        description: "The message to display when the form submission fails",
+        default: "There was an error submitting the form. Please try again later.",
+      }),
+    ),
     datarecordId: datarecord("Datarecord ID", {
       description: "The ID of the datarecord to use to generate the form fields",
     }),

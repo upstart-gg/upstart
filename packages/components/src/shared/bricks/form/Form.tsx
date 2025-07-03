@@ -5,17 +5,17 @@ import get from "lodash-es/get";
 import type { FC, ReactNode } from "react";
 import { useState } from "react";
 import {
-  BooleanField as DatarecordBooleanField,
-  DateField as DatarecordDateField,
-  DateTimeField as DatarecordDateTimeField,
-  EmailField as DatarecordEmailField,
-  NumberField as DatarecordNumberField,
-  SelectField as DatarecordSelectField,
-  StringField as DatarecordStringField,
-  TextareaField as DatarecordTextareaField,
-  UrlField as DatarecordUrlField,
-  type BaseFieldProps as DatarecordFieldProps,
-} from "./fields/datarecord-fields";
+  BooleanField,
+  DateField,
+  DateTimeField,
+  EmailField,
+  NumberField,
+  SelectField,
+  StringField,
+  TextareaField,
+  UrlField,
+  type BaseFieldProps,
+} from "./Fields";
 
 // Helper function to detect datarecord field types
 function getDatarecordFieldType(schema: TSchema): string | null {
@@ -71,7 +71,7 @@ function createDatarecordFieldComponent(
   const title = (fieldSchema.title ?? fieldSchema["ui:title"]) as string | undefined;
   const description = (fieldSchema.description ?? fieldSchema["ui:description"]) as string | undefined;
 
-  const datarecordProps: DatarecordFieldProps = {
+  const datarecordProps: BaseFieldProps = {
     fieldName,
     fieldSchema,
     value: currentValue,
@@ -83,23 +83,23 @@ function createDatarecordFieldComponent(
 
   switch (fieldType) {
     case "datarecord-string":
-      return <DatarecordStringField key={`field-${id}`} {...datarecordProps} />;
+      return <StringField key={`field-${id}`} {...datarecordProps} />;
     case "datarecord-textarea":
-      return <DatarecordTextareaField key={`field-${id}`} {...datarecordProps} />;
+      return <TextareaField key={`field-${id}`} {...datarecordProps} />;
     case "datarecord-select":
-      return <DatarecordSelectField key={`field-${id}`} {...datarecordProps} />;
+      return <SelectField key={`field-${id}`} {...datarecordProps} />;
     case "datarecord-number":
-      return <DatarecordNumberField key={`field-${id}`} {...datarecordProps} />;
+      return <NumberField key={`field-${id}`} {...datarecordProps} />;
     case "datarecord-boolean":
-      return <DatarecordBooleanField key={`field-${id}`} {...datarecordProps} />;
+      return <BooleanField key={`field-${id}`} {...datarecordProps} />;
     case "datarecord-email":
-      return <DatarecordEmailField key={`field-${id}`} {...datarecordProps} />;
+      return <EmailField key={`field-${id}`} {...datarecordProps} />;
     case "datarecord-url":
-      return <DatarecordUrlField key={`field-${id}`} {...datarecordProps} />;
+      return <UrlField key={`field-${id}`} {...datarecordProps} />;
     case "datarecord-date":
-      return <DatarecordDateField key={`field-${id}`} {...datarecordProps} />;
+      return <DateField key={`field-${id}`} {...datarecordProps} />;
     case "datarecord-datetime":
-      return <DatarecordDateTimeField key={`field-${id}`} {...datarecordProps} />;
+      return <DateTimeField key={`field-${id}`} {...datarecordProps} />;
     default:
       return null;
   }
@@ -163,7 +163,7 @@ function processDatarecordSchemaToFields(
   return fields;
 }
 
-interface DatarecordFormProps {
+interface FormProps {
   schema?: AnySchemaObject;
   initialData?: Record<string, unknown>;
   onSubmit?: (data: Record<string, unknown>) => void;
@@ -172,7 +172,7 @@ interface DatarecordFormProps {
   buttonLabel?: string;
 }
 
-export const DatarecordForm: FC<DatarecordFormProps> = ({
+export const Form: FC<FormProps> = ({
   schema,
   initialData = {},
   onSubmit,
@@ -205,10 +205,17 @@ export const DatarecordForm: FC<DatarecordFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="datarecord-form">
+      <input
+        id={"datarecord-id"}
+        type="hidden"
+        value={formData.id as string || ""}
+      />
       {fields}
       {showSubmitButton && onSubmit && (
         <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: "1rem" }}>
-          <button type="submit">{buttonLabel}</button>
+          <button type="submit" style={{ backgroundColor: "blue", color: "white" }}>
+            {buttonLabel}
+          </button>
         </div>
       )}
     </form>
