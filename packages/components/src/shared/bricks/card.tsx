@@ -4,10 +4,13 @@ import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { TextContent } from "../components/TextContent";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
+import { useColorPreset } from "../hooks/use-color-preset";
 
 const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const props = structuredClone(brick.props);
   const styles = useBrickStyle<Manifest>(brick);
+  const presetClasses = useColorPreset<Manifest>(brick);
+  const classes = Object.values(styles);
 
   if (!props.cardTitle && !props.cardBody) {
     // Put some sample content in the card if both title and body are empty
@@ -15,18 +18,15 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
     props.cardBody = "This is the body of the card. You can edit this content.";
   }
 
-  const isOverlay = props.cardImage && props.variants?.includes("image-overlay");
+  const isOverlay = props.cardImage && props.imagePosition === "overlay";
   return (
     <div
       className={tx(
-        "flex flex-1 relative overflow-hidden max-w-[100cqw] rounded-[inherit] min-h-fit",
-        props.variants?.includes("image-side") ? "flex-row" : "flex-col",
-        props.variants?.includes("centered") && "text-center",
-        props.variants?.includes("text-sm") && "text-sm",
-        props.variants?.includes("text-lg") && "text-lg",
-        props.variants?.includes("text-xl") && "text-xl",
-        props.variants?.includes("text-2xl") && "text-2xl",
-        props.variants?.includes("text-base") && "text-base",
+        "flex flex-1 relative overflow-hidden max-w-[100cqw] min-h-fit",
+        props.imagePosition === "side" ? "flex-row" : "flex-col",
+        presetClasses.container,
+        classes,
+        // props.variants?.includes("centered") && "text-center",
 
         isOverlay &&
           css({
@@ -40,10 +40,8 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
       ref={ref}
     >
       {isOverlay && <div className="absolute inset-0 bg-white/90 -z-1" />}
-      <div
-        className={tx("card-inner-wrapper", props.variants?.includes("image-first") ? "order-2" : "order-1")}
-      >
-        {props.cardTitle && !props.variants.includes("hide-title") && (
+      <div className={tx("card-inner-wrapper", props.imagePosition === "top" ? "order-2" : "order-1")}>
+        {props.cardTitle && !props.noTitle && (
           <div className={tx("text-[120%] font-semibold z-auto my-4 mx-4")}>
             <TextContent
               propPath="cardTitle.content"
@@ -55,8 +53,8 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
             />
           </div>
         )}
-        {props.cardBody && !props.variants?.includes("image-between") && (
-          <div className={tx("z-auto pb-4 pt-2 mx-4")}>
+        {props.cardBody && props.imagePosition !== "middle" && (
+          <div className={tx("z-auto p-4 pt-0")}>
             <TextContent
               propPath="cardBody.content"
               className={tx("flex-1")}
@@ -67,25 +65,25 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
           </div>
         )}
       </div>
-      {props.cardImage?.src && !props.variants?.includes("image-overlay") && (
+      {props.cardImage?.src && props.imagePosition !== "overlay" && (
         <img
           className={tx(
             " select-none pointer-events-none bg-transparent",
             props.cardImage.position ?? "object-center",
             props.cardImage.fit ?? "object-cover",
-            props.variants?.includes("image-between") && "order-2",
-            props.variants?.includes("image-first") && "order-first",
-            props.variants?.includes("image-last") && "order-last mt-auto",
-            props.variants?.includes("image-side")
-              ? "h-inherit w-[clamp(50px,33%,300px)]"
+            props.imagePosition === "middle" && "order-2",
+            props.imagePosition === "top" && "order-first",
+            props.imagePosition === "bottom" && "order-last mt-auto",
+            props.imagePosition === "side"
+              ? "h-auto w-[clamp(100px,33%,300px)]"
               : "w-inherit h-[clamp(200px,50%,300px)]",
           )}
           src={props.cardImage.src}
           alt={props.cardImage.alt || "Card Image"}
         />
       )}
-      {props.cardBody && props.variants?.includes("image-between") && (
-        <div className={tx("z-auto pb-4 pt-2 mx-4 order-last")}>
+      {props.cardBody && props.imagePosition === "middle" && (
+        <div className={tx("z-auto p-4 order-last")}>
           <TextContent
             propPath="cardBody.content"
             className={tx("flex-1")}

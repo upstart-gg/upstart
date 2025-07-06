@@ -1,5 +1,11 @@
 import { useHotkeys } from "react-hotkeys-hook";
-import { useDraft, useDraftHelpers, useEditorHelpers, useSelectedBrickId } from "./use-editor";
+import {
+  useDraft,
+  useDraftHelpers,
+  useDraftUndoManager,
+  useEditorHelpers,
+  useSelectedBrickId,
+} from "./use-editor";
 import { toast } from "@upstart.gg/style-system/system";
 
 export function useEditorHotKeys() {
@@ -7,6 +13,7 @@ export function useEditorHotKeys() {
   const draftHelpers = useDraftHelpers();
   const draft = useDraft();
   const selectedBrickId = useSelectedBrickId();
+  const { undo, redo } = useDraftUndoManager();
 
   useHotkeys("esc", () => {
     editorHelpers.deselectBrick();
@@ -67,6 +74,18 @@ export function useEditorHotKeys() {
       enableOnContentEditable: true,
     },
   );
+
+  // Undo
+  useHotkeys(["mod+z", "ctrl+z"], (e) => {
+    e.preventDefault();
+    undo();
+  });
+
+  // Redo
+  useHotkeys(["mod+shift+z", "ctrl+shift+z"], (e) => {
+    e.preventDefault();
+    redo();
+  });
 
   useHotkeys(
     ["mod+down", "mod+right"],

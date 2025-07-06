@@ -27,8 +27,8 @@ type ShadeNumber = (typeof shadeNumbers)[number];
 
 const semanticAliases: Partial<Record<ShadeNumber, string>> = {
   100: "subtle",
-  300: "light",
-  700: "bold",
+  400: "light",
+  700: "dark",
 };
 
 export type ElementColor = string;

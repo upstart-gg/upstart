@@ -64,5 +64,5 @@ export const commonProps = {
       "ui:styleId": "styles:alignSelf",
     }),
   ),
-  preset: Type.Optional(presetRef()),
+  // preset: Type.Optional(presetRef()),
 };

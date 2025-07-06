@@ -55,7 +55,6 @@ export const examples: {
     description: "Welcome paragraph with emphasis, using a preset",
     type: "text",
     props: {
-      preset: "prominent-primary",
       content:
         "Welcome to our platform! We're <strong>excited</strong> to have you here. Our mission is to <em>transform</em> the way you work with cutting-edge technology and <a href='/features'>innovative features</a>.",
       padding: "p-16",

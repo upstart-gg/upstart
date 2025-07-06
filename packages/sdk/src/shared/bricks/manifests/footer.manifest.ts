@@ -7,6 +7,8 @@ import { VscLayoutPanelOff } from "react-icons/vsc";
 import { image, imageRef } from "../props/image";
 import type { BrickProps } from "../props/types";
 import { paddingRef } from "../props/padding";
+import { fontSize } from "../props/text";
+import { colorPresetRef } from "../props/preset";
 
 export const manifest = defineBrickManifest({
   type: "footer",
@@ -21,27 +23,66 @@ export const manifest = defineBrickManifest({
     mobile: "100%",
   },
   props: defineProps({
-    variants: Type.Array(
-      Type.Union(
-        [
-          Type.Literal("logo-left", { title: "Logo on the left", description: "Logo on the left" }),
-          Type.Literal("logo-right", { title: "Logo on the right", description: "Logo on the right" }),
-          Type.Literal("logo-center", { title: "Logo on the center", description: "Logo at center" }),
-          Type.Literal("multiple-rows", {
-            title: "Span on multiple rows.",
-            description: "Span on multiple rows. Use when there a a lot of links sections",
-          }),
-        ],
-        {
-          title: "Variant",
-          description: "Footer variants.",
+    colorPreset: optional(
+      colorPresetRef({
+        title: "Color preset",
+        "ui:presets": {
+          "primary-light": {
+            previewBgClass: "bg-primary-light text-primary-content-light",
+            value: { container: "bg-primary-light text-primary-content-light" },
+            label: "Primary lighter",
+          },
+          primary: {
+            previewBgClass: "bg-primary text-primary-content",
+            label: "Primary",
+            value: { container: "bg-primary text-primary-content" },
+          },
+          "primary-dark": {
+            previewBgClass: "bg-primary-dark text-primary-content",
+            label: "Primary darker",
+            value: { container: "bg-primary-dark text-primary-content" },
+          },
+          "secondary-light": {
+            previewBgClass: "bg-secondary-light text-secondary-content-light",
+            label: "Secondary lighter",
+            value: { container: "bg-secondary-light text-secondary-content-light" },
+          },
+          secondary: {
+            previewBgClass: "bg-secondary text-secondary-content",
+            label: "Secondary",
+            value: { container: "bg-secondary text-secondary-content" },
+          },
+          "secondary-dark": {
+            previewBgClass: "bg-secondary-dark text-secondary-content",
+            label: "Secondary darker",
+            value: { container: "bg-secondary-dark text-secondary-content" },
+          },
+          neutral: {
+            previewBgClass: "bg-neutral text-neutral-content",
+            label: "Neutral",
+            value: { container: "bg-neutral text-neutral-content" },
+          },
+          base100: {
+            previewBgClass: "bg-base-100 text-base-content",
+            label: "Base 1",
+            value: { container: "bg-base-100 text-base-content" },
+          },
+          base200: {
+            previewBgClass: "bg-base-200 text-base-content",
+            label: "Base 2",
+            value: { container: "bg-base-200 text-base-content" },
+          },
+          none: { label: "None", value: {} },
         },
-      ),
+        default: "primary",
+      }),
     ),
+
     // backgroundColor: optional(backgroundColorRef()),
-    padding: optional(paddingRef({ default: "p-4" })),
-    logo: optional(imageRef({ title: "Logo" })),
-    rows: optional(number("Rows", { default: 1, "ui:field": "slider", minimum: 1, maximum: 5 })),
+    padding: optional(paddingRef({ default: "p-10" })),
+    logo: optional(imageRef({ title: "Logo", "ui:no-object-options": true, "ui:no-alt-text": true })),
+    fontSize: optional(fontSize("text-sm", "Font size", { noExtraLargeSizes: true })),
+    // rows: optional(number("Rows", { default: 1, "ui:field": "slider", minimum: 1, maximum: 5 })),
     linksSections: array(
       Type.Object({
         sectionTitle: string("Links Section title"),
@@ -81,7 +122,6 @@ export const examples: {
     description: "Simple footer with logo on the left",
     type: "footer",
     props: {
-      variants: ["logo-left"],
       // backgroundColor: "#f8f9fa",
       logo: {
         src: "https://via.placeholder.com/120x40.png?text=Logo",
@@ -110,7 +150,6 @@ export const examples: {
     description: "Corporate footer with centered logo",
     type: "footer",
     props: {
-      variants: ["logo-center"],
       // backgroundColor: "#2c3e50",
       logo: {
         src: "https://via.placeholder.com/150x50.png?text=Corporate",
@@ -151,7 +190,6 @@ export const examples: {
     description: "E-commerce footer with logo on the right",
     type: "footer",
     props: {
-      variants: ["logo-right"],
       // backgroundColor: "#ffffff",
       logo: {
         src: "https://via.placeholder.com/140x45.png?text=Shop",
@@ -191,7 +229,6 @@ export const examples: {
     description: "Large organization footer with multiple rows",
     type: "footer",
     props: {
-      variants: ["logo-center", "multiple-rows"],
       // backgroundColor: "#1a1a1a",
       logo: {
         src: "https://via.placeholder.com/180x60.png?text=Enterprise",
@@ -249,7 +286,6 @@ export const examples: {
     description: "Startup footer with minimal links and left logo",
     type: "footer",
     props: {
-      variants: ["logo-left"],
       // backgroundColor: "#f5f5f5",
       logo: {
         src: "https://via.placeholder.com/100x35.png?text=Startup",
@@ -286,7 +322,6 @@ export const examples: {
     description: "Agency footer with centered logo and creative sections",
     type: "footer",
     props: {
-      variants: ["logo-center"],
       // backgroundColor: "#6366f1",
       logo: {
         src: "https://via.placeholder.com/130x45.png?text=Agency",
@@ -325,7 +360,6 @@ export const examples: {
     description: "SaaS platform footer with comprehensive links",
     type: "footer",
     props: {
-      variants: ["logo-left", "multiple-rows"],
       logo: {
         src: "https://via.placeholder.com/160x50.png?text=SaaS+Platform",
         alt: "SaaS platform logo",
@@ -374,7 +408,6 @@ export const examples: {
     description: "Non-profit footer with mission-focused links",
     type: "footer",
     props: {
-      variants: ["logo-center"],
       logo: {
         src: "https://via.placeholder.com/140x50.png?text=Non+Profit",
         alt: "Non-profit organization logo",
@@ -414,7 +447,6 @@ export const examples: {
     description: "Tech blog footer with right-aligned logo",
     type: "footer",
     props: {
-      variants: ["logo-right"],
       logo: {
         src: "https://via.placeholder.com/120x40.png?text=Tech+Blog",
         alt: "Tech blog logo",
@@ -454,7 +486,6 @@ export const examples: {
     description: "Restaurant footer with location and menu links",
     type: "footer",
     props: {
-      variants: ["logo-center"],
       logo: {
         src: "https://via.placeholder.com/150x60.png?text=Restaurant",
         alt: "Restaurant logo",

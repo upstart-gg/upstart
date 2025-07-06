@@ -32,6 +32,7 @@ import clsx from "clsx";
 import { CssLengthField } from "./fields/css-length";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 import { DatarecordField } from "./fields/datarecord";
+import ColorPresetField from "./fields/color-preset";
 
 export interface FieldFactoryOptions {
   brickId?: string;
@@ -90,6 +91,17 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;
       return (
         <ColorField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value?: string | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+    case "color-preset": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;
+      return (
+        <ColorPresetField
           key={`field-${id}`}
           currentValue={currentValue}
           onChange={(value?: string | null) => onChange({ [id]: value }, id)}
@@ -425,10 +437,10 @@ export function processObjectSchemaToFields({
 export function FieldTitle({ title, description }: { title?: string; description?: string }) {
   if (!title) return null;
   return (
-    <div className="flex items-center">
+    <div className="flex items-center text-nowrap text-sm">
       {description ? (
         <Tooltip
-          content={<span className="block text-[0.9rem] leading-5 p-1.5">{description}</span>}
+          content={<span className="block text-xs p-1">{description}</span>}
           className="!z-[10000]"
           align="start"
         >

@@ -186,8 +186,8 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   cardTitle: "Welcome to My Site",
                   cardBody: "This is a sample card body. You can edit this content.",
                   cardImage: {
-                    src: "https://placehold.co/300x200@2x/FFFFFF/333333/svg?text=Card+Image",
-                    alt: "Sample Card Image",
+                    src: "https://placehold.co/300x200@2x/EEEEEE/333333/svg?text=Sample",
+                    alt: "Sample",
                   },
                 },
               },

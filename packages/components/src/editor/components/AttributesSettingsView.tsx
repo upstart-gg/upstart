@@ -6,6 +6,7 @@ import { merge, set } from "lodash-es";
 import { useAttributes, useDraft, useDraftHelpers, usePreviewMode } from "~/editor/hooks/use-editor";
 import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
 import type { Attributes, AttributesSchema } from "@upstart.gg/sdk/shared/attributes";
+import { tx } from "@upstart.gg/style-system/twind";
 
 type AttributesSettingsViewProps = {
   attributesSchema: AttributesSchema;
@@ -38,7 +39,8 @@ export default function AttributesSettingsView({
   const navItems = getNavItemsFromManifest(attributesSchema, filter);
 
   const formData = useMemo(() => {
-    const defProps = getSchemaObjectDefaults(structuredClone(attributesSchema));
+    // const resolvedSchema = resolveSchema(attributesSchema);
+    const defProps = getSchemaObjectDefaults(attributesSchema);
     return merge({}, defProps, attr ?? {});
   }, [attr, attributesSchema]);
 

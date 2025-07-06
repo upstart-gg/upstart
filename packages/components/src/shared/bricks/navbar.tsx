@@ -4,12 +4,13 @@ import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { TextContent } from "../components/TextContent";
 import { useDatasource } from "../hooks/use-datasource";
-import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { tx, css } from "@upstart.gg/style-system/twind";
+import { useColorPreset } from "../hooks/use-color-preset";
 
 const Navbar = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
+  const presetClasses = useColorPreset<Manifest>(brick);
   const props = brick.props;
   // const ds = useDatasource(props.navigation.datasource, manifest.datasource);
 
@@ -17,7 +18,11 @@ const Navbar = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
     <header
       ref={ref}
       data-brick-group="container"
-      className={tx("flex-1 flex px-4 brick basis-full navbar h-[60px]", props.preset, styles.container)}
+      className={tx(
+        "flex-1 flex px-4 brick basis-full navbar h-[60px]",
+        styles.container,
+        presetClasses.container,
+      )}
     >
       <div
         className={tx(
@@ -37,7 +42,7 @@ const Navbar = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
               className={`h-full max-h-[60px] w-auto flex-1`}
             />
           )}
-          {props.brand && !props.hideText && (
+          {props.brand && !props.hideBrand && (
             <TextContent
               as="h1"
               propPath="brand.name"

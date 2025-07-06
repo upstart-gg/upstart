@@ -55,7 +55,6 @@ export const examples: {
     description: "Simple welcome hero with blue background",
     type: "hero",
     props: {
-      preset: "prominent-primary",
       content: "Welcome to Our Platform",
       tagline: "The future of productivity starts here",
       align: {
@@ -68,7 +67,6 @@ export const examples: {
     description: "Startup hero with gradient background",
     type: "hero",
     props: {
-      preset: "prominent-secondary",
       content: "Build Something Amazing",
       tagline: "Turn your ideas into reality with our cutting-edge tools",
       align: {
@@ -81,7 +79,6 @@ export const examples: {
     description: "Construction company hero with bold presence",
     type: "hero",
     props: {
-      preset: "prominent-primary",
       content: "Building Tomorrow Today",
       tagline: "Quality construction services for residential and commercial projects",
       padding: "p-16",
@@ -91,7 +88,6 @@ export const examples: {
     description: "Fashion brand hero with modern appeal",
     type: "hero",
     props: {
-      preset: "prominent-accent",
       content: "Express Your Style",
       tagline: "Contemporary fashion that speaks to your individuality",
       align: {
@@ -105,7 +101,6 @@ export const examples: {
     description: "Law firm hero with authoritative tone",
     type: "hero",
     props: {
-      preset: "prominent-secondary",
       content: "Justice You Can Trust",
       tagline: "Experienced legal representation for individuals and businesses",
       padding: "p-8",
@@ -120,7 +115,6 @@ export const examples: {
     description: "Photography studio hero with artistic flair",
     type: "hero",
     props: {
-      preset: "surface-1",
       content: "Capturing Life's Moments",
       tagline: "Professional photography services for weddings, portraits, and events",
       border: {

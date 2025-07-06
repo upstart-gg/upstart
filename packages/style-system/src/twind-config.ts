@@ -130,11 +130,15 @@ export default defineConfig({
       }),
     ],
 
-    ["border-base", ({ $$ }) => ({ borderColor: `color-mix(in lab, var(--color-base-${$$}), black 10%)` })],
+    ["border-base-", ({ $$ }) => ({ borderColor: `color-mix(in lab, var(--color-base-${$$}), black 10%)` })],
     ["border-neutral-", ({ $$ }) => ({ borderColor: `var(--color-neutral-${$$})` })],
     ["border-accent-", ({ $$ }) => ({ borderColor: `var(--color-accent-${$$})` })],
     ["border-primary-", ({ $$ }) => ({ borderColor: `var(--color-primary-${$$})` })],
     ["border-secondary-", ({ $$ }) => ({ borderColor: `var(--color-secondary-${$$})` })],
+    ["border-primary", { borderColor: `var(--color-primary)` }],
+    ["border-secondary", { borderColor: `var(--color-secondary)` }],
+    ["border-accent", { borderColor: `var(--color-accent)` }],
+    ["border-neutral", { borderColor: `var(--color-neutral)` }],
 
     /**
      * Can be used with text-neutral-500, but also text-neutral-500-subtle, text-neutral-500-tonal-subtle, text-neutral-500-strong, etc.
@@ -143,9 +147,7 @@ export default defineConfig({
     ["text-secondary", "@(text-secondary-content)"],
     ["text-accent", "@(text-accent-content)"],
     ["text-neutral", "@(text-neutral-content)"],
-    ["text-base100", "@(text-base100-content)"],
-    ["text-base200", "@(text-base200-content)"],
-    ["text-base300", "@(text-base300-content)"],
+    ["text-base-content", { color: "var(--color-base-content)" }],
     ["text-neutral-", ({ $$ }) => ({ color: `var(--color-neutral-${$$})` })],
     ["text-accent-", ({ $$ }) => ({ color: `var(--color-accent-${$$})` })],
     ["text-primary-", ({ $$ }) => ({ color: `var(--color-primary-${$$})` })],
@@ -182,8 +184,8 @@ export default defineConfig({
       {
         backgroundImage: `repeating-linear-gradient(
           -45deg,
-          white 0px,
-          white 4px,
+          rgba(0,0,0,.1) 0px,
+          rgba(0,0,0,.1) 4px,
           transparent 4px,
           transparent 12px
         )`,
@@ -220,17 +222,17 @@ export default defineConfig({
     ["scrollbar-color-", ({ $$ }) => ({ scrollbarColor: `var(--${$$}-8) var(--${$$}-surface)` })],
 
     // presets preview
-    ["primary", `@(bg-primary text-primary)`],
-    ["secondary", `@(bg-secondary text-secondary)`],
-    ["accent", `@(bg-accent text-accent)`],
-    ["neutral", `@(bg-neutral text-neutral-content)`],
+    // ["primary", `@(bg-primary text-primary)`],
+    // ["secondary", `@(bg-secondary text-secondary)`],
+    // ["accent", `@(bg-accent text-accent)`],
+    // ["neutral", `@(bg-neutral text-neutral-content)`],
 
-    ["surface-", ({ $$ }) => `@(bg-base-${$$}00 text-base-content)`],
-    ["prominent-", ({ $$ }) => `@(bg-${$$}-700 text-${$$})`],
-    ["medium-", ({ $$ }) => `@(bg-${$$}-200 text-${$$}-800)`],
-    ["subtle-", ({ $$ }) => `@(bg-${$$}-50 text-${$$}-800)`],
+    // ["surface-", ({ $$ }) => `@(bg-base-${$$}00 text-base-content)`],
+    // ["prominent-", ({ $$ }) => `@(bg-${$$}-700 text-${$$})`],
+    // ["medium-", ({ $$ }) => `@(bg-${$$}-200 text-${$$}-800)`],
+    // ["subtle-", ({ $$ }) => `@(bg-${$$}-50 text-${$$}-800)`],
 
-    ["light", `@(bg-white text-base-content border-base-300)`],
+    // ["light", `@(bg-white text-base-content border-base-300)`],
   ],
 
   theme: {

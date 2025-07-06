@@ -173,9 +173,9 @@ export const defaultTheme: Theme = {
   tags: ["gradient", "vibrant", "modern", "creative", "dynamic", "artistic", "bold"],
   browserColorScheme: "light",
   colors: {
-    base100: "oklch(0.99 0.005 85)", // Warm white background
-    base200: "oklch(0.97 0.008 85)", // Soft cream
-    base300: "oklch(0.94 0.01 85)", // Light warm gray
+    base100: "#FFF", // Warm white background
+    base200: "oklch(0.99 0.008 92)", // Soft cream
+    base300: "oklch(0.97 0.01 85)", // Light warm gray
     baseContent: "oklch(0.18 0.025 80)", // Rich dark brown-gray
     primary: "oklch(0.68 0.28 340)",
     primaryContent: "oklch(0.99 0.005 340)", // White text on primary

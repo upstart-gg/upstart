@@ -49,7 +49,7 @@ export default function Panel({ className, ...props }: PanelProps) {
       )}
       {...props}
     >
-      <div className="flex-1 relative">
+      <div className="flex-grow relative flex-col">
         {previewMode === "desktop" && panel === "library" && <PanelLibrary />}
         {panel === "inspector" && selectedBrick && <PanelBrickInspector brick={selectedBrick} />}
         {panel === "inspector" && !selectedBrick && selectedSection && (

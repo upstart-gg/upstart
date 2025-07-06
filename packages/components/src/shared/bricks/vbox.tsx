@@ -77,7 +77,7 @@ export const renderClone: DraggableChildrenFn = (provided, snapshot, rubric) => 
           "flex-1 flex flex-col justify-center text-upstart-700 dark:text-upstart-400 items-center gap-1 rounded-[inherit]",
         )}
       >
-        <IconRender {...brick} />
+        <IconRender manifest={brick} />
         <span className={tx("whitespace-nowrap text-xs")}>{brick.name}</span>
       </div>
     </button>

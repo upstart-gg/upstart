@@ -1,5 +1,6 @@
-import { type StringOptions, Type, type Static } from "@sinclair/typebox";
+import { type StringOptions, Type, type Static, type SchemaOptions } from "@sinclair/typebox";
 import { typedRef } from "~/shared/utils/typed-ref";
+import { prop } from "./prop";
 
 export function preset(defaultValue?: string) {
   return Type.Union(
@@ -223,3 +224,42 @@ export const presetsStyleProps: Record<Preset, PresetStylesIds> = {
     "styles:border": { color: "border-neutral-800" },
   },
 };
+
+type ColorPresetOptions = SchemaOptions & {
+  "ui:presets": ColorPresets;
+};
+
+export function colorPreset(opts?: ColorPresetOptions) {
+  const { title = "Color preset", ...options } = opts ?? {};
+  return prop({
+    title,
+    schema: Type.String({
+      $id: "presets:color",
+      "ui:styleId": "presets:color",
+      "ui:field": "color-preset",
+      "ui:responsive": "desktop",
+      ...options,
+    }),
+  });
+}
+
+export type ColorPresetSettings = Static<ReturnType<typeof colorPreset>>;
+
+export function colorPresetRef(options: ColorPresetOptions) {
+  return typedRef("presets:color", { ...options, "ui:styleId": "presets:color" });
+}
+
+export type ColorPresets = Record<
+  string,
+  {
+    /**
+     * Class name to apply for the background color pill preview.
+     */
+    previewBgClass?: string;
+    /**
+     * Part/className object to apply to the brick.
+     */
+    value: Record<string, string>;
+    label: string;
+  }
+>;

@@ -11,7 +11,7 @@ import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
 import { enableMapSet } from "immer";
-import { debounce, isEqual } from "lodash-es";
+import { debounce, isEqual, merge } from "lodash-es";
 import { createContext, useContext, useEffect } from "react";
 import { temporal } from "zundo";
 import { createStore, useStore } from "zustand";
@@ -139,6 +139,7 @@ export interface EditorState extends EditorStateProps {
   deselectBrick: (brickId?: Brick["id"]) => void;
   setImagesSearchResults: (images: EditorStateProps["imagesSearchResults"]) => void;
   togglePanelPosition: () => void;
+  toggleDebugMode: () => void;
   showModal: (modal: EditorStateProps["modal"]) => void;
   hideModal: () => void;
   toggleChat: () => void;
@@ -238,7 +239,10 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                   state.panelPosition = "right";
                 }
               }),
-
+            toggleDebugMode: () =>
+              set((state) => {
+                state.debugMode = !state.debugMode;
+              }),
             setImagesSearchResults: (images) =>
               set((state) => {
                 state.imagesSearchResults = images;
@@ -553,15 +557,25 @@ export const createDraftStore = (
           createEmptySection: (id, afterSectionId) =>
             set((state) => {
               const count = state.sections.length;
+              const nextOrder =
+                1 +
+                (afterSectionId
+                  ? (state.sections.find((s) => s.id === afterSectionId)?.order ?? count)
+                  : count);
               const newSection: Section = {
                 id,
-                order: afterSectionId
-                  ? (state.sections.find((s) => s.id === afterSectionId)?.order ?? state.sections.length)
-                  : state.sections.length,
+                order: nextOrder,
                 label: `Section ${count + 1}`,
                 bricks: [],
                 props: {},
               };
+              // Update all section that have an order greater than or equal to nextOrder
+              state.sections.forEach((s) => {
+                if (s.order >= nextOrder) {
+                  s.order += 1;
+                }
+              });
+              // Add the new section to the state
               state.sections.push(newSection);
             }),
 
@@ -741,8 +755,8 @@ export const createDraftStore = (
               section.order = previous.order;
               previous.order = temp;
 
-              state.sections[sectionIndex] = section;
-              state.sections[previousIndex] = previous;
+              // state.sections[sectionIndex] = section;
+              // state.sections[previousIndex] = previous;
             }),
 
           moveSectionDown: (sectionId) =>
@@ -961,10 +975,15 @@ export const createDraftStore = (
                   });
                 } else {
                   // @ts-ignore
-                  section.props = mergeIgnoringArrays({}, section.props, props, {
+                  // section.props = mergeIgnoringArrays({}, section.props, props, {
+                  //   lastTouched: Date.now(),
+                  // });
+                  section.props = merge({}, section.props, props, {
                     lastTouched: Date.now(),
                   });
                 }
+              } else {
+                console.warn("Cannot update section %s, it does not exist", id);
               }
             }),
           /**
@@ -1352,18 +1371,7 @@ export const createDraftStore = (
           equality: (pastState, currentState) => isEqual(pastState, currentState),
           partialize: (state) =>
             Object.fromEntries(
-              Object.entries(state).filter(
-                ([key]) =>
-                  ![
-                    "previewTheme",
-                    "theme",
-                    "attributes",
-                    "lastSaved",
-                    "sitemap",
-                    "datasources",
-                    "brickMap",
-                  ].includes(key),
-              ),
+              Object.entries(state).filter(([key]) => ["sections", "attr"].includes(key)),
             ) as DraftState,
           // handleSet: (handleSet) =>
           //   debounce<typeof handleSet>((state) => {
@@ -1599,15 +1607,16 @@ export const useSection = (sectionId?: string) => {
 export const useSectionByBrickId = (brickId: string) => {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => {
-    const brick = state.brickMap.get(brickId);
-    if (!brick) {
-      return null;
-    }
-    const section = state.sections.find((s) => s.id === brick.sectionId);
-    if (!section) {
-      return null;
-    }
-    return section;
+    // const brick = state.brickMap.get(brickId);
+    return getBrickSection(brickId, state);
+    // if (!brick) {
+    //   return null;
+    // }
+    // const section = state.sections.find((s) => s.id === brick.sectionId);
+    // if (!section) {
+    //   return null;
+    // }
+    // return section;
   });
 };
 
@@ -1639,6 +1648,7 @@ export const useContextMenuVisible = () => {
 export const useEditorHelpers = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => ({
+    toggleDebugMode: state.toggleDebugMode,
     setContextMenuVisible: state.setContextMenuVisible,
     setDraggingBrickType: state.setDraggingBrickType,
     setPreviewMode: state.setPreviewMode,

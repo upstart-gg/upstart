@@ -1,5 +1,6 @@
 import {
   useChatVisible,
+  useDebugMode,
   useDraft,
   useDraftHelpers,
   useEditorEnabled,
@@ -12,7 +13,7 @@ import {
 } from "../hooks/use-editor";
 import { lazy, startTransition, Suspense, useEffect, useRef, type ComponentProps } from "react";
 import { css, tx, tw } from "@upstart.gg/style-system/twind";
-import { Button } from "@upstart.gg/style-system/system";
+import { Button, Switch } from "@upstart.gg/style-system/system";
 import { usePageAutoSave } from "~/editor/hooks/use-page-autosave";
 import { getThemeCss } from "~/shared/utils/get-theme-css";
 import { useEditorHotKeys } from "../hooks/use-editor-hot-keys";
@@ -28,6 +29,7 @@ import {
 import { defaultProps, manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { type Brick, generateId } from "@upstart.gg/sdk/shared/bricks";
 import { Toaster } from "@upstart.gg/style-system/system";
+import { useIsLocalDev } from "../hooks/use-is-local-dev";
 
 const Tour = lazy(() => import("./Tour"));
 const NavBar = lazy(() => import("./NavBar"));
@@ -50,7 +52,9 @@ export default function Editor(props: EditorProps) {
   const generationState = useGenerationState();
   const draftHelpers = useDraftHelpers();
   const previewMode = usePreviewMode();
-  const { setDraggingBrickType } = useEditorHelpers();
+  const { setDraggingBrickType, toggleDebugMode } = useEditorHelpers();
+  const islocalDev = useIsLocalDev();
+  const debug = useDebugMode();
 
   usePageAutoSave();
   useEditorHotKeys();
@@ -65,6 +69,8 @@ export default function Editor(props: EditorProps) {
   const handleDragStart: OnDragStartResponder = (result) => {
     const { draggableId, type } = result;
     console.log("DragStart result:", result);
+    const element = document.getElementById(draggableId);
+    element?.classList.add(tx("moving"));
   };
 
   const onBeforeCapture: OnBeforeCaptureResponder = (before) => {
@@ -80,10 +86,6 @@ export default function Editor(props: EditorProps) {
         element.classList.add(tx("!bg-upstart-100"));
       }
     }
-    // You can use this to prevent certain drags, e.g. if you want to disable dragging in some cases
-    // if (beforeCapture.draggableId === "some-id") {
-    //   return false; // Prevent the drag
-    // }
   };
 
   const handleDragEnd = (result: DropResult) => {
@@ -347,6 +349,17 @@ export default function Editor(props: EditorProps) {
               },
             }}
           />
+          {islocalDev && (
+            <div className="fixed flex w-[148px] items-center gap-2 bottom-0 right-0 p-2 text-xs text-gray-500 bg-gray-100 dark:bg-dark-800 z-[9999] rounded-tl-md">
+              <Switch defaultChecked={debug} onCheckedChange={toggleDebugMode} size="1" id="debug-mode" />
+              <label htmlFor="debug-mode" className="cursor-pointer select-none">
+                Debug mode{" "}
+                <strong className={tx("font-semibold", debug ? "text-upstart-600" : "text-gray-500")}>
+                  {debug ? "on" : "off"}
+                </strong>
+              </label>
+            </div>
+          )}
         </main>
       </div>
     </DragDropContext>

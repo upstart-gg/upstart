@@ -2,23 +2,31 @@ import { type StringOptions, Type, type Static } from "@sinclair/typebox";
 import { prop } from "./helpers";
 import { typedRef } from "~/shared/utils/typed-ref";
 
-export function fontSize(defaultValue = "inherit", title = "Font size") {
+type Options = {
+  noExtraLargeSizes?: boolean;
+};
+
+export function fontSize(defaultValue = "inherit", title = "Font size", options: Options = {}) {
   return prop({
     title,
     schema: Type.Union(
       [
-        Type.Literal("inherit", { title: "Inherit from parent" }),
+        Type.Literal("inherit", { title: "Same as parent" }),
         Type.Literal("text-xs", { title: "Extra small" }),
         Type.Literal("text-sm", { title: "Small" }),
-        Type.Literal("text-base", { title: "Base size" }),
+        Type.Literal("text-base", { title: "Medium" }),
         Type.Literal("text-lg", { title: "Large" }),
-        Type.Literal("text-xl", { title: "Extra large" }),
-        Type.Literal("text-2xl", { title: "Extra large (2x)" }),
-        Type.Literal("text-3xl", { title: "Extra large (3x)" }),
-        Type.Literal("text-4xl", { title: "Extra large (4x)" }),
-        Type.Literal("text-5xl", { title: "Extra large (5x)" }),
-        Type.Literal("text-6xl", { title: "Extra large (6x)" }),
-        Type.Literal("text-7xl", { title: "Extra large (7x)" }),
+        ...(!options.noExtraLargeSizes
+          ? [
+              Type.Literal("text-xl", { title: "Extra large" }),
+              Type.Literal("text-2xl", { title: "Extra large (2x)" }),
+              Type.Literal("text-3xl", { title: "Extra large (3x)" }),
+              Type.Literal("text-4xl", { title: "Extra large (4x)" }),
+              Type.Literal("text-5xl", { title: "Extra large (5x)" }),
+              Type.Literal("text-6xl", { title: "Extra large (6x)" }),
+              Type.Literal("text-7xl", { title: "Extra large (7x)" }),
+            ]
+          : []),
       ],
       {
         default: defaultValue,

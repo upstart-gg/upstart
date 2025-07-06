@@ -1,4 +1,4 @@
-import type { Brick } from "@upstart.gg/sdk/shared/bricks";
+import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
 
 import {
   forwardRef,
@@ -19,6 +19,7 @@ import {
   useEditorHelpers,
   usePanel,
   usePreviewMode,
+  useSectionByBrickId,
   useSelectedBrickId,
 } from "../hooks/use-editor";
 import {
@@ -39,12 +40,7 @@ import {
 import BaseBrick from "~/shared/components/BaseBrick";
 import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
 import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
-import {
-  menuBarBtnCls,
-  menuBarBtnCommonCls,
-  menuBarBtnSquareCls,
-  menuNavBarCls,
-} from "~/shared/styles/menubar-styles";
+import { menuNavBarCls } from "~/shared/styles/menubar-styles";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { tx } from "@upstart.gg/style-system/twind";
 import { Draggable } from "@hello-pangea/dnd";
@@ -93,6 +89,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const { panelPosition } = usePanel();
     const editorHelpers = useEditorHelpers();
     const { getParentBrick } = useDraftHelpers();
+    const section = useSectionByBrickId(brick.id);
     const manifest = useBrickManifest(brick.type);
     const parentBrick = getParentBrick(brick.id);
     const [isMenuBarVisible, setMenuBarVisible] = useState(false);
@@ -164,12 +161,16 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
         if (hasMouseMoved.current || !brickTarget.matches("[data-brick]") || e.defaultPrevented) {
           return;
         }
-        let selectedBrick = brick;
+        let selectedElement: Brick | Section = brick;
+        let elementType: "brick" | "section" = "brick";
         // If has shift key pressed, then we try to select the upper container
         if (e.shiftKey) {
           if (parentBrick) {
-            selectedBrick = parentBrick;
+            selectedElement = parentBrick;
           }
+        } else if ((e.ctrlKey || e.metaKey) && section) {
+          elementType = "section";
+          selectedElement = section;
         }
 
         editorHelpers.hidePanel();
@@ -184,7 +185,11 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
         }
 
         startTransition(() => {
-          editorHelpers.setSelectedBrickId(selectedBrick.id);
+          if (elementType === "section") {
+            editorHelpers.setSelectedSectionId(selectedElement.id);
+          } else {
+            editorHelpers.setSelectedBrickId(selectedElement.id);
+          }
           editorHelpers.setPanel("inspector");
         });
 
@@ -235,7 +240,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 className={tx(
                   wrapperClass,
                   snapshot.isDragging
-                    ? "opacity-90 !z-[9999] shadow-xl overflow-hidden !cursor-grabbing "
+                    ? "opacity-90 !z-[9999] shadow-xl overflow-hidden !cursor-grabbing"
                     : "hover:cursor-auto",
                 )}
                 onClick={onBrickWrapperClick}

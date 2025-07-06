@@ -1,5 +1,5 @@
 import { type SchemaOptions, type Static, type TRef, Type } from "@sinclair/typebox";
-import type { preset } from "../bricks/props/preset";
+import type { colorPreset, preset } from "../bricks/props/preset";
 import type { background, backgroundColor } from "../bricks/props/background";
 import type { basicAlign } from "../bricks/props/align";
 import type { containerLayout } from "../bricks/props/container";
@@ -25,6 +25,7 @@ export interface SchemaTypeMap {
   "styles:color": ReturnType<typeof color>;
   "styles:shadow": ReturnType<typeof shadow>;
   "styles:cssLength": ReturnType<typeof cssLength>;
+  "presets:color": ReturnType<typeof colorPreset>;
   "assets:image": ReturnType<typeof image>;
   "content:text": ReturnType<typeof textContent>;
   "content:urlOrPageId": ReturnType<typeof urlOrPageId>;

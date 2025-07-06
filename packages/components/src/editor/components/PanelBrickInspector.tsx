@@ -18,6 +18,7 @@ import intersection from "lodash-es/intersection";
 import { useCalloutViewCounter } from "../hooks/use-callout-view-counter";
 import merge from "lodash-es/merge";
 import { presetsStyleProps } from "@upstart.gg/sdk/shared/bricks/props/preset";
+import { IconRender } from "./IconRender";
 
 type TabType = "preset" | "settings" | "content";
 
@@ -43,10 +44,13 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
     (!!manifest.props.properties.preset && previewMode === "desktop") || !!manifest.props.properties.variants;
 
   return (
-    <div key={`brick-inspector-${brick.id}`}>
+    <div key={`brick-inspector-${brick.id}`} className="flex flex-col flex-grow h-full">
       <PanelBlockTitle>
         <div className="flex justify-between items-center group">
-          {manifest.name}
+          <span className="flex items-center">
+            <IconRender manifest={manifest} className="inline-block mr-2 !h-5 !w-5 " />
+            {manifest.name}
+          </span>
           <span
             className={tx(
               "text-xs font-mono lowercase opacity-0 group-hover:opacity-70 transition-opacity delay-1000",
@@ -65,6 +69,7 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
           console.log("changing tab to %s", val);
           setTabsMapping((prev) => ({ ...prev, [brick.id]: val as TabType }));
         }}
+        className="flex-grow flex flex-col"
       >
         {showTabsList && (
           <Tabs.List className="sticky top-0 z-50 bg-gray-100 dark:bg-dark-900">
@@ -118,7 +123,7 @@ function PresetsTab({ brick, section }: { brick: Brick; section: Section }) {
 
   return (
     <div className={tx("flex flex-col h-full")}>
-      <div className="basis-1/2 grow-0">
+      <div className="basis-[70%] grow-0">
         <Callout.Root size="1" className="mb-2">
           <Callout.Text size="1">
             <span className="font-semibold">Style presets</span> are pre-configured color styles that can be
@@ -138,7 +143,6 @@ function PresetsTab({ brick, section }: { brick: Brick; section: Section }) {
                 }}
                 key={preset.const}
                 className={tx(
-                  // `${preset.const}`,
                   classes,
                   (preset.const === "preset-none" || preset.const === "light") && "border border-gray-200",
                   preset.const === "preset-none" && "italic",
@@ -175,8 +179,6 @@ function VariantsTab({ brick, section }: { brick: Brick; section: Section }) {
     console.warn("No variants defined for brick %s in section %s", brick.type, section.id);
     return null;
   }
-
-  console.log("current props for brick %s: %o", brick.id, brick.props);
 
   return (
     <div className={tx("flex flex-col h-full")}>
@@ -313,7 +315,9 @@ function SettingsTab({ brick, section }: { brick: Brick; section: Section }) {
           </Callout.Text>
         </Callout.Root>
       )}
-      <BrickSettingsView brick={brick} />
+      <div className="basis-[70%] flex flex-col">
+        <BrickSettingsView brick={brick} />
+      </div>
       <PageHierarchy brick={brick} section={section} />
     </form>
   );
