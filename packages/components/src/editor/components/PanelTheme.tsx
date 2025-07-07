@@ -43,44 +43,44 @@ export default function ThemePanel() {
         <div className="flex flex-col">
           <PanelBlockTitle className="-mx-2 my-2">Colors</PanelBlockTitle>
           <div className="grid grid-cols-2 gap-x-3 text-sm flex-col gap-y-3 pb-2">
-            {Object.entries(draft.theme.colors).map(([colorType, color]) => (
-              <ColorFieldRow
-                key={colorType}
-                hideColorLabel
-                labelPlacement="right"
-                /* @ts-ignore */
-                name={themeSchema.properties.colors.properties[colorType].title}
-                /* @ts-ignore */
-                description={themeSchema.properties.colors.properties[colorType].description}
-                color={color}
-                labelClassName="font-medium"
-                colorType={colorType as ColorType}
-                onChange={(newColor: string) => {
-                  const colors = { [colorType]: newColor };
-
-                  if (
-                    ["primary", "secondary", "accent", "neutral", "base100", "base200", "base300"].includes(
-                      colorType,
-                    )
-                  ) {
-                    const textColor = getContrastingTextColor(newColor);
-                    if (colorType.startsWith("base")) {
-                      colors.baseContent = textColor;
-                    } else {
-                      colors[`${colorType}Content`] = textColor;
+            {Object.entries(draft.theme.colors)
+              .filter(([colorType]) => ["base200", "base300"].includes(colorType) === false)
+              .map(([colorType, color]) => (
+                <ColorFieldRow
+                  key={colorType}
+                  hideColorLabel
+                  labelPlacement="right"
+                  /* @ts-ignore */
+                  name={themeSchema.properties.colors.properties[colorType].title}
+                  /* @ts-ignore */
+                  description={themeSchema.properties.colors.properties[colorType].description}
+                  color={color}
+                  labelClassName="font-medium"
+                  colorType={colorType as ColorType}
+                  onChange={(newColor: string) => {
+                    const colors = { [colorType]: newColor };
+                    if (
+                      ["primary", "secondary", "accent", "neutral", "base100", "base200", "base300"].includes(
+                        colorType,
+                      )
+                    ) {
+                      const textColor = getContrastingTextColor(newColor);
+                      if (!colorType.startsWith("base")) {
+                        colors[`${colorType}Content`] = textColor;
+                      } else if (colorType === "base100") {
+                        colors.baseContent = textColor;
+                      }
                     }
-                  }
-
-                  draft.setTheme({
-                    ...theme,
-                    colors: {
-                      ...theme.colors,
-                      ...colors,
-                    },
-                  });
-                }}
-              />
-            ))}
+                    draft.setTheme({
+                      ...theme,
+                      colors: {
+                        ...theme.colors,
+                        ...colors,
+                      },
+                    });
+                  }}
+                />
+              ))}
           </div>
 
           <PanelBlockTitle className="-mx-2 my-2">Typography</PanelBlockTitle>

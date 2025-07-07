@@ -128,6 +128,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
       droppableId={section.id}
       type="brick"
       direction="horizontal"
+      mode={section.bricks.length > 0 ? "standard" : "virtual"}
       isDropDisabled={dropDisabled}
       isCombineEnabled
     >
@@ -162,7 +163,11 @@ export default function EditableSection({ section, index }: EditableSectionProps
               {bricks.length === 0 && (
                 <div
                   data-trigger-section-inspector
-                  className="w-full self-stretch py-6 h-auto flex-grow text-center rounded  bg-black/30 text-white flex flex-col justify-center items-center text-base font-normal"
+                  className={tx(
+                    "w-full min-w-full self-stretch py-6 h-auto flex-grow text-center rounded",
+                    " text-white flex flex-col justify-center items-center text-lg font-medium text-shadow",
+                    droppableSnapshot.isDraggingOver ? "bg-upstart-700/60" : "bg-black/30",
+                  )}
                 >
                   This section is empty.
                   <span>
@@ -183,7 +188,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
                   </span>
                 </div>
               )}
-              {droppableProvided.placeholder}
+              {bricks.length === 0 ? null : droppableProvided.placeholder}
             </section>
           </SectionContextMenu>
         );

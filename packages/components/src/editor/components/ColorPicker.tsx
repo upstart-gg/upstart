@@ -10,6 +10,7 @@ import { Text, Select, Tabs, Inset } from "@upstart.gg/style-system/system";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { tx } from "@upstart.gg/style-system/twind";
 import { colorPalette } from "@upstart.gg/style-system/colors";
+import { useTheme } from "../hooks/use-editor";
 
 const gradientMixs = [
   ["100", "200"],
@@ -29,41 +30,240 @@ interface BaseColorPickerProps {
   steps?: number;
 }
 
+const baseColorPalette = {
+  // Gray - Pure neutrals from Tailwind
+  gray: {
+    "50": "hsl(0, 0%, 99%)", // Even lighter
+    "100": "hsl(0, 0%, 95%)", // Even lighter
+    "200": "hsl(0, 0%, 90%)", // Even lighter
+    "800": "hsl(0, 0%, 25%)", // Darker
+    "900": "hsl(0, 0%, 15%)", // Darker
+    "950": "hsl(0, 0%, 5%)", // Much darker
+  },
+
+  // Red - Tailwind red color scale
+  red: {
+    "50": "hsl(0, 86%, 99%)", // Even lighter
+    "100": "hsl(0, 93%, 95%)", // Even lighter
+    "200": "hsl(0, 96%, 90%)", // Even lighter
+    "800": "hsl(0, 84%, 25%)", // Darker
+    "900": "hsl(0, 63%, 15%)", // Darker
+    "950": "hsl(0, 75%, 5%)", // Much darker
+  },
+
+  // Orange - Tailwind orange color scale
+  orange: {
+    "50": "hsl(33, 100%, 99%)", // Even lighter
+    "100": "hsl(34, 100%, 95%)", // Even lighter
+    "200": "hsl(32, 98%, 90%)", // Even lighter
+    "800": "hsl(15, 79%, 25%)", // Darker
+    "900": "hsl(9, 87%, 15%)", // Darker
+    "950": "hsl(15, 86%, 5%)", // Much darker
+  },
+
+  // Amber - Tailwind amber color scale
+  amber: {
+    "50": "hsl(48, 100%, 99%)", // Even lighter
+    "100": "hsl(48, 96%, 95%)", // Even lighter
+    "200": "hsl(48, 97%, 90%)", // Even lighter
+    "800": "hsl(32, 95%, 25%)", // Darker
+    "900": "hsl(28, 93%, 15%)", // Darker
+    "950": "hsl(24, 94%, 5%)", // Much darker
+  },
+
+  // Yellow - Tailwind yellow color scale
+  yellow: {
+    "50": "hsl(55, 92%, 99%)", // Even lighter
+    "100": "hsl(55, 97%, 95%)", // Even lighter
+    "200": "hsl(53, 98%, 90%)", // Even lighter
+    "800": "hsl(32, 81%, 25%)", // Darker
+    "900": "hsl(28, 73%, 15%)", // Darker
+    "950": "hsl(26, 77%, 5%)", // Much darker
+  },
+
+  // Lime - Tailwind lime color scale
+  lime: {
+    "50": "hsl(78, 92%, 99%)", // Even lighter
+    "100": "hsl(80, 89%, 95%)", // Even lighter
+    "200": "hsl(81, 88%, 90%)", // Even lighter
+    "800": "hsl(84, 81%, 25%)", // Darker
+    "900": "hsl(88, 61%, 15%)", // Darker
+    "950": "hsl(89, 80%, 5%)", // Much darker
+  },
+
+  // Green - Tailwind green color scale
+  green: {
+    "50": "hsl(138, 76%, 99%)", // Even lighter
+    "100": "hsl(141, 84%, 95%)", // Even lighter
+    "200": "hsl(141, 79%, 90%)", // Even lighter
+    "800": "hsl(158, 64%, 25%)", // Darker
+    "900": "hsl(158, 68%, 15%)", // Darker
+    "950": "hsl(164, 86%, 5%)", // Much darker
+  },
+
+  // Emerald - Tailwind emerald color scale
+  emerald: {
+    "50": "hsl(152, 81%, 99%)", // Even lighter
+    "100": "hsl(149, 80%, 95%)", // Even lighter
+    "200": "hsl(152, 76%, 90%)", // Even lighter
+    "800": "hsl(158, 84%, 25%)", // Darker
+    "900": "hsl(158, 84%, 15%)", // Darker
+    "950": "hsl(164, 96%, 5%)", // Much darker
+  },
+
+  // Teal - Tailwind teal color scale
+  teal: {
+    "50": "hsl(166, 76%, 99%)", // Even lighter
+    "100": "hsl(167, 85%, 95%)", // Even lighter
+    "200": "hsl(168, 84%, 90%)", // Even lighter
+    "800": "hsl(183, 81%, 25%)", // Darker
+    "900": "hsl(184, 91%, 15%)", // Darker
+    "950": "hsl(186, 100%, 5%)", // Much darker
+  },
+
+  // Cyan - Tailwind cyan color scale
+  cyan: {
+    "50": "hsl(183, 100%, 99%)", // Even lighter
+    "100": "hsl(185, 96%, 95%)", // Even lighter
+    "200": "hsl(186, 94%, 90%)", // Even lighter
+    "800": "hsl(200, 84%, 25%)", // Darker
+    "900": "hsl(202, 83%, 15%)", // Darker
+    "950": "hsl(205, 100%, 5%)", // Much darker
+  },
+
+  // Sky - Tailwind sky color scale
+  sky: {
+    "50": "hsl(204, 100%, 99%)", // Even lighter
+    "100": "hsl(204, 94%, 95%)", // Even lighter
+    "200": "hsl(201, 94%, 90%)", // Even lighter
+    "800": "hsl(213, 92%, 25%)", // Darker
+    "900": "hsl(218, 79%, 15%)", // Darker
+    "950": "hsl(223, 88%, 5%)", // Much darker
+  },
+
+  // Blue - Tailwind blue color scale
+  blue: {
+    "50": "hsl(214, 100%, 99%)", // Even lighter
+    "100": "hsl(214, 95%, 95%)", // Even lighter
+    "200": "hsl(213, 97%, 90%)", // Even lighter
+    "800": "hsl(213, 94%, 25%)", // Darker
+    "900": "hsl(215, 92%, 15%)", // Darker
+    "950": "hsl(221, 100%, 5%)", // Much darker
+  },
+
+  // Indigo - Tailwind indigo color scale
+  indigo: {
+    "50": "hsl(228, 100%, 99%)", // Even lighter
+    "100": "hsl(228, 100%, 95%)", // Even lighter
+    "200": "hsl(228, 100%, 90%)", // Even lighter
+    "800": "hsl(228, 100%, 25%)", // Darker
+    "900": "hsl(228, 100%, 15%)", // Darker
+    "950": "hsl(228, 100%, 5%)", // Much darker
+  },
+
+  // Violet - Tailwind violet color scale
+  violet: {
+    "50": "hsl(250, 100%, 99%)", // Even lighter
+    "100": "hsl(251, 91%, 95%)", // Even lighter
+    "200": "hsl(251, 95%, 90%)", // Even lighter
+    "800": "hsl(258, 90%, 25%)", // Darker
+    "900": "hsl(259, 94%, 15%)", // Darker
+    "950": "hsl(261, 100%, 5%)", // Much darker
+  },
+
+  // Purple - Tailwind purple color scale
+  purple: {
+    "50": "hsl(270, 100%, 99%)", // Even lighter
+    "100": "hsl(269, 100%, 95%)", // Even lighter
+    "200": "hsl(269, 100%, 90%)", // Even lighter
+    "800": "hsl(273, 85%, 25%)", // Darker
+    "900": "hsl(275, 100%, 15%)", // Darker
+    "950": "hsl(279, 100%, 5%)", // Much darker
+  },
+
+  // Fuchsia - Tailwind fuchsia color scale
+  fuchsia: {
+    "50": "hsl(289, 100%, 99%)", // Even lighter
+    "100": "hsl(287, 100%, 95%)", // Even lighter
+    "200": "hsl(288, 96%, 90%)", // Even lighter
+    "800": "hsl(295, 100%, 25%)", // Darker
+    "900": "hsl(297, 100%, 15%)", // Darker
+    "950": "hsl(303, 100%, 5%)", // Much darker
+  },
+
+  // Pink - Tailwind pink color scale
+  pink: {
+    "50": "hsl(327, 73%, 99%)", // Even lighter
+    "100": "hsl(326, 78%, 95%)", // Even lighter
+    "200": "hsl(326, 85%, 90%)", // Even lighter
+    "800": "hsl(335, 78%, 25%)", // Darker
+    "900": "hsl(336, 84%, 15%)", // Darker
+    "950": "hsl(340, 87%, 5%)", // Much darker
+  },
+
+  // Rose - Tailwind rose color scale
+  rose: {
+    "50": "hsl(356, 100%, 99%)", // Even lighter
+    "100": "hsl(356, 100%, 95%)", // Even lighter
+    "200": "hsl(356, 100%, 90%)", // Even lighter
+    "800": "hsl(356, 100%, 25%)", // Darker
+    "900": "hsl(356, 100%, 15%)", // Darker
+    "950": "hsl(356, 100%, 5%)", // Much darker
+  },
+};
+
 const BaseColorPicker: FC<BaseColorPickerProps> = ({
   colorType,
   initialValue = 120,
   onChange = () => {},
 }) => {
   const [selectedColor, setSelectedColor] = useState(initialValue);
+  const theme = useTheme();
 
   // Handle color selection
   const handleColorSelect = (color: string, oklabValues: number[]) => {
     setSelectedColor(color);
     onChange(color, oklabValues);
   };
+
+  const isBaseColor = colorType.startsWith("base");
+  const palette =
+    colorType.startsWith("base") && colorType !== "baseContent" ? baseColorPalette : colorPalette;
+
+  const cols = isBaseColor ? 3 : 7; // Adjust columns for base colors
+
   return (
     <div>
       <Text as="p" size="2" color="gray" className="!capitalize !font-medium">
-        {baseColorsLabels[colorType]}
+        {baseColorsLabels[colorType]} foo
       </Text>
 
       {/* Color circles */}
-      <div className="grid grid-cols-7 gap-1.5 mt-3 pr-4 max-h-[45dvh] overflow-y-scroll scrollbar-thin scrollbar-gutter-stable-both scrollbar-color-violet">
-        {Object.entries(colorPalette).map(([colorName, shades], i) =>
+      <div
+        className={`grid grid-cols-${cols} gap-2 mt-3 p-3 pr-6 max-h-[45dvh] overflow-y-scroll scrollbar-thin scrollbar-gutter-stable-both scrollbar-color-violet`}
+      >
+        {Object.entries(palette).map(([colorName, shades], i) =>
           Object.entries(shades as Record<string, string>)
             .filter((shade) => {
               const shadeInt = parseInt(shade[0], 10);
-              return shadeInt >= 200 && shadeInt <= 800;
+              if (colorType === "base100") {
+                return theme.browserColorScheme === "light" ? shadeInt <= 200 : shadeInt >= 800;
+              }
+              return isBaseColor || (shadeInt >= 200 && shadeInt <= 800);
             })
             .map(([shadeName, color]) => (
               <button
                 type="button"
                 id={`${colorName}-${shadeName}`}
                 key={`${colorName}-${shadeName}`}
-                className="w-6 h-6 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={tx(
+                  "outline outline-gray-200  transition-transform hover:scale-110 focus:outline-upstart-300",
+                  //isBaseColor ? "w-5 h-5 aspect-square rounded-full" :
+                  "w-6 h-6 rounded-full",
+                  selectedColor === color && "outline-upstart-300",
+                )}
                 style={{
                   background: color,
-                  boxShadow: selectedColor === color ? `0 0 0 2px white, 0 0 0 4px ${color}` : "none",
                 }}
                 onClick={() => handleColorSelect(color, chroma(color).oklab())}
                 aria-label={`Select color ${color}`}

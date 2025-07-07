@@ -69,8 +69,6 @@ export function ColorFieldRow({
   name,
   description,
   color,
-  required,
-  labelClassName,
   onChange,
   colorType,
   showReset,
