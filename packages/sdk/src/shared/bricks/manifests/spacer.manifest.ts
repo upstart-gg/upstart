@@ -1,9 +1,9 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, optional } from "../props/helpers";
-import { backgroundColorRef } from "../props/background";
+import { defineProps } from "../props/helpers";
 import type { BrickProps } from "../props/types";
 import { CgSpaceBetween } from "react-icons/cg";
 import { boolean } from "../props/boolean";
+import { Type } from "@sinclair/typebox";
 
 export const manifest = defineBrickManifest({
   type: "spacer",
@@ -25,7 +25,7 @@ export const manifest = defineBrickManifest({
   icon: CgSpaceBetween,
   props: defineProps(
     {
-      autogrow: optional(
+      autogrow: Type.Optional(
         boolean("Auto-grow", false, {
           description: "If enabled, the spacer will automatically grow to fill available space.",
         }),

@@ -1,5 +1,5 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, optional, group, prop } from "../props/helpers";
+import { defineProps, group } from "../props/helpers";
 import { Type } from "@sinclair/typebox";
 import { MdExpandMore } from "react-icons/md";
 import { preset } from "../props/preset";
@@ -33,42 +33,39 @@ Multiple panels can be open simultaneously or limited to one at a time.
 
   props: defineProps(
     {
-      container: optional(
+      container: Type.Optional(
         group({
           title: "Container",
           children: {
-            backgroundColor: optional(backgroundColorRef()),
-            padding: optional(paddingRef()),
-            border: optional(borderRef()),
-            shadow: optional(shadowRef()),
+            backgroundColor: Type.Optional(backgroundColorRef()),
+            padding: Type.Optional(paddingRef()),
+            border: Type.Optional(borderRef()),
+            shadow: Type.Optional(shadowRef()),
           },
         }),
       ),
-      items: prop({
-        title: "Accordion items",
-        schema: Type.Array(
-          Type.Object({
-            title: textContentRef({ title: "Title", default: "My title", disableSizing: true }),
-            content: textContentRef({ title: "Content", default: "Expandable content goes here" }),
-            defaultOpen: optional(boolean("Open by default", false)),
-          }),
-        ),
-      }),
-      itemsStyles: optional(
+      items: Type.Array(
+        Type.Object({
+          title: textContentRef({ title: "Title", default: "My title", disableSizing: true }),
+          content: textContentRef({ title: "Content", default: "Expandable content goes here" }),
+          defaultOpen: Type.Optional(boolean("Open by default", false)),
+        }),
+        {
+          title: "Accordion items",
+        },
+      ),
+      itemsStyles: Type.Optional(
         group({
           title: "Accordion item styles",
           children: {
-            backgroundColor: optional(backgroundColorRef()),
-            color: optional(colorRef()),
+            backgroundColor: Type.Optional(backgroundColorRef()),
+            color: Type.Optional(colorRef()),
             fontSize: fontSize("text-base"),
           },
         }),
       ),
-      allowMultiple: prop({
-        title: "Accordion items",
-        schema: boolean("Allow multiple open", true, {
-          description: "Allow multiple accordion items to be open at the same time",
-        }),
+      allowMultiple: boolean("Allow multiple open", true, {
+        description: "Allow multiple accordion items to be open at the same time",
       }),
       variants: Type.Array(
         StringEnum(["collapse-arrow", "collapse-plus"], {

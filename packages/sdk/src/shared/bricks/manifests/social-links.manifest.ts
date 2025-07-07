@@ -1,5 +1,5 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, optional, prop } from "../props/helpers";
+import { defineProps } from "../props/helpers";
 import { TiSocialFlickr } from "react-icons/ti";
 import { string } from "../props/string";
 import { Type } from "@sinclair/typebox";
@@ -19,23 +19,19 @@ export const manifest = defineBrickManifest({
     links: Type.Array(
       Type.Object({
         href: string("Link"),
-        label: optional(string("Label")),
-        icon: optional(
-          prop({
-            title: "Icon",
+        label: Type.Optional(string("Label")),
+        icon: Type.Optional(
+          string("Icon", {
             description: "Icon to display (iconify reference)",
-            schema: string("Icon", {
-              description: "Icon to display (iconify reference)",
-              "ui:widget": "iconify",
-            }),
+            "ui:widget": "iconify",
           }),
         ),
       }),
     ),
-    backgroundColor: optional(backgroundColorRef()),
-    color: optional(colorRef()),
-    border: optional(borderRef()),
-    shadow: optional(shadowRef()),
+    backgroundColor: Type.Optional(backgroundColorRef()),
+    color: Type.Optional(colorRef()),
+    border: Type.Optional(borderRef()),
+    shadow: Type.Optional(shadowRef()),
     variants: Type.Array(
       Type.Union(
         [

@@ -1,16 +1,14 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, group, optional } from "../props/helpers";
-import { basicAlign, basicAlignRef } from "../props/align";
-import { background, backgroundRef } from "../props/background";
-import { border, borderRef } from "../props/border";
-import { textContent, textContentRef } from "../props/text";
-import { padding, paddingRef } from "../props/padding";
+import { defineProps } from "../props/helpers";
+import { basicAlignRef } from "../props/align";
+import { backgroundRef } from "../props/background";
+import { borderRef } from "../props/border";
+import { textContentRef } from "../props/text";
+import { paddingRef } from "../props/padding";
 import { BsAlphabetUppercase } from "react-icons/bs";
-import { preset } from "../props/preset";
 import type { BrickProps } from "../props/types";
 import { colorRef } from "../props/color";
-import type { FC } from "react";
-import type { Type } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { shadowRef } from "../props/effects";
 
 export const manifest = defineBrickManifest({
@@ -29,13 +27,13 @@ It is typically used on home pages to grab the user's attention.
   props: defineProps(
     {
       content: textContentRef({ title: "Hero title", default: "I'm a big text" }),
-      tagline: optional(textContentRef({ title: "Hero tagline", default: "I'm a tagline" })),
-      background: optional(backgroundRef()),
-      color: optional(colorRef()),
-      shadow: optional(shadowRef()),
-      align: optional(basicAlignRef()),
-      padding: optional(paddingRef()),
-      border: optional(borderRef()),
+      tagline: Type.Optional(textContentRef({ title: "Hero tagline", default: "I'm a tagline" })),
+      background: Type.Optional(backgroundRef()),
+      color: Type.Optional(colorRef()),
+      shadow: Type.Optional(shadowRef()),
+      align: Type.Optional(basicAlignRef()),
+      padding: Type.Optional(paddingRef()),
+      border: Type.Optional(borderRef()),
     },
     {
       default: {

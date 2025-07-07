@@ -1,13 +1,12 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, optional } from "../props/helpers";
+import { defineProps } from "../props/helpers";
 import { TbCarouselHorizontal } from "react-icons/tb";
 import { Type } from "@sinclair/typebox";
 import { makeContainerProps } from "../props/container";
 import type { BrickProps } from "../props/types";
-import { background, backgroundRef } from "../props/background";
-import { border, borderRef } from "../props/border";
-import { padding, paddingRef } from "../props/padding";
-import type { FC } from "react";
+import { backgroundRef } from "../props/background";
+import { borderRef } from "../props/border";
+import { paddingRef } from "../props/padding";
 import { shadowRef } from "../props/effects";
 
 export const manifest = defineBrickManifest({
@@ -31,10 +30,10 @@ export const manifest = defineBrickManifest({
         },
       ),
     ),
-    background: optional(backgroundRef()),
-    border: optional(borderRef()),
-    padding: optional(paddingRef()),
-    shadow: optional(shadowRef()),
+    background: Type.Optional(backgroundRef()),
+    border: Type.Optional(borderRef()),
+    padding: Type.Optional(paddingRef()),
+    shadow: Type.Optional(shadowRef()),
     ...makeContainerProps(),
   }),
 });

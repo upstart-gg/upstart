@@ -1,12 +1,11 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, optional, prop } from "../props/helpers";
+import { defineProps } from "../props/helpers";
 import { string } from "../props/string";
 import { Type } from "@sinclair/typebox";
-import { textContent, textContentRef } from "../props/text";
-import { image, imageRef } from "../props/image";
+import { textContentRef } from "../props/text";
+import { imageRef } from "../props/image";
 import { HiOutlineChatBubbleBottomCenter } from "react-icons/hi2";
 import type { BrickProps } from "../props/types";
-import type { FC } from "react";
 import { backgroundRef } from "../props/background";
 import { borderRef } from "../props/border";
 import { paddingRef } from "../props/padding";
@@ -21,29 +20,26 @@ export const manifest = defineBrickManifest({
   icon: HiOutlineChatBubbleBottomCenter,
   props: defineProps(
     {
-      orientation: optional(
-        prop({
-          title: "Orientation",
-          schema: Type.Union(
-            [
-              Type.Literal("horizontal", { title: "Horizontal" }),
-              Type.Literal("vertical", { title: "Vertical" }),
-            ],
-            { default: "horizontal" },
-          ),
-        }),
+      orientation: Type.Optional(
+        Type.Union(
+          [
+            Type.Literal("horizontal", { title: "Horizontal" }),
+            Type.Literal("vertical", { title: "Vertical" }),
+          ],
+          { title: "Orientation", default: "horizontal" },
+        ),
       ),
-      background: optional(backgroundRef()),
-      border: optional(borderRef()),
-      padding: optional(paddingRef()),
-      shadow: optional(shadowRef()),
+      background: Type.Optional(backgroundRef()),
+      border: Type.Optional(borderRef()),
+      padding: Type.Optional(paddingRef()),
+      shadow: Type.Optional(shadowRef()),
       testimonials: Type.Array(
         Type.Object({
           author: string("Author", { default: "John Doe" }),
-          company: optional(string("Company")),
+          company: Type.Optional(string("Company")),
           text: textContentRef({ title: "Text", default: "Amazing product!" }),
-          avatar: optional(imageRef({ title: "Avatar" })),
-          socialIcon: optional(
+          avatar: Type.Optional(imageRef({ title: "Avatar" })),
+          socialIcon: Type.Optional(
             string("Social Icon", {
               description: "Iconify reference for the social icon",
               "ui:field": "iconify",

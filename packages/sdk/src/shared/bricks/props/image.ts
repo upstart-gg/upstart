@@ -1,7 +1,5 @@
 import { type SchemaOptions, Type, type Static, type ObjectOptions } from "@sinclair/typebox";
-import { prop } from "./helpers";
 import { typedRef } from "~/shared/utils/typed-ref";
-// import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
 
 type PropImageOptions = {
   defaultImageUrl?: string;
@@ -66,6 +64,7 @@ export function image(title = "Image", options: PropImageOptions = {}) {
     },
     {
       $id: "assets:image",
+      title,
       "ui:field": "image",
       "ui:accept": "image/*",
       "ui:show-img-search": showImgSearch,
@@ -79,10 +78,7 @@ export function image(title = "Image", options: PropImageOptions = {}) {
       ...options,
     },
   );
-  return prop({
-    title,
-    schema,
-  });
+  return schema;
 }
 
 export function imageRef(options: PropImageOptions & SchemaOptions = {}) {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { opacity, shadow, textShadow } from "../effects";
+import { opacity, textShadow } from "../effects";
 
 describe("Effects props test suite", () => {
   describe("opacity", () => {

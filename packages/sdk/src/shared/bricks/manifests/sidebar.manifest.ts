@@ -1,11 +1,11 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, group, optional, prop } from "../props/helpers";
+import { defineProps, group } from "../props/helpers";
 import { VscLayoutSidebarLeftOff } from "react-icons/vsc";
 import { Type } from "@sinclair/typebox";
 import { datasourceRef } from "../props/datasource";
-import { string, urlOrPageId, urlOrPageIdRef } from "../props/string";
-import { backgroundColor, backgroundColorRef } from "../props/background";
-import { border, borderRef } from "../props/border";
+import { string, urlOrPageIdRef } from "../props/string";
+import { backgroundColorRef } from "../props/background";
+import { borderRef } from "../props/border";
 import { fixedPositioned } from "../props/position";
 import type { BrickProps } from "../props/types";
 import { shadowRef } from "../props/effects";
@@ -22,36 +22,33 @@ export const manifest = defineBrickManifest({
   `.trim(),
   icon: VscLayoutSidebarLeftOff,
   props: defineProps({
-    container: optional(
+    container: Type.Optional(
       group({
         title: "Main element",
         children: {
-          backgroundColor: optional(backgroundColorRef()),
-          border: optional(borderRef()),
-          shadow: optional(shadowRef()),
-          fixedPositioned: optional(fixedPositioned()),
+          backgroundColor: Type.Optional(backgroundColorRef()),
+          border: Type.Optional(borderRef()),
+          shadow: Type.Optional(shadowRef()),
+          fixedPositioned: Type.Optional(fixedPositioned()),
         },
         metadata: {
           "ui:responsive": true,
         },
       }),
     ),
-    navigation: optional(
+    navigation: Type.Optional(
       group({
         title: "Links",
         children: {
-          datasource: optional(datasourceRef()),
-          navItems: optional(
-            prop({
-              title: "Nav items",
-              schema: Type.Array(
-                Type.Object({
-                  urlOrPageId: urlOrPageIdRef(),
-                  label: optional(string("Label")),
-                }),
-                { title: "Navigation items", default: [] },
-              ),
-            }),
+          datasource: Type.Optional(datasourceRef()),
+          navItems: Type.Optional(
+            Type.Array(
+              Type.Object({
+                urlOrPageId: urlOrPageIdRef(),
+                label: Type.Optional(string("Label")),
+              }),
+              { title: "Navigation items", default: [] },
+            ),
           ),
         },
       }),

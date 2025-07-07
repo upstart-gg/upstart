@@ -3,9 +3,9 @@
  */
 import { type TProperties, Type, type TSchema, type TObject, type ObjectOptions } from "@sinclair/typebox";
 import { commonProps } from "./common";
-import type { PartialBy, Prop, PropGroup, GroupMetadata } from "./types";
+import type { PartialBy, PropGroup, GroupMetadata } from "./types";
 import { get } from "lodash-es";
-import { resolveSchema } from "~/shared/utils/schema-resolver";
+// import { resolveSchema } from "~/shared/utils/schema-resolver";
 
 function isTObject(schema: TSchema | TProperties): schema is TObject {
   return schema.type === "object";
@@ -44,9 +44,6 @@ export function group<T extends TProperties>({
   });
 }
 
-// Re-export prop function from ./prop for backward compatibility
-export { prop } from "./prop";
-
 // Functions to extract metadata from schemas
 export function getGroupInfo(schema: TSchema) {
   const meta = schema.metadata as GroupMetadata;
@@ -82,7 +79,7 @@ export function defineProps<P extends TProperties>(
   return Type.Object(finalProps, options);
 }
 
-export const optional = Type.Optional;
+// export const optional = Type.Optional;
 export const array = Type.Array;
 
 export type PropertyPath = string;
@@ -95,7 +92,8 @@ export type StyleId = string;
 export function getStyleProperties(schema: TSchema, path = "", styles: Record<PropertyPath, StyleId> = {}) {
   if (schema.type === "object") {
     for (const key in schema.properties) {
-      const prop = resolveSchema(schema.properties[key]);
+      // const prop = resolveSchema(schema.properties[key]);
+      const prop = schema.properties[key];
       if (prop["ui:styleId"]) {
         styles[`${path}${key}`] = prop["ui:styleId"];
       }

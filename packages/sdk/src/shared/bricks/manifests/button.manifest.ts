@@ -1,6 +1,5 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, optional, prop } from "../props/helpers";
-import { textContentRef } from "../props/text";
+import { defineProps } from "../props/helpers";
 import { RxButton } from "react-icons/rx";
 import { string, urlOrPageIdRef } from "../props/string";
 import { Type } from "@sinclair/typebox";
@@ -56,29 +55,24 @@ export const manifest = defineBrickManifest({
       ),
     ),
     label: string("Label", { default: "My button" }),
-    type: optional(
-      prop({
+    type: Type.Optional(
+      StringEnum(["button", "submit", "reset"], {
         title: "Type",
-        schema: StringEnum(["button", "submit", "reset"], {
-          enumNames: ["Button", "Submit", "Reset"],
-          default: "button",
-          description: "The type of the button",
-          "ai:instructions":
-            "Use 'button' for regular buttons, 'submit' for form submission, and 'reset' to reset form fields.",
-        }),
+        enumNames: ["Button", "Submit", "Reset"],
+        default: "button",
+        description: "The type of the button",
+        "ai:instructions":
+          "Use 'button' for regular buttons, 'submit' for form submission, and 'reset' to reset form fields.",
       }),
     ),
-    icon: optional(
-      prop({
+    icon: Type.Optional(
+      string("Icon", {
         title: "Icon",
         description: "Icon to display (iconify reference)",
-        schema: string("Icon", {
-          description: "Icon to display (iconify reference)",
-          "ui:field": "iconify",
-        }),
+        "ui:field": "iconify",
       }),
     ),
-    linkToUrlOrPageId: optional(urlOrPageIdRef({ title: "Link" })),
+    linkToUrlOrPageId: Type.Optional(urlOrPageIdRef({ title: "Link" })),
   }),
 });
 

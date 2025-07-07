@@ -1,5 +1,5 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, group, optional } from "../props/helpers";
+import { defineProps, group } from "../props/helpers";
 import { fontSize, textContentRef } from "../props/text";
 import { BsCardText } from "react-icons/bs";
 import { imageRef } from "../props/image";
@@ -20,7 +20,7 @@ export const manifest = defineBrickManifest({
   minWidth: { mobile: 200, desktop: 200 },
   maxWidth: { desktop: 650 },
   props: defineProps({
-    colorPreset: optional(
+    colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color preset",
         "ui:presets": {
@@ -166,12 +166,12 @@ export const manifest = defineBrickManifest({
     //     },
     //   },
     // ),
-    cardImage: optional(
+    cardImage: Type.Optional(
       imageRef({
         "ui:responsive": "desktop",
       }),
     ),
-    imagePosition: optional(
+    imagePosition: Type.Optional(
       Type.Union(
         [
           Type.Literal("top", { title: "Top" }),
@@ -193,7 +193,7 @@ export const manifest = defineBrickManifest({
         },
       ),
     ),
-    noTitle: optional(
+    noTitle: Type.Optional(
       Type.Boolean({
         title: "No Title",
         description: "Whether to hide the card title",
@@ -201,10 +201,10 @@ export const manifest = defineBrickManifest({
         "ui:responsive": "desktop",
       }),
     ),
-    cardTitle: optional(textContentRef({ title: "Title" })),
-    cardBody: optional(textContentRef({ title: "Body" })),
-    shadow: optional(shadowRef()),
-    border: optional(
+    cardTitle: Type.Optional(textContentRef({ title: "Title" })),
+    cardBody: Type.Optional(textContentRef({ title: "Body" })),
+    shadow: Type.Optional(shadowRef()),
+    border: Type.Optional(
       borderRef({
         default: {
           width: "border",

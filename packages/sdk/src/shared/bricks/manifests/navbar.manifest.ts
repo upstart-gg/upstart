@@ -1,19 +1,14 @@
 import { type TObject, Type } from "@sinclair/typebox";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, group, optional, prop } from "../props/helpers";
-import { border, borderRef } from "../props/border";
-import { string, urlOrPageId, urlOrPageIdRef } from "../props/string";
-import { image, imageRef } from "../props/image";
-import { backgroundColor, backgroundColorRef } from "../props/background";
-import { textContent, textContentRef } from "../props/text";
-import { shadow, shadowRef } from "../props/effects";
-import { datasourceRef } from "../props/datasource";
-import { fixedPositioned } from "../props/position";
+import { defineProps, group } from "../props/helpers";
+import { string, urlOrPageIdRef } from "../props/string";
+import { imageRef } from "../props/image";
+import { textContentRef } from "../props/text";
+import { shadowRef } from "../props/effects";
 import { boolean } from "../props/boolean";
 import { VscLayoutPanelOff } from "react-icons/vsc";
 import type { BrickProps } from "../props/types";
 import { colorRef } from "../props/color";
-import type { FC } from "react";
 import { colorPresetRef } from "../props/preset";
 
 export const datasource = Type.Array(
@@ -53,7 +48,7 @@ export const manifest = defineBrickManifest({
   iconClassName: "rotate-180",
   props: defineProps(
     {
-      colorPreset: optional(
+      colorPreset: Type.Optional(
         colorPresetRef({
           title: "Color preset",
           "ui:presets": {
@@ -111,21 +106,21 @@ export const manifest = defineBrickManifest({
           default: "primary",
         }),
       ),
-      brand: optional(
+      brand: Type.Optional(
         textContentRef({
           title: "Brand name",
           default: "Acme Inc.",
           disableSizing: true,
         }),
       ),
-      logo: optional(
+      logo: Type.Optional(
         imageRef({
           title: "Logo",
           "ui:show-img-search": false,
           "ui:no-object-options": true,
         }),
       ),
-      hideBrand: optional(
+      hideBrand: Type.Optional(
         boolean("Hide brand name", undefined, {
           metadata: {
             filter: (manifestProps: TObject, formData: Record<string, unknown>) => {
@@ -137,45 +132,39 @@ export const manifest = defineBrickManifest({
       navigation: group({
         title: "Links",
         children: {
-          position: prop({
-            title: "Position",
-            schema: Type.Union(
-              [
-                Type.Literal("left", { title: "Left" }),
-                Type.Literal("center", { title: "Center" }),
-                Type.Literal("right", { title: "Right" }),
-              ],
-              { default: "right", "ui:responsive": "desktop" },
-            ),
-          }),
-          color: optional(colorRef()),
-          pageTagsFilter: optional(
-            prop({
-              title: "Page tags filter",
+          position: Type.Union(
+            [
+              Type.Literal("left", { title: "Left" }),
+              Type.Literal("center", { title: "Center" }),
+              Type.Literal("right", { title: "Right" }),
+            ],
+            { title: "Position", default: "right", "ui:responsive": "desktop" },
+          ),
+          color: Type.Optional(colorRef()),
+          pageTagsFilter: Type.Optional(
+            Type.Array(Type.String(), {
               description:
                 "Filter pages in the navbar by tags. Only pages with all of these tags will be shown.",
-              schema: Type.Array(Type.String(), {
-                title: "Tags",
-                default: ["navbar"],
-              }),
+              title: "Tags",
+              default: ["navbar"],
             }),
           ),
-          staticNavItems: optional(
-            prop({
-              title: "Nav items",
-              description: "Additional static navigation items to show in the navbar",
-              schema: Type.Array(
-                Type.Object({
-                  urlOrPageId: urlOrPageIdRef(),
-                  label: optional(string("Label")),
-                }),
-                { title: "Navigation items", default: [] },
-              ),
-            }),
+          staticNavItems: Type.Optional(
+            Type.Array(
+              Type.Object({
+                urlOrPageId: urlOrPageIdRef(),
+                label: Type.Optional(string("Label")),
+              }),
+              {
+                title: "Navigation items",
+                description: "Additional static navigation items to show in the navbar",
+                default: [],
+              },
+            ),
           ),
         },
       }),
-      shadow: optional(shadowRef()),
+      shadow: Type.Optional(shadowRef()),
     },
     { noAlignSelf: true },
   ),

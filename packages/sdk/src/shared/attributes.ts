@@ -1,15 +1,12 @@
 import { Type, type TProperties, type Static, type TObject } from "@sinclair/typebox";
 import type { JSONSchemaType } from "ajv";
-import { backgroundColorRef, backgroundRef } from "./bricks/props/background";
-import { string, urlOrPageIdRef } from "./bricks/props/string";
-import { group, optional, prop } from "./bricks/props/helpers";
+import { backgroundColorRef } from "./bricks/props/background";
+import { string } from "./bricks/props/string";
 import { boolean } from "./bricks/props/boolean";
 import { datetime } from "./bricks/props/date";
 import { enumProp } from "./bricks/props/enum";
 import { jsonDefault } from "json-schema-default";
-import { StringEnum } from "./utils/string-enum";
-import { image, imageRef } from "./bricks/props/image";
-import { manifest as navbarManifest } from "./bricks/manifests/navbar.manifest";
+import { imageRef } from "./bricks/props/image";
 import { colorRef } from "./bricks/props/color";
 
 export function defineAttributes(attrs: TProperties) {
@@ -35,7 +32,7 @@ export type { JSONSchemaType };
 
 // Default attributes
 const defaultAttributes = {
-  // $navbar: optional(
+  // $navbar:Type.Optional
   //   group({
   //     title: "Navbar",
   //     children: navbarManifest.props,
@@ -43,7 +40,7 @@ const defaultAttributes = {
   //     //   enabled: boolean("Enabled", true, {
   //     //     description: "Enable or disable the navbar on this page",
   //     //   }),
-  //     //   pageTagsFilter: optional(
+  //     //   pageTagsFilter:Type.Optional
   //     //     prop({
   //     //       title: "Page tags filter",
   //     //       description:
@@ -54,14 +51,14 @@ const defaultAttributes = {
   //     //       }),
   //     //     }),
   //     //   ),
-  //     //   staticNavItems: optional(
+  //     //   staticNavItems:Type.Optional
   //     //     prop({
   //     //       title: "Nav items",
   //     //       description: "Additional static navigation items to show in the navbar",
   //     //       schema: Type.Array(
   //     //         Type.Object({
   //     //           urlOrPageId: urlOrPageIdRef(),
-  //     //           label: optional(string("Label")),
+  //     //           label:Type.Optionalstring("Label")),
   //     //         }),
   //     //         { title: "Navigation items", default: [] },
   //     //       ),
@@ -70,7 +67,7 @@ const defaultAttributes = {
   //     // },
   //   }),
   // ),
-  // $sidebar: optional(
+  // $sidebar:Type.Optional
   //   group({
   //     title: "Sidebar",
   //     children: {
@@ -84,13 +81,13 @@ const defaultAttributes = {
   //         "ui:group": "layout",
   //         "ui:group:title": "Page Layout",
   //       }),
-  //       staticNavItems: optional(
+  //       staticNavItems:Type.Optional
   //         prop({
   //           title: "Nav items",
   //           schema: Type.Array(
   //             Type.Object({
   //               urlOrPageId: urlOrPageIdRef(),
-  //               label: optional(string("Label")),
+  //               label:Type.Optionalstring("Label")),
   //             }),
   //             { title: "Navigation items", default: [] },
   //           ),
@@ -100,7 +97,7 @@ const defaultAttributes = {
   //   }),
   // ),
 
-  // $bodyBackground: optional(
+  // $bodyBackground:Type.Optional
   //   backgroundRef({
   //     default: {
   //       color: "#ffffff",
@@ -158,7 +155,7 @@ const defaultAttributes = {
     "ui:group:title": "Meta tags",
   }),
 
-  $robotsIndexing: optional(
+  $robotsIndexing: Type.Optional(
     boolean("Allow search engines to index this site", true, {
       description: "Disabling this will prevent search engines from indexing this site",
       "ui:group": "seo",
@@ -199,7 +196,7 @@ const defaultAttributes = {
     "ui:multiline": true,
   }),
 
-  $siteOgImage: optional(
+  $siteOgImage: Type.Optional(
     imageRef({
       title: "Social share image",
       description: "Image shown when this site is shared on social media",
@@ -211,7 +208,7 @@ const defaultAttributes = {
     }),
   ),
 
-  $pageOgImage: optional(
+  $pageOgImage: Type.Optional(
     imageRef({
       title: "Social share image",
       description: "Image shown when this page is shared on social media",
@@ -221,14 +218,14 @@ const defaultAttributes = {
       "ui:show-img-search": false,
     }),
   ),
-  $pageLastUpdated: optional(
+  $pageLastUpdated: Type.Optional(
     datetime("Last updated", {
       "ui:hidden": true,
       "ai:guidelines": "Don't generate this property.",
     }),
   ),
 
-  $siteHeadTags: optional(
+  $siteHeadTags: Type.Optional(
     Type.String({
       title: "Head tags",
       description:
@@ -243,7 +240,7 @@ const defaultAttributes = {
       "ui:group:title": "External scripts",
     }),
   ),
-  $siteBodyTags: optional(
+  $siteBodyTags: Type.Optional(
     Type.String({
       title: "Body tags",
       description:

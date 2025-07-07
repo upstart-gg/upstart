@@ -1,10 +1,10 @@
 import { Type } from "@sinclair/typebox";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { array, defineProps, group, optional } from "../props/helpers";
+import { array, defineProps } from "../props/helpers";
 import { number } from "../props/number";
-import { string, urlOrPageId, urlOrPageIdRef } from "../props/string";
+import { string, urlOrPageIdRef } from "../props/string";
 import { VscLayoutPanelOff } from "react-icons/vsc";
-import { image, imageRef } from "../props/image";
+import { imageRef } from "../props/image";
 import type { BrickProps } from "../props/types";
 import { paddingRef } from "../props/padding";
 import { fontSize } from "../props/text";
@@ -23,7 +23,7 @@ export const manifest = defineBrickManifest({
     mobile: "100%",
   },
   props: defineProps({
-    colorPreset: optional(
+    colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color preset",
         "ui:presets": {
@@ -83,11 +83,11 @@ export const manifest = defineBrickManifest({
       }),
     ),
 
-    // backgroundColor: optional(backgroundColorRef()),
-    padding: optional(paddingRef({ default: "p-10" })),
-    logo: optional(imageRef({ title: "Logo", "ui:no-object-options": true, "ui:no-alt-text": true })),
-    fontSize: optional(fontSize("text-sm", "Font size", { noExtraLargeSizes: true })),
-    // rows: optional(number("Rows", { default: 1, "ui:field": "slider", minimum: 1, maximum: 5 })),
+    // backgroundColor:Type.Optional(backgroundColorRef()),
+    padding: Type.Optional(paddingRef({ default: "p-10" })),
+    logo: Type.Optional(imageRef({ title: "Logo", "ui:no-object-options": true, "ui:no-alt-text": true })),
+    fontSize: Type.Optional(fontSize("text-sm", "Font size", { noExtraLargeSizes: true })),
+    // rows:Type.Optional(number("Rows", { default: 1, "ui:field": "slider", minimum: 1, maximum: 5 })),
     linksSections: array(
       Type.Object({
         sectionTitle: string("Links Section title"),
@@ -95,7 +95,6 @@ export const manifest = defineBrickManifest({
           Type.Object({
             title: string("Title"),
             url: urlOrPageIdRef(),
-            column: optional(number("Column", { default: 1 })),
           }),
         ),
       }),
@@ -243,45 +242,45 @@ export const examples: {
         {
           sectionTitle: "Products & Services",
           links: [
-            { title: "Cloud Solutions", url: "/cloud", column: 1 },
-            { title: "Data Analytics", url: "/analytics", column: 1 },
-            { title: "AI & Machine Learning", url: "/ai", column: 1 },
-            { title: "Cybersecurity", url: "/security", column: 2 },
-            { title: "DevOps Tools", url: "/devops", column: 2 },
-            { title: "IoT Platform", url: "/iot", column: 2 },
+            { title: "Cloud Solutions", url: "/cloud" },
+            { title: "Data Analytics", url: "/analytics" },
+            { title: "AI & Machine Learning", url: "/ai" },
+            { title: "Cybersecurity", url: "/security" },
+            { title: "DevOps Tools", url: "/devops" },
+            { title: "IoT Platform", url: "/iot" },
           ],
         },
         {
           sectionTitle: "Industries",
           links: [
-            { title: "Healthcare", url: "/industries/healthcare", column: 3 },
-            { title: "Finance", url: "/industries/finance", column: 3 },
-            { title: "Retail", url: "/industries/retail", column: 3 },
-            { title: "Manufacturing", url: "/industries/manufacturing", column: 4 },
-            { title: "Education", url: "/industries/education", column: 4 },
-            { title: "Government", url: "/industries/government", column: 4 },
+            { title: "Healthcare", url: "/industries/healthcare" },
+            { title: "Finance", url: "/industries/finance" },
+            { title: "Retail", url: "/industries/retail" },
+            { title: "Manufacturing", url: "/industries/manufacturing" },
+            { title: "Education", url: "/industries/education" },
+            { title: "Government", url: "/industries/government" },
           ],
         },
         {
           sectionTitle: "Resources",
           links: [
-            { title: "Documentation", url: "/docs", column: 1 },
-            { title: "API Reference", url: "/api", column: 1 },
-            { title: "Tutorials", url: "/tutorials", column: 1 },
-            { title: "Webinars", url: "/webinars", column: 2 },
-            { title: "White Papers", url: "/whitepapers", column: 2 },
-            { title: "Case Studies", url: "/case-studies", column: 2 },
+            { title: "Documentation", url: "/docs" },
+            { title: "API Reference", url: "/api" },
+            { title: "Tutorials", url: "/tutorials" },
+            { title: "Webinars", url: "/webinars" },
+            { title: "White Papers", url: "/whitepapers" },
+            { title: "Case Studies", url: "/case-studies" },
           ],
         },
         {
           sectionTitle: "Support & Community",
           links: [
-            { title: "Help Center", url: "/help", column: 3 },
-            { title: "Community Forum", url: "/forum", column: 3 },
-            { title: "Contact Support", url: "/support", column: 3 },
-            { title: "Service Status", url: "/status", column: 4 },
-            { title: "Partner Portal", url: "/partners", column: 4 },
-            { title: "Developer Hub", url: "/developers", column: 4 },
+            { title: "Help Center", url: "/help" },
+            { title: "Community Forum", url: "/forum" },
+            { title: "Contact Support", url: "/support" },
+            { title: "Service Status", url: "/status" },
+            { title: "Partner Portal", url: "/partners" },
+            { title: "Developer Hub", url: "/developers" },
           ],
         },
       ],
@@ -373,37 +372,37 @@ export const examples: {
         {
           sectionTitle: "Platform",
           links: [
-            { title: "Dashboard", url: "/dashboard", column: 1 },
-            { title: "Analytics", url: "/analytics", column: 1 },
-            { title: "Integrations", url: "/integrations", column: 1 },
-            { title: "API", url: "/api", column: 1 },
+            { title: "Dashboard", url: "/dashboard" },
+            { title: "Analytics", url: "/analytics" },
+            { title: "Integrations", url: "/integrations" },
+            { title: "API", url: "/api" },
           ],
         },
         {
           sectionTitle: "Solutions",
           links: [
-            { title: "For Startups", url: "/solutions/startups", column: 2 },
-            { title: "For Enterprise", url: "/solutions/enterprise", column: 2 },
-            { title: "For Agencies", url: "/solutions/agencies", column: 2 },
-            { title: "For Developers", url: "/solutions/developers", column: 2 },
+            { title: "For Startups", url: "/solutions/startups" },
+            { title: "For Enterprise", url: "/solutions/enterprise" },
+            { title: "For Agencies", url: "/solutions/agencies" },
+            { title: "For Developers", url: "/solutions/developers" },
           ],
         },
         {
           sectionTitle: "Resources",
           links: [
-            { title: "Blog", url: "/blog", column: 1 },
-            { title: "Documentation", url: "/docs", column: 1 },
-            { title: "Help Center", url: "/help", column: 1 },
-            { title: "Community", url: "/community", column: 1 },
+            { title: "Blog", url: "/blog" },
+            { title: "Documentation", url: "/docs" },
+            { title: "Help Center", url: "/help" },
+            { title: "Community", url: "/community" },
           ],
         },
         {
           sectionTitle: "Company",
           links: [
-            { title: "About Us", url: "/about", column: 2 },
-            { title: "Careers", url: "/careers", column: 2 },
-            { title: "Press", url: "/press", column: 2 },
-            { title: "Legal", url: "/legal", column: 2 },
+            { title: "About Us", url: "/about" },
+            { title: "Careers", url: "/careers" },
+            { title: "Press", url: "/press" },
+            { title: "Legal", url: "/legal" },
           ],
         },
       ],

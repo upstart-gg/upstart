@@ -1,6 +1,5 @@
 import { type StringOptions, Type, type Static, type SchemaOptions } from "@sinclair/typebox";
 import { typedRef } from "~/shared/utils/typed-ref";
-import { prop } from "./prop";
 
 export function preset(defaultValue?: string) {
   return Type.Union(
@@ -231,15 +230,13 @@ type ColorPresetOptions = SchemaOptions & {
 
 export function colorPreset(opts?: ColorPresetOptions) {
   const { title = "Color preset", ...options } = opts ?? {};
-  return prop({
+  return Type.String({
     title,
-    schema: Type.String({
-      $id: "presets:color",
-      "ui:styleId": "presets:color",
-      "ui:field": "color-preset",
-      "ui:responsive": "desktop",
-      ...options,
-    }),
+    $id: "presets:color",
+    "ui:styleId": "presets:color",
+    "ui:field": "color-preset",
+    "ui:responsive": "desktop",
+    ...options,
   });
 }
 

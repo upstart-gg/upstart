@@ -1,33 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { Type } from "@sinclair/typebox";
-import { prop, group, defineProps, getGroupInfo, getStyleProperties } from "../helpers";
-import { manifest as sampleManifest } from "../../manifests/navbar.manifest";
+import { group, defineProps, getGroupInfo } from "../helpers";
 
 describe("Props helpers test suite", () => {
-  describe("prop", () => {
-    it("should create a schema with the correct title", () => {
-      const schema = Type.String();
-      const result = prop({ title: "Test Title", schema });
-      expect(result.title).toBe("Test Title");
-    });
-
-    it("should add description when provided", () => {
-      const schema = Type.String();
-      const result = prop({
-        title: "Test",
-        schema,
-        description: "Test description",
-      });
-      expect(result.description).toBe("Test description");
-    });
-
-    it("should add $id when provided", () => {
-      const schema = Type.String();
-      const result = prop({ title: "Test", schema, $id: "testId" });
-      expect(result.$id).toBe("testId");
-    });
-  });
-
   describe("group", () => {
     it("should create a group object with the correct title", () => {
       const children = {
