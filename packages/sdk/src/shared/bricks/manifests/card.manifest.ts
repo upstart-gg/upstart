@@ -114,7 +114,6 @@ export const manifest = defineBrickManifest({
             label: "Base 200 / Accent",
             value: { container: "bg-base-200 text-base-content border-accent" },
           },
-
           none: { label: "None", value: {} },
         },
         default: "primary",

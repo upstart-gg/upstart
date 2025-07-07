@@ -48,43 +48,11 @@ export const manifest = defineBrickManifest({
   datasource,
   duplicatable: false,
   resizable: false,
-  // maxHeight: {
-  //   desktop: 90,
-  //   mobile: 90,
-  // },
-  // minHeight: {
-  //   desktop: 60,
-  //   mobile: 60,
-  // },
   staticClasses: "flex-1",
   icon: VscLayoutPanelOff,
   iconClassName: "rotate-180",
-
   props: defineProps(
     {
-      // variants: optional(
-      //   Type.Array(
-      //     Type.Union(
-      //       [
-      //         Type.Literal("color-primary", { title: "Primary", "ui:variant-type": "color" }),
-      //         Type.Literal("color-secondary", { title: "Secondary", "ui:variant-type": "color" }),
-      //         Type.Literal("color-neutral", { title: "Neutral", "ui:variant-type": "color" }),
-      //         Type.Literal("color-dark", { title: "Dark", "ui:variant-type": "color" }),
-      //       ],
-      //       {
-      //         title: "Variant",
-      //         description: "Carousel variants.",
-      //       },
-      //     ),
-      //     {
-      //       default: ["color-primary"],
-      //       "ui:field": "variant",
-      //       "ui:variant-names": {
-      //         color: "Color",
-      //       },
-      //     },
-      //   ),
-      // ),
       colorPreset: optional(
         colorPresetRef({
           title: "Color preset",
@@ -207,20 +175,9 @@ export const manifest = defineBrickManifest({
           ),
         },
       }),
-      advanced: optional(
-        group({
-          title: "Advanced",
-          children: {
-            fixedPositioned: optional(fixedPositioned()),
-            // backgroundColor: optional(backgroundColorRef()),
-            // color: optional(colorRef()),
-            // border: optional(borderRef()),
-            shadow: optional(shadowRef()),
-          },
-        }),
-      ),
+      shadow: optional(shadowRef()),
     },
-    { noAlignSelf: true, noPreset: true },
+    { noAlignSelf: true },
   ),
 });
 
@@ -250,7 +207,6 @@ export const examples: {
           { urlOrPageId: "/contact" },
         ],
       },
-      advanced: {},
     },
   },
   {
@@ -262,7 +218,6 @@ export const examples: {
         src: "https://via.placeholder.com/100x35.png?text=Studio",
         alt: "Creative Studio logo",
       },
-      advanced: {},
       navigation: {
         position: "center",
         color: "#d1d5db",
@@ -280,11 +235,6 @@ export const examples: {
     type: "navbar",
     props: {
       brand: "TechCorp Solutions",
-      advanced: {
-        fixedPositioned: true,
-        shadow: "shadow-md",
-      },
-
       logo: {
         src: "https://via.placeholder.com/110x38.png?text=CloudFlow",
         alt: "CloudFlow platform logo",
@@ -327,9 +277,6 @@ export const examples: {
     type: "navbar",
     props: {
       brand: "TechCorp Solutions",
-      advanced: {
-        shadow: "shadow-sm",
-      },
       logo: {
         src: "https://via.placeholder.com/140x50.png?text=Agency+Logo",
         alt: "Digital agency logo",
@@ -352,9 +299,6 @@ export const examples: {
     type: "navbar",
     props: {
       brand: "TechCorp Solutions",
-      advanced: {
-        shadow: "shadow-lg",
-      },
       logo: {
         src: "https://via.placeholder.com/80x50.png?text=BV",
         alt: "Bella Vista restaurant logo",
@@ -376,7 +320,6 @@ export const examples: {
     type: "navbar",
     props: {
       brand: "TechCorp Solutions",
-      advanced: {},
       navigation: {
         position: "left",
         color: "#64748b",

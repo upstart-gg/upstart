@@ -72,6 +72,11 @@ export const manifest = defineBrickManifest({
             label: "Base 2",
             value: { container: "bg-base-200 text-base-content" },
           },
+          base300: {
+            previewBgClass: "bg-base-300 text-base-content",
+            label: "Base 3",
+            value: { container: "bg-base-300 text-base-content" },
+          },
           none: { label: "None", value: {} },
         },
         default: "primary",

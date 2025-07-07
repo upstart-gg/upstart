@@ -8,18 +8,18 @@ export type ColorType = keyof Theme["colors"];
 export type ElementColorType = "page-background" | "background" | "text" | "border" | "shadow";
 
 export const baseColorsLabels: Record<ColorType, string> = {
-  primary: "Primary",
-  secondary: "Secondary",
-  accent: "Accent",
-  neutral: "Neutral",
-  base100: "Base (level 1)",
+  primary: "Primary color",
+  secondary: "Secondary color",
+  accent: "Accent color",
+  neutral: "Neutral color",
+  base100: "Base color",
   base200: "Base (level 2)",
   base300: "Base (level 3)",
-  baseContent: "Base content",
-  primaryContent: "Primary content",
-  secondaryContent: "Secondary content",
-  accentContent: "Accent content",
-  neutralContent: "Neutral content",
+  baseContent: "Base content color",
+  primaryContent: "Primary content color",
+  secondaryContent: "Secondary content color",
+  accentContent: "Accent content color",
+  neutralContent: "Neutral content color",
 };
 
 export const shadeNumbers = [900, 800, 700, 600, 500, 400, 300, 200, 100, 50] as const;
@@ -111,7 +111,7 @@ export function generateColorsVars(theme: Theme) {
     const darkest = chroma(color).darken(2.5);
     const lightest = chroma(color).brighten(3.5);
 
-    const colorScale = chroma.scale([lightest, color, darkest]).domain([50, 500, 900]).mode("lab"); // Use LAB color space for better perceptual scaling
+    const colorScale = chroma.scale([lightest, color, darkest]).domain([50, 500, 900]).mode("lch"); // Use LCH color space for better perceptual scaling
 
     shadeNumbers.forEach((shade) => {
       const varName = `color-${kebabCase(colorName)}-${shade}`;

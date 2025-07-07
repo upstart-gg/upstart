@@ -13,7 +13,7 @@ const ColorPresetField: FC<FieldProps<string>> = (props) => {
   return (
     <div className="flex justify-between flex-1 gap-2 flex-wrap">
       <FieldTitle title={title} description={description} />
-      <div className="flex items-center gap-x-1.5 gap-y-2 flex-wrap">
+      <div className="flex items-center gap-x-2 gap-y-2 flex-wrap">
         {Object.entries(presets).map(([key, { previewBgClass: className, label }]) => (
           <Tooltip
             key={key}

@@ -6,11 +6,12 @@ import {
   type ElementColor,
   baseColorsLabels,
 } from "@upstart.gg/sdk/themes/color-system";
-import { Text, Select, Tabs, Inset } from "@upstart.gg/style-system/system";
+import { Text, Select, Tabs, Inset, Callout, Button } from "@upstart.gg/style-system/system";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { tx } from "@upstart.gg/style-system/twind";
 import { colorPalette } from "@upstart.gg/style-system/colors";
 import { useTheme } from "../hooks/use-editor";
+import type { Theme } from "@upstart.gg/sdk/shared/theme";
 
 const gradientMixs = [
   ["100", "200"],
@@ -226,30 +227,222 @@ const BaseColorPicker: FC<BaseColorPickerProps> = ({
     onChange(color, oklabValues);
   };
 
-  const isBaseColor = colorType.startsWith("base");
-  const palette =
-    colorType.startsWith("base") && colorType !== "baseContent" ? baseColorPalette : colorPalette;
-
+  const isBaseColor = colorType === "base100";
+  const isNeutralColor = colorType === "neutral";
+  const palette = isBaseColor
+    ? baseColorPalette
+    : isNeutralColor
+      ? generateNeutralOptions(theme)
+      : colorPalette;
   const cols = isBaseColor ? 3 : 7; // Adjust columns for base colors
+
+  if (isBaseColor) {
+    return (
+      <div>
+        <Text as="p" size="2" className="!capitalize !font-medium select-none">
+          {baseColorsLabels[colorType]}
+        </Text>
+        <Callout.Root className="mt-3 -mx-4 !py-2 !px-3 !rounded-none">
+          <Callout.Text size="1" className={tx("text-pretty")}>
+            Base color are very light or very dark colors that are used as backgrounds or for large areas. So
+            don't worry if those colors look too light or too dark, they are meant to!
+          </Callout.Text>
+        </Callout.Root>
+        <Tabs.Root defaultValue={theme.browserColorScheme}>
+          <Inset clip="padding-box" side="x" pb="current">
+            <Tabs.List size="1">
+              <Tabs.Trigger value="light" className="!flex-1">
+                Light
+              </Tabs.Trigger>
+              <Tabs.Trigger value="dark" className="!flex-1">
+                Dark
+              </Tabs.Trigger>
+            </Tabs.List>
+          </Inset>
+          <Tabs.Content value="light">
+            <div className={`flex flex-wrap gap-3`}>
+              {Object.entries(palette).map(([colorName, shades], i) =>
+                Object.entries(shades as Record<string, string>)
+                  .filter((shade) => {
+                    const shadeInt = parseInt(shade[0], 10);
+                    return shadeInt <= 100;
+                  })
+                  .map(([shadeName, color]) => {
+                    // Convert color to oklch format
+                    // @ts-ignore oklch is a valid color format
+                    return [shadeName, chroma(color).css("oklch")];
+                  })
+                  .map(([shadeName, color]) => (
+                    <button
+                      type="button"
+                      id={`${colorName}-${shadeName}`}
+                      key={`${colorName}-${shadeName}`}
+                      className={tx(
+                        "outline outline-gray-200 outline-offset-1  transition-transform hover:scale-110 focus:outline-upstart-300",
+                        "w-6 h-6 rounded-full",
+                        selectedColor === color && "outline-upstart-300",
+                      )}
+                      style={{
+                        background: color,
+                      }}
+                      onClick={() => handleColorSelect(color, chroma(color).oklab())}
+                      aria-label={`Select color ${color}`}
+                    />
+                  )),
+              )}
+              <Button
+                size="1"
+                variant="outline"
+                className="!mt-1 self-stretch !basis-full block"
+                onClick={() => handleColorSelect("#ffffff", chroma("#ffffff").oklab())}
+              >
+                Full white
+              </Button>
+            </div>
+          </Tabs.Content>
+          <Tabs.Content value="dark">
+            <div className={`flex flex-wrap gap-3`}>
+              {Object.entries(palette).map(([colorName, shades], i) =>
+                Object.entries(shades as Record<string, string>)
+                  .filter((shade) => {
+                    const shadeInt = parseInt(shade[0], 10);
+                    return shadeInt >= 900;
+                  })
+                  .map(([shadeName, color]) => {
+                    // Convert color to oklch format
+                    // @ts-ignore oklch is a valid color format
+                    return [shadeName, chroma(color).css("oklch")];
+                  })
+                  .map(([shadeName, color]) => (
+                    <button
+                      type="button"
+                      id={`${colorName}-${shadeName}`}
+                      key={`${colorName}-${shadeName}`}
+                      className={tx(
+                        "outline outline-gray-200 outline-offset-1 transition-transform hover:scale-110 focus:outline-upstart-300",
+                        "w-6 h-6 rounded-full",
+                        selectedColor === color && "outline-upstart-300",
+                      )}
+                      style={{
+                        background: color,
+                      }}
+                      onClick={() => handleColorSelect(color, chroma(color).oklab())}
+                      aria-label={`Select color ${color}`}
+                    />
+                  )),
+              )}
+              <Button
+                size="1"
+                variant="outline"
+                className="!mt-1 self-stretch !basis-full block"
+                onClick={() => handleColorSelect("#000000", chroma("#000000").oklab())}
+              >
+                Full black
+              </Button>
+            </div>
+          </Tabs.Content>
+        </Tabs.Root>
+
+        {/* Color circles */}
+
+        {/* Current color display */}
+        <div className="flex items-center gap-3 p-2 bg-gray-100 rounded mt-2">
+          <div
+            className="w-8 h-8 flex-nowrap shrink-0 aspect-square rounded-md shadow-sm"
+            style={{ background: selectedColor }}
+          />
+          <code className="text-xs text-gray-600">{selectedColor}</code>
+        </div>
+
+        <form
+          className="group mt-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const color = new FormData(e.currentTarget).get("customColor") as string;
+            invariant(color, "Color is required");
+            handleColorSelect(color, chroma(color).oklab());
+          }}
+        >
+          {/* <div className={tx("flex text-sm gap-x-1")}>
+          {colorType !== "primary" && (
+            <div className="flex flex-col items-start justify-start gap-y-1 flex-shrink basis-1/2">
+              <Text color="gray">Suggestions:</Text>
+              <div className="gap-1">
+                {suggestedColors.map((suggestion) => (
+                  <button
+                    key={suggestion.color}
+                    type="button"
+                    className="w-6 h-6 mr-1 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    style={{ backgroundColor: suggestion.color }}
+                    onClick={() => handleColorSelect(suggestion.color, chroma(suggestion.color).oklab())}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+           <div className="flex flex-col gap-y-1 items-start justify-start basis-1/2">
+            <Text color="gray">Use a custom color</Text>
+            <div className="flex gap-x-1">
+              <TextField.Root
+                required
+                name="customColor"
+                placeholder="#123456"
+                size="1"
+                className="w-20"
+                pattern="#[0-9a-fA-F]{6}"
+                maxLength={7}
+              />
+              <Button
+                size="1"
+                variant="soft"
+                className="mr-2 group-invalid:pointer-events-none group-invalid:opacity-60"
+                type="submit"
+              >
+                Save
+              </Button>
+            </div>
+          </div>
+        </div> */}
+        </form>
+      </div>
+    );
+  }
 
   return (
     <div>
       <Text as="p" size="2" color="gray" className="!capitalize !font-medium">
-        {baseColorsLabels[colorType]} foo
+        {baseColorsLabels[colorType]}
       </Text>
-
       {/* Color circles */}
+      {colorType.endsWith("Content") && (
+        <Callout.Root className="mt-3 -mx-4 !py-2 !px-3 !rounded-none">
+          <Callout.Text size="1" className={tx("text-pretty")}>
+            Text content colors are auto-generated when you select the associated background color. We
+            recommend using the generated one, but you can also select a different one if you want.
+          </Callout.Text>
+        </Callout.Root>
+      )}
+      {colorType === "neutral" && (
+        <Callout.Root className="mt-3 -mx-4 !py-2 !px-3 !rounded-none">
+          <Callout.Text size="1" className={tx("text-pretty")}>
+            Neutral color is a subdued color derived from the primary color. It is used for backgrounds and
+            elements that need to be less prominent.
+          </Callout.Text>
+        </Callout.Root>
+      )}
       <div
-        className={`grid grid-cols-${cols} gap-2 mt-3 p-3 pr-6 max-h-[45dvh] overflow-y-scroll scrollbar-thin scrollbar-gutter-stable-both scrollbar-color-violet`}
+        className={tx(
+          `grid grid-cols-${cols} gap-3 mt-3 pt-1 pb-1 pl-1 w-full pr-5 max-h-[45dvh] overflow-y-scroll scrollbar-thin scrollbar-color-violet`,
+        )}
+        style={{
+          scrollbarGutter: "stable",
+        }}
       >
         {Object.entries(palette).map(([colorName, shades], i) =>
           Object.entries(shades as Record<string, string>)
             .filter((shade) => {
               const shadeInt = parseInt(shade[0], 10);
-              if (colorType === "base100") {
-                return theme.browserColorScheme === "light" ? shadeInt <= 200 : shadeInt >= 800;
-              }
-              return isBaseColor || (shadeInt >= 200 && shadeInt <= 800);
+              return isNeutralColor || (shadeInt >= 200 && shadeInt <= 800);
             })
             .map(([shadeName, color]) => (
               <button
@@ -257,7 +450,7 @@ const BaseColorPicker: FC<BaseColorPickerProps> = ({
                 id={`${colorName}-${shadeName}`}
                 key={`${colorName}-${shadeName}`}
                 className={tx(
-                  "outline outline-gray-200  transition-transform hover:scale-110 focus:outline-upstart-300",
+                  "outline outline-gray-200 outline-offset-1 transition-transform hover:scale-110 focus:outline-upstart-300",
                   //isBaseColor ? "w-5 h-5 aspect-square rounded-full" :
                   "w-6 h-6 rounded-full",
                   selectedColor === color && "outline-upstart-300",
@@ -274,8 +467,11 @@ const BaseColorPicker: FC<BaseColorPickerProps> = ({
 
       {/* Current color display */}
       <div className="flex items-center gap-3 p-2 bg-gray-100 rounded mt-3">
-        <div className="w-8 h-8 flex-nowrap rounded-md shadow-sm" style={{ background: selectedColor }} />
-        <code className="text-xs font-mono">{selectedColor}</code>
+        <div
+          className="w-8 h-8 flex-nowrap shrink-0 aspect-square rounded-md shadow-sm"
+          style={{ background: selectedColor }}
+        />
+        <code className="text-xs">{selectedColor}</code>
       </div>
 
       <form
@@ -687,4 +883,113 @@ function ButtonsBar({
       ))}
     </div>
   );
+}
+
+type RelationshipType = "same-hue" | "analogous" | "temperature" | "complementary";
+
+/**
+ * Generates a related neutral color from an OKLCH primary color
+ * @param oklchColor - OKLCH color string like "oklch(70% 0.15 200)"
+ * @param relationship - Type of relationship to create
+ * @returns OKLCH string for the neutral color
+ */
+export function generateRelatedNeutral(
+  oklchColor: string,
+  relationship: RelationshipType = "same-hue",
+): string {
+  try {
+    // Convert OKLCH to a format chroma.js can handle better
+    // First convert to hex, then work with that
+    const primaryColor = chroma(oklchColor);
+
+    // Get HSL for easier hue manipulation
+    const hsl = primaryColor.hsl();
+    const [h, s, l] = hsl;
+
+    let neutralHue: number;
+    let neutralSaturation: number;
+    const neutralLightness = 45; // 45% lightness for neutral
+
+    switch (relationship) {
+      case "same-hue":
+        // Keep the exact same hue, but very desaturated
+        neutralHue = h;
+        neutralSaturation = 0.05; // Fixed low saturation
+        break;
+
+      case "analogous":
+        // Shift hue by 60 degrees for clear distinction
+        neutralHue = (h + 60) % 360;
+        neutralSaturation = 0.08; // Slightly more saturated for visibility
+        break;
+
+      case "temperature": {
+        // Create distinctly warm or cool neutral regardless of primary
+        const isWarmPrimary = h >= 30 && h <= 150; // Narrower warm range
+        if (isWarmPrimary) {
+          // For warm primary, use distinctly cool neutral
+          neutralHue = 210; // Cool blue
+          neutralSaturation = 0.12;
+        } else {
+          // For cool primary, use distinctly warm neutral
+          neutralHue = 30; // Warm orange-brown
+          neutralSaturation = 0.12;
+        }
+        break;
+      }
+
+      case "complementary":
+        // Use true complementary hue with moderate saturation
+        neutralHue = (h + 180) % 360;
+        neutralSaturation = 0.1; // More saturated to show the complementary relationship
+        break;
+
+      default:
+        console.warn("Unknown relationship type, defaulting to same-hue");
+        neutralHue = h;
+        neutralSaturation = 0.05;
+    }
+
+    // Create the neutral color using chroma.js HSL
+    const neutralColor = chroma.hsl(neutralHue, neutralSaturation, neutralLightness / 100);
+
+    // Return as OKLCH string
+    // @ts-ignore oklch is a valid color format
+    return neutralColor.css("oklch");
+  } catch (error) {
+    console.warn("Error generating related neutral:", error);
+    // Fallback to a safe neutral gray
+    return "oklch(45% 0.02 240)";
+  }
+}
+
+/**
+ * Generates multiple neutral options from a primary color
+ * @param oklchColor - OKLCH color string
+ * @returns Object with different neutral relationship options
+ */
+function generateNeutralOptions(theme: Theme) {
+  return {
+    primary: {
+      default: generateRelatedNeutral(theme.colors.primary, "same-hue"),
+    },
+    primary_temperature: {
+      default: generateRelatedNeutral(theme.colors.primary, "temperature"),
+    },
+    primary_analogous: {
+      default: generateRelatedNeutral(theme.colors.primary, "analogous"),
+    },
+    primary_complementary: {
+      default: generateRelatedNeutral(theme.colors.primary, "complementary"),
+    },
+    pureGray: {
+      default: "oklch(45% 0 0)",
+    },
+    coolGray: {
+      default: "oklch(45% 0.02 240)",
+    },
+    warmGray: {
+      default: "oklch(45% 0.03 40)",
+    },
+  };
 }
