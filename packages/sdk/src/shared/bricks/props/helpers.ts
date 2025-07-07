@@ -5,6 +5,7 @@ import { type TProperties, Type, type TSchema, type TObject, type ObjectOptions 
 import { commonProps } from "./common";
 import type { PartialBy, PropGroup, GroupMetadata } from "./types";
 import { get } from "lodash-es";
+import { resolveSchema } from "~/shared/utils/schema-resolver";
 // import { resolveSchema } from "~/shared/utils/schema-resolver";
 
 function isTObject(schema: TSchema | TProperties): schema is TObject {
@@ -92,8 +93,8 @@ export type StyleId = string;
 export function getStyleProperties(schema: TSchema, path = "", styles: Record<PropertyPath, StyleId> = {}) {
   if (schema.type === "object") {
     for (const key in schema.properties) {
-      // const prop = resolveSchema(schema.properties[key]);
-      const prop = schema.properties[key];
+      const prop = resolveSchema(schema.properties[key]);
+      // const prop = schema.properties[key];
       if (prop["ui:styleId"]) {
         styles[`${path}${key}`] = prop["ui:styleId"];
       }

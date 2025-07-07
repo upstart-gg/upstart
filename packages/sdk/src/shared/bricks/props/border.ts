@@ -85,6 +85,7 @@ export function border(title = "Border") {
 
 export function borderRef(options: SchemaOptions = {}) {
   return typedRef("styles:border", options);
+  // return typedRef("styles:border", { "ui:styleId": "styles:border", ...options });
 }
 
 export type BorderSettings = Static<ReturnType<typeof border>>;

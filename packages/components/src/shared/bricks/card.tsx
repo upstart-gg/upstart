@@ -12,6 +12,8 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
   const presetClasses = useColorPreset<Manifest>(brick);
   const classes = Object.values(styles);
 
+  console.log("card styles", styles);
+
   if (!props.cardTitle && !props.cardBody) {
     // Put some sample content in the card if both title and body are empty
     props.cardTitle = "Card Title";

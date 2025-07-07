@@ -46,6 +46,7 @@ export function textShadow({
       enumNames: ["None", "Small", "Medium", "Large", "Extra large"],
       "ui:placeholder": "Not specified",
       "ui:field": "enum",
+      "ui:styleId": "styles:textShadow",
     },
   );
 }

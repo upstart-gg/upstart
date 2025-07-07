@@ -13,7 +13,7 @@ const ColorPresetField: FC<FieldProps<string>> = (props) => {
   return (
     <div className="flex justify-between flex-1 gap-2 flex-wrap">
       <FieldTitle title={title} description={description} />
-      <div className="flex items-center gap-x-2 gap-y-2 flex-wrap">
+      <div className="flex items-center gap-x-[7px] gap-y-2 flex-wrap">
         {Object.entries(presets).map(([key, { previewBgClass: className, label }]) => (
           <Tooltip
             key={key}
@@ -28,8 +28,9 @@ const ColorPresetField: FC<FieldProps<string>> = (props) => {
               }}
               type="button"
               className={tx(
+                className,
                 "h-6 w-6 rounded-full outline outline-offset-1  shadow-upstart-300 relative inline-flex items-center justify-center",
-                `${className} hover:opacity-90`,
+                `hover:opacity-90`,
                 currentValue === key ? "outline-2 outline-upstart-500" : "outline-1 outline-gray-300",
               )}
             >

@@ -9,7 +9,7 @@ import { BsAlphabetUppercase } from "react-icons/bs";
 import type { BrickProps } from "../props/types";
 import { colorRef } from "../props/color";
 import { Type } from "@sinclair/typebox";
-import { shadowRef } from "../props/effects";
+import { shadowRef, textShadow } from "../props/effects";
 import { StringEnum } from "~/shared/utils/string-enum";
 
 export const manifest = defineBrickManifest({
@@ -39,6 +39,7 @@ It is typically used on home pages to grab the user's attention.
     ),
     background: Type.Optional(backgroundRef()),
     color: Type.Optional(colorRef()),
+    textShadow: Type.Optional(textShadow()),
     layout: Type.Optional(
       StringEnum(["centered", "sided"], {
         title: "Layout",
@@ -46,8 +47,11 @@ It is typically used on home pages to grab the user's attention.
         enumNames: ["Centered", "Sided"],
       }),
     ),
-    padding: Type.Optional(paddingRef()),
-    border: Type.Optional(borderRef()),
+    padding: Type.Optional(
+      paddingRef({
+        default: "p-2",
+      }),
+    ),
   }),
 });
 
@@ -100,11 +104,6 @@ export const examples: {
       content: "Justice You Can Trust",
       tagline: "Experienced legal representation for individuals and businesses",
       padding: "p-8",
-      border: {
-        width: "border-2",
-        color: "border-gray-800",
-        rounding: "rounded-lg",
-      },
     },
   },
   {
@@ -113,9 +112,6 @@ export const examples: {
     props: {
       content: "Capturing Life's Moments",
       tagline: "Professional photography services for weddings, portraits, and events",
-      border: {
-        rounding: "rounded-lg",
-      },
     },
   },
 ];

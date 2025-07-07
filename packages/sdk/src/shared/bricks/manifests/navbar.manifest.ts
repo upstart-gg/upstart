@@ -86,10 +86,20 @@ export const manifest = defineBrickManifest({
               label: "Secondary darker",
               value: { container: "bg-secondary-dark text-secondary-content" },
             },
+            "neutral-light": {
+              previewBgClass: "bg-neutral-light text-neutral-content-light",
+              value: { container: "bg-neutral-light text-neutral-content-light" },
+              label: "Neutral lighter",
+            },
             neutral: {
               previewBgClass: "bg-neutral text-neutral-content",
               label: "Neutral",
               value: { container: "bg-neutral text-neutral-content" },
+            },
+            "neutral-dark": {
+              previewBgClass: "bg-neutral-dark text-neutral-content",
+              label: "Neutral darker",
+              value: { container: "bg-neutral-dark text-neutral-content" },
             },
             base100: {
               previewBgClass: "bg-base-100 text-base-content",

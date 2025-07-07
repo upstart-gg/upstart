@@ -199,17 +199,17 @@ export default defineConfig({
     ["object-top-right", { objectPosition: "top right" }],
 
     ["hero", { "&::first-line": { lineHeight: "1", margin: "0" } }],
-    ["hero-size-1", { fontSize: "clamp(2.25rem, 1.467rem + 3.913vw, 4.5rem)", lineHeight: "1.1" }],
-    ["hero-size-2", { fontSize: "clamp(3.5rem, 2.717rem + 3.913vw, 5.75rem)", lineHeight: "1.1" }],
-    ["hero-size-3", { fontSize: "clamp(4.75rem, 3.967rem + 3.913vw, 7rem)", lineHeight: "1.1" }],
-    ["hero-size-4", { fontSize: "clamp(6rem, 5.217rem + 3.913vw, 8.25rem)", lineHeight: "1.1" }],
-    ["hero-size-5", { fontSize: "clamp(7.25rem, 6.467rem + 3.913vw, 9.5rem)", lineHeight: "1.1" }],
+    ["hero-size-1", { fontSize: "clamp(2.25rem, 1.467rem + 3.913cqw, 4.5rem)", lineHeight: "1.1" }],
+    ["hero-size-2", { fontSize: "clamp(3.5rem, 2.717rem + 3.913cqw, 5.75rem)", lineHeight: "1.1" }],
+    ["hero-size-3", { fontSize: "clamp(4.75rem, 3.967rem + 3.913cqw, 7rem)", lineHeight: "1.1" }],
+    ["hero-size-4", { fontSize: "clamp(6rem, 5.217rem + 3.913cqw, 8.25rem)", lineHeight: "1.1" }],
+    ["hero-size-5", { fontSize: "clamp(7.25rem, 6.467rem + 3.913cqw, 9.5rem)", lineHeight: "1.1" }],
 
     ["text-shadow-none", { textShadow: "none" }],
     ["text-shadow-sm", { textShadow: "0 1px 2px rgba(0, 0, 0, 0.15)" }],
     ["text-shadow-md", { textShadow: "0 2px 4px rgba(0, 0, 0, 0.2)" }],
-    ["text-shadow-lg", { textShadow: "0 4px 8px rgba(0, 0, 0, 0.25)" }],
-    ["text-shadow-xl", { textShadow: "0 6px 12px rgba(0, 0, 0, 0.3)" }],
+    ["text-shadow-lg", { textShadow: "0 3px 6px rgba(0, 0, 0, 0.2)" }],
+    ["text-shadow-xl", { textShadow: "0 5px 10px rgba(0, 0, 0, 0.2)" }],
 
     ["text-pretty", { textWrap: "pretty" }],
     ["text-balance", { textWrap: "balance" }],
@@ -266,6 +266,7 @@ export default defineConfig({
           950: "#262626",
         },
         base: {
+          default: "var(--color-base-100)",
           100: "var(--color-base-100)",
           200: "var(--color-base-200)",
           300: "var(--color-base-300)",

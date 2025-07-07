@@ -15,21 +15,20 @@ const Hero = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
     <div
       className={tx(
         "flex-1 flex",
-        // ...classes,
+        ...classes,
         props.layout === "sided" ? "flex-row gap-[10%]" : "flex-col gap-[10%] items-center justify-center",
       )}
       ref={ref}
     >
       <div
         className={tx(
-          "flex-1 flex flex-col gap-[5%]",
-          props.layout === "sided" ? "items-start" : "place-items-center text-center",
+          "flex-1 flex flex-col gap-[5%] justify-center",
+          props.layout === "sided" ? "items-start text-left " : "place-items-center text-center",
         )}
       >
         <TextContent
           as="h1"
           propPath="content"
-          className={tx(" ", props.layout === "centered" ? "text-center" : "text-center")}
           brickId={brick.id}
           content={props.content}
           textSizeMode="hero"
@@ -39,10 +38,7 @@ const Hero = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
         <TextContent
           as="h4"
           propPath="tagline"
-          className={tx(
-            "tagline text-2xl font-bold text-balance opacity-80",
-            props.layout === "centered" ? "text-center" : "text-left",
-          )}
+          className={tx("tagline text-2xl font-bold text-balance opacity-80")}
           brickId={brick.id}
           content={props.tagline}
           editable={editable}

@@ -76,10 +76,10 @@ function getSectionEditorStyles({ section, editable, selected, previewMode }: Us
   }
   return [
     "select-none transition-[outline] duration-150 relative",
-    "outline-dashed outline-2 -outline-offset-2 hover:(outline-upstart-500/60 shadow-upstart-500/20)",
+    "outline-dotted outline-4 -outline-offset-4",
     "self-stretch",
 
-    selected ? "outline-upstart-500" : "outline-transparent",
+    selected ? "outline-black/40" : "outline-transparent",
 
     // this is the grid overlay shown when dragging
     editable &&
