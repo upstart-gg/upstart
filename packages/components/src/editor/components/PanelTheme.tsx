@@ -3,24 +3,21 @@ import { forwardRef, useState, type ComponentProps } from "react";
 import { LuArrowRightCircle } from "react-icons/lu";
 import { nanoid } from "nanoid";
 import { type Theme, themeSchema, type FontType } from "@upstart.gg/sdk/shared/theme";
-import { useDraft, useEditorHelpers, useThemes } from "~/editor/hooks/use-editor";
+import { useDraft, useEditorHelpers, useTheme, useThemes } from "~/editor/hooks/use-editor";
 import { ColorFieldRow } from "./json-form/fields/color";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
-import { getContrastingTextColor, type ColorType } from "@upstart.gg/sdk/shared/themes/color-system";
+import { getContrastingTextColor, chroma, type ColorType } from "@upstart.gg/sdk/shared/themes/color-system";
 import FontPicker from "./json-form/fields/font";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";
 import ThemePreview from "./ThemePreview";
-import invariant from "@upstart.gg/sdk/shared/utils/invariant";
+import { generateRelatedNeutral } from "./ColorPicker";
 
 export default function ThemePanel() {
   const draft = useDraft();
   const [genListRef] = useAutoAnimate(/* optional config */);
   const baseSizes = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
-
-  invariant(draft.theme, "ThemePanel: No theme found");
-
-  const theme = draft.theme;
+  const theme = useTheme();
 
   return (
     <Tabs.Root defaultValue="current">
@@ -43,44 +40,70 @@ export default function ThemePanel() {
         <div className="flex flex-col">
           <PanelBlockTitle className="-mx-2 my-2">Colors</PanelBlockTitle>
           <div className="grid grid-cols-2 gap-x-3 text-sm flex-col gap-y-3 pb-2">
-            {Object.entries(draft.theme.colors).map(([colorType, color]) => (
-              <ColorFieldRow
-                key={colorType}
-                hideColorLabel
-                labelPlacement="right"
-                /* @ts-ignore */
-                name={themeSchema.properties.colors.properties[colorType].title}
-                /* @ts-ignore */
-                description={themeSchema.properties.colors.properties[colorType].description}
-                color={color}
-                labelClassName="font-medium"
-                colorType={colorType as ColorType}
-                onChange={(newColor: string) => {
-                  const colors = { [colorType]: newColor };
-
-                  if (
-                    ["primary", "secondary", "accent", "neutral", "base100", "base200", "base300"].includes(
-                      colorType,
-                    )
-                  ) {
-                    const textColor = getContrastingTextColor(newColor);
-                    if (colorType.startsWith("base")) {
-                      colors.baseContent = textColor;
-                    } else {
-                      colors[`${colorType}Content`] = textColor;
+            {Object.entries(draft.theme.colors)
+              // Don't show base200 and base300 in the color picker because they are automatically computed
+              .filter(
+                ([colorType]) =>
+                  ["base200", "base300"].includes(colorType) === false &&
+                  colorType.endsWith("Content") === false,
+              )
+              .map(([colorType, color]) => (
+                <ColorFieldRow
+                  key={colorType}
+                  hideColorLabel
+                  labelPlacement="right"
+                  /* @ts-ignore */
+                  name={themeSchema.properties.colors.properties[colorType].title}
+                  /* @ts-ignore */
+                  description={themeSchema.properties.colors.properties[colorType].description}
+                  color={color}
+                  labelClassName="font-medium"
+                  colorType={colorType as ColorType}
+                  onChange={(newColor: string) => {
+                    const colors = { [colorType]: newColor };
+                    let browserColorScheme = theme.browserColorScheme;
+                    if (
+                      ["primary", "secondary", "accent", "neutral", "base100", "base200", "base300"].includes(
+                        colorType,
+                      )
+                    ) {
+                      const color = chroma(newColor);
+                      const textColor = getContrastingTextColor(newColor);
+                      if (!colorType.startsWith("base")) {
+                        colors[`${colorType}Content`] = textColor;
+                        if (colorType === "primary") {
+                          // Update neutral color based on primary
+                          // @ts-ignore oklch is a valid color format
+                          colors.neutral = generateRelatedNeutral(color.css("oklch"));
+                        }
+                        // If color is base100, we need to compute the baseContent as well as base200 and base300
+                      } else if (colorType === "base100") {
+                        // check if it's a dark or a light color
+                        const isDark = color.luminance() < 0.5;
+                        // update browserColorScheme based on the lightness of base100
+                        browserColorScheme = isDark ? "dark" : "light";
+                        // set base100 content color
+                        colors.baseContent = textColor;
+                        const [l] = color.lch();
+                        const base200 = isDark ? color.set("lch.l", l + 10) : color.set("lch.l", l - 4);
+                        const base300 = isDark ? color.set("lch.l", l + 20) : color.set("lch.l", l - 8);
+                        // @ts-ignore oklch is a valid color format
+                        colors.base200 = base200.css("oklch");
+                        // @ts-ignore oklch is a valid color format
+                        colors.base300 = base300.css("oklch");
+                      }
                     }
-                  }
-
-                  draft.setTheme({
-                    ...theme,
-                    colors: {
-                      ...theme.colors,
-                      ...colors,
-                    },
-                  });
-                }}
-              />
-            ))}
+                    draft.setTheme({
+                      ...theme,
+                      browserColorScheme,
+                      colors: {
+                        ...theme.colors,
+                        ...colors,
+                      },
+                    });
+                  }}
+                />
+              ))}
           </div>
 
           <PanelBlockTitle className="-mx-2 my-2">Typography</PanelBlockTitle>

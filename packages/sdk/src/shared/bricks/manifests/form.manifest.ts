@@ -1,5 +1,5 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, optional, prop } from "../props/helpers";
+import { defineProps } from "../props/helpers";
 import { FaWpforms } from "react-icons/fa6";
 import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
@@ -8,6 +8,7 @@ import { paddingRef } from "../props/padding";
 import { backgroundColorRef } from "../props/background";
 import { colorRef } from "../props/color";
 import { datarecord } from "../props/datarecord";
+import { Type } from "@sinclair/typebox";
 
 export const manifest = defineBrickManifest({
   type: "form",
@@ -19,23 +20,19 @@ There is no need to define the form fields manually and the form does not accept
   isContainer: false,
   icon: FaWpforms,
   props: defineProps({
-    title: optional(string("Title", { description: "The title of the form", default: "My form" })),
-    intro: optional(string("Intro", { description: "The intro text of the form" })),
+    title: Type.Optional(string("Title", { description: "The title of the form", default: "My form" })),
+    intro: Type.Optional(string("Intro", { description: "The intro text of the form" })),
     datarecordId: datarecord("Datarecord ID", {
       description: "The ID of the datarecord to use to generate the form fields",
     }),
-    padding: optional(paddingRef()),
-    backgroundColor: optional(backgroundColorRef()),
-    color: optional(colorRef()),
-    align: optional(
-      prop({
+    padding: Type.Optional(paddingRef()),
+    backgroundColor: Type.Optional(backgroundColorRef()),
+    color: Type.Optional(colorRef()),
+    align: Type.Optional(
+      StringEnum(["vertical", "horizontal"], {
+        default: "vertical",
         title: "Alignment",
         description: "The alignment of the form fields. Default is vertical",
-        schema: StringEnum(["vertical", "horizontal"], {
-          default: "vertical",
-          title: "Form alignment",
-          description: "Choose between vertical or horizontal alignment for the form fields",
-        }),
       }),
     ),
   }),

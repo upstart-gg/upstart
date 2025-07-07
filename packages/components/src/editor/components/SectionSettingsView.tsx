@@ -17,22 +17,25 @@ export default function SectionSettingsView({ section, group }: SectionSettingsV
   const previewMode = usePreviewMode();
   const [showAdvanced, setShowAdvanced] = useLocalStorage("upstart:editor:show-advanced", false);
 
-  const filter: SchemaFilter = (prop) => {
-    return (
-      (typeof prop.metadata?.["ui:responsive"] === "undefined" ||
-        prop.metadata?.["ui:responsive"] === true ||
-        prop.metadata?.["ui:responsive"] === previewMode) &&
-      (typeof prop["ui:responsive"] === "undefined" ||
-        prop["ui:responsive"] === true ||
-        prop["ui:responsive"] === previewMode) &&
-      (!prop.metadata?.category || prop.metadata?.category === "settings") &&
-      (!prop["ui:advanced"] || showAdvanced)
-      /* &&
+  const filter: SchemaFilter = useCallback(
+    (prop) => {
+      return (
+        (typeof prop.metadata?.["ui:responsive"] === "undefined" ||
+          prop.metadata?.["ui:responsive"] === true ||
+          prop.metadata?.["ui:responsive"] === previewMode) &&
+        (typeof prop["ui:responsive"] === "undefined" ||
+          prop["ui:responsive"] === true ||
+          prop["ui:responsive"] === previewMode) &&
+        (!prop.metadata?.category || prop.metadata?.category === "settings") &&
+        (!prop["ui:advanced"] || showAdvanced)
+        /* &&
       (!group || !prop.metadata?.group || (prop.metadata?.group && key === group))*/
-    );
-  };
+      );
+    },
+    [previewMode, showAdvanced],
+  );
 
-  const navItems = getNavItemsFromManifest(sectionSchema.properties.props, filter);
+  const navItems = useMemo(() => getNavItemsFromManifest(sectionSchema.properties.props, filter), [filter]);
 
   const formData = useMemo(() => {
     const defProps = getSchemaObjectDefaults(sectionSchema.properties.props);
@@ -49,10 +52,14 @@ export default function SectionSettingsView({ section, group }: SectionSettingsV
         return;
       }
       // Note: this is a weird way to update the brick props, but it'it allows us to deal with frozen trees
-      const props = JSON.parse(JSON.stringify(section?.props ?? {}));
+      const props = structuredClone(section?.props ?? {});
       // `propertyChangedPath` can take the form of `a.b.c` which means we need to update `props.a.b.c`
       // For this we use lodash.set
       set(props, propertyChangedPath, data[propertyChangedPath]);
+
+      console.log("SectionSettingsView onChange", {
+        props,
+      });
       // Update the brick props in the store
       updateSectionProps(section.id, props, previewMode === "mobile");
     },
@@ -61,6 +68,7 @@ export default function SectionSettingsView({ section, group }: SectionSettingsV
 
   return (
     <FormNavigator
+      key={`section-settings-${section.id}-${previewMode}`}
       title={`Section settings`}
       initialGroup={group}
       navItems={navItems}

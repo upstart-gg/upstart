@@ -40,7 +40,6 @@ import { getJSONSchemaFieldsList } from "../utils/json-field-list";
 import Highlight from "@tiptap/extension-highlight";
 import { menuBarBtnActiveCls, menuBarBtnCls, menuBarBtnCommonCls } from "../styles/menubar-styles";
 import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
-import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import type { TSchema } from "@sinclair/typebox";
 import { tx } from "@upstart.gg/style-system/twind";
 
@@ -253,8 +252,9 @@ const TextEditor = <T extends ElementType = "div">({
       setFocused(true);
       setTimeout(() => {
         const container = document.querySelector<HTMLDivElement>(`#text-editor-menu-${brickId}`);
-        invariant(container, "Menu container not found");
-        setMenuBarContainer(container);
+        if (container) {
+          setMenuBarContainer(container);
+        }
       }, 0);
     };
 

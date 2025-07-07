@@ -1,5 +1,4 @@
-import { type SchemaOptions, Type, type StringOptions } from "@sinclair/typebox";
-import { prop } from "./helpers";
+import { type SchemaOptions, Type } from "@sinclair/typebox";
 
 type EnumOption = {
   title?: string;
@@ -22,21 +21,18 @@ export function enumProp(
   };
   const { options, displayAs, ...commonOpts } = opts;
 
-  return prop({
-    title,
-    schema: Type.Union(
-      options.map((opt) =>
-        Type.Literal(typeof opt === "string" ? opt : opt.value, {
-          title: typeof opt === "string" ? opt : opt.title,
-          "ui:icon": typeof opt === "string" ? undefined : opt.icon,
-        }),
-      ),
-      {
-        title,
-        default: defaultValue,
-        ...defaultOpts,
-        ...commonOpts,
-      },
+  return Type.Union(
+    options.map((opt) =>
+      Type.Literal(typeof opt === "string" ? opt : opt.value, {
+        title: typeof opt === "string" ? opt : opt.title,
+        "ui:icon": typeof opt === "string" ? undefined : opt.icon,
+      }),
     ),
-  });
+    {
+      title,
+      default: defaultValue,
+      ...defaultOpts,
+      ...commonOpts,
+    },
+  );
 }

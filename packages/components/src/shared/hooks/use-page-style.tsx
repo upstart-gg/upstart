@@ -12,40 +12,38 @@ type UsePageStyleProps = {
   showIntro?: boolean;
 };
 
-export function useBodyStyle({ attributes }: { attributes: Attributes }) {
-  return tx(
-    isStandardColor(attributes.$bodyBackground?.color) &&
-      css({ backgroundColor: attributes.$bodyBackground?.color as string }),
-    !isStandardColor(attributes.$bodyBackground?.color) && (attributes.$bodyBackground?.color as string),
-    typeof attributes.$bodyBackground?.image === "string" &&
-      css({
-        backgroundImage: `url(${attributes.$bodyBackground.image})`,
-        backgroundRepeat: "no-repeat",
-        backgroundSize: attributes.$bodyBackground.size ?? "cover",
-        backgroundPosition: "center top",
-      }),
-  );
-}
+// export function useBodyStyle({ attributes }: { attributes: Attributes }) {
+//   return tx(
+//     isStandardColor(attributes.$bodyBackground?.color) &&
+//       css({ backgroundColor: attributes.$bodyBackground?.color as string }),
+//     !isStandardColor(attributes.$bodyBackground?.color) && (attributes.$bodyBackground?.color as string),
+//     typeof attributes.$bodyBackground?.image === "string" &&
+//       css({
+//         backgroundImage: `url(${attributes.$bodyBackground.image})`,
+//         backgroundRepeat: "no-repeat",
+//         backgroundSize: attributes.$bodyBackground.size ?? "cover",
+//         backgroundPosition: "center top",
+//       }),
+//   );
+// }
 
 export function usePageStyle({ attributes, editable, typography, showIntro }: UsePageStyleProps) {
-  // console.log("usePageStyle", { attributes, editable });
   return tx(
     "flex flex-col group/page mx-auto relative max-w-full w-full p-0 antialiased",
-    editable && "overflow-hidden min-h-full transition-all duration-300",
-    isStandardColor(attributes.$pageBackground?.color) &&
-      css({ backgroundColor: attributes.$pageBackground?.color as string }),
-    attributes.$pageBackground?.color &&
-      !isStandardColor(attributes.$pageBackground?.color) &&
-      (attributes.$pageBackground?.color as string),
-    isStandardColor(attributes.$textColor) && css({ color: attributes.$textColor as string }),
-    !isStandardColor(attributes.$textColor) && (attributes.$textColor as string),
-    typeof attributes.$pageBackground?.image === "string" &&
-      css({
-        backgroundImage: `url(${attributes.$pageBackground.image})`,
-        backgroundRepeat: attributes.$pageBackground.repeat ?? "no-repeat",
-        backgroundSize: attributes.$pageBackground.size ?? "cover",
-        backgroundPosition: "center top",
-      }),
+    editable && "overflow-hidden min-h-[100cqh]",
+    isStandardColor(attributes.$backgroundColor)
+      ? css({ backgroundColor: attributes.$backgroundColor as string })
+      : (attributes.$backgroundColor as string),
+    isStandardColor(attributes.$textColor)
+      ? css({ color: attributes.$textColor as string })
+      : (attributes.$textColor as string),
+    // typeof attributes.$backgroundColor?.image === "string" &&
+    //   css({
+    //     backgroundImage: `url(${attributes.$backgroundColor.image})`,
+    //     backgroundRepeat: attributes.$backgroundColor.repeat ?? "no-repeat",
+    //     backgroundSize: attributes.$backgroundColor.size ?? "cover",
+    //     backgroundPosition: "center top",
+    //   }),
 
     getTypographyStyles(typography),
 

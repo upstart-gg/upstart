@@ -15,8 +15,6 @@ const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);
 
-  console.log("image schema", schema);
-
   // const [src, setSrc] = useState<string | null>(currentValue.src);
 
   const onPropsChange = (newVal: Partial<ImageProps>) => {
@@ -104,7 +102,7 @@ const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
 
           {!schema["ui:no-object-options"] && (
             <div className="flex gap-12 flex-1 mt-3 pr-1.5">
-              <div className="flex flex-col gap-2 flex-1 pl-1">
+              <div className="flex flex-col gap-1 flex-1 pl-1">
                 <label className={fieldLabel}>Fit</label>
                 <Select.Root
                   defaultValue={currentValue?.fit}
@@ -124,7 +122,7 @@ const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
                   </Select.Content>
                 </Select.Root>
               </div>
-              <div className="flex flex-col gap-2 flex-1">
+              <div className="flex flex-col gap-1 flex-1">
                 <label className={fieldLabel}>Position</label>
                 <Select.Root
                   defaultValue={currentValue.position}

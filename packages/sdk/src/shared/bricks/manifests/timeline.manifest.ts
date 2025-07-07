@@ -1,13 +1,12 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, optional, group, prop } from "../props/helpers";
+import { defineProps, group } from "../props/helpers";
 import { Type } from "@sinclair/typebox";
-import { MdTimeline } from "react-icons/md";
-import { backgroundColor, backgroundColorRef } from "../props/background";
-import { textContent, textContentRef } from "../props/text";
+import { backgroundColorRef } from "../props/background";
+import { textContentRef } from "../props/text";
 import { string } from "../props/string";
-import { padding, paddingRef } from "../props/padding";
-import { border, borderRef } from "../props/border";
-import { shadow, shadowRef } from "../props/effects";
+import { paddingRef } from "../props/padding";
+import { borderRef } from "../props/border";
+import { shadowRef } from "../props/effects";
 import { RiMapPinTimeLine } from "react-icons/ri";
 import type { BrickProps } from "../props/types";
 import { colorRef } from "../props/color";
@@ -27,40 +26,37 @@ export const manifest = defineBrickManifest({
   defaultWidth: { desktop: "200px", mobile: "100%" },
   props: defineProps(
     {
-      container: optional(
+      container: Type.Optional(
         group({
           title: "Container",
           children: {
-            backgroundColor: optional(backgroundColorRef()),
-            padding: optional(paddingRef()),
-            border: optional(borderRef()),
-            shadow: optional(shadowRef()),
+            backgroundColor: Type.Optional(backgroundColorRef()),
+            padding: Type.Optional(paddingRef()),
+            border: Type.Optional(borderRef()),
+            shadow: Type.Optional(shadowRef()),
           },
         }),
       ),
-      items: prop({
-        title: "Timeline items",
-        schema: Type.Array(
-          Type.Object({
-            date: string("Date", {
-              default: "2024",
-              description: "Date or time period for this event",
-            }),
-            title: textContentRef({ title: "Title", default: "Event title", disableSizing: true }),
-            description: textContentRef({ title: "Description", default: "Event description" }),
-            icon: optional(
-              prop({
-                title: "Icon",
-                description: "Icon to display (iconify reference)",
-                schema: string("Icon", {
-                  description: "Icon for this timeline item",
-                  "ui:widget": "iconify",
-                }),
-              }),
-            ),
+      items: Type.Array(
+        Type.Object({
+          date: string("Date", {
+            default: "2024",
+            description: "Date or time period for this event",
           }),
-        ),
-      }),
+          title: textContentRef({ title: "Title", default: "Event title", disableSizing: true }),
+          description: textContentRef({ title: "Description", default: "Event description" }),
+          icon: Type.Optional(
+            string("Icon", {
+              description: "Icon for this timeline item",
+              "ai:instructions": "Use a iconify reference",
+              "ui:widget": "iconify",
+            }),
+          ),
+        }),
+        {
+          title: "Timeline items",
+        },
+      ),
       variants: Type.Array(
         Type.Union(
           [
@@ -96,70 +92,59 @@ export const manifest = defineBrickManifest({
         ),
         { default: ["vertical", "with-connectors"] },
       ),
-      appearance: optional(
+      appearance: Type.Optional(
         group({
           title: "Appearance",
           children: {
-            lineColor: optional(
-              prop({
+            lineColor: Type.Optional(
+              StringEnum(["primary", "secondary", "accent"], {
                 title: "Line color",
                 description: "Color for the timeline dot/line",
-                schema: StringEnum(["primary", "secondary", "accent"], {
-                  default: "primary",
-                  enumNames: ["Primary", "Secondary", "Accent"],
-                }),
+                default: "primary",
+                enumNames: ["Primary", "Secondary", "Accent"],
               }),
             ),
-            lineWidth: optional(
-              prop({
-                title: "Line width",
-                schema: Type.Union(
-                  [
-                    Type.Literal("border-2", { title: "Thin" }),
-                    Type.Literal("border-4", { title: "Medium" }),
-                    Type.Literal("border-8", { title: "Thick" }),
-                  ],
-                  { default: "border-2" },
-                ),
-              }),
+            lineWidth: Type.Optional(
+              Type.Union(
+                [
+                  Type.Literal("border-2", { title: "Thin" }),
+                  Type.Literal("border-4", { title: "Medium" }),
+                  Type.Literal("border-8", { title: "Thick" }),
+                ],
+                { title: "Line width", default: "border-2" },
+              ),
             ),
-            dotSize: optional(
-              prop({
-                title: "Dot size",
-                schema: Type.Union(
-                  [
-                    Type.Literal("w-3", { title: "S" }),
-                    Type.Literal("w-4", { title: "M" }),
-                    Type.Literal("w-6", { title: "L" }),
-                    Type.Literal("w-8", { title: "XL" }),
-                  ],
-                  { default: "w-4" },
-                ),
-              }),
+            dotSize: Type.Optional(
+              Type.Union(
+                [
+                  Type.Literal("w-3", { title: "S" }),
+                  Type.Literal("w-4", { title: "M" }),
+                  Type.Literal("w-6", { title: "L" }),
+                  Type.Literal("w-8", { title: "XL" }),
+                ],
+                { title: "Dot size", default: "w-4" },
+              ),
             ),
-            datePosition: optional(
-              prop({
-                title: "Date position",
-                schema: Type.Union(
-                  [
-                    Type.Literal("above", { title: "Above title" }),
-                    Type.Literal("below", { title: "Below title" }),
-                    Type.Literal("inline", { title: "Inline with title" }),
-                  ],
-                  { default: "above" },
-                ),
-              }),
+            datePosition: Type.Optional(
+              Type.Union(
+                [
+                  Type.Literal("above", { title: "Above title" }),
+                  Type.Literal("below", { title: "Below title" }),
+                  Type.Literal("inline", { title: "Inline with title" }),
+                ],
+                { title: "Date position", default: "above" },
+              ),
             ),
           },
         }),
       ),
-      textStyles: optional(
+      textStyles: Type.Optional(
         group({
           title: "Text styles",
           children: {
-            dateColor: optional(colorRef({ default: "text-base-content/70", title: "Date color" })),
-            titleColor: optional(colorRef({ default: "text-base-content", title: "Title color" })),
-            descriptionColor: optional(
+            dateColor: Type.Optional(colorRef({ default: "text-base-content/70", title: "Date color" })),
+            titleColor: Type.Optional(colorRef({ default: "text-base-content", title: "Title color" })),
+            descriptionColor: Type.Optional(
               colorRef({ default: "text-base-content/80", title: "Description color" }),
             ),
           },

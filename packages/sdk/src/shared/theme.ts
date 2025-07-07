@@ -104,17 +104,18 @@ export const themeSchema = Type.Object(
         }),
         base100: Type.String({
           title: "Base",
-          description: "Base surface color of page, used for blank backgrounds. Should be very light.",
+          description:
+            "Base surface color of page, used for blank backgrounds. Should be white or near-white for light color-schemes, and black or near-black for dark color-schemes.",
         }),
         base200: Type.String({
           title: "Base 2",
           description:
-            "Base color, darker shade, to create elevations. Should be darker than base100 but still light.",
+            "Should be darker than base 1 but still light for light color-schemes, and lighter but still dark for dark color-schemes.",
         }),
         base300: Type.String({
           title: "Base 3",
           description:
-            "Base color, even more darker shade, to create elevations. Should be darker than base200 but still light.",
+            "3rd base color, should be darker than base 2 for light color-schemes, and lighter than base 2 for dark color-schemes.",
         }),
         baseContent: Type.String({
           title: "Base content",
@@ -173,9 +174,9 @@ export const defaultTheme: Theme = {
   tags: ["gradient", "vibrant", "modern", "creative", "dynamic", "artistic", "bold"],
   browserColorScheme: "light",
   colors: {
-    base100: "oklch(0.99 0.005 85)", // Warm white background
-    base200: "oklch(0.97 0.008 85)", // Soft cream
-    base300: "oklch(0.94 0.01 85)", // Light warm gray
+    base100: "#FFF", // Warm white background
+    base200: "oklch(0.99 0.008 92)", // Soft cream
+    base300: "oklch(0.97 0.01 85)", // Light warm gray
     baseContent: "oklch(0.18 0.025 80)", // Rich dark brown-gray
     primary: "oklch(0.68 0.28 340)",
     primaryContent: "oklch(0.99 0.005 340)", // White text on primary

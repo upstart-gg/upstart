@@ -1,10 +1,9 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, optional, prop } from "../props/helpers";
+import { defineProps } from "../props/helpers";
 import { PiConfetti } from "react-icons/pi";
-import { string, urlOrPageId, urlOrPageIdRef } from "../props/string";
+import { string, urlOrPageIdRef } from "../props/string";
 import type { BrickProps } from "../props/types";
-import type { FC } from "react";
-import type { Type } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 
 export const manifest = defineBrickManifest({
   type: "icon",
@@ -14,24 +13,18 @@ export const manifest = defineBrickManifest({
   repeatable: true,
   icon: PiConfetti,
   props: defineProps({
-    icon: prop({
+    icon: string("Icon", {
       title: "Icon",
       description: "Icon to display (iconify reference)",
-      schema: string("Icon", {
-        description: "Icon to display (iconify reference)",
-        "ui:field": "iconify",
-      }),
+      "ui:field": "iconify",
     }),
-    size: prop({
+    size: string("Size", {
       title: "Size",
+      default: "1em",
       description: "Size of the icon",
-      schema: string("Size", {
-        default: "1em",
-        description: "Size of the icon",
-        "ai:instructions": "The size of the icon can be set using 'em' or '%' unit.",
-      }),
+      "ai:instructions": "The size of the icon can be set using 'em' or '%' unit.",
     }),
-    link: optional(urlOrPageIdRef({ title: "Link" })),
+    link: Type.Optional(urlOrPageIdRef({ title: "Link" })),
   }),
 });
 

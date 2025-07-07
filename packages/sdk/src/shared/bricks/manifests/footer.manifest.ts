@@ -1,14 +1,14 @@
 import { Type } from "@sinclair/typebox";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { array, defineProps, group, optional } from "../props/helpers";
+import { array, defineProps } from "../props/helpers";
 import { number } from "../props/number";
-import { string, urlOrPageId, urlOrPageIdRef } from "../props/string";
+import { string, urlOrPageIdRef } from "../props/string";
 import { VscLayoutPanelOff } from "react-icons/vsc";
-import { image, imageRef } from "../props/image";
-import { preset } from "../props/preset";
+import { imageRef } from "../props/image";
 import type { BrickProps } from "../props/types";
-import type { FC } from "react";
-import { backgroundColorRef } from "../props/background";
+import { paddingRef } from "../props/padding";
+import { fontSize } from "../props/text";
+import { colorPresetRef } from "../props/preset";
 
 export const manifest = defineBrickManifest({
   type: "footer",
@@ -23,26 +23,71 @@ export const manifest = defineBrickManifest({
     mobile: "100%",
   },
   props: defineProps({
-    variants: Type.Array(
-      Type.Union(
-        [
-          Type.Literal("logo-left", { title: "Logo on the left", description: "Logo on the left" }),
-          Type.Literal("logo-right", { title: "Logo on the right", description: "Logo on the right" }),
-          Type.Literal("logo-center", { title: "Logo on the center", description: "Logo at center" }),
-          Type.Literal("multiple-rows", {
-            title: "Span on multiple rows.",
-            description: "Span on multiple rows. Use when there a a lot of links sections",
-          }),
-        ],
-        {
-          title: "Variant",
-          description: "Footer variants.",
+    colorPreset: Type.Optional(
+      colorPresetRef({
+        title: "Color preset",
+        "ui:presets": {
+          "primary-light": {
+            previewBgClass: "bg-primary-light text-primary-content-light",
+            value: { container: "bg-primary-light text-primary-content-light" },
+            label: "Primary lighter",
+          },
+          primary: {
+            previewBgClass: "bg-primary text-primary-content",
+            label: "Primary",
+            value: { container: "bg-primary text-primary-content" },
+          },
+          "primary-dark": {
+            previewBgClass: "bg-primary-dark text-primary-content",
+            label: "Primary darker",
+            value: { container: "bg-primary-dark text-primary-content" },
+          },
+          "secondary-light": {
+            previewBgClass: "bg-secondary-light text-secondary-content-light",
+            label: "Secondary lighter",
+            value: { container: "bg-secondary-light text-secondary-content-light" },
+          },
+          secondary: {
+            previewBgClass: "bg-secondary text-secondary-content",
+            label: "Secondary",
+            value: { container: "bg-secondary text-secondary-content" },
+          },
+          "secondary-dark": {
+            previewBgClass: "bg-secondary-dark text-secondary-content",
+            label: "Secondary darker",
+            value: { container: "bg-secondary-dark text-secondary-content" },
+          },
+          neutral: {
+            previewBgClass: "bg-neutral text-neutral-content",
+            label: "Neutral",
+            value: { container: "bg-neutral text-neutral-content" },
+          },
+          base100: {
+            previewBgClass: "bg-base-100 text-base-content",
+            label: "Base 1",
+            value: { container: "bg-base-100 text-base-content" },
+          },
+          base200: {
+            previewBgClass: "bg-base-200 text-base-content",
+            label: "Base 2",
+            value: { container: "bg-base-200 text-base-content" },
+          },
+          base300: {
+            previewBgClass: "bg-base-300 text-base-content",
+            label: "Base 3",
+            value: { container: "bg-base-300 text-base-content" },
+          },
+          none: { label: "None", value: {} },
         },
-      ),
+        default: "primary",
+      }),
     ),
-    backgroundColor: optional(backgroundColorRef()),
-    logo: optional(imageRef({ title: "Logo" })),
-    rows: optional(number("Rows", { default: 1, "ui:field": "slider", minimum: 1, maximum: 5 })),
+
+    // backgroundColor:Type.Optional(backgroundColorRef()),
+    padding: Type.Optional(paddingRef({ default: "p-10" })),
+    logo: Type.Optional(imageRef({ title: "Logo", "ui:no-object-options": true, "ui:no-alt-text": true })),
+    fontSize: Type.Optional(fontSize("text-sm", "Font size", { noExtraLargeSizes: true })),
+    // rows:Type.Optional(number("Rows", { default: 1, "ui:field": "slider", minimum: 1, maximum: 5 })),
     linksSections: array(
       Type.Object({
         sectionTitle: string("Links Section title"),
@@ -50,7 +95,6 @@ export const manifest = defineBrickManifest({
           Type.Object({
             title: string("Title"),
             url: urlOrPageIdRef(),
-            column: optional(number("Column", { default: 1 })),
           }),
         ),
       }),
@@ -82,8 +126,7 @@ export const examples: {
     description: "Simple footer with logo on the left",
     type: "footer",
     props: {
-      variants: ["logo-left"],
-      backgroundColor: "#f8f9fa",
+      // backgroundColor: "#f8f9fa",
       logo: {
         src: "https://via.placeholder.com/120x40.png?text=Logo",
         alt: "Company logo",
@@ -111,8 +154,7 @@ export const examples: {
     description: "Corporate footer with centered logo",
     type: "footer",
     props: {
-      variants: ["logo-center"],
-      backgroundColor: "#2c3e50",
+      // backgroundColor: "#2c3e50",
       logo: {
         src: "https://via.placeholder.com/150x50.png?text=Corporate",
         alt: "Corporate logo",
@@ -152,8 +194,7 @@ export const examples: {
     description: "E-commerce footer with logo on the right",
     type: "footer",
     props: {
-      variants: ["logo-right"],
-      backgroundColor: "#ffffff",
+      // backgroundColor: "#ffffff",
       logo: {
         src: "https://via.placeholder.com/140x45.png?text=Shop",
         alt: "Shop logo",
@@ -192,8 +233,7 @@ export const examples: {
     description: "Large organization footer with multiple rows",
     type: "footer",
     props: {
-      variants: ["logo-center", "multiple-rows"],
-      backgroundColor: "#1a1a1a",
+      // backgroundColor: "#1a1a1a",
       logo: {
         src: "https://via.placeholder.com/180x60.png?text=Enterprise",
         alt: "Enterprise logo",
@@ -202,45 +242,45 @@ export const examples: {
         {
           sectionTitle: "Products & Services",
           links: [
-            { title: "Cloud Solutions", url: "/cloud", column: 1 },
-            { title: "Data Analytics", url: "/analytics", column: 1 },
-            { title: "AI & Machine Learning", url: "/ai", column: 1 },
-            { title: "Cybersecurity", url: "/security", column: 2 },
-            { title: "DevOps Tools", url: "/devops", column: 2 },
-            { title: "IoT Platform", url: "/iot", column: 2 },
+            { title: "Cloud Solutions", url: "/cloud" },
+            { title: "Data Analytics", url: "/analytics" },
+            { title: "AI & Machine Learning", url: "/ai" },
+            { title: "Cybersecurity", url: "/security" },
+            { title: "DevOps Tools", url: "/devops" },
+            { title: "IoT Platform", url: "/iot" },
           ],
         },
         {
           sectionTitle: "Industries",
           links: [
-            { title: "Healthcare", url: "/industries/healthcare", column: 3 },
-            { title: "Finance", url: "/industries/finance", column: 3 },
-            { title: "Retail", url: "/industries/retail", column: 3 },
-            { title: "Manufacturing", url: "/industries/manufacturing", column: 4 },
-            { title: "Education", url: "/industries/education", column: 4 },
-            { title: "Government", url: "/industries/government", column: 4 },
+            { title: "Healthcare", url: "/industries/healthcare" },
+            { title: "Finance", url: "/industries/finance" },
+            { title: "Retail", url: "/industries/retail" },
+            { title: "Manufacturing", url: "/industries/manufacturing" },
+            { title: "Education", url: "/industries/education" },
+            { title: "Government", url: "/industries/government" },
           ],
         },
         {
           sectionTitle: "Resources",
           links: [
-            { title: "Documentation", url: "/docs", column: 1 },
-            { title: "API Reference", url: "/api", column: 1 },
-            { title: "Tutorials", url: "/tutorials", column: 1 },
-            { title: "Webinars", url: "/webinars", column: 2 },
-            { title: "White Papers", url: "/whitepapers", column: 2 },
-            { title: "Case Studies", url: "/case-studies", column: 2 },
+            { title: "Documentation", url: "/docs" },
+            { title: "API Reference", url: "/api" },
+            { title: "Tutorials", url: "/tutorials" },
+            { title: "Webinars", url: "/webinars" },
+            { title: "White Papers", url: "/whitepapers" },
+            { title: "Case Studies", url: "/case-studies" },
           ],
         },
         {
           sectionTitle: "Support & Community",
           links: [
-            { title: "Help Center", url: "/help", column: 3 },
-            { title: "Community Forum", url: "/forum", column: 3 },
-            { title: "Contact Support", url: "/support", column: 3 },
-            { title: "Service Status", url: "/status", column: 4 },
-            { title: "Partner Portal", url: "/partners", column: 4 },
-            { title: "Developer Hub", url: "/developers", column: 4 },
+            { title: "Help Center", url: "/help" },
+            { title: "Community Forum", url: "/forum" },
+            { title: "Contact Support", url: "/support" },
+            { title: "Service Status", url: "/status" },
+            { title: "Partner Portal", url: "/partners" },
+            { title: "Developer Hub", url: "/developers" },
           ],
         },
       ],
@@ -250,8 +290,7 @@ export const examples: {
     description: "Startup footer with minimal links and left logo",
     type: "footer",
     props: {
-      variants: ["logo-left"],
-      backgroundColor: "#f5f5f5",
+      // backgroundColor: "#f5f5f5",
       logo: {
         src: "https://via.placeholder.com/100x35.png?text=Startup",
         alt: "Startup logo",
@@ -287,8 +326,7 @@ export const examples: {
     description: "Agency footer with centered logo and creative sections",
     type: "footer",
     props: {
-      variants: ["logo-center"],
-      backgroundColor: "#6366f1",
+      // backgroundColor: "#6366f1",
       logo: {
         src: "https://via.placeholder.com/130x45.png?text=Agency",
         alt: "Creative agency logo",
@@ -326,8 +364,6 @@ export const examples: {
     description: "SaaS platform footer with comprehensive links",
     type: "footer",
     props: {
-      variants: ["logo-left", "multiple-rows"],
-      backgroundColor: "#0f172a",
       logo: {
         src: "https://via.placeholder.com/160x50.png?text=SaaS+Platform",
         alt: "SaaS platform logo",
@@ -336,37 +372,37 @@ export const examples: {
         {
           sectionTitle: "Platform",
           links: [
-            { title: "Dashboard", url: "/dashboard", column: 1 },
-            { title: "Analytics", url: "/analytics", column: 1 },
-            { title: "Integrations", url: "/integrations", column: 1 },
-            { title: "API", url: "/api", column: 1 },
+            { title: "Dashboard", url: "/dashboard" },
+            { title: "Analytics", url: "/analytics" },
+            { title: "Integrations", url: "/integrations" },
+            { title: "API", url: "/api" },
           ],
         },
         {
           sectionTitle: "Solutions",
           links: [
-            { title: "For Startups", url: "/solutions/startups", column: 2 },
-            { title: "For Enterprise", url: "/solutions/enterprise", column: 2 },
-            { title: "For Agencies", url: "/solutions/agencies", column: 2 },
-            { title: "For Developers", url: "/solutions/developers", column: 2 },
+            { title: "For Startups", url: "/solutions/startups" },
+            { title: "For Enterprise", url: "/solutions/enterprise" },
+            { title: "For Agencies", url: "/solutions/agencies" },
+            { title: "For Developers", url: "/solutions/developers" },
           ],
         },
         {
           sectionTitle: "Resources",
           links: [
-            { title: "Blog", url: "/blog", column: 1 },
-            { title: "Documentation", url: "/docs", column: 1 },
-            { title: "Help Center", url: "/help", column: 1 },
-            { title: "Community", url: "/community", column: 1 },
+            { title: "Blog", url: "/blog" },
+            { title: "Documentation", url: "/docs" },
+            { title: "Help Center", url: "/help" },
+            { title: "Community", url: "/community" },
           ],
         },
         {
           sectionTitle: "Company",
           links: [
-            { title: "About Us", url: "/about", column: 2 },
-            { title: "Careers", url: "/careers", column: 2 },
-            { title: "Press", url: "/press", column: 2 },
-            { title: "Legal", url: "/legal", column: 2 },
+            { title: "About Us", url: "/about" },
+            { title: "Careers", url: "/careers" },
+            { title: "Press", url: "/press" },
+            { title: "Legal", url: "/legal" },
           ],
         },
       ],
@@ -376,8 +412,6 @@ export const examples: {
     description: "Non-profit footer with mission-focused links",
     type: "footer",
     props: {
-      variants: ["logo-center"],
-      backgroundColor: "#059669",
       logo: {
         src: "https://via.placeholder.com/140x50.png?text=Non+Profit",
         alt: "Non-profit organization logo",
@@ -417,8 +451,6 @@ export const examples: {
     description: "Tech blog footer with right-aligned logo",
     type: "footer",
     props: {
-      variants: ["logo-right"],
-      backgroundColor: "#111827",
       logo: {
         src: "https://via.placeholder.com/120x40.png?text=Tech+Blog",
         alt: "Tech blog logo",
@@ -458,8 +490,6 @@ export const examples: {
     description: "Restaurant footer with location and menu links",
     type: "footer",
     props: {
-      variants: ["logo-center"],
-      backgroundColor: "#7c2d12",
       logo: {
         src: "https://via.placeholder.com/150x60.png?text=Restaurant",
         alt: "Restaurant logo",

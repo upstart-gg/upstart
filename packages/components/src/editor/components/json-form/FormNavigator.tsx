@@ -8,6 +8,7 @@ import {
   useRef,
   useEffect,
   type CSSProperties,
+  startTransition,
 } from "react";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 import type { NavItem, NavItemProperty } from "./types";
@@ -15,6 +16,7 @@ import { processObjectSchemaToFields } from "./field-factory";
 import { type TObject, Type } from "@sinclair/typebox";
 import { useMutationObserver } from "~/editor/hooks/use-mutation-observer";
 import { tx, css } from "@upstart.gg/style-system/twind";
+import { IoMdArrowDropdown } from "react-icons/io";
 
 type FormNavigatorContextType = {
   navigateTo: (item: NavItem) => void;
@@ -119,10 +121,19 @@ const FormNavigator: FC<FormNavigatorProps> = ({
   ]);
 
   const ref = useRef<HTMLDivElement>(null);
+  const scrollViewRef = useRef<HTMLDivElement>(null);
   const refNavigated = useRef(false);
+  const [isOverflowing, setIsOverflowing] = useState(false);
 
   // Direction of animation
   const [animationDirection, setAnimationDirection] = useState<"forward" | "backward" | null>(null);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    setIsOverflowing(
+      scrollViewRef.current ? scrollViewRef.current.scrollHeight > scrollViewRef.current.clientHeight : false,
+    );
+  }, [viewStack.length, scrollViewRef.current]);
 
   // Navigate to a new view
   const navigateTo = useCallback((item: NavItem, direction: typeof animationDirection = "forward") => {
@@ -184,14 +195,14 @@ const FormNavigator: FC<FormNavigatorProps> = ({
     >
       <div
         ref={ref}
-        className={tx("navigator-view transition-all relative overflow-x-hidden scrollbar-thin", className)}
+        className={tx("navigator-view transition-all relative overflow-hidden", className)}
         style={{
           width: "100%",
           // ...style,
         }}
       >
         {/* Current View */}
-        <div className={tx("absolute inset-0 flex flex-col", getAnimationClass())}>
+        <div className={tx("absolute inset-0 flex flex-col ", getAnimationClass())}>
           {/* Header */}
           <div className="flex items-center p-2.5 border-b border-gray-200 dark:border-dark-600 bg-gray-50 dark:bg-dark-800 sticky top-0 z-10">
             {viewStack.length > 1 ? (
@@ -218,7 +229,28 @@ const FormNavigator: FC<FormNavigatorProps> = ({
             </h3>
             <div className="w-10" />
           </div>
-          <div className="overflow-y-auto scrollbar-thin min-h-max h-fit pb-2">{currentView.content}</div>
+          <div
+            ref={scrollViewRef}
+            className="pb-2 overflow-y-scroll scroll-smooth scrollbar-thin "
+            style={{ scrollbarGutter: "stable" }}
+            onScroll={() => {
+              startTransition(() => {
+                setIsOverflowing(false);
+              });
+            }}
+          >
+            {currentView.content}
+          </div>
+        </div>
+        {/* Shadow line of 8px height at the bottom */}
+        <div
+          className={tx(
+            "absolute z-[10000] bottom-px left-0 right-0 h-[12px]",
+            "pointer-events-none flex items-center justify-center transition-opacity duration-[500ms]",
+            isOverflowing ? "opacity-100 animate-pulse" : "opacity-0",
+          )}
+        >
+          <IoMdArrowDropdown className="w-6 h-6 text-upstart-400" />
         </div>
       </div>
     </FormNavigatorContext.Provider>

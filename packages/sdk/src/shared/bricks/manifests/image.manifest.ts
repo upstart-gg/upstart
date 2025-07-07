@@ -1,5 +1,5 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, optional } from "../props/helpers";
+import { defineProps } from "../props/helpers";
 import { imageRef } from "../props/image";
 import { backgroundColorRef } from "../props/background";
 import { borderRef } from "../props/border";
@@ -20,17 +20,17 @@ export const manifest = defineBrickManifest({
   icon: RxImage,
   props: defineProps({
     image: imageRef(),
-    backgroundColor: optional(backgroundColorRef()),
-    border: optional(borderRef()),
-    padding: optional(paddingRef()),
-    shadow: optional(shadowRef()),
-    blurHash: optional(
+    backgroundColor: Type.Optional(backgroundColorRef()),
+    border: Type.Optional(borderRef()),
+    padding: Type.Optional(paddingRef()),
+    shadow: Type.Optional(shadowRef()),
+    blurHash: Type.Optional(
       string("Blur Hash", {
         "ui:fied": "hidden",
         description: "A placeholder for the image while it is loading. Use a blur hash string.",
       }),
     ),
-    author: optional(
+    author: Type.Optional(
       Type.Object({
         name: string("Image Author", {
           "ui:field": "hidden",
@@ -42,7 +42,7 @@ export const manifest = defineBrickManifest({
         }),
       }),
     ),
-    provider: optional(
+    provider: Type.Optional(
       string("Image Provider", {
         "ui:field": "hidden",
         description: "Image provider. Use this to give credit to the author",

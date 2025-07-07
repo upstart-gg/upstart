@@ -13,7 +13,8 @@ const tabContentScrollClass = css({
 
 export function ScrollablePanelTab({ children, tab, className }: ComponentProps<"div"> & { tab: string }) {
   // same for now
-  const height = "h-[calc(100dvh-60px)]";
+  const height = "h-full";
+  // const height = "h-[calc(100dvh-60px)]";
   return (
     <Tabs.Content
       value={tab}

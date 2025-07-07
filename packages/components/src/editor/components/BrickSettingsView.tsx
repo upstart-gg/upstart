@@ -22,22 +22,23 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
   const previewMode = usePreviewMode();
   const getBrickInfo = useGetBrick();
   const brickInfo = getBrickInfo(brick.id);
-  const filter: SchemaFilter = (prop) => {
-    return (
-      (typeof prop.metadata?.["ui:responsive"] === "undefined" ||
-        prop.metadata?.["ui:responsive"] === true ||
-        prop.metadata?.["ui:responsive"] === previewMode) &&
-      (typeof prop["ui:responsive"] === "undefined" ||
-        prop["ui:responsive"] === true ||
-        prop["ui:responsive"] === previewMode) &&
-      (!prop.metadata?.category || prop.metadata?.category === "settings") &&
-      (!prop["ui:advanced"] || showAdvanced)
-      /* &&
-      (!group || !prop.metadata?.group || (prop.metadata?.group && key === group))*/
-    );
-  };
+  const filter: SchemaFilter = useCallback(
+    (prop) => {
+      return (
+        (typeof prop.metadata?.["ui:responsive"] === "undefined" ||
+          prop.metadata?.["ui:responsive"] === true ||
+          prop.metadata?.["ui:responsive"] === previewMode) &&
+        (typeof prop["ui:responsive"] === "undefined" ||
+          prop["ui:responsive"] === true ||
+          prop["ui:responsive"] === previewMode) &&
+        (!prop.metadata?.category || prop.metadata?.category === "settings") &&
+        (!prop["ui:advanced"] || showAdvanced)
+      );
+    },
+    [previewMode, showAdvanced],
+  );
 
-  const navItems = getNavItemsFromManifest(manifest.props, filter);
+  const navItems = useMemo(() => getNavItemsFromManifest(manifest.props, filter), [filter, manifest.props]);
   const formData = useMemo(() => {
     const defProps = defaultProps[brick.type].props;
     return previewMode === "mobile"
@@ -66,6 +67,7 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
 
   return (
     <FormNavigator
+      key={`brick-settings-${brick.id}-${previewMode}`}
       title={`${brick.type} settings`}
       initialGroup={group}
       navItems={navItems}

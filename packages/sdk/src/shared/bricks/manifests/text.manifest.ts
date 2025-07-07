@@ -1,6 +1,6 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { textContentRef } from "../props/text";
-import { defineProps, optional } from "../props/helpers";
+import { defineProps } from "../props/helpers";
 import { backgroundColorRef } from "../props/background";
 import { paddingRef } from "../props/padding";
 import { borderRef } from "../props/border";
@@ -8,6 +8,7 @@ import { RxTextAlignLeft } from "react-icons/rx";
 import type { BrickProps } from "../props/types";
 import { colorRef } from "../props/color";
 import { shadowRef } from "../props/effects";
+import { Type } from "@sinclair/typebox";
 
 export const manifest = defineBrickManifest({
   type: "text",
@@ -30,11 +31,11 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
   props: defineProps(
     {
       content: textContentRef(),
-      backgroundColor: optional(backgroundColorRef()),
-      color: optional(colorRef()),
-      padding: optional(paddingRef({ default: "p-4" })),
-      border: optional(borderRef()),
-      shadow: optional(shadowRef()),
+      backgroundColor: Type.Optional(backgroundColorRef()),
+      color: Type.Optional(colorRef()),
+      padding: Type.Optional(paddingRef({ default: "p-4" })),
+      border: Type.Optional(borderRef()),
+      shadow: Type.Optional(shadowRef()),
     },
     {
       default: {
@@ -55,7 +56,6 @@ export const examples: {
     description: "Welcome paragraph with emphasis, using a preset",
     type: "text",
     props: {
-      preset: "prominent-primary",
       content:
         "Welcome to our platform! We're <strong>excited</strong> to have you here. Our mission is to <em>transform</em> the way you work with cutting-edge technology and <a href='/features'>innovative features</a>.",
       padding: "p-16",

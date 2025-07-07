@@ -27,7 +27,7 @@ export function getBackgroundStyles(props?: BackgroundSettings) {
   ];
 }
 
-function getGapStyles(value: string, mobileValue?: string) {
+export function getGapStyles(value: string, mobileValue?: string) {
   if (!mobileValue) {
     return css({
       gap: value,
@@ -55,18 +55,24 @@ function getOpacityStyles(opacity: OpacitySettings) {
   return propToStyle(opacity, "opacity");
 }
 
-function getPaddingStyles(value: PaddingSettings, mobileValue?: PaddingSettings) {
-  if (!mobileValue) {
-    return value;
-  }
-  return `@desktop:(${value ?? mobileValue}) @mobile:(${mobileValue})`;
-}
+// function getPaddingStyles(value: PaddingSettings, mobileValue?: PaddingSettings) {
+//   if (!mobileValue) {
+//     return value;
+//   }
+//   return `@desktop:(${value ?? mobileValue}) @mobile:(${mobileValue})`;
+// }
 
-function simpleClassHandler(value: string, mobileValue?: string) {
+export function simpleClassHandler(value: string, mobileValue?: string) {
   if (!mobileValue) {
     return value;
   }
-  return `@desktop:(${value ?? mobileValue}) @mobile:(${mobileValue})`;
+  if (value && mobileValue) {
+    return `@desktop:(${value}) @mobile:(${mobileValue})`;
+  }
+  if (mobileValue) {
+    return `@mobile:(${mobileValue})`;
+  }
+  // return `@desktop:(${value ?? mobileValue}) @mobile:(${mobileValue})`;
 }
 
 function getFixedPositionedStyles(value: FixedPositionedSettings) {
@@ -184,16 +190,17 @@ export const brickStylesHelpersMap = {
   "styles:heroSize": simpleClassHandler,
 
   // new test
-  "styles:backgroundColor": getBackgroundColorStyles,
-  "styles:background": getBackgroundStyles,
+  // "styles:backgroundColor": getBackgroundColorStyles,
+  // "styles:background": getBackgroundStyles,
   // "styles:border": getBorderStyles,
-  "styles:padding": getPaddingStyles, // test
+  "styles:padding": simpleClassHandler, // test
   "styles:gap": getGapStyles,
+  "styles:border": getBorderStyles,
+  // "styles:rounding": simpleClassHandler,
 };
 
 export const brickWrapperStylesHelpersMap = {
-  "styles:border": getBorderStyles,
-  "styles:padding": getPaddingStyles, // test
+  // "styles:padding": simpleClassHandler, // test
   "styles:backgroundColor": getBackgroundColorStyles,
   "styles:background": getBackgroundStyles,
   "styles:shadow": simpleClassHandler,
