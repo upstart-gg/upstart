@@ -12,20 +12,47 @@ const Hero = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
   const classes = Object.values(styles);
 
   return (
-    <div className={tx("flex-1", ...classes)}>
-      <TextContent
-        as="h1"
-        propPath="content"
-        className="hero grow flex-wrap text-wrap"
-        brickId={brick.id}
-        content={props.content}
-        textSizeMode="hero"
-        editable={editable}
-        noTextType
-      />
+    <div
+      className={tx(
+        "flex-1 flex",
+        // ...classes,
+        props.layout === "sided" ? "flex-row gap-[10%]" : "flex-col gap-[10%] items-center justify-center",
+      )}
+      ref={ref}
+    >
+      <div
+        className={tx(
+          "flex-1 flex flex-col gap-[5%]",
+          props.layout === "sided" ? "items-start" : "place-items-center text-center",
+        )}
+      >
+        <TextContent
+          as="h1"
+          propPath="content"
+          className={tx(" ", props.layout === "centered" ? "text-center" : "text-center")}
+          brickId={brick.id}
+          content={props.content}
+          textSizeMode="hero"
+          editable={editable}
+          noTextType
+        />
+        <TextContent
+          as="h4"
+          propPath="tagline"
+          className={tx(
+            "tagline text-2xl font-bold text-balance opacity-80",
+            props.layout === "centered" ? "text-center" : "text-left",
+          )}
+          brickId={brick.id}
+          content={props.tagline}
+          editable={editable}
+          noTextType
+        />
+      </div>
     </div>
   );
 });
 
 // Memoize the component to avoid re-rendering when the text content changes
-export default memoizeIgnoringPaths(Hero, ["brick.props.content"]);
+// export default memoizeIgnoringPaths(Hero, ["brick.props.content"]);
+export default Hero;

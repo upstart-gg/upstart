@@ -10,6 +10,7 @@ import type { BrickProps } from "../props/types";
 import { colorRef } from "../props/color";
 import { Type } from "@sinclair/typebox";
 import { shadowRef } from "../props/effects";
+import { StringEnum } from "~/shared/utils/string-enum";
 
 export const manifest = defineBrickManifest({
   type: "hero",
@@ -22,25 +23,32 @@ It is typically used on home pages to grab the user's attention.
   `.trim(),
   icon: BsAlphabetUppercase,
 
-  defaultWidth: { desktop: "200px", mobile: "100%" },
+  defaultWidth: { desktop: "60dvw", mobile: "auto" },
+  minWidth: { desktop: 800 },
 
-  props: defineProps(
-    {
-      content: textContentRef({ title: "Hero title", default: "I'm a big text" }),
-      tagline: Type.Optional(textContentRef({ title: "Hero tagline", default: "I'm a tagline" })),
-      background: Type.Optional(backgroundRef()),
-      color: Type.Optional(colorRef()),
-      shadow: Type.Optional(shadowRef()),
-      align: Type.Optional(basicAlignRef()),
-      padding: Type.Optional(paddingRef()),
-      border: Type.Optional(borderRef()),
-    },
-    {
-      default: {
-        padding: "p-4",
-      },
-    },
-  ),
+  props: defineProps({
+    content: textContentRef({
+      title: "Hero title",
+      default: "<b>Leading Businesses Choose Leading Software</b>",
+    }),
+    tagline: Type.Optional(
+      textContentRef({
+        title: "Hero tagline",
+        default: "Use our platform to build your business with confidence.",
+      }),
+    ),
+    background: Type.Optional(backgroundRef()),
+    color: Type.Optional(colorRef()),
+    layout: Type.Optional(
+      StringEnum(["centered", "sided"], {
+        title: "Layout",
+        default: "sided",
+        enumNames: ["Centered", "Sided"],
+      }),
+    ),
+    padding: Type.Optional(paddingRef()),
+    border: Type.Optional(borderRef()),
+  }),
 });
 
 export type Manifest = typeof manifest;
@@ -55,9 +63,6 @@ export const examples: {
     props: {
       content: "Welcome to Our Platform",
       tagline: "The future of productivity starts here",
-      align: {
-        horizontal: "justify-center",
-      },
       padding: "p-8",
     },
   },
@@ -67,9 +72,6 @@ export const examples: {
     props: {
       content: "Build Something Amazing",
       tagline: "Turn your ideas into reality with our cutting-edge tools",
-      align: {
-        horizontal: "justify-center",
-      },
       padding: "p-16",
     },
   },
@@ -88,10 +90,6 @@ export const examples: {
     props: {
       content: "Express Your Style",
       tagline: "Contemporary fashion that speaks to your individuality",
-      align: {
-        horizontal: "justify-center",
-        vertical: "items-start",
-      },
       padding: "p-16",
     },
   },

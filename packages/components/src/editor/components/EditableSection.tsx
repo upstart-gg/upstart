@@ -48,7 +48,8 @@ type EditableSectionProps = {
 
 export default function EditableSection({ section, index }: EditableSectionProps) {
   const { bricks, id } = section;
-  const { setSelectedSectionId, setPanel, togglePanel } = useEditorHelpers();
+  const { setSelectedSectionId, setPanel, togglePanel, setSelectedBrickId, setIsEditingText } =
+    useEditorHelpers();
   const { resizing } = useResizableSection(section);
   const draftHelpers = useDraftHelpers();
   const previewMode = usePreviewMode();
@@ -110,6 +111,8 @@ export default function EditableSection({ section, index }: EditableSectionProps
       }
       console.log("Section clicked", section.id, target, e);
       setSelectedSectionId(section.id);
+      setSelectedBrickId();
+      setIsEditingText(false);
       setPanel("inspector");
     },
     [resizing, draggingBrickType, section.id],

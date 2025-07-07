@@ -48,6 +48,7 @@ export type SiteAndPagesConfig = {
 };
 
 export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
+  let order = 0;
   return {
     site: {
       id: crypto.randomUUID(),
@@ -70,7 +71,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           {
             id: `s_${generateId()}`,
             label: "Top",
-            order: 1,
+            order: ++order,
             props: {
               purpose: "navbar",
             },
@@ -89,8 +90,23 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           },
           {
             id: `s_content-${generateId()}`,
+            label: "Hero",
+            order: ++order,
+            props: {
+              minHeight: "400px",
+            },
+            bricks: [
+              {
+                id: `b_${generateId()}`,
+                type: "hero",
+                props: {},
+              },
+            ],
+          },
+          {
+            id: `s_content-${generateId()}`,
             label: "Content",
-            order: 2,
+            order: ++order,
             props: {},
             bricks: [
               {
@@ -196,7 +212,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           {
             id: `s_content-${generateId()}`,
             label: "Bottom",
-            order: 3,
+            order: ++order,
             props: {},
             bricks: [
               {

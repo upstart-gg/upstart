@@ -55,7 +55,7 @@ export function usePageStyle({ attributes, editable, typography, showIntro }: Us
 
 function getTypographyStyles(typography: Theme["typography"]) {
   function formatFontFamily(font: typeof typography.body) {
-    return font.type === "stack" ? `var(--font-${font.family})` : font.family;
+    return font.type === "stack" ? `var(--font-${font.family})` : `"${font.family}"`;
   }
   return css({
     fontFamily: formatFontFamily(typography.body),
