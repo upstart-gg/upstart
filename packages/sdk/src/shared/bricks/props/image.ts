@@ -86,7 +86,7 @@ export function image(title = "Image", options: PropImageOptions = {}) {
 }
 
 export function imageRef(options: PropImageOptions & SchemaOptions = {}) {
-  return typedRef("assets:image", { ...options, "ui:styleId": "assets:image" });
+  return typedRef("assets:image", { ...options });
 }
 
 export type ImageProps = Static<ReturnType<typeof image>>;

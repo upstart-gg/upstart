@@ -38,5 +38,5 @@ export function typedRef<K extends keyof SchemaTypeMap>(
   options: SchemaOptions = {},
 ): SchemaTypeMap[K] {
   // biome-ignore lint/suspicious/noExplicitAny: Force inference of Ref to the correct type
-  return Type.Ref(id, { "ui:styleId": id, ...options }) as any;
+  return Type.Ref(id, { ...options }) as any;
 }

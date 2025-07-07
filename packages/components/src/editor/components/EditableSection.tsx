@@ -130,7 +130,6 @@ export default function EditableSection({ section, index }: EditableSectionProps
       direction="horizontal"
       mode={section.bricks.length > 0 ? "standard" : "virtual"}
       isDropDisabled={dropDisabled}
-      isCombineEnabled
     >
       {(droppableProvided, droppableSnapshot) => {
         return (
