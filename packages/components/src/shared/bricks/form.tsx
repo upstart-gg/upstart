@@ -8,6 +8,7 @@ import get from "lodash-es/get";
 import type { ReactNode } from "react";
 import { forwardRef, useState } from "react";
 import { useDatarecord } from "../../editor/hooks/use-datarecord";
+import { useBrickStyle } from "../hooks/use-brick-style";
 import {
   BooleanField,
   DateField,
@@ -190,17 +191,8 @@ function processDatarecordSchemaToFields(
 
 const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
   const { brick } = props;
-  const {
-    title,
-    intro,
-    datarecordId,
-    align = "vertical",
-    padding,
-    backgroundColor,
-    color,
-    buttonLabel,
-    editable = true,
-  } = brick.props;
+  const styles = useBrickStyle<Manifest>(brick);
+  const { title, intro, datarecordId, align = "vertical", buttonLabel, editable = true } = brick.props;
 
   const { datarecord, schema, error } = useDatarecord(datarecordId);
   const [formData, setFormData] = useState<Record<string, unknown>>({});
@@ -215,7 +207,6 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
     e.preventDefault();
     if (editable) {
       console.warn("Form is editable, submission is disabled");
-      // toast.success("Edit mode is enabled, form submission is disabled");
       toast(`This form is not clickable in edit mode but will lead to form submission when published.`, {
         style: {
           minWidth: "max-content",
@@ -228,9 +219,14 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
 
     // Créer un FormData à partir des données du formulaire
     const data = new FormData(e.target as HTMLFormElement);
-    fetch(window.location.href, {
+    console.log("Form data to submit:", Object.fromEntries(data.entries()));
+    const postUrl = !editable ? new URL(window.location.href) : "http://localhost:8081/submit";
+    fetch(postUrl, {
       method: "POST",
       body: data,
+      headers: {
+        "X-DataRecord-Id": datarecordId,
+      },
     })
       .then((response) => {
         if (response.ok) {
@@ -270,26 +266,16 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   const fields = processDatarecordSchemaToFields(typeboxSchema, formData, handleFieldChange);
 
   return (
-    <div
-      ref={ref}
-      className={tx("max-w-full")}
-      style={{
-        padding,
-        backgroundColor,
-        color,
-      }}
-    >
+    <div ref={ref} className={tx("max-w-full flex-1", Object.values(styles))}>
       {title && <h2 className="form-title text-xl font-semibold mb-4">{title}</h2>}
       {intro && <p className="form-intro text-gray-600 mb-6">{intro}</p>}
 
       <div className={tx(align === "horizontal" ? "space-x-4" : "space-y-4")}>
         <form onSubmit={handleSubmit} className="datarecord-form">
-          <input id={"datarecord-id"} type="hidden" value={(formData.id as string) || ""} />
+          <input id={"datarecord-id"} name="datarecord-id" type="hidden" value={datarecordId} />
           {fields}
           <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: "1rem" }}>
-            <button type="submit" style={{ backgroundColor: "blue", color: "white" }}>
-              {buttonLabel || "Submit"}
-            </button>
+            <button type="submit">{buttonLabel || "Submit"}</button>
           </div>
         </form>
       </div>

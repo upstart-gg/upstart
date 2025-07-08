@@ -27,6 +27,7 @@ export const BooleanField: FC<BaseFieldProps> = ({
       <div className="flex items-center space-x-3">
         <input
           id={fieldName}
+          name={fieldName}
           type="checkbox"
           checked={booleanValue}
           onChange={(e) => onChange(e.target.checked)}
@@ -60,6 +61,7 @@ export const NumberField: FC<BaseFieldProps> = ({
       </label>
       <input
         id={fieldName}
+        name={fieldName}
         type="number"
         value={numberValue}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -158,6 +160,7 @@ export const SelectField: FC<BaseFieldProps> = ({
       </label>
       <select
         id={fieldName}
+        name={fieldName}
         value={stringValue}
         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onChange(e.target.value)}
         required={required}
@@ -197,6 +200,7 @@ export const EmailField: FC<BaseFieldProps> = ({
       </label>
       <input
         id={fieldName}
+        name={fieldName}
         type="email"
         value={stringValue}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
@@ -227,6 +231,7 @@ export const UrlField: FC<BaseFieldProps> = ({
       </label>
       <input
         id={fieldName}
+        name={fieldName}
         type="url"
         value={stringValue}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
@@ -257,6 +262,7 @@ export const DateField: FC<BaseFieldProps> = ({
       </label>
       <input
         id={fieldName}
+        name={fieldName}
         type="date"
         value={stringValue}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
@@ -286,6 +292,7 @@ export const DateTimeField: FC<BaseFieldProps> = ({
       </label>
       <input
         id={fieldName}
+        name={fieldName}
         type="datetime-local"
         value={stringValue}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
@@ -315,6 +322,7 @@ export const StringField: FC<BaseFieldProps> = ({
       </label>
       <input
         id={fieldName}
+        name={fieldName}
         value={stringValue}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
         placeholder={fieldSchema["ui:placeholder"] as string | undefined}
@@ -345,6 +353,7 @@ export const TextareaField: FC<BaseFieldProps> = ({
       </label>
       <textarea
         id={fieldName}
+        name={fieldName}
         value={stringValue}
         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)}
         placeholder={fieldSchema["ui:placeholder"] as string | undefined}
