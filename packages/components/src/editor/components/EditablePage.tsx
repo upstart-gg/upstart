@@ -14,7 +14,6 @@ import { usePageStyle } from "~/shared/hooks/use-page-style";
 import { useFontWatcher } from "../hooks/use-font-watcher";
 import Section from "./EditableSection";
 import { tx } from "@upstart.gg/style-system/twind";
-import { processSections } from "@upstart.gg/sdk/shared/bricks";
 import { useResizable } from "../hooks/use-resizable";
 import { useGridObserver } from "../hooks/use-grid-observer";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
@@ -155,12 +154,13 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     <div
       id="page-container"
       ref={pageRef}
-      className={tx(pageClassName, "min-h-[100cqh]")}
+      className={tx(pageClassName)}
       style={{
         zoom,
       }}
     >
-      {processSections(sections).map((section, index) => (
+      {/* If the navbar is enabled, set it statically */}
+      {sections.map((section, index) => (
         <Section key={section.id} section={section} index={index} />
       ))}
     </div>

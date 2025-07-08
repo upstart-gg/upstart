@@ -2,12 +2,11 @@ import { Type } from "@sinclair/typebox";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
 import { datasourceRef } from "../props/datasource";
-import { defineProps, group, optional, prop } from "../props/helpers";
-import { containerLayout, containerLayoutRef, makeContainerProps } from "../props/container";
+import { defineProps, group } from "../props/helpers";
+import { containerLayoutRef } from "../props/container";
 import { IoGridOutline } from "react-icons/io5";
 import type { BrickProps } from "../props/types";
 import { string, url } from "../props/string";
-import type { FC } from "react";
 
 export const datasource = Type.Array(
   Type.Object({
@@ -42,14 +41,11 @@ export const manifest = defineBrickManifest({
 
   icon: IoGridOutline,
   props: defineProps({
-    datasource: optional(datasourceRef()),
-    staticImages: optional(
-      prop({
-        title: "Nav items",
-        schema: Type.Array(Type.Object({ src: url("Image URL"), legend: string("Legend") }), {
-          title: "Images",
-          default: [],
-        }),
+    datasource: Type.Optional(datasourceRef()),
+    staticImages: Type.Optional(
+      Type.Array(Type.Object({ src: url("Image URL"), legend: string("Legend") }), {
+        title: "Images",
+        default: [],
       }),
     ),
     styles: group({

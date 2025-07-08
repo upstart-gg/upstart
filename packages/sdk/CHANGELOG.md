@@ -1,5 +1,14 @@
 # @upstart.gg/sdk
 
+## 0.0.118
+
+### Patch Changes
+
+- [#361](https://github.com/upstart-gg/upstart/pull/361) [`7614e35`](https://github.com/upstart-gg/upstart/commit/7614e35f90fae21f040cb2239a48310910e570dc) Thanks [@mattallty](https://github.com/mattallty)! - Fix brick detaching
+
+- Updated dependencies [[`7614e35`](https://github.com/upstart-gg/upstart/commit/7614e35f90fae21f040cb2239a48310910e570dc)]:
+  - @upstart.gg/style-system@0.0.118
+
 ## 0.0.117
 
 ### Patch Changes

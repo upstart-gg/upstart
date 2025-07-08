@@ -1,8 +1,10 @@
 import interact from "interactjs";
-import { generateId, type Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
+import { generateId, type Section, type Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
 import {
+  useDebugMode,
   useDraftHelpers,
   useDraggingBrickType,
+  useEditingTextForBrickId,
   useEditorHelpers,
   useGridConfig,
   usePreviewMode,
@@ -11,11 +13,15 @@ import {
   useSelectedBrickId,
   useSelectedSectionId,
 } from "../hooks/use-editor";
-import { DropdownMenu, Inset, Popover, Tooltip } from "@upstart.gg/style-system/system";
+import { HiOutlineCog6Tooth } from "react-icons/hi2";
+
+import { ContextMenu, DropdownMenu, Inset, Popover, Portal, Tooltip } from "@upstart.gg/style-system/system";
 import EditableBrickWrapper from "./EditableBrick";
 import { useSectionStyle } from "~/shared/hooks/use-section-style";
 import { TbArrowAutofitHeight, TbBorderCorners, TbDots, TbCirclePlus } from "react-icons/tb";
 import {
+  forwardRef,
+  type PropsWithChildren,
   startTransition,
   useCallback,
   useEffect,
@@ -42,12 +48,13 @@ type EditableSectionProps = {
 
 export default function EditableSection({ section, index }: EditableSectionProps) {
   const { bricks, id } = section;
-  const { setSelectedSectionId, setPanel } = useEditorHelpers();
+  const { setSelectedSectionId, setPanel, togglePanel } = useEditorHelpers();
   const { resizing } = useResizableSection(section);
   const draftHelpers = useDraftHelpers();
   const previewMode = usePreviewMode();
   const selectedSectionId = useSelectedSectionId();
   const selectedBrickId = useSelectedBrickId();
+  const editingBrick = useEditingTextForBrickId();
   const draggingBrickType = useDraggingBrickType();
   const { isDesktop } = useDeviceInfo();
   const className = useSectionStyle({
@@ -57,20 +64,35 @@ export default function EditableSection({ section, index }: EditableSectionProps
     previewMode,
   });
   const sectionObj = useSection(section.id);
+  const isSpecialSection = typeof section.props.purpose !== "undefined";
 
   useDeepCompareEffect(() => {
+    if (section.props.minHeight === "full") {
+      return;
+    }
     // This effect runs when the section object changes, which includes props updates
     // Check if the section is overflowing vertically
     const sectionEl = document.getElementById(section.id);
     invariant(sectionEl, `Section element with id ${section.id} not found`);
-    const isOverflowing =
+    const isOverflowing = () =>
       sectionEl.scrollHeight > sectionEl.clientHeight + parseFloat(section.props.gap ?? "0") * 2; // 8px for padding. Todo: fix this magic number
-    if (isOverflowing) {
+    if (isOverflowing()) {
       console.warn(
         `Section ${section.id} is overflowing vertically. Consider adjusting its height or content. sectionEl.scrollHeight = %s, sectionEl.clientHeight = %s`,
         sectionEl.scrollHeight,
         sectionEl.clientHeight,
       );
+      // let currentHeight = sectionEl.scrollHeight;
+      // let tries = 0;
+      // do {
+      //   currentHeight += 20;
+      //   console.log("Adjusting section height for overflow (try %d):", tries, section.id, currentHeight);
+      //   draftHelpers.updateSectionProps(section.id, {
+      //     minHeight: `${currentHeight}px`,
+      //   });
+      //   sectionEl.style.minHeight = `${currentHeight}px`;
+      //   tries += 1;
+      // } while (isOverflowing() && tries < 20);
     }
   }, [sectionObj]);
 
@@ -94,6 +116,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
   );
 
   const dropDisabled =
+    isSpecialSection ||
     /* Not DnD on mobile */ previewMode === "mobile" ||
     /* No DnD on small screens */
     !isDesktop ||
@@ -101,48 +124,72 @@ export default function EditableSection({ section, index }: EditableSectionProps
     (!!draggingBrickType && manifests[draggingBrickType]?.inlineDragDisabled);
 
   return (
-    <Droppable droppableId={section.id} type="brick" direction="horizontal" isDropDisabled={dropDisabled}>
+    <Droppable
+      droppableId={section.id}
+      type="brick"
+      direction="horizontal"
+      mode={section.bricks.length > 0 ? "standard" : "virtual"}
+      isDropDisabled={dropDisabled}
+    >
       {(droppableProvided, droppableSnapshot) => {
         return (
-          <section
-            key={id}
-            id={id}
-            ref={(el) => {
-              // Combine both refs
-              droppableProvided.innerRef(el);
-            }}
-            data-element-kind="section"
-            onClick={onClick}
-            className={tx(
-              className,
-              droppableSnapshot.isDraggingOver && "!outline-2 !outline-dashed !outline-usptart-300",
-            )}
-            {...droppableProvided.droppableProps}
-          >
-            {!selectedBrickId && <SectionOptionsButtons section={section} />}
-            {bricks
-              .filter((b) => !b.props.hidden?.[previewMode])
-              .map((brick, brickIndex) => (
-                <EditableBrickWrapper key={`${previewMode}-${brick.id}`} brick={brick} index={brickIndex} />
-              ))}
-            {bricks.length === 0 && (
-              <div className="w-full self-stretch py-6 h-auto flex-grow text-center rounded bg-gray-50 hover:bg-upstart-50 flex flex-col justify-center items-center text-base text-black/50 font-medium">
-                This section is empty.
-                <span>
-                  Drag bricks here to stack them inside, or{" "}
-                  <button
-                    type="button"
-                    onClick={() => draftHelpers.deleteSection(section.id)}
-                    className="text-red-800 inline-block hover:underline"
-                  >
-                    delete it
-                  </button>
-                  .
-                </span>
-              </div>
-            )}
-            {droppableProvided.placeholder}
-          </section>
+          <SectionContextMenu section={section}>
+            <section
+              key={id}
+              id={id}
+              ref={(el) => {
+                // Combine both refs
+                droppableProvided.innerRef(el);
+              }}
+              data-element-kind="section"
+              onClick={onClick}
+              className={tx(
+                className,
+                droppableSnapshot.isDraggingOver && "!outline-2 !outline-dashed !outline-usptart-300",
+              )}
+              {...droppableProvided.droppableProps}
+            >
+              {
+                /*!selectedBrickId &&*/ !editingBrick && !draggingBrickType && (
+                  <SectionOptionsButtons section={section} />
+                )
+              }
+              {bricks
+                .filter((b) => !b.props.hidden?.[previewMode])
+                .map((brick, brickIndex) => (
+                  <EditableBrickWrapper key={`${previewMode}-${brick.id}`} brick={brick} index={brickIndex} />
+                ))}
+              {bricks.length === 0 && (
+                <div
+                  data-trigger-section-inspector
+                  className={tx(
+                    "w-full min-w-full self-stretch py-6 h-auto flex-grow text-center rounded",
+                    " text-white flex flex-col justify-center items-center text-lg font-medium text-shadow",
+                    droppableSnapshot.isDraggingOver ? "bg-upstart-700/60" : "bg-black/30",
+                  )}
+                >
+                  This section is empty.
+                  <span>
+                    Drag bricks here to stack them inside, or{" "}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        draftHelpers.deleteSection(section.id);
+                        setSelectedSectionId();
+                        togglePanel("inspector");
+                      }}
+                      className="inline-block underline underline-offset-2"
+                    >
+                      delete it
+                    </button>
+                    .
+                  </span>
+                </div>
+              )}
+              {bricks.length === 0 ? null : droppableProvided.placeholder}
+            </section>
+          </SectionContextMenu>
         );
       }}
     </Droppable>
@@ -194,14 +241,15 @@ function useResizableSection(section: SectionType) {
           Object.assign(sectionEl.dataset, { h: newHeight });
         },
         end: (event) => {
-          const size = getBrickPosition(sectionEl, previewMode);
+          const minHeight = `${parseFloat(sectionEl.dataset.h as string).toFixed(0)}px`;
           sectionEl.style.removeProperty("minHeight");
           sectionEl.style.removeProperty("height");
           sectionEl.style.removeProperty("maxHeight");
           sectionEl.style.removeProperty("flex");
           sectionEl.dataset.h = "";
+          console.log("Resized section", section.id, "to height", minHeight);
           draftHelpers.updateSectionProps(section.id, {
-            minHeight: `${size.h}px`,
+            minHeight,
           });
           startTransition(() => {
             setResizing(false);
@@ -234,31 +282,46 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
   const btnCls = tx(
     "select-none hover:opacity-90",
     "text-base px-1.5 h-9  ",
-    "text-black/80 font-bold flex items-center gap-1",
+    "text-black/80 hover:bg-upstart-100 font-bold flex items-center gap-1",
     "active:(outline-none ring-0) focus:(outline-none ring-0)",
   );
   return (
     <div
       role="toolbar"
       className={tx(
+        // bottom-[3px]
+        isLastSection ? "bottom-5" : "bottom-0 ",
         dropdownOpen ? "opacity-100" : "opacity-0",
-        `section-options-buttons bottom-[3px]
-            absolute z-[99999] left-1/2 -translate-x-1/2 border border-gray-200 border-b-0`,
-        "gap-0 rounded-t-md [&>*:first-child]:rounded-tl-md [&>*:last-child]:rounded-tr-md ",
+        `section-options-buttons translate-y-1/2 shadow
+            absolute z-[99999] left-1/2 -translate-x-1/2 min-w-fit border border-gray-200`,
+        "gap-0 rounded-md [&>*:first-child]:rounded-l-md [&>*:last-child]:rounded-r-md ",
         "bg-white/90 backdrop-blur-md transition-opacity duration-500  group-hover/section:opacity-100 flex",
       )}
     >
       <div
         className={tx(
           btnCls,
-          "cursor-pointer flex-col items-start justify-center gap-0 hover:text-upstart-800",
+          "flex-col items-start justify-center gap-0 hover:text-upstart-800 !px-2.5 pointer-events-none",
         )}
         data-trigger-section-inspector
       >
-        <div className="text-xs font-light leading-[0.9] ">Section</div>
-        <div className="text-sm font-semibold -mt-[8px]">{section.label ?? `${section.order + 1}`}</div>
+        <div className="text-xs font-light leading-[0.9] text-nowrap">Section {section.order}</div>
+        <div className="text-sm font-semibold -mt-[8px] text-nowrap max-w-[120px] truncate">
+          {section.label ?? "Unnamed"}
+        </div>
       </div>
-      {/* {!isLastSection && ( */}
+      <button
+        type="button"
+        id={`${section.id}-resize-handle`}
+        className={tx(btnCls)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setSelectedSectionId(section.id);
+          setPanel("inspector");
+        }}
+      >
+        <HiOutlineCog6Tooth className="w-6 h-6" />
+      </button>
       <button
         type="button"
         id={`${section.id}-resize-handle`}
@@ -297,7 +360,10 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            draftHelpers.createEmptySection(`s_${generateId()}`, section.id);
+            const newId = `s_${generateId()}`;
+            draftHelpers.createEmptySection(newId, section.id);
+            setSelectedSectionId(newId);
+            setPanel("inspector");
           }}
           className={tx(btnCls, "cursor-pointer")}
         >
@@ -316,7 +382,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
         </DropdownMenu.Trigger>
         <DropdownMenu.Content sideOffset={5} size="2" side="bottom" align="end">
           <DropdownMenu.Group>
-            <DropdownMenu.Label>{section.label ?? ""} section</DropdownMenu.Label>
+            <DropdownMenu.Label>{section.label ?? "Unnamed"} (section)</DropdownMenu.Label>
             {!isFirstSection && (
               <DropdownMenu.Item onClick={() => draftHelpers.moveSectionUp(section.id)}>
                 <div className="flex items-center justify-start gap-2">
@@ -337,7 +403,10 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
             <DropdownMenu.Item
               onClick={(e) => {
                 e.stopPropagation();
-                draftHelpers.createEmptySection(`s_${generateId()}`, section.id);
+                const newId = `s_${generateId()}`;
+                draftHelpers.createEmptySection(newId, section.id);
+                setSelectedSectionId(newId);
+                setPanel("inspector");
               }}
             >
               <div className="flex items-center justify-start gap-2">
@@ -377,7 +446,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
             }}
           >
             <div className="flex items-center justify-start gap-2.5">
-              <span>Delete</span>
+              <span>Delete section</span>
             </div>
           </DropdownMenu.Item>
         </DropdownMenu.Content>
@@ -385,3 +454,106 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
     </div>
   );
 }
+
+type SectionContextMenuProps = PropsWithChildren<{
+  section: Section;
+}>;
+
+const SectionContextMenu = forwardRef<HTMLDivElement, SectionContextMenuProps>(
+  ({ section, children }, ref) => {
+    const debugMode = useDebugMode();
+    const sections = useSections();
+    const draftHelpers = useDraftHelpers();
+    const { setSelectedSectionId, setPanel, setSelectedBrickId } = useEditorHelpers();
+    // compare the curret section "order" to the max order of sections to determine if this is the first or last section
+    const maxOrder = sections.reduce((max, sec) => Math.max(max, sec.order), -1);
+    const minOrder = sections.reduce((min, sec) => Math.min(min, sec.order), Infinity);
+    const isLastSection = section.order === maxOrder;
+    const isFirstSection = section.order === minOrder;
+    return (
+      <ContextMenu.Root
+        modal={false}
+        onOpenChange={(menuOpen) => {
+          // editorHelpers.setContextMenuVisible(menuOpen);
+        }}
+      >
+        <ContextMenu.Trigger disabled={debugMode} ref={ref}>
+          {children}
+        </ContextMenu.Trigger>
+        <Portal>
+          <ContextMenu.Content className="nodrag" size="2">
+            <ContextMenu.Group>
+              <ContextMenu.Label>{section.label ?? "Unnamed"} (section)</ContextMenu.Label>
+              <ContextMenu.Item
+                onClick={() => {
+                  setSelectedSectionId(section.id);
+                  setPanel("inspector");
+                }}
+              >
+                <div className="flex items-center justify-start gap-2">
+                  <span>Settings</span>
+                </div>
+              </ContextMenu.Item>
+              <ContextMenu.Separator />
+              {!isFirstSection && (
+                <ContextMenu.Item onClick={() => draftHelpers.moveSectionUp(section.id)}>
+                  <div className="flex items-center justify-start gap-2">
+                    <span>Reorder up</span>
+                  </div>
+                </ContextMenu.Item>
+              )}
+              {!isLastSection && (
+                <ContextMenu.Item onClick={() => draftHelpers.moveSectionDown(section.id)}>
+                  <div className="flex items-center justify-start gap-2">
+                    <span>Reorder down</span>
+                  </div>
+                </ContextMenu.Item>
+              )}
+            </ContextMenu.Group>
+            <ContextMenu.Separator />
+            <ContextMenu.Group>
+              <ContextMenu.Item
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const newId = `s_${generateId()}`;
+                  draftHelpers.createEmptySection(newId, section.id);
+                  setSelectedSectionId(newId);
+                  setPanel("inspector");
+                }}
+              >
+                <div className="flex items-center justify-start gap-2">
+                  <span>Create new section below</span>
+                </div>
+              </ContextMenu.Item>
+              <ContextMenu.Item
+                onClick={(e) => {
+                  e.stopPropagation();
+                  draftHelpers.duplicateSection(section.id);
+                }}
+              >
+                <div className="flex items-center justify-start gap-2">
+                  <span>Duplicate</span>
+                </div>
+              </ContextMenu.Item>
+            </ContextMenu.Group>
+            <ContextMenu.Separator />
+            <ContextMenu.Item
+              color="red"
+              onClick={(e) => {
+                e.stopPropagation();
+                draftHelpers.deleteSection(section.id);
+                setSelectedSectionId();
+                setSelectedBrickId();
+                setPanel();
+              }}
+            >
+              <div className="flex items-center justify-start gap-2.5">
+                <span>Delete section</span>
+              </div>
+            </ContextMenu.Item>
+          </ContextMenu.Content>
+        </Portal>
+      </ContextMenu.Root>
+    );
+  },
+);

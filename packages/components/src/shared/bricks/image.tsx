@@ -6,7 +6,9 @@ import { tx } from "@upstart.gg/style-system/twind";
 
 const Image = forwardRef<HTMLImageElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const { props } = brick;
-  const { image: imageStyles, ...containerStyles } = useBrickStyle(brick);
+
+  const styles = useBrickStyle(brick);
+  const { image: imageStyles, ...containerStyles } = styles;
   const { src, alt } = props.image ?? {};
 
   return (
@@ -22,10 +24,7 @@ const Image = forwardRef<HTMLImageElement, BrickProps<Manifest>>(({ brick, edita
           src={src}
           ref={ref}
           alt={alt}
-          className={tx(
-            "max-h-full w-full h-full min-w-1 min-h-1 select-none pointer-events-none",
-            imageStyles,
-          )}
+          className={tx("max-h-full w-full h-full select-none pointer-events-none", imageStyles)}
         />
       )}
       {editable && (

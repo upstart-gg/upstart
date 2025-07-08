@@ -1,6 +1,6 @@
 import Ajv, { type ErrorObject } from "ajv";
 import addFormats from "ajv-formats";
-import { preset } from "./bricks/props/preset";
+import { colorPreset, preset } from "./bricks/props/preset";
 import { background, backgroundColor } from "./bricks/props/background";
 import { containerLayout } from "./bricks/props/container";
 import { basicAlign } from "./bricks/props/align";
@@ -39,6 +39,7 @@ ajv.addSchema(cssLength(), "styles:cssLength");
 ajv.addSchema(image(), "assets:image");
 ajv.addSchema(textContent(), "content:textContent");
 ajv.addSchema(urlOrPageId(), "content:urlOrPageId");
+ajv.addSchema(colorPreset(), "presets:color");
 
 export const jsonStringsSupportedFormats = [
   "date-time",

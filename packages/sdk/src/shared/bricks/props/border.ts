@@ -1,5 +1,5 @@
 import { type SchemaOptions, Type, type Static } from "@sinclair/typebox";
-import { group, optional, prop } from "./helpers";
+import { group } from "./helpers";
 import { typedRef } from "~/shared/utils/typed-ref";
 import { StringEnum } from "~/shared/utils/string-enum";
 
@@ -12,7 +12,7 @@ export function border(title = "Border") {
       $id: "styles:border",
     },
     children: {
-      rounding: optional(
+      rounding: Type.Optional(
         StringEnum(
           [
             "rounded-auto",
@@ -34,7 +34,7 @@ export function border(title = "Border") {
           },
         ),
       ),
-      width: optional(
+      width: Type.Optional(
         StringEnum(["border-0", "border", "border-2", "border-4", "border-8"], {
           title: "Width",
           enumNames: ["None", "S", "M", "L", "XL"],
@@ -68,7 +68,7 @@ export function border(title = "Border") {
           },
         ),
       ),
-      style: optional(
+      style: Type.Optional(
         StringEnum(["border-solid", "border-dashed", "border-dotted"], {
           title: "Style",
           description: "The brick border style",

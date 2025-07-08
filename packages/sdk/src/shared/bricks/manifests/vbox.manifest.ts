@@ -1,15 +1,14 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, group, optional } from "../props/helpers";
-import { background, backgroundRef } from "../props/background";
+import { defineProps } from "../props/helpers";
+import { backgroundRef } from "../props/background";
 import { datasourceRef } from "../props/datasource";
-import { containerLayout, containerLayoutRef, makeContainerProps } from "../props/container";
+import { makeContainerProps } from "../props/container";
 import { Type } from "@sinclair/typebox";
-import { border, borderRef } from "../props/border";
+import { borderRef } from "../props/border";
 import { shadowRef } from "../props/effects";
-import { padding, paddingRef } from "../props/padding";
-import { RxGrid } from "react-icons/rx";
+import { paddingRef } from "../props/padding";
 import type { BrickProps } from "../props/types";
-import { LuStretchVertical, LuStretchHorizontal } from "react-icons/lu";
+import { LuStretchHorizontal } from "react-icons/lu";
 import { cssLengthRef } from "../props/css-length";
 
 export const datasource = Type.Array(Type.Object({}, { additionalProperties: true }));
@@ -40,11 +39,11 @@ export const manifest = defineBrickManifest({
         "ui:styleId": "styles:gap",
       }),
     ),
-    background: optional(backgroundRef()),
-    border: optional(borderRef()),
-    padding: optional(paddingRef()),
-    shadow: optional(shadowRef()),
-    datasource: optional(datasourceRef()),
+    background: Type.Optional(backgroundRef()),
+    border: Type.Optional(borderRef()),
+    padding: Type.Optional(paddingRef()),
+    shadow: Type.Optional(shadowRef()),
+    datasource: Type.Optional(datasourceRef()),
     ...makeContainerProps(),
   }),
 });

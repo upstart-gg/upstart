@@ -69,8 +69,6 @@ export function ColorFieldRow({
   name,
   description,
   color,
-  required,
-  labelClassName,
   onChange,
   colorType,
   showReset,
@@ -287,7 +285,7 @@ function ColorBasePopover({
   color,
   onChange,
 }: Pick<ColorBasePreviewPillProps, "align" | "side" | "color" | "colorType" | "onChange">) {
-  const width = "240px";
+  const width = "252px";
   return (
     <Popover.Content width={width} side={side} align={align} maxWidth={width}>
       <BaseColorPicker colorType={colorType} initialValue={color} onChange={onChange} />

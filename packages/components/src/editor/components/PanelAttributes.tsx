@@ -57,7 +57,11 @@ export default function SettingsForm() {
   }
 
   return (
-    <Tabs.Root defaultValue={currentTab} onValueChange={setCurrentTab}>
+    <Tabs.Root
+      defaultValue={currentTab}
+      onValueChange={setCurrentTab}
+      className="flex-grow flex flex-col h-dvh"
+    >
       <Tabs.List className="sticky top-0 z-50 bg-gray-100">
         <Tabs.Trigger value="page-settings" className={tx("!flex-1")}>
           Page settings

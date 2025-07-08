@@ -1,12 +1,9 @@
 import { Type } from "@sinclair/typebox";
-import { prop } from "./helpers";
 
 export function file(title = "File") {
-  return prop({
+  return Type.String({
     title,
-    schema: Type.String({
-      format: "data-url",
-      "ui:field": "file",
-    }),
+    format: "data-url",
+    "ui:field": "file",
   });
 }

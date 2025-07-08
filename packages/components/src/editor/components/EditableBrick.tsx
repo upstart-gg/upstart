@@ -1,4 +1,4 @@
-import type { Brick } from "@upstart.gg/sdk/shared/bricks";
+import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
 
 import {
   forwardRef,
@@ -12,11 +12,14 @@ import {
   startTransition,
 } from "react";
 import {
+  useContextMenuVisible,
   useDebugMode,
   useDraftHelpers,
+  useDraggingBrickType,
   useEditorHelpers,
   usePanel,
   usePreviewMode,
+  useSectionByBrickId,
   useSelectedBrickId,
 } from "../hooks/use-editor";
 import {
@@ -37,12 +40,7 @@ import {
 import BaseBrick from "~/shared/components/BaseBrick";
 import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
 import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
-import {
-  menuBarBtnCls,
-  menuBarBtnCommonCls,
-  menuBarBtnSquareCls,
-  menuNavBarCls,
-} from "~/shared/styles/menubar-styles";
+import { menuNavBarCls } from "~/shared/styles/menubar-styles";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { tx } from "@upstart.gg/style-system/twind";
 import { Draggable } from "@hello-pangea/dnd";
@@ -91,10 +89,12 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const { panelPosition } = usePanel();
     const editorHelpers = useEditorHelpers();
     const { getParentBrick } = useDraftHelpers();
+    const section = useSectionByBrickId(brick.id);
     const manifest = useBrickManifest(brick.type);
     const parentBrick = getParentBrick(brick.id);
     const [isMenuBarVisible, setMenuBarVisible] = useState(false);
     const allowedPlacements = useBarPlacements(brick);
+    const draggingBrickType = useDraggingBrickType();
 
     // brick = brickWithDefaults(brick);
     const {
@@ -161,12 +161,16 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
         if (hasMouseMoved.current || !brickTarget.matches("[data-brick]") || e.defaultPrevented) {
           return;
         }
-        let selectedBrick = brick;
+        let selectedElement: Brick | Section = brick;
+        let elementType: "brick" | "section" = "brick";
         // If has shift key pressed, then we try to select the upper container
         if (e.shiftKey) {
           if (parentBrick) {
-            selectedBrick = parentBrick;
+            selectedElement = parentBrick;
           }
+        } else if ((e.ctrlKey || e.metaKey) && section) {
+          elementType = "section";
+          selectedElement = section;
         }
 
         editorHelpers.hidePanel();
@@ -181,7 +185,11 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
         }
 
         startTransition(() => {
-          editorHelpers.setSelectedBrickId(selectedBrick.id);
+          if (elementType === "section") {
+            editorHelpers.setSelectedSectionId(selectedElement.id);
+          } else {
+            editorHelpers.setSelectedBrickId(selectedElement.id);
+          }
           editorHelpers.setPanel("inspector");
         });
 
@@ -197,9 +205,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
         key={brick.id}
         draggableId={brick.id}
         index={index}
-        isDragDisabled={
-          !manifest.movable || isContainerChild || previewMode === "mobile" || manifest.inlineDragDisabled
-        }
+        isDragDisabled={!manifest.movable || isContainerChild || previewMode === "mobile"}
       >
         {(provided, snapshot) => {
           const { ref: hoverRef, isHovered } = useIsHovered({ tolerance: 6 });
@@ -212,10 +218,9 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
 
           // Merge all refs properly to avoid render loops
           const mergedRef = useMergeRefs([provided.innerRef, barsRefs.setReference, ref, hoverRef]);
-
           const resizeOpts = getBrickResizeOptions(brick, manifests[brick.type], previewMode);
 
-          const brickContent = (
+          return (
             <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
               <div
                 ref={mergedRef}
@@ -235,7 +240,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 className={tx(
                   wrapperClass,
                   snapshot.isDragging
-                    ? "opacity-90 !z-[9999] shadow-xl overflow-hidden !cursor-grabbing outline-red-700 outline-2"
+                    ? "opacity-90 !z-[9999] shadow-xl overflow-hidden !cursor-grabbing"
                     : "hover:cursor-auto",
                 )}
                 onClick={onBrickWrapperClick}
@@ -253,38 +258,39 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                   />
                 </FloatingPortal>
                 {/* Children contains resizable handles and other elements */}
-                {manifests[brick.type]?.resizable && !isContainerChild && !snapshot.isDragging && (
-                  <>
-                    {(resizeOpts.canGrowVertical || resizeOpts.canShrinkVertical) && (
-                      <>
-                        <ResizeHandle direction="s" show={isHovered} manifest={manifest} />
-                        <ResizeHandle direction="n" show={isHovered} manifest={manifest} />
-                      </>
-                    )}
-                    {(resizeOpts.canGrowHorizontal || resizeOpts.canShrinkHorizontal) &&
-                      previewMode === "desktop" && (
+                {manifests[brick.type]?.resizable &&
+                  !isContainerChild &&
+                  !draggingBrickType &&
+                  !snapshot.isDragging && (
+                    <>
+                      {(resizeOpts.canGrowVertical || resizeOpts.canShrinkVertical) && (
                         <>
-                          <ResizeHandle direction="w" show={isHovered} manifest={manifest} />
-                          <ResizeHandle direction="e" show={isHovered} manifest={manifest} />
+                          <ResizeHandle direction="s" show={isHovered} manifest={manifest} />
+                          <ResizeHandle direction="n" show={isHovered} manifest={manifest} />
                         </>
                       )}
-                    {((resizeOpts.canGrowVertical && resizeOpts.canGrowHorizontal) ||
-                      (resizeOpts.canShrinkVertical && resizeOpts.canShrinkHorizontal)) &&
-                      previewMode === "desktop" && (
-                        <>
-                          <ResizeHandle direction="se" show={isHovered} manifest={manifest} />
-                          <ResizeHandle direction="sw" show={isHovered} manifest={manifest} />
-                          <ResizeHandle direction="ne" show={isHovered} manifest={manifest} />
-                          <ResizeHandle direction="nw" show={isHovered} manifest={manifest} />
-                        </>
-                      )}
-                  </>
-                )}
+                      {(resizeOpts.canGrowHorizontal || resizeOpts.canShrinkHorizontal) &&
+                        previewMode === "desktop" && (
+                          <>
+                            <ResizeHandle direction="w" show={isHovered} manifest={manifest} />
+                            <ResizeHandle direction="e" show={isHovered} manifest={manifest} />
+                          </>
+                        )}
+                      {((resizeOpts.canGrowVertical && resizeOpts.canGrowHorizontal) ||
+                        (resizeOpts.canShrinkVertical && resizeOpts.canShrinkHorizontal)) &&
+                        previewMode === "desktop" && (
+                          <>
+                            <ResizeHandle direction="se" show={isHovered} manifest={manifest} />
+                            <ResizeHandle direction="sw" show={isHovered} manifest={manifest} />
+                            <ResizeHandle direction="ne" show={isHovered} manifest={manifest} />
+                            <ResizeHandle direction="nw" show={isHovered} manifest={manifest} />
+                          </>
+                        )}
+                    </>
+                  )}
               </div>
             </BrickContextMenu>
           );
-
-          return brickContent;
         }}
       </Draggable>
     );
@@ -317,12 +323,13 @@ const BrickMenuBarsContainer = forwardRef<HTMLDivElement, BrickMenuBarProps>(
   ({ brick, style, isContainerChild, show, ...rest }, ref) => {
     const selectedBrickId = useSelectedBrickId();
     const manifest = useBrickManifest(brick.type);
+    const contextMenuVisible = useContextMenuVisible();
     const visible =
       (show && manifest.isContainer && !selectedBrickId) ||
       (show && !manifest.isContainer && !isContainerChild) ||
       selectedBrickId === brick.id;
     // const visible = (show && brick.isContainer && !selectedBrickId) || selectedBrickId === brick.id;
-    if (!visible && manifest.isContainer) {
+    if (!visible || contextMenuVisible) {
       return null;
     }
     return (
@@ -378,7 +385,12 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
     const parentContainer = draftHelpers.getParentBrick(brick.id);
 
     return (
-      <ContextMenu.Root modal={false}>
+      <ContextMenu.Root
+        modal={false}
+        onOpenChange={(menuOpen) => {
+          editorHelpers.setContextMenuVisible(menuOpen);
+        }}
+      >
         <ContextMenu.Trigger disabled={debugMode} ref={ref}>
           {children}
         </ContextMenu.Trigger>
@@ -387,7 +399,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
             from handling click event coming from the menu items.
             We still need to stop the propagation for other listeners. */}
           <ContextMenu.Content className="nodrag" size="2">
-            <ContextMenu.Label className="!text-xs">
+            <ContextMenu.Label className="!text-sm">
               {manifest.name} ({manifest.kind})
             </ContextMenu.Label>
             {manifest.duplicatable && (
@@ -534,23 +546,33 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                     </ContextMenu.Item>
                   </ContextMenu.SubContent>
                 </ContextMenu.Sub>
-                <ContextMenu.Item onClick={(e) => {}}>Detach from parent</ContextMenu.Item>
+                <ContextMenu.Item
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    draftHelpers.detachBrickFromContainer(brick.id);
+                  }}
+                >
+                  Detach from parent
+                </ContextMenu.Item>
               </>
             )}
-
-            <ContextMenu.Separator />
-            <ContextMenu.Item
-              shortcut="⌫"
-              color="red"
-              onClick={(e) => {
-                e.stopPropagation();
-                draftHelpers.deleteBrick(brick.id);
-                editorHelpers.deselectBrick(brick.id);
-                editorHelpers.hidePanel("inspector");
-              }}
-            >
-              Delete
-            </ContextMenu.Item>
+            {manifest.deletable && (
+              <>
+                <ContextMenu.Separator />
+                <ContextMenu.Item
+                  shortcut="⌫"
+                  color="red"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    draftHelpers.deleteBrick(brick.id);
+                    editorHelpers.deselectBrick(brick.id);
+                    editorHelpers.hidePanel("inspector");
+                  }}
+                >
+                  Delete
+                </ContextMenu.Item>
+              </>
+            )}
           </ContextMenu.Content>
         </Portal>
       </ContextMenu.Root>

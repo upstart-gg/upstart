@@ -3,13 +3,12 @@ import { customAlphabet } from "nanoid";
 import { defaultProps } from "./bricks/manifests/all-manifests";
 import { backgroundRef } from "./bricks/props/background";
 import { borderRef } from "./bricks/props/border";
-import { presetRef } from "./bricks/props/preset";
+import { colorPresetRef, presetRef } from "./bricks/props/preset";
 import { merge } from "lodash-es";
 import { cssLength, cssLengthRef } from "./bricks/props/css-length";
 import { enumProp } from "./bricks/props/enum";
 import { sectionLayout } from "./bricks/props/container";
 import { StringEnum } from "./utils/string-enum";
-import { group } from "./bricks/props/helpers";
 import { getSchemaObjectDefaults } from "./utils/schema";
 
 /**
@@ -116,32 +115,78 @@ export type Brick = Static<typeof brickSchema>;
 
 export const sectionProps = Type.Object(
   {
-    // layout: Type.Optional(
-    //   group({
-    //     title: "Layout",
-    //     children: sectionLayout({
-    //       defaults: {
-    //         gap: "gap-4",
-    //         wrap: true,
-    //         fillSpace: false,
-    //         alignItems: "items-stretch",
-    //         justifyContent: "justify-stretch",
-    //       },
-    //     }),
-    //   }),
-    // ),
-    background: Type.Optional(backgroundRef()),
-    preset: Type.Optional(presetRef()),
+    colorPreset: Type.Optional(
+      colorPresetRef({
+        title: "Color preset",
+        "ui:presets": {
+          "primary-light": {
+            previewBgClass: "bg-primary-light text-primary-content-light",
+            value: { main: "bg-primary-light text-primary-content-light" },
+            label: "Primary lighter",
+          },
+          primary: {
+            previewBgClass: "bg-primary text-primary-content",
+            label: "Primary",
+            value: { main: "bg-primary text-primary-content" },
+          },
+          "primary-dark": {
+            previewBgClass: "bg-primary-dark text-primary-content",
+            label: "Primary darker",
+            value: { main: "bg-primary-dark text-primary-content" },
+          },
+          "secondary-light": {
+            previewBgClass: "bg-secondary-light text-secondary-content-light",
+            label: "Secondary lighter",
+            value: { main: "bg-secondary-light text-secondary-content-light" },
+          },
+          secondary: {
+            previewBgClass: "bg-secondary text-secondary-content",
+            label: "Secondary",
+            value: { main: "bg-secondary text-secondary-content" },
+          },
+          "secondary-dark": {
+            previewBgClass: "bg-secondary-dark text-secondary-content",
+            label: "Secondary darker",
+            value: { main: "bg-secondary-dark text-secondary-content" },
+          },
+          neutral: {
+            previewBgClass: "bg-neutral text-neutral-content",
+            label: "Neutral",
+            value: { main: "bg-neutral text-neutral-content" },
+          },
+          base100: {
+            previewBgClass: "bg-base-100 text-base-content",
+            label: "Base 1",
+            value: { main: "bg-base-100 text-base-content" },
+          },
+          base200: {
+            previewBgClass: "bg-base-200 text-base-content",
+            label: "Base 2",
+            value: { main: "bg-base-200 text-base-content" },
+          },
+          none: { label: "None", value: {} },
+        },
+        default: "none",
+      }),
+    ),
+    // background: Type.Optional(backgroundRef()),
+    // preset: Type.Optional(presetRef()),
     minHeight: Type.Optional(
       cssLengthRef({
         title: "Min height",
-        default: "0px",
+        default: "fit-content",
         description: "The min height of the section",
         "ui:styleId": "minHeight",
-        "ui:advanced": true,
       }),
     ),
-
+    purpose: Type.Optional(
+      StringEnum(["navbar", "sidebar"], {
+        title: "Specific purpose",
+        description: "The purpose of the section. Used for styling and layout.",
+        enumNames: ["Navbar", "Sidebar"],
+        "ui:field": "hidden",
+      }),
+    ),
     maxWidth: Type.Optional(
       enumProp("Max width", "max-w-full", {
         options: [
@@ -168,12 +213,14 @@ export const sectionProps = Type.Object(
         ],
         description: "The maximum width of the section. Desktop only",
         displayAs: "button-group",
+        "ui:responsive": "desktop",
       }),
     ),
     fillSpace: Type.Optional(
       Type.Boolean({
-        title: "Fill available space",
-        description: "Make bricks fill the available space",
+        title: "Fill horizontal space",
+        description: "Make all bricks fill the available space",
+        "ui:responsive": "desktop",
       }),
     ),
     justifyContent: Type.Optional(
@@ -190,7 +237,8 @@ export const sectionProps = Type.Object(
           enumNames: ["Left", "Center", "Right", "Space between", "Space around", "Evenly distributed"],
           title: "Horizontal alignment",
           "ui:placeholder": "Not specified",
-          default: "justify-start",
+          default: "justify-center",
+          "ui:responsive": "desktop",
         },
       ),
     ),
@@ -200,6 +248,7 @@ export const sectionProps = Type.Object(
         title: "Vertical alignment",
         "ui:placeholder": "Not specified",
         default: "items-stretch",
+        "ui:responsive": "desktop",
       }),
     ),
     gap: Type.Optional(

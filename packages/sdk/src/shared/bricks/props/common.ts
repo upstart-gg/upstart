@@ -1,7 +1,6 @@
-import { Type } from "@sinclair/typebox";
-import { presetRef } from "./preset";
+import { type TString, Type } from "@sinclair/typebox";
 import { typedRef } from "~/shared/utils/typed-ref";
-import { cssLength, cssLengthRef } from "./css-length";
+import { cssLengthRef } from "./css-length";
 import { StringEnum } from "~/shared/utils/string-enum";
 
 export function hidden() {
@@ -41,7 +40,7 @@ export const commonProps = {
         "Set a fixed width for the brick. If not set, the brick will be responsive and will follow the flex layout of its parent section.",
       "ai:instructions": "Use percentage values to make the width responsive, like '50%'",
       "ui:field": "hidden",
-    }),
+    }) as TString,
   ),
   height: Type.Optional(
     cssLengthRef({
@@ -64,5 +63,5 @@ export const commonProps = {
       "ui:styleId": "styles:alignSelf",
     }),
   ),
-  preset: Type.Optional(presetRef()),
+  // preset: Type.Optional(presetRef()),
 };

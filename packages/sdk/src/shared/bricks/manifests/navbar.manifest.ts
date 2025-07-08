@@ -1,19 +1,15 @@
-import { Type } from "@sinclair/typebox";
+import { type TObject, Type } from "@sinclair/typebox";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, group, optional, prop } from "../props/helpers";
-import { border, borderRef } from "../props/border";
-import { string, urlOrPageId, urlOrPageIdRef } from "../props/string";
-import { image, imageRef } from "../props/image";
-import { backgroundColor, backgroundColorRef } from "../props/background";
-import { textContent, textContentRef } from "../props/text";
-import { shadow, shadowRef } from "../props/effects";
-import { datasourceRef } from "../props/datasource";
-import { fixedPositioned } from "../props/position";
+import { defineProps, group } from "../props/helpers";
+import { string, urlOrPageIdRef } from "../props/string";
+import { imageRef } from "../props/image";
+import { textContentRef } from "../props/text";
+import { shadowRef } from "../props/effects";
 import { boolean } from "../props/boolean";
 import { VscLayoutPanelOff } from "react-icons/vsc";
 import type { BrickProps } from "../props/types";
 import { colorRef } from "../props/color";
-import type { FC } from "react";
+import { colorPresetRef } from "../props/preset";
 
 export const datasource = Type.Array(
   Type.Object({
@@ -47,78 +43,128 @@ export const manifest = defineBrickManifest({
   datasource,
   duplicatable: false,
   resizable: false,
-  movable: false,
-
-  // maxHeight: {
-  //   desktop: 90,
-  //   mobile: 90,
-  // },
-  // minHeight: {
-  //   desktop: 60,
-  //   mobile: 60,
-  // },
   staticClasses: "flex-1",
   icon: VscLayoutPanelOff,
   iconClassName: "rotate-180",
   props: defineProps(
     {
-      brand: optional(
+      colorPreset: Type.Optional(
+        colorPresetRef({
+          title: "Color preset",
+          "ui:presets": {
+            "primary-light": {
+              previewBgClass: "bg-primary-light text-primary-content-light",
+              value: {
+                container: "bg-primary-light text-primary-content-light",
+              },
+              label: "Primary lighter",
+            },
+            primary: {
+              previewBgClass: "bg-primary text-primary-content",
+              label: "Primary",
+              value: { container: "bg-primary text-primary-content" },
+            },
+            "primary-dark": {
+              previewBgClass: "bg-primary-dark text-primary-content",
+              value: { container: "bg-primary-dark text-primary-content" },
+              label: "Primary darker",
+            },
+            "secondary-light": {
+              previewBgClass: "bg-secondary-light text-secondary-content-light",
+              value: {
+                container: "bg-secondary-light text-secondary-content-light",
+              },
+              label: "Secondary lighter",
+            },
+            secondary: {
+              previewBgClass: "bg-secondary text-secondary-content",
+              label: "Secondary",
+              value: { container: "bg-secondary text-secondary-content" },
+            },
+            "secondary-dark": {
+              previewBgClass: "bg-secondary-dark text-secondary-content",
+              label: "Secondary darker",
+              value: { container: "bg-secondary-dark text-secondary-content" },
+            },
+            neutral: {
+              previewBgClass: "bg-neutral text-neutral-content",
+              label: "Neutral",
+              value: { container: "bg-neutral text-neutral-content" },
+            },
+            base100: {
+              previewBgClass: "bg-base-100 text-base-content",
+              label: "Base 1",
+              value: { container: "bg-base-100 text-base-content" },
+            },
+            base200: {
+              previewBgClass: "bg-base-200 text-base-content",
+              label: "Base 2",
+              value: { container: "bg-base-200 text-base-content" },
+            },
+            none: { label: "None", value: {} },
+          },
+          default: "primary",
+        }),
+      ),
+      brand: Type.Optional(
         textContentRef({
           title: "Brand name",
           default: "Acme Inc.",
           disableSizing: true,
         }),
       ),
-      logo: optional(
+      logo: Type.Optional(
         imageRef({
           title: "Logo",
           "ui:show-img-search": false,
           "ui:no-object-options": true,
         }),
       ),
-      hideText: optional(boolean("Hide brand name")),
-      navigation: group({
-        title: "Links",
-        children: {
-          position: prop({
-            title: "Position",
-            schema: Type.Union(
-              [
-                Type.Literal("left", { title: "Left" }),
-                Type.Literal("center", { title: "Center" }),
-                Type.Literal("right", { title: "Right" }),
-              ],
-              { default: "right", "ui:responsive": "desktop" },
-            ),
-          }),
-          color: optional(colorRef()),
-          datasource: optional(datasourceRef()),
-          staticNavItems: optional(
-            prop({
-              title: "Nav items",
-              schema: Type.Array(
-                Type.Object({
-                  urlOrPageId: urlOrPageIdRef(),
-                  label: optional(string("Label")),
-                }),
-                { title: "Navigation items", default: [] },
-              ),
-            }),
-          ),
-        },
-      }),
-      advanced: optional(
-        group({
-          title: "Advanced",
-          children: {
-            fixedPositioned: optional(fixedPositioned()),
-            backgroundColor: optional(backgroundColorRef()),
-            color: optional(colorRef()),
-            border: optional(borderRef()),
-            shadow: optional(shadowRef()),
+      hideBrand: Type.Optional(
+        boolean("Hide brand name", undefined, {
+          metadata: {
+            filter: (manifestProps: TObject, formData: Record<string, unknown>) => {
+              return !!formData.logo; // Enable this field only if logo is set
+            },
           },
         }),
       ),
+      navigation: group({
+        title: "Links",
+        children: {
+          position: Type.Union(
+            [
+              Type.Literal("left", { title: "Left" }),
+              Type.Literal("center", { title: "Center" }),
+              Type.Literal("right", { title: "Right" }),
+            ],
+            { title: "Position", default: "right", "ui:responsive": "desktop" },
+          ),
+          color: Type.Optional(colorRef()),
+          pageTagsFilter: Type.Optional(
+            Type.Array(Type.String(), {
+              description:
+                "Filter pages in the navbar by tags. Only pages with all of these tags will be shown.",
+              title: "Tags",
+              default: ["navbar"],
+            }),
+          ),
+          staticNavItems: Type.Optional(
+            Type.Array(
+              Type.Object({
+                urlOrPageId: urlOrPageIdRef(),
+                label: Type.Optional(string("Label")),
+              }),
+              {
+                title: "Navigation items",
+                description: "Additional static navigation items to show in the navbar",
+                default: [],
+              },
+            ),
+          ),
+        },
+      }),
+      shadow: Type.Optional(shadowRef()),
     },
     { noAlignSelf: true },
   ),
@@ -135,7 +181,6 @@ export const examples: {
     description: "Corporate navbar with logo and right-aligned navigation",
     type: "navbar",
     props: {
-      preset: "prominent-primary",
       brand: "TechCorp Solutions",
       logo: {
         src: "https://via.placeholder.com/120x40.png?text=TechCorp",
@@ -151,9 +196,6 @@ export const examples: {
           { urlOrPageId: "/contact" },
         ],
       },
-      advanced: {
-        color: "#1f2937",
-      },
     },
   },
   {
@@ -164,9 +206,6 @@ export const examples: {
       logo: {
         src: "https://via.placeholder.com/100x35.png?text=Studio",
         alt: "Creative Studio logo",
-      },
-      advanced: {
-        color: "#ffffff",
       },
       navigation: {
         position: "center",
@@ -185,13 +224,6 @@ export const examples: {
     type: "navbar",
     props: {
       brand: "TechCorp Solutions",
-      advanced: {
-        backgroundColor: "#3b82f6",
-        fixedPositioned: true,
-        shadow: "shadow-md",
-        color: "#ffffff",
-      },
-
       logo: {
         src: "https://via.placeholder.com/110x38.png?text=CloudFlow",
         alt: "CloudFlow platform logo",
@@ -213,7 +245,6 @@ export const examples: {
     type: "navbar",
     props: {
       brand: "TechCorp Solutions",
-      preset: "prominent-primary",
       logo: {
         src: "https://via.placeholder.com/130x45.png?text=ShopEasy",
         alt: "ShopEasy store logo",
@@ -235,14 +266,11 @@ export const examples: {
     type: "navbar",
     props: {
       brand: "TechCorp Solutions",
-      advanced: {
-        shadow: "shadow-sm",
-      },
       logo: {
         src: "https://via.placeholder.com/140x50.png?text=Agency+Logo",
         alt: "Digital agency logo",
       },
-      hideText: true,
+      hideBrand: true,
       navigation: {
         position: "right",
         color: "#64748b",
@@ -260,11 +288,6 @@ export const examples: {
     type: "navbar",
     props: {
       brand: "TechCorp Solutions",
-      advanced: {
-        backgroundColor: "#7c2d12",
-        shadow: "shadow-lg",
-        color: "#fed7aa",
-      },
       logo: {
         src: "https://via.placeholder.com/80x50.png?text=BV",
         alt: "Bella Vista restaurant logo",
@@ -286,15 +309,6 @@ export const examples: {
     type: "navbar",
     props: {
       brand: "TechCorp Solutions",
-      preset: "prominent-secondary",
-      advanced: {
-        backgroundColor: "#f1f5f9",
-        border: {
-          sides: ["border-b"],
-          color: "border-accent",
-        },
-        color: "#334155",
-      },
       navigation: {
         position: "left",
         color: "#64748b",
@@ -312,7 +326,6 @@ export const examples: {
     type: "navbar",
     props: {
       brand: "TechCorp Solutions",
-      preset: "prominent-primary",
       logo: {
         src: "https://via.placeholder.com/100x40.png?text=GF",
         alt: "Green Future organization logo",

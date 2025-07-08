@@ -1,4 +1,4 @@
-import { type StringOptions, Type, type Static } from "@sinclair/typebox";
+import { type StringOptions, Type, type Static, type SchemaOptions } from "@sinclair/typebox";
 import { typedRef } from "~/shared/utils/typed-ref";
 
 export function preset(defaultValue?: string) {
@@ -26,6 +26,18 @@ export function preset(defaultValue?: string) {
       }),
       Type.Literal("accent", {
         title: "Accent",
+        description: "Filled display on accent background with dark text.",
+      }),
+      Type.Literal("primary-gradient", {
+        title: "Primary gradient",
+        description: "Filled display on primary background with dark text.",
+      }),
+      Type.Literal("secondary-gradient", {
+        title: "Secondary gradient",
+        description: "Filled display on secondary background with dark text.",
+      }),
+      Type.Literal("accent-gradient", {
+        title: "Accent gradient",
         description: "Filled display on accent background with dark text.",
       }),
 
@@ -70,8 +82,8 @@ export function preset(defaultValue?: string) {
         description:
           "Mainly white background with dark text. Useful for bricks inside a card or a container that already have a surface/background.",
       }),
-      Type.Literal("dark", {
-        title: "Dark",
+      Type.Literal("neutral", {
+        title: "Neutral",
         description:
           "Mainly dark background with light text. Useful for bricks inside a card or a container that already have a surface/background.",
       }),
@@ -97,7 +109,13 @@ export function presetRef(options: StringOptions = {}) {
   return typedRef("styles:preset", options);
 }
 
-export const presetsStyleProps = {
+type PresetStylesIds = {
+  "styles:backgroundColor": string;
+  "styles:color": string;
+  "styles:border": { color: string };
+};
+
+export const presetsStyleProps: Record<Preset, PresetStylesIds> = {
   "surface-1": {
     "styles:backgroundColor": "bg-base-100",
     "styles:color": "text-base-content",
@@ -143,19 +161,34 @@ export const presetsStyleProps = {
     "styles:color": "text-accent",
     "styles:border": { color: "border-accent" },
   },
+  "primary-gradient": {
+    "styles:backgroundColor": "bg-gradient-to-br from-primary-400 to-primary-500",
+    "styles:color": "text-primary",
+    "styles:border": { color: "border-primary-700" },
+  },
+  "secondary-gradient": {
+    "styles:backgroundColor": "bg-gradient-to-br from-secondary-400 to-secondary-500",
+    "styles:color": "text-secondary",
+    "styles:border": { color: "border-secondary-700" },
+  },
+  "accent-gradient": {
+    "styles:backgroundColor": "bg-gradient-to-br from-accent-400 to-accent-500",
+    "styles:color": "text-accent",
+    "styles:border": { color: "border-accent-700" },
+  },
 
   "medium-primary": {
-    "styles:backgroundColor": "bg-primary-200",
+    "styles:backgroundColor": "bg-primary-300",
     "styles:color": "text-primary-800",
     "styles:border": { color: "border-primary-300" },
   },
   "medium-secondary": {
-    "styles:backgroundColor": "bg-secondary-200",
+    "styles:backgroundColor": "bg-secondary-300",
     "styles:color": "text-secondary-800",
     "styles:border": { color: "border-secondary-300" },
   },
   "medium-accent": {
-    "styles:backgroundColor": "bg-accent-200",
+    "styles:backgroundColor": "bg-accent-300",
     "styles:color": "text-accent-800",
     "styles:border": { color: "border-accent-300" },
   },
@@ -174,5 +207,56 @@ export const presetsStyleProps = {
     "styles:color": "text-accent-800",
     "styles:border": { color: "border-accent-200" },
   },
-  "preset-none": {},
+  "preset-none": {
+    "styles:backgroundColor": "bg-transparent",
+    "styles:color": "text-base-content",
+    "styles:border": { color: "border-transparent" },
+  },
+  light: {
+    "styles:backgroundColor": "bg-white",
+    "styles:color": "text-base-content",
+    "styles:border": { color: "border-base-300" },
+  },
+  neutral: {
+    "styles:backgroundColor": "bg-neutral",
+    "styles:color": "text-neutral-content",
+    "styles:border": { color: "border-neutral-800" },
+  },
 };
+
+type ColorPresetOptions = SchemaOptions & {
+  "ui:presets": ColorPresets;
+};
+
+export function colorPreset(opts?: ColorPresetOptions) {
+  const { title = "Color preset", ...options } = opts ?? {};
+  return Type.String({
+    title,
+    $id: "presets:color",
+    "ui:styleId": "presets:color",
+    "ui:field": "color-preset",
+    "ui:responsive": "desktop",
+    ...options,
+  });
+}
+
+export type ColorPresetSettings = Static<ReturnType<typeof colorPreset>>;
+
+export function colorPresetRef(options: ColorPresetOptions) {
+  return typedRef("presets:color", { ...options, "ui:styleId": "presets:color" });
+}
+
+export type ColorPresets = Record<
+  string,
+  {
+    /**
+     * Class name to apply for the background color pill preview.
+     */
+    previewBgClass?: string;
+    /**
+     * Part/className object to apply to the brick.
+     */
+    value: Record<string, string>;
+    label: string;
+  }
+>;

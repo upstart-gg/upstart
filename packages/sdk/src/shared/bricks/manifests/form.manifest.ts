@@ -4,10 +4,11 @@ import { StringEnum } from "~/shared/utils/string-enum";
 import { backgroundColorRef } from "../props/background";
 import { colorRef } from "../props/color";
 import { datarecord } from "../props/datarecord";
-import { defineProps, optional, prop } from "../props/helpers";
+import { defineProps } from "../props/helpers";
 import { paddingRef } from "../props/padding";
 import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
+import { Type } from "@sinclair/typebox";
 
 export const manifest = defineBrickManifest({
   type: "form",
@@ -19,16 +20,16 @@ There is no need to define the form fields manually and the form does not accept
   isContainer: false,
   icon: FaWpforms,
   props: defineProps({
-    title: optional(string("Title", { description: "The title of the form", default: "My form" })),
-    intro: optional(string("Intro", { description: "The intro text of the form" })),
-    buttonLabel: optional(string("Button Label", { description: "The label of the submit button" })),
-    successMessage: optional(
+    title: Type.Optional(string("Title", { description: "The title of the form", default: "My form" })),
+    intro: Type.Optional(string("Intro", { description: "The intro text of the form" })),
+    buttonLabel: Type.Optional(string("Button Label", { description: "The label of the submit button" })),
+    successMessage: Type.Optional(
       string("Success Message", {
         description: "The message to display when the form is successfully submitted",
         default: "Thank you for your submission!",
       }),
     ),
-    errorMessage: optional(
+    errorMessage: Type.Optional(
       string("Error Message", {
         description: "The message to display when the form submission fails",
         default: "There was an error submitting the form. Please try again later.",
@@ -37,18 +38,14 @@ There is no need to define the form fields manually and the form does not accept
     datarecordId: datarecord("Datarecord ID", {
       description: "The ID of the datarecord to use to generate the form fields",
     }),
-    padding: optional(paddingRef()),
-    backgroundColor: optional(backgroundColorRef()),
-    color: optional(colorRef()),
-    align: optional(
-      prop({
+    padding: Type.Optional(paddingRef()),
+    backgroundColor: Type.Optional(backgroundColorRef()),
+    color: Type.Optional(colorRef()),
+    align: Type.Optional(
+      StringEnum(["vertical", "horizontal"], {
+        default: "vertical",
         title: "Alignment",
         description: "The alignment of the form fields. Default is vertical",
-        schema: StringEnum(["vertical", "horizontal"], {
-          default: "vertical",
-          title: "Form alignment",
-          description: "Choose between vertical or horizontal alignment for the form fields",
-        }),
       }),
     ),
   }),

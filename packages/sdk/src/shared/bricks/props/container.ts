@@ -1,8 +1,8 @@
 import { type TObject, Type, type Static, type SchemaOptions } from "@sinclair/typebox";
-import { getStyleProperties, getStyleValueById, group, optional, prop } from "./helpers";
+import { getStyleProperties, getStyleValueById, group } from "./helpers";
 import { typedRef } from "~/shared/utils/typed-ref";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { cssLength, cssLengthRef } from "./css-length";
+import { cssLengthRef } from "./css-length";
 
 const isFlexLayoutFilter = (manifestProps: TObject, formData: Record<string, unknown>) => {
   const stylesProps = getStyleProperties(manifestProps);
@@ -64,7 +64,7 @@ function containerlayoutStyle(options: SchemaOptions = {}) {
           "ui:styleId": "styles:gap",
         }),
       ),
-      direction: optional(
+      direction: Type.Optional(
         StringEnum(["flex-row", "flex-col"], {
           enumNames: ["Row", "Column"],
           title: "Direction",
@@ -74,7 +74,7 @@ function containerlayoutStyle(options: SchemaOptions = {}) {
           },
         }),
       ),
-      columns: optional(
+      columns: Type.Optional(
         Type.Number({
           title: "Columns",
           description: "Number of columns. Only applies to grid layout",
@@ -86,7 +86,7 @@ function containerlayoutStyle(options: SchemaOptions = {}) {
           },
         }),
       ),
-      wrap: optional(
+      wrap: Type.Optional(
         Type.Boolean({
           title: "Wrap",
           description: "Wrap items.",
@@ -96,7 +96,7 @@ function containerlayoutStyle(options: SchemaOptions = {}) {
           },
         }),
       ),
-      fillSpace: optional(
+      fillSpace: Type.Optional(
         Type.Boolean({
           title: "Fill space",
           description: "Makes items of the container fill the available space",
@@ -137,7 +137,7 @@ function containerlayoutStyle(options: SchemaOptions = {}) {
         ),
       ),
 
-      alignItems: optional(
+      alignItems: Type.Optional(
         Type.Union(
           [
             Type.Literal("items-start", { title: "Start" }),
@@ -204,13 +204,13 @@ export function makeContainerProps() {
 export function sectionLayout(options: SchemaOptions = {}) {
   return Type.Object(
     {
-      // wrap: optional(
+      // wrap:Type.Optional
       //   Type.Boolean({
       //     title: "Wrap",
       //     description: "Wrap bricks.",
       //   }),
       // ),
-      fillSpace: optional(
+      fillSpace: Type.Optional(
         Type.Boolean({
           title: "Fill available space",
           description: "Makes bricks fill the available space",

@@ -1,10 +1,11 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, group, optional } from "../props/helpers";
+import { defineProps, group } from "../props/helpers";
 import { LiaMapMarkedAltSolid } from "react-icons/lia";
 import { borderRef } from "../props/border";
 import { shadowRef } from "../props/effects";
 import type { BrickProps } from "../props/types";
 import { geolocation } from "../props/geolocation";
+import { Type } from "@sinclair/typebox";
 
 export const DEFAULTS = {
   lat: 48.8566, // Default latitude (Paris)
@@ -35,8 +36,8 @@ export const manifest = defineBrickManifest({
         children: geolocation({ defaultZoom: DEFAULTS.zoom }),
       }),
       // location: geolocation({ defaultZoom: DEFAULTS.zoom }),
-      border: optional(borderRef()),
-      shadow: optional(shadowRef()),
+      border: Type.Optional(borderRef()),
+      shadow: Type.Optional(shadowRef()),
     },
     { noPreset: true },
   ),

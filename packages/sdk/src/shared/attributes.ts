@@ -1,14 +1,13 @@
 import { Type, type TProperties, type Static, type TObject } from "@sinclair/typebox";
 import type { JSONSchemaType } from "ajv";
-import { backgroundRef } from "./bricks/props/background";
-import { string, urlOrPageIdRef } from "./bricks/props/string";
-import { group, optional, prop } from "./bricks/props/helpers";
+import { backgroundColorRef } from "./bricks/props/background";
+import { string } from "./bricks/props/string";
 import { boolean } from "./bricks/props/boolean";
 import { datetime } from "./bricks/props/date";
 import { enumProp } from "./bricks/props/enum";
 import { jsonDefault } from "json-schema-default";
-import { StringEnum } from "./utils/string-enum";
-import { image, imageRef } from "./bricks/props/image";
+import { imageRef } from "./bricks/props/image";
+import { colorRef } from "./bricks/props/color";
 
 export function defineAttributes(attrs: TProperties) {
   // Attributes starting with "$" are reserved for internal use
@@ -33,72 +32,99 @@ export type { JSONSchemaType };
 
 // Default attributes
 const defaultAttributes = {
-  $sidebarConfig: optional(
-    group({
-      title: "Sidebar",
-      children: {
-        enabled: boolean("Enabled", true, {
-          description: "Enable or disable the sidebar on this page",
-        }),
-        sidebarPosition: StringEnum(["left", "right"], {
-          title: "Position",
-          default: "left",
-          enumNames: ["Left", "Right"],
-          "ui:group": "layout",
-          "ui:group:title": "Page Layout",
-        }),
-        staticNavItems: optional(
-          prop({
-            title: "Nav items",
-            schema: Type.Array(
-              Type.Object({
-                urlOrPageId: urlOrPageIdRef(),
-                label: optional(string("Label")),
-              }),
-              { title: "Navigation items", default: [] },
-            ),
-          }),
-        ),
-      },
-    }),
-  ),
+  // $navbar:Type.Optional
+  //   group({
+  //     title: "Navbar",
+  //     children: navbarManifest.props,
+  //     // children: {
+  //     //   enabled: boolean("Enabled", true, {
+  //     //     description: "Enable or disable the navbar on this page",
+  //     //   }),
+  //     //   pageTagsFilter:Type.Optional
+  //     //     prop({
+  //     //       title: "Page tags filter",
+  //     //       description:
+  //     //         "Filter pages in the navbar by tags. Only pages with all of these tags will be shown.",
+  //     //       schema: Type.Array(Type.String(), {
+  //     //         title: "Tags",
+  //     //         default: ["navbar"],
+  //     //       }),
+  //     //     }),
+  //     //   ),
+  //     //   staticNavItems:Type.Optional
+  //     //     prop({
+  //     //       title: "Nav items",
+  //     //       description: "Additional static navigation items to show in the navbar",
+  //     //       schema: Type.Array(
+  //     //         Type.Object({
+  //     //           urlOrPageId: urlOrPageIdRef(),
+  //     //           label:Type.Optionalstring("Label")),
+  //     //         }),
+  //     //         { title: "Navigation items", default: [] },
+  //     //       ),
+  //     //     }),
+  //     //   ),
+  //     // },
+  //   }),
+  // ),
+  // $sidebar:Type.Optional
+  //   group({
+  //     title: "Sidebar",
+  //     children: {
+  //       enabled: boolean("Enabled", true, {
+  //         description: "Enable or disable the sidebar on this page",
+  //       }),
+  //       sidebarPosition: StringEnum(["left", "right"], {
+  //         title: "Position",
+  //         default: "left",
+  //         enumNames: ["Left", "Right"],
+  //         "ui:group": "layout",
+  //         "ui:group:title": "Page Layout",
+  //       }),
+  //       staticNavItems:Type.Optional
+  //         prop({
+  //           title: "Nav items",
+  //           schema: Type.Array(
+  //             Type.Object({
+  //               urlOrPageId: urlOrPageIdRef(),
+  //               label:Type.Optionalstring("Label")),
+  //             }),
+  //             { title: "Navigation items", default: [] },
+  //           ),
+  //         }),
+  //       ),
+  //     },
+  //   }),
+  // ),
 
-  $bodyBackground: optional(
-    backgroundRef({
-      default: {
-        color: "#ffffff",
-      },
-      title: "Body Background",
-      description:
-        "Applies to the body element of the page (while Page Background applies to the page container)",
-      "ui:field": "background",
-      "ui:no-alt-text": true,
-      // disable for now
-      // "ui:show-img-search": true,
-      "ui:group": "layout",
-      "ui:group:title": "Page Layout",
-      "ui:group:order": 3,
-    }),
-  ),
+  // $bodyBackground:Type.Optional
+  //   backgroundRef({
+  //     default: {
+  //       color: "#ffffff",
+  //     },
+  //     title: "Body Background",
+  //     description:
+  //       "Applies to the body element of the page (while Page Background applies to the page container)",
+  //     "ui:field": "background",
+  //     "ui:no-alt-text": true,
+  //     // disable for now
+  //     // "ui:show-img-search": true,
+  //     "ui:group": "layout",
+  //     "ui:group:title": "Page Layout",
+  //     "ui:group:order": 3,
+  //   }),
+  // ),
 
-  $pageBackground: optional(
-    backgroundRef({
-      title: "Page Background",
-      "ui:no-alt-text": true,
-      defaultValue: { color: "base-100" },
-    }),
-  ),
-
-  $pageOgImage: optional(
-    imageRef({
-      title: "Social share image",
-      description: "Image shown when this page is shared on social media",
-      "ai:hidden": true,
-      "ui:no-object-options": true,
-      "ui:no-alt-text": true,
-      "ui:show-img-search": false,
-    }),
-  ),
+  $backgroundColor: backgroundColorRef({
+    title: "Background color",
+    default: "bg-base-100",
+    "ui:field": "hidden",
+  }),
+  $textColor: colorRef({
+    title: "Text color",
+    default: "text-base-content",
+    "ui:field": "hidden",
+  }),
 
   $pageLanguage: enumProp("Language", "en", {
     options: [
@@ -129,25 +155,13 @@ const defaultAttributes = {
     "ui:group:title": "Meta tags",
   }),
 
-  $robotsIndexing: optional(
+  $robotsIndexing: Type.Optional(
     boolean("Allow search engines to index this site", true, {
       description: "Disabling this will prevent search engines from indexing this site",
       "ui:group": "seo",
       "ui:group:title": "SEO",
       "ui:scope": "site",
       "ai:hidden": true,
-    }),
-  ),
-
-  $siteOgImage: optional(
-    imageRef({
-      title: "Social share image",
-      description: "Image shown when this site is shared on social media",
-      "ui:scope": "site",
-      "ai:hidden": true,
-      "ui:no-object-options": true,
-      "ui:no-alt-text": true,
-      "ui:show-img-search": false,
     }),
   ),
 
@@ -182,16 +196,36 @@ const defaultAttributes = {
     "ui:multiline": true,
   }),
 
-  $pageLastUpdated: optional(
+  $siteOgImage: Type.Optional(
+    imageRef({
+      title: "Social share image",
+      description: "Image shown when this site is shared on social media",
+      "ui:scope": "site",
+      "ai:hidden": true,
+      "ui:no-object-options": true,
+      "ui:no-alt-text": true,
+      "ui:show-img-search": false,
+    }),
+  ),
+
+  $pageOgImage: Type.Optional(
+    imageRef({
+      title: "Social share image",
+      description: "Image shown when this page is shared on social media",
+      "ai:hidden": true,
+      "ui:no-object-options": true,
+      "ui:no-alt-text": true,
+      "ui:show-img-search": false,
+    }),
+  ),
+  $pageLastUpdated: Type.Optional(
     datetime("Last updated", {
       "ui:hidden": true,
       "ai:guidelines": "Don't generate this property.",
     }),
   ),
 
-  // --- layout attributes ---
-
-  $siteHeadTags: optional(
+  $siteHeadTags: Type.Optional(
     Type.String({
       title: "Head tags",
       description:
@@ -206,7 +240,7 @@ const defaultAttributes = {
       "ui:group:title": "External scripts",
     }),
   ),
-  $siteBodyTags: optional(
+  $siteBodyTags: Type.Optional(
     Type.String({
       title: "Body tags",
       description:
@@ -226,8 +260,9 @@ export const defaultAttributesSchema = Type.Object(defaultAttributes, {
   additionalProperties: true,
 });
 export const siteAttributesSchemaForLLM = Type.Pick(defaultAttributesSchema, [
-  "$bodyBackground",
-  "$pageBackground",
+  // "$bodyBackground",
+  "$backgroundColor",
+  "$textColor",
 ]);
 export const pageAttributesSchemaForLLM = Type.Pick(defaultAttributesSchema, [
   "$pageTitle",
@@ -235,8 +270,9 @@ export const pageAttributesSchemaForLLM = Type.Pick(defaultAttributesSchema, [
   "$pageKeywords",
   "$pageLanguage",
   "$pagePath",
-  "$bodyBackground",
-  "$pageBackground",
+  // "$bodyBackground",
+  "$backgroundColor",
+  "$textColor",
 ]);
 
 export type AttributesSchema = typeof defaultAttributesSchema & Record<string, unknown>;

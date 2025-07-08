@@ -1,6 +1,5 @@
 import { type ComponentProps, useEffect, useRef, useState } from "react";
 import { useAttributes, usePreviewMode } from "~/editor/hooks/use-editor";
-import { useBodyStyle } from "~/shared/hooks/use-page-style";
 import { tx, css } from "@upstart.gg/style-system/twind";
 
 export default function DeviceFrame({ children, ...props }: ComponentProps<"div">) {
@@ -8,7 +7,7 @@ export default function DeviceFrame({ children, ...props }: ComponentProps<"div"
   const previewMode = usePreviewMode();
   const attributes = useAttributes();
   const [show, setShow] = useState<boolean | null>(false);
-  const bodyClasssName = useBodyStyle({ attributes });
+  // const bodyClasssName = useBodyStyle({ attributes });
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -41,9 +40,9 @@ export default function DeviceFrame({ children, ...props }: ComponentProps<"div"
           outline: previewMode === "desktop" ? "none" : "14px solid #111",
           width: previewMode === "desktop" ? "100%" : "100%",
           // marginBlock: "auto",
-          marginBottom: previewMode === "desktop" ? "0.75rem" : "auto",
+          marginBottom: previewMode === "desktop" ? "0.5rem" : "auto",
           marginTop: previewMode === "desktop" ? "0" : "auto",
-          marginInline: previewMode === "desktop" ? "1rem" : "auto",
+          marginInline: previewMode === "desktop" ? ".5rem" : "auto",
           boxShadow:
             previewMode === "desktop"
               ? "1px solid rgba(0, 0, 0, 0.15)"
@@ -55,7 +54,7 @@ export default function DeviceFrame({ children, ...props }: ComponentProps<"div"
             scrollbarColor: "var(--violet-7) var(--violet-3)",
           },
         }),
-        bodyClasssName,
+        // bodyClasssName,
       )}
       {...props}
     >

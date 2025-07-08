@@ -1,16 +1,14 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, group, optional } from "../props/helpers";
-import { basicAlign, basicAlignRef } from "../props/align";
-import { background, backgroundRef } from "../props/background";
-import { border, borderRef } from "../props/border";
-import { textContent, textContentRef } from "../props/text";
-import { padding, paddingRef } from "../props/padding";
+import { defineProps } from "../props/helpers";
+import { basicAlignRef } from "../props/align";
+import { backgroundRef } from "../props/background";
+import { borderRef } from "../props/border";
+import { textContentRef } from "../props/text";
+import { paddingRef } from "../props/padding";
 import { BsAlphabetUppercase } from "react-icons/bs";
-import { preset } from "../props/preset";
 import type { BrickProps } from "../props/types";
 import { colorRef } from "../props/color";
-import type { FC } from "react";
-import type { Type } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { shadowRef } from "../props/effects";
 
 export const manifest = defineBrickManifest({
@@ -29,13 +27,13 @@ It is typically used on home pages to grab the user's attention.
   props: defineProps(
     {
       content: textContentRef({ title: "Hero title", default: "I'm a big text" }),
-      tagline: optional(textContentRef({ title: "Hero tagline", default: "I'm a tagline" })),
-      background: optional(backgroundRef()),
-      color: optional(colorRef()),
-      shadow: optional(shadowRef()),
-      align: optional(basicAlignRef()),
-      padding: optional(paddingRef()),
-      border: optional(borderRef()),
+      tagline: Type.Optional(textContentRef({ title: "Hero tagline", default: "I'm a tagline" })),
+      background: Type.Optional(backgroundRef()),
+      color: Type.Optional(colorRef()),
+      shadow: Type.Optional(shadowRef()),
+      align: Type.Optional(basicAlignRef()),
+      padding: Type.Optional(paddingRef()),
+      border: Type.Optional(borderRef()),
     },
     {
       default: {
@@ -55,7 +53,6 @@ export const examples: {
     description: "Simple welcome hero with blue background",
     type: "hero",
     props: {
-      preset: "prominent-primary",
       content: "Welcome to Our Platform",
       tagline: "The future of productivity starts here",
       align: {
@@ -68,7 +65,6 @@ export const examples: {
     description: "Startup hero with gradient background",
     type: "hero",
     props: {
-      preset: "prominent-secondary",
       content: "Build Something Amazing",
       tagline: "Turn your ideas into reality with our cutting-edge tools",
       align: {
@@ -81,7 +77,6 @@ export const examples: {
     description: "Construction company hero with bold presence",
     type: "hero",
     props: {
-      preset: "prominent-primary",
       content: "Building Tomorrow Today",
       tagline: "Quality construction services for residential and commercial projects",
       padding: "p-16",
@@ -91,7 +86,6 @@ export const examples: {
     description: "Fashion brand hero with modern appeal",
     type: "hero",
     props: {
-      preset: "prominent-accent",
       content: "Express Your Style",
       tagline: "Contemporary fashion that speaks to your individuality",
       align: {
@@ -105,7 +99,6 @@ export const examples: {
     description: "Law firm hero with authoritative tone",
     type: "hero",
     props: {
-      preset: "prominent-secondary",
       content: "Justice You Can Trust",
       tagline: "Experienced legal representation for individuals and businesses",
       padding: "p-8",
@@ -120,7 +113,6 @@ export const examples: {
     description: "Photography studio hero with artistic flair",
     type: "hero",
     props: {
-      preset: "surface-1",
       content: "Capturing Life's Moments",
       tagline: "Professional photography services for weddings, portraits, and events",
       border: {
