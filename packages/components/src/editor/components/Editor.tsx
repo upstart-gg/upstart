@@ -9,6 +9,8 @@ import {
   usePanel,
   usePreviewMode,
   useSections,
+  useSelectedBrickId,
+  useSelectedSectionId,
   useThemes,
 } from "../hooks/use-editor";
 import { lazy, startTransition, Suspense, useEffect, useRef, type ComponentProps } from "react";
@@ -30,6 +32,7 @@ import { defaultProps, manifests } from "@upstart.gg/sdk/shared/bricks/manifests
 import { type Brick, generateId } from "@upstart.gg/sdk/shared/bricks";
 import { Toaster } from "@upstart.gg/style-system/system";
 import { useIsLocalDev } from "../hooks/use-is-local-dev";
+import { useDeviceInfo } from "../hooks/use-device-info";
 
 const Tour = lazy(() => import("./Tour"));
 const NavBar = lazy(() => import("./NavBar"));
@@ -52,10 +55,11 @@ export default function Editor(props: EditorProps) {
   const generationState = useGenerationState();
   const draftHelpers = useDraftHelpers();
   const previewMode = usePreviewMode();
-  const { setDraggingBrickType, toggleDebugMode } = useEditorHelpers();
+  const { setDraggingBrickType, toggleDebugMode, hidePanel } = useEditorHelpers();
+  const selectedBrickId = useSelectedBrickId();
+  const selectedSectionId = useSelectedSectionId();
   const islocalDev = useIsLocalDev();
   const debug = useDebugMode();
-
   usePageAutoSave();
   useEditorHotKeys();
 
@@ -67,14 +71,20 @@ export default function Editor(props: EditorProps) {
   }, [draft.previewTheme, draft.theme]);
 
   const handleDragStart: OnDragStartResponder = (result) => {
-    const { draggableId, type } = result;
+    const { draggableId, type, source } = result;
     console.log("DragStart result:", result);
     const element = document.getElementById(draggableId);
     element?.classList.add(tx("moving"));
+
+    if (source.droppableId !== "bricks-library" && source.droppableId !== "widgets-library") {
+      // hidePanel();
+    }
   };
 
   const onBeforeCapture: OnBeforeCaptureResponder = (before) => {
     setDraggingBrickType(before.draggableId);
+
+    console.log("BeforeCapture result:", before);
 
     const element = document.getElementById(before.draggableId);
 
@@ -115,7 +125,7 @@ export default function Editor(props: EditorProps) {
         const sectionHeight = document.getElementById(destinationSection.id)!.clientHeight;
 
         // create brick from manifest
-        const props = defaultProps[draggableId].props;
+        const props = { ...defaultProps[draggableId].props };
 
         // compute minHeight based on section height
         props.height = `${sectionHeight * 0.9}px`; // 90% of the section height
@@ -352,15 +362,26 @@ export default function Editor(props: EditorProps) {
               },
             }}
           />
+
           {islocalDev && (
-            <div className="fixed flex w-[148px] items-center gap-2 bottom-0 right-0 p-2 text-xs text-gray-500 bg-gray-100 dark:bg-dark-800 z-[9999] rounded-tl-md">
-              <Switch defaultChecked={debug} onCheckedChange={toggleDebugMode} size="1" id="debug-mode" />
-              <label htmlFor="debug-mode" className="cursor-pointer select-none">
-                Debug mode{" "}
-                <strong className={tx("font-semibold", debug ? "text-upstart-600" : "text-gray-500")}>
-                  {debug ? "on" : "off"}
-                </strong>
-              </label>
+            <div
+              className="fixed flex max-w-[548px] items-center divide-x divide-gray-300 bottom-0 right-6 p-2 text-xs text-gray-500 bg-gray-100 dark:bg-dark-800 z-[19999] rounded-t-md"
+              style={{
+                // Shadow to the top left corner
+                boxShadow: "0 -2px 4px rgba(0, 0, 0, 0.1), -2px 0 4px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <div className="px-2">Selected brick: {selectedBrickId ?? "none"}</div>
+              <div className="px-2">Selected section: {selectedSectionId ?? "none"}</div>
+              <div className="flex items-center gap-1 px-2">
+                <Switch defaultChecked={debug} onCheckedChange={toggleDebugMode} size="1" id="debug-mode" />
+                <label htmlFor="debug-mode" className="cursor-pointer select-none">
+                  Debug mode{" "}
+                  <b className={tx("font-semibold", debug ? "text-upstart-600" : "text-gray-500")}>
+                    {debug ? "on" : "off"}
+                  </b>
+                </label>
+              </div>
             </div>
           )}
         </main>

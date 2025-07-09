@@ -10,6 +10,7 @@ import {
   useEffect,
   useCallback,
   startTransition,
+  type CSSProperties,
 } from "react";
 import {
   useContextMenuVisible,
@@ -43,18 +44,55 @@ import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
 import { menuNavBarCls } from "~/shared/styles/menubar-styles";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { tx } from "@upstart.gg/style-system/twind";
-import { Draggable } from "@hello-pangea/dnd";
+import { Draggable, type DraggableStateSnapshot } from "@hello-pangea/dnd";
 import ResizeHandle from "./ResizeHandle";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { commonProps } from "@upstart.gg/sdk/shared/bricks/props/common";
 import { getBrickResizeOptions } from "~/shared/utils/layout-utils";
 import useIsHovered from "../hooks/use-is-hovered";
+import { useDeviceInfo } from "../hooks/use-device-info";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
   isContainerChild?: boolean;
   index: number;
 };
+
+function getDropAnimationStyle(
+  currentSection?: string,
+  style?: CSSProperties,
+  snapshot?: DraggableStateSnapshot,
+) {
+  if (!snapshot?.isDropAnimating || !snapshot.dropAnimation) {
+    return style;
+  }
+
+  const { draggingOver } = snapshot;
+  const { moveTo } = snapshot.dropAnimation;
+
+  console.log("getDropAnimationStyle", {
+    snapshot,
+    style,
+  });
+
+  if (draggingOver === currentSection) {
+    const translate = `translate(${moveTo.x}px, 0px)`;
+    return {
+      ...style,
+      transform: `${translate}`,
+    };
+  }
+  //else {
+  //   const translate = `translate(0px, ${moveTo.y}px)`;
+  //   return {
+  //     ...style,
+  //     transform: `${translate}`,
+  //   };
+  // }
+  return {
+    ...style,
+  };
+}
 
 function useBarPlacements(brick: Brick): Placement[] {
   // const previewMode = usePreviewMode();
@@ -200,6 +238,14 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       [panelPosition],
     );
 
+    const { ref: hoverRef, isHovered } = useIsHovered({ tolerance: 6, deepCheck: true });
+    const wrapperClass = useBrickWrapperStyle({
+      brick,
+      editable: true,
+      selected: selectedBrickId === brick.id,
+      isContainerChild,
+    });
+
     return (
       <Draggable
         key={brick.id}
@@ -208,14 +254,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
         isDragDisabled={!manifest.movable || isContainerChild || previewMode === "mobile"}
       >
         {(provided, snapshot) => {
-          const { ref: hoverRef, isHovered } = useIsHovered({ tolerance: 6 });
-          const wrapperClass = useBrickWrapperStyle({
-            brick,
-            editable: true,
-            selected: selectedBrickId === brick.id,
-            isContainerChild,
-          });
-
           // Merge all refs properly to avoid render loops
           const mergedRef = useMergeRefs([provided.innerRef, barsRefs.setReference, ref, hoverRef]);
           const resizeOpts = getBrickResizeOptions(brick, manifests[brick.type], previewMode);
@@ -239,6 +277,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 data-brick-height={brick.props.height}
                 data-brick-max-width={JSON.stringify(manifest.maxWidth)}
                 data-brick-min-width={JSON.stringify(manifest.minWidth)}
+                style={getDropAnimationStyle(section?.id, provided.draggableProps.style, snapshot)}
                 className={tx(
                   wrapperClass,
                   snapshot.isDragging

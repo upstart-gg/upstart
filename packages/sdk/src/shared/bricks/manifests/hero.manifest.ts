@@ -41,11 +41,7 @@ It is typically used on home pages to grab the user's attention.
         default: "text-shadow-sm",
       }),
     ),
-    padding: Type.Optional(
-      paddingRef({
-        default: "p-4",
-      }),
-    ),
+    padding: Type.Optional(paddingRef({})),
   }),
 });
 

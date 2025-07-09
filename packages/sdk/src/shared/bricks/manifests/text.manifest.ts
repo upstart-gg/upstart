@@ -35,7 +35,7 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
       color: Type.Optional(colorRef()),
       padding: Type.Optional(paddingRef({ default: "p-4" })),
       border: Type.Optional(borderRef()),
-      shadow: Type.Optional(shadowRef()),
+      // shadow: Type.Optional(shadowRef()),
     },
     {
       default: {

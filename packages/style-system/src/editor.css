@@ -22,3 +22,8 @@ body {
   height: 0;
   pointer-events: none;
 }
+
+.tiptap > *:first-child {
+  text-box-trim: trim-start; /* Removes leading space */
+  text-box-edge: cap alphabetic;
+}
