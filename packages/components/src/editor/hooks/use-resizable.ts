@@ -84,15 +84,7 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
   const observerRef = useRef<MutationObserver | null>(null);
   const previewMode = usePreviewMode();
 
-  const {
-    enabledDirections,
-    gridSnap,
-    preserveAspectRatio = false,
-    onResizeStart,
-    onResize,
-    onResizeEnd,
-    enabled = true,
-  } = options;
+  const { enabledDirections, gridSnap, onResizeStart, onResize, onResizeEnd, enabled = true } = options;
 
   // Extract active direction from handle element
   const getActiveDirection = useCallback((handle: HTMLElement | null): string => {
@@ -176,19 +168,6 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
           move(event) {
             const target = event.target as HTMLElement;
             let { width, height } = event.rect;
-
-            // Handle aspect ratio preservation
-            if (preserveAspectRatio) {
-              const rect = target.getBoundingClientRect();
-              const aspectRatio = rect.width / rect.height;
-
-              if (event.edges.right || event.edges.left) {
-                height = width / aspectRatio;
-              } else if (event.edges.top || event.edges.bottom) {
-                width = height * aspectRatio;
-              }
-            }
-
             // log target element and its styles
             const manifest = manifests[target.dataset.brickType || "unknown"] || {};
 
@@ -212,9 +191,17 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
               target.style.left = `${parseFloat(target.style.left || "0") + event.deltaRect.left}px`;
               target.style.marginRight = `${parseFloat(target.style.left || "0") + event.deltaRect.left}px`;
             }
+            if (event.edges.right) {
+              target.style.right = `${parseFloat(target.style.right || "0") - event.deltaRect.right}px`;
+              target.style.marginLeft = `${parseFloat(target.style.right || "0") - event.deltaRect.right}px`;
+            }
             if (event.edges.top) {
               target.style.top = `${parseFloat(target.style.top || "0") + event.deltaRect.top}px`;
               target.style.marginBottom = `${parseFloat(target.style.top || "0") + event.deltaRect.top}px`;
+            }
+            if (event.edges.bottom) {
+              target.style.bottom = `${parseFloat(target.style.bottom || "0") - event.deltaRect.bottom}px`;
+              target.style.marginTop = `${parseFloat(target.style.bottom || "0") - event.deltaRect.bottom}px`;
             }
 
             const activeHandle = event.interaction.downEvent?.target as HTMLElement;
@@ -298,7 +285,6 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
   }, [
     enabled,
     cssQuery,
-    preserveAspectRatio,
     previewMode,
     gridSnap,
     onResizeStart,

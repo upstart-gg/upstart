@@ -6,10 +6,8 @@ import type {
 import type { OpacitySettings } from "@upstart.gg/sdk/shared/bricks/props/effects";
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import type { FixedPositionedSettings } from "@upstart.gg/sdk/shared/bricks/props/position";
-import type { PaddingSettings } from "@upstart.gg/sdk/shared/bricks/props/padding";
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
 import type { ColorSettings } from "@upstart.gg/sdk/shared/bricks/props/color";
-import type { ContainerLayoutSettings } from "@upstart.gg/sdk/shared/bricks/props/container";
 import { css } from "@upstart.gg/style-system/twind";
 
 export function getBackgroundStyles(props?: BackgroundSettings) {
@@ -115,74 +113,17 @@ export function getBasicAlignmentStyles(props?: AlignBasicSettings, mobileProps?
   return [props?.vertical, props?.horizontal];
 }
 
-function getContainerLayoutStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {
-  return props?.type === "grid" ? getGridStyles(props, mobileProps) : getFlexStyles(props, mobileProps);
-}
+// function getContainerLayoutStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {
+//   return props?.type === "grid" ? getGridStyles(props, mobileProps) : getFlexStyles(props, mobileProps);
+// }
 
-/**
- * Flexbox handles alignment using a main axis and a cross axis.
- * We want to map the alignment to the flexbox properties.
- */
-function getFlexStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {
-  if (!props) {
-    return [];
-  }
-  if (mobileProps) {
-    const mobileWrap = mobileProps.wrap ?? props.wrap;
-    const mobileFillSpace = mobileProps.fillSpace ?? props.fillSpace;
-    return `@desktop:(
-      ${props.type ?? ""}
-      ${props.direction ?? ""}
-      ${props.justifyContent ?? ""}
-      ${props.alignItems ?? ""}
-      ${props.gap ?? ""}
-      ${props.wrap ? "flex-wrap" : ""}
-      ${props.fillSpace ? "[&>*]:grow" : ""}
-    )
-    @mobile:(
-      ${mobileProps.type ?? props.type ?? ""}
-      ${mobileProps.direction ?? props.direction ?? ""}
-      ${mobileProps.justifyContent ?? props.justifyContent ?? ""}
-      ${mobileProps.alignItems ?? props.alignItems ?? ""}
-      ${props.gap ?? ""}
-      ${mobileWrap ? "flex-wrap" : ""}
-      ${mobileFillSpace ? "[&>*]:grow" : ""}
-    )`;
-  }
-  return [
-    props.type,
-    props.direction,
-    props.justifyContent,
-    props.alignItems,
-    props.gap ?? "",
-    props.wrap && "flex-wrap",
-    props.fillSpace && "[&>*]:grow",
-    // props.fillSpace && "[&>*]:flex-1",
-  ];
-}
-
-function getGridStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {
-  if (!props || (props.type !== "grid" && mobileProps?.type !== "grid")) {
-    return [];
-  }
-  if (mobileProps) {
-    const mobileCols = mobileProps.columns ?? props.columns;
-    return `@desktop:(
-      ${props.type}
-      ${props.columns ? `grid-cols-${props.columns}` : ""}
-    )
-    @mobile:(
-      ${mobileProps.type}
-      ${mobileCols ? `grid-cols-${mobileCols}` : ""}
-    )`;
-  }
-  return [props.type, props.columns ? `grid-cols-${props.columns}` : "auto-cols-fr grid-flow-col"];
+function getGrowHorizontallyStyles(props?: boolean, mobileProps?: boolean) {
+  return props ? "grow" : null;
 }
 
 export const brickStylesHelpersMap = {
   "styles:color": getColorStyles,
   "styles:basicAlign": getBasicAlignmentStyles,
-  "styles:containerLayout": getContainerLayoutStyles,
   "styles:textShadow": simpleClassHandler,
   "styles:opacity": getOpacityStyles,
   "styles:objectFit": simpleClassHandler,
@@ -196,17 +137,20 @@ export const brickStylesHelpersMap = {
   "styles:padding": simpleClassHandler, // test
   "styles:gap": getGapStyles,
   "styles:border": getBorderStyles,
+  "styles:gradientDirection": simpleClassHandler,
+  "styles:backgroundColor": getBackgroundColorStyles,
+  "styles:background": getBackgroundStyles,
   // "styles:rounding": simpleClassHandler,
 };
 
 export const brickWrapperStylesHelpersMap = {
   // "styles:padding": simpleClassHandler, // test
-  "styles:backgroundColor": getBackgroundColorStyles,
-  "styles:background": getBackgroundStyles,
+
   "styles:shadow": simpleClassHandler,
   // "styles:rounding": simpleClassHandler,
   "styles:fixedPositioned": getFixedPositionedStyles,
   "styles:alignSelf": simpleClassHandler,
+  "styles:growHorizontally": getGrowHorizontallyStyles,
 };
 
 // Return the upper path without the last part (the property name)

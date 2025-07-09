@@ -91,8 +91,10 @@ export default function NavBar() {
     (e: MouseEvent) => {
       e.stopPropagation();
       editorHelpers.setPreviewMode(previewMode === "mobile" ? "desktop" : "mobile");
+      // Hide the panel if its in library mode because we can't add bricks in mobile preview mode
+      editorHelpers.hidePanel("library");
     },
-    [previewMode, editorHelpers.setPreviewMode],
+    [previewMode, editorHelpers.setPreviewMode, editorHelpers.hidePanel],
   );
 
   // bg-upstart-600

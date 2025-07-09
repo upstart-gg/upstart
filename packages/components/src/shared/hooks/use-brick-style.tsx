@@ -1,4 +1,3 @@
-import { getStyleProperties } from "@upstart.gg/sdk/shared/bricks/props/helpers";
 import { brickStylesHelpersMap, brickWrapperStylesHelpersMap, extractStylePath } from "../styles/helpers";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
@@ -6,20 +5,46 @@ import { debounce, get, merge } from "lodash-es";
 import { useBrickManifest } from "./use-brick-manifest";
 import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { tx, css } from "@upstart.gg/style-system/twind";
+import { m } from "motion/react";
+import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
+import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
+import { getStyleProperties } from "../styles/style-props";
 
-function getClassesFromStyleProps<T extends BrickManifest>(
+function useClassesFromStyleProps<T extends BrickManifest>(
   stylesProps: Record<string, string>,
   brick: BrickProps<T>["brick"],
   type: "brick" | "wrapper",
 ) {
   const { props, mobileProps } = brick;
   const mergedProps = merge({}, defaultProps[brick.type].props, props);
+
+  // Todo: filter out stylesProps based on their eventual metadata filter function
+  const manifest = useBrickManifest(brick.type);
+
+  const filtered = Object.entries(stylesProps).reduce((acc, [key, value]) => {
+    const manifestField = get(manifest.props.properties, key);
+    if (manifestField) {
+      // resolve eventual ref
+      const resolvedField = resolveSchema(manifestField);
+      if (resolvedField.metadata?.filter) {
+        const filter = resolvedField.metadata.filter as FieldFilter;
+        if (!filter(resolvedField, mergedProps)) {
+          acc.push(key);
+        }
+      }
+    }
+    // console.log("manifestField", manifestField);
+    return acc;
+  }, [] as string[]);
+
   const helpers = type === "brick" ? brickStylesHelpersMap : brickWrapperStylesHelpersMap;
   const classes = Object.entries(stylesProps).reduce(
     (acc, [path, styleId]) => {
       const helper = helpers[styleId as keyof typeof helpers];
       if (!helper) {
-        // console.warn(`No helper found for styleId: ${styleId} in path: ${path} for type: ${type}`);
+        return acc;
+      }
+      if (filtered.includes(path)) {
         return acc;
       }
       const part = extractStylePath(path);
@@ -44,7 +69,7 @@ function getClassesFromStyleProps<T extends BrickManifest>(
 export function useBrickStyle<T extends BrickManifest>(brick: BrickProps<T>["brick"]) {
   const manifest = useBrickManifest(brick.type);
   const stylesProps = getStyleProperties(manifest.props);
-  return getClassesFromStyleProps(stylesProps, brick, "brick");
+  return useClassesFromStyleProps(stylesProps, brick, "brick");
 }
 
 /**
@@ -61,7 +86,7 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
   const manifest = useBrickManifest(brick.type);
   const stylesProps = getStyleProperties(manifest.props);
   const styleIds = Object.values(stylesProps);
-  const classes = getClassesFromStyleProps(stylesProps, brick, "wrapper");
+  const classes = useClassesFromStyleProps(stylesProps, brick, "wrapper");
 
   return tx(
     manifest.staticClasses,
@@ -82,12 +107,16 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
     isContainerChild && "flex-1",
     /*!isContainerChild &&*/ manifest.maxWidth?.mobile && `@mobile:max-w-[${manifest.maxWidth.mobile}px]`,
     /*!isContainerChild &&*/ manifest.maxWidth?.desktop && `@desktop:max-w-[${manifest.maxWidth.desktop}px]`,
+
     !isContainerChild && typeof props.width !== "undefined" && `@desktop:w-[${props.width}]`,
 
     !isContainerChild &&
       typeof props.width === "undefined" &&
-      manifest.defaultWidth &&
-      `@mobile:w-[${manifest.defaultWidth.mobile}] @desktop:w-[${manifest.defaultWidth.desktop}]`,
+      `@desktop:w-[${manifest.defaultWidth.desktop}]`,
+
+    !isContainerChild && typeof mobileProps?.width !== "undefined"
+      ? `@mobile:w-[${mobileProps.width}]`
+      : `@mobile:w-[${manifest.defaultWidth.mobile}]`,
 
     typeof props.height !== "undefined" &&
       css({
@@ -95,7 +124,6 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
       }),
 
     typeof props.height === "undefined" &&
-      manifest.defaultHeight &&
       `@mobile:h-[${manifest.defaultHeight.mobile}] @desktop:h-[${manifest.defaultHeight.desktop}]`,
 
     styleIds.includes("styles:fixedPositioned") === false && "relative",

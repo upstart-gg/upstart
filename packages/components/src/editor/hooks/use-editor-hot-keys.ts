@@ -17,6 +17,7 @@ export function useEditorHotKeys() {
 
   useHotkeys("esc", () => {
     editorHelpers.deselectBrick();
+    editorHelpers.setSelectedSectionId();
     editorHelpers.hidePanel();
   });
 

@@ -24,10 +24,12 @@ export const manifest = defineBrickManifest({
     desktop: "auto",
     mobile: "100%",
   },
+  defaultHeight: {
+    desktop: "380px",
+  },
   datasource,
   icon: LuStretchHorizontal,
   props: defineProps({
-    // layout: containerLayoutRef({ "ui:disable-grid": true }),
     gap: Type.Optional(
       cssLengthRef({
         title: "Gap",

@@ -14,8 +14,8 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
   description?: string;
   // Min width in pixels
   minWidth?: {
-    mobile: number;
-    desktop: number;
+    mobile?: number;
+    desktop?: number;
   };
   // Max width in pixels
   maxWidth?: {
@@ -60,10 +60,8 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
 
 export function defineBrickManifest<BProps extends TProperties, DSSchema extends TObject | TArray<TObject>>({
   props,
-  defaultWidth,
   defaultHeight,
-  minWidth,
-  minHeight,
+  defaultWidth,
   kind = "brick",
   isContainer = false,
   hideInLibrary = false,
@@ -91,10 +89,11 @@ export function defineBrickManifest<BProps extends TProperties, DSSchema extends
     repeatable,
     duplicatable,
     isContainer,
-    defaultWidth: defaultWidth ?? minWidth,
-    defaultHeight: defaultHeight ?? { mobile: "auto", desktop: "auto" },
-    minWidth,
-    minHeight,
+    defaultWidth: { mobile: defaultWidth?.mobile ?? "auto", desktop: defaultWidth?.desktop ?? "auto" },
+    defaultHeight: {
+      mobile: defaultHeight?.mobile ?? "auto",
+      desktop: defaultHeight?.desktop ?? "auto",
+    },
   } as const;
 }
 

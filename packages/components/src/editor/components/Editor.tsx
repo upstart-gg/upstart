@@ -75,14 +75,13 @@ export default function Editor(props: EditorProps) {
 
   const onBeforeCapture: OnBeforeCaptureResponder = (before) => {
     setDraggingBrickType(before.draggableId);
-    console.log("BeforeCapture:", before);
 
     const element = document.getElementById(before.draggableId);
 
     if (element) {
       const computedStyle = window.getComputedStyle(element);
+      // Change the background color only if it is transparent
       if (computedStyle.getPropertyValue("background-color") === "rgba(0, 0, 0, 0)") {
-        console.log("Setting background color for drag element:", before.draggableId);
         element.classList.add(tx("!bg-upstart-100"));
       }
     }
@@ -93,8 +92,6 @@ export default function Editor(props: EditorProps) {
     setDraggingBrickType(null);
 
     console.log("DragEnd result:", result);
-
-    const destinationBrick = destination ?? combine;
 
     // If dropped outside a valid droppable area
     if (!destination) {
@@ -110,13 +107,19 @@ export default function Editor(props: EditorProps) {
 
     // if the draggable comes from the library
     if (source.droppableId === "bricks-library" || source.droppableId === "widgets-library") {
-      console.log("NEW BRICK DROPPED:", draggableId);
       const destinationSection = sections.find((section) => section.id === destination.droppableId);
 
       // Destination is a section
       if (destinationSection) {
+        // compute the section height
+        const sectionHeight = document.getElementById(destinationSection.id)!.clientHeight;
+
         // create brick from manifest
         const props = defaultProps[draggableId].props;
+
+        // compute minHeight based on section height
+        props.height = `${sectionHeight * 0.9}px`; // 90% of the section height
+
         const newBrick = {
           type: draggableId,
           props,

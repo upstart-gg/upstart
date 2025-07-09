@@ -19,3 +19,8 @@ export function normalizeSchemaEnum(schema: TSchema): Array<{ const: string; tit
 export function getSchemaObjectDefaults<T extends TSchema>(schema: T) {
   return jsonDefault(schema) as Static<T>;
 }
+
+export type FieldFilter<
+  T extends TSchema = TSchema,
+  P extends Record<string, unknown> = Record<string, unknown>,
+> = (propsSchema: T, formData: P) => boolean;

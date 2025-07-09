@@ -3,7 +3,6 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
 import { datasourceRef } from "../props/datasource";
 import { defineProps, group } from "../props/helpers";
-import { containerLayoutRef } from "../props/container";
 import { IoGridOutline } from "react-icons/io5";
 import type { BrickProps } from "../props/types";
 import { string, url } from "../props/string";
@@ -51,7 +50,7 @@ export const manifest = defineBrickManifest({
     styles: group({
       title: "Styles",
       children: {
-        layout: containerLayoutRef(),
+        // layout: containerLayoutRef(),
       },
     }),
   }),

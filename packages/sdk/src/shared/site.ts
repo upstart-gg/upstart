@@ -7,6 +7,7 @@ import { datarecordsMap } from "./datarecords/types";
 import { defaultTheme, themeSchema } from "./theme";
 import { sitePrompt } from "./prompt";
 import { generateId, type Section } from "./bricks";
+import { backgroundColor } from "./bricks/props/background";
 
 export const siteSchema = Type.Object({
   id: Type.String(),
@@ -48,6 +49,7 @@ export type SiteAndPagesConfig = {
 };
 
 export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
+  let order = 0;
   return {
     site: {
       id: crypto.randomUUID(),
@@ -70,7 +72,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           {
             id: `s_${generateId()}`,
             label: "Top",
-            order: 1,
+            order: ++order,
             props: {
               purpose: "navbar",
             },
@@ -79,6 +81,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 id: generateId(),
                 type: "navbar",
                 props: {
+                  backgroundColor: "neutral-dark-gradient",
                   brand: "My Site",
                   navigation: {
                     staticItems: [{ urlOrPageId: "/about" }, { urlOrPageId: "/contact" }],
@@ -89,8 +92,24 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           },
           {
             id: `s_content-${generateId()}`,
+            label: "Hero",
+            order: ++order,
+            props: {
+              minHeight: "400px",
+              backgroundColor: "secondary-dark",
+            },
+            bricks: [
+              {
+                id: `b_${generateId()}`,
+                type: "hero",
+                props: {},
+              },
+            ],
+          },
+          {
+            id: `s_content-${generateId()}`,
             label: "Content",
-            order: 2,
+            order: ++order,
             props: {},
             bricks: [
               {
@@ -196,7 +215,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           {
             id: `s_content-${generateId()}`,
             label: "Bottom",
-            order: 3,
+            order: ++order,
             props: {},
             bricks: [
               {

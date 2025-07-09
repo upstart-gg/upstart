@@ -4,13 +4,11 @@ import { type Manifest, manifest } from "@upstart.gg/sdk/shared/bricks/manifests
 import EditableBrickWrapper from "~/editor/components/EditableBrick";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useDatasource } from "../hooks/use-datasource";
-import { processBrick, type Brick } from "@upstart.gg/sdk/shared/bricks";
 import BrickWrapper from "../components/BrickWrapper";
-import { css, tx } from "@upstart.gg/style-system/twind";
+import { tx } from "@upstart.gg/style-system/twind";
 import { type DraggableChildrenFn, Droppable } from "@hello-pangea/dnd";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
-import { getDraggableStyle } from "~/editor/utils/dnd";
 import { IconRender } from "~/editor/components/IconRender";
 import { useDeviceInfo } from "~/editor/hooks/use-device-info";
 import { useDraggingBrickType, usePreviewMode } from "~/editor/hooks/use-editor";

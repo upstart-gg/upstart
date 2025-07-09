@@ -2,13 +2,12 @@ import { type SchemaOptions, type Static, type TRef, Type } from "@sinclair/type
 import type { colorPreset, preset } from "../bricks/props/preset";
 import type { background, backgroundColor } from "../bricks/props/background";
 import type { basicAlign } from "../bricks/props/align";
-import type { containerLayout } from "../bricks/props/container";
 import type { hidden } from "../bricks/props/common";
 import type { border } from "../bricks/props/border";
 import type { padding } from "../bricks/props/padding";
 import type { image } from "../bricks/props/image";
 import type { color } from "../bricks/props/color";
-import type { shadow } from "../bricks/props/effects";
+import type { shadow, textShadow } from "../bricks/props/effects";
 import type { textContent } from "../bricks/props/text";
 import type { cssLength } from "../bricks/props/css-length";
 import type { urlOrPageId } from "../bricks/props/string";
@@ -18,12 +17,12 @@ export interface SchemaTypeMap {
   "styles:background": ReturnType<typeof background>;
   "styles:backgroundColor": ReturnType<typeof backgroundColor>;
   "styles:basicAlign": ReturnType<typeof basicAlign>;
-  "styles:containerLayout": ReturnType<typeof containerLayout>;
   "styles:hidden": ReturnType<typeof hidden>;
   "styles:border": ReturnType<typeof border>;
   "styles:padding": ReturnType<typeof padding>;
   "styles:color": ReturnType<typeof color>;
   "styles:shadow": ReturnType<typeof shadow>;
+  "styles:textShadow": ReturnType<typeof textShadow>;
   "styles:cssLength": ReturnType<typeof cssLength>;
   "presets:color": ReturnType<typeof colorPreset>;
   "assets:image": ReturnType<typeof image>;

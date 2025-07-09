@@ -237,6 +237,8 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 data-draggable-for-brick-id={brick.id}
                 data-brick-width={brick.props.width}
                 data-brick-height={brick.props.height}
+                data-brick-max-width={JSON.stringify(manifest.maxWidth)}
+                data-brick-min-width={JSON.stringify(manifest.minWidth)}
                 className={tx(
                   wrapperClass,
                   snapshot.isDragging

@@ -118,14 +118,11 @@ const defaultAttributes = {
   $backgroundColor: backgroundColorRef({
     title: "Background color",
     default: "bg-base-100",
-    "ui:field": "hidden",
   }),
   $textColor: colorRef({
     title: "Text color",
     default: "text-base-content",
-    "ui:field": "hidden",
   }),
-
   $pageLanguage: enumProp("Language", "en", {
     options: [
       { value: "ar", title: "Arabic" },

@@ -42,6 +42,15 @@ export const commonProps = {
       "ui:field": "hidden",
     }) as TString,
   ),
+  growHorizontally: Type.Optional(
+    Type.Boolean({
+      title: "Grow horizontally",
+      description:
+        "If set, the brick will grow to fill the available width of its parent section. If not set, the brick will have a fixed width.",
+      "ui:responsive": "desktop",
+      "ui:styleId": "styles:growHorizontally",
+    }),
+  ),
   height: Type.Optional(
     cssLengthRef({
       title: "Fixed height",
@@ -53,8 +62,8 @@ export const commonProps = {
   alignSelf: Type.Optional(
     StringEnum(["self-auto", "self-start", "self-center", "self-end"], {
       title: "Align Self",
-      "ui:field": "hidden",
-      // "ui:field": "enum",
+      // "ui:field": "hidden",
+      "ui:field": "enum",
       "ui:display": "button-group",
       description: "How the brick vertically aligns itself within its parent section.",
       enumNames: ["Auto", "Top", "Center", "Bottom"],
