@@ -14,16 +14,20 @@ type UseSectionStyleProps = {
 
 export function useSectionStyle({ section, selected, editable, previewMode }: UseSectionStyleProps) {
   const GAP = section.props.gap ?? "12px"; // Default gap if not set
-  const availablePresets = sectionProps.properties.colorPreset["ui:presets"] as ColorPresets;
-  const presetClasses = section.props.colorPreset
-    ? availablePresets[section.props.colorPreset].value.main
+
+  const availablePresets = sectionProps.properties.backgroundColor["ui:presets"] as ColorPresets;
+  const presetClasses = section.props.backgroundColor
+    ? availablePresets[section.props.backgroundColor].value.main
     : undefined;
+  const gradientClass = section.props.gradientDirection;
+
   // console.log("useSectionStyle props", { props: section.props });
   return tx(
     "flex @mobile:flex-col @desktop:flex-row w-full @container/section group/section overflow-visible relative mx-auto max-sm:max-w-dvw",
     [
       // section.props.preset as string,
       presetClasses,
+      gradientClass,
       section.props.maxWidth as string,
       typeof section.props.minHeight === "string" &&
         section.props.minHeight !== "full" &&
@@ -44,10 +48,11 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
       ),
 
       css({
-        "&:has(.navbar)": {
+        "&:has([data-is-navbar])": {
           // This is a hack to ensure that the navbar is not affected by the section's padding
           paddingInline: "0px !important",
           paddingBlock: "0px !important",
+          flexDirection: "row",
         },
       }),
 
@@ -55,7 +60,6 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
 
       "flex-nowrap",
 
-      section.props.fillSpace && "[&>*]:grow",
       // "[&>*]:flex-shrink-0",
 
       // Background

@@ -129,7 +129,6 @@ function getFlexStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerL
   }
   if (mobileProps) {
     const mobileWrap = mobileProps.wrap ?? props.wrap;
-    const mobileFillSpace = mobileProps.fillSpace ?? props.fillSpace;
     return `@desktop:(
       ${props.type ?? ""}
       ${props.direction ?? ""}
@@ -137,7 +136,6 @@ function getFlexStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerL
       ${props.alignItems ?? ""}
       ${props.gap ?? ""}
       ${props.wrap ? "flex-wrap" : ""}
-      ${props.fillSpace ? "[&>*]:grow" : ""}
     )
     @mobile:(
       ${mobileProps.type ?? props.type ?? ""}
@@ -146,7 +144,6 @@ function getFlexStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerL
       ${mobileProps.alignItems ?? props.alignItems ?? ""}
       ${props.gap ?? ""}
       ${mobileWrap ? "flex-wrap" : ""}
-      ${mobileFillSpace ? "[&>*]:grow" : ""}
     )`;
   }
   return [
@@ -156,8 +153,6 @@ function getFlexStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerL
     props.alignItems,
     props.gap ?? "",
     props.wrap && "flex-wrap",
-    props.fillSpace && "[&>*]:grow",
-    // props.fillSpace && "[&>*]:flex-1",
   ];
 }
 
@@ -179,6 +174,10 @@ function getGridStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerL
   return [props.type, props.columns ? `grid-cols-${props.columns}` : "auto-cols-fr grid-flow-col"];
 }
 
+function getGrowHorizontallyStyles(props?: boolean, mobileProps?: boolean) {
+  return props ? "grow" : null;
+}
+
 export const brickStylesHelpersMap = {
   "styles:color": getColorStyles,
   "styles:basicAlign": getBasicAlignmentStyles,
@@ -196,17 +195,20 @@ export const brickStylesHelpersMap = {
   "styles:padding": simpleClassHandler, // test
   "styles:gap": getGapStyles,
   "styles:border": getBorderStyles,
+  "styles:gradientDirection": simpleClassHandler,
+  "styles:backgroundColor": getBackgroundColorStyles,
+  "styles:background": getBackgroundStyles,
   // "styles:rounding": simpleClassHandler,
 };
 
 export const brickWrapperStylesHelpersMap = {
   // "styles:padding": simpleClassHandler, // test
-  "styles:backgroundColor": getBackgroundColorStyles,
-  "styles:background": getBackgroundStyles,
+
   "styles:shadow": simpleClassHandler,
   // "styles:rounding": simpleClassHandler,
   "styles:fixedPositioned": getFixedPositionedStyles,
   "styles:alignSelf": simpleClassHandler,
+  "styles:growHorizontally": getGrowHorizontallyStyles,
 };
 
 // Return the upper path without the last part (the property name)

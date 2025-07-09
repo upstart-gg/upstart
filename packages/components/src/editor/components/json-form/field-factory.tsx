@@ -33,6 +33,7 @@ import { CssLengthField } from "./fields/css-length";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 import { DatarecordField } from "./fields/datarecord";
 import ColorPresetField from "./fields/color-preset";
+import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
 
 export interface FieldFactoryOptions {
   brickId?: string;
@@ -399,12 +400,8 @@ export function processObjectSchemaToFields({
     // Apply per field filter
     if (field.metadata?.filter) {
       // field filter should be called with the current formData and the schema
-      const filter = field.metadata.filter as (
-        propsSchema: TObject,
-        formData: Record<string, unknown>,
-      ) => boolean;
+      const filter = field.metadata.filter as FieldFilter;
       if (!filter(formSchema, formData)) {
-        console.warn("processObjectSchemaToFields: Field filter returned false for", fieldName);
         return;
       }
     }

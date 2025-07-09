@@ -24,13 +24,16 @@ const Image = forwardRef<HTMLImageElement, BrickProps<Manifest>>(({ brick, edita
           src={src}
           ref={ref}
           alt={alt}
-          className={tx("max-h-full w-full h-full select-none pointer-events-none", imageStyles)}
+          className={tx(
+            "max-h-full w-full h-full rounded-[inherit] select-none pointer-events-none",
+            imageStyles,
+          )}
         />
       )}
       {editable && (
         <div
           className={tx(
-            "rounded-inherit transition-opacity duration-300 group-hover/image:opacity-100 flex absolute inset-0 bg-black/30 items-center justify-center text-xl text-white font-semibold",
+            "rounded-[inherit] transition-opacity duration-300 group-hover/image:opacity-100 flex absolute inset-0 bg-black/30 items-center justify-center text-xl text-white font-semibold",
             src && "opacity-0",
           )}
         >

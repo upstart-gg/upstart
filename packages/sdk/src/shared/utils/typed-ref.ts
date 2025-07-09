@@ -8,7 +8,7 @@ import type { border } from "../bricks/props/border";
 import type { padding } from "../bricks/props/padding";
 import type { image } from "../bricks/props/image";
 import type { color } from "../bricks/props/color";
-import type { shadow } from "../bricks/props/effects";
+import type { shadow, textShadow } from "../bricks/props/effects";
 import type { textContent } from "../bricks/props/text";
 import type { cssLength } from "../bricks/props/css-length";
 import type { urlOrPageId } from "../bricks/props/string";
@@ -24,6 +24,7 @@ export interface SchemaTypeMap {
   "styles:padding": ReturnType<typeof padding>;
   "styles:color": ReturnType<typeof color>;
   "styles:shadow": ReturnType<typeof shadow>;
+  "styles:textShadow": ReturnType<typeof textShadow>;
   "styles:cssLength": ReturnType<typeof cssLength>;
   "presets:color": ReturnType<typeof colorPreset>;
   "assets:image": ReturnType<typeof image>;

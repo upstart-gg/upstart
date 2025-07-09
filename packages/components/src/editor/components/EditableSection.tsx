@@ -54,7 +54,6 @@ export default function EditableSection({ section, index }: EditableSectionProps
   const draftHelpers = useDraftHelpers();
   const previewMode = usePreviewMode();
   const selectedSectionId = useSelectedSectionId();
-  const selectedBrickId = useSelectedBrickId();
   const editingBrick = useEditingTextForBrickId();
   const draggingBrickType = useDraggingBrickType();
   const { isDesktop } = useDeviceInfo();

@@ -199,11 +199,11 @@ export default defineConfig({
     ["object-top-right", { objectPosition: "top right" }],
 
     ["hero", { "&::first-line": { lineHeight: "1", margin: "0" } }],
-    ["hero-size-1", { fontSize: "clamp(2.25rem, 1.467rem + 3.913cqw, 4.5rem)", lineHeight: "1.1" }],
-    ["hero-size-2", { fontSize: "clamp(3.5rem, 2.717rem + 3.913cqw, 5.75rem)", lineHeight: "1.1" }],
-    ["hero-size-3", { fontSize: "clamp(4.75rem, 3.967rem + 3.913cqw, 7rem)", lineHeight: "1.1" }],
-    ["hero-size-4", { fontSize: "clamp(6rem, 5.217rem + 3.913cqw, 8.25rem)", lineHeight: "1.1" }],
-    ["hero-size-5", { fontSize: "clamp(7.25rem, 6.467rem + 3.913cqw, 9.5rem)", lineHeight: "1.1" }],
+    ["hero-size-1", { fontSize: "clamp(2.5rem, 1.5rem + 3.913cqw, 4rem)", lineHeight: "1.05" }],
+    ["hero-size-2", { fontSize: "clamp(3rem, 2rem + 3.913cqw, 4.5rem)", lineHeight: "1.05" }],
+    ["hero-size-3", { fontSize: "clamp(3.5rem, 2.5rem + 3.913cqw, 5rem)", lineHeight: "1.05" }],
+    ["hero-size-4", { fontSize: "clamp(4rem, 3rem + 3.913cqw, 5.5rem)", lineHeight: "1.05" }],
+    ["hero-size-5", { fontSize: "clamp(4.5rem, 3.5rem + 3.913cqw, 6rem)", lineHeight: "1.05" }],
 
     ["text-shadow-none", { textShadow: "none" }],
     ["text-shadow-sm", { textShadow: "0 1px 2px rgba(0, 0, 0, 0.15)" }],

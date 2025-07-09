@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { startTransition, useEffect, useRef } from "react";
 import {
   useAttributes,
   useDraft,
@@ -29,7 +29,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const draft = useDraft();
   const { zoom } = useZoom();
   const pageRef = useRef<HTMLDivElement>(null);
-  useGridObserver(pageRef);
   const gridConfig = useGridConfig();
   const attributes = useAttributes();
   const sections = useSections();
@@ -42,6 +41,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     showIntro,
   });
   const generationState = useGenerationState();
+  useGridObserver(pageRef);
 
   // on page load, set last loaded property so that the store is saved to local storage
   useEffect(draft.setLastLoaded, []);
@@ -60,23 +60,19 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
             n: true,
             s: true,
           },
-    // onResizeStart: (event) => {
-    //   console.log("Resize started:", event.target);
-    //   const target = event.target as HTMLElement;
-    // },
-    // onResize: (event) => {
-    //   console.log("Resizing:", event);
-    //   console.log("brick id:", event.target.dataset.brickId);
-    // },
+    onResizeStart: (event) => {
+      console.log("Resize started:", event.target);
+      const target = event.target as HTMLElement;
+      // disable flex-grow temporarily to allow resize
+      target.style.setProperty("flex-grow", "0");
+    },
+
     onResizeEnd: (event) => {
+      console.log("resizeend event", event);
       const target = event.target as HTMLElement;
       const brickId = target.dataset.brickId as string;
-      const brickType = target.dataset.brickType as string;
-      const manifest = manifests[brickType];
       const parentBrick = draftHelpers.getParentBrick(brickId);
-
-      // target.style.setProperty("transition", "top,margin-right,margin-bottom,height 0.3s ease-in-out");
-
+      const existingBrick = draftHelpers.getBrick(brickId)?.props;
       const parentElement = target.parentElement as HTMLElement;
       const parentWidth = parentElement.clientWidth;
       if (!parentWidth) {
@@ -95,19 +91,22 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
               ? `${event.rect.width}px`
               : `${(event.rect.width / parentWidth) * 100}%`,
         height: `${event.rect.height}px`,
+        growHorizontally: event.edges.left || event.edges.right ? false : existingBrick?.growHorizontally,
       });
 
       target.style.removeProperty("top");
       target.style.removeProperty("left");
+      target.style.removeProperty("right");
+      target.style.removeProperty("bottom");
       target.style.removeProperty("margin-bottom");
+      target.style.removeProperty("margin-top");
+      target.style.removeProperty("margin-left");
       target.style.removeProperty("margin-right");
       target.style.removeProperty("width");
       target.style.removeProperty("height");
       target.style.removeProperty("min-height");
       target.style.removeProperty("min-width");
-      setTimeout(() => {
-        // target.style.setProperty("transition", "none");
-      }, 300); // Remove transition after a short delay
+      target.style.removeProperty("flex-grow");
     },
   });
 

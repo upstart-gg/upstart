@@ -7,6 +7,7 @@ import { datarecordsMap } from "./datarecords/types";
 import { defaultTheme, themeSchema } from "./theme";
 import { sitePrompt } from "./prompt";
 import { generateId, type Section } from "./bricks";
+import { backgroundColor } from "./bricks/props/background";
 
 export const siteSchema = Type.Object({
   id: Type.String(),
@@ -80,6 +81,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 id: generateId(),
                 type: "navbar",
                 props: {
+                  backgroundColor: "neutral-dark-gradient",
                   brand: "My Site",
                   navigation: {
                     staticItems: [{ urlOrPageId: "/about" }, { urlOrPageId: "/contact" }],
@@ -94,6 +96,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             order: ++order,
             props: {
               minHeight: "400px",
+              backgroundColor: "secondary-dark",
             },
             bricks: [
               {

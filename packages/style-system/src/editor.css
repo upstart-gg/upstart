@@ -15,11 +15,6 @@ body {
   syntax: "<angle>";
 }
 
-/* When hovering but not dragging */
-/* [data-rfd-drag-handle-context-id] {
-  cursor: auto;
-} */
-
 .tiptap p.is-editor-empty:first-child::before {
   color: #adb5bd;
   content: attr(data-placeholder);

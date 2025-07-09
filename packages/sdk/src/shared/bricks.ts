@@ -1,4 +1,4 @@
-import { Type, type Static } from "@sinclair/typebox";
+import { type TObject, Type, type Static } from "@sinclair/typebox";
 import { customAlphabet } from "nanoid";
 import { defaultProps } from "./bricks/manifests/all-manifests";
 import { backgroundRef } from "./bricks/props/background";
@@ -115,9 +115,9 @@ export type Brick = Static<typeof brickSchema>;
 
 export const sectionProps = Type.Object(
   {
-    colorPreset: Type.Optional(
+    backgroundColor: Type.Optional(
       colorPresetRef({
-        title: "Color preset",
+        title: "Background color",
         "ui:presets": {
           "primary-light": {
             previewBgClass: "bg-primary-light text-primary-content-light",
@@ -126,7 +126,7 @@ export const sectionProps = Type.Object(
           },
           "primary-light-gradient": {
             previewBgClass: "bg-gradient-to-br from-primary-300 to-primary-500 text-primary-content-light",
-            value: { main: "bg-gradient-to-br from-primary-300 to-primary-500 text-primary-content-light" },
+            value: { main: "from-primary-300 to-primary-500 text-primary-content-light" },
             label: "Primary light gradient",
           },
           primary: {
@@ -136,7 +136,7 @@ export const sectionProps = Type.Object(
           },
           "primary-gradient": {
             previewBgClass: "bg-gradient-to-br from-primary-500 to-primary-700 text-primary-content",
-            value: { main: "bg-gradient-to-br from-primary-500 to-primary-700 text-primary-content" },
+            value: { main: "from-primary-500 to-primary-700 text-primary-content" },
             label: "Primary gradient",
           },
           "primary-dark": {
@@ -146,7 +146,7 @@ export const sectionProps = Type.Object(
           },
           "primary-dark-gradient": {
             previewBgClass: "bg-gradient-to-br from-primary-700 to-primary-900 text-primary-content",
-            value: { main: "bg-gradient-to-br from-primary-700 to-primary-900 text-primary-content" },
+            value: { main: "from-primary-700 to-primary-900 text-primary-content" },
             label: "Primary dark gradient",
           },
           "secondary-light": {
@@ -158,7 +158,7 @@ export const sectionProps = Type.Object(
             previewBgClass:
               "bg-gradient-to-br from-secondary-300 to-secondary-500 text-secondary-content-light",
             value: {
-              main: "bg-gradient-to-br from-secondary-300 to-secondary-500 text-secondary-content-light",
+              main: "from-secondary-300 to-secondary-500 text-secondary-content-light",
             },
             label: "Secondary light gradient",
           },
@@ -169,7 +169,7 @@ export const sectionProps = Type.Object(
           },
           "secondary-gradient": {
             previewBgClass: "bg-gradient-to-br from-secondary-500 to-secondary-700 text-secondary-content",
-            value: { main: "bg-gradient-to-br from-secondary-500 to-secondary-700 text-secondary-content" },
+            value: { main: "from-secondary-500 to-secondary-700 text-secondary-content" },
             label: "Secondary gradient",
           },
           "secondary-dark": {
@@ -179,7 +179,7 @@ export const sectionProps = Type.Object(
           },
           "secondary-dark-gradient": {
             previewBgClass: "bg-gradient-to-br from-secondary-700 to-secondary-900 text-secondary-content",
-            value: { main: "bg-gradient-to-br from-secondary-700 to-secondary-900 text-secondary-content" },
+            value: { main: "from-secondary-700 to-secondary-900 text-secondary-content" },
             label: "Secondary dark gradient",
           },
           "neutral-light": {
@@ -189,7 +189,7 @@ export const sectionProps = Type.Object(
           },
           "neutral-light-gradient": {
             previewBgClass: "bg-gradient-to-br from-neutral-300 to-neutral-500 text-neutral-content-light",
-            value: { main: "bg-gradient-to-br from-neutral-300 to-neutral-500 text-neutral-content-light" },
+            value: { main: "from-neutral-300 to-neutral-500 text-neutral-content-light" },
             label: "Neutral light gradient",
           },
           neutral: {
@@ -199,7 +199,7 @@ export const sectionProps = Type.Object(
           },
           "neutral-gradient": {
             previewBgClass: "bg-gradient-to-br from-neutral-500 to-neutral-700 text-neutral-content",
-            value: { main: "bg-gradient-to-br from-neutral-500 to-neutral-700 text-neutral-content" },
+            value: { main: "from-neutral-500 to-neutral-700 text-neutral-content" },
             label: "Neutral gradient",
           },
           "neutral-dark": {
@@ -209,7 +209,7 @@ export const sectionProps = Type.Object(
           },
           "neutral-dark-gradient": {
             previewBgClass: "bg-gradient-to-br from-neutral-700 to-neutral-900 text-neutral-content",
-            value: { main: "bg-gradient-to-br from-neutral-700 to-neutral-900 text-neutral-content" },
+            value: { main: "from-neutral-700 to-neutral-900 text-neutral-content" },
             label: "Neutral dark gradient",
           },
           base100: {
@@ -229,6 +229,42 @@ export const sectionProps = Type.Object(
         default: "none",
       }),
     ),
+    gradientDirection: Type.Optional(
+      StringEnum(
+        [
+          "bg-gradient-to-t",
+          "bg-gradient-to-r",
+          "bg-gradient-to-b",
+          "bg-gradient-to-l",
+          "bg-gradient-to-tl",
+          "bg-gradient-to-tr",
+          "bg-gradient-to-br",
+          "bg-gradient-to-bl",
+        ],
+        {
+          title: "Gradient direction",
+          description: "The direction of the gradient. Only applies when color preset is a gradient.",
+          enumNames: [
+            "Top",
+            "Right",
+            "Bottom",
+            "Left",
+            "Top left",
+            "Top right",
+            "Bottom right",
+            "Bottom left",
+          ],
+          default: "bg-gradient-to-br",
+          "ui:responsive": "desktop",
+          "ui:styleId": "styles:gradientDirection",
+          metadata: {
+            filter: (manifestProps: TObject, formData: Section["props"]) => {
+              return formData.backgroundColor?.includes("gradient") === true;
+            },
+          },
+        },
+      ),
+    ),
     // background: Type.Optional(backgroundRef()),
     // preset: Type.Optional(presetRef()),
     minHeight: Type.Optional(
@@ -237,6 +273,7 @@ export const sectionProps = Type.Object(
         default: "fit-content",
         description: "The min height of the section",
         "ui:styleId": "minHeight",
+        "ui:field": "hidden",
       }),
     ),
     purpose: Type.Optional(
@@ -276,13 +313,6 @@ export const sectionProps = Type.Object(
         "ui:responsive": "desktop",
       }),
     ),
-    fillSpace: Type.Optional(
-      Type.Boolean({
-        title: "Fill horizontal space",
-        description: "Make all bricks fill the available space",
-        "ui:responsive": "desktop",
-      }),
-    ),
     justifyContent: Type.Optional(
       StringEnum(
         [
@@ -307,7 +337,7 @@ export const sectionProps = Type.Object(
         enumNames: ["Top", "Center", "Bottom", "Stretch"],
         title: "Vertical alignment",
         "ui:placeholder": "Not specified",
-        default: "items-stretch",
+        default: "items-center",
         "ui:responsive": "desktop",
       }),
     ),

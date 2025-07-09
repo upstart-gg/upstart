@@ -10,6 +10,7 @@ import { VscLayoutPanelOff } from "react-icons/vsc";
 import type { BrickProps } from "../props/types";
 import { colorRef } from "../props/color";
 import { colorPresetRef } from "../props/preset";
+import { StringEnum } from "~/shared/utils/string-enum";
 
 export const datasource = Type.Array(
   Type.Object({
@@ -43,78 +44,161 @@ export const manifest = defineBrickManifest({
   datasource,
   duplicatable: false,
   resizable: false,
-  staticClasses: "flex-1",
+  staticClasses: "flex-1 flex-grow",
+  defaultWidth: { desktop: "100%", mobile: "100%" },
   icon: VscLayoutPanelOff,
   iconClassName: "rotate-180",
   props: defineProps(
     {
-      colorPreset: Type.Optional(
+      backgroundColor: Type.Optional(
         colorPresetRef({
-          title: "Color preset",
+          title: "Background color",
           "ui:presets": {
             "primary-light": {
               previewBgClass: "bg-primary-light text-primary-content-light",
-              value: {
-                container: "bg-primary-light text-primary-content-light",
-              },
+              value: { main: "bg-primary-light text-primary-content-light" },
               label: "Primary lighter",
+            },
+            "primary-light-gradient": {
+              previewBgClass: "bg-gradient-to-br from-primary-300 to-primary-500 text-primary-content-light",
+              value: { main: "from-primary-300 to-primary-500 text-primary-content-light" },
+              label: "Primary light gradient",
             },
             primary: {
               previewBgClass: "bg-primary text-primary-content",
               label: "Primary",
-              value: { container: "bg-primary text-primary-content" },
+              value: { main: "bg-primary text-primary-content" },
+            },
+            "primary-gradient": {
+              previewBgClass: "bg-gradient-to-br from-primary-500 to-primary-700 text-primary-content",
+              value: { main: "from-primary-500 to-primary-700 text-primary-content" },
+              label: "Primary gradient",
             },
             "primary-dark": {
               previewBgClass: "bg-primary-dark text-primary-content",
-              value: { container: "bg-primary-dark text-primary-content" },
-              label: "Primary darker",
+              label: "Primary dark",
+              value: { main: "bg-primary-dark text-primary-content" },
+            },
+            "primary-dark-gradient": {
+              previewBgClass: "bg-gradient-to-br from-primary-700 to-primary-900 text-primary-content",
+              value: { main: "from-primary-700 to-primary-900 text-primary-content" },
+              label: "Primary dark gradient",
             },
             "secondary-light": {
               previewBgClass: "bg-secondary-light text-secondary-content-light",
+              label: "Secondary light",
+              value: { main: "bg-secondary-light text-secondary-content-light" },
+            },
+            "secondary-light-gradient": {
+              previewBgClass:
+                "bg-gradient-to-br from-secondary-300 to-secondary-500 text-secondary-content-light",
               value: {
-                container: "bg-secondary-light text-secondary-content-light",
+                main: "from-secondary-300 to-secondary-500 text-secondary-content-light",
               },
-              label: "Secondary lighter",
+              label: "Secondary light gradient",
             },
             secondary: {
               previewBgClass: "bg-secondary text-secondary-content",
               label: "Secondary",
-              value: { container: "bg-secondary text-secondary-content" },
+              value: { main: "bg-secondary text-secondary-content" },
+            },
+            "secondary-gradient": {
+              previewBgClass: "bg-gradient-to-br from-secondary-500 to-secondary-700 text-secondary-content",
+              value: { main: "from-secondary-500 to-secondary-700 text-secondary-content" },
+              label: "Secondary gradient",
             },
             "secondary-dark": {
               previewBgClass: "bg-secondary-dark text-secondary-content",
-              label: "Secondary darker",
-              value: { container: "bg-secondary-dark text-secondary-content" },
+              label: "Secondary dark",
+              value: { main: "bg-secondary-dark text-secondary-content" },
+            },
+            "secondary-dark-gradient": {
+              previewBgClass: "bg-gradient-to-br from-secondary-700 to-secondary-900 text-secondary-content",
+              value: { main: "from-secondary-700 to-secondary-900 text-secondary-content" },
+              label: "Secondary dark gradient",
             },
             "neutral-light": {
               previewBgClass: "bg-neutral-light text-neutral-content-light",
-              value: { container: "bg-neutral-light text-neutral-content-light" },
-              label: "Neutral lighter",
+              value: { main: "bg-neutral-light text-neutral-content-light" },
+              label: "Neutral light",
+            },
+            "neutral-light-gradient": {
+              previewBgClass: "bg-gradient-to-br from-neutral-300 to-neutral-500 text-neutral-content-light",
+              value: { main: "from-neutral-300 to-neutral-500 text-neutral-content-light" },
+              label: "Neutral light gradient",
             },
             neutral: {
               previewBgClass: "bg-neutral text-neutral-content",
               label: "Neutral",
-              value: { container: "bg-neutral text-neutral-content" },
+              value: { main: "bg-neutral text-neutral-content" },
+            },
+            "neutral-gradient": {
+              previewBgClass: "bg-gradient-to-br from-neutral-500 to-neutral-700 text-neutral-content",
+              value: { main: "from-neutral-500 to-neutral-700 text-neutral-content" },
+              label: "Neutral gradient",
             },
             "neutral-dark": {
               previewBgClass: "bg-neutral-dark text-neutral-content",
-              label: "Neutral darker",
-              value: { container: "bg-neutral-dark text-neutral-content" },
+              label: "Neutral dark",
+              value: { main: "bg-neutral-dark text-neutral-content" },
+            },
+            "neutral-dark-gradient": {
+              previewBgClass: "bg-gradient-to-br from-neutral-700 to-neutral-900 text-neutral-content",
+              value: { main: "from-neutral-700 to-neutral-900 text-neutral-content" },
+              label: "Neutral dark gradient",
             },
             base100: {
               previewBgClass: "bg-base-100 text-base-content",
               label: "Base 1",
-              value: { container: "bg-base-100 text-base-content" },
+              value: { main: "bg-base-100 text-base-content" },
             },
+
             base200: {
               previewBgClass: "bg-base-200 text-base-content",
               label: "Base 2",
-              value: { container: "bg-base-200 text-base-content" },
+              value: { main: "bg-base-200 text-base-content" },
             },
+
             none: { label: "None", value: {} },
           },
-          default: "primary",
+          default: "primary-gradient",
         }),
+      ),
+      gradientDirection: Type.Optional(
+        StringEnum(
+          [
+            "bg-gradient-to-t",
+            "bg-gradient-to-r",
+            "bg-gradient-to-b",
+            "bg-gradient-to-l",
+            "bg-gradient-to-tl",
+            "bg-gradient-to-tr",
+            "bg-gradient-to-br",
+            "bg-gradient-to-bl",
+          ],
+          {
+            title: "Gradient direction",
+            description: "The direction of the gradient. Only applies when color preset is a gradient.",
+            enumNames: [
+              "Top",
+              "Right",
+              "Bottom",
+              "Left",
+              "Top left",
+              "Top right",
+              "Bottom right",
+              "Bottom left",
+            ],
+            default: "bg-gradient-to-br",
+            "ui:responsive": "desktop",
+            "ui:styleId": "styles:gradientDirection",
+            metadata: {
+              filter: (manifestProps: TObject, formData: Manifest["props"]) => {
+                return formData.backgroundColor?.includes("gradient") === true;
+              },
+            },
+          },
+        ),
       ),
       brand: Type.Optional(
         textContentRef({

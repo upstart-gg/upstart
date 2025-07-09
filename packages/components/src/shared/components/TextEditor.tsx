@@ -524,12 +524,7 @@ function TextStyleButtonGroup({ editor, noTextStrike, textSizeMode }: TextStyleB
       aria-label="Text style"
     >
       <ToggleGroup.Item
-        className={tx(
-          menuBarBtnCls,
-          menuBarBtnCommonCls,
-          !textSizeMode && "!rounded-l-none",
-          isBold && menuBarBtnActiveCls,
-        )}
+        className={tx(menuBarBtnCls, menuBarBtnCommonCls, "!rounded-l-none", isBold && menuBarBtnActiveCls)}
         value="bold"
         // @ts-ignore
         onClick={() => editor.chain().focus().toggleBold().run()}

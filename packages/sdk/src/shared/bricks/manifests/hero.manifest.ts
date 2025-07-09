@@ -1,15 +1,11 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
-import { basicAlignRef } from "../props/align";
-import { backgroundRef } from "../props/background";
-import { borderRef } from "../props/border";
 import { textContentRef } from "../props/text";
 import { paddingRef } from "../props/padding";
 import { BsAlphabetUppercase } from "react-icons/bs";
 import type { BrickProps } from "../props/types";
-import { colorRef } from "../props/color";
 import { Type } from "@sinclair/typebox";
-import { shadowRef, textShadow } from "../props/effects";
+import { textShadowRef } from "../props/effects";
 import { StringEnum } from "~/shared/utils/string-enum";
 
 export const manifest = defineBrickManifest({
@@ -29,27 +25,25 @@ It is typically used on home pages to grab the user's attention.
   props: defineProps({
     content: textContentRef({
       title: "Hero title",
-      default: "<b>Leading Businesses Choose Leading Software</b>",
+      default:
+        "<h1 class='hero-size-1' style='text-align:left'><b>Leading Businesses<br />Choose Leading Software</b></h1>",
     }),
     tagline: Type.Optional(
       textContentRef({
         title: "Hero tagline",
-        default: "Use our platform to build your business with confidence.",
+        default: "<p style='text-align:left'>Use our platform to build your business with confidence.</p>",
       }),
     ),
-    background: Type.Optional(backgroundRef()),
-    color: Type.Optional(colorRef()),
-    textShadow: Type.Optional(textShadow()),
-    layout: Type.Optional(
-      StringEnum(["centered", "sided"], {
-        title: "Layout",
-        default: "sided",
-        enumNames: ["Centered", "Sided"],
+    // background: Type.Optional(backgroundRef()),
+    // color: Type.Optional(colorRef()),
+    textShadow: Type.Optional(
+      textShadowRef({
+        default: "text-shadow-sm",
       }),
     ),
     padding: Type.Optional(
       paddingRef({
-        default: "p-2",
+        default: "p-4",
       }),
     ),
   }),
