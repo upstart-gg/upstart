@@ -1202,6 +1202,9 @@ export const createDraftStore = (
               updateChildMappings(id, sectionId, null);
             }),
 
+          /**
+           * @deprecated Use getBrickFromDraft instead
+           */
           getBrick: (id) => {
             return _get().brickMap.get(id)?.brick;
           },
