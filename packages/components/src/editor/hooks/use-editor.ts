@@ -1151,7 +1151,7 @@ export const createDraftStore = (
               // 1. Remove brick from its current location
               if (currentParentId) {
                 // Brick is currently in a container
-                const currentParent = state.getBrick(currentParentId);
+                const currentParent = getBrickFromDraft(currentParentId, state);
                 if (currentParent?.props.$children) {
                   currentParent.props.$children = (currentParent.props.$children as Brick[]).filter(
                     (child) => child.id !== id,
