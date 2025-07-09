@@ -30,7 +30,6 @@ export const manifest = defineBrickManifest({
   datasource,
   icon: LuStretchHorizontal,
   props: defineProps({
-    // layout: containerLayoutRef({ "ui:disable-grid": true }),
     gap: Type.Optional(
       cssLengthRef({
         title: "Gap",

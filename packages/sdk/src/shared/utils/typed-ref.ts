@@ -2,7 +2,6 @@ import { type SchemaOptions, type Static, type TRef, Type } from "@sinclair/type
 import type { colorPreset, preset } from "../bricks/props/preset";
 import type { background, backgroundColor } from "../bricks/props/background";
 import type { basicAlign } from "../bricks/props/align";
-import type { containerLayout } from "../bricks/props/container";
 import type { hidden } from "../bricks/props/common";
 import type { border } from "../bricks/props/border";
 import type { padding } from "../bricks/props/padding";
@@ -18,7 +17,6 @@ export interface SchemaTypeMap {
   "styles:background": ReturnType<typeof background>;
   "styles:backgroundColor": ReturnType<typeof backgroundColor>;
   "styles:basicAlign": ReturnType<typeof basicAlign>;
-  "styles:containerLayout": ReturnType<typeof containerLayout>;
   "styles:hidden": ReturnType<typeof hidden>;
   "styles:border": ReturnType<typeof border>;
   "styles:padding": ReturnType<typeof padding>;

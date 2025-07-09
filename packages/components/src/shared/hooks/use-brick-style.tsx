@@ -1,4 +1,3 @@
-import { getStyleProperties } from "@upstart.gg/sdk/shared/bricks/props/helpers";
 import { brickStylesHelpersMap, brickWrapperStylesHelpersMap, extractStylePath } from "../styles/helpers";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
@@ -9,6 +8,7 @@ import { tx, css } from "@upstart.gg/style-system/twind";
 import { m } from "motion/react";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
+import { getStyleProperties } from "../styles/style-props";
 
 function useClassesFromStyleProps<T extends BrickManifest>(
   stylesProps: Record<string, string>,
