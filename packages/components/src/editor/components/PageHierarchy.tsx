@@ -15,33 +15,27 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
   const [hoverElement, setHoverElement] = useState<{ type: string; id: string }>();
   const lastElementHovered = useRef<HTMLElement | null>(null);
   const pageRef = useRef<HTMLElement | null>(null);
+  const [dragging, setDragging] = useState(false);
 
   useEffect(() => {
     pageRef.current = document.getElementById("page-container")!;
   }, []);
 
   useEffect(() => {
-    console.log("hoverElement changed", hoverElement);
     if (lastElementHovered.current) {
       lastElementHovered.current.classList.remove(tx("outline-upstart-400"));
     }
-    if (hoverElement) {
+    if (!dragging && hoverElement) {
       lastElementHovered.current = document.getElementById(hoverElement.id);
       if (lastElementHovered.current) {
         lastElementHovered.current.classList.add(tx("outline-upstart-400"));
-
         if (pageRef.current && !isVisibleInContainer(lastElementHovered.current, pageRef.current)) {
           // Scroll the page to bring the hovered element into view
           lastElementHovered.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        } else {
-          console.log("Element is already visible in the container", {
-            lastElementHovered: lastElementHovered.current,
-            pageRef: pageRef.current,
-          });
         }
       }
     }
-  }, [hoverElement]);
+  }, [hoverElement, dragging]);
 
   function mapBricks(bricks: Brick[], level = 0) {
     return bricks.map((brick, index) => {
@@ -58,7 +52,7 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
                   selectedBrick?.id === brick.id
                     ? "bg-upstart-500 text-white font-bold cursor-default"
                     : "hover:bg-gray-50 dark:hover:bg-white/10 cursor-pointer",
-                  snapshot.isDragging && "outline outline-2 outline-upstart-400 bg-upstart-400/10",
+                  snapshot.isDragging && "outline outline-2 outline-upstart-400 bg-upstart-400/30",
                 )}
                 style={{ marginLeft: `${level * 10}px` }}
                 onClick={(e) => {
@@ -97,7 +91,9 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
     });
   }
 
-  const handleDragEnd = (result: DropResult) => {};
+  const handleDragEnd = (result: DropResult) => {
+    setDragging(false);
+  };
 
   return (
     <div
@@ -113,14 +109,14 @@ Drag and drop sections and bricks to reorder them.
           `}
         />
       </PanelBlockTitle>
-      <DragDropContext onDragEnd={handleDragEnd}>
+      <DragDropContext onDragEnd={handleDragEnd} onBeforeCapture={() => setDragging(true)}>
         <Droppable droppableId="main-hierarchy" type="hierarchy-section" direction="vertical">
           {(provided, snapshot) => (
             <div
               ref={provided.innerRef}
               {...provided.droppableProps}
               className={tx(
-                "py-2 px-1 flex flex-col gap-1 text-sm text-[80%] scrollbar-thin max-h-[calc(50cqh-5rem)] overflow-y-auto",
+                "py-2 pt-1 px-1 text-sm text-[80%] scrollbar-thin max-h-[calc(50cqh-5rem)] overflow-y-auto",
                 // snapshot.isDraggingOver && "overflow-y-hidden",
               )}
             >
@@ -136,8 +132,8 @@ Drag and drop sections and bricks to reorder them.
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       className={tx(
-                        "flex flex-col grow gap-px rounded group hover:(outline outline-upstart-100) ",
-                        snapshot.isDragging && "outline outline-2 outline-upstart-400 bg-upstart-400/10",
+                        "grow gap-px rounded group hover:(outline outline-upstart-100) pb-1 pr-1 mt-1",
+                        snapshot.isDragging && "outline outline-2 outline-upstart-400 bg-upstart-400/30",
                       )}
                     >
                       <div
@@ -160,7 +156,7 @@ Drag and drop sections and bricks to reorder them.
                       </div>
                       <Droppable
                         droppableId={`${section.id}"-hierarchy`}
-                        type="brick-hirerarchy"
+                        type="brick-hierarchy"
                         direction="vertical"
                       >
                         {(provided, snapshot) => (
@@ -168,7 +164,7 @@ Drag and drop sections and bricks to reorder them.
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                             className={tx(
-                              "flex flex-col gap-px ml-2",
+                              " gap-px ml-2",
                               // snapshot.isDraggingOver && "overflow-y-hidden",
                             )}
                           >
