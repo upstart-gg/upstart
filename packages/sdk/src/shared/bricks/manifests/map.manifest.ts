@@ -35,6 +35,7 @@ export const manifest = defineBrickManifest({
   },
   defaultWidth: {
     desktop: "380px",
+    mobile: "100%",
   },
   icon: LiaMapMarkedAltSolid,
   props: defineProps(

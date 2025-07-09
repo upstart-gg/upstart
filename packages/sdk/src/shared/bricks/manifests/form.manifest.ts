@@ -19,6 +19,9 @@ export const manifest = defineBrickManifest({
 There is no need to define the form fields manually and the form does not accept any children`,
   isContainer: false,
   icon: FaWpforms,
+  minWidth: {
+    desktop: 300,
+  },
   props: defineProps({
     title: Type.Optional(string("Title", { description: "The title of the form", default: "My form" })),
     intro: Type.Optional(string("Intro", { description: "The intro text of the form" })),

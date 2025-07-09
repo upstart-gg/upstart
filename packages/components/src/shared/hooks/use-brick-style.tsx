@@ -108,13 +108,15 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
     /*!isContainerChild &&*/ manifest.maxWidth?.mobile && `@mobile:max-w-[${manifest.maxWidth.mobile}px]`,
     /*!isContainerChild &&*/ manifest.maxWidth?.desktop && `@desktop:max-w-[${manifest.maxWidth.desktop}px]`,
 
-    !isContainerChild &&
-      typeof props.width !== "undefined" &&
-      `@desktop:w-[${props.width}] @mobile:w-[${manifest.defaultWidth.mobile}]`,
+    !isContainerChild && typeof props.width !== "undefined" && `@desktop:w-[${props.width}]`,
 
     !isContainerChild &&
       typeof props.width === "undefined" &&
       `@desktop:w-[${manifest.defaultWidth.desktop}]`,
+
+    !isContainerChild && typeof mobileProps?.width !== "undefined"
+      ? `@mobile:w-[${mobileProps.width}]`
+      : `@mobile:w-[${manifest.defaultWidth.mobile}]`,
 
     typeof props.height !== "undefined" &&
       css({

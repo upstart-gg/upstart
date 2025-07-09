@@ -62,8 +62,8 @@ export const commonProps = {
   alignSelf: Type.Optional(
     StringEnum(["self-auto", "self-start", "self-center", "self-end"], {
       title: "Align Self",
-      "ui:field": "hidden",
-      // "ui:field": "enum",
+      // "ui:field": "hidden",
+      "ui:field": "enum",
       "ui:display": "button-group",
       description: "How the brick vertically aligns itself within its parent section.",
       enumNames: ["Auto", "Top", "Center", "Bottom"],
