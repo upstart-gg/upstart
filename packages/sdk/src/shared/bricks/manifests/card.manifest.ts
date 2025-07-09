@@ -3,11 +3,12 @@ import { defineProps, group } from "../props/helpers";
 import { fontSize, textContentRef } from "../props/text";
 import { BsCardText } from "react-icons/bs";
 import { imageRef } from "../props/image";
-import { type Static, Type } from "@sinclair/typebox";
+import { type Static, type TObject, Type } from "@sinclair/typebox";
 import type { BrickProps } from "../props/types";
 import { shadowRef } from "../props/effects";
 import { borderRef } from "../props/border";
 import { colorPresetRef } from "../props/preset";
+import { StringEnum } from "~/shared/utils/string-enum";
 
 export const manifest = defineBrickManifest({
   type: "card",
@@ -25,54 +26,141 @@ export const manifest = defineBrickManifest({
         title: "Color preset",
         "ui:presets": {
           "primary-light": {
-            previewBgClass: "bg-primary-light text-primary-content-light border-primary-light border-2",
+            previewBgClass: "bg-primary-light text-primary-content-light",
             value: { container: "bg-primary-light text-primary-content-light border-primary-light" },
-            label: "Primary lighter",
+            label: "Primary light",
+          },
+          "primary-light-gradient": {
+            previewBgClass: "bg-gradient-to-br from-primary-300 to-primary-500 text-primary-content-light",
+            value: { container: "from-primary-300 to-primary-500 text-primary-content-light border-primary" },
+            label: "Primary light gradient",
           },
           primary: {
-            previewBgClass: "bg-primary text-primary-content border-primary border-2",
+            previewBgClass: "bg-primary text-primary-content",
             label: "Primary",
             value: { container: "bg-primary text-primary-content border-primary" },
           },
+          "primary-gradient": {
+            previewBgClass: "bg-gradient-to-br from-primary-500 to-primary-700 text-primary-content",
+            label: "Primary gradient",
+            value: { container: "from-primary-500 to-primary-700 text-primary-content border-primary" },
+          },
           "primary-dark": {
-            previewBgClass: "bg-primary-dark text-primary-content border-primary-dark border-2",
-            label: "Primary darker",
+            previewBgClass: "bg-primary-dark text-primary-content",
+            label: "Primary dark",
             value: { container: "bg-primary-dark text-primary-content border-primary-dark" },
           },
+          "primary-dark-gradient": {
+            previewBgClass: "bg-gradient-to-br from-primary-700 to-primary-900 text-primary-content",
+            label: "Primary dark gradient",
+            value: { container: "from-primary-700 to-primary-900 text-primary-content border-primary-dark" },
+          },
           "secondary-light": {
-            previewBgClass: "bg-secondary-light text-secondary-content-light border-secondary-light border-2",
-            label: "Secondary lighter",
+            previewBgClass: "bg-secondary-light text-secondary-content-light",
+            label: "Secondary light",
             value: { container: "bg-secondary-light text-secondary-content-light border-secondary-light" },
           },
+          "secondary-light-gradient": {
+            previewBgClass:
+              "bg-gradient-to-br from-secondary-300 to-secondary-500 text-secondary-content-light",
+            label: "Secondary light gradient",
+            value: {
+              container: "from-secondary-300 to-secondary-500 text-secondary-content-light border-secondary",
+            },
+          },
           secondary: {
-            previewBgClass: "bg-secondary text-secondary-content border-secondary border-2",
+            previewBgClass: "bg-secondary text-secondary-content",
             label: "Secondary",
             value: { container: "bg-secondary text-secondary-content border-secondary" },
           },
+          "secondary-gradient": {
+            previewBgClass: "bg-gradient-to-br from-secondary-500 to-secondary-700 text-secondary-content",
+            label: "Secondary gradient",
+            value: {
+              container: "from-secondary-500 to-secondary-700 text-secondary-content border-secondary",
+            },
+          },
           "secondary-dark": {
-            previewBgClass: "bg-secondary-dark text-secondary-content border-secondary-dark border-2",
-            label: "Secondary darker",
+            previewBgClass: "bg-secondary-dark text-secondary-content",
+            label: "Secondary dark",
             value: { container: "bg-secondary-dark text-secondary-content border-secondary-dark" },
           },
+
+          "secondary-dark-gradient": {
+            previewBgClass: "bg-gradient-to-br from-secondary-700 to-secondary-900 text-secondary-content",
+            label: "Secondary dark gradient",
+            value: {
+              container: "from-secondary-700 to-secondary-900 text-secondary-content border-secondary-dark",
+            },
+          },
+
           "accent-light": {
-            previewBgClass: "bg-accent-light text-accent-content-light border-accent-light border-2",
+            previewBgClass: "bg-accent-light text-accent-content-light",
             label: "Accent lighter",
             value: { container: "bg-accent-light text-accent-content-light border-accent-light" },
           },
+
+          "accent-light-gradient": {
+            previewBgClass: "bg-gradient-to-br from-accent-300 to-accent-500 text-accent-content-light",
+            label: "Accent light gradient",
+            value: { container: "from-accent-300 to-accent-500 text-accent-content-light border-accent" },
+          },
           accent: {
-            previewBgClass: "bg-accent text-accent-content border-accent border-2",
+            previewBgClass: "bg-accent text-accent-content",
             label: "Accent",
             value: { container: "bg-accent text-accent-content border-accent" },
           },
+
+          "accent-gradient": {
+            previewBgClass: "bg-gradient-to-br from-accent-500 to-accent-700 text-accent-content",
+            label: "Accent gradient",
+            value: { container: "from-accent-500 to-accent-700 text-accent-content border-accent" },
+          },
           "accent-dark": {
-            previewBgClass: "bg-accent-dark text-accent-content border-accent-dark border-2",
-            label: "Accent darker",
+            previewBgClass: "bg-accent-dark text-accent-content",
+            label: "Accent dark",
             value: { container: "bg-accent-dark text-accent-content border-accent-dark" },
           },
+
+          "accent-dark-gradient": {
+            previewBgClass: "bg-gradient-to-br from-accent-700 to-accent-900 text-accent-content",
+            label: "Accent dark gradient",
+            value: { container: "from-accent-700 to-accent-900 text-accent-content border-accent-dark" },
+          },
+          "neutral-light": {
+            previewBgClass: "bg-neutral-light text-neutral-content-light",
+            label: "Neutral light",
+            value: { container: "bg-neutral-light text-neutral-content-light border-neutral-light" },
+          },
+
+          "neutral-light-gradient": {
+            previewBgClass: "bg-gradient-to-br from-neutral-300 to-neutral-500 text-neutral-content-light",
+            label: "Neutral light gradient",
+            value: { container: "from-neutral-300 to-neutral-500 text-neutral-content-light border-neutral" },
+          },
+
           neutral: {
-            previewBgClass: "bg-neutral text-neutral-content border-neutral border-2",
+            previewBgClass: "bg-neutral text-neutral-content",
             label: "Neutral",
             value: { container: "bg-neutral text-neutral-content border-neutral" },
+          },
+
+          "neutral-gradient": {
+            previewBgClass: "bg-gradient-to-br from-neutral-500 to-neutral-700 text-neutral-content",
+            label: "Neutral gradient",
+            value: { container: "from-neutral-500 to-neutral-700 text-neutral-content border-neutral" },
+          },
+
+          "neutral-dark": {
+            previewBgClass: "bg-neutral-dark text-neutral-content",
+            label: "Neutral dark",
+            value: { container: "bg-neutral-dark text-neutral-content border-neutral-dark" },
+          },
+
+          "neutral-dark-gradient": {
+            previewBgClass: "bg-gradient-to-br from-neutral-700 to-neutral-900 text-neutral-content",
+            label: "Neutral dark gradient",
+            value: { container: "from-neutral-700 to-neutral-900 text-neutral-content border-neutral-dark" },
           },
           base100: {
             previewBgClass: "bg-base-100 text-base-content border-base-200 border-2",
@@ -94,30 +182,47 @@ export const manifest = defineBrickManifest({
             label: "Base 100 / Accent",
             value: { container: "bg-base-100 text-base-content border-accent" },
           },
-          base200: {
-            previewBgClass: "bg-base-200 text-base-content border-base-300 border-2",
-            label: "Base 200",
-            value: { container: "bg-base-200 text-base-content border-base-300" },
-          },
-          base200_primary: {
-            previewBgClass: "bg-base-200 text-base-content border-primary border-2",
-            label: "Base 200 / Primary",
-            value: { container: "bg-base-200 text-base-content border-primary" },
-          },
-          base200_secondary: {
-            previewBgClass: "bg-base-200 text-base-content border-secondary border-2",
-            label: "Base 200 / Secondary",
-            value: { container: "bg-base-200 text-base-content border-secondary" },
-          },
-          base200_accent: {
-            previewBgClass: "bg-base-200 text-base-content border-accent border-2",
-            label: "Base 200 / Accent",
-            value: { container: "bg-base-200 text-base-content border-accent" },
-          },
+
           none: { label: "None", value: {} },
         },
         default: "primary",
       }),
+    ),
+    gradientDirection: Type.Optional(
+      StringEnum(
+        [
+          "bg-gradient-to-t",
+          "bg-gradient-to-r",
+          "bg-gradient-to-b",
+          "bg-gradient-to-l",
+          "bg-gradient-to-tl",
+          "bg-gradient-to-tr",
+          "bg-gradient-to-br",
+          "bg-gradient-to-bl",
+        ],
+        {
+          title: "Gradient direction",
+          description: "The direction of the gradient. Only applies when color preset is a gradient.",
+          enumNames: [
+            "Top",
+            "Right",
+            "Bottom",
+            "Left",
+            "Top left",
+            "Top right",
+            "Bottom right",
+            "Bottom left",
+          ],
+          default: "bg-gradient-to-br",
+          "ui:responsive": "desktop",
+          "ui:styleId": "styles:gradientDirection",
+          metadata: {
+            filter: (manifestProps: TObject, formData: Manifest["props"]) => {
+              return formData.colorPreset?.includes("gradient") === true;
+            },
+          },
+        },
+      ),
     ),
     // variants: Type.Array(
     //   Type.Union(
@@ -203,7 +308,7 @@ export const manifest = defineBrickManifest({
     ),
     cardTitle: Type.Optional(textContentRef({ title: "Title" })),
     cardBody: Type.Optional(textContentRef({ title: "Body" })),
-    shadow: Type.Optional(shadowRef()),
+
     border: Type.Optional(
       borderRef({
         default: {
@@ -212,6 +317,7 @@ export const manifest = defineBrickManifest({
         },
       }),
     ),
+    shadow: Type.Optional(shadowRef()),
   }),
 });
 

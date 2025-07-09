@@ -4,7 +4,7 @@ import type { TextEditorProps } from "./TextEditor";
 const TextEditor = lazy(() => import("./TextEditor"));
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-export const TextContent = forwardRef<HTMLDivElement, TextEditorProps<any>>(
+const TextContent = forwardRef<HTMLDivElement, TextEditorProps<any>>(
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   (props: TextEditorProps<any>, ref) => {
     if (props.editable) {
@@ -29,3 +29,5 @@ export const TextContent = forwardRef<HTMLDivElement, TextEditorProps<any>>(
     );
   },
 );
+
+export default TextContent;

@@ -6,6 +6,7 @@ import { shadowRef } from "../props/effects";
 import type { BrickProps } from "../props/types";
 import { geolocation } from "../props/geolocation";
 import { Type } from "@sinclair/typebox";
+import { round } from "lodash-es";
 
 export const DEFAULTS = {
   lat: 48.8566, // Default latitude (Paris)
@@ -25,8 +26,16 @@ export const manifest = defineBrickManifest({
     mobile: 280,
   },
   minHeight: {
-    desktop: 120,
+    desktop: 200,
     mobile: 120,
+  },
+  defaultHeight: {
+    desktop: "320px",
+    mobile: "280px",
+  },
+  defaultWidth: {
+    desktop: "380px",
+    mobile: "100%",
   },
   icon: LiaMapMarkedAltSolid,
   props: defineProps(
@@ -36,7 +45,13 @@ export const manifest = defineBrickManifest({
         children: geolocation({ defaultZoom: DEFAULTS.zoom }),
       }),
       // location: geolocation({ defaultZoom: DEFAULTS.zoom }),
-      border: Type.Optional(borderRef()),
+      border: Type.Optional(
+        borderRef({
+          default: {
+            rounding: "rounded-xl",
+          },
+        }),
+      ),
       shadow: Type.Optional(shadowRef()),
     },
     { noPreset: true },

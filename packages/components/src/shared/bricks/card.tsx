@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/card.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { TextContent } from "../components/TextContent";
+import TextContent from "../components/TextContent";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { useColorPreset } from "../hooks/use-color-preset";
@@ -26,7 +26,6 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
         props.imagePosition === "side" ? "flex-row" : "flex-col",
         presetClasses.container,
         classes,
-        // props.variants?.includes("centered") && "text-center",
 
         isOverlay &&
           css({
@@ -39,7 +38,7 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
       )}
       ref={ref}
     >
-      {isOverlay && <div className="absolute inset-0 bg-white/90 -z-1" />}
+      {isOverlay && <div className="absolute inset-0 bg-[inherit] opacity-20 -z-1" />}
       <div className={tx("card-inner-wrapper", props.imagePosition === "top" ? "order-2" : "order-1")}>
         {props.cardTitle && !props.noTitle && (
           <div className={tx("text-[120%] font-semibold z-auto my-4 mx-4")}>
@@ -54,7 +53,7 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
           </div>
         )}
         {props.cardBody && props.imagePosition !== "middle" && (
-          <div className={tx("z-auto p-4 pt-0")}>
+          <div className={tx("z-auto p-4", !props.noTitle && "pt-0")}>
             <TextContent
               propPath="cardBody.content"
               className={tx("flex-1")}
@@ -75,7 +74,7 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
             props.imagePosition === "top" && "order-first",
             props.imagePosition === "bottom" && "order-last mt-auto",
             props.imagePosition === "side"
-              ? "h-auto w-[clamp(100px,33%,300px)]"
+              ? "h-auto w-[clamp(100px,40%,400px)]"
               : "w-inherit h-[clamp(200px,50%,300px)]",
           )}
           src={props.cardImage.src}

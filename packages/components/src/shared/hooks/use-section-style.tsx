@@ -14,16 +14,20 @@ type UseSectionStyleProps = {
 
 export function useSectionStyle({ section, selected, editable, previewMode }: UseSectionStyleProps) {
   const GAP = section.props.gap ?? "12px"; // Default gap if not set
-  const availablePresets = sectionProps.properties.colorPreset["ui:presets"] as ColorPresets;
-  const presetClasses = section.props.colorPreset
-    ? availablePresets[section.props.colorPreset].value.main
+
+  const availablePresets = sectionProps.properties.backgroundColor["ui:presets"] as ColorPresets;
+  const presetClasses = section.props.backgroundColor
+    ? availablePresets[section.props.backgroundColor].value.main
     : undefined;
+  const gradientClass = section.props.gradientDirection;
+
   // console.log("useSectionStyle props", { props: section.props });
   return tx(
     "flex @mobile:flex-col @desktop:flex-row w-full @container/section group/section overflow-visible relative mx-auto max-sm:max-w-dvw",
     [
       // section.props.preset as string,
       presetClasses,
+      gradientClass,
       section.props.maxWidth as string,
       typeof section.props.minHeight === "string" &&
         section.props.minHeight !== "full" &&
@@ -44,10 +48,11 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
       ),
 
       css({
-        "&:has(.navbar)": {
+        "&:has([data-is-navbar])": {
           // This is a hack to ensure that the navbar is not affected by the section's padding
           paddingInline: "0px !important",
           paddingBlock: "0px !important",
+          flexDirection: "row",
         },
       }),
 
@@ -55,7 +60,6 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
 
       "flex-nowrap",
 
-      section.props.fillSpace && "[&>*]:grow",
       // "[&>*]:flex-shrink-0",
 
       // Background
@@ -76,10 +80,10 @@ function getSectionEditorStyles({ section, editable, selected, previewMode }: Us
   }
   return [
     "select-none transition-[outline] duration-150 relative",
-    "outline-dashed outline-2 -outline-offset-2 hover:(outline-upstart-500/60 shadow-upstart-500/20)",
+    "outline-dotted outline-4 -outline-offset-4",
     "self-stretch",
 
-    selected ? "outline-upstart-500" : "outline-transparent",
+    selected ? "outline-black/40" : "outline-transparent",
 
     // this is the grid overlay shown when dragging
     editable &&
@@ -87,6 +91,9 @@ function getSectionEditorStyles({ section, editable, selected, previewMode }: Us
       css`
       &:has(.moving), &:has(.moving) ~ section {
         & [data-floating-ui-portal] {
+          display: none;
+        }
+        & .resizable-handle {
           display: none;
         }
       }`,

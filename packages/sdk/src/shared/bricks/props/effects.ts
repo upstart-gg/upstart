@@ -1,6 +1,6 @@
 import { type SchemaOptions, Type, type Static } from "@sinclair/typebox";
 import { typedRef } from "~/shared/utils/typed-ref";
-import { StringEnum } from "~/shared/utils/string-enum";
+import { StringEnum, type StringEnumOptions } from "~/shared/utils/string-enum";
 
 type ShadowOptions = {
   title?: string;
@@ -31,23 +31,29 @@ export function shadowRef(options: SchemaOptions & ShadowOptions = {}) {
 
 type TextShadowOptions = {
   title?: string;
-  defaultValue?: string;
-};
+} & StringEnumOptions;
 
-export function textShadow({
-  title = "Text shadow",
-  defaultValue = "text-shadow-none",
-}: TextShadowOptions = {}) {
+/**
+ * This function is used in ajv and type ref translations, but should not be used directly in bricks
+ * @deprecated Use `textShadowRef` instead.
+ */
+export function textShadow({ title = "Text shadow", ...rest }: TextShadowOptions = {}) {
   return StringEnum(
     ["text-shadow-none", "text-shadow-sm", "text-shadow-md", "text-shadow-lg", "text-shadow-xl"],
     {
+      $id: "styles:textShadow",
       title,
-      default: defaultValue,
       enumNames: ["None", "Small", "Medium", "Large", "Extra large"],
       "ui:placeholder": "Not specified",
       "ui:field": "enum",
+      "ui:styleId": "styles:textShadow",
+      ...rest,
     },
   );
+}
+
+export function textShadowRef(options: SchemaOptions = {}) {
+  return typedRef("styles:textShadow", options);
 }
 
 export type TextShadowSettings = Static<ReturnType<typeof textShadow>>;

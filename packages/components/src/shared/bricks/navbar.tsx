@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import { manifest, type Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/navbar.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import { TextContent } from "../components/TextContent";
+import TextContent from "../components/TextContent";
 import { useDatasource } from "../hooks/use-datasource";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { tx, css } from "@upstart.gg/style-system/twind";
@@ -18,10 +18,11 @@ const Navbar = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
     <header
       ref={ref}
       data-brick-group="container"
+      data-is-navbar
       className={tx(
-        "flex-1 flex px-4 brick basis-full navbar h-[60px]",
-        styles.container,
-        presetClasses.container,
+        "flex-1 flex px-4 brick basis-full h-[60px]",
+        styles.gradientDirection,
+        presetClasses.main,
       )}
     >
       <div
