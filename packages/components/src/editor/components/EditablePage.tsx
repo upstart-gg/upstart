@@ -16,7 +16,7 @@ import Section from "./EditableSection";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useResizable } from "../hooks/use-resizable";
 import { useGridObserver } from "../hooks/use-grid-observer";
-import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
+import { useDeviceInfo } from "../hooks/use-device-info";
 
 type EditablePageProps = {
   showIntro?: boolean;
@@ -33,6 +33,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const attributes = useAttributes();
   const sections = useSections();
   const typography = useFontWatcher();
+
   const pageClassName = usePageStyle({
     attributes,
     typography,

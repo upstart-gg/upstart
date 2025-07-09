@@ -30,6 +30,7 @@ import { defaultProps, manifests } from "@upstart.gg/sdk/shared/bricks/manifests
 import { type Brick, generateId } from "@upstart.gg/sdk/shared/bricks";
 import { Toaster } from "@upstart.gg/style-system/system";
 import { useIsLocalDev } from "../hooks/use-is-local-dev";
+import { useDeviceInfo } from "../hooks/use-device-info";
 
 const Tour = lazy(() => import("./Tour"));
 const NavBar = lazy(() => import("./NavBar"));
@@ -55,7 +56,7 @@ export default function Editor(props: EditorProps) {
   const { setDraggingBrickType, toggleDebugMode } = useEditorHelpers();
   const islocalDev = useIsLocalDev();
   const debug = useDebugMode();
-
+  const { canUseDnd } = useDeviceInfo();
   usePageAutoSave();
   useEditorHotKeys();
 
@@ -352,6 +353,7 @@ export default function Editor(props: EditorProps) {
               },
             }}
           />
+
           {islocalDev && (
             <div className="fixed flex w-[148px] items-center gap-2 bottom-0 right-0 p-2 text-xs text-gray-500 bg-gray-100 dark:bg-dark-800 z-[9999] rounded-tl-md">
               <Switch defaultChecked={debug} onCheckedChange={toggleDebugMode} size="1" id="debug-mode" />

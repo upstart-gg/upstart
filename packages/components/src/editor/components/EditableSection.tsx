@@ -178,7 +178,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
                       e.stopPropagation();
                       draftHelpers.deleteSection(section.id);
                       setSelectedSectionId();
-                      togglePanel("inspector");
+                      setPanel();
                     }}
                     className="inline-block underline underline-offset-2"
                   >

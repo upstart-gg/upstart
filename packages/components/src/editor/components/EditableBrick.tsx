@@ -49,6 +49,7 @@ import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests
 import { commonProps } from "@upstart.gg/sdk/shared/bricks/props/common";
 import { getBrickResizeOptions } from "~/shared/utils/layout-utils";
 import useIsHovered from "../hooks/use-is-hovered";
+import { useDeviceInfo } from "../hooks/use-device-info";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;

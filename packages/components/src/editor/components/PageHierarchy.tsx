@@ -4,6 +4,7 @@ import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { tx } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";
 import { useEffect, useRef, useState } from "react";
+import { RxDragHandleHorizontal } from "react-icons/rx";
 
 export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick; section: Section }) {
   const { setSelectedBrickId, setSelectedSectionId } = useEditorHelpers();
@@ -11,6 +12,11 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
   const currentSectionId = useSelectedSectionId();
   const [hoverElement, setHoverElement] = useState<{ type: string; id: string }>();
   const lastElementHovered = useRef<HTMLElement | null>(null);
+  const pageRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    pageRef.current = document.getElementById("page-container")!;
+  }, []);
 
   useEffect(() => {
     console.log("hoverElement changed", hoverElement);
@@ -21,6 +27,16 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
       lastElementHovered.current = document.getElementById(hoverElement.id);
       if (lastElementHovered.current) {
         lastElementHovered.current.classList.add(tx("outline-upstart-400"));
+
+        if (pageRef.current && !isVisibleInContainer(lastElementHovered.current, pageRef.current)) {
+          // Scroll the page to bring the hovered element into view
+          lastElementHovered.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        } else {
+          console.log("Element is already visible in the container", {
+            lastElementHovered: lastElementHovered.current,
+            pageRef: pageRef.current,
+          });
+        }
       }
     }
   }, [hoverElement]);
@@ -51,9 +67,7 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
               <span className="inline-flex items-center gap-1.5">
                 <Icon className="w-4 h-4" /> {brickName}
               </span>
-              <span className="text-[80%] text-gray-400 font-mono font-light lowercase opacity-0 group-hover:opacity-70">
-                {brick.id}
-              </span>
+              <RxDragHandleHorizontal className="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-row-resize opacity-70 group-hover:opacity-100 transition-opacity" />
             </div>
           </div>
 
@@ -81,7 +95,7 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
           <div key={section.id} className="flex flex-col gap-px">
             <div
               className={tx(
-                "py-0.5 px-1.5 rounded-md user-select-none",
+                "py-1 px-1.5 rounded-md user-select-none flex justify-between items-center group",
                 section.id === currentSectionId
                   ? "bg-upstart-50 dark:bg-white/10 font-bold cursor-default"
                   : "hover:bg-gray-50 dark:hover:bg-white/10 cursor-pointer",
@@ -92,12 +106,37 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
               }}
               onMouseEnter={() => setHoverElement({ type: "section", id: section.id })}
             >
-              Section {section.label ?? "Unnamed"}
+              <span>Section {section.label ?? "Unnamed"}</span>
+              <RxDragHandleHorizontal className="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-row-resize opacity-70 group-hover:opacity-100 transition-opacity" />
             </div>
             <div className="flex flex-col gap-px ml-2">{mapBricks(section.bricks)}</div>
           </div>
         ))}
       </div>
     </div>
+  );
+}
+function isVisibleInContainer(element: HTMLElement, container: HTMLElement) {
+  // Get element's position relative to the container
+  const elementRect = element.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
+
+  // Calculate element's position relative to container's content area
+  const elementRelativeTop = elementRect.top - containerRect.top + container.scrollTop;
+  const elementRelativeLeft = elementRect.left - containerRect.left + container.scrollLeft;
+  const elementRelativeBottom = elementRelativeTop + element.offsetHeight;
+  const elementRelativeRight = elementRelativeLeft + element.offsetWidth;
+
+  // Container's visible area (scroll position + visible dimensions)
+  const containerScrollTop = container.scrollTop;
+  const containerScrollLeft = container.scrollLeft;
+  const containerVisibleBottom = containerScrollTop + container.clientHeight;
+  const containerVisibleRight = containerScrollLeft + container.clientWidth;
+
+  return (
+    elementRelativeBottom > containerScrollTop &&
+    elementRelativeTop < containerVisibleBottom &&
+    elementRelativeRight > containerScrollLeft &&
+    elementRelativeLeft < containerVisibleRight
   );
 }
