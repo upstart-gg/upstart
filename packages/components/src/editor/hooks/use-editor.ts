@@ -1609,18 +1609,7 @@ export const useSection = (sectionId?: string) => {
 
 export const useSectionByBrickId = (brickId: string) => {
   const ctx = useDraftStoreContext();
-  return useStore(ctx, (state) => {
-    // const brick = state.brickMap.get(brickId);
-    return getBrickSection(brickId, state);
-    // if (!brick) {
-    //   return null;
-    // }
-    // const section = state.sections.find((s) => s.id === brick.sectionId);
-    // if (!section) {
-    //   return null;
-    // }
-    // return section;
-  });
+  return useStore(ctx, (state) => getBrickSection(brickId, state));
 };
 
 export const useAttributes = () => {
