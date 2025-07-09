@@ -432,7 +432,7 @@ export interface DraftState extends DraftStateProps {
   duplicateBrick: (id: string) => void;
   duplicateSection: (id: string) => void;
   moveBrickWithin: (id: string, to: "previous" | "next") => void;
-  reorderBrickWithin: (brickId: string, fromIndex: number, toIndex: number) => void;
+  reorderBrickWithin: (brickId: string, toIndex: number) => void;
   moveBrickToContainerBrick: (id: string, parentId: string, index: number) => void;
   moveBrickToSection: (id: string, sectionId: string | null, index?: number) => void;
   detachBrickFromContainer: (id: string) => void;
@@ -782,24 +782,28 @@ export const createDraftStore = (
             set((state) => {
               // Create a new array of sections in the specified order
               const newSections: Section[] = [];
+              let tmpOrder = 0;
 
               // Add sections in the order specified by orderedIds
               orderedIds.forEach((id) => {
                 const section = state.sections.find((s) => s.id === id);
                 if (section) {
-                  newSections.push(section);
+                  newSections.push({ ...section, order: ++tmpOrder });
                 }
               });
 
               // Add any sections not included in orderedIds at the end
               state.sections.forEach((section) => {
                 if (!orderedIds.includes(section.id)) {
-                  newSections.push(section);
+                  newSections.push({ ...section, order: ++tmpOrder });
                 }
               });
 
               // Replace the sections array
               state.sections = newSections;
+
+              // rebuild map
+              state.brickMap = buildBrickMap(state.sections);
             }),
 
           setLastLoaded: () =>
@@ -1029,7 +1033,7 @@ export const createDraftStore = (
           /**
            * Reorder a brick within its section using indices
            */
-          reorderBrickWithin: (brickId, fromIndex, toIndex) =>
+          reorderBrickWithin: (brickId, toIndex) =>
             set((state) => {
               const brickMapping = state.brickMap.get(brickId);
               if (!brickMapping) {
@@ -1044,14 +1048,28 @@ export const createDraftStore = (
                 const parentBrick = getBrickFromDraft(parentId, state);
                 if (parentBrick?.props.$children) {
                   const children = parentBrick.props.$children as Brick[];
-                  const [movedBrick] = children.splice(fromIndex, 1);
+                  const originalIndex = children.findIndex((b) => b.id === brickId);
+                  if (originalIndex === -1) {
+                    console.error("Cannot reorder brick %s, it does not exist in parent's children", brickId);
+                    return;
+                  }
+                  const [movedBrick] = children.splice(originalIndex, 1);
                   children.splice(toIndex, 0, movedBrick);
                 }
               } else {
                 // Brick is at the top level of a section
                 const section = state.sections.find((s) => s.id === sectionId);
                 if (section) {
-                  const [movedBrick] = section.bricks.splice(fromIndex, 1);
+                  const originalIndex = section.bricks.findIndex((b) => b.id === brickId);
+                  if (originalIndex === -1) {
+                    console.error(
+                      "Cannot reorder brick %s, it does not exist in section %s",
+                      brickId,
+                      sectionId,
+                    );
+                    return;
+                  }
+                  const [movedBrick] = section.bricks.splice(originalIndex, 1);
                   section.bricks.splice(toIndex, 0, movedBrick);
                 }
               }
