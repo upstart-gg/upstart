@@ -238,7 +238,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       [panelPosition],
     );
 
-    const { ref: hoverRef, isHovered } = useIsHovered({ tolerance: 6 });
+    const { ref: hoverRef, isHovered } = useIsHovered({ tolerance: 6, deepCheck: true });
     const wrapperClass = useBrickWrapperStyle({
       brick,
       editable: true,
