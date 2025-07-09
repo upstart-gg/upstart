@@ -11,6 +11,7 @@ export const manifest = defineBrickManifest({
   kind: "brick",
   description: "A flexible element to create space between bricks.",
   repeatable: true,
+  staticClasses: "self-stretch",
   minWidth: {
     desktop: 50,
     mobile: 20,

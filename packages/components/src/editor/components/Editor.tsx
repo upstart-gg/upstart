@@ -204,7 +204,7 @@ export default function Editor(props: EditorProps) {
             `Moving brick ${draggableId} within section from ${source.index} to ${destination.index}`,
           );
           // Moving within the same section - use the new reorder function
-          draftHelpers.reorderBrickWithin(draggableId, source.index, destination.index);
+          draftHelpers.reorderBrickWithin(draggableId, destination.index);
 
           // moveBrickToContainerBrick
         } else {

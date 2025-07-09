@@ -308,7 +308,7 @@ function SettingsTab({ brick, section }: { brick: Brick; section: Section }) {
   return (
     <form className={tx("flex flex-col justify-between h-full")}>
       {previewMode === "mobile" && (
-        <Callout.Root size="1" className="m-2">
+        <Callout.Root size="1">
           <Callout.Text size="1">
             <strong>Note</strong>: You are editing mobile-only styles. Any changes here will only affect how
             the brick appears on mobile devices.
