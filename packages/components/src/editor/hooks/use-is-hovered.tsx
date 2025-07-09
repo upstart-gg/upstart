@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react";
 
 interface UseIsHoveredOptions {
   tolerance?: number;
+  deepCheck?: boolean;
 }
 
 interface UseIsHoveredReturn<T extends HTMLElement> {
@@ -12,7 +13,7 @@ interface UseIsHoveredReturn<T extends HTMLElement> {
 function useIsHovered<T extends HTMLElement = HTMLDivElement>(
   options: UseIsHoveredOptions = {},
 ): UseIsHoveredReturn<T> {
-  const { tolerance = 0 } = options;
+  const { tolerance = 0, deepCheck = false } = options;
   const ref = useRef<T>(null);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -31,7 +32,19 @@ function useIsHovered<T extends HTMLElement = HTMLDivElement>(
         clientY >= rect.top - tolerance &&
         clientY <= rect.bottom + tolerance;
 
-      setIsHovered(withinBounds);
+      if (!withinBounds) {
+        setIsHovered(false);
+        return;
+      }
+
+      // If deepCheck is enabled, verify the element at mouse position is the ref'd element or its child
+      if (deepCheck) {
+        const elementAtPoint = document.elementFromPoint(clientX, clientY);
+        const isActuallyHovered = elementAtPoint === element || element.contains(elementAtPoint);
+        setIsHovered(isActuallyHovered);
+      } else {
+        setIsHovered(true);
+      }
     };
 
     const handleMouseLeave = () => {
@@ -46,33 +59,9 @@ function useIsHovered<T extends HTMLElement = HTMLDivElement>(
       document.removeEventListener("mousemove", handleMouseMove);
       element.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, [tolerance]);
+  }, [tolerance, deepCheck]);
 
   return { ref, isHovered };
 }
 
 export default useIsHovered;
-
-// Usage example:
-/*
-function MyComponent() {
-  const { ref, isHovered } = useIsHovered<HTMLDivElement>({ tolerance: 20 });
-
-  return (
-    <div
-      ref={ref}
-      style={{
-        width: 200,
-        height: 100,
-        backgroundColor: isHovered ? 'lightblue' : 'lightgray',
-        border: '2px solid black',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      {isHovered ? 'Hovered (with 20px tolerance)' : 'Not hovered'}
-    </div>
-  );
-}
-*/
