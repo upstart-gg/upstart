@@ -5,6 +5,8 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";
 import { useEffect, useRef, useState } from "react";
 import { RxDragHandleHorizontal } from "react-icons/rx";
+import { HelpIcon } from "./json-form/HelpIcon";
+import { DragDropContext, Draggable, Droppable, type DropResult } from "@hello-pangea/dnd";
 
 export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick; section: Section }) {
   const { setSelectedBrickId, setSelectedSectionId } = useEditorHelpers();
@@ -42,42 +44,60 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
   }, [hoverElement]);
 
   function mapBricks(bricks: Brick[], level = 0) {
-    return bricks.map((brick) => {
+    return bricks.map((brick, index) => {
       const childBricks = "$children" in brick.props ? (brick.props.$children as Brick[]) : null;
       const Icon = manifests[brick.type].icon;
       const brickName = manifests[brick.type].name;
       return (
-        <div key={brick.id}>
-          <div
-            className={tx(
-              "py-1 px-1.5 rounded-md user-select-none",
-              selectedBrick?.id === brick.id
-                ? "bg-upstart-50 dark:bg-white/10 font-bold cursor-default"
-                : "hover:bg-gray-50 dark:hover:bg-white/10 cursor-pointer",
-            )}
-            style={{ marginLeft: `${level * 10}px` }}
-            onClick={(e) => {
-              e.stopPropagation();
-              console.log("clicking on brick %s", brick.id);
-              setSelectedBrickId(brick.id);
-            }}
-            onMouseEnter={() => setHoverElement({ type: "brick", id: brick.id })}
-          >
-            <div className="flex items-center justify-between group transition-all">
-              <span className="inline-flex items-center gap-1.5">
-                <Icon className="w-4 h-4" /> {brickName}
-              </span>
-              <RxDragHandleHorizontal className="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-row-resize opacity-70 group-hover:opacity-100 transition-opacity" />
+        <Draggable key={`hierarchy_${brick.id}`} draggableId={`hierarchy_${brick.id}`} index={index}>
+          {(provided, snapshot) => (
+            <div key={brick.id} ref={provided.innerRef} {...provided.draggableProps}>
+              <div
+                className={tx(
+                  "py-1 px-1.5 rounded-md select-none",
+                  selectedBrick?.id === brick.id
+                    ? "bg-upstart-500 text-white font-bold cursor-default"
+                    : "hover:bg-gray-50 dark:hover:bg-white/10 cursor-pointer",
+                  snapshot.isDragging && "outline outline-2 outline-upstart-400 bg-upstart-400/10",
+                )}
+                style={{ marginLeft: `${level * 10}px` }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  console.log("clicking on brick %s", brick.id);
+                  setSelectedBrickId(brick.id);
+                }}
+                onMouseEnter={() => setHoverElement({ type: "brick", id: brick.id })}
+              >
+                <div className="flex items-center justify-between group transition-all">
+                  <span className="inline-flex items-center gap-1.5 select-none">
+                    <Icon className="w-4 h-4" /> {brickName}
+                  </span>
+                  <div {...provided.dragHandleProps}>
+                    <RxDragHandleHorizontal className="w-5 h-5 cursor-row-resize opacity-60 group-hover:opacity-80 transition-opacity" />
+                  </div>
+                </div>
+              </div>
+              {childBricks && childBricks.length > 0 && (
+                <Draggable key={`hierarchy_${brick.id}`} draggableId={`hierarchy_${brick.id}`} index={index}>
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      className="flex flex-col gap-px"
+                    >
+                      {mapBricks(childBricks, level + 1)}
+                    </div>
+                  )}
+                </Draggable>
+              )}
             </div>
-          </div>
-
-          {childBricks && childBricks.length > 0 && (
-            <div className="flex flex-col gap-px">{mapBricks(childBricks, level + 1)}</div>
           )}
-        </div>
+        </Draggable>
       );
     });
   }
+
+  const handleDragEnd = (result: DropResult) => {};
 
   return (
     <div
@@ -85,34 +105,86 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
       // Put a shadow at the top to indicate this is a scrollable area
       onMouseLeave={() => setHoverElement(undefined)}
     >
-      <PanelBlockTitle>Hierarchy</PanelBlockTitle>
-      <div
-        className={tx(
-          "py-2 px-1 flex flex-col gap-1 text-sm text-[80%] overflow-y-auto scrollbar-thin max-h-[calc(50cqh-5rem)]",
-        )}
-      >
-        {sections.map((section) => (
-          <div key={section.id} className="flex flex-col gap-px">
+      <PanelBlockTitle>
+        <span>Hierarchy</span>
+        <HelpIcon
+          help={`View and manage the hierarchy of sections and bricks on this page. Click on a section or brick to select it.
+Drag and drop sections and bricks to reorder them.
+          `}
+        />
+      </PanelBlockTitle>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId="main-hierarchy" type="hierarchy-section" direction="vertical">
+          {(provided, snapshot) => (
             <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
               className={tx(
-                "py-1 px-1.5 rounded-md user-select-none flex justify-between items-center group",
-                section.id === currentSectionId
-                  ? "bg-upstart-50 dark:bg-white/10 font-bold cursor-default"
-                  : "hover:bg-gray-50 dark:hover:bg-white/10 cursor-pointer",
+                "py-2 px-1 flex flex-col gap-1 text-sm text-[80%] scrollbar-thin max-h-[calc(50cqh-5rem)] overflow-y-auto",
+                // snapshot.isDraggingOver && "overflow-y-hidden",
               )}
-              onClick={() => {
-                setSelectedBrickId();
-                setSelectedSectionId(section.id);
-              }}
-              onMouseEnter={() => setHoverElement({ type: "section", id: section.id })}
             >
-              <span>Section {section.label ?? "Unnamed"}</span>
-              <RxDragHandleHorizontal className="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-row-resize opacity-70 group-hover:opacity-100 transition-opacity" />
+              {sections.map((section, index) => (
+                <Draggable
+                  key={`hierarchy_${section.id}`}
+                  draggableId={`hierarchy_${section.id}`}
+                  index={index}
+                >
+                  {(provided, snapshot) => (
+                    <div
+                      key={section.id}
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      className={tx(
+                        "flex flex-col grow gap-px rounded group hover:(outline outline-upstart-100) ",
+                        snapshot.isDragging && "outline outline-2 outline-upstart-400 bg-upstart-400/10",
+                      )}
+                    >
+                      <div
+                        className={tx(
+                          "py-1 px-1.5 rounded-md select-none flex justify-between items-center group",
+                          section.id === currentSectionId
+                            ? "bg-upstart-500 text-white font-bold cursor-default"
+                            : "hover:bg-gray-50 dark:hover:bg-white/10 cursor-pointer",
+                        )}
+                        onClick={() => {
+                          setSelectedBrickId();
+                          setSelectedSectionId(section.id);
+                        }}
+                        onMouseEnter={() => setHoverElement({ type: "section", id: section.id })}
+                      >
+                        <span>Section {section.label ?? "Unnamed"}</span>
+                        <div {...provided.dragHandleProps}>
+                          <RxDragHandleHorizontal className="w-5 h-5  cursor-row-resize opacity-60 group-hover:opacity-80 transition-opacity" />
+                        </div>
+                      </div>
+                      <Droppable
+                        droppableId={`${section.id}"-hierarchy`}
+                        type="brick-hirerarchy"
+                        direction="vertical"
+                      >
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                            className={tx(
+                              "flex flex-col gap-px ml-2",
+                              // snapshot.isDraggingOver && "overflow-y-hidden",
+                            )}
+                          >
+                            {mapBricks(section.bricks)}
+                          </div>
+                        )}
+                      </Droppable>
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
             </div>
-            <div className="flex flex-col gap-px ml-2">{mapBricks(section.bricks)}</div>
-          </div>
-        ))}
-      </div>
+          )}
+        </Droppable>
+      </DragDropContext>
     </div>
   );
 }

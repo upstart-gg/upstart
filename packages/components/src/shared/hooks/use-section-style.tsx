@@ -93,6 +93,9 @@ function getSectionEditorStyles({ section, editable, selected, previewMode }: Us
         & [data-floating-ui-portal] {
           display: none;
         }
+        & .resizable-handle {
+          display: none;
+        }
       }`,
   ];
 }
