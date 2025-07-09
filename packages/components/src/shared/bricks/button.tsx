@@ -8,6 +8,7 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick }, r
   const styles = useBrickStyle<Manifest>(brick);
   const { props } = brick;
   return (
+    <div className={tx("flex flex-1", props.justifyContent)}>
     <button
       type="button"
       className={tx("btn", styles.default, props.variants)}
@@ -16,6 +17,7 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick }, r
     >
       {props.label}
     </button>
+    </div>
   );
 });
 

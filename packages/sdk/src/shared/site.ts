@@ -1,12 +1,12 @@
 import { Type, type Static } from "@sinclair/typebox";
-import { pageSchema } from "./page";
-import { pageInfoSchema, sitemapSchema } from "./sitemap";
-import { defaultAttributesSchema, type AttributesSchema, resolveAttributes } from "./attributes";
-import { datasourcesMap } from "./datasources/types";
-import { datarecordsMap } from "./datarecords/types";
-import { defaultTheme, themeSchema } from "./theme";
-import { sitePrompt } from "./prompt";
+import { defaultAttributesSchema, resolveAttributes, type AttributesSchema } from "./attributes";
 import { generateId, type Section } from "./bricks";
+import { datarecordsMap } from "./datarecords/types";
+import { datasourcesMap } from "./datasources/types";
+import { pageSchema } from "./page";
+import { sitePrompt } from "./prompt";
+import { pageInfoSchema, sitemapSchema } from "./sitemap";
+import { defaultTheme, themeSchema } from "./theme";
 
 export const siteSchema = Type.Object({
   id: Type.String(),
@@ -59,6 +59,162 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
       sitemap: [],
       attributes: defaultAttributesSchema,
       attr: resolveAttributes(),
+      datarecords: {
+        "a7f26d80-d68e-4b7a-a4a3-e41c454670ce": {
+          id: "a7f26d80-d68e-4b7a-a4a3-e41c454670ce",
+          label: "Simple Datarecord",
+          schema: {
+            type: "object",
+            properties: {
+              lastName: {
+                type: "string",
+                title: "Last Name",
+                "ui:placeholder": "Enter your last name",
+                metadata: {
+                  order: 0,
+                },
+              },
+              firstName: {
+                type: "string",
+                title: "First Name",
+                "ui:placeholder": "Enter your first name",
+                metadata: {
+                  order: 1,
+                },
+              },
+            },
+          },
+          provider: "internal",
+        },
+        "aacfe76d-4309-466c-83ad-fda8b02b043d": {
+          id: "aacfe76d-4309-466c-83ad-fda8b02b043d",
+          label: "Complex Datarecord",
+          schema: {
+            type: "object",
+            required: ["firstName", "lastName"],
+            properties: {
+              lastName: {
+                type: "string",
+                title: "Last Name",
+                metadata: {
+                  order: 1,
+                },
+              },
+              firstName: {
+                type: "string",
+                title: "First Name",
+                metadata: {
+                  order: 0,
+                },
+              },
+              multiline2: {
+                type: "string",
+                title: "Message",
+                metadata: {
+                  order: 4,
+                  "ui:multiline": true,
+                },
+                maxLength: 30,
+                minLength: 1,
+              },
+              age: {
+                type: "number",
+                title: "age",
+                minimum: 1,
+                metadata: {
+                  order: 2,
+                },
+              },
+              url: {
+                type: "string",
+                title: "personal web site",
+                format: "uri",
+                metadata: {
+                  order: 3,
+                  "ui:placeholder": "https://mysite.example",
+                },
+                description: "your personal website url",
+              },
+              agree: {
+                type: "boolean",
+                title: "agree",
+                metadata: {
+                  order: 5,
+                },
+              },
+              favoriteColor: {
+                enum: ["blue", "green", "red", "yellow", "purple"],
+                type: "string",
+                title: "Favorite Color",
+                metadata: {
+                  order: 6,
+                },
+                description: "Select your favorite color",
+              },
+              favoriteSeason: {
+                enum: ["spring", "summer", "autumn", "winter"],
+                type: "string",
+                title: "Favorite Season",
+                metadata: {
+                  order: 6,
+                  "ui:widget": "radio",
+                },
+                description: "Select your favorite season",
+              },
+              favoriteMusic: {
+                enum: ["technology", "politics", "sports", "music", "movies"],
+                type: "string",
+                title: "Interests",
+                metadata: {
+                  order: 6,
+                  "ui:widget": "checkbox",
+                },
+                description: "What kind of subjects are you interested in?",
+              },
+              registrationDate: {
+                type: "string",
+                title: "Registration date",
+                format: "date",
+                metadata: {
+                  order: 7,
+                },
+              },
+              email: {
+                type: "string",
+                title: "Email",
+                format: "email",
+                metadata: {
+                  order: 8,
+                },
+              },
+              address: {
+                type: "string",
+                title: "Address",
+                metadata: {
+                  order: 9,
+                },
+              },
+              multiline1: {
+                type: "string",
+                title: "some text",
+                metadata: {
+                  order: 10,
+                  "ui:multiline": true,
+                },
+              },
+              datetimes: {
+                type: "string",
+                title: "A datetime",
+                format: "date-time",
+                metadata: {
+                  order: 11,
+                },
+              },
+            },
+          },
+          provider: "internal",
+        },
+      },
     },
     // we need a fake page
     pages: [
@@ -88,9 +244,42 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             ],
           },
           {
+            id: `s_${generateId()}`,
+            label: "Form",
+            order: 2,
+            props: {
+              fillSpace: true,
+              justifyContent: "justify-center",
+            },
+            bricks: [
+              {
+                id: generateId(),
+                type: "form",
+                props: {
+                  padding: "p-4",
+                  datarecordId: "a7f26d80-d68e-4b7a-a4a3-e41c454670ce",
+                  title: "Simple Form",
+                  intro: "This is a simple form to collect user information.",
+                  buttonLabel: "Register",
+                  align: "horizontal",
+                },
+              },{
+                id: generateId(),
+                type: "form",
+                props: {
+                  padding: "p-4",
+                  datarecordId: "aacfe76d-4309-466c-83ad-fda8b02b043d",
+                  title: "Complex Form",
+                  intro: "This is a complex form with various field types.",
+                  buttonLabel: "Submit Form",
+                },
+              },
+            ],
+          },
+          {
             id: `s_content-${generateId()}`,
             label: "Content",
-            order: 2,
+            order: 3,
             props: {},
             bricks: [
               {
@@ -196,7 +385,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           {
             id: `s_content-${generateId()}`,
             label: "Bottom",
-            order: 3,
+            order: 4,
             props: {},
             bricks: [
               {

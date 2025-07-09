@@ -203,7 +203,6 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    console.log("editable value", editable);
     e.preventDefault();
     if (editable) {
       console.warn("Form is editable, submission is disabled");
@@ -215,11 +214,8 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
       return;
     }
 
-    console.log("Form submitted:", formData);
-
-    // Créer un FormData à partir des données du formulaire
+    // Create FormData from the form
     const data = new FormData(e.target as HTMLFormElement);
-    console.log("Form data to submit:", Object.fromEntries(data.entries()));
     const postUrl = !editable ? new URL(window.location.href) : "http://localhost:8081/submit";
     fetch(postUrl, {
       method: "POST",
@@ -268,17 +264,16 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   return (
     <div ref={ref} className={tx("max-w-full flex-1", Object.values(styles))}>
       {title && <h2 className="form-title text-xl font-semibold mb-4">{title}</h2>}
-      {intro && <p className="form-intro text-gray-600 mb-6">{intro}</p>}
-
-      <div className={tx(align === "horizontal" ? "space-x-4" : "space-y-4")}>
-        <form onSubmit={handleSubmit} className="datarecord-form">
-          <input id={"datarecord-id"} name="datarecord-id" type="hidden" value={datarecordId} />
+      {intro && <p className="form-intro  mb-6">{intro}</p>}
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <input id={"datarecord-id"} name="datarecord-id" type="hidden" value={datarecordId} />
+        <div className={tx("flex", align === "horizontal" ? "flex-row flex-wrap gap-4" : "flex-col gap-2")}>
           {fields}
-          <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: "1rem" }}>
-            <button type="submit">{buttonLabel || "Submit"}</button>
-          </div>
-        </form>
-      </div>
+        </div>
+        <div className="flex justify-center pt-1">
+          <button type="submit" className="btn border border-gray-300 rounded-xl">{buttonLabel || "Submit"}</button>
+        </div>
+      </form>
     </div>
   );
 });

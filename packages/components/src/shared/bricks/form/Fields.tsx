@@ -11,6 +11,35 @@ export interface BaseFieldProps {
   description?: string;
 }
 
+interface GenericFieldProps {
+  fieldName: string;
+  title: string;
+  required: boolean;
+  description?: string;
+  children: React.ReactNode;
+}
+
+const inputClassname =
+  "px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500";
+
+const GenericFieldComponent: FC<GenericFieldProps> = ({
+  fieldName,
+  title,
+  required,
+  description,
+  children,
+}) => {
+  return (
+    <div className="flex-1 flex flex-col gap-1">
+      <label htmlFor={fieldName} className="text-sm font-medium">
+        {title} {required && <span className="text-red-500">*</span>}
+      </label>
+      {/* {description && <p className="text-xs text-gray-500">{description}</p>} */}
+      {children}
+    </div>
+  );
+};
+
 export const BooleanField: FC<BaseFieldProps> = ({
   fieldName,
   fieldSchema,
@@ -23,7 +52,7 @@ export const BooleanField: FC<BaseFieldProps> = ({
   const booleanValue = typeof value === "boolean" ? value : false;
 
   return (
-    <div className="field-container space-y-2">
+    <GenericFieldComponent fieldName={fieldName} title={title} required={required} description={description}>
       <div className="flex items-center space-x-3">
         <input
           id={fieldName}
@@ -38,8 +67,7 @@ export const BooleanField: FC<BaseFieldProps> = ({
           {title} {required && <span className="text-red-500">*</span>}
         </label>
       </div>
-      {description && <p className="text-xs text-gray-500">{description}</p>}
-    </div>
+    </GenericFieldComponent>
   );
 };
 
@@ -55,10 +83,7 @@ export const NumberField: FC<BaseFieldProps> = ({
   const numberValue = typeof value === "number" ? value : "";
 
   return (
-    <div className="field-container space-y-2">
-      <label htmlFor={fieldName} className="block text-sm font-medium text-gray-700">
-        {title} {required && <span className="text-red-500">*</span>}
-      </label>
+    <GenericFieldComponent fieldName={fieldName} title={title} required={required} description={description}>
       <input
         id={fieldName}
         name={fieldName}
@@ -74,8 +99,7 @@ export const NumberField: FC<BaseFieldProps> = ({
         required={required}
         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
       />
-      {description && <p className="text-xs text-gray-500">{description}</p>}
-    </div>
+    </GenericFieldComponent>
   );
 };
 
@@ -102,6 +126,7 @@ export const SelectField: FC<BaseFieldProps> = ({
           <legend className="block text-sm font-medium text-gray-700">
             {title} {required && <span className="text-red-500">*</span>}
           </legend>
+        {/* {description && <p className="text-xs text-gray-500 mt-2">{description}</p>} */}
           <div className="space-y-2 mt-2">
             {options.map((option) => (
               <label key={option} className="flex items-center space-x-2">
@@ -109,7 +134,7 @@ export const SelectField: FC<BaseFieldProps> = ({
                   type="checkbox"
                   name={fieldName}
                   value={option}
-                  checked={stringValue === option}
+                  // checked={stringValue === option}
                   onChange={(e) => onChange(e.target.checked ? e.target.value : "")}
                   required={required}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
@@ -119,7 +144,6 @@ export const SelectField: FC<BaseFieldProps> = ({
             ))}
           </div>
         </fieldset>
-        {description && <p className="text-xs text-gray-500 mt-2">{description}</p>}
       </div>
     );
   }
@@ -131,6 +155,7 @@ export const SelectField: FC<BaseFieldProps> = ({
           <legend className="block text-sm font-medium text-gray-700">
             {title} {required && <span className="text-red-500">*</span>}
           </legend>
+          {/* {description && <p className="text-xs text-gray-500 mt-2">{description}</p>} */}
           <div className="space-y-2 mt-2">
             {options.map((option) => (
               <label key={option} className="flex items-center space-x-2">
@@ -148,23 +173,20 @@ export const SelectField: FC<BaseFieldProps> = ({
             ))}
           </div>
         </fieldset>
-        {description && <p className="text-xs text-gray-500 mt-2">{description}</p>}
       </div>
     );
   }
 
   return (
-    <div className="field-container space-y-2">
-      <label htmlFor={fieldName} className="block text-sm font-medium text-gray-700">
-        {title} {required && <span className="text-red-500">*</span>}
-      </label>
+    <GenericFieldComponent fieldName={fieldName} title={title} required={required} description={description}>
+      {/* {description && <p className="text-xs text-gray-500 mt-2">{description}</p>} */}
       <select
         id={fieldName}
         name={fieldName}
         value={stringValue}
         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onChange(e.target.value)}
         required={required}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className={inputClassname}
       >
         <option value="" disabled>
           {(fieldSchema["ui:placeholder"] as string) ||
@@ -177,8 +199,7 @@ export const SelectField: FC<BaseFieldProps> = ({
           </option>
         ))}
       </select>
-      {description && <p className="text-xs text-gray-500">{description}</p>}
-    </div>
+    </GenericFieldComponent>
   );
 };
 
@@ -194,10 +215,7 @@ export const EmailField: FC<BaseFieldProps> = ({
   const stringValue = typeof value === "string" ? value : "";
 
   return (
-    <div className="field-container space-y-2">
-      <label htmlFor={fieldName} className="block text-sm font-medium text-gray-700">
-        {title} {required && <span className="text-red-500">*</span>}
-      </label>
+    <GenericFieldComponent fieldName={fieldName} title={title} required={required} description={description}>
       <input
         id={fieldName}
         name={fieldName}
@@ -206,10 +224,9 @@ export const EmailField: FC<BaseFieldProps> = ({
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
         placeholder={fieldSchema["ui:placeholder"] as string | "email@example.com"}
         required={required}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className={inputClassname}
       />
-      {description && <p className="text-xs text-gray-500">{description}</p>}
-    </div>
+    </GenericFieldComponent>
   );
 };
 
@@ -225,22 +242,18 @@ export const UrlField: FC<BaseFieldProps> = ({
   const stringValue = typeof value === "string" ? value : "";
 
   return (
-    <div className="field-container space-y-2">
-      <label htmlFor={fieldName} className="block text-sm font-medium text-gray-700">
-        {title} {required && <span className="text-red-500">*</span>}
-      </label>
+    <GenericFieldComponent fieldName={fieldName} title={title} required={required} description={description}>
       <input
         id={fieldName}
         name={fieldName}
         type="url"
         value={stringValue}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
-        placeholder={fieldSchema["ui:placeholder"] as string | "https://example.com"}
+        placeholder={fieldSchema["ui:placeholder"]}
         required={required}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className={inputClassname}
       />
-      {description && <p className="text-xs text-gray-500">{description}</p>}
-    </div>
+    </GenericFieldComponent>
   );
 };
 
@@ -256,10 +269,7 @@ export const DateField: FC<BaseFieldProps> = ({
   const stringValue = typeof value === "string" ? value : "";
 
   return (
-    <div className="field-container space-y-2">
-      <label htmlFor={fieldName} className="block text-sm font-medium text-gray-700">
-        {title} {required && <span className="text-red-500">*</span>}
-      </label>
+    <GenericFieldComponent fieldName={fieldName} title={title} required={required} description={description}>
       <input
         id={fieldName}
         name={fieldName}
@@ -267,10 +277,9 @@ export const DateField: FC<BaseFieldProps> = ({
         value={stringValue}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
         required={required}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className={inputClassname}
       />
-      {description && <p className="text-xs text-gray-500">{description}</p>}
-    </div>
+    </GenericFieldComponent>
   );
 };
 
@@ -286,10 +295,7 @@ export const DateTimeField: FC<BaseFieldProps> = ({
   const stringValue = typeof value === "string" ? value : "";
 
   return (
-    <div className="field-container space-y-2">
-      <label htmlFor={fieldName} className="block text-sm font-medium text-gray-700">
-        {title} {required && <span className="text-red-500">*</span>}
-      </label>
+    <GenericFieldComponent fieldName={fieldName} title={title} required={required} description={description}>
       <input
         id={fieldName}
         name={fieldName}
@@ -297,10 +303,9 @@ export const DateTimeField: FC<BaseFieldProps> = ({
         value={stringValue}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
         required={required}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className={inputClassname}
       />
-      {description && <p className="text-xs text-gray-500">{description}</p>}
-    </div>
+    </GenericFieldComponent>
   );
 };
 
@@ -316,22 +321,20 @@ export const StringField: FC<BaseFieldProps> = ({
   const stringValue = typeof value === "string" ? value : "";
 
   return (
-    <div className="field-container">
-      <label htmlFor={fieldName} className="block text-sm font-medium text-gray-700">
-        {title} {required && <span className="text-red-500">*</span>}
-      </label>
+    <GenericFieldComponent fieldName={fieldName} title={title} required={required} description={description}>
       <input
         id={fieldName}
         name={fieldName}
+        type="text"
         value={stringValue}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
         placeholder={fieldSchema["ui:placeholder"] as string | undefined}
         minLength={fieldSchema.minLength as number | undefined}
         maxLength={fieldSchema.maxLength as number | undefined}
         required={required}
+        className={inputClassname}
       />
-      {description && <p className="text-xs text-gray-500">{description}</p>}
-    </div>
+    </GenericFieldComponent>
   );
 };
 
@@ -347,10 +350,7 @@ export const TextareaField: FC<BaseFieldProps> = ({
   const stringValue = typeof value === "string" ? value : "";
 
   return (
-    <div className="field-container">
-      <label htmlFor={fieldName} className="block text-sm font-medium text-gray-700">
-        {title} {required && <span className="text-red-500">*</span>}
-      </label>
+    <GenericFieldComponent fieldName={fieldName} title={title} required={required} description={description}>
       <textarea
         id={fieldName}
         name={fieldName}
@@ -361,9 +361,8 @@ export const TextareaField: FC<BaseFieldProps> = ({
         maxLength={fieldSchema.maxLength as number | undefined}
         required={required}
         rows={4}
-        className="!mt-1"
+        className={inputClassname}
       />
-      {description && <p className="text-xs text-gray-500">{description}</p>}
-    </div>
+    </GenericFieldComponent>
   );
 };
