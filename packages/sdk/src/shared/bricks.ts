@@ -1,15 +1,12 @@
-import { type TObject, Type, type Static } from "@sinclair/typebox";
+import { Type, type Static, type TObject } from "@sinclair/typebox";
 import { customAlphabet } from "nanoid";
 import { defaultProps } from "./bricks/manifests/all-manifests";
-import { backgroundRef } from "./bricks/props/background";
-import { borderRef } from "./bricks/props/border";
-import { colorPresetRef, presetRef } from "./bricks/props/preset";
-import { merge } from "lodash-es";
-import { cssLength, cssLengthRef } from "./bricks/props/css-length";
+import { cssLengthRef } from "./bricks/props/css-length";
 import { enumProp } from "./bricks/props/enum";
-import { sectionLayout } from "./bricks/props/container";
-import { StringEnum } from "./utils/string-enum";
+import { colorPresetRef } from "./bricks/props/preset";
+import { mergeIgnoringArrays } from "./utils/merge";
 import { getSchemaObjectDefaults } from "./utils/schema";
+import { StringEnum } from "./utils/string-enum";
 
 /**
  * Generates a unique identifier for bricks.
@@ -393,7 +390,7 @@ export function processSections(sections: Section[]) {
   return sections.map((section) => {
     return {
       ...section,
-      props: merge({}, sectionDefaultprops, section.props),
+      props: mergeIgnoringArrays({}, sectionDefaultprops, section.props),
       bricks: section.bricks.map(processBrick).filter(Boolean) as Brick[],
     } as const;
   });
@@ -410,7 +407,7 @@ export function processBrick<T extends Brick>(brick: T): T | false {
   }
   const result = {
     ...brick,
-    props: merge({}, defProps.props, {
+    props: mergeIgnoringArrays({}, defProps.props, {
       ...brick.props,
       ...(brick.props.$children
         ? { $children: (brick.props.$children as T[]).map(processBrick).filter(Boolean) }

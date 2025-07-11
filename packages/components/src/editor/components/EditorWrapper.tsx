@@ -108,7 +108,7 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
         siteAttributes: site.attributes,
         datasources: site.datasources,
         datarecords: site.datarecords,
-        pages: pages[0].id === "_default_" ? [] : pages,
+        pages,
         // todo: pass the appropriate data for the page
         data: {},
         theme: site.theme,
