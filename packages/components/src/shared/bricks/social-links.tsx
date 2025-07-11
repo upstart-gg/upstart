@@ -41,8 +41,8 @@ const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, e
   const justifyContent = props.justifyContent || "justify-center";
 
   // Debug: Check what we have
-  console.log("[SocialLinks] styles:", styles);
-  console.log("[SocialLinks] props.color:", props.color);
+  // console.log("[SocialLinks] styles:", styles);
+  // console.log("[SocialLinks] props.color:", props.color);
 
   // Determine display style - default to inline if no display variant is specified
   const displayClass = isBlock

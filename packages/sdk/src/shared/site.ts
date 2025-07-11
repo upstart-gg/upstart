@@ -262,7 +262,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           },
           {
             id: `s_${generateId()}`,
-            label: "Form",
+            label: "Gallery",
             order: ++order,
             props: {
               // fillSpace: true,
@@ -270,18 +270,19 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               alignItems: "items-start",
             },
             bricks: [
-              {
-                id: generateId(),
-                type: "form",
-                props: {
-                  padding: "p-4",
-                  datarecordId: "a7f26d80-d68e-4b7a-a4a3-e41c454670ce",
-                  title: "Simple Form",
-                  intro: "This is a simple form to collect user information.",
-                  buttonLabel: "Register",
-                  align: "horizontal",
-                },
-              },
+
+            ],
+          },
+          {
+            id: `s_${generateId()}`,
+            label: "SocialLinks",
+            order: ++order,
+            props: {
+              // fillSpace: true,
+              justifyContent: "justify-center",
+              alignItems: "items-start",
+            },
+            bricks: [
               {
                 type: "social-links",
                 props: {
@@ -304,7 +305,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                     },
                   ],
                   variants: ["icon-only", "display-inline"],
-                  height: "1380.6000000000001px",
+                  height: "138.6000000000001px",
                 },
                 id: generateId(),
               },
@@ -317,6 +318,30 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   type: "button",
                 },
                 id: generateId(),
+              },
+            ],
+          },
+          {
+            id: `s_${generateId()}`,
+            label: "Form",
+            order: ++order,
+            props: {
+              // fillSpace: true,
+              justifyContent: "justify-center",
+              alignItems: "items-start",
+            },
+            bricks: [
+              {
+                id: generateId(),
+                type: "form",
+                props: {
+                  padding: "p-4",
+                  datarecordId: "a7f26d80-d68e-4b7a-a4a3-e41c454670ce",
+                  title: "Simple Form",
+                  intro: "This is a simple form to collect user information.",
+                  buttonLabel: "Register",
+                  align: "horizontal",
+                },
               },
               {
                 id: generateId(),
