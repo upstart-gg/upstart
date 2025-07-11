@@ -1072,7 +1072,7 @@ export const createDraftStore = (
               // 1. Remove brick from its current parent
               if (currentParentId) {
                 // Brick is currently in a container
-                const currentParent = state.getBrick(currentParentId);
+                const currentParent = getBrickFromDraft(currentParentId, state);
                 if (currentParent?.props.$children) {
                   // Filter out the brick from current parent's children
                   currentParent.props.$children = (currentParent.props.$children as Brick[]).filter(
@@ -1148,7 +1148,7 @@ export const createDraftStore = (
               // 1. Remove brick from its current location
               if (currentParentId) {
                 // Brick is currently in a container
-                const currentParent = state.getBrick(currentParentId);
+                const currentParent = getBrickFromDraft(currentParentId, state);
                 if (currentParent?.props.$children) {
                   currentParent.props.$children = (currentParent.props.$children as Brick[]).filter(
                     (child) => child.id !== id,
@@ -1199,6 +1199,9 @@ export const createDraftStore = (
               updateChildMappings(id, sectionId, null);
             }),
 
+          /**
+           * @deprecated Use getBrickFromDraft instead
+           */
           getBrick: (id) => {
             return _get().brickMap.get(id)?.brick;
           },
@@ -1603,18 +1606,7 @@ export const useSection = (sectionId?: string) => {
 
 export const useSectionByBrickId = (brickId: string) => {
   const ctx = useDraftStoreContext();
-  return useStore(ctx, (state) => {
-    // const brick = state.brickMap.get(brickId);
-    return getBrickSection(brickId, state);
-    // if (!brick) {
-    //   return null;
-    // }
-    // const section = state.sections.find((s) => s.id === brick.sectionId);
-    // if (!section) {
-    //   return null;
-    // }
-    // return section;
-  });
+  return useStore(ctx, (state) => getBrickSection(brickId, state));
 };
 
 export const useAttributes = () => {
