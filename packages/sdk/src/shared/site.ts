@@ -7,7 +7,6 @@ import { pageSchema } from "./page";
 import { sitePrompt } from "./prompt";
 import { pageInfoSchema, sitemapSchema } from "./sitemap";
 import { defaultTheme, themeSchema } from "./theme";
-import { backgroundColor } from "./bricks/props/background";
 
 export const siteSchema = Type.Object({
   id: Type.String(),
@@ -58,7 +57,22 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
       sitePrompt,
       theme: defaultTheme,
       themes: [],
-      sitemap: [],
+      sitemap: [
+        {
+          id: "_default_",
+          label: "First page with really really long name that should be truncated",
+          path: "/",
+          tags: [],
+          sectionsPlan: [],
+        },
+        {
+          id: "_page_2",
+          label: "Second page with really really long name that should be truncated",
+          path: "/secondPage",
+          tags: [],
+          sectionsPlan: [],
+        },
+      ],
       attributes: defaultAttributesSchema,
       attr: resolveAttributes(),
       datarecords: {
@@ -251,8 +265,9 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             label: "Form",
             order: ++order,
             props: {
-              fillSpace: true,
+              // fillSpace: true,
               justifyContent: "justify-center",
+              alignItems: "items-start",
             },
             bricks: [
               {
@@ -266,7 +281,44 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   buttonLabel: "Register",
                   align: "horizontal",
                 },
-              },{
+              },
+              {
+                type: "social-links",
+                props: {
+                  alignSelf: "self-auto",
+                  links: [
+                    {
+                      href: "https://facebook.com",
+                      label: "Facebook",
+                      icon: "mdi:facebook",
+                    },
+                    {
+                      href: "https://instagram.com",
+                      label: "Instagram",
+                      icon: "mdi:instagram",
+                    },
+                    {
+                      href: "https://x.com",
+                      label: "X",
+                      icon: "mdi:twitter",
+                    },
+                  ],
+                  variants: ["icon-only", "display-inline"],
+                  height: "1380.6000000000001px",
+                },
+                id: generateId(),
+              },
+              {
+                type: "button",
+                props: {
+                  alignSelf: "self-auto",
+                  label: "My button",
+                  justifyContent: "justify-center",
+                  type: "button",
+                },
+                id: generateId(),
+              },
+              {
                 id: generateId(),
                 type: "form",
                 props: {
@@ -285,7 +337,251 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             order: ++order,
             props: {
               minHeight: "400px",
-              backgroundColor: "secondary-dark",
+              // backgroundColor: "secondary-dark",
+            },
+            bricks: [
+              {
+                id: `b_${generateId()}`,
+                type: "hero",
+                props: {},
+              },
+            ],
+          },
+          {
+            id: `s_content-${generateId()}`,
+            label: "Content",
+            order: ++order,
+            props: {},
+            bricks: [
+              {
+                id: `b_${generateId()}`,
+                type: "text",
+                props: {
+                  preset: "subtle-accent",
+                  content: "Irure dolor sit amet, consectetur adipiscing elit.",
+                },
+              },
+              // {
+              //   id: `b_${generateId()}`,
+              //   type: "map",
+              //   props: {
+              //     location: {
+              //       lat: 37.7749,
+              //       lng: -122.4194,
+              //       tooltip: "San Francisco, CA",
+              //       address: "San Francisco, CA",
+              //     },
+              //   },
+              // },
+              {
+                id: `b_${generateId()}`,
+                type: "vbox",
+                props: {
+                  $children: [
+                    // {
+                    //   id: `b_${generateId()}`,
+                    //   type: "map",
+                    //   props: {
+                    //     location: {
+                    //       lat: 37.7749,
+                    //       lng: -122.4194,
+                    //       tooltip: "San Francisco, CA",
+                    //       address: "San Francisco, CA",
+                    //     },
+                    //   },
+                    // },
+                    {
+                      id: `b_${generateId()}`,
+                      type: "text",
+                      props: {
+                        preset: "subtle-accent",
+                        content: "Irure dolor sit amet, consectetur adipiscing elit.",
+                      },
+                    },
+                    {
+                      id: `b_${generateId()}`,
+                      type: "text",
+                      props: {
+                        preset: "subtle-accent",
+                        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                      },
+                    },
+                  ],
+                },
+              },
+              {
+                id: `b_${generateId()}`,
+                type: "text",
+                props: {
+                  preset: "subtle-accent",
+                  content: "Irure dolor sit amet, consectetur adipiscing elit.",
+                },
+              },
+              // {
+              //   id: `b_${generateId()}`,
+              //   type: "card",
+              //   props: {
+              //     cardTitle: "Welcome to My Site",
+              //     cardBody: "This is a sample card body. You can edit this content.",
+              //     cardImage: {
+              //       src: "https://images.unsplash.com/photo-1636828982375-a4ec8b809e5e?q=80&w=3456&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+              //       alt: "Sample Card Image",
+              //     },
+              //   },
+              // },
+              {
+                id: `b_${generateId()}`,
+                type: "spacer",
+                props: {
+                  width: "20px",
+                },
+                mobileProps: {
+                  width: "100%",
+                },
+              },
+              {
+                id: `b_${generateId()}`,
+                type: "card",
+                props: {
+                  cardTitle: "Welcome to My Site",
+                  cardBody: "This is a sample card body. You can edit this content.",
+                  cardImage: {
+                    src: "https://placehold.co/300x200@2x/EEEEEE/333333/svg?text=Sample",
+                    alt: "Sample",
+                  },
+                },
+              },
+            ],
+          },
+          {
+            id: `s_content-${generateId()}`,
+            label: "Bottom",
+            order: ++order,
+            props: {},
+            bricks: [
+              {
+                id: `b_${generateId()}`,
+                type: "footer",
+                props: {
+                  linksSections: [
+                    {
+                      sectionTitle: "Links",
+                      links: [
+                        { title: "About", url: "/about" },
+                        { title: "Contact", url: "/contact" },
+                        { title: "Privacy Policy", url: "/privacy" },
+                      ],
+                    },
+                    {
+                      sectionTitle: "Social",
+                      links: [
+                        { title: "Twitter", url: "https://twitter.com" },
+                        { title: "Facebook", url: "https://facebook.com" },
+                        { title: "Instagram", url: "https://instagram.com" },
+                      ],
+                    },
+                    {
+                      sectionTitle: "Legal",
+                      links: [
+                        { title: "Terms of Service", url: "/terms" },
+                        { title: "Cookie Policy", url: "/cookies" },
+                      ],
+                    },
+                    {
+                      sectionTitle: "Contact",
+                      links: [
+                        { title: "Email Us", url: "mailto:" },
+                        { title: "Support", url: "/support" },
+                      ],
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        ] satisfies Section[],
+        tags: [],
+        attributes: defaultAttributesSchema,
+        attr: resolveAttributes(),
+      },
+      {
+        id: "_page_2",
+        label: "Second page with really really long name that should be truncated",
+        path: "/secondPage",
+        sections: [
+          {
+            id: `s_${generateId()}`,
+            label: "Top",
+            order: ++order,
+            props: {
+              purpose: "navbar",
+            },
+            bricks: [
+              {
+                id: generateId(),
+                type: "navbar",
+                props: {
+                  backgroundColor: "neutral-dark-gradient",
+                  brand: "My Site",
+                  navigation: {
+                    staticItems: [{ urlOrPageId: "/about" }, { urlOrPageId: "/contact" }],
+                  },
+                },
+              },
+            ],
+          },
+          {
+            id: `s_${generateId()}`,
+            label: "Form",
+            order: ++order,
+            props: {
+              // fillSpace: true,
+              justifyContent: "justify-center",
+            },
+            bricks: [
+              {
+                id: generateId(),
+                type: "form",
+                props: {
+                  padding: "p-4",
+                  datarecordId: "a7f26d80-d68e-4b7a-a4a3-e41c454670ce",
+                  title: "Simple Form",
+                  intro: "This is a simple form to collect user information.",
+                  buttonLabel: "Register",
+                  align: "horizontal",
+                },
+              },
+
+              {
+                type: "button",
+                props: {
+                  alignSelf: "self-auto",
+                  label: "My button",
+                  justifyContent: "justify-center",
+                  type: "button",
+                },
+                id: generateId(),
+              },
+              {
+                id: generateId(),
+                type: "form",
+                props: {
+                  padding: "p-4",
+                  datarecordId: "aacfe76d-4309-466c-83ad-fda8b02b043d",
+                  title: "Complex Form",
+                  intro: "This is a complex form with various field types.",
+                  buttonLabel: "Submit Form",
+                },
+              },
+            ],
+          },
+          {
+            id: `s_content-${generateId()}`,
+            label: "Hero",
+            order: ++order,
+            props: {
+              minHeight: "400px",
+              // backgroundColor: "secondary-dark",
             },
             bricks: [
               {

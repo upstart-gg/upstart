@@ -271,7 +271,9 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
           {fields}
         </div>
         <div className="flex justify-center pt-1">
-          <button type="submit" className="btn border border-gray-300 rounded-xl">{buttonLabel || "Submit"}</button>
+          <button type="submit" className="btn border border-gray-300 rounded-xl">
+            {buttonLabel || "Submit"}
+          </button>
         </div>
       </form>
     </div>

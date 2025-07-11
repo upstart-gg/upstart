@@ -10,11 +10,14 @@ import { BorderSideField } from "./fields/border-side";
 import ColorField from "./fields/color";
 import DatasourceRefField from "./fields/datasource-ref";
 import EnumField from "./fields/enum";
+import IconifyField from "./fields/iconify";
 import ImageField from "./fields/image";
 import { NumberField, SliderField } from "./fields/number";
 import { PagePaddingField, type TempPadding } from "./fields/padding";
+import { SocialLinksField } from "./fields/social-links";
 import { GeoAddressField, PathField, StringField, UrlOrPageIdField } from "./fields/string";
 import SwitchField from "./fields/switch";
+import VariantGroupField from "./fields/variant-group";
 
 // Import types
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
@@ -23,14 +26,14 @@ import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border"
 import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import type { GeolocationSettings } from "@upstart.gg/sdk/shared/bricks/props/geolocation";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
+import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 import { Tooltip } from "@upstart.gg/style-system/system";
 import clsx from "clsx";
+import ColorPresetField from "./fields/color-preset";
 import { CssLengthField } from "./fields/css-length";
 import { DatarecordField } from "./fields/datarecord";
 import { fieldLabel } from "./form-class";
-import ColorPresetField from "./fields/color-preset";
-import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
 
 export interface FieldFactoryOptions {
   brickId?: string;
@@ -352,6 +355,185 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       );
     }
 
+    case "array": {
+      const rawValue = get(formData, id);
+      // Only use default if the field has never been set, not when it's an empty array
+      const currentValue =
+        rawValue !== undefined ? (Array.isArray(rawValue) ? rawValue : []) : commonProps.schema.default || [];
+
+      // For simple arrays (like variants), we can create a field for each item
+      // or use a specialized component depending on the content
+      if (schema.items) {
+        const itemSchema = resolveSchema(schema.items);
+
+        // For arrays of objects, we need to create a field for each item
+        if (itemSchema.type === "object") {
+          // Special handling for Social Links
+          if (fieldName === "links" && itemSchema.properties?.href && itemSchema.properties?.icon) {
+            // Create a simple hash of the current data length and icons
+            const dataSignature = `${currentValue.length}-${currentValue
+              .map((item: unknown) => {
+                const typedItem = item as Record<string, unknown>;
+                return typedItem?.icon;
+              })
+              .join(",")}`;
+
+            return (
+              <SocialLinksField
+                key={`field-${id}-${dataSignature}`}
+                currentValue={currentValue}
+                onChange={(newArray: unknown[]) => onChange({ [id]: newArray }, id)}
+                itemSchema={itemSchema as TObject<TProperties>}
+                formSchema={commonProps.formSchema}
+                title={commonProps.title}
+                brickId={commonProps.brickId}
+                parents={options.parents}
+                fieldName={fieldName}
+                id={id}
+              />
+            );
+          }
+
+          return (
+            <div key={`field-${id}`} className="space-y-2">
+              {commonProps.title && (
+                <label className="block text-sm font-medium text-gray-700 mb-1">{commonProps.title}</label>
+              )}
+              {currentValue.map((item: unknown, index: number) => {
+                const itemId = `${id}[${index}]`;
+                return (
+                  <div key={itemId} className="border rounded p-2 space-y-2">
+                    {processObjectSchemaToFields({
+                      schema: itemSchema as TObject<TProperties>,
+                      formData: (item as Record<string, unknown>) || {},
+                      formSchema: commonProps.formSchema,
+                      onChange: (itemData, itemFieldId) => {
+                        const newArray = [...currentValue];
+                        const currentItem = (newArray[index] as Record<string, unknown>) || {};
+                        newArray[index] = { ...currentItem, ...itemData };
+                        onChange({ [id]: newArray }, id);
+                      },
+                      options: {
+                        brickId: commonProps.brickId,
+                        parents: [...(options.parents || []), `${fieldName}[${index}]`],
+                      },
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        }
+
+        // For arrays of Union/Literal (like button variants), create a multi-select field
+        if (
+          itemSchema.anyOf ||
+          itemSchema.oneOf ||
+          itemSchema.enum ||
+          (itemSchema as { union?: unknown[] }).union
+        ) {
+          const options =
+            itemSchema.anyOf ||
+            itemSchema.oneOf ||
+            itemSchema.enum ||
+            (itemSchema as { union?: unknown[] }).union ||
+            [];
+
+          // Check if options have ui:variant-type for grouped selection
+          const hasVariantTypes = options.some(
+            (option: unknown) => typeof option === "object" && option !== null && "ui:variant-type" in option,
+          );
+
+          if (hasVariantTypes) {
+            return (
+              <VariantGroupField
+                key={`field-${id}`}
+                currentValue={currentValue as string[]}
+                onChange={(value: string[] | null) => onChange({ [id]: value || [] }, id)}
+                {...commonProps}
+              />
+            );
+          }
+
+          // Fallback to original multi-select buttons for non-variant arrays
+          return (
+            <div key={`field-${id}`} className="space-y-2">
+              {commonProps.title && (
+                <label className="block text-sm font-medium text-gray-700 mb-1">{commonProps.title}</label>
+              )}
+              <div className="flex flex-wrap gap-1">
+                {options.map((option: string | { const: string; title?: string }) => {
+                  const value = typeof option === "string" ? option : option.const;
+                  const title = typeof option === "string" ? value : option.title || option.const;
+                  const isSelected = currentValue.includes(value);
+
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      className={`px-2 py-1 text-xs rounded border transition-colors ${
+                        isSelected
+                          ? "bg-blue-500 text-white border-blue-500"
+                          : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
+                      }`}
+                      onClick={() => {
+                        const newValue = isSelected
+                          ? currentValue.filter((v: string) => v !== value)
+                          : [...currentValue, value];
+                        onChange({ [id]: newValue }, id);
+                      }}
+                    >
+                      {title}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        }
+
+        // For arrays of other types, use the appropriate component based on item type
+        return (
+          <div key={`field-${id}`} className="space-y-2">
+            {commonProps.title && (
+              <label className="block text-sm font-medium text-gray-700 mb-1">{commonProps.title}</label>
+            )}
+            {currentValue.map((item: unknown, index: number) => {
+              const itemId = `${id}[${index}]`;
+              return createFieldComponent({
+                ...options,
+                fieldName: `${fieldName}[${index}]`,
+                fieldSchema: itemSchema,
+                id: itemId,
+                onChange: (itemData, itemFieldId) => {
+                  const newArray = [...currentValue];
+                  newArray[index] = Object.values(itemData)[0];
+                  onChange({ [id]: newArray }, id);
+                },
+              });
+            })}
+          </div>
+        );
+      }
+
+      // Fallback for arrays without items schema
+      console.warn("Array field without items schema:", fieldName, schema);
+      return null;
+    }
+
+    // TODO - iconify
+    case "iconify": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;
+      return (
+        <IconifyField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: string | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
     case "Function":
       return null;
 
@@ -404,7 +586,8 @@ export function processObjectSchemaToFields({
     }
 
     // Build the field ID
-    const id = parents.length ? `${parents.join(".")}.${fieldName}` : fieldName;
+    // For array items, use just the fieldName since formData is the item itself
+    const id = fieldName;
 
     // Create field component
     const fieldComponent = createFieldComponent({

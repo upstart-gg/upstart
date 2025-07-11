@@ -137,8 +137,8 @@ export default function NavBar() {
           id="switch-page-menu-btn"
           items={[
             { label: "New page", onClick: () => editorHelpers.onShowPopup?.("add-page") },
-              { label: "Duplicate page", onClick: () => editorHelpers.onShowPopup?.("duplicate-page") },
-              { type: "separator" as const },
+            { label: "Duplicate page", onClick: () => editorHelpers.onShowPopup?.("duplicate-page") },
+            { type: "separator" as const },
             ...(pages.length > 1 ? [{ type: "label", label: "Switch to page" } as const] : []),
             ...(pages.length > 1
               ? pages.map((page) => ({
@@ -307,7 +307,7 @@ export default function NavBar() {
           </span>
           <div className={tx("inline-flex gap-1 items-center")}>
             <HoverCard.Root>
-              <HoverCard.Trigger> 
+              <HoverCard.Trigger>
                 <button
                   type="button"
                   className={tx(

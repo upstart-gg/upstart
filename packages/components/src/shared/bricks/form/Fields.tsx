@@ -1,4 +1,5 @@
 import type { TSchema } from "@sinclair/typebox";
+import { tx } from "@upstart.gg/style-system/twind";
 import type { FC } from "react";
 
 export interface BaseFieldProps {
@@ -116,17 +117,26 @@ export const SelectField: FC<BaseFieldProps> = ({
   const stringValue = typeof value === "string" ? value : "";
   const widget = fieldSchema.metadata?.["ui:widget"] as "checkbox" | "radio" | "select" | undefined;
 
+  // Calculer la largeur minimale basée sur l'option la plus longue
+  const longestOption = options.reduce(
+    (longest, current) => (current.length > longest.length ? current : longest),
+    (fieldSchema["ui:placeholder"] as string) || "Choose an option",
+  );
+
+  // Estimer la largeur en caractères (approximation)
+  const estimatedWidth = Math.max(longestOption.length * 0.6 + 5, 10); // 0.6em par caractère + padding
+
   // Forcer le type checkbox s'il n'y a qu'une seule option
   const effectiveWidget = options.length === 1 ? "checkbox" : widget;
 
   if (effectiveWidget === "checkbox") {
     return (
-      <div className="field-container space-y-2">
+      <div className="flex-1 flex flex-col gap-1">
         <fieldset>
           <legend className="block text-sm font-medium text-gray-700">
             {title} {required && <span className="text-red-500">*</span>}
           </legend>
-        {/* {description && <p className="text-xs text-gray-500 mt-2">{description}</p>} */}
+          {/* {description && <p className="text-xs text-gray-500 mt-2">{description}</p>} */}
           <div className="space-y-2 mt-2">
             {options.map((option) => (
               <label key={option} className="flex items-center space-x-2">
@@ -150,9 +160,9 @@ export const SelectField: FC<BaseFieldProps> = ({
 
   if (effectiveWidget === "radio") {
     return (
-      <div className="field-container space-y-2">
+      <div className="flex-1 flex flex-col gap-1">
         <fieldset>
-          <legend className="block text-sm font-medium text-gray-700">
+          <legend className="text-sm font-medium">
             {title} {required && <span className="text-red-500">*</span>}
           </legend>
           {/* {description && <p className="text-xs text-gray-500 mt-2">{description}</p>} */}
@@ -186,12 +196,13 @@ export const SelectField: FC<BaseFieldProps> = ({
         value={stringValue}
         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onChange(e.target.value)}
         required={required}
-        className={inputClassname}
+        className={tx(inputClassname, "w-full")}
+        style={{ minWidth: `${estimatedWidth}rem` }}
       >
         <option value="" disabled>
           {(fieldSchema["ui:placeholder"] as string) ||
             (fieldSchema.description as string) ||
-            "Sélectionnez une option"}
+            "Choose an option"}
         </option>
         {options.map((option) => (
           <option key={option} value={option}>
