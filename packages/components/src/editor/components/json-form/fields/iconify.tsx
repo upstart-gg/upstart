@@ -1,6 +1,7 @@
 import { Popover } from "@upstart.gg/style-system/system";
+import type React from "react";
 import type { FC } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaBehance,
   FaDiscord,
@@ -89,7 +90,13 @@ import { FieldTitle } from "../field-factory";
 import type { FieldProps } from "./types";
 
 // Icon mapping with names and components
-const ICON_CATEGORIES = {
+export type IconCategory = "Actions" | "Navigation" | "Communication" | "Files" | "UI" | "Social";
+type IconComponent = React.ComponentType<{ className?: string }>;
+
+const ICON_CATEGORIES: Record<
+  IconCategory,
+  Array<{ name: string; component: IconComponent; title: string }>
+> = {
   Actions: [
     { name: "mdi:plus", component: MdAdd, title: "Add" },
     { name: "mdi:minus", component: MdRemove, title: "Remove" },
@@ -183,22 +190,34 @@ const ICON_CATEGORIES = {
   ],
 };
 
-const IconifyField: FC<FieldProps<string>> = ({
-  currentValue,
-  onChange,
-  title,
-  description,
-  placeholder,
-}) => {
+const IconifyField: FC<
+  FieldProps<string> & {
+    categories?: IconCategory[];
+  }
+> = ({ currentValue, onChange, title, description, placeholder, categories }) => {
+  // Filter available categories based on the categories prop
+  const availableCategories = categories
+    ? (Object.keys(ICON_CATEGORIES).filter((cat) =>
+        categories.includes(cat as IconCategory),
+      ) as IconCategory[])
+    : (Object.keys(ICON_CATEGORIES) as IconCategory[]);
+
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<keyof typeof ICON_CATEGORIES>("Actions");
+  const [selectedCategory, setSelectedCategory] = useState<IconCategory>(availableCategories[0] || "Actions");
+
+  // Update selected category if it's not in available categories
+  useEffect(() => {
+    if (!availableCategories.includes(selectedCategory)) {
+      setSelectedCategory(availableCategories[0] || "Actions");
+    }
+  }, [availableCategories, selectedCategory]);
 
   const handleIconSelect = (iconName: string) => {
     onChange(iconName);
     setIsOpen(false);
   };
 
-  // Find current icon for display
+  // Find current icon for display (search in all categories, not just filtered ones)
   const currentIcon = Object.values(ICON_CATEGORIES)
     .flat()
     .find((icon) => icon.name === currentValue);
@@ -225,18 +244,25 @@ const IconifyField: FC<FieldProps<string>> = ({
 
           <Popover.Content className="w-80 p-4 bg-white border border-gray-200 rounded-lg shadow-lg">
             <div className="space-y-3">
-              {/* Category selector */}
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value as keyof typeof ICON_CATEGORIES)}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded"
-              >
-                {Object.keys(ICON_CATEGORIES).map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
+              {/* Category selector - only show if there are multiple categories */}
+              {availableCategories.length > 1 && (
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value as IconCategory)}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded"
+                >
+                  {availableCategories.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              )}
+
+              {/* Show category title if only one category */}
+              {availableCategories.length === 1 && (
+                <div className="text-sm font-medium text-gray-700 text-center">{selectedCategory} Icons</div>
+              )}
 
               {/* Icon grid */}
               <div className="max-h-64 overflow-y-auto">

@@ -262,7 +262,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           },
           {
             id: `s_${generateId()}`,
-            label: "Gallery",
+            label: "Testimonial",
             order: ++order,
             props: {
               // fillSpace: true,
@@ -270,7 +270,24 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               alignItems: "items-start",
             },
             bricks: [
-
+              {
+                type: "testimonials",
+                props: {
+                  alignSelf: "self-auto",
+                  orientation: "horizontal",
+                  testimonials: [
+                    {
+                      author: "John Doe",
+                      text: "Amazing product!",
+                    },
+                  ],
+                  height: "518.3984375px",
+                  width: "12.467447916666668%",
+                  growHorizontally: false,
+                  lastTouched: 1752250001394,
+                },
+                id: `s_${generateId()}`,
+              },
             ],
           },
           {

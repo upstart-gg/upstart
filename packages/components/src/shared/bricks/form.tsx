@@ -9,6 +9,7 @@ import type { ReactNode } from "react";
 import { forwardRef, useState } from "react";
 import { useDatarecord } from "../../editor/hooks/use-datarecord";
 import { useBrickStyle } from "../hooks/use-brick-style";
+import { usePageTextColor } from "../hooks/use-page-text-color";
 import {
   BooleanField,
   DateField,
@@ -192,6 +193,7 @@ function processDatarecordSchemaToFields(
 const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
   const { brick } = props;
   const styles = useBrickStyle<Manifest>(brick);
+  const pageTextColor = usePageTextColor();
   const { title, intro, datarecordId, align = "vertical", buttonLabel, editable = true } = brick.props;
 
   const { datarecord, schema, error } = useDatarecord(datarecordId);
@@ -271,7 +273,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
           {fields}
         </div>
         <div className="flex justify-center pt-1">
-          <button type="submit" className="btn border border-gray-300 rounded-xl">
+          <button type="submit" className={tx("btn border border-gray-300 rounded-xl", pageTextColor)}>
             {buttonLabel || "Submit"}
           </button>
         </div>

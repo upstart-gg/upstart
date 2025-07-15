@@ -33,6 +33,7 @@ import clsx from "clsx";
 import ColorPresetField from "./fields/color-preset";
 import { CssLengthField } from "./fields/css-length";
 import { DatarecordField } from "./fields/datarecord";
+import type { IconCategory } from "./fields/iconify";
 import { fieldLabel } from "./form-class";
 
 export interface FieldFactoryOptions {
@@ -524,11 +525,13 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
     // TODO - iconify
     case "iconify": {
       const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;
+      const categories = commonProps.schema["ui:iconify-categories"] as IconCategory[] | undefined;
       return (
         <IconifyField
           key={`field-${id}`}
           currentValue={currentValue}
           onChange={(value: string | null) => onChange({ [id]: value }, id)}
+          categories={categories}
           {...commonProps}
         />
       );

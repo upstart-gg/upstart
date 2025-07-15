@@ -56,20 +56,13 @@ export const manifest = defineBrickManifest({
     ),
     label: string("Label", { default: "My button" }),
     justifyContent: Type.Optional(
-      StringEnum(
-        [
-          "justify-start",
-          "justify-center",
-          "justify-end",
-        ],
-        {
-          enumNames: ["Left", "Center", "Right"],
-          title: "Alignment",
-          "ui:placeholder": "Not specified",
-          default: "justify-center",
-          "ui:responsive": "desktop",
-        },
-      ),
+      StringEnum(["justify-start", "justify-center", "justify-end"], {
+        enumNames: ["Left", "Center", "Right"],
+        title: "Alignment",
+        "ui:placeholder": "Not specified",
+        default: "justify-center",
+        "ui:responsive": "desktop",
+      }),
     ),
     type: Type.Optional(
       StringEnum(["button", "submit", "reset"], {

@@ -4,10 +4,12 @@ import { toast } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import { forwardRef } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
+import { usePageTextColor } from "../hooks/use-page-text-color";
 import { renderIcon } from "../utils/icon-resolver";
 
 const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
+  const pageTextColor = usePageTextColor();
   const { props } = brick;
   const onClick = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>, link: { href: string }) => {
     e.preventDefault();
@@ -78,12 +80,11 @@ const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, e
               onClick(e, link);
             }}
             className={tx(
-              "btn",
-              "social-link-btn",
+              "btn social-link-btn",
               itemClass,
               "hover:opacity-80 transition-all duration-200",
               "border-0 bg-transparent p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800",
-              styles.color, // Apply color styles specifically to buttons
+              pageTextColor,
             )}
             aria-label={link.label || link.href}
             title={link.label || link.href}

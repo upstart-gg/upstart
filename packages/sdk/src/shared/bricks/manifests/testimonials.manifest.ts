@@ -1,15 +1,14 @@
-import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps } from "../props/helpers";
-import { string } from "../props/string";
 import { Type } from "@sinclair/typebox";
-import { textContentRef } from "../props/text";
-import { imageRef } from "../props/image";
 import { HiOutlineChatBubbleBottomCenter } from "react-icons/hi2";
-import type { BrickProps } from "../props/types";
+import { defineBrickManifest } from "~/shared/brick-manifest";
 import { backgroundRef } from "../props/background";
 import { borderRef } from "../props/border";
-import { paddingRef } from "../props/padding";
 import { shadowRef } from "../props/effects";
+import { defineProps } from "../props/helpers";
+import { imageRef } from "../props/image";
+import { paddingRef } from "../props/padding";
+import { string } from "../props/string";
+import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({
   type: "testimonials",
@@ -37,12 +36,13 @@ export const manifest = defineBrickManifest({
         Type.Object({
           author: string("Author", { default: "John Doe" }),
           company: Type.Optional(string("Company")),
-          text: textContentRef({ title: "Text", default: "Amazing product!" }),
+          text: string("Text", { default: "Amazing product!" }),
           avatar: Type.Optional(imageRef({ title: "Avatar" })),
           socialIcon: Type.Optional(
             string("Social Icon", {
               description: "Iconify reference for the social icon",
               "ui:field": "iconify",
+              "ui:iconify-categories": ["Social"],
             }),
           ),
         }),
