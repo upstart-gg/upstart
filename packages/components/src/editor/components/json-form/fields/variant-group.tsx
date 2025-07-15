@@ -21,8 +21,9 @@ const VariantGroupField: FC<FieldProps<string[]>> = ({
   schema,
 }) => {
   // Extract options from schema (array of Union items)
-  const schemaItems = schema.items as { anyOf?: VariantOption[] };
+  const schemaItems = schema.items as { anyOf?: VariantOption[]; "ui:grid-cols"?: number };
   const options: VariantOption[] = schemaItems?.anyOf || [];
+  const gridCols = schemaItems?.["ui:grid-cols"];
 
   // Group options by variant type
   const variantGroups: VariantGroup = options.reduce((acc, option) => {
@@ -65,39 +66,55 @@ const VariantGroupField: FC<FieldProps<string[]>> = ({
     <div className="flex flex-col flex-1 gap-4">
       <FieldTitle title={title} description={description} />
 
-      {Object.entries(variantGroups).map(([variantType, typeOptions]) => {
-        const currentValueForType = getCurrentValueForType(variantType);
+      <div className={gridCols ? `grid grid-cols-${gridCols} gap-4` : "flex flex-col gap-4"}>
+        {Object.entries(variantGroups).map(([variantType, typeOptions]) => {
+          const currentValueForType = getCurrentValueForType(variantType);
 
-        return (
-          <div key={variantType} className="flex justify-between flex-1 pr-1 gap-1">
-            <label className="block text-sm font-medium text-gray-700 min-w-0 flex-shrink-0">
-              {capitalizeFirst(variantType)}
-            </label>
-
-            <Select.Root
-              value={currentValueForType || "__none__"}
-              onValueChange={(value) => handleTypeChange(variantType, value || null)}
+          return (
+            <div
+              key={variantType}
+              className={gridCols ? "flex flex-col gap-1" : "flex justify-between flex-1 pr-1 gap-1"}
             >
-              <Select.Trigger radius="large" variant="ghost" placeholder="None" className="min-w-0 flex-1" />
-              <Select.Content position="popper">
-                <Select.Group>
-                  {/* Option to clear/reset */}
-                  <Select.Item value="__none__">
-                    <span className="text-gray-400 italic">Default</span>
-                  </Select.Item>
+              <label
+                className={
+                  gridCols
+                    ? "block text-sm font-medium text-gray-700"
+                    : "block text-sm font-medium text-gray-700 min-w-0 flex-shrink-0"
+                }
+              >
+                {capitalizeFirst(variantType)}
+              </label>
 
-                  {/* Type-specific options */}
-                  {typeOptions.map((option) => (
-                    <Select.Item key={option.const} value={option.const}>
-                      {option.title}
+              <Select.Root
+                value={currentValueForType || "__none__"}
+                onValueChange={(value) => handleTypeChange(variantType, value || null)}
+              >
+                <Select.Trigger
+                  radius="large"
+                  variant="ghost"
+                  placeholder="None"
+                  className={gridCols ? "w-full" : "min-w-0 flex-1"}
+                />
+                <Select.Content position="popper">
+                  <Select.Group>
+                    {/* Option to clear/reset */}
+                    <Select.Item value="__none__">
+                      <span className="text-gray-400 italic">Default</span>
                     </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Content>
-            </Select.Root>
-          </div>
-        );
-      })}
+
+                    {/* Type-specific options */}
+                    {typeOptions.map((option) => (
+                      <Select.Item key={option.const} value={option.const}>
+                        {option.title}
+                      </Select.Item>
+                    ))}
+                  </Select.Group>
+                </Select.Content>
+              </Select.Root>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

@@ -41,7 +41,7 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, edi
     <div className={tx("flex flex-1", props.justifyContent)}>
       <button
         type="button"
-        className={tx("btn", styles.default, props.variants)}
+        className={tx("btn", styles.default, props.variants, props.round)}
         data-text-editable={editable ?? false}
         ref={ref}
         onClick={(e) => {

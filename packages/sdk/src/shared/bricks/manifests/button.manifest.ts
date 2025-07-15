@@ -1,10 +1,10 @@
-import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps } from "../props/helpers";
-import { RxButton } from "react-icons/rx";
-import { string, urlOrPageIdRef } from "../props/string";
 import { Type } from "@sinclair/typebox";
-import type { BrickProps } from "../props/types";
+import { RxButton } from "react-icons/rx";
+import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
+import { defineProps } from "../props/helpers";
+import { string, urlOrPageIdRef } from "../props/string";
+import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({
   type: "button",
@@ -51,6 +51,7 @@ export const manifest = defineBrickManifest({
           title: "Variant",
           description: "Button variants.",
           "ai:tip": "Those are DaisyUI button variants",
+          "ui:grid-cols": 2,
         },
       ),
     ),
@@ -72,6 +73,15 @@ export const manifest = defineBrickManifest({
         description: "The type of the button",
         "ai:instructions":
           "Use 'button' for regular buttons, 'submit' for form submission, and 'reset' to reset form fields.",
+      }),
+    ),
+    round: Type.Optional(
+      StringEnum(["rounded-none", "rounded-sm", "rounded", "rounded-md", "rounded-lg", "rounded-xl"], {
+        title: "Border Radius",
+        enumNames: ["None", "XS", "S", "M", "L", "XL"],
+        default: "rounded-md",
+        description: "Border radius of the button",
+        "ui:placeholder": "Not specified",
       }),
     ),
     icon: Type.Optional(

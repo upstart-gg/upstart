@@ -1,8 +1,8 @@
-import { forwardRef, type MouseEventHandler } from "react";
 import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/footer.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { tx } from "@upstart.gg/style-system/twind";
 import { toast } from "@upstart.gg/style-system/system";
+import { tx } from "@upstart.gg/style-system/twind";
+import { forwardRef, type MouseEventHandler } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { useColorPreset } from "../hooks/use-color-preset";
 
@@ -47,7 +47,7 @@ const Footer = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
       {props.linksSections?.map((section, index) => (
         <nav key={index} className={tx("flex flex-col @mobile:gap-3 @desktop:gap-2", props.fontSize)}>
           <h6 className={tx("uppercase font-bold opacity-80")}>{section.sectionTitle}</h6>
-          {section.links.map((link, linkIndex) => (
+          {section.links?.map((link, linkIndex) => (
             <a key={linkIndex} href={link.url} onClick={onClick} className={tx("link link-hover max-w-fit")}>
               {link.title}
             </a>
