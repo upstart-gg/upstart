@@ -21,18 +21,21 @@ export const manifest = defineBrickManifest({
       Type.Object({
         href: string("Link"),
         label: Type.Optional(string("Label")),
-        icon: Type.Optional(
-          string("Icon", {
-            description: "Icon to display (iconify reference)",
-            readOnly: true,
-          }),
-        ),
+        icon: Type.String({
+          title: "Platform Icon",
+          description: "Select the social media platform icon",
+          "ui:field": "iconify",
+          "ui:options": {
+            categories: ["Social"],
+          },
+        }),
       }),
       {
         title: "Social Links",
         description: "List of social media links",
         default: [], // Empty array by default
         "ui:widget": "array",
+        "ui:displayField": "label",
         "ui:options": {
           orderable: true, // Enable drag & drop reordering
           removable: true, // Enable delete button

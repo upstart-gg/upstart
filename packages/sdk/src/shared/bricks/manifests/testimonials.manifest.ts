@@ -34,9 +34,13 @@ export const manifest = defineBrickManifest({
       shadow: Type.Optional(shadowRef()),
       testimonials: Type.Array(
         Type.Object({
+          text: string("Text", {
+            default: "Amazing product!",
+            "ui:multiline": true,
+            "ui:textarea-class": "h-20",
+          }),
           author: string("Author", { default: "John Doe" }),
           company: Type.Optional(string("Company")),
-          text: string("Text", { default: "Amazing product!" }),
           avatar: Type.Optional(imageRef({ title: "Avatar" })),
           socialIcon: Type.Optional(
             string("Social Icon", {
@@ -46,6 +50,18 @@ export const manifest = defineBrickManifest({
             }),
           ),
         }),
+        {
+          title: "Testimonials",
+          description: "List of testimonials",
+          default: [], // Empty array by default
+          "ui:widget": "array",
+          "ui:displayField": "author", // Affiche le nom de l'auteur dans la vue compacte
+          "ui:options": {
+            orderable: true, // Enable drag & drop reordering
+            removable: true, // Enable delete button
+            addable: true, // Enable add button
+          },
+        },
       ),
     },
     {

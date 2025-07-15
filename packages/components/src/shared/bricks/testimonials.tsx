@@ -20,6 +20,9 @@ const Testimonials = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, 
           {
             author: "John Doe",
             text: "Amazing product!",
+            avatar: null,
+            company: "Example Corp",
+            socialIcon: null,
           },
         ];
 
@@ -42,7 +45,7 @@ const Testimonials = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, 
           )}
         >
           <div className="testimonial-text flex-1">
-            <div className="">{testimonial.text}</div>
+            <div className="whitespace-pre-wrap text-pretty">{testimonial.text}</div>
           </div>
 
           <div className="testimonial-author flex items-center gap-3">
@@ -56,13 +59,11 @@ const Testimonials = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, 
 
             <div className="flex-1">
               <div className="font-semibold">{testimonial.author}</div>
-              {testimonial.company && <div className="text-sm text-gray-600">{testimonial.company}</div>}
+              {testimonial.company && <div className="text-sm">{testimonial.company}</div>}
             </div>
 
             {testimonial.socialIcon && (
-              <div className="w-5 h-5 text-gray-400">
-                {renderIcon(testimonial.socialIcon, "w-5 h-5 text-gray-400")}
-              </div>
+              <div className="w-5 h-5">{renderIcon(testimonial.socialIcon, "w-5 h-5")}</div>
             )}
           </div>
         </div>

@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 // Import field components
 import { AlignBasicField } from "./fields/align-basic";
+import { ArrayField } from "./fields/array";
 import BackgroundField from "./fields/background";
 import { BorderField } from "./fields/border";
 import { BorderSideField } from "./fields/border-side";
@@ -14,7 +15,6 @@ import IconifyField from "./fields/iconify";
 import ImageField from "./fields/image";
 import { NumberField, SliderField } from "./fields/number";
 import { PagePaddingField, type TempPadding } from "./fields/padding";
-import { SocialLinksField } from "./fields/social-links";
 import { GeoAddressField, PathField, StringField, UrlOrPageIdField } from "./fields/string";
 import SwitchField from "./fields/switch";
 import VariantGroupField from "./fields/variant-group";
@@ -367,62 +367,20 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       if (schema.items) {
         const itemSchema = resolveSchema(schema.items);
 
-        // For arrays of objects, we need to create a field for each item
+        // For arrays of objects, use the generic ArrayField
         if (itemSchema.type === "object") {
-          // Special handling for Social Links
-          if (fieldName === "links" && itemSchema.properties?.href && itemSchema.properties?.icon) {
-            // Create a simple hash of the current data length and icons
-            const dataSignature = `${currentValue.length}-${currentValue
-              .map((item: unknown) => {
-                const typedItem = item as Record<string, unknown>;
-                return typedItem?.icon;
-              })
-              .join(",")}`;
-
-            return (
-              <SocialLinksField
-                key={`field-${id}-${dataSignature}`}
-                currentValue={currentValue}
-                onChange={(newArray: unknown[]) => onChange({ [id]: newArray }, id)}
-                itemSchema={itemSchema as TObject<TProperties>}
-                formSchema={commonProps.formSchema}
-                title={commonProps.title}
-                brickId={commonProps.brickId}
-                parents={options.parents}
-                fieldName={fieldName}
-                id={id}
-              />
-            );
-          }
-
+          // Use generic ArrayField for all object arrays
           return (
-            <div key={`field-${id}`} className="space-y-2">
-              {commonProps.title && (
-                <label className="block text-sm font-medium text-gray-700 mb-1">{commonProps.title}</label>
-              )}
-              {currentValue.map((item: unknown, index: number) => {
-                const itemId = `${id}[${index}]`;
-                return (
-                  <div key={itemId} className="border rounded p-2 space-y-2">
-                    {processObjectSchemaToFields({
-                      schema: itemSchema as TObject<TProperties>,
-                      formData: (item as Record<string, unknown>) || {},
-                      formSchema: commonProps.formSchema,
-                      onChange: (itemData, itemFieldId) => {
-                        const newArray = [...currentValue];
-                        const currentItem = (newArray[index] as Record<string, unknown>) || {};
-                        newArray[index] = { ...currentItem, ...itemData };
-                        onChange({ [id]: newArray }, id);
-                      },
-                      options: {
-                        brickId: commonProps.brickId,
-                        parents: [...(options.parents || []), `${fieldName}[${index}]`],
-                      },
-                    })}
-                  </div>
-                );
-              })}
-            </div>
+            <ArrayField
+              key={`field-${id}`}
+              currentValue={currentValue}
+              onChange={(newArray: unknown[] | null) => onChange({ [id]: newArray || [] }, id)}
+              itemSchema={itemSchema}
+              fieldName={fieldName}
+              id={id}
+              parents={options.parents}
+              {...commonProps}
+            />
           );
         }
 
@@ -493,27 +451,18 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
           );
         }
 
-        // For arrays of other types, use the appropriate component based on item type
+        // For arrays of primitive types, use the generic ArrayField
         return (
-          <div key={`field-${id}`} className="space-y-2">
-            {commonProps.title && (
-              <label className="block text-sm font-medium text-gray-700 mb-1">{commonProps.title}</label>
-            )}
-            {currentValue.map((item: unknown, index: number) => {
-              const itemId = `${id}[${index}]`;
-              return createFieldComponent({
-                ...options,
-                fieldName: `${fieldName}[${index}]`,
-                fieldSchema: itemSchema,
-                id: itemId,
-                onChange: (itemData, itemFieldId) => {
-                  const newArray = [...currentValue];
-                  newArray[index] = Object.values(itemData)[0];
-                  onChange({ [id]: newArray }, id);
-                },
-              });
-            })}
-          </div>
+          <ArrayField
+            key={`field-${id}`}
+            currentValue={currentValue}
+            onChange={(newArray: unknown[] | null) => onChange({ [id]: newArray || [] }, id)}
+            itemSchema={itemSchema}
+            fieldName={fieldName}
+            id={id}
+            parents={options.parents}
+            {...commonProps}
+          />
         );
       }
 
@@ -525,7 +474,9 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
     // TODO - iconify
     case "iconify": {
       const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;
-      const categories = commonProps.schema["ui:iconify-categories"] as IconCategory[] | undefined;
+      const categories =
+        (commonProps.schema["ui:iconify-categories"] as IconCategory[] | undefined) ||
+        (commonProps.schema["ui:options"] as { categories?: IconCategory[] })?.categories;
       return (
         <IconifyField
           key={`field-${id}`}
