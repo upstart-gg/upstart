@@ -71,19 +71,31 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
     }
   }, [hoverElement, dragging]);
 
-  function mapBricks(bricks: Brick[], level = 0, currentIndex = -1, isChild = false) {
+  function BricksHierarchy({
+    bricks,
+    level = 0,
+    currentIndex = -1,
+    isChild = false,
+    disabledDragging,
+  }: {
+    bricks: Brick[];
+    level?: number;
+    currentIndex?: number;
+    isChild?: boolean;
+    disabledDragging?: boolean;
+  }) {
     return bricks.map((brick, brickIndex) => {
-      const childBricks = "$children" in brick.props ? (brick.props.$children as Brick[]) : null;
-      const hasChildren = childBricks && childBricks.length > 0;
+      const childBricks: Brick[] = "$children" in brick.props ? brick.props.$children : [];
+      const hasChildren = childBricks.length > 0;
       const Icon = manifests[brick.type].icon;
       const brickName = manifests[brick.type].name;
       currentIndex += 1;
       return (
         <Draggable
-          // isDragDisabled={isChild}
           key={`hierarchy_${brick.id}`}
           draggableId={`hierarchy_${brick.id}`}
           index={currentIndex}
+          isDragDisabled={disabledDragging}
         >
           {(provided, snapshot) => (
             <div
@@ -92,7 +104,7 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
               {...provided.draggableProps}
               className={tx(
                 "bricks-hierarchy-wrapper",
-                snapshot.isDragging && "[&>.bricks-hierarchy-wrapper]:bg-red-800",
+                // snapshot.isDragging && "[&>.bricks-hierarchy-wrapper]:bg-red-800",
               )}
             >
               <div
@@ -120,7 +132,7 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
               >
                 <div
                   className={tx(
-                    "flex items-center justify-between group transition-all py-1 px-1.5 ",
+                    "flex items-center justify-between group transition-all py-1 px-1.5",
                     hasChildren && selectedBrick?.id === brick.id && "bg-upstart-500 text-white font-bold",
                     selectedBrick?.id !== brick.id && "hover:bg-upstart-50",
                   )}
@@ -132,9 +144,16 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
                     <RxDragHandleHorizontal className="w-5 h-5 cursor-row-resize opacity-60 group-hover:opacity-80 transition-opacity" />
                   </div>
                 </div>
-                {childBricks &&
-                  childBricks.length > 0 &&
-                  mapBricks(childBricks, level + 1, currentIndex, true)}
+                {childBricks.length > 0 && !snapshot.isDragging && (
+                  <BricksHierarchy
+                    bricks={childBricks}
+                    level={level + 1}
+                    currentIndex={currentIndex}
+                    isChild
+                    // Disable children dragging if the parent is being dragged
+                    disabledDragging={snapshot.isDragging}
+                  />
+                )}
               </div>
             </div>
           )}
@@ -175,6 +194,15 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
           destIndex,
         );
         draftHelpers.reorderBrickWithin(draggableId, destIndex);
+      } else {
+        console.log(
+          "Moving brick %s from section %s to section %s at index %d",
+          draggableId,
+          sourceDroppable,
+          destDroppable,
+          destIndex,
+        );
+        draftHelpers.moveBrickToSection(draggableId, destDroppable, destIndex);
       }
     }
 
@@ -232,7 +260,7 @@ Drag and drop sections and bricks to reorder them.
                             "py-1 px-1.5 rounded-t select-none flex justify-between items-center group -mr-1",
                             section.id === selectedSectionId
                               ? "bg-upstart-500 text-white font-bold cursor-default"
-                              : "hover:bg-gray-50 dark:hover:bg-white/10 cursor-pointer",
+                              : "hover:bg-upstart-50  cursor-pointer",
                           )}
                           onClick={(e) => {
                             e.stopPropagation();
@@ -255,13 +283,9 @@ Drag and drop sections and bricks to reorder them.
                           type="brick-hierarchy"
                           direction="vertical"
                         >
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.droppableProps}
-                              className={tx("gap-px ml-2")}
-                            >
-                              {mapBricks(section.bricks)}
+                          {(provided) => (
+                            <div ref={provided.innerRef} {...provided.droppableProps} className={tx("ml-2")}>
+                              <BricksHierarchy bricks={section.bricks} />
                               {provided.placeholder}
                             </div>
                           )}
