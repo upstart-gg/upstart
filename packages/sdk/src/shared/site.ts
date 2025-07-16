@@ -191,12 +191,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               {
                 id: `b_${generateId()}`,
                 type: "spacer",
-                props: {
-                  width: "20px",
-                },
-                mobileProps: {
-                  width: "100%",
-                },
+                props: {},
               },
               {
                 id: `b_${generateId()}`,

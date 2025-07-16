@@ -274,8 +274,10 @@ const TextEditor = <T extends ElementType = "div">({
 
       mainEditor.setIsEditingText(false);
       mainEditor.setLastTextEditPosition(e.editor.state.selection.anchor);
-      mainEditor.setSelectedBrickId();
-      mainEditor.togglePanel("inspector");
+
+      // Test commenting this out to see if it helps with the focus issue
+      // mainEditor.setSelectedBrickId();
+      // mainEditor.togglePanel("inspector");
 
       // reset the selection to the end of the document
       const unselected = e.editor.commands.setTextSelection({

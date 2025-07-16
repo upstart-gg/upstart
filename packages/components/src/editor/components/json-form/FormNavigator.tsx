@@ -231,8 +231,7 @@ const FormNavigator: FC<FormNavigatorProps> = ({
           </div>
           <div
             ref={scrollViewRef}
-            className="pb-2 overflow-y-scroll scroll-smooth scrollbar-thin "
-            style={{ scrollbarGutter: "stable" }}
+            className="pb-2 overflow-y-auto scroll-smooth scrollbar-thin "
             onScroll={() => {
               startTransition(() => {
                 setIsOverflowing(false);
