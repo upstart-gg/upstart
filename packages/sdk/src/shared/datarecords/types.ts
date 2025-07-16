@@ -1,7 +1,7 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { airtableOptions } from "./external/airtable/options";
-import { googleSheetsOptions } from "./external/google/sheets/options";
 import { genericWebhookOptions } from "./external/generic-webhook/options";
+import { googleSheetsOptions } from "./external/google/sheets/options";
 
 export const connectorSchema = Type.Union([
   Type.Literal("airtable"),
@@ -74,19 +74,49 @@ const internalDatarecord = Type.Object(
   },
 );
 
+// Schema commun à tous les datarecords
+const commonDatarecordSchema = Type.Object({
+  schema: Type.Any({
+    title: "Schema",
+    description:
+      "JSON Schema of the datarecord. Always of type 'object' and representing a row that will be saved.",
+    examples: [
+      {
+        type: "object",
+        properties: {
+          firstname: { type: "string", title: "Firstname" },
+          lastname: { type: "string", title: "Lastname" },
+          email: { type: "string", format: "email", title: "Email" },
+        },
+        required: ["email"],
+        title: "Newsletter Subscription",
+      },
+    ],
+  }),
+});
+
 export const datarecordsConnectors = Type.Union([
-  Type.Object({
-    provider: Type.Literal("airtable"),
-    options: airtableOptions,
-  }),
-  Type.Object({
-    provider: Type.Literal("google-sheets"),
-    options: googleSheetsOptions,
-  }),
-  Type.Object({
-    provider: Type.Literal("generic-webhook"),
-    options: genericWebhookOptions,
-  }),
+  Type.Composite([
+    Type.Object({
+      provider: Type.Literal("airtable"),
+      options: airtableOptions,
+    }),
+    commonDatarecordSchema,
+  ]),
+  Type.Composite([
+    Type.Object({
+      provider: Type.Literal("google-sheets"),
+      options: googleSheetsOptions,
+    }),
+    commonDatarecordSchema,
+  ]),
+  Type.Composite([
+    Type.Object({
+      provider: Type.Literal("generic-webhook"),
+      options: genericWebhookOptions,
+    }),
+    commonDatarecordSchema,
+  ]),
   internalDatarecord,
 ]);
 
