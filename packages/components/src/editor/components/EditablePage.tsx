@@ -1,6 +1,5 @@
 import { tx } from "@upstart.gg/style-system/twind";
 import { useEffect, useRef } from "react";
-import { PageProvider } from "~/shared/hooks/use-page-context";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
 import {
   useAttributes,
@@ -11,7 +10,6 @@ import {
   useGridConfig,
   usePreviewMode,
   useSections,
-  useTheme,
   useZoom,
 } from "../hooks/use-editor";
 import { useFontWatcher } from "../hooks/use-font-watcher";
@@ -34,7 +32,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const attributes = useAttributes();
   const sections = useSections();
   const typography = useFontWatcher();
-  const theme = useTheme();
 
   const pageClassName = usePageStyle({
     attributes,
@@ -153,20 +150,18 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   }, [generationState.isReady]);
 
   return (
-    <PageProvider attributes={attributes} theme={theme} editable={true}>
-      <div
-        id="page-container"
-        ref={pageRef}
-        className={tx(pageClassName)}
-        style={{
-          zoom,
-        }}
-      >
-        {/* If the navbar is enabled, set it statically */}
-        {sections.map((section, index) => (
-          <Section key={section.id} section={section} index={index} />
-        ))}
-      </div>
-    </PageProvider>
+    <div
+      id="page-container"
+      ref={pageRef}
+      className={tx(pageClassName)}
+      style={{
+        zoom,
+      }}
+    >
+      {/* If the navbar is enabled, set it statically */}
+      {sections.map((section, index) => (
+        <Section key={section.id} section={section} index={index} />
+      ))}
+    </div>
   );
 }
