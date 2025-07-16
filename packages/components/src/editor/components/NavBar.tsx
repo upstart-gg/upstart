@@ -1,5 +1,5 @@
 import { css, tx } from "@upstart.gg/style-system/twind";
-import { type MouseEvent, type PropsWithChildren, useCallback, useMemo, useState } from "react";
+import { type MouseEvent, type PropsWithChildren, useCallback, useMemo } from "react";
 import { BsStars } from "react-icons/bs";
 import { IoIosHelpCircleOutline } from "react-icons/io";
 import { LuRedo, LuUndo } from "react-icons/lu";
@@ -71,22 +71,6 @@ export default function NavBar() {
     [draft.siteId, draft.id, pageVersion, editorHelpers.onPublish],
   );
 
-  const duplicatePage = () => {
-    if (editorMode === "anonymous") {
-      return editorHelpers.onShowLogin();
-    }
-    const data = draft.getPageDataForDuplication();
-    console.log("duplicatePage", data);
-    // todo...
-  };
-
-  const createPage = () => {
-    if (editorMode === "anonymous") {
-      return editorHelpers.onShowLogin();
-    }
-    // todo...
-  };
-
   const switchPreviewMode = useCallback(
     (e: MouseEvent) => {
       e.stopPropagation();
@@ -152,10 +136,9 @@ export default function NavBar() {
         <TopbarMenu
           id="switch-page-menu-btn"
           items={[
-            { label: "New page", onClick: createPage },
-            { label: "Duplicate page", onClick: duplicatePage },
+            { label: "New page", onClick: () => editorHelpers.onShowPopup?.("add-page") },
+            { label: "Duplicate page", onClick: () => editorHelpers.onShowPopup?.("duplicate-page") },
             { type: "separator" as const },
-
             ...(pages.length > 1 ? [{ type: "label", label: "Switch to page" } as const] : []),
             ...(pages.length > 1
               ? pages.map((page) => ({
@@ -320,7 +303,7 @@ export default function NavBar() {
               userConfig.credits === 0 && "text-red-800 font-semibold",
             )}
           >
-            <BsStars className={tx("opacity-60 w-4 h-4")} /> {userConfig.credits} credits
+            <BsStars className={tx("opacity-60 w-4 h-4")} /> {userConfig.credits.toLocaleString()} credits
           </span>
           <div className={tx("inline-flex gap-1 items-center")}>
             <HoverCard.Root>
@@ -492,10 +475,8 @@ function TopbarMenu(props: PropsWithChildren<{ items: TopbarMenuItems; id?: stri
           ) : item.type === "label" ? (
             <DropdownMenu.Label key={item.label}>{item.label}</DropdownMenu.Label>
           ) : item.type === "checkbox" ? (
-            <DropdownMenu.CheckboxItem key={item.label} checked={item.checked}>
-              <button
-                onClick={item.onClick}
-                type="button"
+            <DropdownMenu.CheckboxItem key={item.label} checked={item.checked} onClick={item.onClick}>
+              <div
                 className="group flex justify-start items-center text-nowrap rounded-[inherit]
                 py-1.5 w-fulldark:text-white/90 text-left data-[focus]:bg-upstart-600 data-[focus]:text-white "
               >
@@ -509,13 +490,11 @@ function TopbarMenu(props: PropsWithChildren<{ items: TopbarMenuItems; id?: stri
                     {item.shortcut}
                   </kbd>
                 )}
-              </button>
+              </div>
             </DropdownMenu.CheckboxItem>
           ) : (
-            <DropdownMenu.Item key={item.label}>
-              <button
-                onClick={item.onClick}
-                type="button"
+            <DropdownMenu.Item key={item.label} onClick={item.onClick}>
+              <div
                 className="group flex justify-start items-center text-nowrap rounded-[inherit]
                 py-1.5 w-fulldark:text-white/90 text-left data-[focus]:bg-upstart-600 data-[focus]:text-white "
               >
@@ -529,7 +508,7 @@ function TopbarMenu(props: PropsWithChildren<{ items: TopbarMenuItems; id?: stri
                     {item.shortcut}
                   </kbd>
                 )}
-              </button>
+              </div>
             </DropdownMenu.Item>
           ),
         )}

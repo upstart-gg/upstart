@@ -3,6 +3,7 @@ import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
 import { generateId, processSections } from "@upstart.gg/sdk/shared/bricks";
 import type { CallContextProps, GenerationState } from "@upstart.gg/sdk/shared/context";
 import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
+import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
 import type { SitePrompt } from "@upstart.gg/sdk/shared/prompt";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
@@ -11,14 +12,13 @@ import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
 import { enableMapSet } from "immer";
-import { debounce, isEqual, merge } from "lodash-es";
+import { debounce, isEqual } from "lodash-es";
 import { createContext, useContext, useEffect } from "react";
 import { temporal } from "zundo";
 import { createStore, useStore } from "zustand";
 import { persist, subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 export type { Immer } from "immer";
-import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 
 enableMapSet();
 
@@ -39,6 +39,7 @@ export type PagePublishPayload =
       mode: "publish-page";
       pageId: string;
       pageVersionId: string;
+      schedulePublishedAt?: string | null;
     }
   | { siteId: string; mode: "publish-site" };
 
@@ -978,11 +979,7 @@ export const createDraftStore = (
                     lastTouched: Date.now(),
                   });
                 } else {
-                  // @ts-ignore
-                  // section.props = mergeIgnoringArrays({}, section.props, props, {
-                  //   lastTouched: Date.now(),
-                  // });
-                  section.props = merge({}, section.props, props, {
+                  section.props = mergeIgnoringArrays({}, section.props, props, {
                     lastTouched: Date.now(),
                   });
                 }

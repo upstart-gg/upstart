@@ -1,13 +1,14 @@
-import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps } from "../props/helpers";
-import { TiSocialFlickr } from "react-icons/ti";
-import { string } from "../props/string";
 import { Type } from "@sinclair/typebox";
-import type { BrickProps } from "../props/types";
+import { TiSocialFlickr } from "react-icons/ti";
+import { defineBrickManifest } from "~/shared/brick-manifest";
+import { StringEnum } from "~/shared/utils/string-enum";
 import { backgroundColorRef } from "../props/background";
 import { borderRef } from "../props/border";
 import { colorRef } from "../props/color";
 import { shadowRef } from "../props/effects";
+import { defineProps } from "../props/helpers";
+import { string } from "../props/string";
+import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({
   type: "social-links",
@@ -20,12 +21,34 @@ export const manifest = defineBrickManifest({
       Type.Object({
         href: string("Link"),
         label: Type.Optional(string("Label")),
-        icon: Type.Optional(
-          string("Icon", {
-            description: "Icon to display (iconify reference)",
-            "ui:widget": "iconify",
-          }),
-        ),
+        icon: Type.String({
+          title: "Platform Icon",
+          description: "Select the social media platform icon",
+          "ui:field": "iconify",
+          "ui:options": {
+            categories: ["Social"],
+          },
+        }),
+      }),
+      {
+        title: "Social Links",
+        description: "List of social media links",
+        default: [], // Empty array by default
+        "ui:widget": "array",
+        "ui:displayField": "label",
+        "ui:options": {
+          orderable: true, // Enable drag & drop reordering
+          removable: true, // Enable delete button
+          addable: true, // Enable add button
+        },
+      },
+    ),
+    justifyContent: Type.Optional(
+      StringEnum(["justify-start", "justify-center", "justify-end"], {
+        enumNames: ["Left", "Center", "Right"],
+        title: "Alignment",
+        "ui:placeholder": "Not specified",
+        default: "justify-center",
       }),
     ),
     backgroundColor: Type.Optional(backgroundColorRef()),
@@ -42,11 +65,14 @@ export const manifest = defineBrickManifest({
             description: "Display links as block elements",
           }),
         ],
-        {
-          title: "Variant",
-          description: "Social links variants",
-        },
+        // {
+        //   title: "Variant",
+        //   description: "Social links variants",
+        // },
       ),
+      {
+        default: ["icon-only", "display-inline"], // Default to icon-only and inline display
+      },
     ),
   }),
 });
@@ -58,6 +84,87 @@ export const examples: {
   type: string;
   props: BrickProps<Manifest>["brick"]["props"];
 }[] = [
+  {
+    description: "Social icons aligned to the left",
+    type: "social-links",
+    props: {
+      variants: ["icon-only", "display-inline"],
+      justifyContent: "justify-start",
+      links: [
+        {
+          href: "https://facebook.com/company",
+          label: "Facebook",
+          icon: "mdi:facebook",
+        },
+        {
+          href: "https://twitter.com/company",
+          label: "Twitter",
+          icon: "mdi:twitter",
+        },
+        {
+          href: "https://instagram.com/company",
+          label: "Instagram",
+          icon: "mdi:instagram",
+        },
+      ],
+    },
+  },
+  {
+    description: "Social icons with space between",
+    type: "social-links",
+    props: {
+      variants: ["icon-only", "display-inline"],
+      justifyContent: "justify-start",
+      links: [
+        {
+          href: "https://facebook.com/company",
+          label: "Facebook",
+          icon: "mdi:facebook",
+        },
+        {
+          href: "https://twitter.com/company",
+          label: "Twitter",
+          icon: "mdi:twitter",
+        },
+        {
+          href: "https://instagram.com/company",
+          label: "Instagram",
+          icon: "mdi:instagram",
+        },
+      ],
+    },
+  },
+  {
+    description: "Social icons with custom color",
+    type: "social-links",
+    props: {
+      variants: ["icon-only", "display-inline"],
+      justifyContent: "justify-center",
+      color: "#3b82f6", // Blue color
+      links: [
+        {
+          href: "https://facebook.com/company",
+          label: "Facebook",
+          icon: "mdi:facebook",
+        },
+        {
+          href: "https://twitter.com/company",
+          label: "Twitter",
+          icon: "mdi:twitter",
+        },
+        {
+          href: "https://instagram.com/company",
+          label: "Instagram",
+          icon: "mdi:instagram",
+        },
+        {
+          href: "https://linkedin.com/company/company",
+          label: "LinkedIn",
+          icon: "mdi:linkedin",
+        },
+      ],
+    },
+  },
   {
     description: "Standard social media icons inline",
     type: "social-links",
