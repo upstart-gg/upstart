@@ -24,7 +24,7 @@ interface GenericFieldProps {
 }
 
 const inputClassname =
-  "px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-500";
+  "px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-500 placeholder:text-inherit placeholder:opacity-70";
 
 /**
  * Hook to get the raw page text color value for use in style attributes
@@ -135,7 +135,7 @@ export const SelectField: FC<BaseFieldProps> = ({
   const options = (fieldSchema.enum as string[]) || [];
   const stringValue = typeof value === "string" ? value : "";
   const widget = fieldSchema.metadata?.["ui:widget"] as "checkbox" | "radio" | "select" | undefined;
-  const pageTextColor = usePageTextColor();
+  // const pageTextColor = usePageTextColor();
   const pageTextColorValue = usePageTextColorValue();
 
   // Calculer la largeur minimale basée sur l'option la plus longue
@@ -228,7 +228,7 @@ export const SelectField: FC<BaseFieldProps> = ({
         className={tx(inputClassname, "w-full")}
         style={{ minWidth: `${estimatedWidth}rem` }}
       >
-        <option value="" disabled className={tx(pageTextColor && `${pageTextColor} opacity-70`)}>
+        <option value="" disabled>
           {(fieldSchema["ui:placeholder"] as string) ||
             (fieldSchema.description as string) ||
             "Choose an option"}
@@ -253,7 +253,6 @@ export const EmailField: FC<BaseFieldProps> = ({
   description,
 }) => {
   const stringValue = typeof value === "string" ? value : "";
-  const pageTextColor = usePageTextColor();
 
   return (
     <GenericFieldComponent fieldName={fieldName} title={title} required={required} description={description}>
@@ -265,7 +264,7 @@ export const EmailField: FC<BaseFieldProps> = ({
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
         placeholder={fieldSchema["ui:placeholder"] as string | "email@example.com"}
         required={required}
-        className={tx(inputClassname, pageTextColor && `[&::placeholder]:(${pageTextColor} opacity-70)`)}
+        className={inputClassname}
       />
     </GenericFieldComponent>
   );
@@ -281,7 +280,6 @@ export const UrlField: FC<BaseFieldProps> = ({
   description,
 }) => {
   const stringValue = typeof value === "string" ? value : "";
-  const pageTextColor = usePageTextColor();
 
   return (
     <GenericFieldComponent fieldName={fieldName} title={title} required={required} description={description}>
@@ -293,7 +291,7 @@ export const UrlField: FC<BaseFieldProps> = ({
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
         placeholder={fieldSchema["ui:placeholder"]}
         required={required}
-        className={tx(inputClassname, pageTextColor && `[&::placeholder]:(${pageTextColor} opacity-70)`)}
+        className={inputClassname}
       />
     </GenericFieldComponent>
   );
@@ -361,7 +359,7 @@ export const StringField: FC<BaseFieldProps> = ({
   description,
 }) => {
   const stringValue = typeof value === "string" ? value : "";
-  const pageTextColor = usePageTextColor();
+  // const pageTextColor = usePageTextColor();
 
   return (
     <GenericFieldComponent fieldName={fieldName} title={title} required={required} description={description}>
@@ -375,7 +373,10 @@ export const StringField: FC<BaseFieldProps> = ({
         minLength={fieldSchema.minLength as number | undefined}
         maxLength={fieldSchema.maxLength as number | undefined}
         required={required}
-        className={tx(inputClassname, pageTextColor && `[&::placeholder]:(${pageTextColor} opacity-70)`)}
+        className={tx(
+          inputClassname,
+          // , pageTextColor && `[&::placeholder]:(${pageTextColor} opacity-70)`
+        )}
       />
     </GenericFieldComponent>
   );
@@ -391,7 +392,6 @@ export const TextareaField: FC<BaseFieldProps> = ({
   description,
 }) => {
   const stringValue = typeof value === "string" ? value : "";
-  const pageTextColor = usePageTextColor();
 
   return (
     <GenericFieldComponent fieldName={fieldName} title={title} required={required} description={description}>
@@ -405,7 +405,7 @@ export const TextareaField: FC<BaseFieldProps> = ({
         maxLength={fieldSchema.maxLength as number | undefined}
         required={required}
         rows={4}
-        className={tx(inputClassname, pageTextColor && `[&::placeholder]:(${pageTextColor} opacity-70)`)}
+        className={inputClassname}
       />
     </GenericFieldComponent>
   );

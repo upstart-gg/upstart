@@ -1,16 +1,15 @@
 import { defineConfig } from "@twind/core";
 import presetAutoprefix from "@twind/preset-autoprefix";
-import presetTailwind from "@twind/preset-tailwind";
+import presetContainerQueries from "@twind/preset-container-queries";
 import presetExt from "@twind/preset-ext";
 import presetLineClamp from "@twind/preset-line-clamp";
+import presetTailwind from "@twind/preset-tailwind";
 import presetForms from "@twind/preset-tailwind-forms";
 import presetTypo from "@twind/preset-typography";
-import presetContainerQueries from "@twind/preset-container-queries";
 import { colorPalette } from "./colors";
 
 export default defineConfig({
   darkMode: "media",
-  ignorelist: [/^btn-*/],
   presets: [
     presetAutoprefix(),
     presetTailwind({ disablePreflight: true }),
@@ -29,6 +28,14 @@ export default defineConfig({
       "brick",
       {
         borderRadius: "inherit",
+      },
+    ],
+    [
+      "btn",
+      {
+        padding: "1rem",
+        borderRadius: "inherit",
+        border: "1px solid",
       },
     ],
     [
