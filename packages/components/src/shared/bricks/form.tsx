@@ -192,7 +192,13 @@ function processDatarecordSchemaToFields(
 const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
   const { brick } = props;
   const styles = useBrickStyle<Manifest>(brick);
-  const { title, intro, datarecordId, align = "vertical", buttonLabel, editable = true } = brick.props;
+  const { title, intro, datarecordId, align = "vertical", editable = true } = brick.props;
+
+  const buttonProps = brick.props.button || {};
+  const buttonLabel = buttonProps.buttonLabel as string | undefined;
+  const buttonPosition = (buttonProps.buttonPosition as string) || "right";
+  const buttonBorderRadius = buttonProps.buttonBorderRadius as string | undefined;
+  const buttonColor = buttonProps.buttonColor as string | undefined;
 
   const { datarecord, schema, error } = useDatarecord(datarecordId);
   const [formData, setFormData] = useState<Record<string, unknown>>({});
@@ -260,6 +266,14 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   // Convertir le schema en format TypeBox
   const typeboxSchema = schema as unknown as TObject<TProperties>;
   const fields = processDatarecordSchemaToFields(typeboxSchema, formData, handleFieldChange);
+  const getButtonPosition = () => {
+    if (buttonPosition === "right") {
+      return "justify-end";
+    } else if (buttonPosition === "center") {
+      return "justify-center";
+    }
+    return "justify-start";
+  };
 
   return (
     <div ref={ref} className={tx("max-w-full flex-1", Object.values(styles))}>
@@ -270,8 +284,8 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
         <div className={tx("flex", align === "horizontal" ? "flex-row flex-wrap gap-4" : "flex-col gap-2")}>
           {fields}
         </div>
-        <div className="flex justify-center pt-1">
-          <button type="submit" className={tx("btn")}>
+        <div className={tx("flex pt-1", getButtonPosition())}>
+          <button type="submit" className={tx("btn", buttonBorderRadius, buttonColor)}>
             {buttonLabel || "Submit"}
           </button>
         </div>

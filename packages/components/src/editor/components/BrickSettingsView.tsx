@@ -1,14 +1,14 @@
-import FormNavigator from "./json-form/FormNavigator";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
-import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
-import type { TArray, TObject, TSchema } from "@sinclair/typebox";
-import { useCallback, useMemo } from "react";
-import { merge, set } from "lodash-es";
-import { useDraftHelpers, useGetBrick, usePreviewMode } from "~/editor/hooks/use-editor";
 import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
-import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
+import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
 import { tx } from "@upstart.gg/style-system/twind";
+import { set } from "lodash-es";
+import { useCallback, useMemo } from "react";
 import { useLocalStorage } from "usehooks-ts";
+import { useDraftHelpers, useGetBrick, usePreviewMode } from "~/editor/hooks/use-editor";
+import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
+import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
+import FormNavigator from "./json-form/FormNavigator";
 
 type BrickSettingsViewProps = {
   brick: Brick;
@@ -42,8 +42,8 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
   const formData = useMemo(() => {
     const defProps = defaultProps[brick.type].props;
     return previewMode === "mobile"
-      ? merge({}, defProps, brick.props, brick.mobileProps)
-      : merge({}, defProps, brick.props ?? {});
+      ? mergeIgnoringArrays({}, defProps, brick.mobileProps ?? {})
+      : mergeIgnoringArrays(defProps, brick.props ?? {});
   }, [brick, previewMode]);
 
   const onChange = useCallback(

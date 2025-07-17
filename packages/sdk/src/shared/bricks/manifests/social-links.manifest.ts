@@ -2,10 +2,6 @@ import { Type } from "@sinclair/typebox";
 import { TiSocialFlickr } from "react-icons/ti";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { backgroundColorRef } from "../props/background";
-import { borderRef } from "../props/border";
-import { colorRef } from "../props/color";
-import { shadowRef } from "../props/effects";
 import { defineProps } from "../props/helpers";
 import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
@@ -19,8 +15,6 @@ export const manifest = defineBrickManifest({
   props: defineProps({
     links: Type.Array(
       Type.Object({
-        href: string("Link"),
-        label: Type.Optional(string("Label")),
         icon: Type.String({
           title: "Platform Icon",
           description: "Select the social media platform icon",
@@ -29,11 +23,29 @@ export const manifest = defineBrickManifest({
             categories: ["Social"],
           },
         }),
+        label: Type.Optional(string("Label")),
+        href: string("Link"),
       }),
       {
         title: "Social Links",
         description: "List of social media links",
-        default: [], // Empty array by default
+        default: [
+          {
+            href: "https://facebook.com/company",
+            label: "Facebook",
+            icon: "mdi:facebook",
+          },
+          {
+            href: "https://twitter.com/company",
+            label: "Twitter",
+            icon: "mdi:twitter",
+          },
+          {
+            href: "https://instagram.com/company",
+            label: "Instagram",
+            icon: "mdi:instagram",
+          },
+        ],
         "ui:widget": "array",
         "ui:displayField": "label",
         "ui:options": {
@@ -43,36 +55,19 @@ export const manifest = defineBrickManifest({
         },
       },
     ),
-    justifyContent: Type.Optional(
-      StringEnum(["justify-start", "justify-center", "justify-end"], {
-        enumNames: ["Left", "Center", "Right"],
-        title: "Alignment",
-        "ui:placeholder": "Not specified",
-        default: "justify-center",
+    display: Type.Optional(
+      StringEnum(["row", "col"], {
+        enumNames: ["Horizontal", "Vertical"],
+        title: "Display",
+        default: "row",
       }),
     ),
-    backgroundColor: Type.Optional(backgroundColorRef()),
-    color: Type.Optional(colorRef()),
-    border: Type.Optional(borderRef()),
-    shadow: Type.Optional(shadowRef()),
-    variants: Type.Array(
-      Type.Union(
-        [
-          Type.Literal("icon-only", { title: "Only icons", description: "Display only icons" }),
-          Type.Literal("display-inline", { title: "Display inline", description: "Display links inline" }),
-          Type.Literal("display-block", {
-            title: "Display block",
-            description: "Display links as block elements",
-          }),
-        ],
-        // {
-        //   title: "Variant",
-        //   description: "Social links variants",
-        // },
-      ),
-      {
-        default: ["icon-only", "display-inline"], // Default to icon-only and inline display
-      },
+    icononly: Type.Optional(
+      Type.Boolean({
+        title: "Only icons",
+        description: "If set, the brick will only display the icons without labels.",
+        default: true,
+      }),
     ),
   }),
 });
@@ -85,11 +80,10 @@ export const examples: {
   props: BrickProps<Manifest>["brick"]["props"];
 }[] = [
   {
-    description: "Social icons aligned to the left",
+    description: "Social icons displayed horizontally, without labels",
     type: "social-links",
     props: {
-      variants: ["icon-only", "display-inline"],
-      justifyContent: "justify-start",
+      icononly: true,
       links: [
         {
           href: "https://facebook.com/company",
@@ -110,11 +104,11 @@ export const examples: {
     },
   },
   {
-    description: "Social icons with space between",
+    description: "Social icons displayed vertically, without labels",
     type: "social-links",
     props: {
-      variants: ["icon-only", "display-inline"],
-      justifyContent: "justify-start",
+      icononly: true,
+      display: "col",
       links: [
         {
           href: "https://facebook.com/company",
@@ -135,41 +129,10 @@ export const examples: {
     },
   },
   {
-    description: "Social icons with custom color",
+    description: "Social icons displayed horizontally, with labels",
     type: "social-links",
     props: {
-      variants: ["icon-only", "display-inline"],
-      justifyContent: "justify-center",
-      color: "#3b82f6", // Blue color
-      links: [
-        {
-          href: "https://facebook.com/company",
-          label: "Facebook",
-          icon: "mdi:facebook",
-        },
-        {
-          href: "https://twitter.com/company",
-          label: "Twitter",
-          icon: "mdi:twitter",
-        },
-        {
-          href: "https://instagram.com/company",
-          label: "Instagram",
-          icon: "mdi:instagram",
-        },
-        {
-          href: "https://linkedin.com/company/company",
-          label: "LinkedIn",
-          icon: "mdi:linkedin",
-        },
-      ],
-    },
-  },
-  {
-    description: "Standard social media icons inline",
-    type: "social-links",
-    props: {
-      variants: ["icon-only", "display-inline"],
+      icononly: false,
       links: [
         {
           href: "https://facebook.com/company",
@@ -195,10 +158,40 @@ export const examples: {
     },
   },
   {
-    description: "Professional social links with labels (block layout)",
+    description: "Social icons displayed vertically, with labels",
     type: "social-links",
     props: {
-      variants: ["display-block"],
+      icononly: false,
+      display: "col",
+      links: [
+        {
+          href: "https://facebook.com/company",
+          label: "Facebook",
+          icon: "mdi:facebook",
+        },
+        {
+          href: "https://twitter.com/company",
+          label: "Twitter",
+          icon: "mdi:twitter",
+        },
+        {
+          href: "https://instagram.com/company",
+          label: "Instagram",
+          icon: "mdi:instagram",
+        },
+        {
+          href: "https://linkedin.com/company/company",
+          label: "LinkedIn",
+          icon: "mdi:linkedin",
+        },
+      ],
+    },
+  },
+  {
+    description: "Professional social links with labels",
+    type: "social-links",
+    props: {
+      icononly: false,
       links: [
         {
           href: "https://linkedin.com/in/johndoe",
@@ -227,7 +220,7 @@ export const examples: {
     description: "Creative portfolio social links (icon-only inline)",
     type: "social-links",
     props: {
-      variants: ["icon-only", "display-inline"],
+      icononly: true,
       links: [
         {
           href: "https://dribbble.com/designer",
@@ -261,7 +254,8 @@ export const examples: {
     description: "Developer/tech social links with labels",
     type: "social-links",
     props: {
-      variants: ["display-inline"],
+      icononly: false,
+      display: "col",
       links: [
         {
           href: "https://github.com/developer",
@@ -290,7 +284,8 @@ export const examples: {
     description: "Music artist social platforms (block layout)",
     type: "social-links",
     props: {
-      variants: ["display-block"],
+      icononly: true,
+      display: "col",
       links: [
         {
           href: "https://spotify.com/artist/musician",
@@ -324,7 +319,7 @@ export const examples: {
     description: "Business contact icons only",
     type: "social-links",
     props: {
-      variants: ["icon-only", "display-inline"],
+      icononly: true,
       links: [
         {
           href: "tel:+1234567890",
@@ -353,7 +348,7 @@ export const examples: {
     description: "Gaming content creator links (inline with labels)",
     type: "social-links",
     props: {
-      variants: ["display-inline"],
+      icononly: false,
       links: [
         {
           href: "https://twitch.tv/gamer",
@@ -382,7 +377,8 @@ export const examples: {
     description: "Restaurant social presence (block layout)",
     type: "social-links",
     props: {
-      variants: ["display-block"],
+      icononly: false,
+      display: "col",
       links: [
         {
           href: "https://facebook.com/restaurant",
@@ -416,7 +412,8 @@ export const examples: {
     description: "Minimal footer social icons",
     type: "social-links",
     props: {
-      variants: ["icon-only", "display-inline"],
+      icononly: true,
+      display: "row",
       links: [
         {
           href: "https://twitter.com/company",
@@ -440,7 +437,8 @@ export const examples: {
     description: "E-commerce store social channels (inline with labels)",
     type: "social-links",
     props: {
-      variants: ["display-inline"],
+      icononly: false,
+      display: "row",
       links: [
         {
           href: "https://facebook.com/store",

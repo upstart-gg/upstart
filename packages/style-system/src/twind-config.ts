@@ -10,6 +10,7 @@ import { colorPalette } from "./colors";
 
 export default defineConfig({
   darkMode: "media",
+  // ignorelist: [/^btn-*/],
   presets: [
     presetAutoprefix(),
     presetTailwind({ disablePreflight: true }),
@@ -33,11 +34,73 @@ export default defineConfig({
     [
       "btn",
       {
-        padding: "1rem",
+        padding: "0.5rem 1rem",
         borderRadius: "inherit",
-        border: "1px solid",
+        borderWidth: "1px",
+        borderStyle: "solid",
+        borderColor: "inherit",
       },
     ],
+    [
+      "btn-color-",
+      ({ $$ }) => ({
+        borderColor: `var(--color-${$$})`,
+        backgroundColor: `var(--color-${$$})`,
+        color: `var(--color-${$$}-content)`,
+        "&:hover": {
+          backgroundColor: `var(--color-${$$}-600)`,
+          borderColor: `var(--color-${$$}-600)`,
+        },
+      }),
+    ],
+    // [
+    //   "btn-primary",
+    //   {
+    //     backgroundColor: "var(--color-primary)",
+    //     color: "var(--color-primary-content)",
+    //     borderColor: "var(--color-primary)",
+    //     "&:hover": {
+    //       backgroundColor: "var(--color-primary-600)",
+    //       borderColor: "var(--color-primary-600)",
+    //     },
+    //   },
+    // ],
+    // [
+    //   "btn-secondary",
+    //   {
+    //     backgroundColor: "var(--color-secondary)",
+    //     color: "var(--color-secondary-content)",
+    //     borderColor: "var(--color-secondary)",
+    //     "&:hover": {
+    //       backgroundColor: "var(--color-secondary-600)",
+    //       borderColor: "var(--color-secondary-600)",
+    //     },
+    //   },
+    // ],
+    // [
+    //   "btn-accent",
+    //   {
+    //     backgroundColor: "var(--color-accent)",
+    //     color: "var(--color-accent-content)",
+    //     borderColor: "var(--color-accent)",
+    //     "&:hover": {
+    //       backgroundColor: "var(--color-accent-600)",
+    //       borderColor: "var(--color-accent-600)",
+    //     },
+    //   },
+    // ],
+    // [
+    //   "btn-neutral",
+    //   {
+    //     backgroundColor: "var(--color-neutral)",
+    //     color: "var(--color-neutral-content)",
+    //     borderColor: "var(--color-neutral)",
+    //     "&:hover": {
+    //       backgroundColor: "var(--color-neutral-600)",
+    //       borderColor: "var(--color-neutral-600)",
+    //     },
+    //   },
+    // ],
     [
       "rounded-auto",
       {

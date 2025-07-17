@@ -32,30 +32,14 @@ const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, e
   // Ensure links is an array - allow empty arrays
   const links = Array.isArray(props.links) ? props.links : [];
 
-  const variants = Array.isArray(props.variants) ? props.variants : ["icon-only", "display-inline"];
-  const isIconOnly = variants.includes("icon-only");
-  const isInline = variants.includes("display-inline");
-  const isBlock = variants.includes("display-block");
-
-  // Get justify content setting
-  const justifyContent = props.justifyContent || "justify-center";
-
-  // Debug: Check what we have
-  // console.log("[SocialLinks] styles:", styles);
-  // console.log("[SocialLinks] props.color:", props.color);
-
-  // Determine display style - default to inline if no display variant is specified
-  const displayClass = isBlock
-    ? `flex flex-col flex-1 gap-4 ${justifyContent}`
-    : `flex flex-row flex-1 ${justifyContent}`;
-  const itemClass = isBlock ? "flex items-center gap-2" : "flex items-center gap-1";
+  const isRowDisplay = props.display?.includes("row") ?? false;
 
   return (
     <div
       ref={ref}
       className={tx(
-        "social-links",
-        displayClass,
+        "social-links flex flex-1 justify-start items-start",
+        isRowDisplay ? "flex-row" : "flex-col",
         "min-w-fit w-auto min-h-[2rem] my-1",
         editable && "relative group",
         styles.backgroundColor,
@@ -78,16 +62,16 @@ const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, e
               onClick(e, link);
             }}
             className={tx(
-              "btn social-link-btn",
-              itemClass,
+              "social-link-btn  p-1",
+              "flex items-center gap-1",
               "hover:opacity-80 transition-all duration-200",
-              "border-0 bg-transparent rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 p-1",
+              "border-0 bg-transparent rounded-md hover:bg-gray-100 dark:hover:bg-gray-800",
             )}
             aria-label={link.label || link.href}
             title={link.label || link.href}
           >
             {iconElement}
-            {!isIconOnly && link.label && <span className="text-sm ml-1">{link.label}</span>}
+            {!props.icononly && link.label && <span className="text-sm ml-1">{link.label}</span>}
           </button>
         );
       })}
