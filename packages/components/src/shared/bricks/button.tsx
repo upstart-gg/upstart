@@ -32,16 +32,15 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, edi
   };
 
   // Check if icon should be displayed on left or right
-  const variants = Array.isArray(props.variants) ? props.variants : [];
-  const hasIconLeft = variants.includes("btn-icon-left");
-  const hasIconRight = variants.includes("btn-icon-right");
+  // const hasIconLeft = variants.includes("btn-icon-left");
+  // const hasIconRight = variants.includes("btn-icon-right");
   const iconElement = renderIcon(props.icon, "w-4 h-4");
 
   return (
     <div className={tx("flex flex-1", props.justifyContent)}>
       <button
         type="button"
-        className={tx("btn", styles.default, props.variants, props.round)}
+        className={tx("btn", styles.default, props.color, props.modifier, props.round)}
         data-text-editable={editable ?? false}
         ref={ref}
         onClick={(e) => {
@@ -49,10 +48,10 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, edi
           handelClick(e);
         }}
       >
-        {hasIconLeft && iconElement && <span className="mr-2">{iconElement}</span>}
+        {/* {hasIconLeft && iconElement && <span className="mr-2">{iconElement}</span>} */}
         {props.label}
-        {hasIconRight && iconElement && <span className="ml-2">{iconElement}</span>}
-        {!hasIconLeft && !hasIconRight && iconElement && <span className="mr-2">{iconElement}</span>}
+        {/* {hasIconRight && iconElement && <span className="ml-2">{iconElement}</span>}
+        {!hasIconLeft && !hasIconRight && iconElement && <span className="mr-2">{iconElement}</span>} */}
       </button>
     </div>
   );

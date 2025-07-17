@@ -13,48 +13,19 @@ export const manifest = defineBrickManifest({
   description: "A button with text and optional icon",
   icon: RxButton,
   props: defineProps({
-    /**
-     * @see https://daisyui.com/components/button/?lang=en
-     * @see https://raw.githubusercontent.com/saadeghi/daisyui/refs/heads/master/packages/docs/src/routes/(routes)/components/button/+page.md?plain=1
-     */
-    variants: Type.Array(
-      Type.Union(
-        [
-          Type.Literal("btn-neutral", { title: "Neutral", "ui:variant-type": "color" }),
-          Type.Literal("btn-primary", { title: "Primary", "ui:variant-type": "color" }),
-          Type.Literal("btn-secondary", { title: "Secondary", "ui:variant-type": "color" }),
-          Type.Literal("btn-accent", { title: "Accent", "ui:variant-type": "color" }),
-          Type.Literal("btn-info", { title: "Info", "ui:variant-type": "color" }),
-          Type.Literal("btn-success", { title: "Success", "ui:variant-type": "color" }),
-          Type.Literal("btn-warning", { title: "Warning", "ui:variant-type": "color" }),
-          Type.Literal("btn-error", { title: "Error", "ui:variant-type": "color" }),
-          Type.Literal("btn-outline", { title: "Outline", "ui:variant-type": "style" }),
-          Type.Literal("btn-dash", { title: "Dash", "ui:variant-type": "style" }),
-          Type.Literal("btn-soft", { title: "Soft", "ui:variant-type": "style" }),
-          Type.Literal("btn-ghost", { title: "Ghost", "ui:variant-type": "style" }),
-          Type.Literal("btn-link", { title: "Link", "ui:variant-type": "style" }),
-          Type.Literal("btn-active", { title: "Active", "ui:variant-type": "behavior" }),
-          Type.Literal("btn-disabled", { title: "Disabled", "ui:variant-type": "behavior" }),
-          Type.Literal("btn-icon-left", { title: "Icon left", "ui:variant-type": "icon" }),
-          Type.Literal("btn-icon-right", { title: "Icon right", "ui:variant-type": "icon" }),
-          Type.Literal("btn-xs", { title: "Extra small", "ui:variant-type": "size" }),
-          Type.Literal("btn-sm", { title: "Small", "ui:variant-type": "size" }),
-          Type.Literal("btn-md", { title: "Medium", "ui:variant-type": "size" }),
-          Type.Literal("btn-lg", { title: "Large", "ui:variant-type": "size" }),
-          Type.Literal("btn-xl", { title: "Extra large", "ui:variant-type": "size" }),
-          Type.Literal("btn-wide", { title: "Wide", "ui:variant-type": "modifier" }),
-          Type.Literal("btn-block", { title: "Block", "ui:variant-type": "modifier" }),
-          Type.Literal("btn-square", { title: "Square", "ui:variant-type": "modifier" }),
-          Type.Literal("btn-circle", { title: "Circle", "ui:variant-type": "modifier" }),
-        ],
-        {
-          title: "Variant",
-          description: "Button variants.",
-          "ai:tip": "Those are DaisyUI button variants",
-          "ui:grid-cols": 2,
-        },
-      ),
-    ),
+    color: StringEnum(["btn-color-neutral", "btn-color-primary", "btn-color-secondary", "btn-color-accent"], {
+      title: "Color",
+      enumNames: ["Neutral", "Primary", "Secondary", "Accent"],
+      description: "Button variants.",
+      default: "btn-color-primary",
+    }),
+    modifier: StringEnum(["btn-block", "btn-wide"], {
+      title: "Modifier",
+      description: "Button modifiers.",
+      enumNames: ["Block", "Wide"],
+      default: "btn-wide",
+    }),
+
     label: string("Label", { default: "My button" }),
     justifyContent: Type.Optional(
       StringEnum(["justify-start", "justify-center", "justify-end"], {
@@ -103,54 +74,41 @@ export const examples: {
   props: BrickProps<Manifest>["brick"]["props"];
 }[] = [
   {
-    description: "Primary button, large size, linking to a URL",
+    description: "Primary button, wide, linking to a URL",
     type: "button",
     props: {
-      variants: ["btn-primary", "btn-lg"],
+      color: "btn-color-primary",
+      modifier: "btn-wide",
       label: "Click me",
       linkToUrlOrPageId: "https://example.com",
     },
   },
   {
-    description: "Secondary button, small size, linking to a page",
+    description: "Secondary button, block size, linking to a page",
     type: "button",
     props: {
-      variants: ["btn-secondary", "btn-sm"],
+      color: "btn-color-secondary",
       label: "Go to page",
+      modifier: "btn-block",
       linkToUrlOrPageId: "page-id-123",
-    },
-  },
-  {
-    description: "Disabled button with outline style",
-    type: "button",
-    props: {
-      variants: ["btn-outline", "btn-disabled"],
-      label: "Disabled Button",
-    },
-  },
-  {
-    description: "Ghost button",
-    type: "button",
-    props: {
-      variants: ["btn-ghost"],
-      label: "Ghost Button",
-      linkToUrlOrPageId: "https://example.com/ghost",
     },
   },
   {
     description: "Submit button in a form",
     type: "button",
     props: {
-      variants: ["btn-primary", "btn-md"],
+      color: "btn-color-primary",
       label: "Submit form",
       type: "submit",
+      modifier: "btn-wide",
     },
   },
   {
     description: "Button with icon on the right",
     type: "button",
     props: {
-      variants: ["btn-primary", "btn-md", "btn-icon-right"],
+      color: "btn-color-primary",
+      modifier: "btn-block",
       label: "Icon Button",
       icon: "mdi:check-circle",
     },

@@ -53,54 +53,12 @@ export default defineConfig({
         },
       }),
     ],
-    // [
-    //   "btn-primary",
-    //   {
-    //     backgroundColor: "var(--color-primary)",
-    //     color: "var(--color-primary-content)",
-    //     borderColor: "var(--color-primary)",
-    //     "&:hover": {
-    //       backgroundColor: "var(--color-primary-600)",
-    //       borderColor: "var(--color-primary-600)",
-    //     },
-    //   },
-    // ],
-    // [
-    //   "btn-secondary",
-    //   {
-    //     backgroundColor: "var(--color-secondary)",
-    //     color: "var(--color-secondary-content)",
-    //     borderColor: "var(--color-secondary)",
-    //     "&:hover": {
-    //       backgroundColor: "var(--color-secondary-600)",
-    //       borderColor: "var(--color-secondary-600)",
-    //     },
-    //   },
-    // ],
-    // [
-    //   "btn-accent",
-    //   {
-    //     backgroundColor: "var(--color-accent)",
-    //     color: "var(--color-accent-content)",
-    //     borderColor: "var(--color-accent)",
-    //     "&:hover": {
-    //       backgroundColor: "var(--color-accent-600)",
-    //       borderColor: "var(--color-accent-600)",
-    //     },
-    //   },
-    // ],
-    // [
-    //   "btn-neutral",
-    //   {
-    //     backgroundColor: "var(--color-neutral)",
-    //     color: "var(--color-neutral-content)",
-    //     borderColor: "var(--color-neutral)",
-    //     "&:hover": {
-    //       backgroundColor: "var(--color-neutral-600)",
-    //       borderColor: "var(--color-neutral-600)",
-    //     },
-    //   },
-    // ],
+    [
+      "btn-wide",
+      {
+        width: "100%",
+      },
+    ],
     [
       "rounded-auto",
       {

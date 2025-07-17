@@ -195,10 +195,10 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   const { title, intro, datarecordId, align = "vertical", editable = true } = brick.props;
 
   const buttonProps = brick.props.button || {};
-  const buttonLabel = buttonProps.buttonLabel as string | undefined;
-  const buttonPosition = (buttonProps.buttonPosition as string) || "right";
-  const buttonBorderRadius = buttonProps.buttonBorderRadius as string | undefined;
-  const buttonColor = buttonProps.buttonColor as string | undefined;
+  const buttonLabel = buttonProps.label as string | undefined;
+  const buttonPosition = (buttonProps.position as string) || "right";
+  const buttonBorderRadius = buttonProps.borderRadius as string | undefined;
+  const buttonColor = buttonProps.color as string | undefined;
 
   const { datarecord, schema, error } = useDatarecord(datarecordId);
   const [formData, setFormData] = useState<Record<string, unknown>>({});

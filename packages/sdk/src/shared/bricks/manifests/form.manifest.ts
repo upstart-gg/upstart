@@ -35,13 +35,13 @@ There is no need to define the form fields manually and the form does not accept
     button: group({
       title: "Button",
       children: {
-        buttonLabel: Type.Optional(
+        label: Type.Optional(
           string("Button Label", {
             description: "The label of the submit button",
             default: "Submit",
           }),
         ),
-        buttonPosition: Type.Union(
+        position: Type.Union(
           [
             Type.Literal("left", { title: "Left" }),
             Type.Literal("center", { title: "Center" }),
@@ -49,7 +49,7 @@ There is no need to define the form fields manually and the form does not accept
           ],
           { title: "Position", default: "right", "ui:responsive": "desktop" },
         ),
-        buttonColor: Type.Union(
+        color: Type.Union(
           [
             Type.Literal("btn-color-neutral", { title: "Neutral", "ui:variant-type": "color" }),
             Type.Literal("btn-color-primary", { title: "Primary", "ui:variant-type": "color" }),
@@ -62,7 +62,7 @@ There is no need to define the form fields manually and the form does not accept
             "ai:tip": "Those are  button variants",
           },
         ),
-        buttonBorderRadius: Type.Optional(
+        borderRadius: Type.Optional(
           StringEnum(["rounded-none", "rounded-sm", "rounded", "rounded-md", "rounded-lg", "rounded-xl"], {
             title: "Border Radius",
             enumNames: ["None", "XS", "S", "M", "L", "XL"],
@@ -104,10 +104,10 @@ export const examples: {
       align: "vertical",
       datarecordId: "contacts",
       button: {
-        buttonLabel: "Send Message",
-        buttonPosition: "right",
-        buttonBorderRadius: "rounded-md",
-        buttonColor: "btn-color-primary",
+        label: "Send Message",
+        position: "right",
+        borderRadius: "rounded-md",
+        color: "btn-color-primary",
       },
     },
   },
@@ -120,10 +120,10 @@ export const examples: {
       align: "vertical",
       datarecordId: "user-registration",
       button: {
-        buttonLabel: "Register",
-        buttonPosition: "right",
-        buttonBorderRadius: "rounded-md",
-        buttonColor: "btn-color-secondary",
+        label: "Register",
+        position: "right",
+        borderRadius: "rounded-md",
+        color: "btn-color-secondary",
       },
     },
   },
@@ -136,10 +136,10 @@ export const examples: {
       align: "horizontal",
       datarecordId: "newsletter-subscription",
       button: {
-        buttonLabel: "Subscribe",
-        buttonPosition: "center",
-        buttonBorderRadius: "rounded-md",
-        buttonColor: "btn-color-accent",
+        label: "Subscribe",
+        position: "center",
+        borderRadius: "rounded-md",
+        color: "btn-color-accent",
       },
     },
   },
@@ -152,10 +152,10 @@ export const examples: {
       align: "vertical",
       datarecordId: "event-registration",
       button: {
-        buttonLabel: "Register Now",
-        buttonPosition: "right",
-        buttonBorderRadius: "rounded-md",
-        buttonColor: "btn-color-primary",
+        label: "Register Now",
+        position: "right",
+        borderRadius: "rounded-md",
+        color: "btn-color-primary",
       },
     },
   },
@@ -168,10 +168,10 @@ export const examples: {
       align: "vertical",
       datarecordId: "job-application",
       button: {
-        buttonLabel: "Submit Application",
-        buttonPosition: "right",
-        buttonBorderRadius: "rounded-md",
-        buttonColor: "btn-color-secondary",
+        label: "Submit Application",
+        position: "right",
+        borderRadius: "rounded-md",
+        color: "btn-color-secondary",
       },
     },
   },
@@ -184,10 +184,10 @@ export const examples: {
       align: "vertical",
       datarecordId: "customer-feedback",
       button: {
-        buttonLabel: "Submit Feedback",
-        buttonPosition: "right",
-        buttonBorderRadius: "rounded-md",
-        buttonColor: "btn-color-accent",
+        label: "Submit Feedback",
+        position: "right",
+        borderRadius: "rounded-md",
+        color: "btn-color-accent",
       },
     },
   },
