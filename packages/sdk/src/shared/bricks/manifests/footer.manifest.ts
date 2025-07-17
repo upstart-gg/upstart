@@ -1,14 +1,13 @@
 import { Type } from "@sinclair/typebox";
+import { VscLayoutPanelOff } from "react-icons/vsc";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { array, defineProps } from "../props/helpers";
-import { number } from "../props/number";
-import { string, urlOrPageIdRef } from "../props/string";
-import { VscLayoutPanelOff } from "react-icons/vsc";
 import { imageRef } from "../props/image";
-import type { BrickProps } from "../props/types";
 import { paddingRef } from "../props/padding";
-import { fontSize } from "../props/text";
 import { colorPresetRef } from "../props/preset";
+import { string, urlOrPageIdRef } from "../props/string";
+import { fontSize } from "../props/text";
+import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({
   type: "footer",
@@ -90,12 +89,16 @@ export const manifest = defineBrickManifest({
     // rows:Type.Optional(number("Rows", { default: 1, "ui:field": "slider", minimum: 1, maximum: 5 })),
     linksSections: array(
       Type.Object({
-        sectionTitle: string("Links Section title"),
+        sectionTitle: string("Title"),
         links: array(
           Type.Object({
             title: string("Title"),
             url: urlOrPageIdRef(),
           }),
+          {
+
+              title: "Links",
+          }
         ),
       }),
       {
@@ -110,6 +113,14 @@ export const manifest = defineBrickManifest({
             ],
           },
         ],
+        title: "Footer Links",
+        "ui:displayField": "sectionTitle",
+        "ui:options": {
+          orderable: true, // Enable drag & drop reordering
+          removable: true, // Enable delete button
+          addable: true, // Enable add button
+        },
+        description: "List of Links Sections",
       },
     ),
   }),

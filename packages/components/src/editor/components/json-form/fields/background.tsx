@@ -47,10 +47,11 @@ const BackgroundField: FC<FieldProps<BackgroundSettings>> = (props) => {
                 schema["ui:accept"] ??
                 "image/png, image/jpeg, image/jpg, image/svg+xml, image/webp, image/gif"
               }
-              onChange={(e) => {
+              onChange={async (e) => {
                 const file = e.target.files?.[0];
                 if (!file) return;
-                onImageUpload(file);
+                const url = await onImageUpload(file);
+                console.log("image upload url", url);
                 const tempUrl = URL.createObjectURL(file);
                 if (tempUrl) {
                   onChange({ ...currentValue, image: tempUrl as string });

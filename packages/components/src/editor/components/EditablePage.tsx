@@ -1,4 +1,7 @@
-import { startTransition, useEffect, useRef } from "react";
+import { tx } from "@upstart.gg/style-system/twind";
+import { useEffect, useRef } from "react";
+import { PageProvider } from "~/shared/hooks/use-page-context";
+import { usePageStyle } from "~/shared/hooks/use-page-style";
 import {
   useAttributes,
   useDraft,
@@ -8,15 +11,13 @@ import {
   useGridConfig,
   usePreviewMode,
   useSections,
+  useTheme,
   useZoom,
 } from "../hooks/use-editor";
-import { usePageStyle } from "~/shared/hooks/use-page-style";
 import { useFontWatcher } from "../hooks/use-font-watcher";
-import Section from "./EditableSection";
-import { tx } from "@upstart.gg/style-system/twind";
-import { useResizable } from "../hooks/use-resizable";
 import { useGridObserver } from "../hooks/use-grid-observer";
-import { useDeviceInfo } from "../hooks/use-device-info";
+import { useResizable } from "../hooks/use-resizable";
+import Section from "./EditableSection";
 
 type EditablePageProps = {
   showIntro?: boolean;
@@ -33,6 +34,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const attributes = useAttributes();
   const sections = useSections();
   const typography = useFontWatcher();
+  const theme = useTheme();
 
   const pageClassName = usePageStyle({
     attributes,
@@ -62,14 +64,12 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
             s: true,
           },
     onResizeStart: (event) => {
-      console.log("Resize started:", event.target);
       const target = event.target as HTMLElement;
       // disable flex-grow temporarily to allow resize
       target.style.setProperty("flex-grow", "0");
     },
 
     onResizeEnd: (event) => {
-      console.log("resizeend event", event);
       const target = event.target as HTMLElement;
       const brickId = target.dataset.brickId as string;
       const parentBrick = draftHelpers.getParentBrick(brickId);
@@ -80,9 +80,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         console.warn("Page width is not available, cannot update brick props.");
         return;
       }
-
-      console.log("Parent element width:", parentWidth, "px");
-      console.log("Parent element offsetWidth:", parentElement.offsetWidth, "px");
 
       draftHelpers.updateBrickProps(brickId, {
         width:
@@ -151,18 +148,20 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   }, [generationState.isReady]);
 
   return (
-    <div
-      id="page-container"
-      ref={pageRef}
-      className={tx(pageClassName)}
-      style={{
-        zoom,
-      }}
-    >
-      {/* If the navbar is enabled, set it statically */}
-      {sections.map((section, index) => (
-        <Section key={section.id} section={section} index={index} />
-      ))}
-    </div>
+    <PageProvider attributes={attributes} theme={theme} editable={true}>
+      <div
+        id="page-container"
+        ref={pageRef}
+        className={tx(pageClassName)}
+        style={{
+          zoom,
+        }}
+      >
+        {/* If the navbar is enabled, set it statically */}
+        {sections.map((section, index) => (
+          <Section key={section.id} section={section} index={index} />
+        ))}
+      </div>
+    </PageProvider>
   );
 }

@@ -1,5 +1,15 @@
 # @upstart.gg/style-system
 
+## 0.0.119
+
+### Patch Changes
+
+- [#366](https://github.com/upstart-gg/upstart/pull/366) [`3daaeda`](https://github.com/upstart-gg/upstart/commit/3daaeda34fe3767f450e0dcc56dba3cc2e2c7593) Thanks [@mattallty](https://github.com/mattallty)! - Start hierarchy drag
+
+- [#369](https://github.com/upstart-gg/upstart/pull/369) [`bfe2538`](https://github.com/upstart-gg/upstart/commit/bfe2538a467c9573dfc079f9d44167b1926cd692) Thanks [@mattallty](https://github.com/mattallty)! - Implement image upload
+
+- [#363](https://github.com/upstart-gg/upstart/pull/363) [`ae5b601`](https://github.com/upstart-gg/upstart/commit/ae5b601879000850e27b3f9dea97cecdb02f6c01) Thanks [@mattallty](https://github.com/mattallty)! - Rework some bricks
+
 ## 0.0.118
 
 ### Patch Changes

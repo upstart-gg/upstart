@@ -1,39 +1,40 @@
-import type { ReactNode } from "react";
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
 import get from "lodash-es/get";
+import type { ReactNode } from "react";
 
 // Import field components
-import ColorField from "./fields/color";
-import EnumField from "./fields/enum";
-import ImageField from "./fields/image";
+import { AlignBasicField } from "./fields/align-basic";
+import { ArrayField } from "./fields/array";
+import BackgroundField from "./fields/background";
 import { BorderField } from "./fields/border";
 import { BorderSideField } from "./fields/border-side";
-import { GeoAddressField, PathField, StringField, UrlOrPageIdField } from "./fields/string";
-import { NumberField, SliderField } from "./fields/number";
-import SwitchField from "./fields/switch";
-import { PagePaddingField, type TempPadding } from "./fields/padding";
-import BackgroundField from "./fields/background";
-import GeolocationField from "./fields/geolocation";
-import { FlexField } from "./fields/flex";
-import { AlignBasicField } from "./fields/align-basic";
+import ColorField from "./fields/color";
 import DatasourceRefField from "./fields/datasource-ref";
-import { GridField } from "./fields/grid";
+import EnumField from "./fields/enum";
+import IconifyField from "./fields/iconify";
+import ImageField from "./fields/image";
+import { NumberField, SliderField } from "./fields/number";
+import { PagePaddingField, type TempPadding } from "./fields/padding";
+import { GeoAddressField, PathField, StringField, UrlOrPageIdField } from "./fields/string";
+import SwitchField from "./fields/switch";
+import VariantGroupField from "./fields/variant-group";
 
 // Import types
-import type { GeolocationSettings } from "@upstart.gg/sdk/shared/bricks/props/geolocation";
-import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
-import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
+import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
+import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
+import type { GeolocationSettings } from "@upstart.gg/sdk/shared/bricks/props/geolocation";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
-import { fieldLabel } from "./form-class";
+import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
+import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 import { Tooltip } from "@upstart.gg/style-system/system";
 import clsx from "clsx";
-import { CssLengthField } from "./fields/css-length";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
-import { DatarecordField } from "./fields/datarecord";
 import ColorPresetField from "./fields/color-preset";
-import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
+import { CssLengthField } from "./fields/css-length";
+import { DatarecordField } from "./fields/datarecord";
+import type { IconCategory } from "./fields/iconify";
+import { fieldLabel } from "./form-class";
 
 export interface FieldFactoryOptions {
   brickId?: string;
@@ -355,6 +356,138 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       );
     }
 
+    case "array": {
+      const rawValue = get(formData, id);
+      // Only use default if the field has never been set, not when it's an empty array
+      const currentValue =
+        rawValue !== undefined ? (Array.isArray(rawValue) ? rawValue : []) : commonProps.schema.default || [];
+
+      // For simple arrays (like variants), we can create a field for each item
+      // or use a specialized component depending on the content
+      if (schema.items) {
+        const itemSchema = resolveSchema(schema.items);
+
+        // For arrays of objects, use the generic ArrayField
+        if (itemSchema.type === "object") {
+          // Use generic ArrayField for all object arrays
+          return (
+            <ArrayField
+              key={`field-${id}`}
+              currentValue={currentValue}
+              onChange={(newArray: unknown[] | null) => onChange({ [id]: newArray || [] }, id)}
+              itemSchema={itemSchema}
+              fieldName={fieldName}
+              id={id}
+              parents={options.parents}
+              {...commonProps}
+            />
+          );
+        }
+
+        // For arrays of Union/Literal (like button variants), create a multi-select field
+        if (
+          itemSchema.anyOf ||
+          itemSchema.oneOf ||
+          itemSchema.enum ||
+          (itemSchema as { union?: unknown[] }).union
+        ) {
+          const options =
+            itemSchema.anyOf ||
+            itemSchema.oneOf ||
+            itemSchema.enum ||
+            (itemSchema as { union?: unknown[] }).union ||
+            [];
+
+          // Check if options have ui:variant-type for grouped selection
+          const hasVariantTypes = options.some(
+            (option: unknown) => typeof option === "object" && option !== null && "ui:variant-type" in option,
+          );
+
+          if (hasVariantTypes) {
+            return (
+              <VariantGroupField
+                key={`field-${id}`}
+                currentValue={currentValue as string[]}
+                onChange={(value: string[] | null) => onChange({ [id]: value || [] }, id)}
+                {...commonProps}
+              />
+            );
+          }
+
+          // Fallback to original multi-select buttons for non-variant arrays
+          return (
+            <div key={`field-${id}`} className="space-y-2">
+              {commonProps.title && (
+                <label className="block text-sm font-medium text-gray-700 mb-1">{commonProps.title}</label>
+              )}
+              <div className="flex flex-wrap gap-1">
+                {options.map((option: string | { const: string; title?: string }) => {
+                  const value = typeof option === "string" ? option : option.const;
+                  const title = typeof option === "string" ? value : option.title || option.const;
+                  const isSelected = currentValue.includes(value);
+
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      className={`px-2 py-1 text-xs rounded border transition-colors ${
+                        isSelected
+                          ? "bg-blue-500 text-white border-blue-500"
+                          : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
+                      }`}
+                      onClick={() => {
+                        const newValue = isSelected
+                          ? currentValue.filter((v: string) => v !== value)
+                          : [...currentValue, value];
+                        onChange({ [id]: newValue }, id);
+                      }}
+                    >
+                      {title}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        }
+
+        // For arrays of primitive types, use the generic ArrayField
+        return (
+          <ArrayField
+            key={`field-${id}`}
+            currentValue={currentValue}
+            onChange={(newArray: unknown[] | null) => onChange({ [id]: newArray || [] }, id)}
+            itemSchema={itemSchema}
+            fieldName={fieldName}
+            id={id}
+            parents={options.parents}
+            {...commonProps}
+          />
+        );
+      }
+
+      // Fallback for arrays without items schema
+      console.warn("Array field without items schema:", fieldName, schema);
+      return null;
+    }
+
+    // TODO - iconify
+    case "iconify": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;
+      const categories =
+        (commonProps.schema["ui:iconify-categories"] as IconCategory[] | undefined) ||
+        (commonProps.schema["ui:options"] as { categories?: IconCategory[] })?.categories;
+      return (
+        <IconifyField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: string | null) => onChange({ [id]: value }, id)}
+          categories={categories}
+          {...commonProps}
+        />
+      );
+    }
+
     case "Function":
       return null;
 
@@ -407,7 +540,8 @@ export function processObjectSchemaToFields({
     }
 
     // Build the field ID
-    const id = parents.length ? `${parents.join(".")}.${fieldName}` : fieldName;
+    // For array items, use just the fieldName since formData is the item itself
+    const id = fieldName;
 
     // Create field component
     const fieldComponent = createFieldComponent({

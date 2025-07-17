@@ -1,5 +1,23 @@
 # @upstart.gg/components
 
+## 0.0.119
+
+### Patch Changes
+
+- [#366](https://github.com/upstart-gg/upstart/pull/366) [`3daaeda`](https://github.com/upstart-gg/upstart/commit/3daaeda34fe3767f450e0dcc56dba3cc2e2c7593) Thanks [@mattallty](https://github.com/mattallty)! - Start hierarchy drag
+
+- [#367](https://github.com/upstart-gg/upstart/pull/367) [`f85bc5f`](https://github.com/upstart-gg/upstart/commit/f85bc5fd1b80dbfa60ec3949aee72cb9b669ba64) Thanks [@mattallty](https://github.com/mattallty)! - Fix error
+
+- [#368](https://github.com/upstart-gg/upstart/pull/368) [`0eb3f63`](https://github.com/upstart-gg/upstart/commit/0eb3f631688a9ebf8348b58c6d1266ca8c41cb16) Thanks [@mattallty](https://github.com/mattallty)! - Fix page hierarchy
+
+- [#369](https://github.com/upstart-gg/upstart/pull/369) [`bfe2538`](https://github.com/upstart-gg/upstart/commit/bfe2538a467c9573dfc079f9d44167b1926cd692) Thanks [@mattallty](https://github.com/mattallty)! - Implement image upload
+
+- [#363](https://github.com/upstart-gg/upstart/pull/363) [`ae5b601`](https://github.com/upstart-gg/upstart/commit/ae5b601879000850e27b3f9dea97cecdb02f6c01) Thanks [@mattallty](https://github.com/mattallty)! - Rework some bricks
+
+- Updated dependencies [[`3daaeda`](https://github.com/upstart-gg/upstart/commit/3daaeda34fe3767f450e0dcc56dba3cc2e2c7593), [`0eb3f63`](https://github.com/upstart-gg/upstart/commit/0eb3f631688a9ebf8348b58c6d1266ca8c41cb16), [`bfe2538`](https://github.com/upstart-gg/upstart/commit/bfe2538a467c9573dfc079f9d44167b1926cd692), [`ae5b601`](https://github.com/upstart-gg/upstart/commit/ae5b601879000850e27b3f9dea97cecdb02f6c01)]:
+  - @upstart.gg/style-system@0.0.119
+  - @upstart.gg/sdk@0.0.119
+
 ## 0.0.118
 
 ### Patch Changes

@@ -140,6 +140,7 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
       if (!hasHandles) return;
 
       const interactable = interact(htmlElement).resizable({
+        inertia: true,
         edges: {
           top: ".resizable-handle-n, .resizable-handle-ne, .resizable-handle-nw",
           right: ".resizable-handle-e, .resizable-handle-ne, .resizable-handle-se",
@@ -151,6 +152,8 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
             const target = event.target as HTMLElement;
             const rect = target.getBoundingClientRect();
             const activeHandle = event.interaction.downEvent?.target as HTMLElement;
+
+            target.classList.toggle("resizing", true);
 
             setElementSize(target, rect.width, rect.height);
 
@@ -220,6 +223,8 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
             const target = event.target as HTMLElement;
             const rect = target.getBoundingClientRect();
             const activeHandle = event.interaction.downEvent?.target as HTMLElement;
+
+            target.classList.toggle("resizing", false);
 
             const resizeEvent = createResizeEvent(
               target,
