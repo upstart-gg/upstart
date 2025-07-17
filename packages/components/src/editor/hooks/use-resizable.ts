@@ -140,7 +140,6 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
       if (!hasHandles) return;
 
       const interactable = interact(htmlElement).resizable({
-        inertia: true,
         edges: {
           top: ".resizable-handle-n, .resizable-handle-ne, .resizable-handle-nw",
           right: ".resizable-handle-e, .resizable-handle-ne, .resizable-handle-se",
