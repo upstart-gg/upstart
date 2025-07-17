@@ -107,7 +107,6 @@ export interface EditorStateProps {
   contextMenuVisible: boolean;
   draggingBrickType?: Brick["type"];
 
-  onShowLogin: () => void;
   onShowPopup?: (id: string | false) => void;
   onPublish: (data: PagePublishPayload) => void;
   /**
@@ -197,9 +196,6 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
         ]
       : undefined,
     sitePrompt: "",
-    onShowLogin: () => {
-      console.warn("onShowLogin is not implemented");
-    },
     onPublish: () => {
       console.warn("onPublish is not implemented");
     },
@@ -1678,7 +1674,6 @@ export const useEditorHelpers = () => {
     showModal: state.showModal,
     hideModal: state.hideModal,
     toggleEditorEnabled: state.toggleEditorEnabled,
-    onShowLogin: state.onShowLogin,
     onPublish: state.onPublish,
     onSavePage: state.onSavePage,
     onSaveSite: state.onSaveSite,

@@ -9,11 +9,13 @@ import trans from "./trans.svg?url";
 import { debounce } from "lodash-es";
 import { IoMdClose } from "react-icons/io";
 import { FieldTitle } from "../field-factory";
+import { useUploader } from "../../UploaderContext";
 
 const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
   const { schema, formData, onChange, required, title, description, currentValue } = props;
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);
+  const { onImageUpload } = useUploader();
 
   // const [src, setSrc] = useState<string | null>(currentValue.src);
 
@@ -33,11 +35,16 @@ const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
             type="file"
             className="overflow-hidden w-[0.1px] h-[0.1px] opacity-0 absolute -z-10"
             accept={schema["ui:accept"]}
-            onChange={(e) => {
+            onChange={async (e) => {
               const file = e.target.files?.[0];
               if (file) {
+                const url = await onImageUpload(file);
+                console.log("image upload url", url);
+                const tempUrl = URL.createObjectURL(file);
+
                 const src = URL.createObjectURL(file);
-                onPropsChange({ src: src });
+                // First assign the URL to src
+                onPropsChange({ src: url });
               }
             }}
             required={required}
