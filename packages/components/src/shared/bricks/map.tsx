@@ -3,6 +3,7 @@ import { type Manifest, DEFAULTS } from "@upstart.gg/sdk/bricks/manifests/map.ma
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { tx } from "@upstart.gg/style-system/twind";
+import L, { Map as LMap, TileLayer, Marker, LatLng } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
@@ -24,13 +25,13 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
     async function init() {
       if (!mapRef.current) return;
       try {
-        const L = (await import("leaflet")).default;
         // Initialize the map
-        const map = L.map(mapRef.current, {
+        const map = new LMap(mapRef.current, {
           zoomControl: false,
           attributionControl: false,
           dragging: false, // Disable dragging for static maps
-          touchZoom: false, // Disable touch zoom for static maps
+          // @ts-ignore @types/leaflet are not in sync with latest leadflet beta, pingchZoom does exist!
+          pinchZoom: false, // Disable touch zoom for static maps
           scrollWheelZoom: false, // Disable scroll wheel zoom for static maps
           doubleClickZoom: false, // Disable double click zoom for static maps
           boxZoom: false, // Disable box zoom for static maps
@@ -39,12 +40,12 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
         }).setView([lat, lng], props.location.zoom ?? DEFAULTS.zoom);
 
         // Add tile layer
-        L.tileLayer("https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png", {
+        new TileLayer("https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png", {
           zIndex: 40,
         }).addTo(map);
 
         // Add marker with tooltip
-        const marker = L.marker([lat, lng]).addTo(map);
+        const marker = new Marker([lat, lng]).addTo(map);
 
         if (props.location.tooltip) {
           marker
@@ -81,7 +82,7 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
   // Update map when location changes
   useEffect(() => {
     if (mapInstanceRef.current && markerRef.current) {
-      const newLatLng = window.L.latLng(lat, lng);
+      const newLatLng = new LatLng(lat, lng);
       // Update map center
       mapInstanceRef.current.setView(newLatLng, props.location.zoom ?? DEFAULTS.zoom);
       // Update marker position
