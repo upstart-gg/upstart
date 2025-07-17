@@ -64,14 +64,12 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
             s: true,
           },
     onResizeStart: (event) => {
-      console.log("Resize started:", event.target);
       const target = event.target as HTMLElement;
       // disable flex-grow temporarily to allow resize
       target.style.setProperty("flex-grow", "0");
     },
 
     onResizeEnd: (event) => {
-      console.log("resizeend event", event);
       const target = event.target as HTMLElement;
       const brickId = target.dataset.brickId as string;
       const parentBrick = draftHelpers.getParentBrick(brickId);
@@ -82,9 +80,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         console.warn("Page width is not available, cannot update brick props.");
         return;
       }
-
-      console.log("Parent element width:", parentWidth, "px");
-      console.log("Parent element offsetWidth:", parentElement.offsetWidth, "px");
 
       draftHelpers.updateBrickProps(brickId, {
         width:

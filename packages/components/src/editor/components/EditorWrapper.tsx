@@ -43,7 +43,6 @@ export type EditorWrapperProps = {
    * Callback when a tour is completed.
    */
   onTourComplete?: (tourId: string) => void;
-  onShowLogin: () => void;
   onShowPopup: EditorStateProps["onShowPopup"];
   onPublish: EditorStateProps["onPublish"];
   onSavePage?: EditorStateProps["onSavePage"];
@@ -63,7 +62,6 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
       mode,
       onImageUpload,
       children,
-      onShowLogin,
       onSaveSite,
       onSavePage,
       onPublish,
@@ -78,7 +76,6 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
     const editorStore = useRef(
       createEditorStore({
         mode,
-        onShowLogin,
         onPublish,
         onSaveSite,
         onSavePage,
