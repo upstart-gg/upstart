@@ -386,6 +386,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   datarecordId: "aacfe76d-4309-466c-83ad-fda8b02b043d",
                   title: "Complex Form",
                   intro: "This is a complex form with various field types.",
+                  align: "vertical",
                   button: {
                     label: "Submit Form",
                     position: "right",

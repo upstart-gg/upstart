@@ -23,9 +23,8 @@ export const manifest = defineBrickManifest({
       title: "Modifier",
       description: "Button modifiers.",
       enumNames: ["Block", "Wide"],
-      default: "btn-wide",
+      default: "btn-block",
     }),
-
     label: string("Label", { default: "My button" }),
     justifyContent: Type.Optional(
       StringEnum(["justify-start", "justify-center", "justify-end"], {

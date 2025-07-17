@@ -2,7 +2,6 @@ import { Type } from "@sinclair/typebox";
 import { HiOutlineChatBubbleBottomCenter } from "react-icons/hi2";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { backgroundRef } from "../props/background";
-import { borderRef } from "../props/border";
 import { shadowRef } from "../props/effects";
 import { defineProps } from "../props/helpers";
 import { imageRef } from "../props/image";
@@ -29,7 +28,6 @@ export const manifest = defineBrickManifest({
         ),
       ),
       background: Type.Optional(backgroundRef()),
-      border: Type.Optional(borderRef()),
       padding: Type.Optional(paddingRef()),
       shadow: Type.Optional(shadowRef()),
       testimonials: Type.Array(

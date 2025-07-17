@@ -285,7 +285,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
           {fields}
         </div>
         <div className={tx("flex pt-1", getButtonPosition())}>
-          <button type="submit" className={tx("btn", buttonBorderRadius, buttonColor)}>
+          <button type="submit" className={tx("btn", buttonBorderRadius, buttonColor, buttonProps.modifier)}>
             {buttonLabel || "Submit"}
           </button>
         </div>
