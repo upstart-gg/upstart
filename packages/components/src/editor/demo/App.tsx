@@ -26,18 +26,12 @@ export default function App({ path }: { path: string }) {
 
 function InnerEditor(
   props: PropsWithChildren<
-    Omit<
-      EditorWrapperProps,
-      "onImageUpload" | "onShowLogin" | "onShowPopup" | "onPublish" | "onSavePage" | "onSaveSite"
-    >
+    Omit<EditorWrapperProps, "onImageUpload" | "onShowPopup" | "onPublish" | "onSavePage" | "onSaveSite">
   >,
 ) {
   const onImageUpload = async (file: File) => {
     console.log("Image upload callback called with", file);
     return "https://via.placeholder.com/150";
-  };
-  const onShowLogin = () => {
-    console.debug("onShowLogin: Out of the demo, the 'login' modal should be displayed at this time.");
   };
   const onPublish = () => {
     console.debug("onPublish: Out of the demo, the 'publish' modal should be displayed at this time.");
@@ -68,7 +62,6 @@ function InnerEditor(
     <EditorWrapper
       ref={editorWrapperRef}
       {...props}
-      onShowLogin={onShowLogin}
       onImageUpload={onImageUpload}
       onPublish={onPublish}
       onSavePage={onSavePage}

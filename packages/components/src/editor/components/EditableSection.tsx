@@ -282,7 +282,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
   const btnCls = tx(
     "select-none hover:opacity-90",
     "text-base px-1.5 h-9  ",
-    "text-black/80 hover:bg-upstart-100 font-bold flex items-center gap-1",
+    "text-black/80 hover:bg-upstart-300/20 font-bold flex items-center gap-1",
     "active:(outline-none ring-0) focus:(outline-none ring-0)",
   );
   return (
@@ -295,7 +295,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
         `section-options-buttons translate-y-1/2 shadow
             absolute z-[99999] left-1/2 -translate-x-1/2 min-w-fit border border-gray-200`,
         "gap-0 rounded-md [&>*:first-child]:rounded-l-md [&>*:last-child]:rounded-r-md ",
-        "bg-white/90 backdrop-blur-md transition-opacity duration-500  group-hover/section:opacity-100 flex",
+        "bg-white/90 backdrop-blur-md transition-opacity duration-500 group-hover/section:opacity-100 flex",
       )}
     >
       <div

@@ -165,6 +165,9 @@ function getBrickWrapperEditorStyles(
       "&.moving": {
         outlineColor: "var(--violet-8)",
       },
+      "&.resizing": {
+        outlineColor: "var(--violet-8)",
+      },
       "& [data-brick-group]:hover": {
         outline: "1px dashed var(--violet-8)",
         opacity: 0.85,
