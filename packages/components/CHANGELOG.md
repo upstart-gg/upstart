@@ -1,5 +1,15 @@
 # @upstart.gg/components
 
+## 0.0.120
+
+### Patch Changes
+
+- [#371](https://github.com/upstart-gg/upstart/pull/371) [`70c7781`](https://github.com/upstart-gg/upstart/commit/70c77819a24406452722589dce1444ad6dfed7ed) Thanks [@mattallty](https://github.com/mattallty)! - Use latest leaflet version
+
+- Updated dependencies [[`70c7781`](https://github.com/upstart-gg/upstart/commit/70c77819a24406452722589dce1444ad6dfed7ed)]:
+  - @upstart.gg/style-system@0.0.120
+  - @upstart.gg/sdk@0.0.120
+
 ## 0.0.119
 
 ### Patch Changes
