@@ -12,7 +12,7 @@ import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
 import { enableMapSet } from "immer";
-import { debounce, isEqual } from "lodash-es";
+import { debounce, isEqual, merge } from "lodash-es";
 import { createContext, useContext, useEffect } from "react";
 import { temporal } from "zundo";
 import { createStore, useStore } from "zustand";
@@ -975,7 +975,7 @@ export const createDraftStore = (
                     lastTouched: Date.now(),
                   });
                 } else {
-                  section.props = mergeIgnoringArrays({}, section.props, props, {
+                  section.props = merge({}, section.props, props, {
                     lastTouched: Date.now(),
                   });
                 }

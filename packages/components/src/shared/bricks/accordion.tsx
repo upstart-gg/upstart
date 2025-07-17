@@ -1,16 +1,17 @@
-import { forwardRef } from "react";
 import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/accordion.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
+import { tx } from "@upstart.gg/style-system/twind";
+import { forwardRef } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import { tx, css } from "@upstart.gg/style-system/twind";
 
 const Accordion = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
   const { props } = brick;
+  const items = Array.isArray(props.items) ? props.items : [];
 
   return (
     <div className={tx("collapse-container", styles.container)}>
-      {props.items.map((item, index) => {
+      {items.map((item, index) => {
         return (
           <div key={index} className={tx("collapse", props.variants, props.itemsStyles?.fontSize)}>
             {!props.allowMultiple && (

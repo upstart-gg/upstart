@@ -1,9 +1,6 @@
 import type { TSchema } from "@sinclair/typebox";
-import { isStandardColor } from "@upstart.gg/sdk/shared/themes/color-system";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { FC } from "react";
-import { usePageContext } from "../../hooks/use-page-context";
-import { usePageTextColor } from "../../hooks/use-page-text-color";
 
 export interface BaseFieldProps {
   fieldName: string;
@@ -25,18 +22,6 @@ interface GenericFieldProps {
 
 const inputClassname =
   "px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-500 placeholder:text-inherit placeholder:opacity-70";
-
-/**
- * Hook to get the raw page text color value for use in style attributes
- */
-function usePageTextColorValue() {
-  try {
-    const { attributes } = usePageContext();
-    return isStandardColor(attributes.$textColor) ? (attributes.$textColor as string) : "";
-  } catch {
-    return "";
-  }
-}
 
 const GenericFieldComponent: FC<GenericFieldProps> = ({
   fieldName,
@@ -77,7 +62,7 @@ export const BooleanField: FC<BaseFieldProps> = ({
           checked={booleanValue}
           onChange={(e) => onChange(e.target.checked)}
           required={required}
-          className="h-4 w-4 focus:ring-accent-500 border-gray-300 rounded"
+          className="h-4 w-4 rounded border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-500 accent-current"
         />
         <label htmlFor={fieldName} className="block text-sm font-medium">
           {title} {required && <span className="text-red-500">*</span>}
@@ -97,7 +82,6 @@ export const NumberField: FC<BaseFieldProps> = ({
   description,
 }) => {
   const numberValue = typeof value === "number" ? value : "";
-  const pageTextColor = usePageTextColor();
 
   return (
     <GenericFieldComponent fieldName={fieldName} title={title} required={required} description={description}>
@@ -114,10 +98,7 @@ export const NumberField: FC<BaseFieldProps> = ({
         min={fieldSchema.minimum as number | undefined}
         max={fieldSchema.maximum as number | undefined}
         required={required}
-        className={tx(
-          "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
-          pageTextColor && `[&::placeholder]:(${pageTextColor} opacity-70)`,
-        )}
+        className={inputClassname}
       />
     </GenericFieldComponent>
   );
@@ -135,8 +116,6 @@ export const SelectField: FC<BaseFieldProps> = ({
   const options = (fieldSchema.enum as string[]) || [];
   const stringValue = typeof value === "string" ? value : "";
   const widget = fieldSchema.metadata?.["ui:widget"] as "checkbox" | "radio" | "select" | undefined;
-  // const pageTextColor = usePageTextColor();
-  const pageTextColorValue = usePageTextColorValue();
 
   // Calculer la largeur minimale basée sur l'option la plus longue
   const longestOption = options.reduce(
@@ -168,11 +147,7 @@ export const SelectField: FC<BaseFieldProps> = ({
                   // checked={stringValue === option}
                   onChange={(e) => onChange(e.target.checked ? e.target.value : "")}
                   required={required}
-                  className={tx(
-                    "h-4 w-4 focus:ring-accent-500 border-gray-300 rounded",
-                    !pageTextColorValue && "accent-accent-500",
-                  )}
-                  style={pageTextColorValue ? { accentColor: pageTextColorValue } : undefined}
+                  className="h-4 w-4 rounded border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-500 accent-current"
                 />
                 <span className="text-sm">{option}</span>
               </label>
@@ -201,11 +176,7 @@ export const SelectField: FC<BaseFieldProps> = ({
                   checked={stringValue === option}
                   onChange={(e) => onChange(e.target.value)}
                   required={required}
-                  className={tx(
-                    "h-4 w-4 focus:ring-accent-500 border-gray-300",
-                    !pageTextColorValue && "accent-accent-600",
-                  )}
-                  style={pageTextColorValue ? { accentColor: pageTextColorValue } : undefined}
+                  className="h-4 w-4 rounded border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-500 accent-current"
                 />
                 <span className="text-sm">{option}</span>
               </label>
@@ -359,7 +330,6 @@ export const StringField: FC<BaseFieldProps> = ({
   description,
 }) => {
   const stringValue = typeof value === "string" ? value : "";
-  // const pageTextColor = usePageTextColor();
 
   return (
     <GenericFieldComponent fieldName={fieldName} title={title} required={required} description={description}>

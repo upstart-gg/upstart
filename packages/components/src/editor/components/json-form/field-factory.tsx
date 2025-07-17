@@ -540,8 +540,10 @@ export function processObjectSchemaToFields({
     }
 
     // Build the field ID
-    // For array items, use just the fieldName since formData is the item itself
-    const id = fieldName;
+    // For array items, use just the fieldName
+    // Detect if we're in an array context by checking if the last parent contains brackets
+    const isArrayItem = parents.length > 0 && parents[parents.length - 1].includes("[");
+    const id = !isArrayItem && parents.length > 0 ? `${parents.join(".")}.${fieldName}` : fieldName;
 
     // Create field component
     const fieldComponent = createFieldComponent({
