@@ -2,9 +2,12 @@ import { type Static, Type, type StringOptions } from "@sinclair/typebox";
 import type { FieldMetadata } from "./types";
 import { typedRef } from "~/shared/utils/typed-ref";
 
-type StrFieldOptions = StringOptions & FieldMetadata;
+type StrFieldOptions = StringOptions &
+  FieldMetadata & {
+    "ui:multiline"?: boolean;
+  };
 
-export function string(title: string, options: Omit<StrFieldOptions, "default"> = {}) {
+export function string(title: string, options: StrFieldOptions = {}) {
   return Type.String({ title, ...options });
 }
 
@@ -44,4 +47,20 @@ export type UrlOrPageIdSettings = Static<ReturnType<typeof urlOrPageId>>;
 
 export function urlOrPageIdRef(options: { title?: string; default?: string } = {}) {
   return typedRef("content:urlOrPageId", { ...options });
+}
+
+type IconOptions = StrFieldOptions & { "ui:default-icon-collection"?: string };
+
+export function icon(title?: string, options: IconOptions = {}) {
+  return Type.String({
+    title: title ?? "Icon",
+    "ai:instructions": "Use a iconify reference like 'mdi:heart' or 'fa-solid:coffee'.",
+    "ui:field": "iconify",
+    $id: "assets:icon",
+    ...options,
+  });
+}
+
+export function iconRef(options: IconOptions = {}) {
+  return typedRef("assets:icon", options);
 }

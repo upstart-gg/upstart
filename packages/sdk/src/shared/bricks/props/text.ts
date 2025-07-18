@@ -1,11 +1,11 @@
 import { type StringOptions, Type, type Static } from "@sinclair/typebox";
 import { typedRef } from "~/shared/utils/typed-ref";
 
-type Options = {
+type Options = StringOptions & {
   noExtraLargeSizes?: boolean;
 };
 
-export function fontSize(defaultValue = "inherit", title = "Font size", options: Options = {}) {
+export function fontSize(options: Options = {}) {
   return Type.Union(
     [
       Type.Literal("inherit", { title: "Same as parent" }),
@@ -26,16 +26,25 @@ export function fontSize(defaultValue = "inherit", title = "Font size", options:
         : []),
     ],
     {
-      default: defaultValue,
-      title,
+      default: "inherit",
+      title: "Font size",
+      $id: "styles:fontSize",
       "ui:styleId": "styles:fontSize",
       "ui:field": "enum",
       "ui:display": "select",
+      ...options,
     },
   );
 }
 
 export type FontSizeSettings = Static<ReturnType<typeof fontSize>>;
+
+export function fontSizeRef(options: Options = {}) {
+  return typedRef("styles:fontSize", {
+    ...options,
+    "ui:styleId": "styles:fontSize",
+  });
+}
 
 type TextContentOptions = {
   showInSettings?: boolean;

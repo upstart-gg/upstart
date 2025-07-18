@@ -33,7 +33,6 @@ import clsx from "clsx";
 import ColorPresetField from "./fields/color-preset";
 import { CssLengthField } from "./fields/css-length";
 import { DatarecordField } from "./fields/datarecord";
-import type { IconCategory } from "./fields/iconify";
 import { fieldLabel } from "./form-class";
 
 export interface FieldFactoryOptions {
@@ -432,7 +431,7 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
                       type="button"
                       className={`px-2 py-1 text-xs rounded border transition-colors ${
                         isSelected
-                          ? "bg-blue-500 text-white border-blue-500"
+                          ? "bg-upstart-500 text-white border-upstart-500"
                           : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
                       }`}
                       onClick={() => {
@@ -471,18 +470,15 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       return null;
     }
 
-    // TODO - iconify
     case "iconify": {
       const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;
-      const categories =
-        (commonProps.schema["ui:iconify-categories"] as IconCategory[] | undefined) ||
-        (commonProps.schema["ui:options"] as { categories?: IconCategory[] })?.categories;
+      const defaultCollection = commonProps.schema["ui:default-icon-collection"] as string | undefined;
       return (
         <IconifyField
           key={`field-${id}`}
           currentValue={currentValue}
+          defaultCollection={defaultCollection}
           onChange={(value: string | null) => onChange({ [id]: value }, id)}
-          categories={categories}
           {...commonProps}
         />
       );

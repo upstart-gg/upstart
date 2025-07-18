@@ -17,7 +17,12 @@ export default defineConfig({
     presetContainerQueries(),
     presetExt(),
     presetLineClamp(),
-    presetForms(),
+    presetForms({
+      // strategy: "class",
+      // We use the `btn` class for buttons, so we don't want to apply the default button styles
+      // to avoid conflicts with our custom button styles.
+      //
+    }),
     presetTypo(),
   ],
   variants: [

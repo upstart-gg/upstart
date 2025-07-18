@@ -22,7 +22,7 @@ export const StringField: FC<FieldProps<string>> = (props) => {
           required={required}
           placeholder={placeholder}
           resize="vertical"
-          size={"1"}
+          size={"2"}
           spellCheck={!!schema["ui:spellcheck"]}
         />
       ) : (
@@ -30,6 +30,7 @@ export const StringField: FC<FieldProps<string>> = (props) => {
           defaultValue={currentValue}
           onChange={(e) => onChangeDebounced(e.target.value)}
           className="!mt-1"
+          size={"2"}
           required={required}
           placeholder={placeholder}
           spellCheck={!!schema["ui:spellcheck"]}

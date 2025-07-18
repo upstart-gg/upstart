@@ -1,4 +1,11 @@
-import { DragDropContext, Draggable, Droppable, type DropResult } from "@hello-pangea/dnd";
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  type DropResult,
+  type DraggableStateSnapshot,
+  type DraggableProvided,
+} from "@hello-pangea/dnd";
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 import { useState } from "react";
@@ -7,6 +14,7 @@ import { TbPlus } from "react-icons/tb";
 import { FieldTitle, processObjectSchemaToFields } from "../field-factory";
 import type { FieldProps } from "./types";
 import { tx } from "@upstart.gg/style-system/twind";
+import { IconButton } from "@upstart.gg/style-system/system";
 
 export interface ArrayFieldProps extends FieldProps<unknown[]> {
   itemSchema: TSchema;
@@ -179,25 +187,25 @@ export function ArrayField({
   const renderArrayItem = (
     item: unknown,
     index: number,
-    // biome-ignore lint/suspicious/noExplicitAny: DragDropContext types are complex
-    provided?: { innerRef?: any; draggableProps?: any; dragHandleProps?: any },
+    provided?: DraggableProvided,
+    snapshot?: DraggableStateSnapshot,
   ) => {
     const typedItem = item as Record<string, unknown>;
     const isExpanded = expandedItems.has(index);
     const displayText = getDisplayText(item, index);
-
-    // Create a stable key for drag and drop
-    const stableKey = `item-${index}`;
 
     if (resolvedItemSchema.type === "object") {
       return (
         <div
           ref={provided?.innerRef}
           {...provided?.draggableProps}
-          className={`${isDragging ? "shadow-lg" : ""}`}
+          className={tx("border border-gray-200 rounded", `${snapshot?.isDragging && "shadow-lg"}`)}
         >
           {/* Header row - always visible */}
-          <div className={tx("flex items-center justify-between p-2 hover:bg-gray-50  border-gray-200 rounded bg-white", isExpanded ? "border-t, border-r border-l" : "border")}>
+          <div
+            className={tx("flex items-center cursor-pointer justify-between p-2 hover:bg-upstart-50")}
+            onClick={() => toggleExpanded(index)}
+          >
             <div className="flex items-center gap-2 min-w-0 flex-1">
               {/* Drag handle */}
               {orderable && (
@@ -209,24 +217,19 @@ export function ArrayField({
                 </div>
               )}
 
-              <span className="text-sm font-medium text-gray-700 truncate">{displayText}</span>
+              <span className="text-xs font-medium text-gray-700 truncate">{displayText}</span>
             </div>
 
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => toggleExpanded(index)}
-                className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded transition-colors"
-                title={isExpanded ? "Collapse" : "Expand"}
-              >
-                {isExpanded ? <MdExpandLess className="w-4 h-4" /> : <MdExpandMore className="w-4 h-4" />}
-              </button>
+            <div className="flex items-center gap-1 text-gray-500">
+              <MdExpandLess
+                className={tx("w-4 h-4 transition-transform duration-300", !isExpanded && "rotate-180")}
+              />
             </div>
           </div>
 
           {/* Expanded content - only visible when expanded */}
           {isExpanded && (
-            <div className="border-l border-r border-b border-gray-200 p-3 bg-gray-50 rounded-b">
+            <div className="p-2 bg-gray-50 rounded-b-[inherit]">
               <div className="space-y-3">
                 {/* Edit fields */}
                 {processObjectSchemaToFields({
@@ -271,7 +274,7 @@ export function ArrayField({
         ref={provided?.innerRef}
         {...provided?.draggableProps}
         className={`flex items-center gap-2 p-2 border rounded bg-white ${
-          isDragging ? "shadow-lg" : "shadow-sm"
+          snapshot?.isDragging ? "shadow-lg" : "shadow-sm"
         } transition-shadow`}
       >
         {orderable && (
@@ -313,26 +316,21 @@ export function ArrayField({
       <div className="flex w-full items-center justify-between">
         <FieldTitle title={title} description={description} />
         {addable && (
-          <button
-            type="button"
-            onClick={handleAddItem}
-            className="inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded transition-colors"
-            title="Add Item"
-          >
+          <IconButton type="button" onClick={handleAddItem} title="Add Item" variant="outline" size="1">
             <TbPlus className="w-4 h-4" />
-          </button>
+          </IconButton>
         )}
       </div>
 
       {/* Array items */}
       {orderable ? (
         <DragDropContext onDragEnd={handleDragEnd} onDragStart={() => setIsDragging(true)}>
-          <Droppable droppableId={`array-${id}`}>
+          <Droppable droppableId={`array-${id}`} direction="vertical">
             {(provided, snapshot) => (
               <div
                 {...provided.droppableProps}
                 ref={provided.innerRef}
-                className={`space-y-1 ${snapshot.isDraggingOver ? "bg-blue-50" : ""}`}
+                className={`space-y-1 -mx-1 ${snapshot.isDraggingOver ? "bg-upstart-50" : ""}`}
               >
                 {currentValue.map((item, index) => {
                   // Create stable key for drag and drop
@@ -350,7 +348,7 @@ export function ArrayField({
           </Droppable>
         </DragDropContext>
       ) : (
-        <div className="space-y-1">
+        <div className="space-y-1 -mx-1">
           {currentValue.map((item, index) => (
             <div key={`${id}-${index}`}>{renderArrayItem(item, index)}</div>
           ))}
@@ -359,7 +357,9 @@ export function ArrayField({
 
       {currentValue.length === 0 && (
         <div className="text-center py-6 text-gray-500 text-sm border-2 border-dashed border-gray-200 rounded text-pretty">
-          No items added yet. Click on the "+" to get started.
+          No items added yet.
+          <br />
+          Click on the "+" to get started.
         </div>
       )}
     </div>

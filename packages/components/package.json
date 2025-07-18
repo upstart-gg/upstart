@@ -47,8 +47,11 @@
     "@ai-sdk/react": "1.2.12",
     "@date-fns/utc": "1.2.0",
     "@hello-pangea/dnd": "18.0.1",
+    "@iconify/collections": "1.0.569",
+    "@iconify/react": "6.0.0",
     "@radix-ui/themes": "3.2.1",
     "@sinclair/typebox": "0.34.33",
+    "@tanstack/react-virtual": "3.13.12",
     "@tiptap/extension-code": "2.14.0",
     "@tiptap/extension-document": "2.14.0",
     "@tiptap/extension-heading": "2.14.0",
@@ -90,6 +93,7 @@
     "zustand": "4.5.5"
   },
   "devDependencies": {
+    "@iconify/types": "2.0.0",
     "@interactjs/types": "1.10.27",
     "@types/debug": "4.1.12",
     "@types/express": "^4.17.21",

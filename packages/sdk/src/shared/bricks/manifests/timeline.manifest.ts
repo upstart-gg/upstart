@@ -3,7 +3,7 @@ import { defineProps, group } from "../props/helpers";
 import { Type } from "@sinclair/typebox";
 import { backgroundColorRef } from "../props/background";
 import { textContentRef } from "../props/text";
-import { string } from "../props/string";
+import { iconRef, string } from "../props/string";
 import { paddingRef } from "../props/padding";
 import { borderRef } from "../props/border";
 import { shadowRef } from "../props/effects";
@@ -45,13 +45,7 @@ export const manifest = defineBrickManifest({
           }),
           title: textContentRef({ title: "Title", default: "Event title", disableSizing: true }),
           description: textContentRef({ title: "Description", default: "Event description" }),
-          icon: Type.Optional(
-            string("Icon", {
-              description: "Icon for this timeline item",
-              "ai:instructions": "Use a iconify reference",
-              "ui:widget": "iconify",
-            }),
-          ),
+          icon: Type.Optional(iconRef()),
         }),
         {
           title: "Timeline items",

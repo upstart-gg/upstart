@@ -6,7 +6,7 @@ import { imageRef } from "../props/image";
 import { paddingRef } from "../props/padding";
 import { colorPresetRef } from "../props/preset";
 import { string, urlOrPageIdRef } from "../props/string";
-import { fontSize } from "../props/text";
+import { fontSize, fontSizeRef } from "../props/text";
 import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({
@@ -85,7 +85,7 @@ export const manifest = defineBrickManifest({
     // backgroundColor:Type.Optional(backgroundColorRef()),
     padding: Type.Optional(paddingRef({ default: "p-10" })),
     logo: Type.Optional(imageRef({ title: "Logo", "ui:no-object-options": true, "ui:no-alt-text": true })),
-    fontSize: Type.Optional(fontSize("text-sm", "Font size", { noExtraLargeSizes: true })),
+    fontSize: Type.Optional(fontSizeRef({ default: "text-sm", noExtraLargeSizes: true })),
     // rows:Type.Optional(number("Rows", { default: 1, "ui:field": "slider", minimum: 1, maximum: 5 })),
     linksSections: array(
       Type.Object({
@@ -96,9 +96,8 @@ export const manifest = defineBrickManifest({
             url: urlOrPageIdRef(),
           }),
           {
-
-              title: "Links",
-          }
+            title: "Links",
+          },
         ),
       }),
       {

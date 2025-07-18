@@ -35,7 +35,7 @@ type TextShadowOptions = {
 
 /**
  * This function is used in ajv and type ref translations, but should not be used directly in bricks
- * @deprecated Use `textShadowRef` instead.
+ * @deprecated When using OUSTIDE of ajv.addSchema(), use `textShadowRef` instead.
  */
 export function textShadow({ title = "Text shadow", ...rest }: TextShadowOptions = {}) {
   return StringEnum(

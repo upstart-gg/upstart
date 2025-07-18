@@ -9,9 +9,9 @@ import { padding } from "./bricks/props/padding";
 import { image } from "./bricks/props/image";
 import { color } from "./bricks/props/color";
 import { shadow, textShadow } from "./bricks/props/effects";
-import { textContent } from "./bricks/props/text";
+import { fontSize, textContent } from "./bricks/props/text";
 import { cssLength } from "./bricks/props/css-length";
-import { urlOrPageId } from "./bricks/props/string";
+import { icon, urlOrPageId } from "./bricks/props/string";
 
 export type { JSONSchemaType, AnySchemaObject, SchemaObject, JSONType } from "ajv";
 
@@ -29,6 +29,7 @@ ajv.addSchema(background(), "styles:background");
 ajv.addSchema(backgroundColor(), "styles:backgroundColor");
 ajv.addSchema(basicAlign(), "styles:basicAlign");
 // ajv.addSchema(containerLayout(), "styles:containerLayout");
+ajv.addSchema(fontSize(), "styles:fontSize");
 ajv.addSchema(hidden(), "styles:hidden");
 ajv.addSchema(border(), "styles:border");
 ajv.addSchema(padding(), "styles:padding");
@@ -37,6 +38,7 @@ ajv.addSchema(shadow(), "styles:shadow");
 ajv.addSchema(textShadow(), "styles:textShadow");
 ajv.addSchema(cssLength(), "styles:cssLength");
 ajv.addSchema(image(), "assets:image");
+ajv.addSchema(icon(), "assets:icon");
 ajv.addSchema(textContent(), "content:textContent");
 ajv.addSchema(urlOrPageId(), "content:urlOrPageId");
 ajv.addSchema(colorPreset(), "presets:color");

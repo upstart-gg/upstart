@@ -3,7 +3,7 @@ import { RxButton } from "react-icons/rx";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
 import { defineProps } from "../props/helpers";
-import { string, urlOrPageIdRef } from "../props/string";
+import { iconRef, string, urlOrPageIdRef } from "../props/string";
 import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({
@@ -84,13 +84,7 @@ export const manifest = defineBrickManifest({
         "ui:placeholder": "Not specified",
       }),
     ),
-    icon: Type.Optional(
-      string("Icon", {
-        title: "Icon",
-        description: "Icon to display (iconify reference)",
-        "ui:field": "iconify",
-      }),
-    ),
+    icon: Type.Optional(iconRef()),
     linkToUrlOrPageId: Type.Optional(urlOrPageIdRef({ title: "Link" })),
   }),
 });
