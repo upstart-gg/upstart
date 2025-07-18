@@ -372,7 +372,10 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   align: "horizontal",
                   button: {
                     label: "Register",
-                    position: "center",
+                    position: {
+                      horizontal: "justify-center",
+                    },
+                    size: "block",
                     borderRadius: "rounded-lg",
                     color: "btn-color-primary",
                   },
@@ -389,7 +392,10 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   align: "vertical",
                   button: {
                     label: "Submit Form",
-                    position: "right",
+                    position: {
+                      horizontal: "justify-end",
+                    },
+                    size: "wide",
                     borderRadius: "rounded-md",
                     color: "btn-color-accent",
                   },

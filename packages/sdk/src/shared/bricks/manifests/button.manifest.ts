@@ -5,6 +5,7 @@ import { StringEnum } from "~/shared/utils/string-enum";
 import { defineProps } from "../props/helpers";
 import { string, urlOrPageIdRef } from "../props/string";
 import type { BrickProps } from "../props/types";
+import { borderRef } from "../props/border";
 
 export const manifest = defineBrickManifest({
   type: "button",
@@ -12,6 +13,9 @@ export const manifest = defineBrickManifest({
   repeatable: true,
   description: "A button with text and optional icon",
   icon: RxButton,
+  maxHeight: {
+    desktop: 50,
+  },
   props: defineProps({
     color: StringEnum(["btn-color-neutral", "btn-color-primary", "btn-color-secondary", "btn-color-accent"], {
       title: "Color",
@@ -19,39 +23,19 @@ export const manifest = defineBrickManifest({
       description: "Button variants.",
       default: "btn-color-primary",
     }),
-    modifier: StringEnum(["btn-block", "btn-wide"], {
-      title: "Modifier",
-      description: "Button modifiers.",
-      enumNames: ["Block", "Wide"],
-      default: "btn-block",
-    }),
     label: string("Label", { default: "My button" }),
-    justifyContent: Type.Optional(
-      StringEnum(["justify-start", "justify-center", "justify-end"], {
-        enumNames: ["Left", "Center", "Right"],
-        title: "Alignment",
-        "ui:placeholder": "Not specified",
-        default: "justify-center",
-        "ui:responsive": "desktop",
-      }),
-    ),
-    type: Type.Optional(
-      StringEnum(["button", "submit", "reset"], {
-        title: "Type",
-        enumNames: ["Button", "Submit", "Reset"],
-        default: "button",
-        description: "The type of the button",
-        "ai:instructions":
-          "Use 'button' for regular buttons, 'submit' for form submission, and 'reset' to reset form fields.",
-      }),
-    ),
-    round: Type.Optional(
-      StringEnum(["rounded-none", "rounded-sm", "rounded", "rounded-md", "rounded-lg", "rounded-xl"], {
-        title: "Border Radius",
-        enumNames: ["None", "XS", "S", "M", "L", "XL"],
-        default: "rounded-md",
-        description: "Border radius of the button",
-        "ui:placeholder": "Not specified",
+    size: StringEnum(["btn-size-small", "btn-size-medium", "btn-size-large"], {
+      title: "Size",
+      description: "Button size.",
+      enumNames: ["Small", "Medium", "Large"],
+      default: "btn-size-medium",
+    }),
+    border: Type.Optional(
+      borderRef({
+        default: {
+          width: "border",
+          rounding: "rounded-md",
+        },
       }),
     ),
     icon: Type.Optional(
@@ -73,33 +57,23 @@ export const examples: {
   props: BrickProps<Manifest>["brick"]["props"];
 }[] = [
   {
-    description: "Primary button, wide, linking to a URL",
+    description: "Primary button, full width, linking to a URL",
     type: "button",
     props: {
       color: "btn-color-primary",
-      modifier: "btn-wide",
       label: "Click me",
       linkToUrlOrPageId: "https://example.com",
+      size: "btn-size-medium",
     },
   },
   {
-    description: "Secondary button, block size, linking to a page",
+    description: "Secondary button, block width, linking to a page",
     type: "button",
     props: {
       color: "btn-color-secondary",
       label: "Go to page",
-      modifier: "btn-block",
       linkToUrlOrPageId: "page-id-123",
-    },
-  },
-  {
-    description: "Submit button in a form",
-    type: "button",
-    props: {
-      color: "btn-color-primary",
-      label: "Submit form",
-      type: "submit",
-      modifier: "btn-wide",
+      size: "btn-size-small",
     },
   },
   {
@@ -107,9 +81,9 @@ export const examples: {
     type: "button",
     props: {
       color: "btn-color-primary",
-      modifier: "btn-block",
       label: "Icon Button",
       icon: "mdi:check-circle",
+      size: "btn-size-large",
     },
   },
 ];

@@ -38,11 +38,7 @@ const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
             onChange={async (e) => {
               const file = e.target.files?.[0];
               if (file) {
-                const url = await onImageUpload(file);
-                console.log("image upload url", url);
-                const tempUrl = URL.createObjectURL(file);
-
-                const src = URL.createObjectURL(file);
+                const url = import.meta.env.DEV ? URL.createObjectURL(file) : await onImageUpload(file);
                 // First assign the URL to src
                 onPropsChange({ src: url });
               }

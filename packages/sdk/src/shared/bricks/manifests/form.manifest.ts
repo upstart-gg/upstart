@@ -2,6 +2,8 @@ import { Type } from "@sinclair/typebox";
 import { FaWpforms } from "react-icons/fa6";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
+import { basicAlignRef } from "../props/align";
+import { borderRef } from "../props/border";
 import { datarecord } from "../props/datarecord";
 import { defineProps, group } from "../props/helpers";
 import { paddingRef } from "../props/padding";
@@ -32,6 +34,15 @@ There is no need to define the form fields manually and the form does not accept
       }),
     ),
     padding: Type.Optional(paddingRef()),
+    buttonPosition: Type.Optional(
+      basicAlignRef({
+        title: "Button Position",
+        description: "The position of the button.",
+        defaultValue: { horizontal: "justify-end" },
+        "ui:no-vertical-align": true,
+        "ui:horizontal-align-label": "Button position",
+      }),
+    ),
     button: group({
       title: "Button",
       children: {
@@ -40,14 +51,6 @@ There is no need to define the form fields manually and the form does not accept
             description: "The label of the submit button",
             default: "Submit",
           }),
-        ),
-        position: Type.Union(
-          [
-            Type.Literal("left", { title: "Left" }),
-            Type.Literal("center", { title: "Center" }),
-            Type.Literal("right", { title: "Right" }),
-          ],
-          { title: "Position", default: "right", "ui:responsive": "desktop" },
         ),
         color: Type.Union(
           [
@@ -62,20 +65,20 @@ There is no need to define the form fields manually and the form does not accept
             "ai:tip": "Those are  button variants",
           },
         ),
-        borderRadius: Type.Optional(
-          StringEnum(["rounded-none", "rounded-sm", "rounded", "rounded-md", "rounded-lg", "rounded-xl"], {
-            title: "Border Radius",
-            enumNames: ["None", "XS", "S", "M", "L", "XL"],
-            default: "rounded-md",
-            description: "Border radius of the button",
+        size: StringEnum(["block", "wide"], {
+          title: "Size",
+          description: "Button sizes.",
+          enumNames: ["Block", "Wide"],
+          default: "block",
+        }),
+        border: Type.Optional(
+          borderRef({
+            default: {
+              width: "border",
+              rounding: "rounded-md",
+            },
           }),
         ),
-        modifier: StringEnum(["btn-block", "btn-wide"], {
-          title: "Modifier",
-          description: "Button modifiers.",
-          enumNames: ["Block", "Wide"],
-          default: "btn-block",
-        }),
       },
     }),
     title: Type.Optional(string("Title", { description: "The title of the form", default: "My form" })),
@@ -109,12 +112,13 @@ export const examples: {
       intro: "We'd love to hear from you. Send us a message and we'll respond as soon as possible.",
       align: "vertical",
       datarecordId: "contacts",
+      buttonPosition: {
+        horizontal: "justify-end",
+      },
       button: {
         label: "Send Message",
-        position: "right",
-        borderRadius: "rounded-md",
         color: "btn-color-primary",
-        modifier: "btn-block",
+        size: "block",
       },
     },
   },
@@ -126,12 +130,13 @@ export const examples: {
       intro: "Join our platform and start your journey today.",
       align: "vertical",
       datarecordId: "user-registration",
+      buttonPosition: {
+        horizontal: "justify-end",
+      },
       button: {
         label: "Register",
-        position: "right",
-        borderRadius: "rounded-md",
         color: "btn-color-secondary",
-        modifier: "btn-wide",
+        size: "wide",
       },
     },
   },
@@ -143,12 +148,13 @@ export const examples: {
       intro: "Subscribe to our newsletter for the latest updates and exclusive content.",
       align: "horizontal",
       datarecordId: "newsletter-subscription",
+      buttonPosition: {
+        horizontal: "justify-center",
+      },
       button: {
         label: "Subscribe",
-        position: "center",
-        borderRadius: "rounded-md",
         color: "btn-color-accent",
-        modifier: "btn-block",
+        size: "block",
       },
     },
   },
@@ -160,12 +166,13 @@ export const examples: {
       intro: "Register for the Annual Tech Conference 2025. Early bird pricing ends soon!",
       align: "vertical",
       datarecordId: "event-registration",
+      buttonPosition: {
+        horizontal: "justify-end",
+      },
       button: {
         label: "Register Now",
-        position: "right",
-        borderRadius: "rounded-md",
         color: "btn-color-primary",
-        modifier: "btn-block",
+        size: "block",
       },
     },
   },
@@ -177,12 +184,13 @@ export const examples: {
       intro: "We're excited to learn more about you! Please fill out this application form completely.",
       align: "vertical",
       datarecordId: "job-application",
+      buttonPosition: {
+        horizontal: "justify-start",
+      },
       button: {
         label: "Submit Application",
-        position: "right",
-        borderRadius: "rounded-md",
         color: "btn-color-secondary",
-        modifier: "btn-block",
+        size: "block",
       },
     },
   },
@@ -194,12 +202,13 @@ export const examples: {
       intro: "Your opinion matters to us. Help us improve our products and services.",
       align: "vertical",
       datarecordId: "customer-feedback",
+      buttonPosition: {
+        horizontal: "justify-end",
+      },
       button: {
         label: "Submit Feedback",
-        position: "right",
-        borderRadius: "rounded-md",
         color: "btn-color-accent",
-        modifier: "btn-wide",
+        size: "wide",
       },
     },
   },

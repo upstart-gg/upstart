@@ -196,8 +196,6 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
 
   const buttonProps = brick.props.button || {};
   const buttonLabel = buttonProps.label as string | undefined;
-  const buttonPosition = (buttonProps.position as string) || "right";
-  const buttonBorderRadius = buttonProps.borderRadius as string | undefined;
   const buttonColor = buttonProps.color as string | undefined;
 
   const { datarecord, schema, error } = useDatarecord(datarecordId);
@@ -266,17 +264,9 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   // Convertir le schema en format TypeBox
   const typeboxSchema = schema as unknown as TObject<TProperties>;
   const fields = processDatarecordSchemaToFields(typeboxSchema, formData, handleFieldChange);
-  const getButtonPosition = () => {
-    if (buttonPosition === "right") {
-      return "justify-end";
-    } else if (buttonPosition === "center") {
-      return "justify-center";
-    }
-    return "justify-start";
-  };
-
+  const { button, buttonPosition, ...rest } = styles;
   return (
-    <div ref={ref} className={tx("max-w-full flex-1", Object.values(styles))}>
+    <div ref={ref} className={tx("max-w-full flex-1", Object.values(rest))}>
       {title && <h2 className="form-title text-xl font-semibold mb-4">{title}</h2>}
       {intro && <p className="form-intro  mb-6">{intro}</p>}
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -284,8 +274,16 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
         <div className={tx("flex", align === "horizontal" ? "flex-row flex-wrap gap-4" : "flex-col gap-2")}>
           {fields}
         </div>
-        <div className={tx("flex pt-1", getButtonPosition())}>
-          <button type="submit" className={tx("btn", buttonBorderRadius, buttonColor, buttonProps.modifier)}>
+        <div className={tx("flex pt-1", Object.values(buttonPosition))}>
+          <button
+            type="submit"
+            className={tx(
+              "btn",
+              buttonColor,
+              buttonProps.size === "wide" ? "w-full" : "",
+              Object.values(button),
+            )}
+          >
             {buttonLabel || "Submit"}
           </button>
         </div>
