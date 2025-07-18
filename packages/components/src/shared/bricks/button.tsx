@@ -42,7 +42,7 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, edi
       <button
         type="button"
         className={tx("btn", styles.default, props.variants, props.round)}
-        data-text-editable={editable ?? false}
+        data-prevented-by-editor={editable ? "true" : "false"}
         ref={ref}
         onClick={(e) => {
           e.preventDefault();

@@ -9,22 +9,8 @@ import { InlineIcon } from "@iconify/react";
 const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
   const { props } = brick;
-  const onClick = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>, link: { href: string }) => {
-    e.preventDefault();
-    if (editable) {
-      console.warn("SocialLinks is editable, links are disabled");
-      toast(`This link is not clickable in edit mode but will lead to ${link.href} when published.`, {
-        style: {
-          minWidth: "max-content",
-        },
-      });
-      return;
-    }
-  };
-
   // Ensure links is an array - allow empty arrays
   const links = Array.isArray(props.links) ? props.links : [];
-
   const isRowDisplay = props.display?.includes("row") ?? false;
 
   return (
@@ -46,10 +32,18 @@ const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, e
         return (
           <a
             key={index}
-            type="button"
             href={link.href}
+            data-prevented-by-editor={editable ? "true" : "false"}
             onClick={(e) => {
               if (editable) {
+                toast(
+                  `This link is not clickable in edit mode but will lead to ${link.href} when published.`,
+                  {
+                    style: {
+                      minWidth: "max-content",
+                    },
+                  },
+                );
                 e.preventDefault();
               }
             }}
