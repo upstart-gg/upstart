@@ -28,10 +28,7 @@ export const manifest = defineBrickManifest({
           { title: "Orientation", default: "horizontal" },
         ),
       ),
-      background: Type.Optional(backgroundRef()),
-      border: Type.Optional(borderRef()),
       padding: Type.Optional(paddingRef()),
-      shadow: Type.Optional(shadowRef()),
       testimonials: Type.Array(
         Type.Object({
           text: string("Text", {

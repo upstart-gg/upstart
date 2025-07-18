@@ -40,7 +40,7 @@ const Testimonials = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, 
         <div
           key={index}
           className={tx(
-            "testimonial-item flex flex-col gap-4 p-6 rounded-lg border border-gray-200 bg-white shadow-sm",
+            "testimonial-item flex flex-col gap-4 p-6 rounded-lg border border-gray-200  shadow-sm",
             props.orientation === "horizontal" ? "flex-1" : "w-full",
           )}
         >
