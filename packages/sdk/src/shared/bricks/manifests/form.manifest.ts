@@ -7,6 +7,7 @@ import { defineProps, group } from "../props/helpers";
 import { paddingRef } from "../props/padding";
 import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
+import { fontSizeRef } from "../props/text";
 
 export const manifest = defineBrickManifest({
   type: "form",
@@ -32,12 +33,12 @@ There is no need to define the form fields manually and the form does not accept
       }),
     ),
     padding: Type.Optional(paddingRef()),
+    fontSize: Type.Optional(fontSizeRef({ default: "inherit", noExtraLargeSizes: true })),
     button: group({
       title: "Button",
       children: {
         buttonLabel: Type.Optional(
           string("Button Label", {
-            description: "The label of the submit button",
             default: "Submit",
           }),
         ),
@@ -72,8 +73,11 @@ There is no need to define the form fields manually and the form does not accept
         ),
       },
     }),
+
     title: Type.Optional(string("Title", { description: "The title of the form", default: "My form" })),
-    intro: Type.Optional(string("Intro", { description: "The intro text of the form" })),
+    intro: Type.Optional(
+      string("Intro", { description: "The intro text of the form", "ui:multiline": true }),
+    ),
     successMessage: Type.Optional(
       string("Success Message", {
         description: "The message to display when the form is successfully submitted",

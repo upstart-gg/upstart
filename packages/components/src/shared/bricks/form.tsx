@@ -195,7 +195,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   const { title, intro, datarecordId, align = "vertical", editable = true } = brick.props;
 
   const buttonProps = brick.props.button || {};
-  const buttonLabel = buttonProps.buttonLabel as string | undefined;
+  const buttonLabel = buttonProps.buttonLabel ?? "Submit";
   const buttonPosition = (buttonProps.buttonPosition as string) || "right";
   const buttonBorderRadius = buttonProps.buttonBorderRadius as string | undefined;
   const buttonColor = buttonProps.buttonColor as string | undefined;
@@ -277,7 +277,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
 
   return (
     <div ref={ref} className={tx("max-w-full flex-1", Object.values(styles))}>
-      {title && <h2 className="form-title text-xl font-semibold mb-4">{title}</h2>}
+      {title && <h2 className="form-title text-[110%] font-semibold mb-4">{title}</h2>}
       {intro && <p className="form-intro  mb-6">{intro}</p>}
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input id={"datarecord-id"} name="datarecord-id" type="hidden" value={datarecordId} />
@@ -286,7 +286,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
         </div>
         <div className={tx("flex pt-1", getButtonPosition())}>
           <button type="submit" className={tx("btn", buttonBorderRadius, buttonColor)}>
-            {buttonLabel || "Submit"}
+            {buttonLabel}
           </button>
         </div>
       </form>

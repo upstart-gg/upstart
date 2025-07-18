@@ -129,6 +129,7 @@ export const brickStylesHelpersMap = {
   "styles:objectFit": simpleClassHandler,
   "styles:objectPosition": simpleClassHandler,
   "styles:heroSize": simpleClassHandler,
+  "styles:fontSize": simpleClassHandler,
 
   // new test
   // "styles:backgroundColor": getBackgroundColorStyles,

@@ -7,7 +7,7 @@ import { shadowRef } from "../props/effects";
 import { defineProps } from "../props/helpers";
 import { imageRef } from "../props/image";
 import { paddingRef } from "../props/padding";
-import { string } from "../props/string";
+import { iconRef, string } from "../props/string";
 import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({
@@ -42,13 +42,7 @@ export const manifest = defineBrickManifest({
           author: string("Author", { default: "John Doe" }),
           company: Type.Optional(string("Company")),
           avatar: Type.Optional(imageRef({ title: "Avatar" })),
-          socialIcon: Type.Optional(
-            string("Social Icon", {
-              description: "Iconify reference for the social icon",
-              "ui:field": "iconify",
-              "ui:iconify-categories": ["Social"],
-            }),
-          ),
+          socialIcon: Type.Optional(iconRef()),
         }),
         {
           title: "Testimonials",

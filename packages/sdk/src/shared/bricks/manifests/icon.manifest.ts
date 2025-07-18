@@ -1,7 +1,7 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
 import { PiConfetti } from "react-icons/pi";
-import { string, urlOrPageIdRef } from "../props/string";
+import { iconRef, string, urlOrPageIdRef } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { Type } from "@sinclair/typebox";
 
@@ -13,11 +13,7 @@ export const manifest = defineBrickManifest({
   repeatable: true,
   icon: PiConfetti,
   props: defineProps({
-    icon: string("Icon", {
-      title: "Icon",
-      description: "Icon to display (iconify reference)",
-      "ui:field": "iconify",
-    }),
+    icon: Type.Optional(iconRef()),
     size: string("Size", {
       title: "Size",
       default: "1em",

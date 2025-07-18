@@ -4,7 +4,7 @@ import { Type } from "@sinclair/typebox";
 import { MdExpandMore } from "react-icons/md";
 import { preset } from "../props/preset";
 import { backgroundColor, backgroundColorRef } from "../props/background";
-import { fontSize, textContent, textContentRef } from "../props/text";
+import { fontSize, fontSizeRef, textContent, textContentRef } from "../props/text";
 import { string } from "../props/string";
 import { padding, paddingRef } from "../props/padding";
 import { border, borderRef } from "../props/border";
@@ -60,7 +60,7 @@ Multiple panels can be open simultaneously or limited to one at a time.
           children: {
             backgroundColor: Type.Optional(backgroundColorRef()),
             color: Type.Optional(colorRef()),
-            fontSize: fontSize("text-base"),
+            fontSize: fontSizeRef({ default: "inherit" }),
           },
         }),
       ),

@@ -4,7 +4,7 @@ import { toast } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import { forwardRef } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import { renderIcon } from "../utils/icon-resolver";
+import { InlineIcon } from "@iconify/react/dist/iconify.js";
 
 const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
@@ -35,7 +35,7 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, edi
   const variants = Array.isArray(props.variants) ? props.variants : [];
   const hasIconLeft = variants.includes("btn-icon-left");
   const hasIconRight = variants.includes("btn-icon-right");
-  const iconElement = renderIcon(props.icon, "w-4 h-4");
+  const iconElement = props.icon ? <InlineIcon icon={props.icon} className="w-5 h-5" /> : null;
 
   return (
     <div className={tx("flex flex-1", props.justifyContent)}>

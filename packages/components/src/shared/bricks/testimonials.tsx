@@ -4,7 +4,7 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { forwardRef } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { useColorPreset } from "../hooks/use-color-preset";
-import { renderIcon } from "../utils/icon-resolver";
+import { InlineIcon } from "@iconify/react";
 
 const Testimonials = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const { props } = brick;
@@ -62,9 +62,7 @@ const Testimonials = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, 
               {testimonial.company && <div className="text-sm">{testimonial.company}</div>}
             </div>
 
-            {testimonial.socialIcon && (
-              <div className="w-5 h-5">{renderIcon(testimonial.socialIcon, "w-5 h-5")}</div>
-            )}
+            {testimonial.socialIcon && <InlineIcon icon={testimonial.socialIcon} className="w-5 h-5" />}
           </div>
         </div>
       ))}

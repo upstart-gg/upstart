@@ -4,7 +4,7 @@ import { toast } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import { forwardRef } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import { renderIcon } from "../utils/icon-resolver";
+import { InlineIcon } from "@iconify/react";
 
 const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
@@ -20,13 +20,6 @@ const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, e
       });
       return;
     }
-    if (!editable && link.href) {
-      if (link.href.startsWith("http")) {
-        window.open(link.href, "_blank", "noopener,noreferrer");
-      } else {
-        window.location.href = link.href;
-      }
-    }
   };
 
   // Ensure links is an array - allow empty arrays
@@ -38,10 +31,9 @@ const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, e
     <div
       ref={ref}
       className={tx(
-        "social-links flex flex-1 justify-start items-start",
-        isRowDisplay ? "flex-row" : "flex-col",
-        "min-w-fit w-auto min-h-[2rem] my-1",
-        editable && "relative group",
+        "flex flex-1 justify-start items-start text-xl",
+        isRowDisplay ? "flex-row" : "flex-col items-stretch",
+        // editable && "relative group",
         styles.backgroundColor,
       )}
     >
@@ -51,28 +43,22 @@ const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, e
         </div>
       )}
       {links.map((link, index) => {
-        const iconElement = link.icon ? renderIcon(link.icon, "w-5 h-5") : null;
-
         return (
-          <button
+          <a
             key={index}
             type="button"
+            href={link.href}
             onClick={(e) => {
-              e.preventDefault();
-              onClick(e, link);
+              if (editable) {
+                e.preventDefault();
+              }
             }}
-            className={tx(
-              "social-link-btn  p-1",
-              "flex items-center gap-1",
-              "hover:opacity-80 transition-all duration-200",
-              "border-0 bg-transparent rounded-md hover:bg-gray-100 dark:hover:bg-gray-800",
-            )}
-            aria-label={link.label || link.href}
+            className={tx("p-0.5 grow flex items-center gap-1 hover:opacity-80")}
             title={link.label || link.href}
           >
-            {iconElement}
-            {!props.icononly && link.label && <span className="text-sm ml-1">{link.label}</span>}
-          </button>
+            {link.icon && <InlineIcon icon={link.icon} className="text-[100%]" />}
+            {!props.icononly && link.label && <span className="ml-1">{link.label}</span>}
+          </a>
         );
       })}
     </div>
