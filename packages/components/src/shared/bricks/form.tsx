@@ -267,7 +267,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   const { button, buttonPosition, ...rest } = styles;
   return (
     <div ref={ref} className={tx("max-w-full flex-1", Object.values(rest))}>
-      {title && <h2 className="form-title text-xl font-semibold mb-4">{title}</h2>}
+      {title && <h2 className="form-title text-[110%] font-semibold mb-4">{title}</h2>}
       {intro && <p className="form-intro  mb-6">{intro}</p>}
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input id={"datarecord-id"} name="datarecord-id" type="hidden" value={datarecordId} />

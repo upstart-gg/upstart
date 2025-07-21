@@ -59,11 +59,6 @@ export interface UseResizableOptions {
   };
 
   /**
-   * Whether to preserve aspect ratio during resize
-   */
-  preserveAspectRatio?: boolean;
-
-  /**
    * Event listeners
    */
   onResizeStart?: (event: ResizeEvent) => void;
@@ -93,14 +88,6 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
     const directionClass = Array.from(handle.classList).find((cls) => cls.startsWith("resizable-handle-"));
 
     return directionClass ? directionClass.replace("resizable-handle-", "") : "";
-  }, []);
-
-  // Set element dimensions
-  const setElementSize = useCallback((element: HTMLElement, width: number, height: number) => {
-    element.style.width = `${width}px`;
-    element.style.height = `${height}px`;
-    element.style.minWidth = `${width}px`;
-    element.style.minHeight = `${height}px`;
   }, []);
 
   // Create resize event object
@@ -154,7 +141,7 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
 
             target.classList.toggle("resizing", true);
 
-            setElementSize(target, rect.width, rect.height);
+            setElementSize(target, rect.width, rect.height, event);
 
             const resizeEvent = createResizeEvent(
               target,
@@ -186,24 +173,24 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
               height = Math.min(height, manifest.maxHeight[previewMode]);
             }
 
-            setElementSize(target, width, height);
+            setElementSize(target, width, height, event);
 
             // Handle position adjustments for top/left edges
             if (event.edges.left) {
-              target.style.left = `${parseFloat(target.style.left || "0") + event.deltaRect.left}px`;
-              target.style.marginRight = `${parseFloat(target.style.left || "0") + event.deltaRect.left}px`;
+              // target.style.left = `${parseFloat(target.style.left || "0") + event.deltaRect.left}px`;
+              // target.style.marginRight = `${parseFloat(target.style.left || "0") + event.deltaRect.left}px`;
             }
             if (event.edges.right) {
-              target.style.right = `${parseFloat(target.style.right || "0") - event.deltaRect.right}px`;
-              target.style.marginLeft = `${parseFloat(target.style.right || "0") - event.deltaRect.right}px`;
+              // target.style.right = `${parseFloat(target.style.right || "0") - event.deltaRect.right}px`;
+              // target.style.marginLeft = `${parseFloat(target.style.right || "0") - event.deltaRect.right}px`;
             }
             if (event.edges.top) {
-              target.style.top = `${parseFloat(target.style.top || "0") + event.deltaRect.top}px`;
-              target.style.marginBottom = `${parseFloat(target.style.top || "0") + event.deltaRect.top}px`;
+              // target.style.top = `${parseFloat(target.style.top || "0") + event.deltaRect.top}px`;
+              // target.style.marginBottom = `${parseFloat(target.style.top || "0") + event.deltaRect.top}px`;
             }
             if (event.edges.bottom) {
-              target.style.bottom = `${parseFloat(target.style.bottom || "0") - event.deltaRect.bottom}px`;
-              target.style.marginTop = `${parseFloat(target.style.bottom || "0") - event.deltaRect.bottom}px`;
+              // target.style.bottom = `${parseFloat(target.style.bottom || "0") - event.deltaRect.bottom}px`;
+              // target.style.marginTop = `${parseFloat(target.style.bottom || "0") - event.deltaRect.bottom}px`;
             }
 
             const activeHandle = event.interaction.downEvent?.target as HTMLElement;
@@ -254,18 +241,29 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
             // @ts-ignore
             max: (x, y, event) => {
               const element = event.element as HTMLElement;
+              const parent = element.parentElement as HTMLElement;
+              // ParentHeight without padding
+              const parentHeight =
+                parent.clientHeight -
+                parseFloat(getComputedStyle(parent).paddingTop) -
+                parseFloat(getComputedStyle(parent).paddingBottom);
               const brickType = element.dataset.brickType;
               if (!brickType) {
                 console.warn("Element does not have a brickType dataset attribute, using default max size.");
-                return { width: Infinity, height: Infinity };
+                return { width: Infinity, height: parentHeight };
               }
               const manifest = manifests[brickType];
               const maxWidth = manifest.maxWidth?.[previewMode] ?? Infinity;
-              const maxHeight = manifest.maxHeight?.[previewMode] ?? Infinity;
+              const maxHeight = manifest.maxHeight?.[previewMode] ?? parentHeight;
               return { width: maxWidth, height: maxHeight };
             },
           }),
-          interact.modifiers.restrictSize({ max: "parent" }),
+          // interact.modifiers.restrictRect({
+          //   restriction: "parent",
+          // }),
+          // interact.modifiers.restrictSize({
+          //   max: "parent",
+          // }),
           ...(gridSnap?.enabled !== false && gridSnap
             ? [
                 interact.modifiers.snapSize({
@@ -286,17 +284,7 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
 
       interactablesRef.current.add(interactable);
     });
-  }, [
-    enabled,
-    cssQuery,
-    previewMode,
-    gridSnap,
-    onResizeStart,
-    onResize,
-    onResizeEnd,
-    setElementSize,
-    createResizeEvent,
-  ]);
+  }, [enabled, cssQuery, previewMode, gridSnap, onResizeStart, onResize, onResizeEnd, createResizeEvent]);
 
   // Set up mutation observer for dynamic content
   const setupMutationObserver = useCallback(() => {
@@ -354,4 +342,24 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
       }
     };
   }, [enabled, initializeResizable, setupMutationObserver]);
+}
+
+// helper to Set element dimensions
+function setElementSize(element: HTMLElement, width: number, height: number, event: ResizeEvent) {
+  element.style.width = `${width}px`;
+  element.style.height = `${height}px`;
+  element.style.minWidth = `${width}px`;
+
+  // disable flex-grow temporarily to allow resize
+  element.style.setProperty("flex-grow", "0");
+  // element.style.minHeight = `${height}px`;
+
+  let { x = 0, y = 0 } = element.dataset;
+
+  // Parse existing transform values
+  x = (parseFloat(`${x}`) || 0) + event.deltaRect.left;
+  y = (parseFloat(`${y}`) || 0) + event.deltaRect.top;
+
+  // Update position to maintain the correct anchor point
+  element.style.transform = `translate(${x}px, ${y}px)`;
 }

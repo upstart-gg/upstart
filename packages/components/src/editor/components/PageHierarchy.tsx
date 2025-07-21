@@ -23,16 +23,13 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
   const [hoverElement, setHoverElement] = useState<{ type: string; id: string }>();
   const lastElementHovered = useRef<HTMLElement | null>(null);
   const pageRef = useRef<HTMLElement | null>(null);
-  const [dragging, setDragging] = useState(false);
+  const [dragging, setDragging] = useState<false | string>(false);
 
-  useLayoutEffect(() => {
-    console.log("PageHierarchy mounted, restoring scroll position");
+  useEffect(() => {
     const currentElement = selectedSectionId ?? selectedBrickId;
     // Restore scroll position after render
     if (currentElement) {
-      console.log("Restoring scroll position to %s", currentElement);
       const domObj = document.getElementById(`hierarchy_${currentElement}`);
-
       if (
         domObj &&
         "scrollIntoViewIfNeeded" in domObj &&
@@ -46,8 +43,6 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
           block: "center",
         });
       }
-    } else {
-      console.log("No section or brick selected, not restoring scroll position");
     }
   }, [selectedSectionId, selectedBrickId]);
 
@@ -74,13 +69,13 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
   function BricksHierarchy({
     bricks,
     level = 0,
-    currentIndex = -1,
+    // currentIndex = -1,
     isChild = false,
     disabledDragging,
   }: {
     bricks: Brick[];
     level?: number;
-    currentIndex?: number;
+    // currentIndex?: number;
     isChild?: boolean;
     disabledDragging?: boolean;
   }) {
@@ -89,53 +84,55 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
       const hasChildren = childBricks.length > 0;
       const Icon = manifests[brick.type].icon;
       const brickName = manifests[brick.type].name;
-      currentIndex += 1;
+      // currentIndex += 1;
       return (
         <Draggable
           key={`hierarchy_${brick.id}`}
           draggableId={`hierarchy_${brick.id}`}
-          index={currentIndex}
+          index={brickIndex}
           isDragDisabled={disabledDragging}
         >
           {(provided, snapshot) => (
-            <div
-              key={brick.id}
-              ref={provided.innerRef}
-              {...provided.draggableProps}
-              className={tx(
-                "bricks-hierarchy-wrapper",
-                // snapshot.isDragging && "[&>.bricks-hierarchy-wrapper]:bg-red-800",
-              )}
-            >
+            <div key={brick.id} ref={provided.innerRef} {...provided.draggableProps} className="min-h-fit">
               <div
                 id={`hierarchy_${brick.id}`}
                 className={tx(
                   "rounded-md select-none cursor-pointer",
-                  // isChild && "-mr-1.5",
-                  hasChildren && "outline outline-2 outline-transparent",
+                  !hasChildren && !dragging && selectedBrick?.id !== brick.id && "hover:bg-upstart-50",
+                  hasChildren && "outline outline-2 outline-transparent min-h-fit",
                   hasChildren &&
                     (selectedBrick?.id === brick.id ? "outline-upstart-400" : "hover:(outline-upstart-100)"),
                   !hasChildren && selectedBrick?.id === brick.id && "bg-upstart-500 text-white font-bold",
                   snapshot.isDragging && "outline outline-2 outline-upstart-400 bg-upstart-400/30",
+                  `z-[9999]`,
                 )}
                 style={{
                   paddingLeft: `${level * 8}px`,
                   marginTop: isChild && brickIndex === 0 ? "0.25rem" : "1px",
                 }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  setSelectedBrickId(brick.id);
-                  document.getElementById(brick.id)?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-                }}
-                onMouseEnter={() => setHoverElement({ type: "brick", id: brick.id })}
               >
                 <div
                   className={tx(
                     "flex items-center justify-between group transition-all py-1 px-1.5",
                     hasChildren && selectedBrick?.id === brick.id && "bg-upstart-500 text-white font-bold",
-                    selectedBrick?.id !== brick.id && "hover:bg-upstart-50",
+                    !dragging && selectedBrick?.id !== brick.id && "hover:bg-upstart-50",
                   )}
+                  onClick={(e) => {
+                    console.log("Clicked on brick", brick.id);
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setSelectedBrickId(brick.id);
+                    setSelectedSectionId();
+                    document
+                      .getElementById(brick.id)
+                      ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                  }}
+                  // I DON'T KNOW WHY BUT SETTING ONMOUSEENTER HERE DISABLES ONCLICK
+                  // onMouseEnter={() => {
+                  //   if (dragging || snapshot.isDragging || snapshot.draggingOver || disabledDragging)
+                  //     return true;
+                  //   setHoverElement({ type: "brick", id: brick.id });
+                  // }}
                 >
                   <span className="inline-flex items-center gap-1.5 select-none">
                     <Icon className="w-4 h-4" /> {brickName}
@@ -144,15 +141,32 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
                     <RxDragHandleHorizontal className="w-5 h-5 cursor-row-resize opacity-60 group-hover:opacity-80 transition-opacity" />
                   </div>
                 </div>
-                {childBricks.length > 0 && !snapshot.isDragging && (
-                  <BricksHierarchy
-                    bricks={childBricks}
-                    level={level + 1}
-                    currentIndex={currentIndex}
-                    isChild
-                    // Disable children dragging if the parent is being dragged
-                    disabledDragging={snapshot.isDragging}
-                  />
+                {childBricks.length > 0 && (
+                  // This should be enclosed in a droppable to allow dropping bricks into it
+                  <Droppable
+                    droppableId={`hierarchy_${brick.id}`}
+                    isDropDisabled={snapshot.isDragging}
+                    type="brick-hierarchy"
+                    direction="vertical"
+                  >
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                        className={tx("ml-2", snapshot.isDragging && "[&>*]:opacity-50", isChild && "mt-1")}
+                      >
+                        <BricksHierarchy
+                          bricks={childBricks}
+                          level={level + 1}
+                          // currentIndex={currentIndex}
+                          isChild
+                          // Disable children dragging if the parent is being dragged
+                          disabledDragging={snapshot.isDragging || dragging === brick.id}
+                        />
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
                 )}
               </div>
             </div>
@@ -202,11 +216,18 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
           destDroppable,
           destIndex,
         );
-        draftHelpers.moveBrickToSection(draggableId, destDroppable, destIndex);
+        // Check if destDroppable is a section or a brick
+        const isDestSection = sections.some((s) => s.id === destDroppable);
+        if (isDestSection) {
+          // Move brick to section
+          draftHelpers.moveBrickToSection(draggableId, destDroppable, destIndex);
+        } else {
+          // Move brick to another brick's children
+          draftHelpers.moveBrickToContainerBrick(draggableId, destDroppable, destIndex);
+        }
       }
     }
 
-    console.log("Draggable ID:", draggableId);
     setDragging(false);
   };
 
@@ -224,7 +245,13 @@ Drag and drop sections and bricks to reorder them.
           `}
         />
       </PanelBlockTitle>
-      <DragDropContext onDragEnd={handleDragEnd} onBeforeCapture={() => setDragging(true)}>
+      <DragDropContext
+        onDragEnd={handleDragEnd}
+        onBeforeCapture={(cap) => {
+          console.log("Before capture", cap);
+          setDragging(cap.draggableId.replace(/^hierarchy_/, ""));
+        }}
+      >
         <Droppable droppableId="main-hierarchy" type="hierarchy-section" direction="vertical">
           {(provided, snapshot) => {
             return (
@@ -260,10 +287,17 @@ Drag and drop sections and bricks to reorder them.
                             "py-1 px-1.5 rounded-t select-none flex justify-between items-center group -mr-1",
                             section.id === selectedSectionId
                               ? "bg-upstart-500 text-white font-bold cursor-default"
-                              : "hover:bg-upstart-50  cursor-pointer",
+                              : !dragging
+                                ? "hover:bg-upstart-50 cursor-pointer"
+                                : "",
                           )}
                           onClick={(e) => {
-                            e.stopPropagation();
+                            if (e.defaultPrevented) {
+                              console.log(
+                                "Event was already handled, skipping click action on section hierarchy",
+                              );
+                              return; // If the event was already handled, do nothing
+                            }
                             e.preventDefault();
                             setSelectedBrickId();
                             setSelectedSectionId(section.id);
@@ -271,7 +305,17 @@ Drag and drop sections and bricks to reorder them.
                               .getElementById(section.id)
                               ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
                           }}
-                          onMouseEnter={() => setHoverElement({ type: "section", id: section.id })}
+                          onMouseEnter={() => {
+                            if (
+                              dragging ||
+                              dragSnapshot.isDragging ||
+                              dragSnapshot.draggingOver ||
+                              snapshot.isDraggingOver
+                            ) {
+                              return;
+                            }
+                            setHoverElement({ type: "section", id: section.id });
+                          }}
                         >
                           <span>Section {section.label ?? "Unnamed"}</span>
                           <div {...provided.dragHandleProps}>
@@ -281,10 +325,14 @@ Drag and drop sections and bricks to reorder them.
                         <Droppable
                           droppableId={`hierarchy_${section.id}`}
                           type="brick-hierarchy"
-                          direction="vertical"
+                          isDropDisabled={dragSnapshot.isDragging}
                         >
                           {(provided) => (
-                            <div ref={provided.innerRef} {...provided.droppableProps} className={tx("ml-2")}>
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.droppableProps}
+                              className={tx("ml-2", dragSnapshot.isDragging && "[&>*]:opacity-50")}
+                            >
                               <BricksHierarchy bricks={section.bricks} />
                               {provided.placeholder}
                             </div>

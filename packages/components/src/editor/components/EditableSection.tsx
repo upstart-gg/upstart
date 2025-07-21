@@ -131,6 +131,13 @@ export default function EditableSection({ section, index }: EditableSectionProps
       type="brick"
       direction="horizontal"
       mode={section.bricks.length > 0 ? "standard" : "virtual"}
+      renderClone={
+        section.bricks.length > 0
+          ? undefined
+          : (provided, snapshot) => {
+              return null; // No clone rendering for empty sections
+            }
+      }
       isDropDisabled={dropDisabled}
     >
       {(droppableProvided, droppableSnapshot) => {
@@ -271,17 +278,33 @@ function useResizableSection(section: SectionType) {
 function SectionOptionsButtons({ section }: { section: SectionType }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const draftHelpers = useDraftHelpers();
-  const { setSelectedSectionId, setPanel, setSelectedBrickId } = useEditorHelpers();
+  const { setSelectedSectionId, setPanel, hidePanel, setSelectedBrickId } = useEditorHelpers();
   const sections = useSections();
+  const selectedSectionId = useSelectedSectionId();
   // compare the curret section "order" to the max order of sections to determine if this is the first or last section
   const maxOrder = sections.reduce((max, sec) => Math.max(max, sec.order), -1);
   const minOrder = sections.reduce((min, sec) => Math.min(min, sec.order), Infinity);
   const isLastSection = section.order === maxOrder;
   const isFirstSection = section.order === minOrder;
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  const onSettingsBtnClick = useCallback(
+    (e: MouseEvent) => {
+      e.stopPropagation();
+      if (selectedSectionId !== section.id) {
+        setSelectedSectionId(section.id);
+        setPanel("inspector");
+      } else {
+        hidePanel();
+        setSelectedSectionId();
+      }
+    },
+    [selectedSectionId],
+  );
+
   const btnCls = tx(
     "select-none hover:opacity-90",
-    "text-base px-1.5 h-9  ",
+    "text-base px-1.5 h-7  ",
     "text-black/80 hover:bg-upstart-300/20 font-bold flex items-center gap-1",
     "active:(outline-none ring-0) focus:(outline-none ring-0)",
   );
@@ -290,7 +313,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
       role="toolbar"
       className={tx(
         // bottom-[3px]
-        isLastSection ? "bottom-5" : "bottom-0 ",
+        isLastSection ? "bottom-3" : "bottom-0",
         dropdownOpen ? "opacity-100" : "opacity-0",
         `section-options-buttons translate-y-1/2 shadow
             absolute z-[99999] left-1/2 -translate-x-1/2 min-w-fit border border-gray-200`,
@@ -299,14 +322,11 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
       )}
     >
       <div
-        className={tx(
-          btnCls,
-          "flex-col items-start justify-center gap-0 hover:text-upstart-800 !px-2.5 pointer-events-none",
-        )}
+        className={tx(btnCls, "inline-flex flex-nowrap items-center gap-1 !px-2.5 pointer-events-none")}
         data-trigger-section-inspector
       >
-        <div className="text-xs font-light leading-[0.9] text-nowrap">Section {section.order}</div>
-        <div className="text-sm font-semibold -mt-[8px] text-nowrap max-w-[120px] truncate">
+        <div className="text-xs font-light text-nowrap">Section</div>
+        <div className="text-xs font-semibold text-nowrap max-w-[120px] truncate">
           {section.label ?? "Unnamed"}
         </div>
       </div>
@@ -314,22 +334,17 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
         type="button"
         id={`${section.id}-resize-handle`}
         className={tx(btnCls)}
-        onClick={(e) => {
-          e.stopPropagation();
-          setSelectedSectionId(section.id);
-          setPanel("inspector");
-        }}
+        onClick={onSettingsBtnClick}
       >
-        <HiOutlineCog6Tooth className="w-6 h-6" />
+        <HiOutlineCog6Tooth className="w-5 h-5" />
       </button>
       <button
         type="button"
         id={`${section.id}-resize-handle`}
         className={tx("!cursor-ns-resize", btnCls, "section-resizable-handle")}
       >
-        <TbArrowAutofitHeight className="w-6 h-6" />
+        <TbArrowAutofitHeight className="w-5 h-5" />
       </button>
-      {/* )} */}
       {section.props.minHeight !== "full" && (
         <Tooltip content="Fill entire screen height" delayDuration={400}>
           <button
@@ -351,7 +366,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
             }}
             className={tx(btnCls, "cursor-pointer")}
           >
-            <TbBorderCorners className="w-6 h-6" />
+            <TbBorderCorners className="w-5 h-5" />
           </button>
         </Tooltip>
       )}
@@ -367,7 +382,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
           }}
           className={tx(btnCls, "cursor-pointer")}
         >
-          <TbCirclePlus className="w-6 h-6" />
+          <TbCirclePlus className="w-5 h-5" />
         </button>
       </Tooltip>
       <DropdownMenu.Root modal={false} onOpenChange={setDropdownOpen}>
@@ -377,7 +392,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
           }}
         >
           <button type="button" className={tx(btnCls)}>
-            <TbDots className="w-6 h-6" />
+            <TbDots className="w-5 h-5" />
           </button>
         </DropdownMenu.Trigger>
         <DropdownMenu.Content sideOffset={5} size="2" side="bottom" align="end">

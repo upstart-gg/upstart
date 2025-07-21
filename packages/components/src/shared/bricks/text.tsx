@@ -14,11 +14,11 @@ const Text = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
   const classes = Object.values(styles);
 
   return (
-    <div className={tx("flex-inherit", ...classes)}>
+    <div className={tx("flex-grow min-h-fit", ...classes)}>
       <TextContent
         ref={ref}
         propPath="content"
-        className="first-child:first-line:leading-[100%]"
+        className="first-child:first-line:leading-[100%] text-wrap"
         brickId={brick.id}
         content={props.content ?? "Your text here..."}
         editable={editable}

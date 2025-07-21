@@ -63,7 +63,8 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     onResizeStart: (event) => {
       const target = event.target as HTMLElement;
       // disable flex-grow temporarily to allow resize
-      target.style.setProperty("flex-grow", "0");
+      //target.style.setProperty("flex-grow", "0");
+      // Disable fixed height of the upper section ?
     },
 
     onResizeEnd: (event) => {
@@ -102,6 +103,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       target.style.removeProperty("min-height");
       target.style.removeProperty("min-width");
       target.style.removeProperty("flex-grow");
+      target.style.removeProperty("transform");
     },
   });
 

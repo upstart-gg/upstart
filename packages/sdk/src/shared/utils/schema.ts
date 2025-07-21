@@ -5,11 +5,16 @@ export function normalizeSchemaEnum(schema: TSchema): Array<{ const: string; tit
   if (!("enum" in schema)) {
     return schema.anyOf ?? schema.oneOf;
   }
-  const { enum: enumValues, enumNames } = schema as unknown as { enum: string[]; enumNames?: string[] };
+  const {
+    enum: enumValues,
+    enumNames,
+    "ui:icons": icons,
+  } = schema as unknown as { enum: string[]; enumNames?: string[]; "ui:icons"?: string[] };
   // combine to key-value pairs
   return enumValues.map((value, index) => ({
     const: value,
     title: enumNames ? enumNames[index] : value,
+    "ui:icon": icons ? icons[index] : undefined,
   }));
 }
 

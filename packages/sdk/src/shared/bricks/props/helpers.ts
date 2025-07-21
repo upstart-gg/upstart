@@ -4,9 +4,6 @@
 import { type TProperties, Type, type TSchema, type TObject, type ObjectOptions } from "@sinclair/typebox";
 import { commonProps } from "./common";
 import type { PartialBy, PropGroup, GroupMetadata } from "./types";
-import { get } from "lodash-es";
-import { resolveSchema } from "~/shared/utils/schema-resolver";
-// import { resolveSchema } from "~/shared/utils/schema-resolver";
 
 function isTObject(schema: TSchema | TProperties): schema is TObject {
   return schema.type === "object";
@@ -57,26 +54,21 @@ export function getGroupInfo(schema: TSchema) {
 
 export function defineProps<P extends TProperties>(
   props: P,
-  options?: ObjectOptions & { noPreset?: boolean; noAlignSelf?: boolean; defaultPreset?: string },
+  options?: ObjectOptions & { noGrow?: boolean; noAlignSelf?: boolean; defaultPreset?: string },
 ) {
-  const finalProps = { ...commonProps, ...props };
-  // if (options?.noPreset) {
-  //   // If noPreset is true, we don't add the preset property
-  //   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  //   // biome-ignore lint/performance/noDelete: <explanation>
-  //   delete (finalProps as any).preset;
+  const allProps = { ...commonProps, ...props };
+  const { alignSelf, growHorizontally, ...rest } = allProps;
+  const finalProps = {
+    ...(options?.noAlignSelf ? {} : { alignSelf }),
+    ...(options?.noGrow ? {} : { growHorizontally }),
+    ...rest,
+  } as typeof allProps;
+  // if (!options?.noAlignSelf) {
+  //   finalProps.alignSelf = alignSelf;
   // }
-  // if (options?.defaultPreset) {
-  //   // If defaultPreset is provided, we set it as the default value for the preset property
-  //   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  //   (finalProps as any).preset = Type.Optional(presetRef({ default: options.defaultPreset }));
+  // if (!options?.noGrow) {
+  //   finalProps.growHorizontally = growHorizontally;
   // }
-  if (options?.noAlignSelf) {
-    // If noPreset is true, we don't add the preset property
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    // biome-ignore lint/performance/noDelete: <explanation>
-    delete (finalProps as any).alignSelf;
-  }
   return Type.Object(finalProps, options);
 }
 

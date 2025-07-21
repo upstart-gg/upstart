@@ -15,34 +15,32 @@ const Hero = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
   return (
     <div
       className={tx(
-        "flex-1 flex",
+        "flex-grow flex shrink-0 flex-col gap-[1.5rem] min-h-fit",
         ...classes,
         // props.layout === "sided" ? "flex-row gap-[10%]" : "flex-col gap-[10%] items-center justify-center",
       )}
       ref={ref}
     >
-      <div className={tx("flex-1 flex flex-col gap-[1.5rem]")}>
-        <TextContent
-          as="h1"
-          propPath="content"
-          brickId={brick.id}
-          content={props.content}
-          textSizeMode="hero"
-          editable={editable}
-          noTextType
-        />
-        <TextContent
-          as="p"
-          propPath="tagline"
-          className={tx(
-            "tagline text-2xl font-bold text-balance",
-            isTextContentEmpty(props.tagline) && !selected ? "opacity-0 hover:opacity-80" : "opacity-80",
-          )}
-          brickId={brick.id}
-          content={props.tagline}
-          editable={editable}
-        />
-      </div>
+      <TextContent
+        as="h1"
+        propPath="content"
+        brickId={brick.id}
+        content={props.content}
+        textSizeMode="hero"
+        editable={editable}
+        noTextType
+      />
+      <TextContent
+        as="p"
+        propPath="tagline"
+        className={tx(
+          "tagline text-2xl font-bold text-balance",
+          isTextContentEmpty(props.tagline) && !selected ? "opacity-0 hover:opacity-80" : "opacity-80",
+        )}
+        brickId={brick.id}
+        content={props.tagline}
+        editable={editable}
+      />
     </div>
   );
 });

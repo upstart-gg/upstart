@@ -195,8 +195,17 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     const onBrickWrapperClick = useCallback(
       (e: MouseEvent<HTMLElement>) => {
+        const originalTarget = e.target as HTMLElement;
         const brickTarget = e.currentTarget as HTMLElement;
-        if (hasMouseMoved.current || !brickTarget.matches("[data-brick]") || e.defaultPrevented) {
+        if (
+          hasMouseMoved.current ||
+          !brickTarget.matches("[data-brick]") ||
+          (e.defaultPrevented && !originalTarget.closest('[data-prevented-by-editor="true"]'))
+        ) {
+          console.log(
+            "EditableBrickWrapper: Click ignored due to mouse movement or default prevented",
+            originalTarget,
+          );
           return;
         }
         let selectedElement: Brick | Section = brick;
@@ -521,7 +530,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
 
             {!isContainerChild && (
               <ContextMenu.Sub>
-                <ContextMenu.SubTrigger>Position</ContextMenu.SubTrigger>
+                <ContextMenu.SubTrigger>Vertical Position</ContextMenu.SubTrigger>
                 <ContextMenu.SubContent>
                   {Object.entries(normalizeSchemaEnum(commonProps.alignSelf)).map(([key, value]) => (
                     <ContextMenu.CheckboxItem

@@ -4,45 +4,22 @@ import { toast } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import { forwardRef } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import { renderIcon } from "../utils/icon-resolver";
+import { InlineIcon } from "@iconify/react";
 
 const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
   const { props } = brick;
-  const onClick = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>, link: { href: string }) => {
-    e.preventDefault();
-    if (editable) {
-      console.warn("SocialLinks is editable, links are disabled");
-      toast(`This link is not clickable in edit mode but will lead to ${link.href} when published.`, {
-        style: {
-          minWidth: "max-content",
-        },
-      });
-      return;
-    }
-    if (!editable && link.href) {
-      if (link.href.startsWith("http")) {
-        window.open(link.href, "_blank", "noopener,noreferrer");
-      } else {
-        window.location.href = link.href;
-      }
-    }
-  };
-
   // Ensure links is an array - allow empty arrays
   const links = Array.isArray(props.links) ? props.links : [];
-
   const isRowDisplay = props.display?.includes("row") ?? false;
 
   return (
     <div
       ref={ref}
       className={tx(
-        "social-links flex flex-1 justify-start items-start",
-        isRowDisplay ? "flex-row" : "flex-col",
-        "min-w-fit w-auto min-h-[2rem] my-1",
-        editable && "relative group",
-        styles.backgroundColor,
+        "flex flex-grow shrink-0 justify-start items-start min-h-fit min-w-fit gap-2",
+        isRowDisplay ? "flex-row" : "flex-col items-stretch",
+        Object.values(styles),
       )}
     >
       {editable && links.length === 0 && (
@@ -51,28 +28,31 @@ const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, e
         </div>
       )}
       {links.map((link, index) => {
-        const iconElement = link.icon ? renderIcon(link.icon, "w-5 h-5") : null;
-
         return (
-          <button
+          <a
             key={index}
-            type="button"
+            href={link.href}
+            data-prevented-by-editor={editable ? "true" : "false"}
             onClick={(e) => {
-              e.preventDefault();
-              onClick(e, link);
+              if (editable) {
+                toast(
+                  `This link is not clickable in edit mode but will lead to ${link.href} when published.`,
+                  {
+                    id: `social-link-no-click-toast`,
+                    style: {
+                      minWidth: "max-content",
+                    },
+                  },
+                );
+                e.preventDefault();
+              }
             }}
-            className={tx(
-              "social-link-btn  p-1",
-              "flex items-center gap-1",
-              "hover:opacity-80 transition-all duration-200",
-              "border-0 bg-transparent rounded-md hover:bg-gray-100 dark:hover:bg-gray-800",
-            )}
-            aria-label={link.label || link.href}
+            className={tx("grow flex items-center gap-0.5 hover:opacity-80")}
             title={link.label || link.href}
           >
-            {iconElement}
-            {!props.icononly && link.label && <span className="text-sm ml-1">{link.label}</span>}
-          </button>
+            {link.icon && <InlineIcon icon={link.icon} className="text-[100%]" />}
+            {!props.icononly && link.label && <span className="ml-1 text-nowrap">{link.label}</span>}
+          </a>
         );
       })}
     </div>

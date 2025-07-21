@@ -24,18 +24,13 @@ export const manifest = defineBrickManifest({
     mobile: 30,
   },
   icon: CgSpaceBetween,
-  props: defineProps(
-    {
-      autogrow: Type.Optional(
-        boolean("Auto-grow", false, {
-          description: "If enabled, the spacer will automatically grow to fill available space.",
-        }),
-      ),
-    },
-    {
-      noPreset: true,
-    },
-  ),
+  props: defineProps({
+    autogrow: Type.Optional(
+      boolean("Auto-grow", false, {
+        description: "If enabled, the spacer will automatically grow to fill available space.",
+      }),
+    ),
+  }),
 });
 
 export type Manifest = typeof manifest;
