@@ -237,7 +237,7 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
       // Put a shadow at the top to indicate this is a scrollable area
       onMouseLeave={() => setHoverElement(undefined)}
     >
-      <PanelBlockTitle>
+      <PanelBlockTitle className="border-t">
         <span>Hierarchy</span>
         <HelpIcon
           help={`View and manage the hierarchy of sections and bricks on this page. Click on a section or brick to select it.

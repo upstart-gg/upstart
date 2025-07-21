@@ -1,5 +1,4 @@
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
-
 import {
   forwardRef,
   type PropsWithChildren,
@@ -30,7 +29,6 @@ import {
   useMergeRefs,
   autoPlacement,
   offset,
-  toast,
   useHover,
   useInteractions,
   safePolygon,
@@ -50,7 +48,6 @@ import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests
 import { commonProps } from "@upstart.gg/sdk/shared/bricks/props/common";
 import { getBrickResizeOptions } from "~/shared/utils/layout-utils";
 import useIsHovered from "../hooks/use-is-hovered";
-import { useDeviceInfo } from "../hooks/use-device-info";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -527,25 +524,41 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                 </ContextMenu.CheckboxItem>
               </ContextMenu.SubContent>
             </ContextMenu.Sub>
-
+            {!isContainerChild && (
+              <ContextMenu.CheckboxItem
+                checked={brick.props.growHorizontally}
+                onCheckedChange={(newVal) => {
+                  // e.stopPropagation();
+                  draftHelpers.updateBrickProps(brick.id, {
+                    growHorizontally: newVal,
+                  });
+                }}
+              >
+                Grow horizontally
+              </ContextMenu.CheckboxItem>
+            )}
             {!isContainerChild && (
               <ContextMenu.Sub>
                 <ContextMenu.SubTrigger>Vertical Position</ContextMenu.SubTrigger>
                 <ContextMenu.SubContent>
-                  {Object.entries(normalizeSchemaEnum(commonProps.alignSelf)).map(([key, value]) => (
-                    <ContextMenu.CheckboxItem
-                      key={key}
-                      checked={brick.props.alignSelf === value.const}
-                      onClick={(e) => e.stopPropagation()}
-                      onCheckedChange={() =>
-                        draftHelpers.updateBrickProps(brick.id, {
-                          alignSelf: value.const,
-                        })
-                      }
-                    >
-                      {value.title}
-                    </ContextMenu.CheckboxItem>
-                  ))}
+                  <ContextMenu.RadioGroup
+                    value={brick.props.alignSelf}
+                    onValueChange={(value) => {
+                      draftHelpers.updateBrickProps(brick.id, {
+                        alignSelf: value,
+                      });
+                    }}
+                  >
+                    {Object.entries(normalizeSchemaEnum(commonProps.alignSelf)).map(([key, value]) => (
+                      <ContextMenu.RadioItem
+                        key={key}
+                        value={value.const}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {value.title}
+                      </ContextMenu.RadioItem>
+                    ))}
+                  </ContextMenu.RadioGroup>
                 </ContextMenu.SubContent>
               </ContextMenu.Sub>
             )}

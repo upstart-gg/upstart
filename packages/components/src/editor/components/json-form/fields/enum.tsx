@@ -78,7 +78,7 @@ const EnumField: FC<FieldProps<string>> = (props) => {
             defaultValue={currentValue as string}
             size="1"
             radius="medium"
-            className="!h-7 -mt-0.5 -mb-0.5"
+            className="!h-[24px] -mt-0.5 -mb-0.5"
           >
             {options
               .filter((o) => !o["ui:hidden-option"])
@@ -86,7 +86,7 @@ const EnumField: FC<FieldProps<string>> = (props) => {
                 <SegmentedControl.Item
                   key={option.const}
                   value={option.const}
-                  className={tx("[&_.rt-SegmentedControlItemLabel]:(px-[6px])")}
+                  className={tx("[&_.rt-SegmentedControlItemLabel]:(px-[7px])")}
                 >
                   {option.title}
                 </SegmentedControl.Item>
@@ -105,7 +105,7 @@ const EnumField: FC<FieldProps<string>> = (props) => {
             defaultValue={currentValue as string}
             size="1"
             radius="medium"
-            className="!h-7 -mt-0.5 -mb-0.5"
+            className="!h-[24px] -mt-0.5 -mb-0.5"
           >
             {options
               .filter((o) => !o["ui:hidden-option"])
@@ -113,7 +113,7 @@ const EnumField: FC<FieldProps<string>> = (props) => {
                 <SegmentedControl.Item
                   key={option.const}
                   value={option.const}
-                  className={tx("[&_.rt-SegmentedControlItemLabel]:px-2")}
+                  className={tx("[&_.rt-SegmentedControlItemLabel]:px-[7px]")}
                 >
                   <Tooltip
                     content={

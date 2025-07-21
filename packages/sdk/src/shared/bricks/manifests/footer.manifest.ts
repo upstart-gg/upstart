@@ -112,7 +112,7 @@ export const manifest = defineBrickManifest({
             ],
           },
         ],
-        title: "Footer Links",
+        title: "Links",
         "ui:displayField": "sectionTitle",
         "ui:options": {
           orderable: true, // Enable drag & drop reordering
@@ -120,6 +120,9 @@ export const manifest = defineBrickManifest({
           addable: true, // Enable add button
         },
         description: "List of Links Sections",
+        metadata: {
+          category: "content",
+        },
       },
     ),
   }),

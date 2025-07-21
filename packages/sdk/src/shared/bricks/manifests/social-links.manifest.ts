@@ -52,6 +52,9 @@ export const manifest = defineBrickManifest({
           removable: true, // Enable delete button
           addable: true, // Enable add button
         },
+        metadata: {
+          category: "content",
+        },
       },
     ),
     display: Type.Optional(

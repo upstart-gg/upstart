@@ -83,20 +83,43 @@ There is no need to define the form fields manually and the form does not accept
       },
     }),
 
-    title: Type.Optional(string("Title", { description: "The title of the form", default: "My form" })),
+    title: Type.Optional(
+      Type.String({
+        title: "Form title",
+        default: "My form",
+        metadata: {
+          category: "content",
+        },
+      }),
+    ),
     intro: Type.Optional(
-      string("Intro", { description: "The intro text of the form", "ui:multiline": true }),
+      Type.String({
+        title: "Intro",
+        description: "The intro text of the form",
+        "ui:multiline": true,
+        metadata: {
+          category: "content",
+        },
+      }),
     ),
     successMessage: Type.Optional(
-      string("Success Message", {
+      Type.String({
+        title: "Success Message",
         description: "The message to display when the form is successfully submitted",
         default: "Thank you for your submission!",
+        metadata: {
+          category: "content",
+        },
       }),
     ),
     errorMessage: Type.Optional(
-      string("Error Message", {
+      Type.String({
+        title: "Error Message",
         description: "The message to display when the form submission fails",
         default: "There was an error submitting the form. Please try again later.",
+        metadata: {
+          category: "content",
+        },
       }),
     ),
   }),

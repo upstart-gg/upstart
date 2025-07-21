@@ -9,8 +9,8 @@ import {
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 import { tx } from "@upstart.gg/style-system/twind";
-import { useState } from "react";
-import { MdDelete, MdDragIndicator, MdExpandLess, MdExpandMore } from "react-icons/md";
+import { useState, useRef, useEffect } from "react";
+import { MdDragIndicator } from "react-icons/md";
 import { TbPlus } from "react-icons/tb";
 import { FieldTitle, processObjectSchemaToFields } from "../field-factory";
 import type { FieldProps } from "./types";
@@ -37,7 +37,8 @@ export function ArrayField({
   schema,
 }: ArrayFieldProps) {
   const [isDragging, setIsDragging] = useState(false);
-  const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());
+  const [expandedItem, setExpandedItem] = useState<number | null>(null);
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // Get UI options from the array schema (not item schema)
   const uiOptions = schema["ui:options"] as Record<string, boolean> | undefined;
@@ -51,16 +52,28 @@ export function ArrayField({
 
   const resolvedItemSchema = resolveSchema(itemSchema);
 
+  // Scroll expanded item into view
+  useEffect(() => {
+    if (expandedItem !== null && itemRefs.current[expandedItem]) {
+      // Use setTimeout to ensure the DOM has updated after expansion
+      setTimeout(() => {
+        itemRefs.current[expandedItem]?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    }
+  }, [expandedItem]);
+
   // Handle expanding/collapsing items
   const toggleExpanded = (index: number) => {
-    setExpandedItems((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(index)) {
-        newSet.delete(index);
-      } else {
-        newSet.add(index);
+    setExpandedItem((prev) => {
+      // If clicking on the already expanded item, close it
+      if (prev === index) {
+        return null;
       }
-      return newSet;
+      // Otherwise, expand this item (closing any previously expanded item)
+      return index;
     });
   };
 
@@ -100,13 +113,12 @@ export function ArrayField({
     const newArray = [...currentValue, defaultItem];
     onChange(newArray);
 
+    // Update refs array size
+    itemRefs.current = [...itemRefs.current, null];
+
     // Automatically expand the newly added item
     const newIndex = newArray.length - 1;
-    setExpandedItems((prev) => {
-      const newSet = new Set(prev);
-      newSet.add(newIndex);
-      return newSet;
-    });
+    setExpandedItem(newIndex);
   };
 
   // Handle removing item
@@ -116,17 +128,21 @@ export function ArrayField({
     const newArray = currentValue.filter((_, i) => i !== index);
     onChange(newArray);
 
-    // Update expanded items after removal
-    setExpandedItems((prev) => {
-      const newSet = new Set<number>();
-      prev.forEach((expandedIndex) => {
-        if (expandedIndex < index) {
-          newSet.add(expandedIndex);
-        } else if (expandedIndex > index) {
-          newSet.add(expandedIndex - 1);
-        }
-      });
-      return newSet;
+    // Update refs array size
+    itemRefs.current = itemRefs.current.filter((_, i) => i !== index);
+
+    // Update expanded item after removal
+    setExpandedItem((prev) => {
+      if (prev === null) return null;
+      if (prev === index) {
+        // If the removed item was expanded, close expansion
+        return null;
+      } else if (prev > index) {
+        // If expanded item was after the removed item, adjust its index
+        return prev - 1;
+      }
+      // If expanded item was before the removed item, keep it as is
+      return prev;
     });
   };
 
@@ -146,27 +162,26 @@ export function ArrayField({
 
     onChange(newArray);
 
-    // Update expanded items after reordering
-    setExpandedItems((prev) => {
-      const newSet = new Set<number>();
-      prev.forEach((expandedIndex) => {
-        if (expandedIndex === source.index) {
-          newSet.add(destination.index);
-        } else if (source.index < destination.index) {
-          if (expandedIndex > source.index && expandedIndex <= destination.index) {
-            newSet.add(expandedIndex - 1);
-          } else {
-            newSet.add(expandedIndex);
-          }
-        } else {
-          if (expandedIndex >= destination.index && expandedIndex < source.index) {
-            newSet.add(expandedIndex + 1);
-          } else {
-            newSet.add(expandedIndex);
-          }
+    // Update expanded item after reordering
+    setExpandedItem((prev) => {
+      if (prev === null) return null;
+
+      if (prev === source.index) {
+        // The expanded item was moved, update to its new position
+        return destination.index;
+      } else if (source.index < destination.index) {
+        // Item moved forward - adjust indexes of items in between
+        if (prev > source.index && prev <= destination.index) {
+          return prev - 1;
         }
-      });
-      return newSet;
+      } else {
+        // Item moved backward - adjust indexes of items in between
+        if (prev >= destination.index && prev < source.index) {
+          return prev + 1;
+        }
+      }
+
+      return prev;
     });
   };
 
@@ -197,13 +212,18 @@ export function ArrayField({
     snapshot?: DraggableStateSnapshot,
   ) => {
     const typedItem = item as Record<string, unknown>;
-    const isExpanded = expandedItems.has(index);
+    const isExpanded = expandedItem === index;
     const displayText = getDisplayText(item, index);
 
     if (resolvedItemSchema.type === "object") {
       return (
         <div
-          ref={provided?.innerRef}
+          ref={(el) => {
+            if (provided?.innerRef) {
+              provided.innerRef(el);
+            }
+            itemRefs.current[index] = el;
+          }}
           {...provided?.draggableProps}
           className={tx(
             "border rounded",
@@ -213,7 +233,9 @@ export function ArrayField({
         >
           {/* Header row - always visible */}
           <div
-            className={tx("flex items-center cursor-pointer justify-between p-2 hover:bg-upstart-50")}
+            className={tx(
+              "flex items-center cursor-pointer justify-between p-2 bg-gray-100 hover:bg-upstart-50",
+            )}
             onClick={() => toggleExpanded(index)}
           >
             <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -227,7 +249,7 @@ export function ArrayField({
                 </div>
               )}
 
-              <span className="text-xs font-medium text-gray-700 truncate">{displayText}</span>
+              <span className="text-xs font-normal text-gray-700 truncate">{displayText}</span>
             </div>
 
             {/* Action buttons */}
@@ -275,7 +297,12 @@ export function ArrayField({
     // For primitive types, use simple inline editing
     return (
       <div
-        ref={provided?.innerRef}
+        ref={(el) => {
+          if (provided?.innerRef) {
+            provided.innerRef(el);
+          }
+          itemRefs.current[index] = el;
+        }}
         {...provided?.draggableProps}
         className={`flex items-center gap-2 p-2 border rounded border-gray-200 ${
           snapshot?.isDragging ? "shadow-lg" : ""
@@ -360,10 +387,8 @@ export function ArrayField({
       )}
 
       {currentValue.length === 0 && (
-        <div className="text-center py-6 text-gray-500 text-sm border-2 border-dashed border-gray-200 rounded text-pretty">
+        <div className="text-center py-6 text-gray-400 text-sm border-2 border-dashed border-gray-200 rounded">
           No items added yet.
-          <br />
-          Click on the "+" to get started.
         </div>
       )}
     </div>
