@@ -14,7 +14,7 @@ import { TbPlus } from "react-icons/tb";
 import { FieldTitle, processObjectSchemaToFields } from "../field-factory";
 import type { FieldProps } from "./types";
 import { tx } from "@upstart.gg/style-system/twind";
-import { IconButton } from "@upstart.gg/style-system/system";
+import { Button, IconButton } from "@upstart.gg/style-system/system";
 
 export interface ArrayFieldProps extends FieldProps<unknown[]> {
   itemSchema: TSchema;
@@ -199,7 +199,11 @@ export function ArrayField({
         <div
           ref={provided?.innerRef}
           {...provided?.draggableProps}
-          className={tx("border border-gray-200 rounded", `${snapshot?.isDragging && "shadow-lg"}`)}
+          className={tx(
+            "border rounded",
+            isExpanded ? "border-gray-300" : "border-gray-200",
+            `${snapshot?.isDragging && "shadow-lg"}`,
+          )}
         >
           {/* Header row - always visible */}
           <div
@@ -316,9 +320,9 @@ export function ArrayField({
       <div className="flex w-full items-center justify-between">
         <FieldTitle title={title} description={description} />
         {addable && (
-          <IconButton type="button" onClick={handleAddItem} title="Add Item" variant="outline" size="1">
-            <TbPlus className="w-4 h-4" />
-          </IconButton>
+          <Button type="button" onClick={handleAddItem} variant="soft" size="1" radius="full">
+            <TbPlus className="w-3 h-3" /> Add item
+          </Button>
         )}
       </div>
 
@@ -330,7 +334,7 @@ export function ArrayField({
               <div
                 {...provided.droppableProps}
                 ref={provided.innerRef}
-                className={`space-y-1 -mx-1 ${snapshot.isDraggingOver ? "bg-upstart-50" : ""}`}
+                className={`space-y-1 ${snapshot.isDraggingOver ? "bg-upstart-50" : ""}`}
               >
                 {currentValue.map((item, index) => {
                   // Create stable key for drag and drop

@@ -26,7 +26,6 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
         props.imagePosition === "side" ? "flex-row" : "flex-col",
         presetClasses.container,
         classes,
-
         isOverlay &&
           css({
             backgroundImage: `url(${props.cardImage?.src})`,

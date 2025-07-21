@@ -15,7 +15,7 @@ export function shadow({ title = "Shadow", defaultValue = "shadow-none" }: Shado
     enumNames: ["None", "S", "M", "L", "XL", "2XL"],
     "ui:placeholder": "Not specified",
     "ui:field": "enum",
-    "ui:display": "select",
+    "ui:display": "button-group",
     // "ui:advanced": true,
   });
 }
@@ -43,7 +43,8 @@ export function textShadow({ title = "Text shadow", ...rest }: TextShadowOptions
     {
       $id: "styles:textShadow",
       title,
-      enumNames: ["None", "Small", "Medium", "Large", "Extra large"],
+      enumNames: ["None", "S", "M", "L", "XL"],
+      "ui:display": "button-group",
       "ui:placeholder": "Not specified",
       "ui:field": "enum",
       "ui:styleId": "styles:textShadow",

@@ -1,26 +1,38 @@
-import { useDraftHelpers, useGetBrick, usePreviewMode, useSectionByBrickId } from "../hooks/use-editor";
+import { usePreviewMode, useSectionByBrickId } from "../hooks/use-editor";
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
-import { Callout, SegmentedControl, Select, Switch, Tabs } from "@upstart.gg/style-system/system";
-import { defaultProps, manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
+import { Callout, Tabs } from "@upstart.gg/style-system/system";
+import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
-import { FormRenderer } from "./json-form/FormRenderer";
 import { useLocalStorage } from "usehooks-ts";
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
-import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import BrickSettingsView from "./BrickSettingsView";
 import { tx } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";
 import PageHierarchy from "./PageHierarchy";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
-import { FieldTitle } from "./json-form/field-factory";
-import intersection from "lodash-es/intersection";
-import { useCalloutViewCounter } from "../hooks/use-callout-view-counter";
-import merge from "lodash-es/merge";
-import { presetsStyleProps } from "@upstart.gg/sdk/shared/bricks/props/preset";
 import { IconRender } from "./IconRender";
+import type { TObject, TSchema } from "@sinclair/typebox";
 
 type TabType = "preset" | "settings" | "content";
+
+function hasFilteredProperties(manifest: BrickManifest, filter: (prop: TSchema) => boolean): boolean {
+  function extractProperties(schema: TObject): Record<string, TSchema> {
+    const contentProps: Record<string, TSchema> = {};
+    for (const [key, prop] of Object.entries(schema.properties)) {
+      if (filter(prop)) {
+        contentProps[key] = prop;
+      } else if (prop.type === "object" && prop.properties) {
+        const nestedContentProps = extractProperties(prop as TObject);
+        if (Object.keys(nestedContentProps).length > 0) {
+          Object.assign(contentProps, nestedContentProps);
+        }
+      }
+    }
+    return contentProps;
+  }
+  const filteredProps = extractProperties(manifest.props as TObject);
+  return Object.keys(filteredProps).length > 0;
+}
 
 export default function PanelBrickInspector({ brick }: { brick: Brick }) {
   const previewMode = usePreviewMode();
@@ -29,11 +41,15 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
   const selectedTab = tabsMapping[brick.id] ?? "settings";
   const manifest = manifests[brick.type];
 
+  const hasContentProperties = hasFilteredProperties(manifest, (prop) => {
+    return prop.metadata?.category === "content";
+  });
+
   useEffect(() => {
-    if (!manifest.isContainer && selectedTab === "content") {
+    if (!hasContentProperties && selectedTab === "content") {
       setTabsMapping((prev) => ({ ...prev, [brick.id]: "settings" }));
     }
-  }, [setTabsMapping, brick?.id, selectedTab, manifest?.isContainer]);
+  }, [setTabsMapping, brick?.id, selectedTab, hasContentProperties]);
 
   if (!section) {
     console.warn(`No section found for brick: ${brick.id}`);
@@ -41,14 +57,14 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
   }
 
   const showTabsList =
-    (!!manifest.props.properties.preset && previewMode === "desktop") || !!manifest.props.properties.variants;
+    (!!manifest.props.properties.preset && previewMode === "desktop") || hasContentProperties;
 
   return (
     <div key={`brick-inspector-${brick.id}`} className="flex flex-col flex-grow h-full">
       <PanelBlockTitle>
-        <div className="flex justify-between items-center group">
+        <div className="flex flex-1 justify-between items-center group">
           <span className="flex items-center">
-            <IconRender manifest={manifest} className="inline-block mr-2 !h-5 !w-5 " />
+            <IconRender manifest={manifest} className="inline-block mr-2 !h-4 !w-4 " />
             {manifest.name}
           </span>
           <span
@@ -66,239 +82,29 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
       <Tabs.Root
         value={selectedTab}
         onValueChange={(val) => {
-          console.log("changing tab to %s", val);
           setTabsMapping((prev) => ({ ...prev, [brick.id]: val as TabType }));
         }}
         className="flex-grow flex flex-col"
       >
         {showTabsList && (
-          <Tabs.List className="sticky top-0 z-50 bg-gray-100 dark:bg-dark-900">
-            {manifest.props.properties.preset && (
-              <Tabs.Trigger value="preset" className="!flex-1">
-                Color Preset
-              </Tabs.Trigger>
-            )}
-            {manifest.props.properties.variants && (
-              <Tabs.Trigger value="variants" className="!flex-1">
-                Variant
+          <Tabs.List className="sticky top-0 z-50 bg-gray-100 dark:bg-dark-900" size="1">
+            {hasContentProperties && (
+              <Tabs.Trigger value="content" className="!flex-1">
+                Content
               </Tabs.Trigger>
             )}
             <Tabs.Trigger value="settings" className="!flex-1">
               {previewMode === "mobile" ? "Mobile settings" : "Settings"}
             </Tabs.Trigger>
-            {/*
-            {manifest.isContainer && (
-              <Tabs.Trigger value="content" className="!flex-1">
-                Content
-              </Tabs.Trigger>
-            )} */}
           </Tabs.List>
-        )}
-        {manifest.props.properties.preset && previewMode === "desktop" && (
-          <ScrollablePanelTab tab="preset">
-            <PresetsTab brick={brick} section={section} />
-          </ScrollablePanelTab>
-        )}
-        {manifest.props.properties.variants && (
-          <ScrollablePanelTab tab="variants">
-            <VariantsTab brick={brick} section={section} />
-          </ScrollablePanelTab>
         )}
         <ScrollablePanelTab tab="settings">
           <SettingsTab brick={brick} section={section} />
         </ScrollablePanelTab>
-        {/* <ScrollablePanelTab tab="content">
-          <ContentTab brick={brick} manifest={manifest} />
-        </ScrollablePanelTab> */}
+        <ScrollablePanelTab tab="content">
+          <ContentTab brick={brick} section={section} />
+        </ScrollablePanelTab>
       </Tabs.Root>
-    </div>
-  );
-}
-
-function PresetsTab({ brick, section }: { brick: Brick; section: Section }) {
-  const manifest = manifests[brick.type];
-  const { updateBrickProps, getBrick } = useDraftHelpers();
-  const previewMode = usePreviewMode();
-  const schema = resolveSchema(manifest.props.properties.preset);
-
-  return (
-    <div className={tx("flex flex-col h-full")}>
-      <div className="basis-[70%] grow-0">
-        <Callout.Root size="1" className="mb-2">
-          <Callout.Text size="1">
-            <span className="font-semibold">Style presets</span> are pre-configured color styles that can be
-            applied to your bricks to quickly change their appearance.
-          </Callout.Text>
-        </Callout.Root>
-        <div className="grid grid-cols-3 gap-1.5 auto-rows-[3rem] flex-1 mx-2">
-          {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
-          {schema.anyOf.map((preset: any) => {
-            const styles = presetsStyleProps[preset.const as keyof typeof presetsStyleProps];
-            const classes = tx(styles["styles:backgroundColor"], styles["styles:color"]);
-            return (
-              <button
-                type="button"
-                onClick={() => {
-                  updateBrickProps(brick.id, { preset: preset.const }, previewMode === "mobile");
-                }}
-                key={preset.const}
-                className={tx(
-                  classes,
-                  (preset.const === "preset-none" || preset.const === "light") && "border border-gray-200",
-                  preset.const === "preset-none" && "italic",
-                  `text-xs flex items-center justify-center text-center p-2
-                   rounded-md hover:opacity-80 relative overflow-hidden`,
-                  brick.props.preset === preset.const && "outline outline-2 outline-upstart-400",
-                )}
-              >
-                {preset.title}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-      <PageHierarchy brick={brick} section={section} />
-    </div>
-  );
-}
-function VariantsTab({ brick, section }: { brick: Brick; section: Section }) {
-  const manifest = manifests[brick.type];
-  const { updateBrickProps } = useDraftHelpers();
-  const previewMode = usePreviewMode();
-  const schema = resolveSchema(manifest.props.properties.variants);
-  const { shouldDisplay } = useCalloutViewCounter("brick-variants", 8);
-  const variantsNames: Record<string, string> = schema["ui:variant-names"] ?? {};
-  const formData = useMemo(() => {
-    const defProps = defaultProps[brick.type].props;
-    return previewMode === "mobile"
-      ? merge({}, defProps, brick.props, brick.mobileProps)
-      : merge({}, defProps, brick.props ?? {});
-  }, [brick, previewMode]);
-
-  if (Object.keys(variantsNames).length === 0) {
-    console.warn("No variants defined for brick %s in section %s", brick.type, section.id);
-    return null;
-  }
-
-  return (
-    <div className={tx("flex flex-col h-full")}>
-      <div className="basis-1/2 grow-0">
-        {shouldDisplay && (
-          <Callout.Root size="1" className="m-2">
-            <Callout.Text size="1">
-              <span className="font-semibold">Variants</span> change the layout and/or behavior of the brick
-            </Callout.Text>
-          </Callout.Root>
-        )}
-        <div className="mx-2 divide-y divide-gray-100">
-          {Object.entries(variantsNames).map(([variantKey, variantName]) => (
-            <div key={variantKey} className="py-2.5">
-              <VariantSelector
-                label={variantName}
-                // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-                values={schema.items.anyOf.filter((vr: any) => vr["ui:variant-type"] === variantKey)}
-                currentVariants={formData.variants}
-                onChange={(variants) => {
-                  console.debug("setting variant %s to %o", variantKey, variants);
-                  updateBrickProps(brick.id, { variants }, previewMode === "mobile");
-                }}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-      <PageHierarchy brick={brick} section={section} />
-    </div>
-  );
-}
-
-function VariantSelector({
-  label,
-  values,
-  onChange,
-  currentVariants = [],
-}: {
-  label: string;
-  values: { const: string; title: string }[];
-  onChange: (variants: string[]) => void;
-  currentVariants: string[];
-}) {
-  const currentValue = intersection(
-    currentVariants,
-    values.map((v) => v.const),
-  ).at(0);
-
-  // The variant is like a boolean, so we'll use a switch to select the variant
-  if (values.length === 1) {
-    return (
-      <div className="flex items-center justify-between">
-        <FieldTitle title={values[0].title} />
-        <Switch
-          onCheckedChange={(checked) => {
-            const newVariants = currentVariants.filter((v) => v !== currentValue);
-            if (checked) {
-              newVariants.push(values[0].const);
-            }
-            onChange(newVariants);
-          }}
-          size="2"
-          variant="soft"
-          defaultChecked={currentVariants.includes(values[0].const)}
-        />
-      </div>
-    );
-  }
-
-  // Compute the total length of options titles to either display a select or button-groups
-  const totalLength = values.reduce((acc, v) => acc + v.title.length, 0);
-
-  if (totalLength > 10) {
-    // If the total length is too long, we use a select
-    return (
-      <div className="flex items-center justify-between pr-2">
-        <FieldTitle title={label} />
-        <Select.Root
-          defaultValue={currentValue}
-          size="2"
-          onValueChange={(value) => {
-            onChange(currentVariants.filter((v) => v !== currentValue).concat(value));
-          }}
-        >
-          <Select.Trigger radius="medium" variant="ghost" placeholder="Not specified">
-            {values.find((v) => v.const === currentValue)?.title}
-          </Select.Trigger>
-          <Select.Content position="popper">
-            <Select.Group>
-              {values.map((v) => (
-                <Select.Item key={v.const} value={v.const}>
-                  {v.title}
-                </Select.Item>
-              ))}
-            </Select.Group>
-          </Select.Content>
-        </Select.Root>
-      </div>
-    );
-  }
-
-  // Use a button group to select the variant
-  return (
-    <div className="flex items-center justify-between">
-      <FieldTitle title={label} />
-      <SegmentedControl.Root
-        value={currentValue}
-        onValueChange={(value) => {
-          onChange(currentVariants.filter((v) => v !== currentValue).concat(value));
-        }}
-        size="1"
-        radius="medium"
-      >
-        {values.map((option) => (
-          <SegmentedControl.Item key={option.const} value={option.const}>
-            {option.title}
-          </SegmentedControl.Item>
-        ))}
-      </SegmentedControl.Root>
     </div>
   );
 }
@@ -322,40 +128,26 @@ function SettingsTab({ brick, section }: { brick: Brick; section: Section }) {
     </form>
   );
 }
-
-function ContentTab({ brick, manifest }: { brick: Brick; manifest: BrickManifest }) {
-  const { updateBrickProps } = useDraftHelpers();
+function ContentTab({ brick, section }: { brick: Brick; section: Section }) {
   const previewMode = usePreviewMode();
-  const getBrickInfo = useGetBrick();
-  const brickInfo = getBrickInfo(brick.id);
-
-  const onChange = useCallback(
-    (data: Record<string, unknown>, propertyChanged: string) => {
-      if (!propertyChanged) {
-        // ignore changes unrelated to the brick
-        return;
-      }
-      console.log("ContentTab.onChange(%o)", data, propertyChanged);
-      updateBrickProps(brick.id, data, previewMode === "mobile");
-    },
-    [brick.id, previewMode, updateBrickProps],
-  );
-
-  invariant(brickInfo, "Brick info props is missing in ContentTab");
-
   return (
-    <form className={tx("px-3 flex flex-col gap-3")}>
-      <FormRenderer
-        brickId={brick.id}
-        formSchema={manifest.props}
-        formData={brickInfo.props}
-        filter={(prop) => {
-          return true;
-          // return prop["ui:inspector-tab"] === "content";
-        }}
-        onChange={onChange}
-        previewMode={previewMode}
-      />
+    <form className={tx("flex flex-col justify-between h-full")}>
+      {previewMode === "mobile" && (
+        <Callout.Root size="1">
+          <Callout.Text size="1">
+            <strong>Note</strong>: You are editing mobile-only styles. Any changes here will only affect how
+            the brick appears on mobile devices.
+          </Callout.Text>
+        </Callout.Root>
+      )}
+      <div className="basis-[70%] flex flex-col">
+        <BrickSettingsView
+          brick={brick}
+          label="content"
+          categoryFilter={(category) => category === "content"}
+        />
+      </div>
+      <PageHierarchy brick={brick} section={section} />
     </form>
   );
 }

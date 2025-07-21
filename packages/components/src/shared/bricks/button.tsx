@@ -10,11 +10,10 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, edi
   const styles = useBrickStyle<Manifest>(brick);
   const { props } = brick;
 
-  const handelClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (editable) {
-      console.warn("Form is editable, submission is disabled");
-      toast(`This form is not clickable in edit mode but will lead to form submission when published.`, {
+      toast(`This button is not clickable in edit mode`, {
+        id: `button-no-click-toast`,
         style: {
           minWidth: "max-content",
         },
@@ -44,10 +43,7 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, edi
         className={tx("btn", styles.default, props.variants, props.round)}
         data-prevented-by-editor={editable ? "true" : "false"}
         ref={ref}
-        onClick={(e) => {
-          e.preventDefault();
-          handelClick(e);
-        }}
+        onClick={handleClick}
       >
         {hasIconLeft && iconElement && <span className="mr-2">{iconElement}</span>}
         {props.label}

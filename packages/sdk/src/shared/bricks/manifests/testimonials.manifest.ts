@@ -1,4 +1,4 @@
-import { Type } from "@sinclair/typebox";
+import { type TObject, Type } from "@sinclair/typebox";
 import { HiOutlineChatBubbleBottomCenter } from "react-icons/hi2";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { backgroundRef } from "../props/background";
@@ -9,24 +9,235 @@ import { imageRef } from "../props/image";
 import { paddingRef } from "../props/padding";
 import { iconRef, string } from "../props/string";
 import type { BrickProps } from "../props/types";
+import { fontSizeRef } from "../props/text";
+import { colorPresetRef } from "../props/preset";
+import { StringEnum } from "~/shared/utils/string-enum";
 
 export const manifest = defineBrickManifest({
   type: "testimonials",
   name: "Testimonials",
   kind: "widget",
   description: "Display testimonials from users",
+  defaultWidth: { desktop: "100%" },
   repeatable: false,
   icon: HiOutlineChatBubbleBottomCenter,
   props: defineProps(
     {
-      orientation: Type.Optional(
-        Type.Union(
+      colorPreset: Type.Optional(
+        colorPresetRef({
+          title: "Color preset",
+          "ui:presets": {
+            "primary-light": {
+              previewBgClass: "bg-primary-light text-primary-content-light",
+              value: { card: "bg-primary-light text-primary-content-light border-primary-light" },
+              label: "Primary light",
+            },
+            "primary-light-gradient": {
+              previewBgClass: "bg-gradient-to-br from-primary-300 to-primary-500 text-primary-content-light",
+              value: {
+                card: "from-primary-300 to-primary-500 text-primary-content-light border-primary",
+              },
+              label: "Primary light gradient",
+            },
+            primary: {
+              previewBgClass: "bg-primary text-primary-content",
+              label: "Primary",
+              value: { card: "bg-primary text-primary-content border-primary" },
+            },
+            "primary-gradient": {
+              previewBgClass: "bg-gradient-to-br from-primary-500 to-primary-700 text-primary-content",
+              label: "Primary gradient",
+              value: { card: "from-primary-500 to-primary-700 text-primary-content border-primary" },
+            },
+            "primary-dark": {
+              previewBgClass: "bg-primary-dark text-primary-content",
+              label: "Primary dark",
+              value: { card: "bg-primary-dark text-primary-content border-primary-dark" },
+            },
+            "primary-dark-gradient": {
+              previewBgClass: "bg-gradient-to-br from-primary-700 to-primary-900 text-primary-content",
+              label: "Primary dark gradient",
+              value: {
+                card: "from-primary-700 to-primary-900 text-primary-content border-primary-dark",
+              },
+            },
+            "secondary-light": {
+              previewBgClass: "bg-secondary-light text-secondary-content-light",
+              label: "Secondary light",
+              value: { card: "bg-secondary-light text-secondary-content-light border-secondary-light" },
+            },
+            "secondary-light-gradient": {
+              previewBgClass:
+                "bg-gradient-to-br from-secondary-300 to-secondary-500 text-secondary-content-light",
+              label: "Secondary light gradient",
+              value: {
+                card: "from-secondary-300 to-secondary-500 text-secondary-content-light border-secondary",
+              },
+            },
+            secondary: {
+              previewBgClass: "bg-secondary text-secondary-content",
+              label: "Secondary",
+              value: { card: "bg-secondary text-secondary-content border-secondary" },
+            },
+            "secondary-gradient": {
+              previewBgClass: "bg-gradient-to-br from-secondary-500 to-secondary-700 text-secondary-content",
+              label: "Secondary gradient",
+              value: {
+                card: "from-secondary-500 to-secondary-700 text-secondary-content border-secondary",
+              },
+            },
+            "secondary-dark": {
+              previewBgClass: "bg-secondary-dark text-secondary-content",
+              label: "Secondary dark",
+              value: { card: "bg-secondary-dark text-secondary-content border-secondary-dark" },
+            },
+
+            "secondary-dark-gradient": {
+              previewBgClass: "bg-gradient-to-br from-secondary-700 to-secondary-900 text-secondary-content",
+              label: "Secondary dark gradient",
+              value: {
+                card: "from-secondary-700 to-secondary-900 text-secondary-content border-secondary-dark",
+              },
+            },
+
+            "accent-light": {
+              previewBgClass: "bg-accent-light text-accent-content-light",
+              label: "Accent lighter",
+              value: { card: "bg-accent-light text-accent-content-light border-accent-light" },
+            },
+
+            "accent-light-gradient": {
+              previewBgClass: "bg-gradient-to-br from-accent-300 to-accent-500 text-accent-content-light",
+              label: "Accent light gradient",
+              value: { card: "from-accent-300 to-accent-500 text-accent-content-light border-accent" },
+            },
+            accent: {
+              previewBgClass: "bg-accent text-accent-content",
+              label: "Accent",
+              value: { card: "bg-accent text-accent-content border-accent" },
+            },
+
+            "accent-gradient": {
+              previewBgClass: "bg-gradient-to-br from-accent-500 to-accent-700 text-accent-content",
+              label: "Accent gradient",
+              value: { card: "from-accent-500 to-accent-700 text-accent-content border-accent" },
+            },
+            "accent-dark": {
+              previewBgClass: "bg-accent-dark text-accent-content",
+              label: "Accent dark",
+              value: { card: "bg-accent-dark text-accent-content border-accent-dark" },
+            },
+
+            "accent-dark-gradient": {
+              previewBgClass: "bg-gradient-to-br from-accent-700 to-accent-900 text-accent-content",
+              label: "Accent dark gradient",
+              value: { card: "from-accent-700 to-accent-900 text-accent-content border-accent-dark" },
+            },
+            "neutral-light": {
+              previewBgClass: "bg-neutral-light text-neutral-content-light",
+              label: "Neutral light",
+              value: { card: "bg-neutral-light text-neutral-content-light border-neutral-light" },
+            },
+
+            "neutral-light-gradient": {
+              previewBgClass: "bg-gradient-to-br from-neutral-300 to-neutral-500 text-neutral-content-light",
+              label: "Neutral light gradient",
+              value: {
+                card: "from-neutral-300 to-neutral-500 text-neutral-content-light border-neutral",
+              },
+            },
+
+            neutral: {
+              previewBgClass: "bg-neutral text-neutral-content",
+              label: "Neutral",
+              value: { card: "bg-neutral text-neutral-content border-neutral" },
+            },
+
+            "neutral-gradient": {
+              previewBgClass: "bg-gradient-to-br from-neutral-500 to-neutral-700 text-neutral-content",
+              label: "Neutral gradient",
+              value: { card: "from-neutral-500 to-neutral-700 text-neutral-content border-neutral" },
+            },
+
+            "neutral-dark": {
+              previewBgClass: "bg-neutral-dark text-neutral-content",
+              label: "Neutral dark",
+              value: { card: "bg-neutral-dark text-neutral-content border-neutral-dark" },
+            },
+
+            "neutral-dark-gradient": {
+              previewBgClass: "bg-gradient-to-br from-neutral-700 to-neutral-900 text-neutral-content",
+              label: "Neutral dark gradient",
+              value: {
+                card: "from-neutral-700 to-neutral-900 text-neutral-content border-neutral-dark",
+              },
+            },
+            base100: {
+              previewBgClass: "bg-base-100 text-base-content border-base-200 border-2",
+              label: "Base 100",
+              value: { card: "bg-base-100 text-base-content border-base-200" },
+            },
+            base100_primary: {
+              previewBgClass: "bg-base-100 text-base-content border-primary border-2",
+              label: "Base 100 / Primary",
+              value: { card: "bg-base-100 text-base-content border-primary" },
+            },
+            base100_secondary: {
+              previewBgClass: "bg-base-100 text-base-content border-secondary border-2",
+              label: "Base 100 / Secondary",
+              value: { card: "bg-base-100 text-base-content border-secondary" },
+            },
+            base100_accent: {
+              previewBgClass: "bg-base-100 text-base-content border-accent border-2",
+              label: "Base 100 / Accent",
+              value: { card: "bg-base-100 text-base-content border-accent" },
+            },
+
+            none: { label: "None", value: {} },
+          },
+          default: "primary",
+        }),
+      ),
+      gradientDirection: Type.Optional(
+        StringEnum(
           [
-            Type.Literal("horizontal", { title: "Horizontal" }),
-            Type.Literal("vertical", { title: "Vertical" }),
+            "bg-gradient-to-t",
+            "bg-gradient-to-r",
+            "bg-gradient-to-b",
+            "bg-gradient-to-l",
+            "bg-gradient-to-tl",
+            "bg-gradient-to-tr",
+            "bg-gradient-to-br",
+            "bg-gradient-to-bl",
           ],
-          { title: "Orientation", default: "horizontal" },
+          {
+            title: "Gradient direction",
+            description: "The direction of the gradient. Only applies when color preset is a gradient.",
+            enumNames: [
+              "Top",
+              "Right",
+              "Bottom",
+              "Left",
+              "Top left",
+              "Top right",
+              "Bottom right",
+              "Bottom left",
+            ],
+            default: "bg-gradient-to-br",
+            "ui:responsive": "desktop",
+            "ui:styleId": "styles:gradientDirection",
+            metadata: {
+              filter: (manifestProps: TObject, formData: Manifest["props"]) => {
+                return formData.colorPreset?.includes("gradient") === true;
+              },
+            },
+          },
         ),
+      ),
+      fontSize: Type.Optional(
+        fontSizeRef({
+          "ui:no-extra-large-sizes": true,
+        }),
       ),
       padding: Type.Optional(paddingRef()),
       testimonials: Type.Array(
@@ -45,12 +256,16 @@ export const manifest = defineBrickManifest({
           title: "Testimonials",
           description: "List of testimonials",
           default: [], // Empty array by default
+          "ui:tab": "content",
           "ui:widget": "array",
           "ui:displayField": "author", // Affiche le nom de l'auteur dans la vue compacte
           "ui:options": {
             orderable: true, // Enable drag & drop reordering
             removable: true, // Enable delete button
             addable: true, // Enable add button
+          },
+          metadata: {
+            category: "content",
           },
         },
       ),
@@ -71,10 +286,9 @@ export const examples: {
   props: BrickProps<Manifest>["brick"]["props"];
 }[] = [
   {
-    description: "SaaS platform testimonials with avatars (horizontal)",
+    description: "SaaS platform testimonials with avatars",
     type: "testimonials",
     props: {
-      orientation: "horizontal",
       testimonials: [
         {
           author: "Sarah Johnson",
@@ -110,10 +324,9 @@ export const examples: {
     },
   },
   {
-    description: "E-commerce customer reviews (vertical)",
+    description: "E-commerce customer reviews",
     type: "testimonials",
     props: {
-      orientation: "vertical",
       testimonials: [
         {
           author: "Jessica Williams",
@@ -141,7 +354,6 @@ export const examples: {
     description: "Agency client testimonials with company info",
     type: "testimonials",
     props: {
-      orientation: "horizontal",
       testimonials: [
         {
           author: "Rachel Thompson",
@@ -177,10 +389,9 @@ export const examples: {
     },
   },
   {
-    description: "App user feedback (vertical layout)",
+    description: "App user feedback",
     type: "testimonials",
     props: {
-      orientation: "vertical",
       testimonials: [
         {
           author: "Tom Wilson",
@@ -216,7 +427,6 @@ export const examples: {
     description: "Course/education testimonials with social icons",
     type: "testimonials",
     props: {
-      orientation: "horizontal",
       testimonials: [
         {
           author: "Amanda Foster",
@@ -245,7 +455,6 @@ export const examples: {
     description: "Simple testimonials without avatars",
     type: "testimonials",
     props: {
-      orientation: "horizontal",
       testimonials: [
         {
           author: "Anonymous User",
@@ -269,7 +478,6 @@ export const examples: {
     description: "Consultant testimonials with professional focus",
     type: "testimonials",
     props: {
-      orientation: "vertical",
       testimonials: [
         {
           author: "Dr. Patricia Lee",
@@ -298,7 +506,6 @@ export const examples: {
     description: "Event testimonials with social media icons",
     type: "testimonials",
     props: {
-      orientation: "horizontal",
       testimonials: [
         {
           author: "Jennifer Adams",
@@ -329,70 +536,6 @@ export const examples: {
             alt: "Sophie Chen attendee photo",
           },
           socialIcon: "mdi:instagram",
-        },
-      ],
-    },
-  },
-  {
-    description: "Fitness/wellness testimonials with achievement focus",
-    type: "testimonials",
-    props: {
-      orientation: "vertical",
-      testimonials: [
-        {
-          author: "Mark Thompson",
-          text: "Lost 30 pounds in 4 months following this program! The personalized approach and constant support made all the difference in achieving my goals.",
-          avatar: {
-            src: "https://via.placeholder.com/75x75.png?text=MT",
-            alt: "Mark Thompson transformation photo",
-          },
-          socialIcon: "mdi:dumbbell",
-        },
-        {
-          author: "Anna Johnson",
-          text: "Finally found a workout routine I actually enjoy! The trainers are motivating and the community support keeps me accountable every day.",
-          avatar: {
-            src: "https://via.placeholder.com/75x75.png?text=AJ",
-            alt: "Anna Johnson fitness photo",
-          },
-          socialIcon: "mdi:heart-pulse",
-        },
-        {
-          author: "Chris Davis",
-          text: "This program completely changed my relationship with fitness. I'm stronger, more confident, and have energy I haven't felt in years.",
-          avatar: {
-            src: "https://via.placeholder.com/75x75.png?text=CD",
-            alt: "Chris Davis success photo",
-          },
-          socialIcon: "mdi:trophy",
-        },
-      ],
-    },
-  },
-  {
-    description: "Restaurant customer reviews with food focus",
-    type: "testimonials",
-    props: {
-      orientation: "horizontal",
-      testimonials: [
-        {
-          author: "Food Critic Helen",
-          company: "Local Food Blog",
-          text: "Exceptional cuisine and impeccable service! Every dish was a masterpiece and the attention to detail was remarkable. A true culinary experience.",
-          avatar: {
-            src: "https://via.placeholder.com/65x65.png?text=HC",
-            alt: "Helen food critic photo",
-          },
-          socialIcon: "mdi:silverware-fork-knife",
-        },
-        {
-          author: "Regular Customer Joe",
-          text: "Been coming here for years and it never disappoints. The staff knows my order by heart and the quality is consistently outstanding.",
-          avatar: {
-            src: "https://via.placeholder.com/65x65.png?text=JC",
-            alt: "Joe regular customer",
-          },
-          socialIcon: "mdi:food",
         },
       ],
     },

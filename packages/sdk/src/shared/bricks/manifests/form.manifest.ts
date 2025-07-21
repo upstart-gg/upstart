@@ -33,7 +33,7 @@ There is no need to define the form fields manually and the form does not accept
       }),
     ),
     padding: Type.Optional(paddingRef()),
-    fontSize: Type.Optional(fontSizeRef({ default: "inherit", noExtraLargeSizes: true })),
+    fontSize: Type.Optional(fontSizeRef({ default: "inherit", "ui:no-extra-large-sizes": true })),
     button: group({
       title: "Button",
       children: {

@@ -25,14 +25,11 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
   const pageRef = useRef<HTMLElement | null>(null);
   const [dragging, setDragging] = useState(false);
 
-  useLayoutEffect(() => {
-    console.log("PageHierarchy mounted, restoring scroll position");
+  useEffect(() => {
     const currentElement = selectedSectionId ?? selectedBrickId;
     // Restore scroll position after render
     if (currentElement) {
-      console.log("Restoring scroll position to %s", currentElement);
       const domObj = document.getElementById(`hierarchy_${currentElement}`);
-
       if (
         domObj &&
         "scrollIntoViewIfNeeded" in domObj &&
@@ -46,8 +43,6 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
           block: "center",
         });
       }
-    } else {
-      console.log("No section or brick selected, not restoring scroll position");
     }
   }, [selectedSectionId, selectedBrickId]);
 
@@ -95,23 +90,20 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
           key={`hierarchy_${brick.id}`}
           draggableId={`hierarchy_${brick.id}`}
           index={currentIndex}
-          isDragDisabled={disabledDragging}
+          // isDragDisabled={disabledDragging}
         >
           {(provided, snapshot) => (
             <div
               key={brick.id}
               ref={provided.innerRef}
               {...provided.draggableProps}
-              className={tx(
-                "bricks-hierarchy-wrapper",
-                // snapshot.isDragging && "[&>.bricks-hierarchy-wrapper]:bg-red-800",
-              )}
+              className={tx("bricks-hierarchy-wrapper")}
             >
               <div
                 id={`hierarchy_${brick.id}`}
                 className={tx(
                   "rounded-md select-none cursor-pointer",
-                  // isChild && "-mr-1.5",
+                  !hasChildren && selectedBrick?.id !== brick.id && "hover:bg-upstart-50",
                   hasChildren && "outline outline-2 outline-transparent",
                   hasChildren &&
                     (selectedBrick?.id === brick.id ? "outline-upstart-400" : "hover:(outline-upstart-100)"),
@@ -122,13 +114,6 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
                   paddingLeft: `${level * 8}px`,
                   marginTop: isChild && brickIndex === 0 ? "0.25rem" : "1px",
                 }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  setSelectedBrickId(brick.id);
-                  document.getElementById(brick.id)?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-                }}
-                onMouseEnter={() => setHoverElement({ type: "brick", id: brick.id })}
               >
                 <div
                   className={tx(
@@ -136,6 +121,17 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
                     hasChildren && selectedBrick?.id === brick.id && "bg-upstart-500 text-white font-bold",
                     selectedBrick?.id !== brick.id && "hover:bg-upstart-50",
                   )}
+                  onMouseEnter={() => setHoverElement({ type: "brick", id: brick.id })}
+                  onClick={(e) => {
+                    console.log("Clicked on brick", brick.id);
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setSelectedBrickId(brick.id);
+                    setSelectedSectionId();
+                    document
+                      .getElementById(brick.id)
+                      ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                  }}
                 >
                   <span className="inline-flex items-center gap-1.5 select-none">
                     <Icon className="w-4 h-4" /> {brickName}
@@ -144,14 +140,14 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
                     <RxDragHandleHorizontal className="w-5 h-5 cursor-row-resize opacity-60 group-hover:opacity-80 transition-opacity" />
                   </div>
                 </div>
-                {childBricks.length > 0 && !snapshot.isDragging && (
+                {childBricks.length > 0 && (
                   <BricksHierarchy
                     bricks={childBricks}
                     level={level + 1}
                     currentIndex={currentIndex}
                     isChild
                     // Disable children dragging if the parent is being dragged
-                    disabledDragging={snapshot.isDragging}
+                    // disabledDragging={snapshot.isDragging}
                   />
                 )}
               </div>
@@ -206,7 +202,6 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
       }
     }
 
-    console.log("Draggable ID:", draggableId);
     setDragging(false);
   };
 
@@ -260,10 +255,15 @@ Drag and drop sections and bricks to reorder them.
                             "py-1 px-1.5 rounded-t select-none flex justify-between items-center group -mr-1",
                             section.id === selectedSectionId
                               ? "bg-upstart-500 text-white font-bold cursor-default"
-                              : "hover:bg-upstart-50  cursor-pointer",
+                              : "hover:bg-upstart-50 cursor-pointer",
                           )}
                           onClick={(e) => {
-                            e.stopPropagation();
+                            if (e.defaultPrevented) {
+                              console.log(
+                                "Event was already handled, skipping click action on section hierarchy",
+                              );
+                              return; // If the event was already handled, do nothing
+                            }
                             e.preventDefault();
                             setSelectedBrickId();
                             setSelectedSectionId(section.id);

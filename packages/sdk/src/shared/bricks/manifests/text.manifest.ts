@@ -1,13 +1,10 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { textContentRef } from "../props/text";
 import { defineProps } from "../props/helpers";
-import { backgroundColorRef } from "../props/background";
 import { paddingRef } from "../props/padding";
 import { borderRef } from "../props/border";
 import { RxTextAlignLeft } from "react-icons/rx";
 import type { BrickProps } from "../props/types";
-import { colorRef } from "../props/color";
-import { shadowRef } from "../props/effects";
 import { Type } from "@sinclair/typebox";
 
 export const manifest = defineBrickManifest({
@@ -31,8 +28,8 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
   props: defineProps(
     {
       content: textContentRef(),
-      backgroundColor: Type.Optional(backgroundColorRef()),
-      color: Type.Optional(colorRef()),
+      // backgroundColor: Type.Optional(backgroundColorRef()),
+      // color: Type.Optional(colorRef()),
       padding: Type.Optional(paddingRef({ default: "p-4" })),
       border: Type.Optional(borderRef()),
       // shadow: Type.Optional(shadowRef()),
@@ -67,7 +64,6 @@ export const examples: {
     props: {
       content:
         "<h3>Key Features</h3><ul><li><strong>Advanced Analytics</strong> - Real-time data insights</li><li><strong>Cloud Integration</strong> - Seamless connectivity</li><li><strong>24/7 Support</strong> - Always here to help</li></ul>",
-      backgroundColor: "#f8fafc",
       padding: "p-8",
     },
   },
@@ -77,8 +73,6 @@ export const examples: {
     props: {
       content:
         "<p style='text-align: center'><em>\"Innovation distinguishes between a leader and a follower.\"</em><br><strong>- Steve Jobs</strong></p>",
-      backgroundColor: "#1e293b",
-      color: "#f1f5f9",
       padding: "p-8",
     },
   },
@@ -97,8 +91,6 @@ export const examples: {
     props: {
       content:
         "<p style='text-align: center'><strong>Ready to Get Started?</strong><br>Join over <span style='color: #ef4444'>50,000</span> satisfied customers and transform your business today!</p><p style='text-align: center'><a href='/signup'>Sign up now</a> and get your first month <em>absolutely free</em>.</p>",
-      backgroundColor: "#fef3c7",
-      color: "#92400e",
     },
   },
   {
@@ -107,7 +99,6 @@ export const examples: {
     props: {
       content:
         "<h2>About Our Company</h2><p>We've been serving customers since 2010, building trust through quality products and exceptional service.</p>",
-      backgroundColor: "#f0f9ff",
     },
   },
   {
@@ -116,7 +107,6 @@ export const examples: {
     props: {
       content:
         "<h4>API Configuration</h4><p>To get started with our API, you'll need to:</p><ol><li>Create an account and <strong>generate an API key</strong></li><li>Install the SDK: <code>npm install @company/sdk</code></li><li>Initialize with your credentials</li></ol><p>For detailed instructions, visit our <a href='/docs/api'>API documentation</a>.</p>",
-      backgroundColor: "#f8fafc",
       padding: "p-8",
     },
   },
@@ -127,7 +117,6 @@ export const examples: {
       content:
         "<p style='text-align: center'><strong>Meet Our Team</strong></p><p>Our diverse team of experts brings together decades of experience in technology, design, and business strategy. We're passionate about <em>creating solutions</em> that make a real difference.</p><p><a href='/team'>Learn more about our team</a> and the values that drive us forward.</p>",
       padding: "p-8",
-      color: "#374151",
     },
   },
   {
@@ -136,8 +125,6 @@ export const examples: {
     props: {
       content:
         "<p><strong>⚠️ Important Notice:</strong><br>Scheduled maintenance will occur on <em>Sunday, March 15th</em> from 2:00 AM to 6:00 AM UTC.</p><p>During this time, some features may be temporarily unavailable. We apologize for any inconvenience.</p>",
-      backgroundColor: "#dc2626",
-      color: "#fef2f2",
       padding: "p-8",
     },
   },
@@ -147,7 +134,6 @@ export const examples: {
     props: {
       content:
         "<p style='text-align: center'><strong>✅ Success!</strong><br>Your account has been created successfully.</p><p style='text-align: center'>Check your email for verification instructions and <a href='/dashboard' style='color: #065f46'>start exploring</a> your new dashboard.</p>",
-      backgroundColor: "#d1fae5",
       padding: "p-8",
     },
   },

@@ -223,9 +223,8 @@ export const manifest = defineBrickManifest({
           },
         }),
       ),
-      navigation: group({
-        title: "Links",
-        children: {
+      navigation: Type.Object(
+        {
           position: Type.Union(
             [
               Type.Literal("left", { title: "Left" }),
@@ -257,7 +256,14 @@ export const manifest = defineBrickManifest({
             ),
           ),
         },
-      }),
+        {
+          title: "Navigation",
+          description: "Settings for the navigation items in the navbar",
+          metadata: {
+            category: "content",
+          },
+        },
+      ),
       shadow: Type.Optional(shadowRef()),
     },
     { noAlignSelf: true },

@@ -23,6 +23,7 @@ type CommonMetadata = {
   "ui:responsive"?: boolean | "mobile" | "mobile-only";
   "ui:hidden"?: boolean | "if-empty";
   "ui:scope"?: "site" | "page";
+  "ui:tab"?: BrickPropCategory;
 };
 
 export type FieldMetadata = CommonMetadata & {

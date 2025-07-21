@@ -5,6 +5,8 @@ import { StringEnum } from "~/shared/utils/string-enum";
 import { defineProps } from "../props/helpers";
 import { iconRef, string } from "../props/string";
 import type { BrickProps } from "../props/types";
+import { fontSizeRef } from "../props/text";
+import { paddingRef } from "../props/padding";
 
 export const manifest = defineBrickManifest({
   type: "social-links",
@@ -57,6 +59,12 @@ export const manifest = defineBrickManifest({
         enumNames: ["Horizontal", "Vertical"],
         title: "Display",
         default: "row",
+      }),
+    ),
+    fontSize: Type.Optional(fontSizeRef()),
+    padding: Type.Optional(
+      paddingRef({
+        default: "p-2",
       }),
     ),
     icononly: Type.Optional(

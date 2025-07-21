@@ -56,15 +56,9 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
         },
       }),
 
-      // section.props.layout?.wrap === true ? "flex-wrap" : "flex-nowrap",
-
       "flex-nowrap",
 
-      // "[&>*]:flex-shrink-0",
-
       // Background
-      // !!section.props.background && getBackgroundStyles(section.props.background),
-
       // Section editor styles
       getSectionEditorStyles({ editable, previewMode, section, selected }),
       // Manage the section order using css "order" (flex) property
@@ -80,10 +74,10 @@ function getSectionEditorStyles({ section, editable, selected, previewMode }: Us
   }
   return [
     "select-none transition-[outline] duration-150 relative",
-    "outline-dotted outline-4 -outline-offset-4",
-    "self-stretch",
+    "outline-dashed outline-2 -outline-offset-2",
+    // "self-stretch",
 
-    selected ? "outline-black/40" : "outline-transparent",
+    selected ? "outline-upstart-500/40" : "outline-transparent hover:outline-upstart-500/40",
 
     // this is the grid overlay shown when dragging
     editable &&

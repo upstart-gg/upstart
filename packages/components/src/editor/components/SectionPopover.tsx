@@ -3,18 +3,6 @@ import type { Section } from "@upstart.gg/sdk/shared/bricks";
 import { Popover, Inset } from "@upstart.gg/style-system/system";
 import SectionSettingsView from "./SectionSettingsView";
 
-/**
- * Specific popover for Section settings with given group
- */
-// export default function BrickSettingsGroupPopover() {
-//   const { popoverElement: brickSettingsPopover } = useBrickSettingsPopover({
-//     Component: BrickSettingsGroupMenu,
-//     selector: "[data-brick-group]",
-//     placement: "bottom",
-//   });
-//   return brickSettingsPopover;
-// }
-
 type SectionPopoverProps = PropsWithChildren<{
   section: Section;
   view: "settings" | "presets";

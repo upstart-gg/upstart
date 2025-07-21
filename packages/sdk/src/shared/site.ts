@@ -260,6 +260,68 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               },
             ],
           },
+
+          // {
+          //   id: `s_${generateId()}`,
+          //   label: "Form",
+          //   order: ++order,
+          //   props: {
+          //     // fillSpace: true,
+          //     justifyContent: "justify-center",
+          //     alignItems: "items-start",
+          //   },
+          //   bricks: [
+          //     {
+          //       id: generateId(),
+          //       type: "form",
+          //       props: {
+          //         padding: "p-4",
+          //         datarecordId: "a7f26d80-d68e-4b7a-a4a3-e41c454670ce",
+          //         title: "Simple Form",
+          //         intro: "This is a simple form to collect user information.",
+          //         align: "vertical",
+          //         button: {
+          //           buttonLabel: "Register",
+          //           buttonPosition: "center",
+          //           buttonBorderRadius: "rounded-lg",
+          //           buttonColor: "btn-color-primary",
+          //         },
+          //       },
+          //     },
+          //     {
+          //       id: generateId(),
+          //       type: "form",
+          //       props: {
+          //         padding: "p-4",
+          //         datarecordId: "aacfe76d-4309-466c-83ad-fda8b02b043d",
+          //         title: "Complex Form",
+          //         intro: "This is a complex form with various field types.",
+          //         button: {
+          //           buttonLabel: "Submit Form",
+          //           buttonPosition: "right",
+          //           buttonBorderRadius: "rounded-md",
+          //           buttonColor: "btn-color-accent",
+          //         },
+          //       },
+          //     },
+          //   ],
+          // },
+          {
+            id: `s_content-${generateId()}`,
+            label: "Hero",
+            order: ++order,
+            props: {
+              minHeight: "400px",
+              // backgroundColor: "secondary-dark",
+            },
+            bricks: [
+              {
+                id: `b_${generateId()}`,
+                type: "hero",
+                props: {},
+              },
+            ],
+          },
           {
             id: `s_${generateId()}`,
             label: "Testimonial",
@@ -277,21 +339,29 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   testimonials: [
                     {
                       author: "Billy Gates",
-                      text: "Upstart rocks!",
+                      text: "Upstart rocks! I love the flexibility and ease of use. Can't wait to see more features!",
                       socialIcon: "mdi:twitter",
                       company: "Microsoft",
                     },
                     {
                       author: "Jeff Bezos",
-                      text: "Amazing product!",
+                      text: "Amazing product! Upstart has transformed the way I build websites. Highly recommend it!",
                       socialIcon: "mdi:facebook",
                       company: "Amazon",
                     },
+                    {
+                      author: "Elon Musk",
+                      text: "Upstart is a game changer! The possibilities are endless.",
+                      socialIcon: "mdi:linkedin",
+                      company: "SpaceX",
+                    },
+                    {
+                      author: "Mark Zuckerberg",
+                      text: "Upstart is a fantastic tool for building modern websites. I'm impressed!",
+                      socialIcon: "mdi:facebook",
+                      company: "Meta",
+                    },
                   ],
-                  height: "144.828125px",
-                  width: "45.82331730769231%",
-                  growHorizontally: false,
-                  lastTouched: 1752581827291,
                 },
                 id: "s_uuqtYzo",
               },
@@ -302,9 +372,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             label: "SocialLinks",
             order: ++order,
             props: {
-              // fillSpace: true,
               justifyContent: "justify-center",
-              alignItems: "items-start",
             },
             bricks: [
               {
@@ -329,7 +397,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                     },
                   ],
                   variants: ["icon-only", "display-inline"],
-                  height: "138.6000000000001px",
                 },
                 id: generateId(),
               },
@@ -342,67 +409,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   type: "button",
                 },
                 id: generateId(),
-              },
-            ],
-          },
-          {
-            id: `s_${generateId()}`,
-            label: "Form",
-            order: ++order,
-            props: {
-              // fillSpace: true,
-              justifyContent: "justify-center",
-              alignItems: "items-start",
-            },
-            bricks: [
-              {
-                id: generateId(),
-                type: "form",
-                props: {
-                  padding: "p-4",
-                  datarecordId: "a7f26d80-d68e-4b7a-a4a3-e41c454670ce",
-                  title: "Simple Form",
-                  intro: "This is a simple form to collect user information.",
-                  align: "horizontal",
-                  button: {
-                    buttonLabel: "Register",
-                    buttonPosition: "center",
-                    buttonBorderRadius: "rounded-lg",
-                    buttonColor: "btn-color-primary",
-                  },
-                },
-              },
-              {
-                id: generateId(),
-                type: "form",
-                props: {
-                  padding: "p-4",
-                  datarecordId: "aacfe76d-4309-466c-83ad-fda8b02b043d",
-                  title: "Complex Form",
-                  intro: "This is a complex form with various field types.",
-                  button: {
-                    buttonLabel: "Submit Form",
-                    buttonPosition: "right",
-                    buttonBorderRadius: "rounded-md",
-                    buttonColor: "btn-color-accent",
-                  },
-                },
-              },
-            ],
-          },
-          {
-            id: `s_content-${generateId()}`,
-            label: "Hero",
-            order: ++order,
-            props: {
-              minHeight: "400px",
-              // backgroundColor: "secondary-dark",
-            },
-            bricks: [
-              {
-                id: `b_${generateId()}`,
-                type: "hero",
-                props: {},
               },
             ],
           },
@@ -437,18 +443,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 type: "vbox",
                 props: {
                   $children: [
-                    // {
-                    //   id: `b_${generateId()}`,
-                    //   type: "map",
-                    //   props: {
-                    //     location: {
-                    //       lat: 37.7749,
-                    //       lng: -122.4194,
-                    //       tooltip: "San Francisco, CA",
-                    //       address: "San Francisco, CA",
-                    //     },
-                    //   },
-                    // },
                     {
                       id: `b_${generateId()}`,
                       type: "text",
@@ -589,51 +583,50 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               },
             ],
           },
-          {
-            id: `s_${generateId()}`,
-            label: "Form",
-            order: ++order,
-            props: {
-              // fillSpace: true,
-              justifyContent: "justify-center",
-            },
-            bricks: [
-              {
-                id: generateId(),
-                type: "form",
-                props: {
-                  padding: "p-4",
-                  datarecordId: "a7f26d80-d68e-4b7a-a4a3-e41c454670ce",
-                  title: "Simple Form",
-                  intro: "This is a simple form to collect user information.",
-                  buttonLabel: "Register",
-                  align: "horizontal",
-                },
-              },
+          // {
+          //   id: `s_${generateId()}`,
+          //   label: "Form",
+          //   order: ++order,
+          //   props: {
+          //     justifyContent: "justify-center",
+          //   },
+          //   bricks: [
+          //     {
+          //       id: generateId(),
+          //       type: "form",
+          //       props: {
+          //         padding: "p-4",
+          //         datarecordId: "a7f26d80-d68e-4b7a-a4a3-e41c454670ce",
+          //         title: "Simple Form",
+          //         intro: "This is a simple form to collect user information.",
+          //         buttonLabel: "Register",
+          //         align: "horizontal",
+          //       },
+          //     },
 
-              {
-                type: "button",
-                props: {
-                  alignSelf: "self-auto",
-                  label: "My button",
-                  justifyContent: "justify-center",
-                  type: "button",
-                },
-                id: generateId(),
-              },
-              {
-                id: generateId(),
-                type: "form",
-                props: {
-                  padding: "p-4",
-                  datarecordId: "aacfe76d-4309-466c-83ad-fda8b02b043d",
-                  title: "Complex Form",
-                  intro: "This is a complex form with various field types.",
-                  buttonLabel: "Submit Form",
-                },
-              },
-            ],
-          },
+          //     {
+          //       type: "button",
+          //       props: {
+          //         alignSelf: "self-auto",
+          //         label: "My button",
+          //         justifyContent: "justify-center",
+          //         type: "button",
+          //       },
+          //       id: generateId(),
+          //     },
+          //     {
+          //       id: generateId(),
+          //       type: "form",
+          //       props: {
+          //         padding: "p-4",
+          //         datarecordId: "aacfe76d-4309-466c-83ad-fda8b02b043d",
+          //         title: "Complex Form",
+          //         intro: "This is a complex form with various field types.",
+          //         buttonLabel: "Submit Form",
+          //       },
+          //     },
+          //   ],
+          // },
           {
             id: `s_content-${generateId()}`,
             label: "Hero",

@@ -97,14 +97,14 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
     !mobileProps?.width && manifest.minWidth?.mobile && `@mobile:min-w-[${manifest.minWidth.mobile}px]`,
     !props.width && manifest.minWidth?.desktop && `@desktop:min-w-[${manifest.minWidth.desktop}px]`,
 
-    manifest.minHeight?.mobile ? `@mobile:min-h-[${manifest.minHeight.mobile}px]` : "@mobile:min-h-fit",
-    manifest.minHeight?.desktop ? `@desktop:min-h-[${manifest.minHeight.desktop}px]` : "@desktop:min-h-fit",
+    manifest.minHeight?.mobile ? `@mobile:min-h-[${manifest.minHeight.mobile}px]` : "@mobile:(min-h-fit)",
+    manifest.minHeight?.desktop ? `@desktop:min-h-[${manifest.minHeight.desktop}px]` : "@desktop:(min-h-fit)",
 
     manifest.maxHeight?.mobile && `@mobile:max-h-[${manifest.maxHeight.mobile}px]`,
     manifest.maxHeight?.desktop && `@desktop:max-h-[${manifest.maxHeight.desktop}px]`,
 
     // Always respect the parent container width
-    isContainerChild && "flex-1",
+    isContainerChild && "flex-grow",
     /*!isContainerChild &&*/ manifest.maxWidth?.mobile && `@mobile:max-w-[${manifest.maxWidth.mobile}px]`,
     /*!isContainerChild &&*/ manifest.maxWidth?.desktop && `@desktop:max-w-[${manifest.maxWidth.desktop}px]`,
 
@@ -150,7 +150,7 @@ function getBrickWrapperEditorStyles(
   return [
     "select-none transition-[outline] duration-[200ms]",
     "outline outline-2 outline-transparent outline-dashed",
-    !isContainer ? "outline-offset-2" : "outline-offset-8",
+    !isContainer ? "outline-offset-2" : "outline-offset-[6px]",
     selected && !isContainer && "!outline-upstart-400",
     selected && isContainer && "!outline-orange-300",
     !selected && !isContainerChild && !isContainer && "hover:(outline-upstart-400/60)",

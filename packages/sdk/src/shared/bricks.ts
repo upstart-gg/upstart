@@ -322,20 +322,35 @@ export const sectionProps = Type.Object(
         ],
         {
           enumNames: ["Left", "Center", "Right", "Space between", "Space around", "Evenly distributed"],
-          title: "Horizontal alignment",
+          title: "Horizontal align.",
           "ui:placeholder": "Not specified",
           default: "justify-center",
+          "ui:display": "icon-group",
           "ui:responsive": "desktop",
+          "ui:icons": [
+            "fluent:align-start-horizontal-20-regular",
+            "fluent:align-center-vertical-20-regular",
+            "fluent:align-end-horizontal-20-regular",
+            "fluent:align-space-between-vertical-20-regular",
+            "fluent:align-space-around-vertical-20-regular",
+            "fluent:align-space-evenly-horizontal-20-regular",
+          ],
         },
       ),
     ),
     alignItems: Type.Optional(
-      StringEnum(["items-start", "items-center", "items-end", "items-stretch"], {
-        enumNames: ["Top", "Center", "Bottom", "Stretch"],
+      StringEnum(["items-start", "items-center", "items-end"], {
+        enumNames: ["Top", "Center", "Bottom"],
         title: "Vertical alignment",
         "ui:placeholder": "Not specified",
         default: "items-center",
         "ui:responsive": "desktop",
+        "ui:display": "icon-group",
+        "ui:icons": [
+          "fluent:align-start-vertical-20-regular",
+          "fluent:center-vertical-20-regular",
+          "fluent:align-end-vertical-20-regular",
+        ],
       }),
     ),
     gap: Type.Optional(

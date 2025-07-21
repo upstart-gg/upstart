@@ -8,9 +8,9 @@ import { InlineIcon } from "@iconify/react";
 
 const Testimonials = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const { props } = brick;
-  const styles = useBrickStyle<Manifest>(brick);
+  const { gradientDirection, ...styles } = useBrickStyle<Manifest>(brick);
   const presetClasses = useColorPreset<Manifest>(brick);
-  const classes = Object.values(styles);
+  const containerClasses = Object.values(styles);
 
   // If no testimonials, show sample content
   const testimonials =
@@ -27,25 +27,20 @@ const Testimonials = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, 
         ];
 
   return (
-    <div
-      ref={ref}
-      className={tx(
-        "flex flex-1 gap-6",
-        props.orientation === "vertical" ? "flex-col" : "flex-row flex-wrap",
-        presetClasses.container,
-        ...classes,
-      )}
-    >
+    <div ref={ref} className={tx("flex flex-1 gap-6 flex-row flex-wrap min-h-fit", containerClasses)}>
       {testimonials.map((testimonial, index) => (
         <div
           key={index}
           className={tx(
-            "testimonial-item flex flex-col gap-4 p-6 rounded-lg border border-gray-200  shadow-sm",
-            props.orientation === "horizontal" ? "flex-1" : "w-full",
+            "testimonial-item flex flex-1 flex-col gap-4 p-6 rounded-lg border shadow-sm @desktop:(min-w-[250px])",
+            presetClasses.card,
+            gradientDirection,
           )}
         >
           <div className="testimonial-text flex-1">
-            <div className="whitespace-pre-wrap text-pretty">{testimonial.text}</div>
+            <div className="whitespace-pre-wrap text-pretty font-medium italic text-[110%]">
+              {testimonial.text}
+            </div>
           </div>
 
           <div className="testimonial-author flex items-center gap-3">
@@ -57,9 +52,9 @@ const Testimonials = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, 
               />
             )}
 
-            <div className="flex-1">
-              <div className="font-semibold">{testimonial.author}</div>
-              {testimonial.company && <div className="text-sm">{testimonial.company}</div>}
+            <div className="flex-1 flex-nowrap">
+              <div className="font-semibold text-[90%] text-nowrap">{testimonial.author}</div>
+              {testimonial.company && <div className="text-[85%]">{testimonial.company}</div>}
             </div>
 
             {testimonial.socialIcon && <InlineIcon icon={testimonial.socialIcon} className="w-5 h-5" />}

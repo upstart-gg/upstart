@@ -17,10 +17,9 @@ const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, e
     <div
       ref={ref}
       className={tx(
-        "flex flex-1 justify-start items-start text-xl",
+        "flex flex-grow shrink-0 justify-start items-start min-h-fit min-w-fit gap-2",
         isRowDisplay ? "flex-row" : "flex-col items-stretch",
-        // editable && "relative group",
-        styles.backgroundColor,
+        Object.values(styles),
       )}
     >
       {editable && links.length === 0 && (
@@ -39,6 +38,7 @@ const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, e
                 toast(
                   `This link is not clickable in edit mode but will lead to ${link.href} when published.`,
                   {
+                    id: `social-link-no-click-toast`,
                     style: {
                       minWidth: "max-content",
                     },
@@ -47,11 +47,11 @@ const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, e
                 e.preventDefault();
               }
             }}
-            className={tx("p-0.5 grow flex items-center gap-1 hover:opacity-80")}
+            className={tx("grow flex items-center gap-0.5 hover:opacity-80")}
             title={link.label || link.href}
           >
             {link.icon && <InlineIcon icon={link.icon} className="text-[100%]" />}
-            {!props.icononly && link.label && <span className="ml-1">{link.label}</span>}
+            {!props.icononly && link.label && <span className="ml-1 text-nowrap">{link.label}</span>}
           </a>
         );
       })}

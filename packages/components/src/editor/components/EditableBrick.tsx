@@ -530,7 +530,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
 
             {!isContainerChild && (
               <ContextMenu.Sub>
-                <ContextMenu.SubTrigger>Position</ContextMenu.SubTrigger>
+                <ContextMenu.SubTrigger>Vertical Position</ContextMenu.SubTrigger>
                 <ContextMenu.SubContent>
                   {Object.entries(normalizeSchemaEnum(commonProps.alignSelf)).map(([key, value]) => (
                     <ContextMenu.CheckboxItem

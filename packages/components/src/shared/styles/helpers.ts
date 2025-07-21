@@ -146,7 +146,7 @@ export const brickStylesHelpersMap = {
 
 export const brickWrapperStylesHelpersMap = {
   // "styles:padding": simpleClassHandler, // test
-
+  "styles:alignItems": simpleClassHandler,
   "styles:shadow": simpleClassHandler,
   // "styles:rounding": simpleClassHandler,
   "styles:fixedPositioned": getFixedPositionedStyles,

@@ -2,7 +2,7 @@ import { type StringOptions, Type, type Static } from "@sinclair/typebox";
 import { typedRef } from "~/shared/utils/typed-ref";
 
 type Options = StringOptions & {
-  noExtraLargeSizes?: boolean;
+  "ui:no-extra-large-sizes"?: boolean;
 };
 
 export function fontSize(options: Options = {}) {
@@ -13,17 +13,13 @@ export function fontSize(options: Options = {}) {
       Type.Literal("text-sm", { title: "Small" }),
       Type.Literal("text-base", { title: "Medium" }),
       Type.Literal("text-lg", { title: "Large" }),
-      ...(!options.noExtraLargeSizes
-        ? [
-            Type.Literal("text-xl", { title: "Extra large" }),
-            Type.Literal("text-2xl", { title: "Extra large (2x)" }),
-            Type.Literal("text-3xl", { title: "Extra large (3x)" }),
-            Type.Literal("text-4xl", { title: "Extra large (4x)" }),
-            Type.Literal("text-5xl", { title: "Extra large (5x)" }),
-            Type.Literal("text-6xl", { title: "Extra large (6x)" }),
-            Type.Literal("text-7xl", { title: "Extra large (7x)" }),
-          ]
-        : []),
+      Type.Literal("text-xl", { title: "Extra large", "ui:extra-large": true }),
+      Type.Literal("text-2xl", { title: "Extra large (2x)", "ui:extra-large": true }),
+      Type.Literal("text-3xl", { title: "Extra large (3x)", "ui:extra-large": true }),
+      Type.Literal("text-4xl", { title: "Extra large (4x)", "ui:extra-large": true }),
+      Type.Literal("text-5xl", { title: "Extra large (5x)", "ui:extra-large": true }),
+      Type.Literal("text-6xl", { title: "Extra large (6x)", "ui:extra-large": true }),
+      Type.Literal("text-7xl", { title: "Extra large (7x)", "ui:extra-large": true }),
     ],
     {
       default: "inherit",

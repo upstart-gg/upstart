@@ -253,8 +253,7 @@ const IconifyField: FC<
         {/* Button to open selector */}
         <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
           <Popover.Trigger>
-            <Button type="button" variant="outline" size="1">
-              <MdGridView className="w-4 h-4" />
+            <Button type="button" variant="soft" size="1" radius="full">
               Choose icon
             </Button>
           </Popover.Trigger>
