@@ -126,7 +126,7 @@ const DatasourceRefField: FC<FieldProps<DatasourceRefSettings>> = (props) => {
     : {};
 
   return (
-    <div className="field field-datasource">
+    <div className="field field-datasource flex-1">
       <div className="flex flex-col gap-3">
         <div className="flex flex-col flex-1 gap-1">
           <SegmentedControl.Root

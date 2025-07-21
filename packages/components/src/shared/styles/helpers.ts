@@ -7,6 +7,7 @@ import type { OpacitySettings } from "@upstart.gg/sdk/shared/bricks/props/effect
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import type { FixedPositionedSettings } from "@upstart.gg/sdk/shared/bricks/props/position";
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
+import type { GapBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/gap";
 import type { ColorSettings } from "@upstart.gg/sdk/shared/bricks/props/color";
 import { css } from "@upstart.gg/style-system/twind";
 
@@ -113,6 +114,10 @@ export function getBasicAlignmentStyles(props?: AlignBasicSettings, mobileProps?
   return [props?.vertical, props?.horizontal];
 }
 
+export function getBasicGapStyles(props?: GapBasicSettings, mobileProps?: GapBasicSettings) {
+  return props;
+}
+
 // function getContainerLayoutStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {
 //   return props?.type === "grid" ? getGridStyles(props, mobileProps) : getFlexStyles(props, mobileProps);
 // }
@@ -124,6 +129,7 @@ function getGrowHorizontallyStyles(props?: boolean, mobileProps?: boolean) {
 export const brickStylesHelpersMap = {
   "styles:color": getColorStyles,
   "styles:basicAlign": getBasicAlignmentStyles,
+  "styles:basicGap": getBasicGapStyles,
   "styles:textShadow": simpleClassHandler,
   "styles:opacity": getOpacityStyles,
   "styles:objectFit": simpleClassHandler,

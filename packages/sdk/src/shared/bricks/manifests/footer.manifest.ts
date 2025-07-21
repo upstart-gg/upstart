@@ -96,9 +96,8 @@ export const manifest = defineBrickManifest({
             url: urlOrPageIdRef(),
           }),
           {
-
-              title: "Links",
-          }
+            title: "Links",
+          },
         ),
       }),
       {

@@ -262,6 +262,47 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           },
           {
             id: `s_${generateId()}`,
+            order: 2,
+            label: "Bikes",
+            bricks: [
+              {
+                type: "images-gallery",
+                props: {
+                  alignSelf: "self-start",
+                  useDatabase: false,
+                  datasource: {
+                    mapping: {},
+                    filters: {
+                      patternProperties: {
+                        "^(.*)$": {
+                          op: {},
+                        },
+                      },
+                    },
+                    sort: {
+                      patternProperties: {
+                        "^(.*)$": {},
+                      },
+                    },
+                  },
+                  staticImages: [],
+                  columns: 3,
+                  gap: "gap-4",
+                  padding: "p-4",
+                  aspectRatio: "aspect-[4/3]",
+                  height: "104.4px",
+                  lastTouched: 1752850834838,
+                },
+                id: "brick-YCqqkii",
+              },
+            ],
+            props: {
+              minHeight: "524px",
+              lastTouched: 1752850818572,
+            },
+          },
+          {
+            id: `s_${generateId()}`,
             label: "Testimonial",
             order: 2,
             props: {
@@ -340,6 +381,12 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   label: "My button",
                   justifyContent: "justify-center",
                   type: "button",
+                  modifier: "btn-block",
+                  color: "btn-color-primary",
+                  width: "20.834446225071225%",
+                  height: "42px",
+                  growHorizontally: false,
+                  lastTouched: 1752753224134,
                 },
                 id: generateId(),
               },
@@ -365,10 +412,13 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   intro: "This is a simple form to collect user information.",
                   align: "horizontal",
                   button: {
-                    buttonLabel: "Register",
-                    buttonPosition: "center",
-                    buttonBorderRadius: "rounded-lg",
-                    buttonColor: "btn-color-primary",
+                    label: "Register",
+                    position: {
+                      horizontal: "justify-center",
+                    },
+                    size: "block",
+                    borderRadius: "rounded-lg",
+                    color: "btn-color-primary",
                   },
                 },
               },
@@ -380,11 +430,15 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   datarecordId: "aacfe76d-4309-466c-83ad-fda8b02b043d",
                   title: "Complex Form",
                   intro: "This is a complex form with various field types.",
+                  align: "vertical",
                   button: {
-                    buttonLabel: "Submit Form",
-                    buttonPosition: "right",
-                    buttonBorderRadius: "rounded-md",
-                    buttonColor: "btn-color-accent",
+                    label: "Submit Form",
+                    position: {
+                      horizontal: "justify-end",
+                    },
+                    size: "wide",
+                    borderRadius: "rounded-md",
+                    color: "btn-color-accent",
                   },
                 },
               },
@@ -606,7 +660,12 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   datarecordId: "a7f26d80-d68e-4b7a-a4a3-e41c454670ce",
                   title: "Simple Form",
                   intro: "This is a simple form to collect user information.",
-                  buttonLabel: "Register",
+                  button: {
+                    label: "Register",
+                    position: "center",
+                    borderRadius: "rounded-lg",
+                    color: "btn-color-primary",
+                  },
                   align: "horizontal",
                 },
               },
@@ -629,7 +688,12 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   datarecordId: "aacfe76d-4309-466c-83ad-fda8b02b043d",
                   title: "Complex Form",
                   intro: "This is a complex form with various field types.",
-                  buttonLabel: "Submit Form",
+                  button: {
+                    label: "Register 2",
+                    position: "left",
+                    borderRadius: "rounded-lg",
+                    color: "btn-color-primary",
+                  },
                 },
               },
             ],

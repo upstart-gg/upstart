@@ -1,16 +1,17 @@
-import { type SchemaOptions, type Static, type TRef, Type } from "@sinclair/typebox";
-import type { colorPreset, preset } from "../bricks/props/preset";
-import type { background, backgroundColor } from "../bricks/props/background";
+import { type SchemaOptions, Type } from "@sinclair/typebox";
 import type { basicAlign } from "../bricks/props/align";
-import type { hidden } from "../bricks/props/common";
+import type { basicGap } from "../bricks/props/gap";
+import type { background, backgroundColor } from "../bricks/props/background";
 import type { border } from "../bricks/props/border";
-import type { padding } from "../bricks/props/padding";
-import type { image } from "../bricks/props/image";
 import type { color } from "../bricks/props/color";
-import type { shadow, textShadow } from "../bricks/props/effects";
-import type { textContent } from "../bricks/props/text";
+import type { hidden } from "../bricks/props/common";
 import type { cssLength } from "../bricks/props/css-length";
+import type { shadow, textShadow } from "../bricks/props/effects";
+import type { image } from "../bricks/props/image";
+import type { padding } from "../bricks/props/padding";
+import type { colorPreset, preset } from "../bricks/props/preset";
 import type { urlOrPageId } from "../bricks/props/string";
+import type { textContent } from "../bricks/props/text";
 
 export interface SchemaTypeMap {
   "styles:preset": ReturnType<typeof preset>;
@@ -24,6 +25,7 @@ export interface SchemaTypeMap {
   "styles:shadow": ReturnType<typeof shadow>;
   "styles:textShadow": ReturnType<typeof textShadow>;
   "styles:cssLength": ReturnType<typeof cssLength>;
+  "styles:basicGap": ReturnType<typeof basicGap>;
   "presets:color": ReturnType<typeof colorPreset>;
   "assets:image": ReturnType<typeof image>;
   "content:text": ReturnType<typeof textContent>;
