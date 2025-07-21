@@ -1,6 +1,6 @@
-import { Type, type Static } from "@sinclair/typebox";
+import { Type, type SchemaOptions, type Static } from "@sinclair/typebox";
 
-export function datasourceRef() {
+export function datasourceRef(options: SchemaOptions = {}) {
   return Type.Object(
     {
       id: Type.String({
@@ -49,6 +49,7 @@ export function datasourceRef() {
       "ui:meta-type": "datasource-ref",
       title: "Database",
       description: "Datasource reference. Only used for dynamic websites. Do not use for static websites",
+      ...options,
     },
   );
 }

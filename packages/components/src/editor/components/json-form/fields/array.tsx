@@ -1,12 +1,12 @@
 import { DragDropContext, Draggable, Droppable, type DropResult } from "@hello-pangea/dnd";
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
+import { tx } from "@upstart.gg/style-system/twind";
 import { useState } from "react";
 import { MdDelete, MdDragIndicator, MdExpandLess, MdExpandMore } from "react-icons/md";
 import { TbPlus } from "react-icons/tb";
 import { FieldTitle, processObjectSchemaToFields } from "../field-factory";
 import type { FieldProps } from "./types";
-import { tx } from "@upstart.gg/style-system/twind";
 
 export interface ArrayFieldProps extends FieldProps<unknown[]> {
   itemSchema: TSchema;
@@ -33,6 +33,7 @@ export function ArrayField({
 
   // Get UI options from the array schema (not item schema)
   const uiOptions = schema["ui:options"] as Record<string, boolean> | undefined;
+  const maxItems = schema.maxItems as number | undefined;
   const addable = uiOptions?.addable ?? true;
   const removable = uiOptions?.removable ?? true;
   const orderable = uiOptions?.orderable ?? true;
@@ -58,6 +59,11 @@ export function ArrayField({
   // Handle adding new item
   const handleAddItem = () => {
     if (!addable) return;
+
+    // Check if we've reached the maximum number of items
+    if (maxItems !== undefined && currentValue.length >= maxItems) {
+      return;
+    }
 
     let defaultItem: unknown;
 
@@ -197,7 +203,12 @@ export function ArrayField({
           className={`${isDragging ? "shadow-lg" : ""}`}
         >
           {/* Header row - always visible */}
-          <div className={tx("flex items-center justify-between p-2 hover:bg-gray-50  border-gray-200 rounded bg-white", isExpanded ? "border-t, border-r border-l" : "border")}>
+          <div
+            className={tx(
+              "flex items-center justify-between p-2 hover:bg-gray-50  border-gray-200 rounded bg-white",
+              isExpanded ? "border-t, border-r border-l" : "border",
+            )}
+          >
             <div className="flex items-center gap-2 min-w-0 flex-1">
               {/* Drag handle */}
               {orderable && (
@@ -316,8 +327,18 @@ export function ArrayField({
           <button
             type="button"
             onClick={handleAddItem}
-            className="inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded transition-colors"
-            title="Add Item"
+            disabled={maxItems !== undefined && currentValue.length >= maxItems}
+            className={tx(
+              "inline-flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors",
+              maxItems !== undefined && currentValue.length >= maxItems
+                ? "text-gray-300 cursor-not-allowed"
+                : "text-gray-500 hover:text-gray-700 hover:bg-gray-200",
+            )}
+            title={
+              maxItems !== undefined && currentValue.length >= maxItems
+                ? `Maximum of ${maxItems} items allowed`
+                : "Add Item"
+            }
           >
             <TbPlus className="w-4 h-4" />
           </button>

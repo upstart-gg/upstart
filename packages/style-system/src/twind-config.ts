@@ -39,6 +39,7 @@ export default defineConfig({
         borderWidth: "1px",
         borderStyle: "solid",
         borderColor: "inherit",
+        height: "3rem",
       },
     ],
     [
@@ -54,9 +55,31 @@ export default defineConfig({
       }),
     ],
     [
-      "btn-wide",
+      "btn-size-large",
       {
-        width: "100%",
+        paddingLeft: "1.5rem",
+        paddingRight: "1.5rem",
+        height: "3rem",
+        fontSize: "1.125rem",
+        lineHeight: "1.75rem",
+      },
+    ],
+    [
+      "btn-size-medium",
+      {
+        paddingLeft: "1.25rem",
+        paddingRight: "1.25rem",
+        height: "2.5rem",
+      },
+    ],
+    [
+      "btn-size-small",
+      {
+        paddingLeft: "1rem",
+        paddingRight: "1rem",
+        height: "2rem",
+        fontSize: "0.875rem",
+        lineHeight: "1.25rem",
       },
     ],
     [

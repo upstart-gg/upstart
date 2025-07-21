@@ -66,7 +66,9 @@ export const AlignBasicField: FC<FieldProps<AlignBasicSettings>> = (props) => {
           <div className="flex flex-col gap-1 flex-1">
             <label className={fieldLabel}>{schema["ui:vertical-align-label"] ?? "Vertical align"}</label>
             <SegmentedControl.Root
-              onValueChange={(value) => onSettingsChange({ vertical: value as AlignBasicSettings["vertical"] })}
+              onValueChange={(value) =>
+                onSettingsChange({ vertical: value as AlignBasicSettings["vertical"] })
+              }
               defaultValue={currentValue.vertical}
               size="1"
               className="w-full !max-w-full mt-0.5"

@@ -9,6 +9,7 @@ import { renderIcon } from "../utils/icon-resolver";
 const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
   const { props } = brick;
+  const classes = Object.values(styles);
 
   const handelClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -31,16 +32,11 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, edi
     }
   };
 
-  // Check if icon should be displayed on left or right
-  // const hasIconLeft = variants.includes("btn-icon-left");
-  // const hasIconRight = variants.includes("btn-icon-right");
-  const iconElement = renderIcon(props.icon, "w-4 h-4");
-
   return (
-    <div className={tx("flex flex-1", props.justifyContent)}>
+    <div className={tx("flex flex-1")}>
       <button
         type="button"
-        className={tx("btn", styles.default, props.color, props.modifier, props.round)}
+        className={tx(classes, props.color, props.size, "flex-1 w-full")}
         data-text-editable={editable ?? false}
         ref={ref}
         onClick={(e) => {
@@ -48,10 +44,7 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, edi
           handelClick(e);
         }}
       >
-        {/* {hasIconLeft && iconElement && <span className="mr-2">{iconElement}</span>} */}
         {props.label}
-        {/* {hasIconRight && iconElement && <span className="ml-2">{iconElement}</span>}
-        {!hasIconLeft && !hasIconRight && iconElement && <span className="mr-2">{iconElement}</span>} */}
       </button>
     </div>
   );
