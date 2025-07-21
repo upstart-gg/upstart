@@ -112,7 +112,7 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
 function SettingsTab({ brick, section }: { brick: Brick; section: Section }) {
   const previewMode = usePreviewMode();
   return (
-    <form className={tx("flex flex-col justify-between h-full")}>
+    <form className={tx("flex flex-col justify-between h-full")} onSubmit={(e) => e.preventDefault()}>
       {previewMode === "mobile" && (
         <Callout.Root size="1">
           <Callout.Text size="1">
@@ -131,7 +131,7 @@ function SettingsTab({ brick, section }: { brick: Brick; section: Section }) {
 function ContentTab({ brick, section }: { brick: Brick; section: Section }) {
   const previewMode = usePreviewMode();
   return (
-    <form className={tx("flex flex-col justify-between h-full")}>
+    <form className={tx("flex flex-col justify-between h-full")} onSubmit={(e) => e.preventDefault()}>
       {previewMode === "mobile" && (
         <Callout.Root size="1">
           <Callout.Text size="1">

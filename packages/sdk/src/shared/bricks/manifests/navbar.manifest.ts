@@ -205,6 +205,9 @@ export const manifest = defineBrickManifest({
           title: "Brand name",
           default: "Acme Inc.",
           disableSizing: true,
+          metadata: {
+            category: "content",
+          },
         }),
       ),
       logo: Type.Optional(
@@ -212,6 +215,9 @@ export const manifest = defineBrickManifest({
           title: "Logo",
           "ui:show-img-search": false,
           "ui:no-object-options": true,
+          metadata: {
+            category: "content",
+          },
         }),
       ),
       hideBrand: Type.Optional(
@@ -223,48 +229,41 @@ export const manifest = defineBrickManifest({
           },
         }),
       ),
-      navigation: Type.Object(
-        {
-          position: Type.Union(
-            [
-              Type.Literal("left", { title: "Left" }),
-              Type.Literal("center", { title: "Center" }),
-              Type.Literal("right", { title: "Right" }),
-            ],
-            { title: "Position", default: "right", "ui:responsive": "desktop" },
-          ),
-          color: Type.Optional(colorRef()),
-          pageTagsFilter: Type.Optional(
-            Type.Array(Type.String(), {
-              description:
-                "Filter pages in the navbar by tags. Only pages with all of these tags will be shown.",
-              title: "Tags",
-              default: ["navbar"],
-            }),
-          ),
-          staticNavItems: Type.Optional(
-            Type.Array(
-              Type.Object({
-                urlOrPageId: urlOrPageIdRef(),
-                label: Type.Optional(string("Label")),
-              }),
-              {
-                title: "Navigation items",
-                description: "Additional static navigation items to show in the navbar",
-                default: [],
-              },
-            ),
-          ),
-        },
-        {
-          title: "Navigation",
-          description: "Settings for the navigation items in the navbar",
+      shadow: Type.Optional(shadowRef()),
+      linksPosition: Type.Union(
+        [
+          Type.Literal("left", { title: "Left" }),
+          Type.Literal("center", { title: "Center" }),
+          Type.Literal("right", { title: "Right" }),
+        ],
+        { title: "Links position", default: "right", "ui:responsive": "desktop" },
+      ),
+      linksTagsFilter: Type.Optional(
+        Type.Array(Type.String(), {
+          description: "Filter pages in the navbar by tags. Only pages with all of these tags will be shown.",
+          title: "Tags",
+          default: ["navbar"],
           metadata: {
             category: "content",
           },
-        },
+        }),
       ),
-      shadow: Type.Optional(shadowRef()),
+      staticNavItems: Type.Optional(
+        Type.Array(
+          Type.Object({
+            urlOrPageId: urlOrPageIdRef(),
+            label: Type.Optional(string("Label")),
+          }),
+          {
+            title: "Navigation items",
+            description: "Additional static navigation items to show in the navbar",
+            default: [],
+            metadata: {
+              category: "content",
+            },
+          },
+        ),
+      ),
     },
     { noAlignSelf: true },
   ),
@@ -286,16 +285,13 @@ export const examples: {
         src: "https://via.placeholder.com/120x40.png?text=TechCorp",
         alt: "TechCorp Solutions logo",
       },
-      navigation: {
-        position: "right",
-        color: "#374151",
-        staticNavItems: [
-          { urlOrPageId: "/services" },
-          { urlOrPageId: "/about" },
-          { urlOrPageId: "/portfolio" },
-          { urlOrPageId: "/contact" },
-        ],
-      },
+      linksPosition: "right",
+      staticNavItems: [
+        { urlOrPageId: "/services" },
+        { urlOrPageId: "/about" },
+        { urlOrPageId: "/portfolio" },
+        { urlOrPageId: "/contact" },
+      ],
     },
   },
   {
@@ -307,16 +303,13 @@ export const examples: {
         src: "https://via.placeholder.com/100x35.png?text=Studio",
         alt: "Creative Studio logo",
       },
-      navigation: {
-        position: "center",
-        color: "#d1d5db",
-        staticNavItems: [
-          { urlOrPageId: "/work" },
-          { urlOrPageId: "/services" },
-          { urlOrPageId: "/team" },
-          { urlOrPageId: "/blog" },
-        ],
-      },
+      linksPosition: "center",
+      staticNavItems: [
+        { urlOrPageId: "/work" },
+        { urlOrPageId: "/services" },
+        { urlOrPageId: "/team" },
+        { urlOrPageId: "/blog" },
+      ],
     },
   },
   {
@@ -328,16 +321,13 @@ export const examples: {
         src: "https://via.placeholder.com/110x38.png?text=CloudFlow",
         alt: "CloudFlow platform logo",
       },
-      navigation: {
-        position: "right",
-        color: "#f1f5f9",
-        staticNavItems: [
-          { urlOrPageId: "/features" },
-          { urlOrPageId: "/pricing" },
-          { urlOrPageId: "/docs" },
-          { urlOrPageId: "/login" },
-        ],
-      },
+      linksPosition: "right",
+      staticNavItems: [
+        { urlOrPageId: "/features" },
+        { urlOrPageId: "/pricing" },
+        { urlOrPageId: "/docs" },
+        { urlOrPageId: "/login" },
+      ],
     },
   },
   {
@@ -349,16 +339,14 @@ export const examples: {
         src: "https://via.placeholder.com/130x45.png?text=ShopEasy",
         alt: "ShopEasy store logo",
       },
-      navigation: {
-        position: "right",
-        staticNavItems: [
-          { urlOrPageId: "/products" },
-          { urlOrPageId: "/categories" },
-          { urlOrPageId: "/deals" },
-          { urlOrPageId: "/account" },
-          { urlOrPageId: "/cart" },
-        ],
-      },
+      linksPosition: "right",
+      staticNavItems: [
+        { urlOrPageId: "/products" },
+        { urlOrPageId: "/categories" },
+        { urlOrPageId: "/deals" },
+        { urlOrPageId: "/account" },
+        { urlOrPageId: "/cart" },
+      ],
     },
   },
   {
@@ -371,16 +359,13 @@ export const examples: {
         alt: "Digital agency logo",
       },
       hideBrand: true,
-      navigation: {
-        position: "right",
-        color: "#64748b",
-        staticNavItems: [
-          { urlOrPageId: "/projects" },
-          { urlOrPageId: "/capabilities" },
-          { urlOrPageId: "/insights" },
-          { urlOrPageId: "/contact" },
-        ],
-      },
+      linksPosition: "right",
+      staticNavItems: [
+        { urlOrPageId: "/projects" },
+        { urlOrPageId: "/capabilities" },
+        { urlOrPageId: "/insights" },
+        { urlOrPageId: "/contact" },
+      ],
     },
   },
   {
@@ -392,16 +377,13 @@ export const examples: {
         src: "https://via.placeholder.com/80x50.png?text=BV",
         alt: "Bella Vista restaurant logo",
       },
-      navigation: {
-        position: "center",
-        color: "#fdba74",
-        staticNavItems: [
-          { urlOrPageId: "/menu" },
-          { urlOrPageId: "/reservations" },
-          { urlOrPageId: "/events" },
-          { urlOrPageId: "/location" },
-        ],
-      },
+      linksPosition: "center",
+      staticNavItems: [
+        { urlOrPageId: "/menu" },
+        { urlOrPageId: "/reservations" },
+        { urlOrPageId: "/events" },
+        { urlOrPageId: "/location" },
+      ],
     },
   },
   {
@@ -409,36 +391,13 @@ export const examples: {
     type: "navbar",
     props: {
       brand: "TechCorp Solutions",
-      navigation: {
-        position: "left",
-        color: "#64748b",
-        staticNavItems: [
-          { urlOrPageId: "/work" },
-          { urlOrPageId: "/about" },
-          { urlOrPageId: "/experience" },
-          { urlOrPageId: "/contact" },
-        ],
-      },
-    },
-  },
-  {
-    description: "Non-profit navbar with mission-focused design",
-    type: "navbar",
-    props: {
-      brand: "TechCorp Solutions",
-      logo: {
-        src: "https://via.placeholder.com/100x40.png?text=GF",
-        alt: "Green Future organization logo",
-      },
-      navigation: {
-        position: "right",
-        staticNavItems: [
-          { urlOrPageId: "/mission" },
-          { urlOrPageId: "/programs" },
-          { urlOrPageId: "/volunteer" },
-          { urlOrPageId: "/donate" },
-        ],
-      },
+      linksPosition: "left",
+      staticNavItems: [
+        { urlOrPageId: "/work" },
+        { urlOrPageId: "/about" },
+        { urlOrPageId: "/experience" },
+        { urlOrPageId: "/contact" },
+      ],
     },
   },
 ];

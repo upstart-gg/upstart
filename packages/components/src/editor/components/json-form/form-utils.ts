@@ -27,8 +27,12 @@ export function getNavItemsFromManifest(
           ? {
               children: getNavItemsFromManifest(prop as TObject, filter, nextPathParts),
             }
-          : { schema: prop as TSchema }),
+          : { schema: prop }),
+        // : prop.type === "object" && !prop["ui:field"]
+        // ? { schema: getNavItemsFromManifest(prop as TObject, filter, nextPathParts) }
+        // : { schema: prop }),
       };
     });
-  return items;
+
+  return items.flat();
 }

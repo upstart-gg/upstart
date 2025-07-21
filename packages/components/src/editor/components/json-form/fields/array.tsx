@@ -14,8 +14,8 @@ import { TbPlus } from "react-icons/tb";
 import { FieldTitle, processObjectSchemaToFields } from "../field-factory";
 import type { FieldProps } from "./types";
 import { tx } from "@upstart.gg/style-system/twind";
-import { Button, IconButton } from "@upstart.gg/style-system/system";
-
+import { Button, IconButton, TextField } from "@upstart.gg/style-system/system";
+import { RxCross2 } from "react-icons/rx";
 export interface ArrayFieldProps extends FieldProps<unknown[]> {
   itemSchema: TSchema;
   fieldName: string;
@@ -224,11 +224,19 @@ export function ArrayField({
               <span className="text-xs font-medium text-gray-700 truncate">{displayText}</span>
             </div>
 
-            <div className="flex items-center gap-1 text-gray-500">
-              <MdExpandLess
-                className={tx("w-4 h-4 transition-transform duration-300", !isExpanded && "rotate-180")}
-              />
-            </div>
+            {/* Action buttons */}
+            {removable && (
+              <IconButton
+                type="button"
+                size="1"
+                variant="ghost"
+                color="red"
+                onClick={() => handleRemoveItem(index)}
+                title="Remove item"
+              >
+                <RxCross2 className="w-3 h-3" />
+              </IconButton>
+            )}
           </div>
 
           {/* Expanded content - only visible when expanded */}
@@ -251,20 +259,6 @@ export function ArrayField({
                     parents: [...parents, `${fieldName}[${index}]`],
                   },
                 })}
-
-                {/* Action buttons */}
-                {removable && (
-                  <div className="flex justify-end border-gray-200">
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveItem(index)}
-                      className="inline-flex items-center gap-1 px-2 py-1 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors"
-                      title="Remove item"
-                    >
-                      <MdDelete className="w-4 h-4" />
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
           )}
@@ -277,9 +271,9 @@ export function ArrayField({
       <div
         ref={provided?.innerRef}
         {...provided?.draggableProps}
-        className={`flex items-center gap-2 p-2 border rounded bg-white ${
-          snapshot?.isDragging ? "shadow-lg" : "shadow-sm"
-        } transition-shadow`}
+        className={`flex items-center gap-2 p-2 border rounded border-gray-200 ${
+          snapshot?.isDragging ? "shadow-lg" : ""
+        }`}
       >
         {orderable && (
           <div
@@ -290,25 +284,29 @@ export function ArrayField({
           </div>
         )}
 
-        <input
-          type="text"
-          value={String(item || "")}
+        <TextField.Root
+          size="1"
+          className="flex-1"
+          value={`${item || ""}`}
           onChange={(e) => {
             const newArray = [...currentValue];
             newArray[index] = e.target.value;
             onChange(newArray);
           }}
-          className="flex-1 px-2 py-1 border rounded text-sm"
         />
 
         {removable && (
-          <button
+          <IconButton
             type="button"
+            size="1"
+            variant="ghost"
+            color="red"
             onClick={() => handleRemoveItem(index)}
-            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 h-auto rounded transition-colors"
+            title="Remove item"
+            className="group"
           >
-            <MdDelete className="w-4 h-4" />
-          </button>
+            <RxCross2 className="w-3 h-3 text-gray-400 group-hover:text-red-800" />
+          </IconButton>
         )}
       </div>
     );
@@ -331,11 +329,7 @@ export function ArrayField({
         <DragDropContext onDragEnd={handleDragEnd} onDragStart={() => setIsDragging(true)}>
           <Droppable droppableId={`array-${id}`} direction="vertical">
             {(provided, snapshot) => (
-              <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                className={`space-y-1 ${snapshot.isDraggingOver ? "bg-upstart-50" : ""}`}
-              >
+              <div {...provided.droppableProps} ref={provided.innerRef} className={`space-y-1`}>
                 {currentValue.map((item, index) => {
                   // Create stable key for drag and drop
                   const stableKey = `item-${index}`;
