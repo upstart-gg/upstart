@@ -38,24 +38,21 @@ export const manifest = defineBrickManifest({
     mobile: "100%",
   },
   icon: LiaMapMarkedAltSolid,
-  props: defineProps(
-    {
-      location: group({
-        title: "Location",
-        children: geolocation({ defaultZoom: DEFAULTS.zoom }),
+  props: defineProps({
+    location: group({
+      title: "Location",
+      children: geolocation({ defaultZoom: DEFAULTS.zoom }),
+    }),
+    // location: geolocation({ defaultZoom: DEFAULTS.zoom }),
+    border: Type.Optional(
+      borderRef({
+        default: {
+          rounding: "rounded-xl",
+        },
       }),
-      // location: geolocation({ defaultZoom: DEFAULTS.zoom }),
-      border: Type.Optional(
-        borderRef({
-          default: {
-            rounding: "rounded-xl",
-          },
-        }),
-      ),
-      shadow: Type.Optional(shadowRef()),
-    },
-    { noPreset: true },
-  ),
+    ),
+    shadow: Type.Optional(shadowRef()),
+  }),
 });
 
 export type Manifest = typeof manifest;

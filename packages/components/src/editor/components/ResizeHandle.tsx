@@ -14,7 +14,7 @@ export default function ResizeHandle({
     <button
       type="button"
       className={tx(
-        "resizable-handle absolute",
+        "resizable-handle absolute focus:outline-none",
         "overflow-visible z-[9998]",
         `resizable-handle-${direction}`,
         {

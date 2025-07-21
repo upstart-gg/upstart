@@ -135,6 +135,7 @@ export const brickStylesHelpersMap = {
   "styles:objectFit": simpleClassHandler,
   "styles:objectPosition": simpleClassHandler,
   "styles:heroSize": simpleClassHandler,
+  "styles:fontSize": simpleClassHandler,
 
   // new test
   // "styles:backgroundColor": getBackgroundColorStyles,
@@ -151,7 +152,7 @@ export const brickStylesHelpersMap = {
 
 export const brickWrapperStylesHelpersMap = {
   // "styles:padding": simpleClassHandler, // test
-
+  "styles:alignItems": simpleClassHandler,
   "styles:shadow": simpleClassHandler,
   // "styles:rounding": simpleClassHandler,
   "styles:fixedPositioned": getFixedPositionedStyles,

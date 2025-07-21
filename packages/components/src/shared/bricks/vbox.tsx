@@ -17,38 +17,18 @@ const Vbox = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
   const props = brick.props;
   const styles = useBrickStyle<Manifest>(brick);
   const classes = Object.values(styles);
-  const ds = useDatasource(props.datasource, manifest.datasource);
-
-  // // If this container is Dynamic
-  // if (ds.datasourceId && props.$childrenType) {
-  //   console.log("override childrenBricks with data from datasource", ds.data);
-  //   // Take the first child brick as a template and render it for each item in the datasource
-  //   const template = props.$children?.at(0) as Brick | undefined;
-  //   // Override childrenBricks with the data from the datasource
-  //   props.$children =
-  //     template && ds.data !== null
-  //       ? ds.data
-  //           .map((data, index) =>
-  //             processBrick({
-  //               ...template,
-  //               id: `${brick.id}-${index}`,
-  //               props: { ...template.props, datasourceRef: props.datasource, ...data },
-  //             }),
-  //           )
-  //           .filter(Boolean)
-  //       : [];
-  // }
+  // const ds = useDatasource(props.datasource, manifest.datasource);
 
   if (editable) {
     return (
-      <div className={tx("flex flex-1 flex-col relative", ...classes)} ref={ref}>
+      <div className={tx("flex flex-grow flex-col", ...classes)} ref={ref}>
         <DroppableVbox brick={brick} />
       </div>
     );
   }
 
   return (
-    <div className={tx("flex-1", Object.values(styles))} ref={ref}>
+    <div className={tx("flex flex-grow flex-col", Object.values(styles))} ref={ref}>
       {props.$children?.map((brick) => (
         <BrickWrapper key={brick.id} brick={brick} />
       ))}
@@ -104,7 +84,7 @@ function DroppableVbox({ brick }: BrickProps<Manifest>) {
   const { isDesktop } = useDeviceInfo();
   const draggingBrickType = useDraggingBrickType();
   const previewMode = usePreviewMode();
-  const ds = useDatasource(props.datasource, manifest.datasource);
+  // const ds = useDatasource(props.datasource, manifest.datasource);
   return (
     <Droppable
       droppableId={brick.id}
@@ -120,7 +100,7 @@ function DroppableVbox({ brick }: BrickProps<Manifest>) {
           {...droppableProvided.droppableProps}
           ref={droppableProvided.innerRef}
           className={tx(
-            "flex-1 flex flex-col relative",
+            "flex-grow flex flex-col justify-end",
             droppableSnapshot.isDraggingOver && "!outline !outline-2 !outline-orange-300",
             (droppableSnapshot.isDraggingOver || draggingBrickType) && "!overflow-y-hidden",
             droppableSnapshot.isDraggingOver && "[&>*]:(!transform-none)",
@@ -135,11 +115,6 @@ function DroppableVbox({ brick }: BrickProps<Manifest>) {
                   <EditableBrickWrapper key={`${brick.id}`} brick={brick} isContainerChild index={index} />
                 );
               })
-          ) : ds.datasourceId ? (
-            <div className="bg-gradient-to-tr from-gray-200/80 to-gray-100/80 text-black flex justify-center items-center flex-1 text-lg font-bold">
-              This container is dynamic.
-              <pre className="text-xs font-mono">{JSON.stringify(props, null, 2)}</pre>
-            </div>
           ) : (
             <div
               className={tx(

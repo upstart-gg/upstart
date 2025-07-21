@@ -274,6 +274,9 @@ export const manifest = defineBrickManifest({
     cardImage: Type.Optional(
       imageRef({
         "ui:responsive": "desktop",
+        metadata: {
+          category: "content",
+        },
       }),
     ),
     imagePosition: Type.Optional(
@@ -291,6 +294,7 @@ export const manifest = defineBrickManifest({
           default: "top",
           "ui:responsive": "desktop",
           metadata: {
+            category: "content",
             filter: (manifestProps: Manifest["props"], formData: Static<Manifest["props"]>) => {
               return !!formData.cardImage?.src;
             },

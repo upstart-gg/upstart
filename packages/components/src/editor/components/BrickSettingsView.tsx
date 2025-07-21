@@ -12,10 +12,19 @@ import FormNavigator from "./json-form/FormNavigator";
 
 type BrickSettingsViewProps = {
   brick: Brick;
+  label?: string;
   group?: string;
+  categoryFilter?: (category: string | undefined) => boolean;
 };
 
-export default function BrickSettingsView({ brick, group }: BrickSettingsViewProps) {
+const defaultFilter = (category: string | undefined) => category === "settings" || !category;
+
+export default function BrickSettingsView({
+  brick,
+  label,
+  group,
+  categoryFilter = defaultFilter,
+}: BrickSettingsViewProps) {
   const { updateBrickProps } = useDraftHelpers();
   const manifest = useBrickManifest(brick.type);
   const [showAdvanced, setShowAdvanced] = useLocalStorage("upstart:editor:show-advanced", false);
@@ -31,11 +40,11 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
         (typeof prop["ui:responsive"] === "undefined" ||
           prop["ui:responsive"] === true ||
           prop["ui:responsive"] === previewMode) &&
-        (!prop.metadata?.category || prop.metadata?.category === "settings") &&
+        categoryFilter(prop.metadata?.category) &&
         (!prop["ui:advanced"] || showAdvanced)
       );
     },
-    [previewMode, showAdvanced],
+    [previewMode, showAdvanced, categoryFilter],
   );
 
   const navItems = useMemo(() => getNavItemsFromManifest(manifest.props, filter), [filter, manifest.props]);
@@ -67,8 +76,8 @@ export default function BrickSettingsView({ brick, group }: BrickSettingsViewPro
 
   return (
     <FormNavigator
-      key={`brick-settings-${brick.id}-${previewMode}`}
-      title={`${brick.type} settings`}
+      key={`brick-nav-${brick.id}-${previewMode}`}
+      title={`${brick.type} ${label ?? "settings"}`}
       initialGroup={group}
       navItems={navItems}
       formSchema={manifest.props}

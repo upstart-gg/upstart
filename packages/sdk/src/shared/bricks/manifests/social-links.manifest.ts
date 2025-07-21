@@ -3,8 +3,10 @@ import { TiSocialFlickr } from "react-icons/ti";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
 import { defineProps } from "../props/helpers";
-import { string } from "../props/string";
+import { iconRef, string } from "../props/string";
 import type { BrickProps } from "../props/types";
+import { fontSizeRef } from "../props/text";
+import { paddingRef } from "../props/padding";
 
 export const manifest = defineBrickManifest({
   type: "social-links",
@@ -15,14 +17,11 @@ export const manifest = defineBrickManifest({
   props: defineProps({
     links: Type.Array(
       Type.Object({
-        icon: Type.String({
-          title: "Platform Icon",
-          description: "Select the social media platform icon",
-          "ui:field": "iconify",
-          "ui:options": {
-            categories: ["Social"],
-          },
-        }),
+        icon: Type.Optional(
+          iconRef({
+            "ui:default-icon-collection": "cib",
+          }),
+        ),
         label: Type.Optional(string("Label")),
         href: string("Link"),
       }),
@@ -62,11 +61,16 @@ export const manifest = defineBrickManifest({
         default: "row",
       }),
     ),
+    fontSize: Type.Optional(fontSizeRef()),
+    padding: Type.Optional(
+      paddingRef({
+        default: "p-2",
+      }),
+    ),
     icononly: Type.Optional(
       Type.Boolean({
         title: "Only icons",
         description: "If set, the brick will only display the icons without labels.",
-        default: true,
       }),
     ),
   }),

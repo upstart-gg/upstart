@@ -45,6 +45,7 @@ export const commonProps = {
   growHorizontally: Type.Optional(
     Type.Boolean({
       title: "Grow horizontally",
+      // "ui:field": "hidden",
       description:
         "If set, the brick will grow to fill the available width of its parent section. If not set, the brick will have a fixed width.",
       "ui:responsive": "desktop",
@@ -64,9 +65,16 @@ export const commonProps = {
       title: "Vertical position",
       // "ui:field": "hidden",
       "ui:field": "enum",
-      "ui:display": "select",
+      "ui:display": "icon-group",
       description: "How the brick vertically aligns itself within its parent section.",
       enumNames: ["Auto", "Top", "Center", "Bottom"],
+      // "ui:icons": ["ix:align-objects", "ri:align-top", "ri:align-vertically", "ri:align-bottom"],
+      "ui:icons": [
+        "fluent:auto-fit-height-20-regular",
+        "fluent:align-start-vertical-20-regular",
+        "fluent:center-vertical-20-regular",
+        "fluent:align-end-vertical-20-regular",
+      ],
       default: "self-auto",
       "ui:placeholder": "Not specified",
       "ui:styleId": "styles:alignSelf",

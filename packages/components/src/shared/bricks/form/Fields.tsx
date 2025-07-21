@@ -2,11 +2,11 @@ import type { TSchema } from "@sinclair/typebox";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { FC } from "react";
 
-export interface BaseFieldProps {
+export interface BaseFieldProps<T = unknown> {
   fieldName: string;
   fieldSchema: TSchema;
-  value: unknown;
-  onChange: (value: unknown) => void;
+  value: T | unknown;
+  onChange: (value: T | unknown) => void;
   title: string;
   required: boolean;
   description?: string;
@@ -20,8 +20,11 @@ interface GenericFieldProps {
   children: React.ReactNode;
 }
 
-const inputClassname =
-  "px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-500 placeholder:text-inherit placeholder:opacity-70";
+const inputClassname = tx(
+  `px-3 py-2 border border-base-200 rounded-md shadow-inset
+  focus:(outline-2 outline-offset-0 outline-accent-500 ring-none border-accent-500)
+  placeholder:text-inherit placeholder:opacity-70`,
+);
 
 const GenericFieldComponent: FC<GenericFieldProps> = ({
   fieldName,
@@ -32,7 +35,7 @@ const GenericFieldComponent: FC<GenericFieldProps> = ({
 }) => {
   return (
     <div className="flex-1 flex flex-col gap-1">
-      <label htmlFor={fieldName} className="text-sm font-medium">
+      <label htmlFor={fieldName} className="font-medium">
         {title} {required && <span>*</span>}
       </label>
       {/* {description && <p className="text-xs text-gray-500">{description}</p>} */}
@@ -41,7 +44,7 @@ const GenericFieldComponent: FC<GenericFieldProps> = ({
   );
 };
 
-export const BooleanField: FC<BaseFieldProps> = ({
+export const BooleanField: FC<BaseFieldProps<boolean>> = ({
   fieldName,
   fieldSchema,
   value,
@@ -59,20 +62,22 @@ export const BooleanField: FC<BaseFieldProps> = ({
           id={fieldName}
           name={fieldName}
           type="checkbox"
-          checked={booleanValue}
+          defaultChecked={booleanValue}
           onChange={(e) => onChange(e.target.checked)}
           required={required}
-          className="h-4 w-4 rounded border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-500 accent-current"
+          className={tx(
+            "rounded border border-base-200 focus:outline-none focus:(ring-2 ring-accent-500 border-accent-500) text-accent-500",
+          )}
         />
-        <label htmlFor={fieldName} className="block text-sm font-medium">
-          {title} {required && <span className="text-red-500">*</span>}
+        <label htmlFor={fieldName} className="font-medium">
+          {title} {required && <span>*</span>}
         </label>
       </div>
     </GenericFieldComponent>
   );
 };
 
-export const NumberField: FC<BaseFieldProps> = ({
+export const NumberField: FC<BaseFieldProps<number>> = ({
   fieldName,
   fieldSchema,
   value,
@@ -92,7 +97,7 @@ export const NumberField: FC<BaseFieldProps> = ({
         value={numberValue}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           const val = e.target.value;
-          onChange(val === "" ? undefined : Number(val));
+          onChange(val === "" ? 0 : Number(val));
         }}
         placeholder={fieldSchema["ui:placeholder"] as string | undefined}
         min={fieldSchema.minimum as number | undefined}
@@ -147,7 +152,9 @@ export const SelectField: FC<BaseFieldProps> = ({
                   // checked={stringValue === option}
                   onChange={(e) => onChange(e.target.checked ? e.target.value : "")}
                   required={required}
-                  className="h-4 w-4 rounded border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-500 accent-current"
+                  className={tx(
+                    "rounded border border-base-200 focus:outline-none focus:(ring-2 ring-accent-500 border-accent-500) text-accent-500",
+                  )}
                 />
                 <span className="text-sm">{option}</span>
               </label>
@@ -162,8 +169,8 @@ export const SelectField: FC<BaseFieldProps> = ({
     return (
       <div className="flex-1 flex flex-col gap-1">
         <fieldset>
-          <legend className="text-sm font-medium">
-            {title} {required && <span className="text-red-500">*</span>}
+          <legend className="font-medium">
+            {title} {required && <span>*</span>}
           </legend>
           {/* {description && <p className="text-xs text-gray-500 mt-2">{description}</p>} */}
           <div className="space-y-2 mt-2">
@@ -176,9 +183,9 @@ export const SelectField: FC<BaseFieldProps> = ({
                   checked={stringValue === option}
                   onChange={(e) => onChange(e.target.value)}
                   required={required}
-                  className="h-4 w-4 rounded border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-500 accent-current"
+                  className="border border-base-200 focus:outline-none focus:(ring-2 ring-accent-500 border-accent-500) text-accent-500"
                 />
-                <span className="text-sm">{option}</span>
+                <span>{option}</span>
               </label>
             ))}
           </div>
@@ -343,10 +350,7 @@ export const StringField: FC<BaseFieldProps> = ({
         minLength={fieldSchema.minLength as number | undefined}
         maxLength={fieldSchema.maxLength as number | undefined}
         required={required}
-        className={tx(
-          inputClassname,
-          // , pageTextColor && `[&::placeholder]:(${pageTextColor} opacity-70)`
-        )}
+        className={tx(inputClassname)}
       />
     </GenericFieldComponent>
   );

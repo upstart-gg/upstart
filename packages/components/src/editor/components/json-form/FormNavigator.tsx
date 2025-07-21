@@ -124,6 +124,7 @@ const FormNavigator: FC<FormNavigatorProps> = ({
   const scrollViewRef = useRef<HTMLDivElement>(null);
   const refNavigated = useRef(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
+  const hasChildrenItems = navItems.some((item) => item.children && item.children.length > 0);
 
   // Direction of animation
   const [animationDirection, setAnimationDirection] = useState<"forward" | "backward" | null>(null);
@@ -204,34 +205,36 @@ const FormNavigator: FC<FormNavigatorProps> = ({
         {/* Current View */}
         <div className={tx("absolute inset-0 flex flex-col ", getAnimationClass())}>
           {/* Header */}
-          <div className="flex items-center p-2.5 border-b border-gray-200 dark:border-dark-600 bg-gray-50 dark:bg-dark-800 sticky top-0 z-10">
-            {viewStack.length > 1 ? (
-              <button
-                type="button"
-                className={tx(
-                  `flex items-center gap-1 p-0 bg-transparent text-upstart-600 dark:text-upstart-300
+          {hasChildrenItems && (
+            <div className="flex items-center p-2.5 border-b border-gray-200 dark:border-dark-600 bg-gray-50 dark:bg-dark-800 sticky top-0 z-10">
+              {viewStack.length > 1 ? (
+                <button
+                  type="button"
+                  className={tx(
+                    `flex items-center gap-1 p-0 bg-transparent text-upstart-600 dark:text-upstart-300
                   border-0 cursor-pointer font-medium text-sm hover:opacity-80 focus:outline-none select-none`,
-                )}
-                onClick={navigateBack}
-              >
-                <FiChevronLeft />
-                Back
-              </button>
-            ) : (
-              <div className="w-10" />
-            )}
-            <h3
-              className={tx(
-                "flex-1 m-0 text-sm font-semibold text-center select-none first-letter:uppercase",
+                  )}
+                  onClick={navigateBack}
+                >
+                  <FiChevronLeft />
+                  Back
+                </button>
+              ) : (
+                <div className="w-10" />
               )}
-            >
-              {currentView.title}
-            </h3>
-            <div className="w-10" />
-          </div>
+              <h3
+                className={tx(
+                  "flex-1 m-0 text-sm font-semibold text-center select-none first-letter:uppercase",
+                )}
+              >
+                {currentView.title}
+              </h3>
+              <div className="w-10" />
+            </div>
+          )}
           <div
             ref={scrollViewRef}
-            className="pb-2 overflow-y-auto scroll-smooth scrollbar-thin "
+            className="pb-2 overflow-y-auto scroll-smooth scrollbar-thin"
             onScroll={() => {
               startTransition(() => {
                 setIsOverflowing(false);

@@ -1,14 +1,12 @@
 import { useAttributes, useAttributesSchema, useDraft, useEditorHelpers } from "../hooks/use-editor";
-import { sortJsonSchemaProperties } from "~/shared/utils/sort-json-schema-props";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FormRenderer } from "./json-form/FormRenderer";
 import type { Attributes, AttributesSchema } from "@upstart.gg/sdk/shared/attributes";
 import { Tabs, Spinner, IconButton } from "@upstart.gg/style-system/system";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import FormNavigator from "./json-form/FormNavigator";
 import AttributesSettingsView from "./AttributesSettingsView";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
+
 export default function SettingsForm() {
   const attrSchema = useAttributesSchema();
   const [shouldRender, setShouldRender] = useState(false);

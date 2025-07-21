@@ -28,7 +28,7 @@ const Navbar = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
       <div
         className={tx(
           "flex flex-1 items-center justify-between @lg:justify-start",
-          props.navigation.position !== "center" && "@lg:gap-4",
+          props.linksPosition !== "center" && "@lg:gap-4",
         )}
       >
         <div
@@ -63,8 +63,8 @@ const Navbar = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
           className={tx(
             "hidden @desktop:flex items-center gap-2",
             styles.navigation,
-            props.navigation.position === "right" && "ml-auto",
-            props.navigation.position === "center" && "mx-auto",
+            props.linksPosition === "right" && "ml-auto",
+            props.linksPosition === "center" && "mx-auto",
           )}
         >
           {/* {ds.data.map((item, index) => {

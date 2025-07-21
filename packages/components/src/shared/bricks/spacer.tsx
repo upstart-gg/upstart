@@ -11,8 +11,9 @@ const Divider = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edita
     <div
       ref={ref}
       className={tx(
-        "flex-grow flex-shrink-0 @mobile:w-full",
-        editable && "hover:(striped-bg ) group-hover/section:(striped-bg) transition-colors duration-150",
+        "flex-grow flex-shrink-0 @mobile:w-full h-full",
+        editable &&
+          "outline-dotted -outline-offset-1 outline-transparent hover:(striped-bg outline-black/10) group-hover/section:(striped-bg outline-black/10) transition-colors duration-150",
         selected && "striped-bg ",
         ...Object.values(styles),
       )}

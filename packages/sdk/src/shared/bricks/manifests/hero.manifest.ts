@@ -6,7 +6,6 @@ import { BsAlphabetUppercase } from "react-icons/bs";
 import type { BrickProps } from "../props/types";
 import { Type } from "@sinclair/typebox";
 import { textShadowRef } from "../props/effects";
-import { StringEnum } from "~/shared/utils/string-enum";
 
 export const manifest = defineBrickManifest({
   type: "hero",

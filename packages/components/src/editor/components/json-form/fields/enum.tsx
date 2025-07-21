@@ -1,16 +1,17 @@
-import { SegmentedControl } from "@upstart.gg/style-system/system";
+import { SegmentedControl, Tooltip } from "@upstart.gg/style-system/system";
 import type { FieldProps } from "./types";
 import { Select } from "@upstart.gg/style-system/system";
 import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { FC } from "react";
 import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 interface EnumOption {
   const: string;
   title: string;
   description?: string;
-  icon?: string;
+  "ui:icon"?: string;
   "ui:hidden-option"?: boolean;
 }
 
@@ -43,7 +44,7 @@ const EnumField: FC<FieldProps<string>> = (props) => {
       return (
         <div className="radio-field">
           <FieldTitle title={title} description={description} />
-          <div className="flex flex-col gap-2 mt-1.5">
+          <div className="flex flex-col gap-2">
             {options
               .filter((o) => !o["ui:hidden-option"])
               .map((option) => (
@@ -77,11 +78,16 @@ const EnumField: FC<FieldProps<string>> = (props) => {
             defaultValue={currentValue as string}
             size="1"
             radius="medium"
+            className="!h-7 -mt-0.5 -mb-0.5"
           >
             {options
               .filter((o) => !o["ui:hidden-option"])
               .map((option) => (
-                <SegmentedControl.Item key={option.const} value={option.const}>
+                <SegmentedControl.Item
+                  key={option.const}
+                  value={option.const}
+                  className={tx("[&_.rt-SegmentedControlItemLabel]:(px-[6px])")}
+                >
                   {option.title}
                 </SegmentedControl.Item>
               ))}
@@ -92,39 +98,40 @@ const EnumField: FC<FieldProps<string>> = (props) => {
 
     case "icon-group":
       return (
-        <div className="icon-group-field">
+        <div className="icon-group-field flex flex-1 justify-between flex-wrap gap-3">
           <FieldTitle title={title} description={description} />
-          <div className="flex divide-x divide-white dark:divide-dark-500">
+          <SegmentedControl.Root
+            onValueChange={onChange}
+            defaultValue={currentValue as string}
+            size="1"
+            radius="medium"
+            className="!h-7 -mt-0.5 -mb-0.5"
+          >
             {options
               .filter((o) => !o["ui:hidden-option"])
               .map((option) => (
-                <button
+                <SegmentedControl.Item
                   key={option.const}
-                  type="button"
-                  className={tx(
-                    `text-sm first:rounded-l last:rounded-r py-0.5 flex-1 flex items-center justify-center`,
-                    {
-                      "bg-upstart-600 text-white": currentValue === option.const,
-                      "bg-gray-200 hover:bg-gray-300 dark:bg-dark-600 dark:hover:bg-dark-500 text-gray-500 dark:text-white/50":
-                        currentValue !== option.const,
-                    },
-                  )}
-                  onClick={() => onChange(option.const)}
+                  value={option.const}
+                  className={tx("[&_.rt-SegmentedControlItemLabel]:px-2")}
                 >
-                  <span
-                    className="w-7 h-7 p-0.5"
-                    /* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */
-                    dangerouslySetInnerHTML={{ __html: option.icon ?? "" }}
-                  />
-                </button>
+                  <Tooltip
+                    content={
+                      <span className="block text-xs p-0.5">{`${option.title}${option.description ? ` - ${option.description}` : ""}`}</span>
+                    }
+                    className="!z-[10000]"
+                  >
+                    <Icon icon={option["ui:icon"] as string} className="w-5 h-5 pointer-events-none" />
+                  </Tooltip>
+                </SegmentedControl.Item>
               ))}
-          </div>
+          </SegmentedControl.Root>
         </div>
       );
 
     default:
       return (
-        <div className="flex justify-between flex-1 pr-1 gap-1">
+        <div className="flex justify-between flex-grow pr-1 gap-4">
           <FieldTitle title={title} description={description} />
           <Select.Root defaultValue={currentValue} size="2" onValueChange={(value) => onChange(value)}>
             <Select.Trigger

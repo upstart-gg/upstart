@@ -318,21 +318,29 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   testimonials: [
                     {
                       author: "Billy Gates",
-                      text: "Upstart rocks!",
+                      text: "Upstart rocks! I love the flexibility and ease of use. Can't wait to see more features!",
                       socialIcon: "mdi:twitter",
                       company: "Microsoft",
                     },
                     {
                       author: "Jeff Bezos",
-                      text: "Amazing product!",
+                      text: "Amazing product! Upstart has transformed the way I build websites. Highly recommend it!",
                       socialIcon: "mdi:facebook",
                       company: "Amazon",
                     },
+                    {
+                      author: "Elon Musk",
+                      text: "Upstart is a game changer! The possibilities are endless.",
+                      socialIcon: "mdi:linkedin",
+                      company: "SpaceX",
+                    },
+                    {
+                      author: "Mark Zuckerberg",
+                      text: "Upstart is a fantastic tool for building modern websites. I'm impressed!",
+                      socialIcon: "mdi:facebook",
+                      company: "Meta",
+                    },
                   ],
-                  height: "144.828125px",
-                  width: "45.82331730769231%",
-                  growHorizontally: false,
-                  lastTouched: 1752581827291,
                 },
                 id: "s_uuqtYzo",
               },
@@ -343,9 +351,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             label: "SocialLinks",
             order: ++order,
             props: {
-              // fillSpace: true,
               justifyContent: "justify-center",
-              alignItems: "items-start",
             },
             bricks: [
               {
@@ -370,7 +376,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                     },
                   ],
                   variants: ["icon-only", "display-inline"],
-                  height: "138.6000000000001px",
                 },
                 id: generateId(),
               },
@@ -491,18 +496,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 type: "vbox",
                 props: {
                   $children: [
-                    // {
-                    //   id: `b_${generateId()}`,
-                    //   type: "map",
-                    //   props: {
-                    //     location: {
-                    //       lat: 37.7749,
-                    //       lng: -122.4194,
-                    //       tooltip: "San Francisco, CA",
-                    //       address: "San Francisco, CA",
-                    //     },
-                    //   },
-                    // },
                     {
                       id: `b_${generateId()}`,
                       type: "text",

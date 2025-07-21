@@ -10,6 +10,7 @@ import { paddingRef } from "../props/padding";
 import type { BrickProps } from "../props/types";
 import { LuStretchHorizontal } from "react-icons/lu";
 import { cssLengthRef } from "../props/css-length";
+import { StringEnum } from "~/shared/utils/string-enum";
 
 export const datasource = Type.Array(Type.Object({}, { additionalProperties: true }));
 
@@ -30,6 +31,16 @@ export const manifest = defineBrickManifest({
   datasource,
   icon: LuStretchHorizontal,
   props: defineProps({
+    alignItems: Type.Optional(
+      StringEnum(["items-start", "items-center", "items-end", "items-stretch"], {
+        enumNames: ["Top", "Center", "Bottom", "Stretch"],
+        default: "items-stretch",
+        title: "Align bricks",
+        description: "Align bricks vertically",
+        "ui:placeholder": "Not specified",
+        "ui:styleId": "styles:alignItems",
+      }),
+    ),
     gap: Type.Optional(
       cssLengthRef({
         title: "Gap",
@@ -45,7 +56,7 @@ export const manifest = defineBrickManifest({
     border: Type.Optional(borderRef()),
     padding: Type.Optional(paddingRef()),
     shadow: Type.Optional(shadowRef()),
-    datasource: Type.Optional(datasourceRef()),
+    // datasource: Type.Optional(datasourceRef()),
     ...makeContainerProps(),
   }),
 });

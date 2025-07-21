@@ -77,12 +77,21 @@ importers:
       '@hello-pangea/dnd':
         specifier: 18.0.1
         version: 18.0.1(@types/react@18.3.3)(react-dom@18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124))(react@18.3.0-canary-3d9b20132-20240124)
+      '@iconify/collections':
+        specifier: 1.0.569
+        version: 1.0.569
+      '@iconify/react':
+        specifier: 6.0.0
+        version: 6.0.0(react@18.3.0-canary-3d9b20132-20240124)
       '@radix-ui/themes':
         specifier: 3.1.4
         version: 3.1.4(@types/react-dom@18.3.6(@types/react@18.3.3))(@types/react@18.3.3)(react-dom@18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124))(react@18.3.0-canary-3d9b20132-20240124)
       '@sinclair/typebox':
         specifier: 0.34.6
         version: 0.34.6
+      '@tanstack/react-virtual':
+        specifier: 3.13.12
+        version: 3.13.12(react-dom@18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124))(react@18.3.0-canary-3d9b20132-20240124)
       '@tiptap/extension-code':
         specifier: 2.14.0
         version: 2.14.0(@tiptap/core@2.14.0(@tiptap/pm@2.14.0))
@@ -213,6 +222,9 @@ importers:
         specifier: 4.5.5
         version: 4.5.5(@types/react@18.3.3)(immer@10.1.1)(react@18.3.0-canary-3d9b20132-20240124)
     devDependencies:
+      '@iconify/types':
+        specifier: 2.0.0
+        version: 2.0.0
       '@interactjs/types':
         specifier: 1.10.27
         version: 1.10.27
@@ -1754,6 +1766,14 @@ packages:
   '@iconify-json/simple-icons@1.2.31':
     resolution: {integrity: sha512-xBUPtvkcSAiXs9DfVtudhLddQtQYin3I3Ph/W5FNYA0oE6r2hmLB8TgOog9OjOt1Sxn3IB5+4n5+64DMf2xNmQ==}
 
+  '@iconify/collections@1.0.569':
+    resolution: {integrity: sha512-PclOVcAlvv55Fv5kRJmxk/KMoFLNBMLh0q9LDMlonIPJMUu958VsNw7F7CVurfyEbCf/54i7eF+q6LHqJxeQvg==}
+
+  '@iconify/react@6.0.0':
+    resolution: {integrity: sha512-eqNscABVZS8eCpZLU/L5F5UokMS9mnCf56iS1nM9YYHdH8ZxqZL9zyjSwW60IOQFsXZkilbBiv+1paMXBhSQnw==}
+    peerDependencies:
+      react: 18.3.0-canary-3d9b20132-20240124
+
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
 
@@ -2871,11 +2891,20 @@ packages:
   '@swc/helpers@0.5.15':
     resolution: {integrity: sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==}
 
+  '@tanstack/react-virtual@3.13.12':
+    resolution: {integrity: sha512-Gd13QdxPSukP8ZrkbgS2RwoZseTTbQPLnQEn7HY/rqtM+8Zt95f7xKC7N0EsKs7aoz0WzZ+fditZux+F8EzYxA==}
+    peerDependencies:
+      react: 18.3.0-canary-3d9b20132-20240124
+      react-dom: 18.3.0-canary-3d9b20132-20240124
+
   '@tanstack/react-virtual@3.13.6':
     resolution: {integrity: sha512-WT7nWs8ximoQ0CDx/ngoFP7HbQF9Q2wQe4nh2NB+u2486eX3nZRE40P9g6ccCVq7ZfTSH5gFOuCoVH5DLNS/aA==}
     peerDependencies:
       react: 18.3.0-canary-3d9b20132-20240124
       react-dom: 18.3.0-canary-3d9b20132-20240124
+
+  '@tanstack/virtual-core@3.13.12':
+    resolution: {integrity: sha512-1YBOJfRHV4sXUmWsFSf5rQor4Ss82G8dQWLRbnk3GA4jeP8hQt1hxXh0tmflpC0dz3VgEv/1+qwPyLeWkQuPFA==}
 
   '@tanstack/virtual-core@3.13.6':
     resolution: {integrity: sha512-cnQUeWnhNP8tJ4WsGcYiX24Gjkc9ALstLbHcBj1t3E7EimN6n6kHH+DPV4PpDnuw00NApQp+ViojMj1GRdwYQg==}
@@ -8738,6 +8767,15 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
+  '@iconify/collections@1.0.569':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify/react@6.0.0(react@18.3.0-canary-3d9b20132-20240124)':
+    dependencies:
+      '@iconify/types': 2.0.0
+      react: 18.3.0-canary-3d9b20132-20240124
+
   '@iconify/types@2.0.0': {}
 
   '@inquirer/checkbox@2.5.0':
@@ -9995,11 +10033,19 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
+  '@tanstack/react-virtual@3.13.12(react-dom@18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124))(react@18.3.0-canary-3d9b20132-20240124)':
+    dependencies:
+      '@tanstack/virtual-core': 3.13.12
+      react: 18.3.0-canary-3d9b20132-20240124
+      react-dom: 18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124)
+
   '@tanstack/react-virtual@3.13.6(react-dom@18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124))(react@18.3.0-canary-3d9b20132-20240124)':
     dependencies:
       '@tanstack/virtual-core': 3.13.6
       react: 18.3.0-canary-3d9b20132-20240124
       react-dom: 18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124)
+
+  '@tanstack/virtual-core@3.13.12': {}
 
   '@tanstack/virtual-core@3.13.6': {}
 

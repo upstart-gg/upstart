@@ -3,7 +3,7 @@ import { RxButton } from "react-icons/rx";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
 import { defineProps } from "../props/helpers";
-import { string, urlOrPageIdRef } from "../props/string";
+import { iconRef, string, urlOrPageIdRef } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { borderRef } from "../props/border";
 

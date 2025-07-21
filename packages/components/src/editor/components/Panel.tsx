@@ -64,7 +64,7 @@ export default function Panel({ className, ...props }: PanelProps) {
             <button
               type="button"
               className={tx(
-                "absolute z-[9999] aspect-square h-7 w-7 top-0 flex justify-center items-center bg-gray-100 hover:(bg-upstart-100 text-upstart-800) backdrop-blur-md border border-t-0 border-upstart-200 text-black/50",
+                "absolute z-[9999] aspect-square h-7 w-7 top-0 flex justify-center items-center bg-gradient-to-tr from-red-800 to-red-700 hover:opacity-90 backdrop-blur-md border border-t-0 border-red-900 text-white/90",
                 panelPosition === "right" ? "-left-7 rounded-bl" : "-right-7 rounded-br",
               )}
               onClick={() => {
