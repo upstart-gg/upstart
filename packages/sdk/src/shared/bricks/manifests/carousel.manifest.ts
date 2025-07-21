@@ -55,7 +55,7 @@ export const manifest = defineBrickManifest({
   },
   icon: TbCarouselHorizontal,
   props: defineProps({
-    title: Type.Optional(string("Title", {})),
+    title: Type.Optional(Type.String({ title: "Title", metadata: { category: "content" } })),
     navigation: Type.Optional(
       Type.Union(
         [
@@ -100,6 +100,7 @@ export const manifest = defineBrickManifest({
           default: [],
           maxItems: 12,
           metadata: {
+            category: "content",
             filter: (manifestProps: TObject, formData: Manifest["props"]) => {
               return formData.useDatabase === false;
             },
