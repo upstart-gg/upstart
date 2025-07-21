@@ -14,7 +14,6 @@ import { MdDelete, MdDragIndicator, MdExpandLess, MdExpandMore } from "react-ico
 import { TbPlus } from "react-icons/tb";
 import { FieldTitle, processObjectSchemaToFields } from "../field-factory";
 import type { FieldProps } from "./types";
-import { tx } from "@upstart.gg/style-system/twind";
 import { Button, IconButton, TextField } from "@upstart.gg/style-system/system";
 import { RxCross2 } from "react-icons/rx";
 export interface ArrayFieldProps extends FieldProps<unknown[]> {

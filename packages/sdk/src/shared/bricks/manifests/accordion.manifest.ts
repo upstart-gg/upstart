@@ -2,7 +2,6 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, group } from "../props/helpers";
 import { Type } from "@sinclair/typebox";
 import { MdExpandMore } from "react-icons/md";
-import { preset } from "../props/preset";
 import { backgroundColor, backgroundColorRef } from "../props/background";
 import { fontSize, fontSizeRef, textContent, textContentRef } from "../props/text";
 import { string } from "../props/string";
