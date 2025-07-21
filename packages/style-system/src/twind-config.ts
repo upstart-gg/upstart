@@ -44,6 +44,7 @@ export default defineConfig({
         borderWidth: "1px",
         borderStyle: "solid",
         borderColor: "inherit",
+        height: "3rem",
       },
     ],
     [
@@ -58,54 +59,34 @@ export default defineConfig({
         },
       }),
     ],
-    // [
-    //   "btn-primary",
-    //   {
-    //     backgroundColor: "var(--color-primary)",
-    //     color: "var(--color-primary-content)",
-    //     borderColor: "var(--color-primary)",
-    //     "&:hover": {
-    //       backgroundColor: "var(--color-primary-600)",
-    //       borderColor: "var(--color-primary-600)",
-    //     },
-    //   },
-    // ],
-    // [
-    //   "btn-secondary",
-    //   {
-    //     backgroundColor: "var(--color-secondary)",
-    //     color: "var(--color-secondary-content)",
-    //     borderColor: "var(--color-secondary)",
-    //     "&:hover": {
-    //       backgroundColor: "var(--color-secondary-600)",
-    //       borderColor: "var(--color-secondary-600)",
-    //     },
-    //   },
-    // ],
-    // [
-    //   "btn-accent",
-    //   {
-    //     backgroundColor: "var(--color-accent)",
-    //     color: "var(--color-accent-content)",
-    //     borderColor: "var(--color-accent)",
-    //     "&:hover": {
-    //       backgroundColor: "var(--color-accent-600)",
-    //       borderColor: "var(--color-accent-600)",
-    //     },
-    //   },
-    // ],
-    // [
-    //   "btn-neutral",
-    //   {
-    //     backgroundColor: "var(--color-neutral)",
-    //     color: "var(--color-neutral-content)",
-    //     borderColor: "var(--color-neutral)",
-    //     "&:hover": {
-    //       backgroundColor: "var(--color-neutral-600)",
-    //       borderColor: "var(--color-neutral-600)",
-    //     },
-    //   },
-    // ],
+    [
+      "btn-size-large",
+      {
+        paddingLeft: "1.5rem",
+        paddingRight: "1.5rem",
+        height: "3rem",
+        fontSize: "1.125rem",
+        lineHeight: "1.75rem",
+      },
+    ],
+    [
+      "btn-size-medium",
+      {
+        paddingLeft: "1.25rem",
+        paddingRight: "1.25rem",
+        height: "2.5rem",
+      },
+    ],
+    [
+      "btn-size-small",
+      {
+        paddingLeft: "1rem",
+        paddingRight: "1rem",
+        height: "2rem",
+        fontSize: "0.875rem",
+        lineHeight: "1.25rem",
+      },
+    ],
     [
       "rounded-auto",
       {

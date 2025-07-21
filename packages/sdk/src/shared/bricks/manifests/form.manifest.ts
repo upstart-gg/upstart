@@ -2,6 +2,8 @@ import { Type } from "@sinclair/typebox";
 import { FaWpforms } from "react-icons/fa6";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
+import { basicAlignRef } from "../props/align";
+import { borderRef } from "../props/border";
 import { datarecord } from "../props/datarecord";
 import { defineProps, group } from "../props/helpers";
 import { paddingRef } from "../props/padding";
@@ -33,24 +35,25 @@ There is no need to define the form fields manually and the form does not accept
       }),
     ),
     padding: Type.Optional(paddingRef()),
+    buttonPosition: Type.Optional(
+      basicAlignRef({
+        title: "Button Position",
+        description: "The position of the button.",
+        defaultValue: { horizontal: "justify-end" },
+        "ui:no-vertical-align": true,
+        "ui:horizontal-align-label": "Button position",
+      }),
+    ),
     fontSize: Type.Optional(fontSizeRef({ default: "inherit", "ui:no-extra-large-sizes": true })),
     button: group({
       title: "Button",
       children: {
-        buttonLabel: Type.Optional(
+        label: Type.Optional(
           string("Button Label", {
             default: "Submit",
           }),
         ),
-        buttonPosition: Type.Union(
-          [
-            Type.Literal("left", { title: "Left" }),
-            Type.Literal("center", { title: "Center" }),
-            Type.Literal("right", { title: "Right" }),
-          ],
-          { title: "Position", default: "right", "ui:responsive": "desktop" },
-        ),
-        buttonColor: Type.Union(
+        color: Type.Union(
           [
             Type.Literal("btn-color-neutral", { title: "Neutral", "ui:variant-type": "color" }),
             Type.Literal("btn-color-primary", { title: "Primary", "ui:variant-type": "color" }),
@@ -63,12 +66,18 @@ There is no need to define the form fields manually and the form does not accept
             "ai:tip": "Those are  button variants",
           },
         ),
-        buttonBorderRadius: Type.Optional(
-          StringEnum(["rounded-none", "rounded-sm", "rounded", "rounded-md", "rounded-lg", "rounded-xl"], {
-            title: "Border Radius",
-            enumNames: ["None", "XS", "S", "M", "L", "XL"],
-            default: "rounded-md",
-            description: "Border radius of the button",
+        size: StringEnum(["block", "wide"], {
+          title: "Size",
+          description: "Button sizes.",
+          enumNames: ["Block", "Wide"],
+          default: "block",
+        }),
+        border: Type.Optional(
+          borderRef({
+            default: {
+              width: "border",
+              rounding: "rounded-md",
+            },
           }),
         ),
       },
@@ -107,27 +116,31 @@ export const examples: {
       intro: "We'd love to hear from you. Send us a message and we'll respond as soon as possible.",
       align: "vertical",
       datarecordId: "contacts",
+      buttonPosition: {
+        horizontal: "justify-end",
+      },
       button: {
-        buttonLabel: "Send Message",
-        buttonPosition: "right",
-        buttonBorderRadius: "rounded-md",
-        buttonColor: "btn-color-primary",
+        label: "Send Message",
+        color: "btn-color-primary",
+        size: "block",
       },
     },
   },
   {
-    description: "User registration form",
+    description: "User registration form with large button",
     type: "form",
     props: {
       title: "Create Account",
       intro: "Join our platform and start your journey today.",
       align: "vertical",
       datarecordId: "user-registration",
+      buttonPosition: {
+        horizontal: "justify-end",
+      },
       button: {
-        buttonLabel: "Register",
-        buttonPosition: "right",
-        buttonBorderRadius: "rounded-md",
-        buttonColor: "btn-color-secondary",
+        label: "Register",
+        color: "btn-color-secondary",
+        size: "wide",
       },
     },
   },
@@ -139,11 +152,13 @@ export const examples: {
       intro: "Subscribe to our newsletter for the latest updates and exclusive content.",
       align: "horizontal",
       datarecordId: "newsletter-subscription",
+      buttonPosition: {
+        horizontal: "justify-center",
+      },
       button: {
-        buttonLabel: "Subscribe",
-        buttonPosition: "center",
-        buttonBorderRadius: "rounded-md",
-        buttonColor: "btn-color-accent",
+        label: "Subscribe",
+        color: "btn-color-accent",
+        size: "block",
       },
     },
   },
@@ -155,11 +170,13 @@ export const examples: {
       intro: "Register for the Annual Tech Conference 2025. Early bird pricing ends soon!",
       align: "vertical",
       datarecordId: "event-registration",
+      buttonPosition: {
+        horizontal: "justify-end",
+      },
       button: {
-        buttonLabel: "Register Now",
-        buttonPosition: "right",
-        buttonBorderRadius: "rounded-md",
-        buttonColor: "btn-color-primary",
+        label: "Register Now",
+        color: "btn-color-primary",
+        size: "block",
       },
     },
   },
@@ -171,11 +188,13 @@ export const examples: {
       intro: "We're excited to learn more about you! Please fill out this application form completely.",
       align: "vertical",
       datarecordId: "job-application",
+      buttonPosition: {
+        horizontal: "justify-start",
+      },
       button: {
-        buttonLabel: "Submit Application",
-        buttonPosition: "right",
-        buttonBorderRadius: "rounded-md",
-        buttonColor: "btn-color-secondary",
+        label: "Submit Application",
+        color: "btn-color-secondary",
+        size: "block",
       },
     },
   },
@@ -187,11 +206,13 @@ export const examples: {
       intro: "Your opinion matters to us. Help us improve our products and services.",
       align: "vertical",
       datarecordId: "customer-feedback",
+      buttonPosition: {
+        horizontal: "justify-end",
+      },
       button: {
-        buttonLabel: "Submit Feedback",
-        buttonPosition: "right",
-        buttonBorderRadius: "rounded-md",
-        buttonColor: "btn-color-accent",
+        label: "Submit Feedback",
+        color: "btn-color-accent",
+        size: "wide",
       },
     },
   },

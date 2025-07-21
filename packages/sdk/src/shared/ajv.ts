@@ -1,19 +1,20 @@
 import Ajv, { type ErrorObject } from "ajv";
 import addFormats from "ajv-formats";
-import { colorPreset, preset } from "./bricks/props/preset";
-import { background, backgroundColor } from "./bricks/props/background";
 import { basicAlign } from "./bricks/props/align";
-import { hidden } from "./bricks/props/common";
+import { basicGap } from "./bricks/props/gap";
+import { background, backgroundColor } from "./bricks/props/background";
 import { border } from "./bricks/props/border";
-import { padding } from "./bricks/props/padding";
-import { image } from "./bricks/props/image";
 import { color } from "./bricks/props/color";
+import { hidden } from "./bricks/props/common";
+import { cssLength } from "./bricks/props/css-length";
 import { shadow, textShadow } from "./bricks/props/effects";
 import { fontSize, textContent } from "./bricks/props/text";
-import { cssLength } from "./bricks/props/css-length";
 import { icon, urlOrPageId } from "./bricks/props/string";
+import { padding } from "./bricks/props/padding";
+import { colorPreset } from "./bricks/props/preset";
+import { image } from "./bricks/props/image";
 
-export type { JSONSchemaType, AnySchemaObject, SchemaObject, JSONType } from "ajv";
+export type { AnySchemaObject, JSONSchemaType, JSONType, SchemaObject } from "ajv";
 
 export const ajv = new Ajv({
   useDefaults: true,
@@ -24,10 +25,10 @@ export const ajv = new Ajv({
   inlineRefs: false,
 });
 
-ajv.addSchema(preset(), "styles:preset");
 ajv.addSchema(background(), "styles:background");
 ajv.addSchema(backgroundColor(), "styles:backgroundColor");
 ajv.addSchema(basicAlign(), "styles:basicAlign");
+ajv.addSchema(basicGap(), "styles:basicGap");
 // ajv.addSchema(containerLayout(), "styles:containerLayout");
 ajv.addSchema(fontSize(), "styles:fontSize");
 ajv.addSchema(hidden(), "styles:hidden");

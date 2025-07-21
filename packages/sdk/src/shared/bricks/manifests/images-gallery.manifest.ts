@@ -1,11 +1,15 @@
-import { Type } from "@sinclair/typebox";
+import { Type, type TObject } from "@sinclair/typebox";
+import { IoGridOutline } from "react-icons/io5";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
+import { StringEnum } from "~/shared/utils/string-enum";
 import { datasourceRef } from "../props/datasource";
-import { defineProps, group } from "../props/helpers";
-import { IoGridOutline } from "react-icons/io5";
+import { basicGapRef } from "../props/gap";
+import { defineProps } from "../props/helpers";
+import { imageRef } from "../props/image";
+import { paddingRef } from "../props/padding";
+import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
-import { string, url } from "../props/string";
 
 export const datasource = Type.Array(
   Type.Object({
@@ -37,22 +41,76 @@ export const manifest = defineBrickManifest({
   aiInstructions: "This brick should mostly be used for image galleries and collections.",
   defaultInspectorTab: "content",
   isContainer: false,
-
+  minHeight: {
+    desktop: 200,
+  },
+  minWidth: {
+    desktop: 300,
+  },
   icon: IoGridOutline,
   props: defineProps({
-    datasource: Type.Optional(datasourceRef()),
-    staticImages: Type.Optional(
-      Type.Array(Type.Object({ src: url("Image URL"), legend: string("Legend") }), {
-        title: "Images",
-        default: [],
+    title: Type.Optional(string("Title", {})),
+    useDatabase: Type.Boolean({
+      title: "Use Database",
+      description: "Use a database to manage images. If disabled, you can use static images.",
+      default: false,
+      "ui:field": "hidden",
+    }),
+    datasource: Type.Optional(
+      datasourceRef({
+        metadata: {
+          filter: (manifestProps: TObject, formData: Manifest["props"]) => {
+            return formData.useDatabase === true;
+          },
+        },
       }),
     ),
-    styles: group({
-      title: "Styles",
-      children: {
-        // layout: containerLayoutRef(),
+    staticImages: Type.Optional(
+      Type.Array(
+        Type.Object({
+          src: imageRef({
+            "ui:responsive": "desktop",
+            "ui:no-alt-text": true,
+            "ui:no-object-options": true,
+          }),
+          legend: string("Legend"),
+        }),
+        {
+          title: "Images",
+          default: [],
+          maxItems: 12,
+          metadata: {
+            filter: (manifestProps: TObject, formData: Manifest["props"]) => {
+              return formData.useDatabase === false;
+            },
+          },
+        },
+      ),
+    ),
+    columns: Type.Optional(
+      Type.Number({
+        title: "Columns",
+        description: "Number of columns (grid layout only)",
+        minimum: 1,
+        maximum: 6,
+        default: 3,
+        "ui:field": "slider",
+      }),
+    ),
+    gap: basicGapRef(),
+    padding: paddingRef({
+      default: {
+        desktop: "p-4",
       },
     }),
+    borderRadius: Type.Optional(
+      StringEnum(["rounded-none", "rounded-sm", "rounded-md", "rounded-lg", "rounded-xl", "rounded-full"], {
+        enumNames: ["None", "Small", "Medium", "Large", "Extra large", "Full"],
+        title: "Border",
+        description: "Rounded corners for images",
+        default: "rounded-md",
+      }),
+    ),
   }),
   datasource,
 });
@@ -68,28 +126,35 @@ export const examples: {
     description: "Product portfolio gallery (3-column grid)",
     type: "images-gallery",
     props: {
-      styles: {
-        layout: {
-          type: "grid",
-          columns: 3,
-          gap: "gap-4",
-        },
-      },
+      title: "Product Portfolio",
+      useDatabase: false,
+      borderRadius: "rounded-lg",
+      columns: 3,
+      gap: "gap-4",
+      padding: "p-4",
       staticImages: [
         {
-          src: "https://via.placeholder.com/400x400.png?text=Product+1",
+          src: {
+            src: "https://via.placeholder.com/400x400.png?text=Product+1",
+          },
           legend: "Premium wireless headphones",
         },
         {
-          src: "https://via.placeholder.com/400x400.png?text=Product+2",
+          src: {
+            src: "https://via.placeholder.com/400x400.png?text=Product+2",
+          },
           legend: "Bluetooth speaker",
         },
         {
-          src: "https://via.placeholder.com/400x400.png?text=Product+3",
+          src: {
+            src: "https://via.placeholder.com/400x400.png?text=Product+3",
+          },
           legend: "Smart fitness tracker",
         },
         {
-          src: "https://via.placeholder.com/400x400.png?text=Product+4",
+          src: {
+            src: "https://via.placeholder.com/400x400.png?text=Product+4",
+          },
           legend: "Wireless charging pad",
         },
       ],
@@ -99,43 +164,59 @@ export const examples: {
     description: "Team photos gallery (4-column grid)",
     type: "images-gallery",
     props: {
-      styles: {
-        layout: {
-          type: "grid",
-          gap: "gap-8",
-        },
-      },
+      useDatabase: false,
+
+      columns: 4,
+      gap: "gap-6",
+      borderRadius: "rounded-full",
+      padding: "p-6",
       staticImages: [
         {
-          src: "https://via.placeholder.com/300x300.png?text=CEO",
+          src: {
+            src: "https://via.placeholder.com/300x300.png?text=CEO",
+          },
           legend: "Sarah Johnson - Chief Executive Officer",
         },
         {
-          src: "https://via.placeholder.com/300x300.png?text=CTO",
+          src: {
+            src: "https://via.placeholder.com/300x300.png?text=CTO",
+          },
           legend: "Mike Chen - Chief Technology Officer",
         },
         {
-          src: "https://via.placeholder.com/300x300.png?text=Design",
+          src: {
+            src: "https://via.placeholder.com/300x300.png?text=Design",
+          },
           legend: "Emily Rodriguez - Head of Design",
         },
         {
-          src: "https://via.placeholder.com/300x300.png?text=Marketing",
+          src: {
+            src: "https://via.placeholder.com/300x300.png?text=Marketing",
+          },
           legend: "David Park - Marketing Director",
         },
         {
-          src: "https://via.placeholder.com/300x300.png?text=Sales",
+          src: {
+            src: "https://via.placeholder.com/300x300.png?text=Sales",
+          },
           legend: "Lisa Wong - Sales Manager",
         },
         {
-          src: "https://via.placeholder.com/300x300.png?text=Support",
+          src: {
+            src: "https://via.placeholder.com/300x300.png?text=Support",
+          },
           legend: "Alex Thompson - Customer Support Lead",
         },
         {
-          src: "https://via.placeholder.com/300x300.png?text=Dev",
+          src: {
+            src: "https://via.placeholder.com/300x300.png?text=Dev",
+          },
           legend: "Carlos Martinez - Senior Developer",
         },
         {
-          src: "https://via.placeholder.com/300x300.png?text=HR",
+          src: {
+            src: "https://via.placeholder.com/300x300.png?text=HR",
+          },
           legend: "Jennifer Adams - HR Specialist",
         },
       ],
@@ -145,68 +226,83 @@ export const examples: {
     description: "Project showcase (2-column grid with larger spacing)",
     type: "images-gallery",
     props: {
-      styles: {
-        layout: {
-          type: "grid",
-          columns: 2,
-          gap: "gap-8",
-        },
-      },
+      useDatabase: false,
+      columns: 2,
+      gap: "gap-6",
+      borderRadius: "rounded-full",
+      padding: "p-6",
       staticImages: [
         {
-          src: "https://via.placeholder.com/600x400.png?text=Website+Redesign",
+          src: {
+            src: "https://via.placeholder.com/600x400.png?text=Website+Redesign",
+          },
           legend: "Modern e-commerce website redesign project",
         },
         {
-          src: "https://via.placeholder.com/600x400.png?text=Mobile+App",
+          src: {
+            src: "https://via.placeholder.com/600x400.png?text=Mobile+App",
+          },
           legend: "iOS and Android mobile application",
         },
         {
-          src: "https://via.placeholder.com/600x400.png?text=Brand+Identity",
+          src: {
+            src: "https://via.placeholder.com/600x400.png?text=Brand+Identity",
+          },
           legend: "Complete brand identity design package",
         },
         {
-          src: "https://via.placeholder.com/600x400.png?text=Dashboard+UI",
+          src: {
+            src: "https://via.placeholder.com/600x400.png?text=Dashboard+UI",
+          },
           legend: "Analytics dashboard user interface",
         },
       ],
     },
   },
   {
-    description: "Event photos (horizontal flex layout)",
+    description: "Event photos",
     type: "images-gallery",
     props: {
-      styles: {
-        layout: {
-          type: "flex",
-          direction: "flex-row",
-          wrap: true,
-          gap: "gap-4",
-        },
-      },
+      useDatabase: false,
+      columns: 4,
+      gap: "gap-6",
+      borderRadius: "rounded-full",
+      padding: "p-6",
       staticImages: [
         {
-          src: "https://via.placeholder.com/250x180.png?text=Opening",
+          src: {
+            src: "https://via.placeholder.com/250x180.png?text=Opening",
+          },
           legend: "Conference opening ceremony",
         },
         {
-          src: "https://via.placeholder.com/250x180.png?text=Keynote",
+          src: {
+            src: "https://via.placeholder.com/250x180.png?text=Keynote",
+          },
           legend: "Keynote presentation",
         },
         {
-          src: "https://via.placeholder.com/250x180.png?text=Workshop",
+          src: {
+            src: "https://via.placeholder.com/250x180.png?text=Workshop",
+          },
           legend: "Technical workshop session",
         },
         {
-          src: "https://via.placeholder.com/250x180.png?text=Networking",
+          src: {
+            src: "https://via.placeholder.com/250x180.png?text=Networking",
+          },
           legend: "Networking lunch break",
         },
         {
-          src: "https://via.placeholder.com/250x180.png?text=Panel",
+          src: {
+            src: "https://via.placeholder.com/250x180.png?text=Panel",
+          },
           legend: "Expert panel discussion",
         },
         {
-          src: "https://via.placeholder.com/250x180.png?text=Awards",
+          src: {
+            src: "https://via.placeholder.com/250x180.png?text=Awards",
+          },
           legend: "Awards ceremony",
         },
       ],

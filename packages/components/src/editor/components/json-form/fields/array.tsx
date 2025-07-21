@@ -8,6 +8,7 @@ import {
 } from "@hello-pangea/dnd";
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
+import { tx } from "@upstart.gg/style-system/twind";
 import { useState } from "react";
 import { MdDelete, MdDragIndicator, MdExpandLess, MdExpandMore } from "react-icons/md";
 import { TbPlus } from "react-icons/tb";
@@ -41,6 +42,7 @@ export function ArrayField({
 
   // Get UI options from the array schema (not item schema)
   const uiOptions = schema["ui:options"] as Record<string, boolean> | undefined;
+  const maxItems = schema.maxItems as number | undefined;
   const addable = uiOptions?.addable ?? true;
   const removable = uiOptions?.removable ?? true;
   const orderable = uiOptions?.orderable ?? true;
@@ -66,6 +68,11 @@ export function ArrayField({
   // Handle adding new item
   const handleAddItem = () => {
     if (!addable) return;
+
+    // Check if we've reached the maximum number of items
+    if (maxItems !== undefined && currentValue.length >= maxItems) {
+      return;
+    }
 
     let defaultItem: unknown;
 

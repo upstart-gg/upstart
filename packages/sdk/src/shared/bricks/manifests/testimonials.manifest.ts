@@ -2,7 +2,6 @@ import { type TObject, Type } from "@sinclair/typebox";
 import { HiOutlineChatBubbleBottomCenter } from "react-icons/hi2";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { backgroundRef } from "../props/background";
-import { borderRef } from "../props/border";
 import { shadowRef } from "../props/effects";
 import { defineProps } from "../props/helpers";
 import { imageRef } from "../props/image";

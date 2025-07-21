@@ -9,6 +9,7 @@ import { InlineIcon } from "@iconify/react/dist/iconify.js";
 const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
   const { props } = brick;
+  const classes = Object.values(styles);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (editable) {
@@ -31,24 +32,19 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, edi
   };
 
   // Check if icon should be displayed on left or right
-  const variants = Array.isArray(props.variants) ? props.variants : [];
-  const hasIconLeft = variants.includes("btn-icon-left");
-  const hasIconRight = variants.includes("btn-icon-right");
   const iconElement = props.icon ? <InlineIcon icon={props.icon} className="w-5 h-5" /> : null;
 
   return (
-    <div className={tx("flex flex-1", props.justifyContent)}>
+    <div className={tx("flex flex-1")}>
       <button
         type="button"
-        className={tx("btn", styles.default, props.variants, props.round)}
+        className={tx(classes, "flex-1 w-full")}
         data-prevented-by-editor={editable ? "true" : "false"}
         ref={ref}
         onClick={handleClick}
       >
-        {hasIconLeft && iconElement && <span className="mr-2">{iconElement}</span>}
+        {iconElement}
         {props.label}
-        {hasIconRight && iconElement && <span className="ml-2">{iconElement}</span>}
-        {!hasIconLeft && !hasIconRight && iconElement && <span className="mr-2">{iconElement}</span>}
       </button>
     </div>
   );
