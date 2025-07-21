@@ -49,7 +49,7 @@ export const manifest = defineBrickManifest({
   },
   icon: IoGridOutline,
   props: defineProps({
-    title: Type.Optional(string("Title", {})),
+    title: Type.Optional(Type.String({ title: "Title", metadata: { category: "content" } })),
     useDatabase: Type.Boolean({
       title: "Use Database",
       description: "Use a database to manage images. If disabled, you can use static images.",
@@ -80,6 +80,7 @@ export const manifest = defineBrickManifest({
           default: [],
           maxItems: 12,
           metadata: {
+            category: "content",
             filter: (manifestProps: TObject, formData: Manifest["props"]) => {
               return formData.useDatabase === false;
             },
