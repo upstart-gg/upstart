@@ -211,6 +211,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
     if (editable) {
       console.warn("Form is editable, submission is disabled");
       toast(`This form is not clickable in edit mode but will lead to form submission when published.`, {
+        id: `form-no-click-toast`,
         style: {
           minWidth: "max-content",
         },
