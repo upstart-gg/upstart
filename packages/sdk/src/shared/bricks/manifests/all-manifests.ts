@@ -1,5 +1,5 @@
 import { examples as accordionExamples, manifest as accordionManifest } from "./accordion.manifest";
-import { examples as boxExamples, manifest as boxManifest } from "./box.manifest";
+import { examples as boxExamples, manifest as boxManifest } from "./hbox.manifest";
 import { examples as buttonExamples, manifest as buttonManifest } from "./button.manifest";
 import { examples as cardExamples, manifest as cardManifest } from "./card.manifest";
 import { examples as carouselExamples, manifest as carouselManifest } from "./carousel.manifest";

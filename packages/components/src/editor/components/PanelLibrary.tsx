@@ -213,7 +213,7 @@ const InnerDraggableBrick = forwardRef<HTMLDivElement, InnerProps>((props, ref) 
         )}
       >
         <IconRender manifest={brick} />
-        <span className={tx("whitespace-nowrap text-xs")}>{brick.name}</span>
+        <span className={tx("text-center text-xs")}>{brick.name}</span>
       </div>
     </div>
   );
@@ -241,27 +241,6 @@ const DraggableBrick = forwardRef<HTMLDivElement, DraggableBrickProps>(({ brick,
             {...provided.dragHandleProps}
             {...props}
           />
-          //   <div
-          //     ref={mergedRef}
-          //     {...provided.draggableProps}
-          //     {...provided.dragHandleProps}
-          //     className={tx(
-          //       `rounded border border-upstart-100 hover:border-upstart-600 hover:bg-upstart-50 bg-white dark:bg-dark-700 !cursor-grab
-          // active:!cursor-grabbing touch-none select-none pointer-events-auto draggable-brick group aspect-square
-          // z-[99999] flex flex-col items-center justify-center
-          // [&:is(.clone)]:(opacity-80 !bg-white)`,
-          //     )}
-          //     {...props}
-          //   >
-          //     <div
-          //       className={tx(
-          //         "flex-1 flex flex-col justify-center text-upstart-700 dark:text-upstart-400 items-center gap-1 rounded-[inherit]",
-          //       )}
-          //     >
-          //       <IconRender {...brick} />
-          //       <span className={tx("whitespace-nowrap text-xs")}>{brick.name}</span>
-          //     </div>
-          //   </div>
         );
       }}
     </Draggable>

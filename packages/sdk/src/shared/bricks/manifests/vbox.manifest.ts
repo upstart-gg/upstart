@@ -7,9 +7,9 @@ import { borderRef } from "../props/border";
 import { shadowRef } from "../props/effects";
 import { paddingRef } from "../props/padding";
 import type { BrickProps } from "../props/types";
-import { LuStretchHorizontal } from "react-icons/lu";
 import { cssLengthRef } from "../props/css-length";
 import { StringEnum } from "~/shared/utils/string-enum";
+import { RxViewHorizontal } from "react-icons/rx";
 
 // Generic container can hold any type of array data source
 export const manifest = defineBrickManifest({
@@ -25,7 +25,7 @@ export const manifest = defineBrickManifest({
   defaultHeight: {
     desktop: "380px",
   },
-  icon: LuStretchHorizontal,
+  icon: RxViewHorizontal,
   props: defineProps({
     alignItems: Type.Optional(
       StringEnum(["items-start", "items-center", "items-end", "items-stretch"], {

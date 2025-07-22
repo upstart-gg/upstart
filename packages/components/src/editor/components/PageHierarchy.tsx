@@ -278,7 +278,7 @@ Drag and drop sections and bricks to reorder them.
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         className={tx(
-                          "grow gap-px rounded group pb-1 pr-1 mt-1 outline outline-2 outline-transparent",
+                          "grow space-y-1 rounded group pb-1 pr-1 mt-1 outline outline-2 outline-transparent",
                           dragSnapshot.isDragging && "outline-upstart-400 bg-upstart-400/30",
                           section.id === selectedSectionId
                             ? "outline-upstart-400"
@@ -337,6 +337,15 @@ Drag and drop sections and bricks to reorder them.
                               className={tx("ml-2", dragSnapshot.isDragging && "[&>*]:opacity-50")}
                             >
                               <BricksHierarchy bricks={section.bricks} />
+                              {section.bricks.length === 0 && (
+                                <div
+                                  className={tx(
+                                    "w-full h-full px-2 flex items-center text-gray-500 font-medium",
+                                  )}
+                                >
+                                  No bricks in this section.
+                                </div>
+                              )}
                               {provided.placeholder}
                             </div>
                           )}

@@ -161,6 +161,7 @@ export const brickStylesHelpersMap = {
 
 export const brickWrapperStylesHelpersMap = {
   "styles:alignItems": simpleClassHandler,
+  "styles:justifyContent": simpleClassHandler,
   "styles:fixedPositioned": getFixedPositionedStyles,
   "styles:alignSelf": simpleClassHandler,
   "styles:growHorizontally": getGrowHorizontallyStyles,

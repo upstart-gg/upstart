@@ -67,11 +67,6 @@ function getDropAnimationStyle(
   const { draggingOver } = snapshot;
   const { moveTo } = snapshot.dropAnimation;
 
-  console.log("getDropAnimationStyle", {
-    snapshot,
-    style,
-  });
-
   if (draggingOver === currentSection) {
     const translate = `translate(${moveTo.x}px, 0px)`;
     return {

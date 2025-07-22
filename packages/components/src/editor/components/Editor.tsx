@@ -101,8 +101,6 @@ export default function Editor(props: EditorProps) {
     const { destination, source, draggableId, type, combine } = result;
     setDraggingBrickType(null);
 
-    console.log("DragEnd result:", result);
-
     // If dropped outside a valid droppable area
     if (!destination) {
       console.warn("Dropped outside a valid droppable area, no action taken.");

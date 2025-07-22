@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import type { Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/box.manifest";
+import type { Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/hbox.manifest";
 import EditableBrickWrapper from "~/editor/components/EditableBrick";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import BrickWrapper from "../components/BrickWrapper";
@@ -12,7 +12,7 @@ import { IconRender } from "~/editor/components/IconRender";
 import { useDeviceInfo } from "~/editor/hooks/use-device-info";
 import { useDraggingBrickType, usePreviewMode } from "~/editor/hooks/use-editor";
 
-const Box = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+const Hbox = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const props = brick.props;
   const styles = useBrickStyle<Manifest>(brick);
   const classes = Object.values(styles);
@@ -21,7 +21,7 @@ const Box = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable 
   if (editable) {
     return (
       <div className={tx("flex flex-grow flex-col", ...classes)} ref={ref}>
-        <DroppableBox brick={brick} />
+        <DroppableHbox brick={brick} />
       </div>
     );
   }
@@ -62,10 +62,21 @@ export const renderClone: DraggableChildrenFn = (provided, snapshot, rubric) => 
 };
 
 const renderClone2: DraggableChildrenFn = (provided, snapshot, rubric) => {
-  return null;
+  return (
+    // <div
+    //   {...provided.draggableProps}
+    //   {...provided.dragHandleProps}
+    //   ref={provided.innerRef}
+    //   style={{
+    //     width: "200px",
+    //     scale: 0.2,
+    //   }}
+    // />
+    null
+  );
 };
 
-function DroppableBox({ brick }: BrickProps<Manifest>) {
+function DroppableHbox({ brick }: BrickProps<Manifest>) {
   const props = brick.props;
   const styles = useBrickStyle<Manifest>(brick);
   const classes = Object.values(styles);
@@ -88,7 +99,7 @@ function DroppableBox({ brick }: BrickProps<Manifest>) {
           {...droppableProvided.droppableProps}
           ref={droppableProvided.innerRef}
           className={tx(
-            "flex-grow flex flex-col justify-end",
+            "flex-grow flex items-center",
             droppableSnapshot.isDraggingOver && "!outline !outline-2 !outline-orange-300",
             (droppableSnapshot.isDraggingOver || draggingBrickType) && "!overflow-y-hidden",
             droppableSnapshot.isDraggingOver && "[&>*]:(!transform-none)",
@@ -106,14 +117,12 @@ function DroppableBox({ brick }: BrickProps<Manifest>) {
           ) : (
             <div
               className={tx(
-                "w-full h-full text-center  border-4 border-gray-300 border-dotted p-4 rounded flex justify-center items-center text-base text-black/50 font-medium",
+                "w-full h-full text-center border-4 border-gray-300 border-dotted p-4 rounded flex justify-center items-center text-base text-black/50 font-medium",
               )}
             >
-              This is a simple box.
+              This is a horizontal box.
               <br />
-              Drag a brick inside it that you want to give
-              <br />
-              some border, background, padding, or shadow.
+              Drag bricks here to stack them inside.
             </div>
           )}
         </div>
@@ -122,4 +131,4 @@ function DroppableBox({ brick }: BrickProps<Manifest>) {
   );
 }
 
-export default Box;
+export default Hbox;
