@@ -1,42 +1,11 @@
 import { Type, type TObject } from "@sinclair/typebox";
 import { TbCarouselHorizontal } from "react-icons/tb";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { datasourceRef } from "../props/datasource";
 import { defineProps } from "../props/helpers";
 import { imageRef } from "../props/image";
 import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
-
-export const datasource = Type.Array(
-  Type.Object({
-    src: Type.String({ format: "uri", title: "Image URL" }),
-    alt: Type.String({ default: "", title: "Alt text" }),
-    legend: Type.Optional(Type.String({ title: "Legend" })),
-  }),
-  {
-    default: [
-      {
-        src: canvasDataURI,
-        alt: "Slide 1",
-        legend: "First slide",
-      },
-      {
-        src: canvasDataURI,
-        alt: "Slide 2",
-        legend: "Second slide",
-      },
-      {
-        src: canvasDataURI,
-        alt: "Slide 3",
-        legend: "Third slide",
-      },
-    ],
-  },
-);
-
-export type Datasource = typeof datasource;
 
 export const manifest = defineBrickManifest({
   type: "carousel",
@@ -70,21 +39,6 @@ export const manifest = defineBrickManifest({
         },
       ),
     ),
-    useDatabase: Type.Boolean({
-      title: "Use Database",
-      description: "Use a database to manage images. If disabled, you can use static images.",
-      default: false,
-      "ui:field": "hidden",
-    }),
-    datasource: Type.Optional(
-      datasourceRef({
-        metadata: {
-          filter: (manifestProps: TObject, formData: Manifest["props"]) => {
-            return formData.useDatabase === true;
-          },
-        },
-      }),
-    ),
     staticImages: Type.Optional(
       Type.Array(
         Type.Object({
@@ -117,7 +71,6 @@ export const manifest = defineBrickManifest({
       }),
     ),
   }),
-  datasource,
 });
 
 export type Manifest = typeof manifest;
@@ -133,7 +86,6 @@ export const examples: {
     props: {
       title: "Featured Images",
       navigation: "pager-dots",
-      useDatabase: false,
       staticImages: [
         {
           src: {

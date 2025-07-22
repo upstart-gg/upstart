@@ -1,15 +1,13 @@
-import { type Manifest, manifest } from "@upstart.gg/sdk/shared/bricks/manifests/carousel.manifest";
+import type { Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/carousel.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
 import { forwardRef, useState } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import { useDatasource } from "../hooks/use-datasource";
 
 const Carousel = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, ref) => {
   const { props } = brick;
   const styles = useBrickStyle<Manifest>(brick);
-  const { datasourceId, data, isSample } = useDatasource(props.datasource, manifest.datasource);
   const staticImages = props.staticImages || [];
   const title = props.title;
   const navigation = props.navigation || "pager-dots";
@@ -56,7 +54,7 @@ const Carousel = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, re
       {title && <div className={tx("text-lg w-full text-center font-semibold", styles.title)}>{title}</div>}
 
       <div className="relative group flex-1 flex flex-col min-h-0 gap-2">
-        {props.editable && isSample && (
+        {props.editable && staticImages.length === 0 && (
           <div className="absolute top-0 left-0 right-0 bottom-0 bg-white/30 rounded-lg flex items-center justify-center z-10">
             <div className="text-white text-center rounded-md bg-black/30 p-4">
               <div className="text-2xl font-bold">Carousel</div>
