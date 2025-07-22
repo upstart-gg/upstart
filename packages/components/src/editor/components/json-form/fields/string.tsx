@@ -72,7 +72,7 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (pro
   );
 
   return (
-    <div className="flex-1">
+    <div className="flex-1 max-w-full">
       <div className="flex justify-between flex-1 gap-1">
         <FieldTitle title={title} description={description} />
         <SegmentedControl.Root
@@ -104,7 +104,7 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (pro
           <Select.Trigger
             radius="large"
             variant="surface"
-            className="!mt-2 !w-full !flex-1 !max-w-[73%] truncate"
+            className="!mt-2 !w-full !flex-1 !max-w-full truncate"
             placeholder="Select a page"
           />
           <Select.Content position="popper">
