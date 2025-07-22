@@ -84,7 +84,8 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
         onValueChange={(val) => {
           setTabsMapping((prev) => ({ ...prev, [brick.id]: val as TabType }));
         }}
-        className="flex-grow flex flex-col"
+        // className="contents"
+        className="flex-1 flex flex-col"
       >
         {showTabsList && (
           <Tabs.List className="sticky top-0 z-50 bg-gray-100 dark:bg-dark-900" size="1">
@@ -99,20 +100,22 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
           </Tabs.List>
         )}
         <ScrollablePanelTab tab="settings">
-          <SettingsTab brick={brick} section={section} />
+          <SettingsTab brick={brick} section={section} hasTabs={showTabsList} />
         </ScrollablePanelTab>
-        <ScrollablePanelTab tab="content">
-          <ContentTab brick={brick} section={section} />
-        </ScrollablePanelTab>
+        {hasContentProperties && (
+          <ScrollablePanelTab tab="content">
+            <ContentTab brick={brick} section={section} hasTabs={showTabsList} />
+          </ScrollablePanelTab>
+        )}
       </Tabs.Root>
     </div>
   );
 }
 
-function SettingsTab({ brick, section }: { brick: Brick; section: Section }) {
+function SettingsTab({ brick, section, hasTabs }: { brick: Brick; section: Section; hasTabs: boolean }) {
   const previewMode = usePreviewMode();
   return (
-    <form className={tx("flex flex-col justify-between h-full")} onSubmit={(e) => e.preventDefault()}>
+    <form className={tx("flex flex-col h-full")} onSubmit={(e) => e.preventDefault()}>
       {previewMode === "mobile" && (
         <Callout.Root size="1">
           <Callout.Text size="1">
@@ -121,17 +124,21 @@ function SettingsTab({ brick, section }: { brick: Brick; section: Section }) {
           </Callout.Text>
         </Callout.Root>
       )}
-      <div className="basis-[70%] flex flex-col">
+      <div className="basis-[50%] shrink-0 grow flex flex-col">
         <BrickSettingsView brick={brick} />
       </div>
-      <PageHierarchy brick={brick} section={section} />
+      <PageHierarchy
+        brick={brick}
+        section={section}
+        className={tx(hasTabs ? "h-[calc(50cqh-58px)]" : "h-[50cqh]")}
+      />
     </form>
   );
 }
-function ContentTab({ brick, section }: { brick: Brick; section: Section }) {
+function ContentTab({ brick, section, hasTabs }: { brick: Brick; section: Section; hasTabs: boolean }) {
   const previewMode = usePreviewMode();
   return (
-    <form className={tx("flex flex-col justify-between h-full")} onSubmit={(e) => e.preventDefault()}>
+    <form className={tx("flex flex-col h-full")} onSubmit={(e) => e.preventDefault()}>
       {previewMode === "mobile" && (
         <Callout.Root size="1">
           <Callout.Text size="1">
@@ -140,14 +147,18 @@ function ContentTab({ brick, section }: { brick: Brick; section: Section }) {
           </Callout.Text>
         </Callout.Root>
       )}
-      <div className="basis-[70%] flex flex-col">
+      <div className="basis-[50%] shrink-0 grow flex flex-col">
         <BrickSettingsView
           brick={brick}
           label="content"
           categoryFilter={(category) => category === "content"}
         />
       </div>
-      <PageHierarchy brick={brick} section={section} />
+      <PageHierarchy
+        brick={brick}
+        section={section}
+        className={tx(hasTabs ? "h-[calc(50cqh-58px)]" : "h-[50cqh]")}
+      />
     </form>
   );
 }

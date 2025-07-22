@@ -260,47 +260,47 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               },
             ],
           },
-          {
-            id: `s_${generateId()}`,
-            order: 2,
-            label: "Bikes",
-            bricks: [
-              {
-                type: "images-gallery",
-                props: {
-                  alignSelf: "self-start",
-                  useDatabase: false,
-                  datasource: {
-                    mapping: {},
-                    filters: {
-                      patternProperties: {
-                        "^(.*)$": {
-                          op: {},
-                        },
-                      },
-                    },
-                    sort: {
-                      patternProperties: {
-                        "^(.*)$": {},
-                      },
-                    },
-                  },
-                  staticImages: [],
-                  columns: 3,
-                  gap: "gap-4",
-                  padding: "p-4",
-                  aspectRatio: "aspect-[4/3]",
-                  height: "104.4px",
-                  lastTouched: 1752850834838,
-                },
-                id: "brick-YCqqkii",
-              },
-            ],
-            props: {
-              minHeight: "524px",
-              lastTouched: 1752850818572,
-            },
-          },
+          // {
+          //   id: `s_${generateId()}`,
+          //   order: 2,
+          //   label: "Bikes",
+          //   bricks: [
+          //     {
+          //       type: "images-gallery",
+          //       props: {
+          //         alignSelf: "self-start",
+          //         useDatabase: false,
+          //         datasource: {
+          //           mapping: {},
+          //           filters: {
+          //             patternProperties: {
+          //               "^(.*)$": {
+          //                 op: {},
+          //               },
+          //             },
+          //           },
+          //           sort: {
+          //             patternProperties: {
+          //               "^(.*)$": {},
+          //             },
+          //           },
+          //         },
+          //         staticImages: [],
+          //         columns: 3,
+          //         gap: "gap-4",
+          //         padding: "p-4",
+          //         aspectRatio: "aspect-[4/3]",
+          //         height: "104.4px",
+          //         lastTouched: 1752850834838,
+          //       },
+          //       id: "brick-YCqqkii",
+          //     },
+          //   ],
+          //   props: {
+          //     minHeight: "524px",
+          //     lastTouched: 1752850818572,
+          //   },
+          // },
           {
             id: `s_${generateId()}`,
             label: "Testimonial",

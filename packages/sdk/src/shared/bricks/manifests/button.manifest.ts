@@ -23,7 +23,7 @@ export const manifest = defineBrickManifest({
       description: "Button variants.",
       default: "btn-color-primary",
     }),
-    label: string("Label", { default: "My button" }),
+    label: string("Label", { default: "My button", metadata: { category: "content" } }),
     size: StringEnum(["btn-size-small", "btn-size-medium", "btn-size-large"], {
       title: "Size",
       description: "Button size.",
@@ -43,9 +43,10 @@ export const manifest = defineBrickManifest({
         title: "Icon",
         description: "Icon to display (iconify reference)",
         "ui:field": "iconify",
+        metadata: { category: "content" },
       }),
     ),
-    linkToUrlOrPageId: Type.Optional(urlOrPageIdRef({ title: "Link" })),
+    linkToUrlOrPageId: Type.Optional(urlOrPageIdRef({ title: "Link", metadata: { category: "content" } })),
   }),
 });
 

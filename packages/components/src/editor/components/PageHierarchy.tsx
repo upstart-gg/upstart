@@ -14,7 +14,10 @@ import { RxDragHandleHorizontal } from "react-icons/rx";
 import { HelpIcon } from "./json-form/HelpIcon";
 import { DragDropContext, Draggable, Droppable, type DropResult } from "@hello-pangea/dnd";
 
-export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick; section: Section }) {
+export default function PageHierarchy({
+  brick: selectedBrick,
+  className = "h-[calc(50cqh-58px)]",
+}: { brick?: Brick; section: Section; className?: string }) {
   const { setSelectedBrickId, setSelectedSectionId } = useEditorHelpers();
   const sections = useSections();
   const selectedSectionId = useSelectedSectionId();
@@ -233,11 +236,11 @@ export default function PageHierarchy({ brick: selectedBrick }: { brick?: Brick;
 
   return (
     <div
-      className="basis-[30%]"
+      className={tx("grow-0 shrink-0", className)}
       // Put a shadow at the top to indicate this is a scrollable area
       onMouseLeave={() => setHoverElement(undefined)}
     >
-      <PanelBlockTitle>
+      <PanelBlockTitle className="border-t">
         <span>Hierarchy</span>
         <HelpIcon
           help={`View and manage the hierarchy of sections and bricks on this page. Click on a section or brick to select it.
@@ -258,7 +261,7 @@ Drag and drop sections and bricks to reorder them.
               <div
                 ref={provided.innerRef}
                 className={tx(
-                  "py-2 pt-1 px-1 text-sm text-[80%] scrollbar-thin max-h-[calc(50cqh-5rem)] overflow-y-auto",
+                  "py-2 pt-1 px-1 text-sm text-[80%] scrollbar-thin max-h-[calc(100%-38px)] overflow-y-auto",
                 )}
                 {...provided.droppableProps}
               >

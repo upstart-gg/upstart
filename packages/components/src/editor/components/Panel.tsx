@@ -16,6 +16,7 @@ import PanelTheme from "./PanelTheme";
 import PanelBrickInspector from "./PanelBrickInspector";
 import PanelSectionInspector from "./PanelSectionInspector";
 import PanelLibrary from "./PanelLibrary";
+import { Tooltip } from "@upstart.gg/style-system/system";
 
 type PanelProps = ComponentProps<"aside">;
 
@@ -61,18 +62,20 @@ export default function Panel({ className, ...props }: PanelProps) {
 
         {panel && (
           <>
-            <button
-              type="button"
-              className={tx(
-                "absolute z-[9999] aspect-square h-7 w-7 top-0 flex justify-center items-center bg-gradient-to-tr from-red-800 to-red-700 hover:opacity-90 backdrop-blur-md border border-t-0 border-red-900 text-white/90",
-                panelPosition === "right" ? "-left-7 rounded-bl" : "-right-7 rounded-br",
-              )}
-              onClick={() => {
-                hidePanel();
-              }}
-            >
-              <RxCross2 className="h-4 w-4" />
-            </button>
+            <Tooltip content="Close panel" delayDuration={500}>
+              <button
+                type="button"
+                className={tx(
+                  "absolute z-[9999] aspect-square h-7 w-7 top-0 flex justify-center items-center bg-gradient-to-tr from-red-800 to-red-700 hover:opacity-90 backdrop-blur-md border border-t-0 border-red-900 text-white/90",
+                  panelPosition === "right" ? "-left-7 rounded-bl" : "-right-7 rounded-br",
+                )}
+                onClick={() => {
+                  hidePanel();
+                }}
+              >
+                <RxCross2 className="h-4 w-4" />
+              </button>
+            </Tooltip>
             <button
               type="button"
               className={tx(

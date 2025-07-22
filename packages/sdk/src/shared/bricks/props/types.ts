@@ -28,7 +28,7 @@ type CommonMetadata = {
 
 export type FieldMetadata = CommonMetadata & {
   "ui:field"?: string;
-  [key: string]: string | number | boolean | undefined;
+  [key: string]: unknown;
 };
 
 export type GroupMetadata = CommonMetadata & {
