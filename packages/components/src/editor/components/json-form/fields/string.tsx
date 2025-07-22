@@ -141,13 +141,12 @@ export const GeoAddressField: FC<FieldProps<string>> = (props) => {
       console.log("address changed for brick %s", brickId);
 
       if (brickId) {
+        // Todo: fix hardcoded location props
         updateBrickProps(brickId, {
-          location: {
-            address: matchedResult.label,
-            lat: matchedResult.lat,
-            lng: matchedResult.lng,
-            tooltip: "",
-          },
+          address: matchedResult.label,
+          lat: matchedResult.lat,
+          lng: matchedResult.lng,
+          tooltip: "",
         });
       }
 

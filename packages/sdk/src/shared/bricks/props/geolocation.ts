@@ -8,8 +8,10 @@ export function geolocation(opts: ObjectOptions & { defaultZoom?: number } = {})
     {
       lat: number("Latitude", { "ui:field": "hidden" }),
       lng: number("Longitude", { "ui:field": "hidden" }),
-      address: string("Address", { "ui:field": "geoaddress" }),
-      tooltip: Type.Optional(string("Tooltip")),
+      address: string("Address", {
+        "ui:field": "geoaddress",
+      }),
+      tooltip: Type.Optional(string("Tooltip", {})),
       zoom: Type.Optional(
         number("Zoom", {
           description: "Zoom level for the map",
@@ -23,6 +25,9 @@ export function geolocation(opts: ObjectOptions & { defaultZoom?: number } = {})
     },
     {
       title,
+      metadata: {
+        category: "content",
+      },
       ...opts,
     },
   );
