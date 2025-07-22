@@ -38,14 +38,6 @@ export const manifest = defineBrickManifest({
         },
       }),
     ),
-    icon: Type.Optional(
-      string("Icon", {
-        title: "Icon",
-        description: "Icon to display (iconify reference)",
-        "ui:field": "iconify",
-        metadata: { category: "content" },
-      }),
-    ),
     linkToUrlOrPageId: Type.Optional(urlOrPageIdRef({ title: "Link", metadata: { category: "content" } })),
   }),
 });
@@ -75,16 +67,6 @@ export const examples: {
       label: "Go to page",
       linkToUrlOrPageId: "page-id-123",
       size: "btn-size-small",
-    },
-  },
-  {
-    description: "Button with icon on the right",
-    type: "button",
-    props: {
-      color: "btn-color-primary",
-      label: "Icon Button",
-      icon: "mdi:check-circle",
-      size: "btn-size-large",
     },
   },
 ];
