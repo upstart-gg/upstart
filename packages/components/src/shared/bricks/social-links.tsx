@@ -35,12 +35,12 @@ const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, e
             data-prevented-by-editor={editable ? "true" : "false"}
             onClick={(e) => {
               if (editable) {
-                toast(`This link is not clickable in edit mode.`, {
-                  id: `social-link-no-click-toast`,
-                  style: {
-                    minWidth: "max-content",
-                  },
-                });
+                // toast(`This link is not clickable in edit mode.`, {
+                //   id: `social-link-no-click-toast`,
+                //   style: {
+                //     minWidth: "max-content",
+                //   },
+                // });
                 e.preventDefault();
               }
             }}

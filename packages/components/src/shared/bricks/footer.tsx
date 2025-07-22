@@ -14,12 +14,12 @@ const Footer = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
   const onClick: MouseEventHandler | undefined = editable
     ? (e) => {
         e.preventDefault();
-        toast(`This link is not clickable in edit mode.`, {
-          id: `footer-link-no-click-toast`,
-          style: {
-            minWidth: "max-content",
-          },
-        });
+        // toast(`This link is not clickable in edit mode.`, {
+        //   id: `footer-link-no-click-toast`,
+        //   style: {
+        //     minWidth: "max-content",
+        //   },
+        // });
       }
     : undefined;
   return (

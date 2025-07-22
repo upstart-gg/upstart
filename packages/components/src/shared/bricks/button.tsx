@@ -13,12 +13,12 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, edi
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (editable) {
-      toast(`This button is not clickable in edit mode`, {
-        id: `button-no-click-toast`,
-        style: {
-          minWidth: "max-content",
-        },
-      });
+      // toast(`This button is not clickable in edit mode`, {
+      //   id: `button-no-click-toast`,
+      //   style: {
+      //     minWidth: "max-content",
+      //   },
+      // });
       return;
     }
     if (props.linkToUrlOrPageId) {

@@ -90,7 +90,7 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (pro
         <TextField.Root
           defaultValue={currentValue?.startsWith("http") ? currentValue : ""}
           onChange={(e) => onChange(e.target.value)}
-          className="!mt-2"
+          className="!mt-2 max-w-full"
           required={required}
           placeholder="https://example.com"
           spellCheck={!!schema["ui:spellcheck"]}
@@ -104,7 +104,7 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (pro
           <Select.Trigger
             radius="large"
             variant="surface"
-            className="!mt-2 !w-full"
+            className="!mt-2 !w-full !flex-1 !max-w-[73%] truncate"
             placeholder="Select a page"
           />
           <Select.Content position="popper">

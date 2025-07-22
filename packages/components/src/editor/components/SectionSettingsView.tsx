@@ -73,7 +73,7 @@ export default function SectionSettingsView({ section, group }: SectionSettingsV
       initialGroup={group}
       navItems={navItems}
       formSchema={sectionSchema.properties.props}
-      className={"flex-1"}
+      className={"flex-grow"}
       formData={formData}
       onChange={onChange}
       brickId={section.id}

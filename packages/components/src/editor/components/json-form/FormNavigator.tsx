@@ -7,14 +7,12 @@ import {
   type FC,
   useRef,
   useEffect,
-  type CSSProperties,
   startTransition,
 } from "react";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 import type { NavItem, NavItemProperty } from "./types";
 import { processObjectSchemaToFields } from "./field-factory";
 import { type TObject, Type } from "@sinclair/typebox";
-import { useMutationObserver } from "~/editor/hooks/use-mutation-observer";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { IoMdArrowDropdown } from "react-icons/io";
 
@@ -130,11 +128,11 @@ const FormNavigator: FC<FormNavigatorProps> = ({
   const [animationDirection, setAnimationDirection] = useState<"forward" | "backward" | null>(null);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    setIsOverflowing(
-      scrollViewRef.current ? scrollViewRef.current.scrollHeight > scrollViewRef.current.clientHeight : false,
-    );
-  }, [viewStack.length, scrollViewRef.current]);
+  // useEffect(() => {
+  //   setIsOverflowing(
+  //     scrollViewRef.current ? scrollViewRef.current.scrollHeight > scrollViewRef.current.clientHeight : false,
+  //   );
+  // }, [viewStack.length, scrollViewRef.current]);
 
   // Navigate to a new view
   const navigateTo = useCallback((item: NavItem, direction: typeof animationDirection = "forward") => {
@@ -196,7 +194,7 @@ const FormNavigator: FC<FormNavigatorProps> = ({
     >
       <div
         ref={ref}
-        className={tx("navigator-view transition-all relative overflow-hidden", className)}
+        className={tx("navigator-view transition-all relative overflow-x-hidden", className)}
         style={{
           width: "100%",
           // ...style,
@@ -232,9 +230,10 @@ const FormNavigator: FC<FormNavigatorProps> = ({
               <div className="w-10" />
             </div>
           )}
-          <div
+          {currentView.content}
+          {/* <div
             ref={scrollViewRef}
-            className="pb-2 overflow-y-auto scroll-smooth scrollbar-thin"
+            // className="pb-2 overflow-y-auto scroll-smooth scrollbar-thin"
             onScroll={() => {
               startTransition(() => {
                 setIsOverflowing(false);
@@ -242,17 +241,7 @@ const FormNavigator: FC<FormNavigatorProps> = ({
             }}
           >
             {currentView.content}
-          </div>
-        </div>
-        {/* Shadow line of 8px height at the bottom */}
-        <div
-          className={tx(
-            "absolute z-[10000] bottom-px left-0 right-0 h-[12px]",
-            "pointer-events-none flex items-center justify-center transition-opacity duration-[500ms]",
-            isOverflowing ? "opacity-100 animate-pulse" : "opacity-0",
-          )}
-        >
-          <IoMdArrowDropdown className="w-6 h-6 text-upstart-400" />
+          </div> */}
         </div>
       </div>
     </FormNavigatorContext.Provider>

@@ -40,20 +40,8 @@ export default function PanelSectionInspector({ section }: { section: Section })
         onValueChange={(val) => {
           setTabsMapping((prev) => ({ ...prev, [section.id]: val as TabType }));
         }}
-        className="flex-grow flex flex-col"
+        className="flex-1 flex flex-col"
       >
-        {/* {showTabList && (
-          <Tabs.List className="sticky top-0 z-50 bg-gray-100 dark:bg-dark-900">
-            {previewMode === "desktop" && (
-              <Tabs.Trigger value="preset" className="!flex-1">
-                Color Preset
-              </Tabs.Trigger>
-            )}
-            <Tabs.Trigger value="settings" className="!flex-1">
-              Settings
-            </Tabs.Trigger>
-          </Tabs.List>
-        )} */}
         <ScrollablePanelTab tab="settings">
           <SettingsTab section={section} />
         </ScrollablePanelTab>
@@ -65,7 +53,7 @@ export default function PanelSectionInspector({ section }: { section: Section })
 function SettingsTab({ section }: { section: Section }) {
   const previewMode = usePreviewMode();
   return (
-    <div className="flex flex-col justify-between h-full">
+    <div className="flex flex-col h-full">
       {previewMode === "mobile" && (
         <Callout.Root size="1" className="m-2">
           <Callout.Text size="1">
@@ -74,10 +62,10 @@ function SettingsTab({ section }: { section: Section }) {
           </Callout.Text>
         </Callout.Root>
       )}
-      <div className="basis-[70%] flex flex-col">
+      <div className="basis-[50%] shrink-0 grow flex flex-col">
         <SectionSettingsView section={section} />
       </div>
-      <PageHierarchy section={section} />
+      <PageHierarchy section={section} className="h-[50cqh]" />
     </div>
   );
 }

@@ -311,8 +311,7 @@ export default function Editor(props: EditorProps) {
         </Suspense>
         <main
           className={tx(
-            "flex-1 flex place-content-center z-40 overscroll-none ",
-            "overflow-x-auto overflow-y-visible ",
+            "flex-1 flex place-content-center z-40 overflow-x-auto overscroll-none ",
             generationState.isReady === false && "!hidden",
             css({
               gridArea: "main",
