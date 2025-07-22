@@ -6,7 +6,6 @@ import { shadowRef } from "../props/effects";
 import type { BrickProps } from "../props/types";
 import { geolocation } from "../props/geolocation";
 import { Type } from "@sinclair/typebox";
-import { round } from "lodash-es";
 import { number } from "../props/number";
 import { string } from "../props/string";
 
