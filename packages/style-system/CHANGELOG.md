@@ -1,5 +1,15 @@
 # @upstart.gg/style-system
 
+## 0.0.120
+
+### Patch Changes
+
+- [#373](https://github.com/upstart-gg/upstart/pull/373) [`ccbad19`](https://github.com/upstart-gg/upstart/commit/ccbad19fc11c40e9e500018fe4c9e81fbbaa93d2) Thanks [@mattallty](https://github.com/mattallty)! - Implement iconify icons
+
+- [#377](https://github.com/upstart-gg/upstart/pull/377) [`0450764`](https://github.com/upstart-gg/upstart/commit/045076467dc1aa088b70757b532abc526f0af1ae) Thanks [@mattallty](https://github.com/mattallty)! - Fix btn styling
+
+- [#371](https://github.com/upstart-gg/upstart/pull/371) [`70c7781`](https://github.com/upstart-gg/upstart/commit/70c77819a24406452722589dce1444ad6dfed7ed) Thanks [@mattallty](https://github.com/mattallty)! - Use latest leaflet version
+
 ## 0.0.119
 
 ### Patch Changes
