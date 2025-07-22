@@ -285,7 +285,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           //             },
           //           },
           //         },
-          //         staticImages: [],
+          //         images: [],
           //         columns: 3,
           //         gap: "gap-4",
           //         padding: "p-4",

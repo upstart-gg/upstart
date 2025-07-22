@@ -7,16 +7,14 @@ import { borderRef } from "../props/border";
 import { shadowRef } from "../props/effects";
 import { paddingRef } from "../props/padding";
 import type { BrickProps } from "../props/types";
-import { LuStretchHorizontal } from "react-icons/lu";
-import { cssLengthRef } from "../props/css-length";
-import { StringEnum } from "~/shared/utils/string-enum";
+import { MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
 
 // Generic container can hold any type of array data source
 export const manifest = defineBrickManifest({
-  type: "vbox",
+  type: "box",
   kind: "brick",
-  name: "Vertical box",
-  description: "A vertical container for stacking bricks",
+  name: "Box",
+  description: "A container for a single brick to give it a background, border, padding, etc.",
   isContainer: true,
   defaultWidth: {
     desktop: "auto",
@@ -25,29 +23,8 @@ export const manifest = defineBrickManifest({
   defaultHeight: {
     desktop: "380px",
   },
-  icon: LuStretchHorizontal,
+  icon: MdOutlineCheckBoxOutlineBlank,
   props: defineProps({
-    alignItems: Type.Optional(
-      StringEnum(["items-start", "items-center", "items-end", "items-stretch"], {
-        enumNames: ["Top", "Center", "Bottom", "Stretch"],
-        default: "items-stretch",
-        title: "Align bricks",
-        description: "Align bricks vertically",
-        "ui:placeholder": "Not specified",
-        "ui:styleId": "styles:alignItems",
-      }),
-    ),
-    gap: Type.Optional(
-      cssLengthRef({
-        title: "Gap",
-        default: "10px",
-        description: "Space between bricks.",
-        "ai:instructions":
-          "Can be a tailwind gap class like 'gap-1' or 'gap-2', or a custom value like '10px'",
-        "ui:placeholder": "Not specified",
-        "ui:styleId": "styles:gap",
-      }),
-    ),
     background: Type.Optional(backgroundRef()),
     border: Type.Optional(borderRef()),
     padding: Type.Optional(paddingRef()),

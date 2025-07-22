@@ -1,9 +1,8 @@
-import { type Manifest, manifest } from "@upstart.gg/sdk/shared/bricks/manifests/images-gallery.manifest";
+import type { Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/images-gallery.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
 import { forwardRef, useState } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import { useDatasource } from "../hooks/use-datasource";
 
 /**
  * Containers can operate in two modes: Static and Dynamic.
@@ -13,8 +12,7 @@ import { useDatasource } from "../hooks/use-datasource";
 const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, ref) => {
   const { props } = brick;
   const styles = useBrickStyle<Manifest>(brick);
-  const { datasourceId, data, isSample } = useDatasource(props.datasource, manifest.datasource);
-  const staticImages = props.staticImages || [];
+  const images = props.images || [];
   const title = props.title;
 
   // State for managing the selected image in the popover
@@ -60,7 +58,7 @@ const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, 
           <div
             className={tx("h-full", "overflow-visible", `grid ${getGridClasses()}`, Object.values(styles))}
           >
-            {props.editable && isSample && (
+            {props.editable && !images.length && (
               <div className="absolute top-0 left-0 right-0 bottom-0 bg-white/30 rounded-lg flex items-center justify-center">
                 <div className="text-white text-center rounded-md bg-black/30 p-4">
                   <div className="text-2xl font-bold">Images Wall</div>
@@ -68,7 +66,7 @@ const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, 
                 </div>
               </div>
             )}
-            {staticImages.map((image, index) => {
+            {images.map((image, index) => {
               return (
                 <div key={index} className={tx("grid relative justify-center items-center  hover:scale-105")}>
                   <img
@@ -89,7 +87,7 @@ const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, 
         </div>
       </div>
 
-      {selectedImageIndex !== null && staticImages[selectedImageIndex] && (
+      {selectedImageIndex !== null && images[selectedImageIndex] && (
         <div
           className={tx(
             "fixed top-0 left-0 w-screen h-screen",
@@ -109,8 +107,8 @@ const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, 
             onClick={(e) => e.stopPropagation()}
           >
             <img
-              src={staticImages[selectedImageIndex].src.src}
-              alt={staticImages[selectedImageIndex].src.alt}
+              src={images[selectedImageIndex].src.src}
+              alt={images[selectedImageIndex].src.alt}
               className={"max-w-full max-h-full object-contain"}
             />
           </div>

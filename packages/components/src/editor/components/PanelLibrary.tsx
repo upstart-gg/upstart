@@ -70,14 +70,14 @@ export default function PanelLibrary() {
     <div className="flex flex-col h-full">
       <div
         className={tx(
-          "flex flex-col max-h-[calc(100dvh/2-40px)] overflow-y-auto",
+          "flex flex-col min-h-[calc(100dvh/3-40px)] overflow-y-auto",
           panelTabContentScrollClass,
         )}
       >
         <PanelBlockTitle>Widgets</PanelBlockTitle>
         {shouldDisplayLibraryCallout && (
           <Callout.Root size="1" color="violet" className="!rounded-none">
-            <Callout.Text size="1">Widgets are more complex components you can use.</Callout.Text>
+            <Callout.Text size="1">Widgets are complex components you can use.</Callout.Text>
           </Callout.Root>
         )}
 
@@ -119,15 +119,16 @@ export default function PanelLibrary() {
             }}
           </Droppable>
         </div>
+        <div
+          className={tx(
+            "p-2 bg-upstart-50/50 font-normal text-upstart-600 m-2 text-xs rounded transition-opacity",
+            currentManifest?.kind === "widget" && currentManifest?.description ? "opacity-100" : "opacity-0",
+          )}
+        >
+          {currentManifest?.description ?? <span>&nbsp;</span>}
+        </div>
       </div>
-      <div
-        className={tx(
-          "p-2 bg-upstart-50/50 font-normal text-upstart-600 m-2 text-xs rounded transition-opacity",
-          currentManifest?.kind === "widget" && currentManifest?.description ? "opacity-100" : "opacity-0",
-        )}
-      >
-        {currentManifest?.description ?? <span>&nbsp;</span>}
-      </div>
+
       <div
         className={tx(
           "flex flex-col max-h-[calc(100dvh/2-40px)] overflow-y-auto",
@@ -173,14 +174,14 @@ export default function PanelLibrary() {
             )}
           </Droppable>
         </div>
-      </div>
-      <div
-        className={tx(
-          "p-2 bg-upstart-50/50 font-normal text-upstart-600 mx-2 text-xs rounded transition-opacity",
-          currentManifest?.kind === "brick" && currentManifest?.description ? "opacity-100" : "opacity-0",
-        )}
-      >
-        {currentManifest?.description}
+        <div
+          className={tx(
+            "p-2 bg-upstart-50/50 font-normal text-upstart-600 mx-2 text-xs rounded transition-opacity",
+            currentManifest?.kind === "brick" && currentManifest?.description ? "opacity-100" : "opacity-0",
+          )}
+        >
+          {currentManifest?.description}
+        </div>
       </div>
     </div>
   );

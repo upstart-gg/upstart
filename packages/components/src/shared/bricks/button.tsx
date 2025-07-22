@@ -34,7 +34,13 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, edi
   return (
     <button
       type="button"
-      className={tx(classes, props.color, props.size, "btn h-full w-full font-medium")}
+      className={tx(
+        classes,
+        props.color,
+        props.size,
+        "btn h-full w-full font-medium",
+        editable && "pointer-events-none",
+      )}
       data-prevented-by-editor={editable ? "true" : "false"}
       ref={ref}
       onClick={handleClick}
