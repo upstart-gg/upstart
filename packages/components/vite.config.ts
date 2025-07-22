@@ -34,6 +34,16 @@ export default defineConfig(({ mode }) => ({
   },
   server: {
     port: +(process.env.PORT ?? 3008),
+    ...(process.env.PROXY_API_REQUESTS
+      ? {
+          proxy: {
+            "/editor": {
+              target: "http://localhost:8080", // Backend server
+              changeOrigin: true, // Ensure the request appears to come from the frontend server
+            },
+          },
+        }
+      : {}),
   },
   resolve: {
     alias: {
