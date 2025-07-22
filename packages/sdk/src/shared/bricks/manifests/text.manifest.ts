@@ -6,6 +6,11 @@ import { borderRef } from "../props/border";
 import { RxTextAlignLeft } from "react-icons/rx";
 import type { BrickProps } from "../props/types";
 import { Type } from "@sinclair/typebox";
+import { basicAlignRef } from "../props/align";
+import { number } from "../props/number";
+import { backgroundColorRef } from "../props/background";
+import { colorRef } from "../props/color";
+import { shadowRef } from "../props/effects";
 
 export const manifest = defineBrickManifest({
   type: "text",
@@ -28,11 +33,33 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
   props: defineProps(
     {
       content: textContentRef(),
-      // backgroundColor: Type.Optional(backgroundColorRef()),
-      // color: Type.Optional(colorRef()),
-      padding: Type.Optional(paddingRef({ default: "p-4" })),
+      verticalAlign: Type.Optional(
+        basicAlignRef({
+          title: "Vertical align",
+          description: "Vertical alignment of the text within the brick.",
+          "ui:no-horizontal-align": true,
+          "ui:vertical-align-label": "Vertical Align",
+          default: { vertical: "items-start" },
+        }),
+      ),
+      padding: Type.Optional(paddingRef({ default: "p-0" })),
+      backgroundColor: Type.Optional(backgroundColorRef()),
+      color: Type.Optional(colorRef()),
       border: Type.Optional(borderRef()),
-      // shadow: Type.Optional(shadowRef()),
+      columns: Type.Optional(
+        Type.Number({
+          title: "Columns",
+          description: "Number of columns to display the text in.",
+          default: 1,
+          minimum: 1,
+          maximum: 6,
+          "ui:field": "slider",
+          // "ui:styleId": "styles:columns",
+          "ui:placeholder": "1",
+          "ai:instructions": "Use 1 for single column, 2 for two columns, etc. up to 4 columns.",
+        }),
+      ),
+      shadow: Type.Optional(shadowRef()),
     },
     {
       default: {

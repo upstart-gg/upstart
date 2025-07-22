@@ -391,64 +391,63 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   width: "20.834446225071225%",
                   height: "42px",
                   growHorizontally: false,
-                  lastTouched: 1752753224134,
                 },
                 id: generateId(),
               },
             ],
           },
-          {
-            id: `s_${generateId()}`,
-            label: "Form",
-            order: ++order,
-            props: {
-              // fillSpace: true,
-              justifyContent: "justify-center",
-              alignItems: "items-start",
-            },
-            bricks: [
-              {
-                id: generateId(),
-                type: "form",
-                props: {
-                  padding: "p-4",
-                  datarecordId: "a7f26d80-d68e-4b7a-a4a3-e41c454670ce",
-                  title: "Simple Form",
-                  intro: "This is a simple form to collect user information.",
-                  align: "horizontal",
-                  button: {
-                    label: "Register",
-                    position: {
-                      horizontal: "justify-center",
-                    },
-                    size: "block",
-                    borderRadius: "rounded-lg",
-                    color: "btn-color-primary",
-                  },
-                },
-              },
-              {
-                id: generateId(),
-                type: "form",
-                props: {
-                  padding: "p-4",
-                  datarecordId: "aacfe76d-4309-466c-83ad-fda8b02b043d",
-                  title: "Complex Form",
-                  intro: "This is a complex form with various field types.",
-                  align: "vertical",
-                  button: {
-                    label: "Submit Form",
-                    position: {
-                      horizontal: "justify-end",
-                    },
-                    size: "wide",
-                    borderRadius: "rounded-md",
-                    color: "btn-color-accent",
-                  },
-                },
-              },
-            ],
-          },
+          // {
+          //   id: `s_${generateId()}`,
+          //   label: "Form",
+          //   order: ++order,
+          //   props: {
+          //     // fillSpace: true,
+          //     justifyContent: "justify-center",
+          //     alignItems: "items-start",
+          //   },
+          //   bricks: [
+          //     {
+          //       id: generateId(),
+          //       type: "form",
+          //       props: {
+          //         padding: "p-4",
+          //         datarecordId: "a7f26d80-d68e-4b7a-a4a3-e41c454670ce",
+          //         title: "Simple Form",
+          //         intro: "This is a simple form to collect user information.",
+          //         align: "horizontal",
+          //         button: {
+          //           label: "Register",
+          //           position: {
+          //             horizontal: "justify-center",
+          //           },
+          //           size: "block",
+          //           borderRadius: "rounded-lg",
+          //           color: "btn-color-primary",
+          //         },
+          //       },
+          //     },
+          //     {
+          //       id: generateId(),
+          //       type: "form",
+          //       props: {
+          //         padding: "p-4",
+          //         datarecordId: "aacfe76d-4309-466c-83ad-fda8b02b043d",
+          //         title: "Complex Form",
+          //         intro: "This is a complex form with various field types.",
+          //         align: "vertical",
+          //         button: {
+          //           label: "Submit Form",
+          //           position: {
+          //             horizontal: "justify-end",
+          //           },
+          //           size: "wide",
+          //           borderRadius: "rounded-md",
+          //           color: "btn-color-accent",
+          //         },
+          //       },
+          //     },
+          //   ],
+          // },
           {
             id: `s_content-${generateId()}`,
             label: "Hero",
@@ -476,7 +475,16 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 type: "text",
                 props: {
                   preset: "subtle-accent",
-                  content: "Irure dolor sit amet, consectetur adipiscing elit.",
+                  width: "600px",
+                  columns: 3,
+                  content: `
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam placerat mollis justo in imperdiet. Nulla in commodo magna. Donec placerat varius tincidunt. Phasellus tincidunt, nunc in vehicula elementum, augue diam ultrices urna, vel tempor massa libero non tortor. Suspendisse fermentum nisi consectetur porta ultricies. Nunc sem eros, elementum eget ex nec, blandit tristique mi. Morbi eu enim dignissim augue dapibus euismod non ut velit. Nulla a orci mauris. Morbi ante nibh, porttitor rhoncus elit at, accumsan scelerisque est. Mauris molestie augue vel purus sollicitudin, vitae euismod magna consectetur. Sed iaculis tincidunt nulla. Aenean neque mauris, pretium ut ex ut, placerat suscipit arcu. Etiam et risus orci.
+
+Mauris rhoncus fringilla porttitor. Vestibulum in eros lorem. Vivamus iaculis viverra diam, ut auctor ante tempus eu. Nunc commodo augue nulla. Vestibulum hendrerit placerat ullamcorper. Etiam egestas sed odio a semper. In a vestibulum ligula, sit amet ornare odio. Phasellus et orci a mauris euismod aliquet. Nam volutpat, purus ac tempus ullamcorper, mi dolor porta est, finibus lobortis sapien nulla non orci. Duis consequat magna erat, quis blandit dolor ultricies eget. Praesent lectus metus, imperdiet quis mi a, cursus posuere mauris. Suspendisse lacinia venenatis sapien, sit amet luctus neque aliquet sit amet. Aliquam ac euismod lorem. Donec vel tincidunt ante, a volutpat dolor. Integer id vehicula est. Duis laoreet imperdiet commodo.
+
+Curabitur suscipit mauris ut ex venenatis interdum at sit amet dui. Nam pulvinar augue eget nibh placerat mollis. Vivamus nec mi eu urna tincidunt rutrum. Sed efficitur eget purus vel convallis. Quisque dapibus, nisl non efficitur rutrum, massa dolor finibus orci, ut consectetur elit risus non est. Pellentesque sed faucibus arcu, eu tincidunt lacus. Sed laoreet, erat id tempor mattis, felis mi dapibus massa, id venenatis urna nulla at ante. Morbi pellentesque consequat libero, elementum semper augue iaculis eu. Vivamus porttitor est vitae semper posuere. Fusce semper sagittis vestibulum. Sed posuere risus augue, id malesuada tortor sagittis ut. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+
+Praesent rutrum fermentum neque varius blandit. Cras dignissim eleifend tortor, ut sollicitudin augue condimentum sed. Pellentesque bibendum metus eget gravida scelerisque. Pellentesque sapien turpis, iaculis nec tincidunt quis, aliquam venenatis est. Cras volutpat libero et blandit convallis. In ut cursus nisi, in vestibulum nisl. Nulla tortor augue, pulvinar ac metus at, viverra suscipit metus.`,
                 },
               },
               // {
@@ -491,38 +499,38 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               //     },
               //   },
               // },
-              {
-                id: `b_${generateId()}`,
-                type: "vbox",
-                props: {
-                  $children: [
-                    {
-                      id: `b_${generateId()}`,
-                      type: "text",
-                      props: {
-                        preset: "subtle-accent",
-                        content: "Irure dolor sit amet, consectetur adipiscing elit.",
-                      },
-                    },
-                    {
-                      id: `b_${generateId()}`,
-                      type: "text",
-                      props: {
-                        preset: "subtle-accent",
-                        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-                      },
-                    },
-                  ],
-                },
-              },
-              {
-                id: `b_${generateId()}`,
-                type: "text",
-                props: {
-                  preset: "subtle-accent",
-                  content: "Irure dolor sit amet, consectetur adipiscing elit.",
-                },
-              },
+              // {
+              //   id: `b_${generateId()}`,
+              //   type: "vbox",
+              //   props: {
+              //     $children: [
+              //       {
+              //         id: `b_${generateId()}`,
+              //         type: "text",
+              //         props: {
+              //           preset: "subtle-accent",
+              //           content: "Irure dolor sit amet, consectetur adipiscing elit.",
+              //         },
+              //       },
+              //       {
+              //         id: `b_${generateId()}`,
+              //         type: "text",
+              //         props: {
+              //           preset: "subtle-accent",
+              //           content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+              //         },
+              //       },
+              //     ],
+              //   },
+              // },
+              // {
+              //   id: `b_${generateId()}`,
+              //   type: "text",
+              //   props: {
+              //     preset: "subtle-accent",
+              //     content: "Irure dolor sit amet, consectetur adipiscing elit.",
+              //   },
+              // },
               // {
               //   id: `b_${generateId()}`,
               //   type: "card",

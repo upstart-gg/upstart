@@ -142,7 +142,7 @@ export const examples: {
       align: "vertical",
       datarecordId: "contacts",
       buttonPosition: {
-        horizontal: "justify-end",
+        horizontal: "end",
       },
       buttonLabel: "Send Message",
       button: {
@@ -160,7 +160,7 @@ export const examples: {
       align: "vertical",
       datarecordId: "user-registration",
       buttonPosition: {
-        horizontal: "justify-end",
+        horizontal: "end",
       },
       buttonLabel: "Register",
       button: {
@@ -178,7 +178,7 @@ export const examples: {
       align: "horizontal",
       datarecordId: "newsletter-subscription",
       buttonPosition: {
-        horizontal: "justify-center",
+        horizontal: "center",
       },
       buttonLabel: "Subscribe",
       button: {
@@ -196,7 +196,7 @@ export const examples: {
       align: "vertical",
       datarecordId: "event-registration",
       buttonPosition: {
-        horizontal: "justify-end",
+        horizontal: "end",
       },
       buttonLabel: "Register Now",
       button: {
@@ -214,7 +214,7 @@ export const examples: {
       align: "vertical",
       datarecordId: "job-application",
       buttonPosition: {
-        horizontal: "justify-start",
+        horizontal: "start",
       },
       buttonLabel: "Submit Application",
       button: {
@@ -232,7 +232,7 @@ export const examples: {
       align: "vertical",
       datarecordId: "customer-feedback",
       buttonPosition: {
-        horizontal: "justify-end",
+        horizontal: "end",
       },
       buttonLabel: "Submit Feedback",
       button: {

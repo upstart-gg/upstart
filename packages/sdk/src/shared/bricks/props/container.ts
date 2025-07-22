@@ -3,16 +3,6 @@ import { StringEnum } from "~/shared/utils/string-enum";
 
 export function makeContainerProps() {
   return {
-    $childrenType: Type.Optional(
-      Type.String({
-        title: "Dynamic child brick type",
-        description: "Type of the child bricks that will be created when container is dynamic",
-        "ui:field": "brick-type",
-        metadata: {
-          category: "content",
-        },
-      }),
-    ),
     $children: Type.Array(Type.Any(), {
       "ui:field": "hidden",
       description: "List of nested bricks",

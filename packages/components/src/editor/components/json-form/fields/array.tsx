@@ -318,7 +318,7 @@ export function ArrayField({
         )}
 
         <TextField.Root
-          size="1"
+          size="2"
           className="flex-1"
           value={`${item || ""}`}
           onChange={(e) => {

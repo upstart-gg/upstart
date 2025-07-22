@@ -8,21 +8,10 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { InlineIcon } from "@iconify/react/dist/iconify.js";
 
 export const AlignBasicField: FC<FieldProps<AlignBasicSettings>> = (props) => {
-  const {
-    currentValue = {
-      horizontal: "justify-start",
-      vertical: "items-center",
-    },
-    onChange,
-    required,
-    title,
-    description,
-    placeholder,
-    schema,
-  } = props;
+  const { currentValue, onChange, required, title, description, placeholder, schema } = props;
 
   const onSettingsChange = (newVal: Partial<AlignBasicSettings>) => {
-    const newProps = { ...currentValue, ...newVal };
+    const newProps = { ...(currentValue ?? {}), ...newVal };
     onChange(newProps);
   };
 
@@ -32,7 +21,7 @@ export const AlignBasicField: FC<FieldProps<AlignBasicSettings>> = (props) => {
         <div
           className={tx(
             "flex gap-1 flex-1",
-            schema["ui:no-horizontal-align"] ? "flex-col" : "flex-row justify-between",
+            schema["ui:no-vertical-align"] ? "flex-row justify-between" : "flex-col",
           )}
         >
           <label className={fieldLabel}>{schema["ui:horizontal-align-label"] ?? "Horizontal align"}</label>
@@ -40,7 +29,7 @@ export const AlignBasicField: FC<FieldProps<AlignBasicSettings>> = (props) => {
             onValueChange={(value) =>
               onSettingsChange({ horizontal: value as AlignBasicSettings["horizontal"] })
             }
-            defaultValue={currentValue.horizontal}
+            defaultValue={currentValue?.horizontal}
             size="1"
             radius="medium"
             className="!h-[24px] -mt-0.5 -mb-0.5"
@@ -52,13 +41,13 @@ export const AlignBasicField: FC<FieldProps<AlignBasicSettings>> = (props) => {
                 value={option.const}
                 className={tx("[&_.rt-SegmentedControlItemLabel]:px-[7px]")}
               >
-                {option.const === "justify-start" && (
+                {option.const === "start" && (
                   <InlineIcon icon="fluent:align-start-horizontal-20-regular" className="w-5 h-5" />
                 )}
-                {option.const === "justify-center" && (
+                {option.const === "center" && (
                   <InlineIcon icon="fluent:center-horizontal-20-regular" className="w-5 h-5" />
                 )}
-                {option.const === "justify-end" && (
+                {option.const === "end" && (
                   <InlineIcon icon="fluent:align-end-horizontal-20-regular" className="w-5 h-5" />
                 )}
               </SegmentedControl.Item>
@@ -68,11 +57,16 @@ export const AlignBasicField: FC<FieldProps<AlignBasicSettings>> = (props) => {
       )}
 
       {!schema["ui:no-vertical-align"] && (
-        <div className="flex flex-col gap-1 flex-1">
+        <div
+          className={tx(
+            "flex gap-1 flex-1",
+            schema["ui:no-horizontal-align"] ? "flex-row justify-between" : "flex-col",
+          )}
+        >
           <label className={fieldLabel}>{schema["ui:vertical-align-label"] ?? "Vertical align"}</label>
           <SegmentedControl.Root
             onValueChange={(value) => onSettingsChange({ vertical: value as AlignBasicSettings["vertical"] })}
-            defaultValue={currentValue.vertical}
+            defaultValue={currentValue?.vertical}
             size="1"
             radius="medium"
             className="!h-[24px] -mt-0.5 -mb-0.5"
@@ -84,9 +78,9 @@ export const AlignBasicField: FC<FieldProps<AlignBasicSettings>> = (props) => {
                 value={option.const}
                 className={tx("[&_.rt-SegmentedControlItemLabel]:px-[7px]")}
               >
-                {option.const === "items-start" && <PiAlignTop className="w-4 h-4" />}
-                {option.const === "items-center" && <PiAlignCenterVertical className="w-4 h-4" />}
-                {option.const === "items-end" && <PiAlignBottom className="w-4 h-4" />}
+                {option.const === "start" && <PiAlignTop className="w-4 h-4" />}
+                {option.const === "center" && <PiAlignCenterVertical className="w-4 h-4" />}
+                {option.const === "end" && <PiAlignBottom className="w-4 h-4" />}
               </SegmentedControl.Item>
             ))}
           </SegmentedControl.Root>
