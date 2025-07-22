@@ -69,12 +69,15 @@ export default function PanelLibrary() {
   return (
     <div className="flex flex-col h-full">
       <div
-        className={tx("flex flex-col h-[calc(100dvh/3-40px)] overflow-y-auto", panelTabContentScrollClass)}
+        className={tx(
+          "flex flex-col min-h-[calc(100dvh/3-40px)] overflow-y-auto",
+          panelTabContentScrollClass,
+        )}
       >
         <PanelBlockTitle>Widgets</PanelBlockTitle>
         {shouldDisplayLibraryCallout && (
           <Callout.Root size="1" color="violet" className="!rounded-none">
-            <Callout.Text size="1">Widgets are more complex components you can use.</Callout.Text>
+            <Callout.Text size="1">Widgets are complex components you can use.</Callout.Text>
           </Callout.Root>
         )}
 

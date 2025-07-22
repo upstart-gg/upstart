@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import type { Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/vbox.manifest";
+import type { Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/box.manifest";
 import EditableBrickWrapper from "~/editor/components/EditableBrick";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import BrickWrapper from "../components/BrickWrapper";
@@ -12,7 +12,7 @@ import { IconRender } from "~/editor/components/IconRender";
 import { useDeviceInfo } from "~/editor/hooks/use-device-info";
 import { useDraggingBrickType, usePreviewMode } from "~/editor/hooks/use-editor";
 
-const Vbox = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+const Box = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const props = brick.props;
   const styles = useBrickStyle<Manifest>(brick);
   const classes = Object.values(styles);
@@ -21,7 +21,7 @@ const Vbox = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
   if (editable) {
     return (
       <div className={tx("flex flex-grow flex-col", ...classes)} ref={ref}>
-        <DroppableVbox brick={brick} />
+        <DroppableBox brick={brick} />
       </div>
     );
   }
@@ -62,21 +62,10 @@ export const renderClone: DraggableChildrenFn = (provided, snapshot, rubric) => 
 };
 
 const renderClone2: DraggableChildrenFn = (provided, snapshot, rubric) => {
-  return (
-    // <div
-    //   {...provided.draggableProps}
-    //   {...provided.dragHandleProps}
-    //   ref={provided.innerRef}
-    //   style={{
-    //     width: "200px",
-    //     scale: 0.2,
-    //   }}
-    // />
-    null
-  );
+  return null;
 };
 
-function DroppableVbox({ brick }: BrickProps<Manifest>) {
+function DroppableBox({ brick }: BrickProps<Manifest>) {
   const props = brick.props;
   const styles = useBrickStyle<Manifest>(brick);
   const classes = Object.values(styles);
@@ -131,4 +120,4 @@ function DroppableVbox({ brick }: BrickProps<Manifest>) {
   );
 }
 
-export default Vbox;
+export default Box;

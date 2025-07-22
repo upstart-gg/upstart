@@ -72,12 +72,10 @@ export function defineBrickManifest<BProps extends TProperties, DSSchema extends
   duplicatable = true,
   defaultInspectorTab = "preset",
   icon,
-  datasource,
   ...rest
 }: BrickManifestProps<BProps, DSSchema>) {
   return {
     ...rest,
-    datasource: datasource as DSSchema,
     icon,
     props,
     kind,
