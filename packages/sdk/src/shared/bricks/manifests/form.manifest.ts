@@ -45,14 +45,10 @@ There is no need to define the form fields manually and the form does not accept
       }),
     ),
     fontSize: Type.Optional(fontSizeRef({ default: "inherit", "ui:no-extra-large-sizes": true })),
+
     button: group({
       title: "Button",
       children: {
-        label: Type.Optional(
-          string("Button Label", {
-            default: "Submit",
-          }),
-        ),
         color: Type.Union(
           [
             Type.Literal("btn-color-neutral", { title: "Neutral", "ui:variant-type": "color" }),
@@ -102,6 +98,12 @@ There is no need to define the form fields manually and the form does not accept
         },
       }),
     ),
+    buttonLabel: Type.Optional(
+      string("Button Label", {
+        default: "Submit",
+        metadata: { category: "content" },
+      }),
+    ),
     successMessage: Type.Optional(
       Type.String({
         title: "Success Message",
@@ -142,8 +144,8 @@ export const examples: {
       buttonPosition: {
         horizontal: "justify-end",
       },
+      buttonLabel: "Send Message",
       button: {
-        label: "Send Message",
         color: "btn-color-primary",
         size: "block",
       },
@@ -160,8 +162,8 @@ export const examples: {
       buttonPosition: {
         horizontal: "justify-end",
       },
+      buttonLabel: "Register",
       button: {
-        label: "Register",
         color: "btn-color-secondary",
         size: "wide",
       },
@@ -178,8 +180,8 @@ export const examples: {
       buttonPosition: {
         horizontal: "justify-center",
       },
+      buttonLabel: "Subscribe",
       button: {
-        label: "Subscribe",
         color: "btn-color-accent",
         size: "block",
       },
@@ -196,8 +198,8 @@ export const examples: {
       buttonPosition: {
         horizontal: "justify-end",
       },
+      buttonLabel: "Register Now",
       button: {
-        label: "Register Now",
         color: "btn-color-primary",
         size: "block",
       },
@@ -214,8 +216,8 @@ export const examples: {
       buttonPosition: {
         horizontal: "justify-start",
       },
+      buttonLabel: "Submit Application",
       button: {
-        label: "Submit Application",
         color: "btn-color-secondary",
         size: "block",
       },
@@ -232,8 +234,8 @@ export const examples: {
       buttonPosition: {
         horizontal: "justify-end",
       },
+      buttonLabel: "Submit Feedback",
       button: {
-        label: "Submit Feedback",
         color: "btn-color-accent",
         size: "wide",
       },

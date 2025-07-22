@@ -192,10 +192,9 @@ function processDatarecordSchemaToFields(
 const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
   const { brick } = props;
   const styles = useBrickStyle<Manifest>(brick);
-  const { title, intro, datarecordId, align = "vertical", editable = true } = brick.props;
+  const { title, buttonLabel, intro, datarecordId, align = "vertical", editable = true } = brick.props;
 
   const buttonProps = brick.props.button || {};
-  const buttonLabel = buttonProps.label as string | undefined;
   const buttonColor = buttonProps.color as string | undefined;
 
   const { datarecord, schema, error } = useDatarecord(datarecordId);

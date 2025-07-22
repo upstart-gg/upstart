@@ -11,6 +11,7 @@ import type { BrickProps } from "../props/types";
 import { fontSizeRef } from "../props/text";
 import { colorPresetRef } from "../props/preset";
 import { StringEnum } from "~/shared/utils/string-enum";
+import { cssLengthRef } from "../props/css-length";
 
 export const manifest = defineBrickManifest({
   type: "testimonials",
@@ -239,6 +240,17 @@ export const manifest = defineBrickManifest({
         }),
       ),
       padding: Type.Optional(paddingRef()),
+      gap: Type.Optional(
+        cssLengthRef({
+          title: "Gap",
+          default: "26px",
+          description: "Space between bricks.",
+          "ai:instructions":
+            "Can be a tailwind gap class like 'gap-1' or 'gap-2', or a custom value like '10px'",
+          "ui:placeholder": "Not specified",
+          "ui:styleId": "styles:gap",
+        }),
+      ),
       testimonials: Type.Array(
         Type.Object({
           text: string("Text", {
