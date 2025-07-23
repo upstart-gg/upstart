@@ -22,6 +22,7 @@ export const manifest = defineBrickManifest({
     Each item has a date/time, title, description, and optional icon.
   `.trim(),
   icon: RiMapPinTimeLine,
+  hideInLibrary: true,
   defaultWidth: { desktop: "200px", mobile: "100%" },
   props: defineProps(
     {

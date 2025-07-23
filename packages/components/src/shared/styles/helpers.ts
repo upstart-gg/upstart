@@ -112,10 +112,13 @@ function getBorderStyles(props?: Partial<BorderSettings>) {
 }
 
 export function getBasicAlignmentStyles(
-  props: AlignBasicSettings,
-  mobileProps: AlignBasicSettings,
-  schema: TSchema,
+  props?: AlignBasicSettings,
+  mobileProps?: AlignBasicSettings,
+  schema?: TSchema,
 ) {
+  if (!props || !schema) {
+    return null;
+  }
   if (schema["ui:flex-mode"] === "column") {
     return [
       props.vertical ? `justify-${props.vertical}` : null,

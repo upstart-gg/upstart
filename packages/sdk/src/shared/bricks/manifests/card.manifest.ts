@@ -216,7 +216,7 @@ export const manifest = defineBrickManifest({
           "ui:responsive": "desktop",
           "ui:styleId": "styles:gradientDirection",
           metadata: {
-            filter: (manifestProps: TObject, formData: Manifest["props"]) => {
+            filter: (manifestProps: TObject, formData: Static<Manifest["props"]>) => {
               return formData.colorPreset?.includes("gradient") === true;
             },
           },
