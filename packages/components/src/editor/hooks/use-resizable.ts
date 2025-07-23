@@ -50,7 +50,7 @@ export interface UseResizableOptions {
   /**
    * Grid snapping configuration
    */
-  gridSnap?: {
+  gridSnap: {
     width: number;
     height: number;
     enabled?: boolean;
@@ -74,7 +74,7 @@ export interface UseResizableOptions {
 /**
  * Custom hook to make elements resizable using interact.js
  */
-export function useResizable(cssQuery: string, options: UseResizableOptions = {}): void {
+export function useResizable(cssQuery: string, options: UseResizableOptions): void {
   const interactablesRef = useRef<Set<Interact.Interactable>>(new Set());
   const observerRef = useRef<MutationObserver | null>(null);
   const previewMode = usePreviewMode();
@@ -230,12 +230,12 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
               const element = event.element as HTMLElement;
               const brickType = element.dataset.brickType;
               if (!brickType) {
-                console.warn("Element does not have a brickType dataset attribute, using default min size.");
-                return { width: 50, height: 50 };
+                // Element does not have a brickType dataset attribute, using default min size.
+                return { width: gridSnap.width, height: gridSnap.height };
               }
               const manifest = manifests[brickType];
-              const minWidth = manifest.minWidth?.[previewMode] ?? 50;
-              const minHeight = manifest.minHeight?.[previewMode] ?? 50;
+              const minWidth = manifest.minWidth?.[previewMode] ?? gridSnap.width;
+              const minHeight = manifest.minHeight?.[previewMode] ?? gridSnap.height;
               return { width: minWidth, height: minHeight };
             },
             // @ts-ignore
@@ -249,7 +249,7 @@ export function useResizable(cssQuery: string, options: UseResizableOptions = {}
                 parseFloat(getComputedStyle(parent).paddingBottom);
               const brickType = element.dataset.brickType;
               if (!brickType) {
-                console.warn("Element does not have a brickType dataset attribute, using default max size.");
+                // Element does not have a brickType dataset attribute, using default max size.
                 return { width: Infinity, height: parentHeight };
               }
               const manifest = manifests[brickType];

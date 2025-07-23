@@ -9,7 +9,6 @@ import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({
   type: "carousel",
-  kind: "widget",
   name: "Carousel",
   description: "An image carousel with navigation arrows and dots or numbers indicator",
   aiInstructions:

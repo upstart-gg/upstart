@@ -1,24 +1,23 @@
 import { type SchemaOptions, Type, type Static } from "@sinclair/typebox";
 import { typedRef } from "~/shared/utils/typed-ref";
 
-type AlignBasicOptions = {
-  title?: string;
-  defaultValue?: {
-    horizontal: string;
-    vertical: string;
-  };
+type AlignBasicOptions = SchemaOptions & {
+  "ui:no-horizontal-align"?: boolean;
+  "ui:no-vertical-align"?: boolean;
+  "ui:horizontal-align-label"?: string;
+  "ui:vertical-align-label"?: string;
+  "ui:flex-mode"?: "row" | "column";
 };
 
 export function basicAlign(opts: AlignBasicOptions = {}) {
-  const { title = "Align", defaultValue = { horizontal: "justify-start", vertical: "items-center" } } = opts;
   return Type.Object(
     {
       horizontal: Type.Optional(
         Type.Union(
           [
-            Type.Literal("justify-start", { title: "Left" }),
-            Type.Literal("justify-center", { title: "Center" }),
-            Type.Literal("justify-end", { title: "Right" }),
+            Type.Literal("start", { title: "Left" }),
+            Type.Literal("center", { title: "Center" }),
+            Type.Literal("end", { title: "Right" }),
           ],
           {
             title: "Horizontal",
@@ -28,9 +27,9 @@ export function basicAlign(opts: AlignBasicOptions = {}) {
       vertical: Type.Optional(
         Type.Union(
           [
-            Type.Literal("items-start", { title: "Top" }),
-            Type.Literal("items-center", { title: "Center" }),
-            Type.Literal("items-end", { title: "Bottom" }),
+            Type.Literal("start", { title: "Top" }),
+            Type.Literal("center", { title: "Center" }),
+            Type.Literal("end", { title: "Bottom" }),
           ],
           {
             title: "Vertical",
@@ -40,17 +39,17 @@ export function basicAlign(opts: AlignBasicOptions = {}) {
     },
     {
       $id: "styles:basicAlign",
-      title,
+      title: "Align",
       "ui:responsive": true,
       "ui:field": "align-basic",
       "ui:styleId": "styles:basicAlign",
-      default: defaultValue,
+      ...opts,
     },
   );
 }
 
 export type AlignBasicSettings = Static<ReturnType<typeof basicAlign>>;
 
-export function basicAlignRef(options: SchemaOptions = {}) {
+export function basicAlignRef(options: AlignBasicOptions = {}) {
   return typedRef("styles:basicAlign", options);
 }

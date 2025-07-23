@@ -11,8 +11,8 @@ import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({
   type: "footer",
-  kind: "widget",
   name: "Footer",
+  category: "layout",
   description: "A footer with links and an optional logo",
   icon: VscLayoutPanelOff,
   staticClasses: "flex-1",

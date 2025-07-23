@@ -120,7 +120,7 @@ function DroppableVbox({ brick }: BrickProps<Manifest>) {
                 "w-full h-full text-center  border-4 border-gray-300 border-dotted p-4 rounded flex justify-center items-center text-base text-black/50 font-medium",
               )}
             >
-              This is a container.
+              This is a vertical box.
               <br />
               Drag bricks here to stack them inside.
             </div>

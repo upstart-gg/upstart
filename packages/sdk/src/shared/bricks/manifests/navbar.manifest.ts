@@ -37,8 +37,8 @@ export const datasource = Type.Array(
 
 export const manifest = defineBrickManifest({
   type: "navbar",
-  kind: "widget",
   name: "Navbar",
+  category: "layout",
   description: "A navigation bar with logo and navigation",
   aiInstructions: "This brick should be used on most sites/pages.",
   datasource,

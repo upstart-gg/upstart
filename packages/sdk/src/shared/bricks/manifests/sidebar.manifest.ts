@@ -11,7 +11,7 @@ import { shadowRef } from "../props/effects";
 
 export const manifest = defineBrickManifest({
   type: "sidebar",
-  kind: "widget",
+  category: "layout",
   name: "Sidebar",
   description: "A sidebard element",
   inlineDragDisabled: true,

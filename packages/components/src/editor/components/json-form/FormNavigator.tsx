@@ -7,14 +7,12 @@ import {
   type FC,
   useRef,
   useEffect,
-  startTransition,
 } from "react";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 import type { NavItem, NavItemProperty } from "./types";
 import { processObjectSchemaToFields } from "./field-factory";
 import { type TObject, Type } from "@sinclair/typebox";
-import { tx, css } from "@upstart.gg/style-system/twind";
-import { IoMdArrowDropdown } from "react-icons/io";
+import { tx } from "@upstart.gg/style-system/twind";
 
 type FormNavigatorContextType = {
   navigateTo: (item: NavItem) => void;
@@ -119,20 +117,11 @@ const FormNavigator: FC<FormNavigatorProps> = ({
   ]);
 
   const ref = useRef<HTMLDivElement>(null);
-  const scrollViewRef = useRef<HTMLDivElement>(null);
   const refNavigated = useRef(false);
-  const [isOverflowing, setIsOverflowing] = useState(false);
   const hasChildrenItems = navItems.some((item) => item.children && item.children.length > 0);
 
   // Direction of animation
   const [animationDirection, setAnimationDirection] = useState<"forward" | "backward" | null>(null);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  // useEffect(() => {
-  //   setIsOverflowing(
-  //     scrollViewRef.current ? scrollViewRef.current.scrollHeight > scrollViewRef.current.clientHeight : false,
-  //   );
-  // }, [viewStack.length, scrollViewRef.current]);
 
   // Navigate to a new view
   const navigateTo = useCallback((item: NavItem, direction: typeof animationDirection = "forward") => {

@@ -6,17 +6,17 @@ import { shadowRef } from "../props/effects";
 import type { BrickProps } from "../props/types";
 import { geolocation } from "../props/geolocation";
 import { Type } from "@sinclair/typebox";
-import { round } from "lodash-es";
+import { number } from "../props/number";
+import { string } from "../props/string";
 
 export const DEFAULTS = {
   lat: 48.8566, // Default latitude (Paris)
   lng: 2.3522, // Default longitude (Paris)
-  zoom: 17,
+  zoom: 15, // Default zoom level
 };
 
 export const manifest = defineBrickManifest({
   type: "map",
-  kind: "widget",
   name: "Map",
   description: "A map element showing a location",
   aiInstructions:
@@ -39,11 +39,35 @@ export const manifest = defineBrickManifest({
   },
   icon: LiaMapMarkedAltSolid,
   props: defineProps({
-    location: group({
-      title: "Location",
-      children: geolocation({ defaultZoom: DEFAULTS.zoom }),
-    }),
     // location: geolocation({ defaultZoom: DEFAULTS.zoom }),
+    lat: number("Latitude", { "ui:field": "hidden" }),
+    lng: number("Longitude", { "ui:field": "hidden" }),
+    address: string("Address", {
+      "ui:field": "geoaddress",
+      metadata: {
+        category: "content",
+      },
+    }),
+    tooltip: Type.Optional(
+      string("Tooltip", {
+        metadata: {
+          category: "content",
+        },
+      }),
+    ),
+    zoom: Type.Optional(
+      number("Zoom", {
+        description: "Zoom level for the map",
+        "ui:instructions": "The zoom level should be between 0 (world view) and 21 (street view).",
+        "ui:field": "slider",
+        minimum: 12,
+        maximum: 18,
+        default: DEFAULTS.zoom,
+        metadata: {
+          category: "content",
+        },
+      }),
+    ),
     border: Type.Optional(
       borderRef({
         default: {
@@ -66,12 +90,10 @@ export const examples: {
     description: "Map showing a specific location",
     type: "map",
     props: {
-      location: {
-        lat: 37.7749,
-        lng: -122.4194,
-        address: "San Francisco, CA",
-        tooltip: "San Francisco, CA",
-      },
+      lat: 37.7749,
+      lng: -122.4194,
+      address: "San Francisco, CA",
+      tooltip: "San Francisco, CA",
       shadow: "shadow-md",
     },
   },
@@ -79,12 +101,10 @@ export const examples: {
     description: "Map with custom styles",
     type: "map",
     props: {
-      location: {
-        lat: 40.7128,
-        lng: -74.006,
-        address: "New York, NY",
-        tooltip: "New York, NY",
-      },
+      lat: 40.7128,
+      lng: -74.006,
+      address: "New York, NY",
+      tooltip: "New York, NY",
       border: {
         color: "border-gray-300",
         width: "border",

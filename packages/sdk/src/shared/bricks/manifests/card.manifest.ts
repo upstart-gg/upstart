@@ -12,7 +12,6 @@ import { StringEnum } from "~/shared/utils/string-enum";
 
 export const manifest = defineBrickManifest({
   type: "card",
-  kind: "widget",
   name: "Card",
   description: "A card that can have a title, image, and content",
   repeatable: true,

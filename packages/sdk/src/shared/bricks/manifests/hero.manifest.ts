@@ -6,11 +6,15 @@ import { BsAlphabetUppercase } from "react-icons/bs";
 import type { BrickProps } from "../props/types";
 import { Type } from "@sinclair/typebox";
 import { textShadowRef } from "../props/effects";
+import { backgroundColorRef } from "../props/background";
+import { colorRef } from "../props/color";
+import { borderRef } from "../props/border";
+import { basicAlignRef } from "../props/align";
 
 export const manifest = defineBrickManifest({
   type: "hero",
+  category: "basic",
   name: "Hero",
-  kind: "brick",
   description: "A big textual element for home pages",
   aiInstructions: `
 This hero element is a large text element that can be used to display a title and an optional tagline.
@@ -33,14 +37,29 @@ It is typically used on home pages to grab the user's attention.
         default: "<p style='text-align:left'>Use our platform to build your business with confidence.</p>",
       }),
     ),
-    // background: Type.Optional(backgroundRef()),
-    // color: Type.Optional(colorRef()),
+    backgroundColor: Type.Optional(backgroundColorRef()),
+    color: Type.Optional(colorRef()),
+    border: Type.Optional(borderRef()),
     textShadow: Type.Optional(
       textShadowRef({
         default: "text-shadow-sm",
       }),
     ),
-    padding: Type.Optional(paddingRef({})),
+    padding: Type.Optional(
+      paddingRef({
+        default: "p-8",
+      }),
+    ),
+    verticalAlign: Type.Optional(
+      basicAlignRef({
+        title: "Vertical align",
+        description: "Vertical alignment of the text within the brick.",
+        "ui:flex-mode": "column",
+        "ui:no-horizontal-align": true,
+        "ui:vertical-align-label": "Vertical Align",
+        default: { vertical: "center" },
+      }),
+    ),
   }),
 });
 

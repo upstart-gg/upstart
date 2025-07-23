@@ -11,7 +11,7 @@ import { BsDatabaseDown } from "react-icons/bs";
 
 export const manifest = defineBrickManifest({
   type: "dynamic",
-  kind: "brick",
+  category: "container",
   name: "Dynamic",
   description: "A dynamic container that fetches data from your database and constructs bricks from it.",
   isContainer: true,

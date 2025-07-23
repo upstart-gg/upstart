@@ -7,6 +7,7 @@ import {
   useEditingTextForBrickId,
   useEditorHelpers,
   useGridConfig,
+  useIsMouseOverPanel,
   usePreviewMode,
   useSection,
   useSections,
@@ -56,6 +57,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
   const selectedSectionId = useSelectedSectionId();
   const editingBrick = useEditingTextForBrickId();
   const draggingBrickType = useDraggingBrickType();
+  const isMouseOverPanel = useIsMouseOverPanel();
   const { isDesktop } = useDeviceInfo();
   const className = useSectionStyle({
     section,
@@ -118,6 +120,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
   );
 
   const dropDisabled =
+    isMouseOverPanel ||
     isSpecialSection ||
     /* Not DnD on mobile */ previewMode === "mobile" ||
     /* No DnD on small screens */

@@ -1,11 +1,10 @@
 import { brickStylesHelpersMap, brickWrapperStylesHelpersMap, extractStylePath } from "../styles/helpers";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { debounce, get, merge } from "lodash-es";
+import { get, merge } from "lodash-es";
 import { useBrickManifest } from "./use-brick-manifest";
 import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { tx, css } from "@upstart.gg/style-system/twind";
-import { m } from "motion/react";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
 import { getStyleProperties } from "../styles/style-props";
@@ -18,7 +17,6 @@ function useClassesFromStyleProps<T extends BrickManifest>(
   const { props, mobileProps } = brick;
   const mergedProps = merge({}, defaultProps[brick.type].props, props);
 
-  // Todo: filter out stylesProps based on their eventual metadata filter function
   const manifest = useBrickManifest(brick.type);
 
   const filtered = Object.entries(stylesProps).reduce((acc, [key, value]) => {
@@ -52,9 +50,11 @@ function useClassesFromStyleProps<T extends BrickManifest>(
 
       const resolvedProps = get(mergedProps, path);
       const resolvedMobileProps = get(mobileProps, path);
+      const schema = get(manifest.props.properties, path);
+
       acc[part].push(
         // @ts-expect-error
-        tx(helper?.(resolvedProps, resolvedMobileProps)),
+        tx(helper?.(resolvedProps, resolvedMobileProps, schema)),
       );
       return acc;
     },
@@ -92,13 +92,13 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
     manifest.staticClasses,
     props.className as string,
     props.preset as string,
-    "brick-wrapper group/brick flex",
+    "brick-wrapper group/brick flex min-h-fit min-w-min",
 
-    !mobileProps?.width && manifest.minWidth?.mobile && `@mobile:min-w-[${manifest.minWidth.mobile}px]`,
-    !props.width && manifest.minWidth?.desktop && `@desktop:min-w-[${manifest.minWidth.desktop}px]`,
+    !mobileProps?.width && manifest.minWidth?.mobile && `@mobile:w-[${manifest.minWidth.mobile}px]`,
+    !props.width && manifest.minWidth?.desktop && `@desktop:w-[${manifest.minWidth.desktop}px]`,
 
-    manifest.minHeight?.mobile ? `@mobile:min-h-[${manifest.minHeight.mobile}px]` : "@mobile:(min-h-fit)",
-    manifest.minHeight?.desktop ? `@desktop:min-h-[${manifest.minHeight.desktop}px]` : "@desktop:(min-h-fit)",
+    manifest.minHeight?.mobile && `@mobile:h-[${manifest.minHeight.mobile}px]`,
+    manifest.minHeight?.desktop && `@desktop:h-[${manifest.minHeight.desktop}px]`,
 
     manifest.maxHeight?.mobile && `@mobile:max-h-[${manifest.maxHeight.mobile}px]`,
     manifest.maxHeight?.desktop && `@desktop:max-h-[${manifest.maxHeight.desktop}px]`,

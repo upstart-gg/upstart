@@ -9,8 +9,8 @@ import { Type } from "@sinclair/typebox";
 
 export const manifest = defineBrickManifest({
   type: "video",
-  kind: "brick",
   name: "Video",
+  category: "media",
   description: "Youtube video",
   repeatable: true,
   icon: RxVideo,
