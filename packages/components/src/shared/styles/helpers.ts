@@ -1,14 +1,14 @@
-import { propToClass, propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
-import type {
-  BackgroundSettings,
-  BackgroundColorSettings,
-} from "@upstart.gg/sdk/shared/bricks/props/background";
-import type { OpacitySettings } from "@upstart.gg/sdk/shared/bricks/props/effects";
-import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
-import type { FixedPositionedSettings } from "@upstart.gg/sdk/shared/bricks/props/position";
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
-import type { GapBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/gap";
+import type {
+  BackgroundColorSettings,
+  BackgroundSettings,
+} from "@upstart.gg/sdk/shared/bricks/props/background";
+import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import type { ColorSettings } from "@upstart.gg/sdk/shared/bricks/props/color";
+import type { OpacitySettings } from "@upstart.gg/sdk/shared/bricks/props/effects";
+import type { GapBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/gap";
+import type { FixedPositionedSettings } from "@upstart.gg/sdk/shared/bricks/props/position";
+import { propToClass, propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
 import { css } from "@upstart.gg/style-system/twind";
 import type { TSchema } from "@sinclair/typebox";
 
@@ -89,7 +89,7 @@ function getBorderStyles(props?: Partial<BorderSettings>) {
   const {
     width = "border-0",
     sides = [],
-    color,
+    // color,
     // color = "border-transparent",
     style = "border-solid",
     rounding = "",
@@ -108,7 +108,7 @@ function getBorderStyles(props?: Partial<BorderSettings>) {
     borderProcessedClass = width;
   }
 
-  return [propToStyle(color, "borderColor"), style, borderProcessedClass, rounding];
+  return [style, borderProcessedClass, rounding];
 }
 
 export function getBasicAlignmentStyles(
@@ -160,6 +160,7 @@ export const brickStylesHelpersMap = {
   "styles:backgroundColor": getBackgroundColorStyles,
   "styles:background": getBackgroundStyles,
   "styles:shadow": simpleClassHandler,
+  "styles:rounding": simpleClassHandler,
 };
 
 export const brickWrapperStylesHelpersMap = {
