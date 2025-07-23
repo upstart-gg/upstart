@@ -22,65 +22,65 @@ export const manifest = defineBrickManifest({
     mobile: "100%",
   },
   props: defineProps({
-    // colorPreset: Type.Optional(
-    //   colorPresetRef({
-    //     title: "Color preset",
-    //     "ui:presets": {
-    //       "primary-light": {
-    //         previewBgClass: "bg-primary-light text-primary-content-light",
-    //         value: { container: "bg-primary-light text-primary-content-light" },
-    //         label: "Primary lighter",
-    //       },
-    //       primary: {
-    //         previewBgClass: "bg-primary text-primary-content",
-    //         label: "Primary",
-    //         value: { container: "bg-primary text-primary-content" },
-    //       },
-    //       "primary-dark": {
-    //         previewBgClass: "bg-primary-dark text-primary-content",
-    //         label: "Primary darker",
-    //         value: { container: "bg-primary-dark text-primary-content" },
-    //       },
-    //       "secondary-light": {
-    //         previewBgClass: "bg-secondary-light text-secondary-content-light",
-    //         label: "Secondary lighter",
-    //         value: { container: "bg-secondary-light text-secondary-content-light" },
-    //       },
-    //       secondary: {
-    //         previewBgClass: "bg-secondary text-secondary-content",
-    //         label: "Secondary",
-    //         value: { container: "bg-secondary text-secondary-content" },
-    //       },
-    //       "secondary-dark": {
-    //         previewBgClass: "bg-secondary-dark text-secondary-content",
-    //         label: "Secondary darker",
-    //         value: { container: "bg-secondary-dark text-secondary-content" },
-    //       },
-    //       neutral: {
-    //         previewBgClass: "bg-neutral text-neutral-content",
-    //         label: "Neutral",
-    //         value: { container: "bg-neutral text-neutral-content" },
-    //       },
-    //       base100: {
-    //         previewBgClass: "bg-base-100 text-base-content",
-    //         label: "Base 1",
-    //         value: { container: "bg-base-100 text-base-content" },
-    //       },
-    //       base200: {
-    //         previewBgClass: "bg-base-200 text-base-content",
-    //         label: "Base 2",
-    //         value: { container: "bg-base-200 text-base-content" },
-    //       },
-    //       base300: {
-    //         previewBgClass: "bg-base-300 text-base-content",
-    //         label: "Base 3",
-    //         value: { container: "bg-base-300 text-base-content" },
-    //       },
-    //       none: { label: "None", value: {} },
-    //     },
-    //     default: "primary",
-    //   }),
-    // ),
+    color: Type.Optional(
+      colorPresetRef({
+        title: "Color preset",
+        "ui:presets": {
+          "primary-light": {
+            previewBgClass: "bg-primary-light text-primary-content-light",
+            value: { container: "bg-primary-light text-primary-content-light" },
+            label: "Primary lighter",
+          },
+          primary: {
+            previewBgClass: "bg-primary text-primary-content",
+            label: "Primary",
+            value: { container: "bg-primary text-primary-content" },
+          },
+          "primary-dark": {
+            previewBgClass: "bg-primary-dark text-primary-content",
+            label: "Primary darker",
+            value: { container: "bg-primary-dark text-primary-content" },
+          },
+          "secondary-light": {
+            previewBgClass: "bg-secondary-light text-secondary-content-light",
+            label: "Secondary lighter",
+            value: { container: "bg-secondary-light text-secondary-content-light" },
+          },
+          secondary: {
+            previewBgClass: "bg-secondary text-secondary-content",
+            label: "Secondary",
+            value: { container: "bg-secondary text-secondary-content" },
+          },
+          "secondary-dark": {
+            previewBgClass: "bg-secondary-dark text-secondary-content",
+            label: "Secondary darker",
+            value: { container: "bg-secondary-dark text-secondary-content" },
+          },
+          neutral: {
+            previewBgClass: "bg-neutral text-neutral-content",
+            label: "Neutral",
+            value: { container: "bg-neutral text-neutral-content" },
+          },
+          base100: {
+            previewBgClass: "bg-base-100 text-base-content",
+            label: "Base 1",
+            value: { container: "bg-base-100 text-base-content" },
+          },
+          base200: {
+            previewBgClass: "bg-base-200 text-base-content",
+            label: "Base 2",
+            value: { container: "bg-base-200 text-base-content" },
+          },
+          base300: {
+            previewBgClass: "bg-base-300 text-base-content",
+            label: "Base 3",
+            value: { container: "bg-base-300 text-base-content" },
+          },
+          none: { label: "None", value: {} },
+        },
+        default: "primary",
+      }),
+    ),
 
     // backgroundColor:Type.Optional(backgroundColorRef()),
     padding: Type.Optional(paddingRef({ default: "p-10" })),

@@ -1,4 +1,4 @@
-import { type TObject, Type } from "@sinclair/typebox";
+import { type Static, type TObject, Type } from "@sinclair/typebox";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, group } from "../props/helpers";
 import { string, urlOrPageIdRef } from "../props/string";
@@ -50,9 +50,9 @@ export const manifest = defineBrickManifest({
   iconClassName: "rotate-180",
   props: defineProps(
     {
-      backgroundColor: Type.Optional(
+      color: Type.Optional(
         colorPresetRef({
-          title: "Background color",
+          title: "Color",
           "ui:presets": {
             "primary-light": {
               previewBgClass: "bg-primary-light text-primary-content-light",
@@ -193,8 +193,8 @@ export const manifest = defineBrickManifest({
             "ui:responsive": "desktop",
             "ui:styleId": "styles:gradientDirection",
             metadata: {
-              filter: (manifestProps: TObject, formData: Manifest["props"]) => {
-                return formData.backgroundColor?.includes("gradient") === true;
+              filter: (manifestProps: TObject, formData: Static<Manifest["props"]>) => {
+                return formData.color?.includes("gradient") === true;
               },
             },
           },
@@ -223,7 +223,7 @@ export const manifest = defineBrickManifest({
       hideBrand: Type.Optional(
         boolean("Hide brand name", undefined, {
           metadata: {
-            filter: (manifestProps: TObject, formData: Record<string, unknown>) => {
+            filter: (manifestProps: TObject, formData: Static<Manifest["props"]>) => {
               return !!formData.logo; // Enable this field only if logo is set
             },
           },

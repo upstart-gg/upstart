@@ -1,4 +1,4 @@
-import { type TObject, Type } from "@sinclair/typebox";
+import { type Static, type TObject, Type } from "@sinclair/typebox";
 import { HiOutlineChatBubbleBottomCenter } from "react-icons/hi2";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { backgroundRef } from "../props/background";
@@ -22,9 +22,9 @@ export const manifest = defineBrickManifest({
   icon: HiOutlineChatBubbleBottomCenter,
   props: defineProps(
     {
-      colorPreset: Type.Optional(
+      color: Type.Optional(
         colorPresetRef({
-          title: "Color preset",
+          title: "Color",
           "ui:presets": {
             "primary-light": {
               previewBgClass: "bg-primary-light text-primary-content-light",
@@ -194,7 +194,7 @@ export const manifest = defineBrickManifest({
 
             none: { label: "None", value: {} },
           },
-          default: "primary",
+          default: "base100",
         }),
       ),
       gradientDirection: Type.Optional(
@@ -226,8 +226,8 @@ export const manifest = defineBrickManifest({
             "ui:responsive": "desktop",
             "ui:styleId": "styles:gradientDirection",
             metadata: {
-              filter: (manifestProps: TObject, formData: Manifest["props"]) => {
-                return formData.colorPreset?.includes("gradient") === true;
+              filter: (manifestProps: TObject, formData: Static<Manifest["props"]>) => {
+                return formData.color?.includes("gradient") === true;
               },
             },
           },

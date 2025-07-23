@@ -1,19 +1,26 @@
 import { forwardRef } from "react";
 import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/hero.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { memoizeIgnoringPaths } from "../utils/memoize";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import TextContent from "../components/TextContent";
-import { tx, css } from "@upstart.gg/style-system/twind";
+import { tx } from "@upstart.gg/style-system/twind";
 import { isTextContentEmpty } from "../utils/text-content";
+import { useColorPreset } from "../hooks/use-color-preset";
 
 const Hero = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable, selected }, ref) => {
-  const styles = useBrickStyle<Manifest>(brick);
   const props = brick.props;
+  const styles = useBrickStyle<Manifest>(brick);
   const classes = Object.values(styles);
-
+  const presetClasses = useColorPreset<Manifest>(brick);
   return (
-    <div className={tx("flex-grow flex shrink-0 flex-col gap-[1.5rem] min-h-fit", ...classes)} ref={ref}>
+    <div
+      className={tx(
+        "flex-grow flex shrink-0 flex-col gap-[1.5rem] min-h-fit",
+        ...classes,
+        presetClasses.main,
+      )}
+      ref={ref}
+    >
       <TextContent
         as="h1"
         propPath="content"
