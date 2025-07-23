@@ -19,11 +19,10 @@ const Accordion = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick }
   const [openedItems, setOpenedItems] = useState(() => items.map((item) => !!item.defaultOpen));
 
   return (
-    <div className={tx("flex flex-1 ")}>
+    <div className={tx("flex flex-grow shrink-0 min-h-fit")}>
       <div
         className={tx(
-          "flex flex-1 flex-col overflow-hidden ",
-          // presetClasses.border,
+          "flex flex-grow shrink-0 min-h-fit flex-col overflow-hidden ",
           Object.values(otherStyles),
           props.gap,
         )}
@@ -50,21 +49,15 @@ const Accordion = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick }
                   }
                 }}
                 className={tx(
-                  "flex flex-1 items-center p-3 gap-1 justify-between w-full",
+                  "flex flex-grow shrink-0 items-center p-3 gap-1 justify-between w-full",
                   "font-semibold cursor-pointer select-none text-left text-[110%] ",
                   presetClasses.title,
                   gradientDirection,
-                  isOpen ? "rounded-b-none border-b" : "",
+                  isOpen && "rounded-b-none border-b",
                   presetClasses.border,
                 )}
               >
-                <div className={tx("flex flex-1 flex-row items-center gap-1")}>
-                  {/* {props.collapse === "collapse-plus" &&
-                    (isOpen ? (
-                      <MdRemove className={tx("flex-shrink-0 text-[1.2em]")} />
-                    ) : (
-                      <MdAdd className={tx("flex-shrink-0 text-[1.2em]")} />
-                    ))} */}
+                <div className={tx("flex flex-grow shrink-0 flex-row items-center gap-1")}>
                   <TextContent
                     propPath={`items.${index}.title`}
                     className={tx("w-full")}
@@ -74,15 +67,9 @@ const Accordion = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick }
                     inline
                   />
                 </div>
-
-                {/* {props.collapse === "collapse-arrow" && (
-                  <MdKeyboardArrowRight className={tx("transition-transform", isOpen && "rotate-90")} />
-                )} */}
                 <MdKeyboardArrowRight className={tx("transition-transform", isOpen && "rotate-90")} />
               </button>
-              <div
-                className={tx("transition-all duration-900 ease-in-out p-3 flex-1", isOpen ? "" : "hidden")}
-              >
+              <div className={tx("transition-all duration-900 ease-in-out p-3 flex-1", !isOpen && "hidden")}>
                 <TextContent
                   propPath={`items.${index}.content`}
                   className={tx("w-full")}

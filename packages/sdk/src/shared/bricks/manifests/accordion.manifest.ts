@@ -48,29 +48,7 @@ Multiple panels can be open simultaneously or limited to one at a time.
         description:
           "Restrict to one open item at a time. If false, multiple items can be open simultaneously.",
       }),
-      // collapse: Type.Optional(
-      //   Type.Union(
-      //     [
-      //     Type.Literal("collapse-none", { title: "None" }),
-      //       Type.Literal("collapse-plus", { title: "Plus" }),
-      //       Type.Literal("collapse-arrow", { title: "Arrow" }),
-      //     ],
-      //     {
-      //       title: "Collapse indicator",
-      //       description: "Collapse indicator style.",
-      //       default: "collapse-none",
-      //     },
-      //   ),
-      // ),
       gap: basicGapRef({ allowNoGap: false }),
-      // border: Type.Optional(
-      //   borderRef({
-      //     default: {
-      //       width: "border",
-      //       rounding: "rounded-md",
-      //     },
-      //   }),
-      // ),
       rounding: Type.Optional(
         StringEnum(
           [
