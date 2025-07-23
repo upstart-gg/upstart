@@ -306,36 +306,10 @@ Multiple panels can be open simultaneously or limited to one at a time.
               previewBgClass: "bg-base-100 text-base-content border-base-200 border-2",
               label: "Base 100",
               value: {
-                title: "bg-base-100 text-base-content border-base-200",
-                border: "border-base-200",
+                title: "bg-base-300 text-base-content border-base-300",
+                border: "border-base-300",
               },
             },
-            base100_primary: {
-              previewBgClass: "bg-base-100 text-base-content border-primary border-2",
-              label: "Base 100 / Primary",
-              value: {
-                title: "bg-base-100 text-base-content border-primary",
-                border: "border-primary",
-              },
-            },
-            base100_secondary: {
-              previewBgClass: "bg-base-100 text-base-content border-secondary border-2",
-              label: "Base 100 / Secondary",
-              value: {
-                title: "bg-base-100 text-base-content border-secondary",
-                border: "border-secondary",
-              },
-            },
-            base100_accent: {
-              previewBgClass: "bg-base-100 text-base-content border-accent border-2",
-              label: "Base 100 / Accent",
-              value: {
-                title: "bg-base-100 text-base-content border-accent",
-                border: "border-accent",
-              },
-            },
-
-            none: { label: "None", value: {} },
           },
           default: "primary",
         }),
