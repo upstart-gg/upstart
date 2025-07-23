@@ -2,20 +2,34 @@ import {
   DragDropContext,
   Draggable,
   Droppable,
-  type DropResult,
-  type DraggableStateSnapshot,
   type DraggableProvided,
+  type DraggableStateSnapshot,
+  type DropResult,
 } from "@hello-pangea/dnd";
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
+import { Button, IconButton, TextField } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useState } from "react";
-import { MdDelete, MdDragIndicator, MdExpandLess, MdExpandMore } from "react-icons/md";
+import { MdDragIndicator } from "react-icons/md";
+import { RxCross2 } from "react-icons/rx";
 import { TbPlus } from "react-icons/tb";
 import { FieldTitle, processObjectSchemaToFields } from "../field-factory";
 import type { FieldProps } from "./types";
-import { Button, IconButton, TextField } from "@upstart.gg/style-system/system";
-import { RxCross2 } from "react-icons/rx";
+
+// If the HTML contains any tags, this function will strip them out and return plain text.
+// This is useful for displaying text content without HTML formatting (ie for items title).
+function stripHtml(html: string) {
+  if (!html) return "";
+  if (typeof window !== "undefined") {
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    return div.textContent || div.innerText || "";
+  }
+  // SSR fallback
+  return html.replace(/<[^>]+>/g, "");
+}
+
 export interface ArrayFieldProps extends FieldProps<unknown[]> {
   itemSchema: TSchema;
   fieldName: string;
@@ -175,14 +189,14 @@ export function ArrayField({
     const typedItem = item as Record<string, unknown>;
 
     if (displayField && typedItem[displayField]) {
-      return String(typedItem[displayField]);
+      return stripHtml(String(typedItem[displayField]));
     }
 
     // Fallback: try common field names
     const fallbackFields = ["name", "title", "label", "text", "author"];
     for (const field of fallbackFields) {
       if (typedItem[field]) {
-        return String(typedItem[field]);
+        return stripHtml(String(typedItem[field]));
       }
     }
 
@@ -227,7 +241,9 @@ export function ArrayField({
                 </div>
               )}
 
-              <span className="text-xs font-medium text-gray-700 truncate">{displayText}</span>
+              <span className="text-xs font-medium text-gray-700 truncate whitespace-nowrap">
+                {displayText}
+              </span>
             </div>
 
             {/* Action buttons */}
@@ -319,7 +335,7 @@ export function ArrayField({
   };
 
   return (
-    <div className="space-y-3 flex-1">
+    <div className="space-y-3 flex-1 min-w-0">
       {/* Header with title and add button */}
       <div className="flex w-full items-center justify-between">
         <FieldTitle title={title} description={description} />

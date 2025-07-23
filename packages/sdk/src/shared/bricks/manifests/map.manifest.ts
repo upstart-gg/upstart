@@ -86,7 +86,7 @@ export const examples: {
         tooltip: "New York, NY",
       },
       border: {
-        color: "border-gray-300",
+        // color: "border-gray-300",
         width: "border",
         rounding: "rounded-lg",
       },
