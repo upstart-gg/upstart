@@ -14,7 +14,6 @@ import { StringEnum } from "~/shared/utils/string-enum";
 
 export const manifest = defineBrickManifest({
   type: "timeline",
-  kind: "widget",
   name: "Timeline",
   description: "A timeline element for showing chronological events",
   aiInstructions: `

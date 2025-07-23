@@ -17,6 +17,7 @@ import {
   useDraftHelpers,
   useDraggingBrickType,
   useEditorHelpers,
+  useIsMouseOverPanel,
   usePanel,
   usePreviewMode,
   useSectionByBrickId,
@@ -125,6 +126,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const [isMenuBarVisible, setMenuBarVisible] = useState(false);
     const allowedPlacements = useBarPlacements(brick);
     const draggingBrickType = useDraggingBrickType();
+    const isMouseOverPanel = useIsMouseOverPanel();
 
     // brick = brickWithDefaults(brick);
     const {
@@ -247,13 +249,11 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       isContainerChild,
     });
 
+    const isDragDisabled =
+      isMouseOverPanel || !manifest.movable || isContainerChild || previewMode === "mobile";
+
     return (
-      <Draggable
-        key={brick.id}
-        draggableId={brick.id}
-        index={index}
-        isDragDisabled={!manifest.movable || isContainerChild || previewMode === "mobile"}
-      >
+      <Draggable key={brick.id} draggableId={brick.id} index={index} isDragDisabled={isDragDisabled}>
         {(provided, snapshot) => {
           // Merge all refs properly to avoid render loops
           const mergedRef = useMergeRefs([provided.innerRef, barsRefs.setReference, ref, hoverRef]);
@@ -270,7 +270,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 data-brick
                 data-brick-id={brick.id}
                 data-brick-type={brick.type}
-                data-element-kind={manifest.kind}
                 data-last-touched={brick.props.lastTouched ?? "0"}
                 data-container-child={isContainerChild}
                 data-draggable-for-brick-id={brick.id}
@@ -441,9 +440,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
             from handling click event coming from the menu items.
             We still need to stop the propagation for other listeners. */}
           <ContextMenu.Content className="nodrag" size="2">
-            <ContextMenu.Label className="!text-sm">
-              {manifest.name} ({manifest.kind})
-            </ContextMenu.Label>
+            <ContextMenu.Label className="!text-sm">{manifest.name} (brick)</ContextMenu.Label>
             {manifest.duplicatable && (
               <ContextMenu.Item
                 shortcut="⌘D"

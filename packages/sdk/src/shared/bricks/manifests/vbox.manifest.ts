@@ -14,7 +14,7 @@ import { RxViewHorizontal } from "react-icons/rx";
 // Generic container can hold any type of array data source
 export const manifest = defineBrickManifest({
   type: "vbox",
-  kind: "brick",
+  category: "container",
   name: "Vertical box",
   description: "A vertical container for stacking bricks",
   isContainer: true,

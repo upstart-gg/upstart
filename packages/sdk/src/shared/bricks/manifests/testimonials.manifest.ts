@@ -16,7 +16,6 @@ import { cssLengthRef } from "../props/css-length";
 export const manifest = defineBrickManifest({
   type: "testimonials",
   name: "Testimonials",
-  kind: "widget",
   description: "Display testimonials from users",
   defaultWidth: { desktop: "100%" },
   repeatable: false,

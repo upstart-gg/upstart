@@ -14,7 +14,7 @@ import { shadowRef } from "../props/effects";
 
 export const manifest = defineBrickManifest({
   type: "text",
-  kind: "brick",
+  category: "basic",
   name: "Text",
   description: "Text with formatting options",
   aiInstructions: `Text "content" can contain minimal HTML tags like <strong>, <em>, <br> and <a> as well as <p> and <span> and lists.

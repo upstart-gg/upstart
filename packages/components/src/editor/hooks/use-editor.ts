@@ -107,6 +107,8 @@ export interface EditorStateProps {
   contextMenuVisible: boolean;
   draggingBrickType?: Brick["type"];
 
+  isMouseOverPanel?: boolean;
+
   onShowPopup?: (id: string | false) => void;
   onPublish: (data: PagePublishPayload) => void;
   /**
@@ -147,6 +149,7 @@ export interface EditorState extends EditorStateProps {
   zoomOut: () => void;
   resetZoom: () => void;
   setDraggingBrickType: (type: Brick["type"] | null) => void;
+  setMouseOverPanel: (over: boolean) => void;
 }
 
 export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
@@ -212,6 +215,10 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
           immer((set, _get) => ({
             ...DEFAULT_PROPS,
             ...initProps,
+            setMouseOverPanel: (over) =>
+              set((state) => {
+                state.isMouseOverPanel = over;
+              }),
             setContextMenuVisible: (open) =>
               set((state) => {
                 state.contextMenuVisible = open;
@@ -1648,9 +1655,15 @@ export const useContextMenuVisible = () => {
   return useStore(ctx, (state) => state.contextMenuVisible);
 };
 
+export const useIsMouseOverPanel = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.isMouseOverPanel);
+};
+
 export const useEditorHelpers = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => ({
+    setMouseOverPanel: state.setMouseOverPanel,
     toggleDebugMode: state.toggleDebugMode,
     setContextMenuVisible: state.setContextMenuVisible,
     setDraggingBrickType: state.setDraggingBrickType,

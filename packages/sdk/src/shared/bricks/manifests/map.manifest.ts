@@ -17,7 +17,6 @@ export const DEFAULTS = {
 
 export const manifest = defineBrickManifest({
   type: "map",
-  kind: "widget",
   name: "Map",
   description: "A map element showing a location",
   aiInstructions:

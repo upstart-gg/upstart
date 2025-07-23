@@ -2,11 +2,11 @@ import type { TObject, TProperties, TArray } from "@sinclair/typebox";
 import type { IconBase } from "react-icons/lib";
 import { getSchemaObjectDefaults } from "./utils/schema";
 
-type BrickKind = "brick" | "widget" | "container";
+export type BrickCategory = "layout" | "basic" | "media" | "widgets" | "container";
 
 type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | TArray<TObject>> = {
   type: string;
-  kind?: BrickKind;
+  category?: BrickCategory;
   name: string;
   icon: typeof IconBase;
   iconClassName?: string;
@@ -62,7 +62,7 @@ export function defineBrickManifest<BProps extends TProperties, DSSchema extends
   props,
   defaultHeight,
   defaultWidth,
-  kind = "brick",
+  category = "widgets",
   isContainer = false,
   hideInLibrary = false,
   deletable = true,
@@ -78,7 +78,7 @@ export function defineBrickManifest<BProps extends TProperties, DSSchema extends
     ...rest,
     icon,
     props,
-    kind,
+    category,
     defaultInspectorTab,
     hideInLibrary,
     deletable,

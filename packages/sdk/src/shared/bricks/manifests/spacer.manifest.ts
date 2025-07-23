@@ -8,7 +8,7 @@ import { Type } from "@sinclair/typebox";
 export const manifest = defineBrickManifest({
   type: "spacer",
   name: "Spacer",
-  kind: "brick",
+  category: "container",
   description: "A flexible element to create space between bricks.",
   repeatable: true,
   staticClasses: "self-stretch",

@@ -13,8 +13,8 @@ import { basicAlignRef } from "../props/align";
 
 export const manifest = defineBrickManifest({
   type: "hero",
+  category: "basic",
   name: "Hero",
-  kind: "brick",
   description: "A big textual element for home pages",
   aiInstructions: `
 This hero element is a large text element that can be used to display a title and an optional tagline.

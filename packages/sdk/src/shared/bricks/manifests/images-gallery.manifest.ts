@@ -34,8 +34,8 @@ export type Datasource = typeof datasource;
 
 export const manifest = defineBrickManifest({
   type: "images-gallery",
-  kind: "widget",
   name: "Gallery",
+  category: "media",
   description: "An image collection",
   aiInstructions: "This brick should mostly be used for image galleries and collections.",
   defaultInspectorTab: "content",

@@ -13,7 +13,6 @@ import { fontSizeRef } from "../props/text";
 
 export const manifest = defineBrickManifest({
   type: "form",
-  kind: "widget",
   name: "Form",
   description: "A form element",
   aiInstructions: `The form brick automatically renders form fields based on the datarecord id provided in the props.

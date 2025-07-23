@@ -17,7 +17,6 @@ import { StringEnum } from "~/shared/utils/string-enum";
 
 export const manifest = defineBrickManifest({
   type: "accordion",
-  kind: "widget",
   name: "Accordion",
   description: "An accordion/collapse element for expandable content",
   aiInstructions: `

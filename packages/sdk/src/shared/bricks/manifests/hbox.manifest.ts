@@ -14,7 +14,7 @@ import { StringEnum } from "~/shared/utils/string-enum";
 // Generic container can hold any type of array data source
 export const manifest = defineBrickManifest({
   type: "hbox",
-  kind: "brick",
+  category: "container",
   name: "Horizontal Box",
   description: "A horizontal container for stacking bricks",
   isContainer: true,
