@@ -21,6 +21,7 @@ import {
   UrlField,
   type BaseFieldProps,
 } from "./form/Fields";
+import { useColorPreset } from "../hooks/use-color-preset";
 
 // Helper function to detect datarecord field types
 function getDatarecordFieldType(schema: TSchema): string | null {
@@ -191,8 +192,20 @@ function processDatarecordSchemaToFields(
 
 const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
   const { brick } = props;
+  const presetClasses = useColorPreset<Manifest>(brick);
   const styles = useBrickStyle<Manifest>(brick);
-  const { title, buttonLabel, intro, datarecordId, align = "vertical", editable = true } = brick.props;
+  const [submitState, setSubmitState] = useState<"idle" | "submitting" | "error" | "success">("idle");
+  const { button, buttonPosition, ...rest } = styles;
+  const {
+    title,
+    buttonLabel,
+    successMessage,
+    errorMessage,
+    intro,
+    datarecordId,
+    align = "vertical",
+    editable = true,
+  } = brick.props;
 
   const buttonProps = brick.props.button || {};
   const buttonColor = buttonProps.color as string | undefined;
@@ -208,7 +221,6 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editable) {
-      console.warn("Form is editable, submission is disabled");
       toast(`This form is not clickable in edit mode but will lead to form submission when published.`, {
         id: `form-no-click-toast`,
         style: {
@@ -219,54 +231,65 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
     }
 
     // Create FormData from the form
-    const data = new FormData(e.target as HTMLFormElement);
-    const postUrl = !editable ? new URL(window.location.href) : "http://localhost:8081/submit";
-    fetch(postUrl, {
+    setSubmitState("submitting");
+
+    fetch(new URL(window.location.href), {
       method: "POST",
-      body: data,
+      body: new FormData(e.target as HTMLFormElement),
       headers: {
         "X-DataRecord-Id": datarecordId,
       },
     })
       .then((response) => {
         if (response.ok) {
-          console.log("Form submitted successfully");
+          setSubmitState("success");
         } else {
-          console.error("Form submission failed");
+          setSubmitState("error");
         }
       })
       .catch((error) => {
-        console.error("Form submission error:", error);
+        setSubmitState("error");
       });
   };
 
-  if (error) {
+  if (error && editable) {
     return (
       <div ref={ref} className="p-4 border border-red-200 bg-red-50 text-red-600 rounded">
         Error loading datarecord: {error.message}
       </div>
     );
+  } else if (error) {
+    return null; // If not editable, we don't show the error in the form
   }
 
   if (!datarecord || !schema) {
     return (
-      <div ref={ref} className="p-4 border border-gray-200 bg-gray-50 text-gray-600 rounded">
-        {datarecordId ? "Loading datarecord..." : "Please select a datarecord to display the form"}
+      <div
+        ref={ref}
+        className={tx(
+          "flex-grow min-h-fit text-center shrink-0 p-4 flex items-center justify-center",
+          Object.values(rest),
+          presetClasses.main,
+        )}
+      >
+        {datarecordId ? (
+          "Loading database..."
+        ) : (
+          <span>
+            Select a database
+            <br /> you want to connect this form with.
+          </span>
+        )}
       </div>
     );
-  }
-
-  if (!schema || schema.type !== "object" || !schema.properties) {
-    console.error("Invalid datarecord schema format", schema);
-    return <div className="text-red-500 text-sm">Invalid datarecord schema format</div>;
   }
 
   // Convertir le schema en format TypeBox
   const typeboxSchema = schema as unknown as TObject<TProperties>;
   const fields = processDatarecordSchemaToFields(typeboxSchema, formData, handleFieldChange);
-  const { button, buttonPosition, ...rest } = styles;
+
   return (
-    <div ref={ref} className={tx("max-w-full flex-1", Object.values(rest))}>
+    <div ref={ref} className={tx("flex-grow shrink-0 min-h-fit", Object.values(rest), presetClasses.main)}>
       {title && <h2 className="form-title text-[110%] font-semibold mb-4">{title}</h2>}
       {intro && <p className="form-intro  mb-6">{intro}</p>}
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -274,9 +297,12 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
         <div className={tx("flex", align === "horizontal" ? "flex-row flex-wrap gap-4" : "flex-col gap-2")}>
           {fields}
         </div>
+        {submitState === "error" && <div>{errorMessage}</div>}
+        {submitState === "success" && <div>{successMessage}</div>}
         <div className={tx("flex pt-1", Object.values(buttonPosition))}>
           <button
             type="submit"
+            disabled={submitState === "submitting"}
             className={tx(
               "btn",
               buttonColor,

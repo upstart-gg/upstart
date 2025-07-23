@@ -11,7 +11,6 @@ export const DatarecordField: FC<FieldProps<DatarecordSettings | undefined>> = (
   const { currentValue, onChange, required, title, description, placeholder, schema } = props;
   const editorHelpers = useEditorHelpers();
   const { options } = useDatarecords();
-  const { datarecord, schema: datarecordSchema } = useDatarecord(currentValue);
 
   const onSettingsChange = (newVal: string) => {
     // console.log("DatarecordField onSettingsChange", newVal);
