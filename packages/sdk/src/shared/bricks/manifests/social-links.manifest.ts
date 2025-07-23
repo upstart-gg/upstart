@@ -10,7 +10,6 @@ import { paddingRef } from "../props/padding";
 
 export const manifest = defineBrickManifest({
   type: "social-links",
-  kind: "widget",
   name: "Social links",
   description: "A list of social media links",
   icon: TiSocialFlickr,
@@ -51,6 +50,9 @@ export const manifest = defineBrickManifest({
           orderable: true, // Enable drag & drop reordering
           removable: true, // Enable delete button
           addable: true, // Enable add button
+        },
+        metadata: {
+          category: "content",
         },
       },
     ),

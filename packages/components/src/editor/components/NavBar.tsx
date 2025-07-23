@@ -407,7 +407,8 @@ export default function NavBar() {
           items={[
             { label: "Publish this page", onClick: () => publish() },
             { label: "Publish all pages", onClick: () => publish(true) },
-            { label: "Schedule publish", onClick: () => editorHelpers.onShowPopup?.("schedule-publish") },
+            { type: "separator" as const },
+            { label: "Schedule publication", onClick: () => editorHelpers.onShowPopup?.("schedule-publish") },
           ]}
         >
           <button type="button" className={tx(btnClass, rocketBtn, btnWithArrow)}>

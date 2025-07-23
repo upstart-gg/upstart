@@ -4,4 +4,4 @@
 "@upstart.gg/sdk": patch
 ---
 
-Use latest leaflet version
+More fixes on various bricks

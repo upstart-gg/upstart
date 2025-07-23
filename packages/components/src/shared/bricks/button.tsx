@@ -13,12 +13,12 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, edi
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (editable) {
-      toast(`This button is not clickable in edit mode`, {
-        id: `button-no-click-toast`,
-        style: {
-          minWidth: "max-content",
-        },
-      });
+      // toast(`This button is not clickable in edit mode`, {
+      //   id: `button-no-click-toast`,
+      //   style: {
+      //     minWidth: "max-content",
+      //   },
+      // });
       return;
     }
     if (props.linkToUrlOrPageId) {
@@ -31,22 +31,22 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, edi
     }
   };
 
-  // Check if icon should be displayed on left or right
-  const iconElement = props.icon ? <InlineIcon icon={props.icon} className="w-5 h-5" /> : null;
-
   return (
-    <div className={tx("flex flex-1")}>
-      <button
-        type="button"
-        className={tx(classes, "flex-1 w-full")}
-        data-prevented-by-editor={editable ? "true" : "false"}
-        ref={ref}
-        onClick={handleClick}
-      >
-        {iconElement}
-        {props.label}
-      </button>
-    </div>
+    <button
+      type="button"
+      className={tx(
+        classes,
+        props.color,
+        props.size,
+        "btn h-full w-full font-medium",
+        editable && "pointer-events-none",
+      )}
+      data-prevented-by-editor={editable ? "true" : "false"}
+      ref={ref}
+      onClick={handleClick}
+    >
+      {props.label}
+    </button>
   );
 });
 

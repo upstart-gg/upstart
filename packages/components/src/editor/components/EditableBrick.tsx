@@ -1,5 +1,4 @@
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
-
 import {
   forwardRef,
   type PropsWithChildren,
@@ -18,6 +17,7 @@ import {
   useDraftHelpers,
   useDraggingBrickType,
   useEditorHelpers,
+  useIsMouseOverPanel,
   usePanel,
   usePreviewMode,
   useSectionByBrickId,
@@ -30,7 +30,6 @@ import {
   useMergeRefs,
   autoPlacement,
   offset,
-  toast,
   useHover,
   useInteractions,
   safePolygon,
@@ -50,7 +49,6 @@ import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests
 import { commonProps } from "@upstart.gg/sdk/shared/bricks/props/common";
 import { getBrickResizeOptions } from "~/shared/utils/layout-utils";
 import useIsHovered from "../hooks/use-is-hovered";
-import { useDeviceInfo } from "../hooks/use-device-info";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -69,11 +67,6 @@ function getDropAnimationStyle(
 
   const { draggingOver } = snapshot;
   const { moveTo } = snapshot.dropAnimation;
-
-  console.log("getDropAnimationStyle", {
-    snapshot,
-    style,
-  });
 
   if (draggingOver === currentSection) {
     const translate = `translate(${moveTo.x}px, 0px)`;
@@ -133,6 +126,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const [isMenuBarVisible, setMenuBarVisible] = useState(false);
     const allowedPlacements = useBarPlacements(brick);
     const draggingBrickType = useDraggingBrickType();
+    const isMouseOverPanel = useIsMouseOverPanel();
 
     // brick = brickWithDefaults(brick);
     const {
@@ -255,13 +249,11 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       isContainerChild,
     });
 
+    const isDragDisabled =
+      isMouseOverPanel || !manifest.movable || isContainerChild || previewMode === "mobile";
+
     return (
-      <Draggable
-        key={brick.id}
-        draggableId={brick.id}
-        index={index}
-        isDragDisabled={!manifest.movable || isContainerChild || previewMode === "mobile"}
-      >
+      <Draggable key={brick.id} draggableId={brick.id} index={index} isDragDisabled={isDragDisabled}>
         {(provided, snapshot) => {
           // Merge all refs properly to avoid render loops
           const mergedRef = useMergeRefs([provided.innerRef, barsRefs.setReference, ref, hoverRef]);
@@ -278,7 +270,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 data-brick
                 data-brick-id={brick.id}
                 data-brick-type={brick.type}
-                data-element-kind={manifest.kind}
                 data-last-touched={brick.props.lastTouched ?? "0"}
                 data-container-child={isContainerChild}
                 data-draggable-for-brick-id={brick.id}
@@ -449,9 +440,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
             from handling click event coming from the menu items.
             We still need to stop the propagation for other listeners. */}
           <ContextMenu.Content className="nodrag" size="2">
-            <ContextMenu.Label className="!text-sm">
-              {manifest.name} ({manifest.kind})
-            </ContextMenu.Label>
+            <ContextMenu.Label className="!text-sm">{manifest.name} (brick)</ContextMenu.Label>
             {manifest.duplicatable && (
               <ContextMenu.Item
                 shortcut="⌘D"
@@ -527,25 +516,41 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                 </ContextMenu.CheckboxItem>
               </ContextMenu.SubContent>
             </ContextMenu.Sub>
-
+            {!isContainerChild && (
+              <ContextMenu.CheckboxItem
+                checked={brick.props.growHorizontally}
+                onCheckedChange={(newVal) => {
+                  // e.stopPropagation();
+                  draftHelpers.updateBrickProps(brick.id, {
+                    growHorizontally: newVal,
+                  });
+                }}
+              >
+                Grow horizontally
+              </ContextMenu.CheckboxItem>
+            )}
             {!isContainerChild && (
               <ContextMenu.Sub>
                 <ContextMenu.SubTrigger>Vertical Position</ContextMenu.SubTrigger>
                 <ContextMenu.SubContent>
-                  {Object.entries(normalizeSchemaEnum(commonProps.alignSelf)).map(([key, value]) => (
-                    <ContextMenu.CheckboxItem
-                      key={key}
-                      checked={brick.props.alignSelf === value.const}
-                      onClick={(e) => e.stopPropagation()}
-                      onCheckedChange={() =>
-                        draftHelpers.updateBrickProps(brick.id, {
-                          alignSelf: value.const,
-                        })
-                      }
-                    >
-                      {value.title}
-                    </ContextMenu.CheckboxItem>
-                  ))}
+                  <ContextMenu.RadioGroup
+                    value={brick.props.alignSelf}
+                    onValueChange={(value) => {
+                      draftHelpers.updateBrickProps(brick.id, {
+                        alignSelf: value,
+                      });
+                    }}
+                  >
+                    {Object.entries(normalizeSchemaEnum(commonProps.alignSelf)).map(([key, value]) => (
+                      <ContextMenu.RadioItem
+                        key={key}
+                        value={value.const}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {value.title}
+                      </ContextMenu.RadioItem>
+                    ))}
+                  </ContextMenu.RadioGroup>
                 </ContextMenu.SubContent>
               </ContextMenu.Sub>
             )}

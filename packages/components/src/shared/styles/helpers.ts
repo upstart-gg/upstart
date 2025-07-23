@@ -10,6 +10,7 @@ import type { GapBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/gap";
 import type { FixedPositionedSettings } from "@upstart.gg/sdk/shared/bricks/props/position";
 import { propToClass, propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
 import { css } from "@upstart.gg/style-system/twind";
+import type { TSchema } from "@sinclair/typebox";
 
 export function getBackgroundStyles(props?: BackgroundSettings) {
   if (!props) {
@@ -110,8 +111,21 @@ function getBorderStyles(props?: Partial<BorderSettings>) {
   return [style, borderProcessedClass, rounding];
 }
 
-export function getBasicAlignmentStyles(props?: AlignBasicSettings, mobileProps?: AlignBasicSettings) {
-  return [props?.vertical, props?.horizontal];
+export function getBasicAlignmentStyles(
+  props: AlignBasicSettings,
+  mobileProps: AlignBasicSettings,
+  schema: TSchema,
+) {
+  if (schema["ui:flex-mode"] === "column") {
+    return [
+      props.vertical ? `justify-${props.vertical}` : null,
+      props.horizontal ? `items-${props.horizontal}` : null,
+    ];
+  }
+  return [
+    props.horizontal ? `justify-${props.horizontal}` : null,
+    props.vertical ? `items-${props.vertical}` : null,
+  ];
 }
 
 export function getBasicGapStyles(props?: GapBasicSettings, mobileProps?: GapBasicSettings) {
@@ -136,25 +150,19 @@ export const brickStylesHelpersMap = {
   "styles:objectPosition": simpleClassHandler,
   "styles:heroSize": simpleClassHandler,
   "styles:fontSize": simpleClassHandler,
-
-  // new test
-  // "styles:backgroundColor": getBackgroundColorStyles,
-  // "styles:background": getBackgroundStyles,
-  // "styles:border": getBorderStyles,
   "styles:padding": simpleClassHandler, // test
   "styles:gap": getGapStyles,
   "styles:border": getBorderStyles,
   "styles:gradientDirection": simpleClassHandler,
   "styles:backgroundColor": getBackgroundColorStyles,
   "styles:background": getBackgroundStyles,
+  "styles:shadow": simpleClassHandler,
   "styles:rounding": simpleClassHandler,
 };
 
 export const brickWrapperStylesHelpersMap = {
-  // "styles:padding": simpleClassHandler, // test
   "styles:alignItems": simpleClassHandler,
-  "styles:shadow": simpleClassHandler,
-  // "styles:rounding": simpleClassHandler,
+  "styles:justifyContent": simpleClassHandler,
   "styles:fixedPositioned": getFixedPositionedStyles,
   "styles:alignSelf": simpleClassHandler,
   "styles:growHorizontally": getGrowHorizontallyStyles,

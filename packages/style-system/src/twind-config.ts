@@ -36,17 +36,7 @@ export default defineConfig({
         borderRadius: "inherit",
       },
     ],
-    [
-      "btn",
-      {
-        padding: "0.5rem 1rem",
-        borderRadius: "inherit",
-        borderWidth: "1px",
-        borderStyle: "solid",
-        borderColor: "inherit",
-        height: "3rem",
-      },
-    ],
+    ["btn", "py-2 px-4"],
     [
       "btn-color-",
       ({ $$ }) => ({

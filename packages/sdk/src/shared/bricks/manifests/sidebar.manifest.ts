@@ -2,7 +2,6 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, group } from "../props/helpers";
 import { VscLayoutSidebarLeftOff } from "react-icons/vsc";
 import { Type } from "@sinclair/typebox";
-import { datasourceRef } from "../props/datasource";
 import { string, urlOrPageIdRef } from "../props/string";
 import { backgroundColorRef } from "../props/background";
 import { borderRef } from "../props/border";
@@ -12,7 +11,7 @@ import { shadowRef } from "../props/effects";
 
 export const manifest = defineBrickManifest({
   type: "sidebar",
-  kind: "widget",
+  category: "layout",
   name: "Sidebar",
   description: "A sidebard element",
   inlineDragDisabled: true,
@@ -40,7 +39,6 @@ export const manifest = defineBrickManifest({
       group({
         title: "Links",
         children: {
-          datasource: Type.Optional(datasourceRef()),
           navItems: Type.Optional(
             Type.Array(
               Type.Object({

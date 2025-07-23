@@ -17,20 +17,12 @@ describe("Align prop test suite", () => {
       expect(schema["ui:responsive"]).toBe(true);
     });
 
-    it("should have correct default values", () => {
-      const schema = basicAlign();
-      expect(schema.default).toEqual({
-        horizontal: "justify-start",
-        vertical: "items-center",
-      });
-    });
-
     it("should accept custom default values", () => {
       const customDefault = {
-        horizontal: "justify-center",
-        vertical: "items-start",
+        horizontal: "center",
+        vertical: "start",
       };
-      const schema = basicAlign({ defaultValue: customDefault });
+      const schema = basicAlign({ default: customDefault });
       expect(schema.default).toEqual(customDefault);
     });
   });

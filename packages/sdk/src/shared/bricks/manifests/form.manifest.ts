@@ -13,7 +13,6 @@ import { fontSizeRef } from "../props/text";
 
 export const manifest = defineBrickManifest({
   type: "form",
-  kind: "widget",
   name: "Form",
   description: "A form element",
   aiInstructions: `The form brick automatically renders form fields based on the datarecord id provided in the props.
@@ -45,14 +44,10 @@ There is no need to define the form fields manually and the form does not accept
       }),
     ),
     fontSize: Type.Optional(fontSizeRef({ default: "inherit", "ui:no-extra-large-sizes": true })),
+
     button: group({
       title: "Button",
       children: {
-        label: Type.Optional(
-          string("Button Label", {
-            default: "Submit",
-          }),
-        ),
         color: Type.Union(
           [
             Type.Literal("btn-color-neutral", { title: "Neutral", "ui:variant-type": "color" }),
@@ -83,20 +78,49 @@ There is no need to define the form fields manually and the form does not accept
       },
     }),
 
-    title: Type.Optional(string("Title", { description: "The title of the form", default: "My form" })),
+    title: Type.Optional(
+      Type.String({
+        title: "Form title",
+        default: "My form",
+        metadata: {
+          category: "content",
+        },
+      }),
+    ),
     intro: Type.Optional(
-      string("Intro", { description: "The intro text of the form", "ui:multiline": true }),
+      Type.String({
+        title: "Intro",
+        description: "The intro text of the form",
+        "ui:multiline": true,
+        metadata: {
+          category: "content",
+        },
+      }),
+    ),
+    buttonLabel: Type.Optional(
+      string("Button Label", {
+        default: "Submit",
+        metadata: { category: "content" },
+      }),
     ),
     successMessage: Type.Optional(
-      string("Success Message", {
+      Type.String({
+        title: "Success Message",
         description: "The message to display when the form is successfully submitted",
         default: "Thank you for your submission!",
+        metadata: {
+          category: "content",
+        },
       }),
     ),
     errorMessage: Type.Optional(
-      string("Error Message", {
+      Type.String({
+        title: "Error Message",
         description: "The message to display when the form submission fails",
         default: "There was an error submitting the form. Please try again later.",
+        metadata: {
+          category: "content",
+        },
       }),
     ),
   }),
@@ -117,10 +141,10 @@ export const examples: {
       align: "vertical",
       datarecordId: "contacts",
       buttonPosition: {
-        horizontal: "justify-end",
+        horizontal: "end",
       },
+      buttonLabel: "Send Message",
       button: {
-        label: "Send Message",
         color: "btn-color-primary",
         size: "block",
       },
@@ -135,10 +159,10 @@ export const examples: {
       align: "vertical",
       datarecordId: "user-registration",
       buttonPosition: {
-        horizontal: "justify-end",
+        horizontal: "end",
       },
+      buttonLabel: "Register",
       button: {
-        label: "Register",
         color: "btn-color-secondary",
         size: "wide",
       },
@@ -153,10 +177,10 @@ export const examples: {
       align: "horizontal",
       datarecordId: "newsletter-subscription",
       buttonPosition: {
-        horizontal: "justify-center",
+        horizontal: "center",
       },
+      buttonLabel: "Subscribe",
       button: {
-        label: "Subscribe",
         color: "btn-color-accent",
         size: "block",
       },
@@ -171,10 +195,10 @@ export const examples: {
       align: "vertical",
       datarecordId: "event-registration",
       buttonPosition: {
-        horizontal: "justify-end",
+        horizontal: "end",
       },
+      buttonLabel: "Register Now",
       button: {
-        label: "Register Now",
         color: "btn-color-primary",
         size: "block",
       },
@@ -189,10 +213,10 @@ export const examples: {
       align: "vertical",
       datarecordId: "job-application",
       buttonPosition: {
-        horizontal: "justify-start",
+        horizontal: "start",
       },
+      buttonLabel: "Submit Application",
       button: {
-        label: "Submit Application",
         color: "btn-color-secondary",
         size: "block",
       },
@@ -207,10 +231,10 @@ export const examples: {
       align: "vertical",
       datarecordId: "customer-feedback",
       buttonPosition: {
-        horizontal: "justify-end",
+        horizontal: "end",
       },
+      buttonLabel: "Submit Feedback",
       button: {
-        label: "Submit Feedback",
         color: "btn-color-accent",
         size: "wide",
       },

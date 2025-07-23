@@ -192,10 +192,9 @@ function processDatarecordSchemaToFields(
 const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
   const { brick } = props;
   const styles = useBrickStyle<Manifest>(brick);
-  const { title, intro, datarecordId, align = "vertical", editable = true } = brick.props;
+  const { title, buttonLabel, intro, datarecordId, align = "vertical", editable = true } = brick.props;
 
   const buttonProps = brick.props.button || {};
-  const buttonLabel = buttonProps.label as string | undefined;
   const buttonColor = buttonProps.color as string | undefined;
 
   const { datarecord, schema, error } = useDatarecord(datarecordId);
@@ -211,6 +210,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
     if (editable) {
       console.warn("Form is editable, submission is disabled");
       toast(`This form is not clickable in edit mode but will lead to form submission when published.`, {
+        id: `form-no-click-toast`,
         style: {
           minWidth: "max-content",
         },

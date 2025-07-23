@@ -8,7 +8,7 @@ import { Type } from "@sinclair/typebox";
 export const manifest = defineBrickManifest({
   type: "icon",
   name: "Icon",
-  kind: "brick",
+  category: "basic",
   description: "An icon with optional text",
   repeatable: true,
   icon: PiConfetti,

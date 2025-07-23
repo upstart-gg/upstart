@@ -13,14 +13,7 @@ const Hero = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
   const classes = Object.values(styles);
 
   return (
-    <div
-      className={tx(
-        "flex-grow flex shrink-0 flex-col gap-[1.5rem] min-h-fit",
-        ...classes,
-        // props.layout === "sided" ? "flex-row gap-[10%]" : "flex-col gap-[10%] items-center justify-center",
-      )}
-      ref={ref}
-    >
+    <div className={tx("flex-grow flex shrink-0 flex-col gap-[1.5rem] min-h-fit", ...classes)} ref={ref}>
       <TextContent
         as="h1"
         propPath="content"

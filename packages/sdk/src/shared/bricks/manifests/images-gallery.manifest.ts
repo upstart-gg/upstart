@@ -3,7 +3,6 @@ import { IoGridOutline } from "react-icons/io5";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { datasourceRef } from "../props/datasource";
 import { basicGapRef } from "../props/gap";
 import { defineProps } from "../props/helpers";
 import { imageRef } from "../props/image";
@@ -35,8 +34,8 @@ export type Datasource = typeof datasource;
 
 export const manifest = defineBrickManifest({
   type: "images-gallery",
-  kind: "widget",
   name: "Gallery",
+  category: "media",
   description: "An image collection",
   aiInstructions: "This brick should mostly be used for image galleries and collections.",
   defaultInspectorTab: "content",
@@ -50,22 +49,7 @@ export const manifest = defineBrickManifest({
   icon: IoGridOutline,
   props: defineProps({
     title: Type.Optional(Type.String({ title: "Title", metadata: { category: "content" } })),
-    useDatabase: Type.Boolean({
-      title: "Use Database",
-      description: "Use a database to manage images. If disabled, you can use static images.",
-      default: false,
-      "ui:field": "hidden",
-    }),
-    datasource: Type.Optional(
-      datasourceRef({
-        metadata: {
-          filter: (manifestProps: TObject, formData: Manifest["props"]) => {
-            return formData.useDatabase === true;
-          },
-        },
-      }),
-    ),
-    staticImages: Type.Optional(
+    images: Type.Optional(
       Type.Array(
         Type.Object({
           src: imageRef({
@@ -128,12 +112,11 @@ export const examples: {
     type: "images-gallery",
     props: {
       title: "Product Portfolio",
-      useDatabase: false,
       borderRadius: "rounded-lg",
       columns: 3,
       gap: "gap-4",
       padding: "p-4",
-      staticImages: [
+      images: [
         {
           src: {
             src: "https://via.placeholder.com/400x400.png?text=Product+1",
@@ -165,13 +148,11 @@ export const examples: {
     description: "Team photos gallery (4-column grid)",
     type: "images-gallery",
     props: {
-      useDatabase: false,
-
       columns: 4,
       gap: "gap-6",
       borderRadius: "rounded-full",
       padding: "p-6",
-      staticImages: [
+      images: [
         {
           src: {
             src: "https://via.placeholder.com/300x300.png?text=CEO",
@@ -227,12 +208,11 @@ export const examples: {
     description: "Project showcase (2-column grid with larger spacing)",
     type: "images-gallery",
     props: {
-      useDatabase: false,
       columns: 2,
       gap: "gap-6",
       borderRadius: "rounded-full",
       padding: "p-6",
-      staticImages: [
+      images: [
         {
           src: {
             src: "https://via.placeholder.com/600x400.png?text=Website+Redesign",
@@ -264,12 +244,11 @@ export const examples: {
     description: "Event photos",
     type: "images-gallery",
     props: {
-      useDatabase: false,
       columns: 4,
       gap: "gap-6",
       borderRadius: "rounded-full",
       padding: "p-6",
-      staticImages: [
+      images: [
         {
           src: {
             src: "https://via.placeholder.com/250x180.png?text=Opening",

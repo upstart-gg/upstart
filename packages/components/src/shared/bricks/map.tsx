@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { type Manifest, DEFAULTS } from "@upstart.gg/sdk/bricks/manifests/map.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { tx } from "@upstart.gg/style-system/twind";
-import L, { Map as LMap, TileLayer, Marker, LatLng } from "leaflet";
+import type L from "leaflet";
+import { Map as LMap, TileLayer, Marker, LatLng, Point } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
@@ -17,8 +18,8 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
   const markerRef = useRef<L.Marker | null>(null);
   const initRef = useRef(false);
 
-  const lat = useMemo(() => props.location?.lat ?? DEFAULTS.lat, [props.location?.lat]);
-  const lng = useMemo(() => props.location?.lng ?? DEFAULTS.lng, [props.location?.lng]);
+  const lat = props.lat ?? DEFAULTS.lat;
+  const lng = props.lng ?? DEFAULTS.lng;
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -37,7 +38,7 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
           boxZoom: false, // Disable box zoom for static maps
           keyboard: false, // Disable keyboard controls for static maps
           trackResize: editable, // Enable resize tracking
-        }).setView([lat, lng], props.location.zoom ?? DEFAULTS.zoom);
+        }).setView([lat, lng], props.zoom ?? DEFAULTS.zoom);
 
         // Add tile layer
         new TileLayer("https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png", {
@@ -47,13 +48,13 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
         // Add marker with tooltip
         const marker = new Marker([lat, lng]).addTo(map);
 
-        if (props.location.tooltip) {
+        if (props.tooltip) {
           marker
-            .bindTooltip(props.location.tooltip, {
+            .bindTooltip(props.tooltip, {
               permanent: true,
               direction: "bottom",
               sticky: true, // Keep the tooltip open
-              offset: L.point(0, 10), // Adjust tooltip position
+              offset: new Point(0, 10), // Adjust tooltip position
             })
             .openTooltip();
         }
@@ -84,25 +85,25 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
     if (mapInstanceRef.current && markerRef.current) {
       const newLatLng = new LatLng(lat, lng);
       // Update map center
-      mapInstanceRef.current.setView(newLatLng, props.location.zoom ?? DEFAULTS.zoom);
+      mapInstanceRef.current.setView(newLatLng, props.zoom ?? DEFAULTS.zoom);
       // Update marker position
       markerRef.current.setLatLng(newLatLng);
 
       // Update tooltip
-      if (props.location.tooltip) {
+      if (props.tooltip) {
         markerRef.current
-          .bindTooltip(props.location.tooltip, {
+          .bindTooltip(props.tooltip, {
             permanent: true,
             direction: "bottom",
             sticky: true, // Keep the tooltip open
-            offset: window.L.point(0, 10), // Adjust tooltip position
+            offset: new Point(0, 10), // Adjust tooltip position
           })
           .openTooltip();
       } else {
         markerRef.current.unbindTooltip();
       }
     }
-  }, [lat, lng, props.location.tooltip, props.location.zoom]);
+  }, [lat, lng, props.tooltip, props.zoom]);
 
   const resizingDelayTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 

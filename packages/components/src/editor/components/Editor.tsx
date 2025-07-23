@@ -71,20 +71,13 @@ export default function Editor(props: EditorProps) {
   }, [draft.previewTheme, draft.theme]);
 
   const handleDragStart: OnDragStartResponder = (result) => {
-    const { draggableId, type, source } = result;
-    console.log("DragStart result:", result);
+    const { draggableId } = result;
     const element = document.getElementById(draggableId);
     element?.classList.add(tx("moving"));
-
-    if (source.droppableId !== "bricks-library" && source.droppableId !== "widgets-library") {
-      // hidePanel();
-    }
   };
 
   const onBeforeCapture: OnBeforeCaptureResponder = (before) => {
     setDraggingBrickType(before.draggableId);
-
-    console.log("BeforeCapture result:", before);
 
     const element = document.getElementById(before.draggableId);
 
@@ -101,8 +94,6 @@ export default function Editor(props: EditorProps) {
     const { destination, source, draggableId, type, combine } = result;
     setDraggingBrickType(null);
 
-    console.log("DragEnd result:", result);
-
     // If dropped outside a valid droppable area
     if (!destination) {
       console.warn("Dropped outside a valid droppable area, no action taken.");
@@ -116,7 +107,7 @@ export default function Editor(props: EditorProps) {
     }
 
     // if the draggable comes from the library
-    if (source.droppableId === "bricks-library" || source.droppableId === "widgets-library") {
+    if (source.droppableId.startsWith("$library$")) {
       const destinationSection = sections.find((section) => section.id === destination.droppableId);
 
       // Destination is a section
@@ -135,8 +126,6 @@ export default function Editor(props: EditorProps) {
           props,
           id: `brick-${generateId()}`,
         } satisfies Brick;
-
-        console.log("Brick object created:", newBrick);
 
         // Add a new brick to the section
         draftHelpers.addBrick(newBrick, destinationSection.id, destination.index, null);
@@ -311,8 +300,7 @@ export default function Editor(props: EditorProps) {
         </Suspense>
         <main
           className={tx(
-            "flex-1 flex place-content-center z-40 overscroll-none ",
-            "overflow-x-auto overflow-y-visible ",
+            "flex-1 flex place-content-center z-40 overflow-x-auto overscroll-none ",
             generationState.isReady === false && "!hidden",
             css({
               gridArea: "main",

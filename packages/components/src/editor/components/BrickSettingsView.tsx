@@ -77,11 +77,11 @@ export default function BrickSettingsView({
   return (
     <FormNavigator
       key={`brick-nav-${brick.id}-${previewMode}`}
-      title={`${brick.type} ${label ?? "settings"}`}
+      title={`${manifest.name} ${label ?? "settings"}`}
       initialGroup={group}
       navItems={navItems}
       formSchema={manifest.props}
-      className={tx("flex-1")}
+      className={tx("flex-grow")}
       formData={formData}
       onChange={onChange}
       brickId={brick.id}

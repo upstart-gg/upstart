@@ -72,7 +72,7 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (pro
   );
 
   return (
-    <div className="flex-1">
+    <div className="flex-1 max-w-full">
       <div className="flex justify-between flex-1 gap-1">
         <FieldTitle title={title} description={description} />
         <SegmentedControl.Root
@@ -90,7 +90,7 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (pro
         <TextField.Root
           defaultValue={currentValue?.startsWith("http") ? currentValue : ""}
           onChange={(e) => onChange(e.target.value)}
-          className="!mt-2"
+          className="!mt-2 max-w-full"
           required={required}
           placeholder="https://example.com"
           spellCheck={!!schema["ui:spellcheck"]}
@@ -104,7 +104,7 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (pro
           <Select.Trigger
             radius="large"
             variant="surface"
-            className="!mt-2 !w-full"
+            className="!mt-2 !w-full !flex-1 !max-w-full truncate"
             placeholder="Select a page"
           />
           <Select.Content position="popper">
@@ -141,13 +141,12 @@ export const GeoAddressField: FC<FieldProps<string>> = (props) => {
       console.log("address changed for brick %s", brickId);
 
       if (brickId) {
+        // Todo: fix hardcoded location props
         updateBrickProps(brickId, {
-          location: {
-            address: matchedResult.label,
-            lat: matchedResult.lat,
-            lng: matchedResult.lng,
-            tooltip: "",
-          },
+          address: matchedResult.label,
+          lat: matchedResult.lat,
+          lng: matchedResult.lng,
+          tooltip: "",
         });
       }
 

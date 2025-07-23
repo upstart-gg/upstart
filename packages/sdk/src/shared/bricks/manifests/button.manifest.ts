@@ -11,6 +11,7 @@ export const manifest = defineBrickManifest({
   type: "button",
   name: "Button",
   repeatable: true,
+  category: "basic",
   description: "A button with text and optional icon",
   icon: RxButton,
   maxHeight: {
@@ -23,7 +24,7 @@ export const manifest = defineBrickManifest({
       description: "Button variants.",
       default: "btn-color-primary",
     }),
-    label: string("Label", { default: "My button" }),
+    label: string("Label", { default: "My button", metadata: { category: "content" } }),
     size: StringEnum(["btn-size-small", "btn-size-medium", "btn-size-large"], {
       title: "Size",
       description: "Button size.",
@@ -38,14 +39,7 @@ export const manifest = defineBrickManifest({
         },
       }),
     ),
-    icon: Type.Optional(
-      string("Icon", {
-        title: "Icon",
-        description: "Icon to display (iconify reference)",
-        "ui:field": "iconify",
-      }),
-    ),
-    linkToUrlOrPageId: Type.Optional(urlOrPageIdRef({ title: "Link" })),
+    linkToUrlOrPageId: Type.Optional(urlOrPageIdRef({ title: "Link", metadata: { category: "content" } })),
   }),
 });
 
@@ -74,16 +68,6 @@ export const examples: {
       label: "Go to page",
       linkToUrlOrPageId: "page-id-123",
       size: "btn-size-small",
-    },
-  },
-  {
-    description: "Button with icon on the right",
-    type: "button",
-    props: {
-      color: "btn-color-primary",
-      label: "Icon Button",
-      icon: "mdi:check-circle",
-      size: "btn-size-large",
     },
   },
 ];

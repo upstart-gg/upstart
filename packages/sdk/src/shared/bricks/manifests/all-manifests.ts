@@ -1,7 +1,9 @@
 import { examples as accordionExamples, manifest as accordionManifest } from "./accordion.manifest";
+import { examples as boxExamples, manifest as boxManifest } from "./hbox.manifest";
 import { examples as buttonExamples, manifest as buttonManifest } from "./button.manifest";
 import { examples as cardExamples, manifest as cardManifest } from "./card.manifest";
 import { examples as carouselExamples, manifest as carouselManifest } from "./carousel.manifest";
+import { examples as dynamicExamples, manifest as dynamicManifest } from "./dynamic.manifest";
 import { examples as footerExamples, manifest as footerManifest } from "./footer.manifest";
 import { examples as formExamples, manifest as formManifest } from "./form.manifest";
 import { examples as heroExamples, manifest as heroManifest } from "./hero.manifest";
@@ -38,6 +40,8 @@ export const manifests: Record<string, BrickManifest> = {
   [iconManifest.type]: iconManifest,
   [socialLinksManifest.type]: socialLinksManifest,
   [vboxManifest.type]: vboxManifest,
+  [boxManifest.type]: boxManifest,
+  [dynamicManifest.type]: dynamicManifest,
   [spacerManifest.type]: spacerManifest,
   [testimonialsManifest.type]: testimonialsManifest,
   [timelineManifest.type]: timelineManifest,
@@ -61,6 +65,8 @@ export const defaultProps: Record<string, BrickDefaults> = {
   [iconManifest.type]: getBrickManifestDefaults(iconManifest),
   [socialLinksManifest.type]: getBrickManifestDefaults(socialLinksManifest),
   [vboxManifest.type]: getBrickManifestDefaults(vboxManifest),
+  [boxManifest.type]: getBrickManifestDefaults(boxManifest),
+  [dynamicManifest.type]: getBrickManifestDefaults(dynamicManifest),
   [spacerManifest.type]: getBrickManifestDefaults(spacerManifest),
   [testimonialsManifest.type]: getBrickManifestDefaults(testimonialsManifest),
   [timelineManifest.type]: getBrickManifestDefaults(timelineManifest),
@@ -85,6 +91,8 @@ export const examples: Record<string, { description: string; type: string; props
   [iconManifest.type]: iconExamples,
   [socialLinksManifest.type]: socialLinksExamples,
   [vboxManifest.type]: vboxExamples,
+  [boxManifest.type]: boxExamples,
+  [dynamicManifest.type]: dynamicExamples,
   [spacerManifest.type]: spacerExamples,
   [testimonialsManifest.type]: testimonialsExamples,
   [timelineManifest.type]: timelineExamples,

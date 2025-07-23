@@ -7,16 +7,16 @@ import { borderRef } from "../props/border";
 import { shadowRef } from "../props/effects";
 import { paddingRef } from "../props/padding";
 import type { BrickProps } from "../props/types";
+import { RxViewVertical } from "react-icons/rx";
 import { cssLengthRef } from "../props/css-length";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { RxViewHorizontal } from "react-icons/rx";
 
 // Generic container can hold any type of array data source
 export const manifest = defineBrickManifest({
-  type: "vbox",
+  type: "hbox",
   category: "container",
-  name: "Vertical box",
-  description: "A vertical container for stacking bricks",
+  name: "Horizontal Box",
+  description: "A horizontal container for stacking bricks",
   isContainer: true,
   defaultWidth: {
     desktop: "auto",
@@ -25,16 +25,16 @@ export const manifest = defineBrickManifest({
   defaultHeight: {
     desktop: "380px",
   },
-  icon: RxViewHorizontal,
+  icon: RxViewVertical,
   props: defineProps({
-    alignItems: Type.Optional(
-      StringEnum(["items-start", "items-center", "items-end", "items-stretch"], {
+    justifyContent: Type.Optional(
+      StringEnum(["justify-start", "justify-center", "justify-end", "justify-stretch"], {
         enumNames: ["Top", "Center", "Bottom", "Stretch"],
-        default: "items-stretch",
-        title: "Align bricks",
-        description: "Align bricks vertically",
+        default: "justify-stretch",
+        title: "Justify bricks",
+        description: "Justify bricks horizontally",
         "ui:placeholder": "Not specified",
-        "ui:styleId": "styles:alignItems",
+        "ui:styleId": "styles:justifyContent",
       }),
     ),
     gap: Type.Optional(

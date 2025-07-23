@@ -12,8 +12,8 @@ import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({
   type: "image",
-  kind: "brick",
   name: "Image",
+  category: "media",
   description: "An image brick",
   repeatable: true,
   defaultWidth: { desktop: "300px", mobile: "100%" },

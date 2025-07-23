@@ -11,7 +11,6 @@ import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({
   type: "accordion",
-  kind: "widget",
   name: "Accordion",
   description: "An accordion/collapse element for expandable content",
   aiInstructions: `

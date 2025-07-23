@@ -42,16 +42,7 @@ export const commonProps = {
       "ui:field": "hidden",
     }) as TString,
   ),
-  growHorizontally: Type.Optional(
-    Type.Boolean({
-      title: "Grow horizontally",
-      // "ui:field": "hidden",
-      description:
-        "If set, the brick will grow to fill the available width of its parent section. If not set, the brick will have a fixed width.",
-      "ui:responsive": "desktop",
-      "ui:styleId": "styles:growHorizontally",
-    }),
-  ),
+
   height: Type.Optional(
     cssLengthRef({
       title: "Fixed height",
@@ -60,15 +51,23 @@ export const commonProps = {
       "ui:field": "hidden",
     }),
   ),
+  growHorizontally: Type.Optional(
+    Type.Boolean({
+      title: "Grow horizontally",
+      "ui:field": "hidden",
+      description:
+        "If set, the brick will grow to fill the available width of its parent section. If not set, the brick will have a fixed width.",
+      "ui:responsive": "desktop",
+      "ui:styleId": "styles:growHorizontally",
+    }),
+  ),
   alignSelf: Type.Optional(
     StringEnum(["self-auto", "self-start", "self-center", "self-end"], {
       title: "Vertical position",
-      // "ui:field": "hidden",
-      "ui:field": "enum",
+      "ui:field": "hidden",
       "ui:display": "icon-group",
       description: "How the brick vertically aligns itself within its parent section.",
       enumNames: ["Auto", "Top", "Center", "Bottom"],
-      // "ui:icons": ["ix:align-objects", "ri:align-top", "ri:align-vertically", "ri:align-bottom"],
       "ui:icons": [
         "fluent:auto-fit-height-20-regular",
         "fluent:align-start-vertical-20-regular",
