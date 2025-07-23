@@ -168,7 +168,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         color: `bg-${variant}-600`,
       },
       border: {
-        color: `border-${variant}-900`,
+        // color: `border-${variant}-900`,
         style: "border-solid",
         width: "border",
       },
@@ -180,7 +180,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         color: `bg-${variant}-400`,
       },
       border: {
-        color: `border-${variant}-700`,
+        // color: `border-${variant}-700`,
         style: "border-solid",
         width: "border",
       },
@@ -192,7 +192,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         color: `bg-${variant}-200`,
       },
       border: {
-        color: `border-${variant}-500`,
+        // color: `border-${variant}-500`,
         style: "border-solid",
         width: "border",
       },
@@ -204,7 +204,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         color: `bg-${variant}-100`,
       },
       border: {
-        color: `border-${variant}-400`,
+        // color: `border-${variant}-400`,
         style: "border-solid",
         width: "border",
       },
@@ -222,7 +222,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         color: `bg-${variant}-50`,
       },
       border: {
-        color: variantColors[variant].border,
+        // color: variantColors[variant].border,
         style: "border-solid",
         width: "border",
       },
@@ -234,7 +234,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         color: `bg-${variant}-100`,
       },
       border: {
-        color: `border-${variant}-700`,
+        // color: `border-${variant}-700`,
         style: "border-solid",
         width: "border",
       },
@@ -245,7 +245,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         color: `bg-${variant}-300`,
       },
       border: {
-        color: `border-${variant}-700`,
+        // color: `border-${variant}-700`,
         style: "border-solid",
         width: "border",
       },
@@ -256,7 +256,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         color: `bg-${variant}-50`,
       },
       border: {
-        color: `border-${variant}-300`,
+        // color: `border-${variant}-300`,
         style: "border-solid",
         width: "border",
       },
@@ -267,7 +267,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         color: `bg-gradient-to-tr from-${variant}-200 to-${variant}-50`,
       },
       border: {
-        color: `border-${variant}-200`,
+        // color: `border-${variant}-200`,
         style: "border-solid",
         width: "border",
       },
@@ -278,7 +278,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         color: `bg-gradient-to-tr from-${variant}-200 ${variant === "neutral" ? "to-neutral-100" : `to-${getOtherVariantColor(variant)}-200`}`,
       },
       border: {
-        color: `border-${variant}-200`,
+        // color: `border-${variant}-200`,
         style: "border-solid",
         width: "border",
       },
@@ -289,7 +289,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         color: `bg-gradient-to-tr from-${variant}-200 ${variant === "neutral" ? "to-neutral-100" : `to-${getOtherVariantColor(variant, true)}-200`}`,
       },
       border: {
-        color: `border-${variant}-200`,
+        // color: `border-${variant}-200`,
         style: "border-solid",
         width: "border",
       },
@@ -300,7 +300,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         color: `bg-gradient-to-tr from-${variant}-400 to-${variant}-100`,
       },
       border: {
-        color: `border-${variant}-200`,
+        // color: `border-${variant}-200`,
         style: "border-solid",
         width: "border",
       },
@@ -311,7 +311,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         color: `bg-gradient-to-tr from-${variant}-400 ${variant === "neutral" ? "to-neutral-200" : `to-${getOtherVariantColor(variant)}-400`}`,
       },
       border: {
-        color: `border-${variant}-200`,
+        // color: `border-${variant}-200`,
         style: "border-solid",
         width: "border",
       },
@@ -322,7 +322,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         color: `bg-gradient-to-tr from-${variant}-400 ${variant === "neutral" ? "to-neutral-200" : `to-${getOtherVariantColor(variant, true)}-400`}`,
       },
       border: {
-        color: `border-${variant}-200`,
+        // color: `border-${variant}-200`,
         style: "border-solid",
         width: "border",
       },
@@ -340,7 +340,7 @@ export function getPresetStyles({ style, variant }: StylePreset): StylePropertie
         color: "bg-transparent",
       },
       border: {
-        color: `border-${variant}-600`,
+        // color: `border-${variant}-600`,
         style: "border-solid",
         width: "border-2",
       },

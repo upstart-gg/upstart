@@ -43,16 +43,16 @@ export function border(title = "Border") {
           "ui:placeholder": "None",
         }),
       ),
-      color: Type.Optional(
-        Type.String({
-          // default: defaultValue?.color,
-          title: "Color",
-          "ai:instructions":
-            "Can be set to transparent, hex/rgb/rgba color, or classes like `border-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900",
-          "ui:field": "color",
-          "ui:color-type": "border",
-        }),
-      ),
+      // color: Type.Optional(
+      //   Type.String({
+      //     // default: defaultValue?.color,
+      //     title: "Color",
+      //     "ai:instructions":
+      //       "Can be set to transparent, hex/rgb/rgba color, or classes like `border-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 50 and 900",
+      //     "ui:field": "color",
+      //     "ui:color-type": "border",
+      //   }),
+      // ),
       sides: Type.Optional(
         Type.Array(
           StringEnum(["border-l", "border-t", "border-r", "border-b"], {

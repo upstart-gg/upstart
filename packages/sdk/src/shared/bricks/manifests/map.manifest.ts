@@ -106,7 +106,7 @@ export const examples: {
       address: "New York, NY",
       tooltip: "New York, NY",
       border: {
-        color: "border-gray-300",
+        // color: "border-gray-300",
         width: "border",
         rounding: "rounded-lg",
       },
