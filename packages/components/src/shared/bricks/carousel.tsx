@@ -51,7 +51,9 @@ const Carousel = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, re
 
   return (
     <div ref={ref} className={tx("flex flex-col flex-1", styles.container)}>
-      {title && <div className={tx("text-lg w-full text-center font-semibold", styles.title)}>{title}</div>}
+      {title && (
+        <div className={tx("text-[110%] w-full text-center font-semibold", styles.title)}>{title}</div>
+      )}
 
       <div className="relative group flex-1 flex flex-col min-h-0 gap-2">
         {props.editable && staticImages.length === 0 && (

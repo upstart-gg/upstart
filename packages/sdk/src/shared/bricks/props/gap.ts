@@ -1,26 +1,38 @@
-import { Type, type SchemaOptions, type Static, type StringOptions } from "@sinclair/typebox";
+import { Type, type Static, type StringOptions } from "@sinclair/typebox";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { typedRef } from "~/shared/utils/typed-ref";
 
-export function basicGap(opts: StringOptions = {}) {
+export function basicGap(opts: StringOptions & { allowNoGap?: boolean } = {}) {
+  const allowNoGap = opts.allowNoGap !== false;
+  const values = [
+    "gap-0",
+    "gap-px",
+    "gap-2",
+    "gap-4",
+    "gap-6",
+    "gap-8",
+    "gap-10",
+    "gap-12",
+    "gap-16",
+    "gap-24",
+  ];
+  const names = ["No gap", "Minimal", "S", "M", "L", "XL", "2XL", "4XL", "4XL", "6XL"];
+  const filteredValues = allowNoGap ? values : values.slice(1);
+  const filteredNames = allowNoGap ? names : names.slice(1);
   return Type.Optional(
-    StringEnum(
-      ["gap-0", "gap-px", "gap-2", "gap-4", "gap-6", "gap-8", "gap-10", "gap-12", "gap-16", "gap-24"],
-      {
-        $id: "styles:basicGap",
-        enumNames: ["No gap", "Minimal", "S", "M", "L", "XL", "2XL", "4XL", "4XL", "6XL"],
-        title: "Gap",
-        description: "Space between elements",
-        default: "gap-4",
-        "ui:styleId": "styles:basicGap",
-        ...opts,
-      },
-    ),
+    StringEnum(filteredValues, {
+      $id: "styles:basicGap",
+      enumNames: filteredNames,
+      title: "Gap",
+      description: "Space between elements",
+      default: "gap-4",
+      "ui:styleId": "styles:basicGap",
+      ...opts,
+    }),
   );
 }
 
 export type GapBasicSettings = Static<ReturnType<typeof basicGap>>;
 
-export function basicGapRef(options: SchemaOptions = {}) {
-  return typedRef("styles:basicGap", options);
+export function basicGapRef(options: StringOptions & { allowNoGap?: boolean } = {}) {
+  return basicGap(options);
 }

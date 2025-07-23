@@ -48,12 +48,24 @@ const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, 
     setSelectedImageIndex(null);
   };
 
+  if (images.length === 0) {
+    return (
+      <div
+        ref={ref}
+        className={tx("flex flex-col flex-1 items-center justify-center p-8 bg-gray-100", borderRadius)}
+      >
+        {title && <div className={tx("text-lg font-semibold mb-4", styles.title)}>{title}</div>}
+        <div className="text-gray-500">No images to display</div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div ref={ref} className={tx("flex flex-1")}>
         <div className={"flex flex-col flex-1"}>
           {title && (
-            <div className={tx("text-lg w-full text-center font-semibold", styles.title)}>{title}</div>
+            <div className={tx("text-[110%] w-full text-center font-semibold", styles.title)}>{title}</div>
           )}
           <div
             className={tx("h-full", "overflow-visible", `grid ${getGridClasses()}`, Object.values(styles))}

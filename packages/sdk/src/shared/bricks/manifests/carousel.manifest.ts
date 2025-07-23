@@ -1,4 +1,4 @@
-import { Type, type TObject } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { TbCarouselHorizontal } from "react-icons/tb";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
@@ -54,9 +54,6 @@ export const manifest = defineBrickManifest({
           maxItems: 12,
           metadata: {
             category: "content",
-            filter: (manifestProps: TObject, formData: Manifest["props"]) => {
-              return formData.useDatabase === false;
-            },
           },
         },
       ),

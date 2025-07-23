@@ -63,10 +63,10 @@ export const BorderField: FC<FieldProps<BorderSettings>> = (props) => {
         <div className="basis-full w-0" />
 
         {/* border color */}
-        <div className="flex flex-col gap-1 flex-1">
+        {/* <div className="flex flex-col gap-1 flex-1">
           <label className={fieldLabel}>Color</label>
           <ColorPill
-            color={currentValue.color}
+            // color={currentValue.color}
             elementColorType="border"
             onChange={(color) => {
               if (color) {
@@ -74,7 +74,7 @@ export const BorderField: FC<FieldProps<BorderSettings>> = (props) => {
               }
             }}
           />
-        </div>
+        </div> */}
 
         <div className="flex flex-col gap-1 flex-1">
           <label className={fieldLabel}>Side</label>
