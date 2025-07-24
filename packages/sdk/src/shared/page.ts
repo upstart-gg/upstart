@@ -43,6 +43,7 @@ export type GenericPageContext = Omit<GenericPageConfig, "attr" | "attributes"> 
   theme: Theme;
   sitemap: Sitemap;
   attr: Attributes;
+  pathParams?: Record<string, string>;
 };
 
 export const pageSchema = Type.Object({
