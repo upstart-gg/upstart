@@ -257,7 +257,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
         {(provided, snapshot) => {
           // Merge all refs properly to avoid render loops
           const mergedRef = useMergeRefs([provided.innerRef, barsRefs.setReference, ref, hoverRef]);
-          const resizeOpts = getBrickResizeOptions(brick, manifests[brick.type], previewMode);
+          const resizeOpts = getBrickResizeOptions(manifests[brick.type]);
 
           return (
             <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>

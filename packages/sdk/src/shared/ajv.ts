@@ -3,7 +3,7 @@ import addFormats from "ajv-formats";
 import { basicAlign } from "./bricks/props/align";
 import { basicGap } from "./bricks/props/gap";
 import { background, backgroundColor } from "./bricks/props/background";
-import { border } from "./bricks/props/border";
+import { border, rounding } from "./bricks/props/border";
 import { color } from "./bricks/props/color";
 import { hidden } from "./bricks/props/common";
 import { cssLength } from "./bricks/props/css-length";
@@ -13,6 +13,7 @@ import { icon, urlOrPageId } from "./bricks/props/string";
 import { padding } from "./bricks/props/padding";
 import { colorPreset } from "./bricks/props/preset";
 import { image } from "./bricks/props/image";
+import { direction } from "./bricks/props/direction";
 
 export type { AnySchemaObject, JSONSchemaType, JSONType, SchemaObject } from "ajv";
 
@@ -29,9 +30,10 @@ ajv.addSchema(background(), "styles:background");
 ajv.addSchema(backgroundColor(), "styles:backgroundColor");
 ajv.addSchema(basicAlign(), "styles:basicAlign");
 ajv.addSchema(basicGap(), "styles:basicGap");
-// ajv.addSchema(containerLayout(), "styles:containerLayout");
+ajv.addSchema(rounding(), "styles:rounding");
 ajv.addSchema(fontSize(), "styles:fontSize");
 ajv.addSchema(hidden(), "styles:hidden");
+ajv.addSchema(direction(), "styles:direction");
 ajv.addSchema(border(), "styles:border");
 ajv.addSchema(padding(), "styles:padding");
 ajv.addSchema(color(), "styles:color");

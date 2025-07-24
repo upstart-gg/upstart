@@ -7,7 +7,7 @@ import TextContent from "../components/TextContent";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { useColorPreset } from "../hooks/use-color-preset";
 
-const Accordion = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick }, ref) => {
+const Accordion = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
   const { props } = brick;
   const items = Array.isArray(props.items) ? props.items : [];
@@ -19,14 +19,19 @@ const Accordion = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick }
   const [openedItems, setOpenedItems] = useState(() => items.map((item) => !!item.defaultOpen));
 
   return (
-    <div className={tx("flex flex-grow shrink-0 min-h-fit")}>
+    <div ref={ref} className={tx("flex flex-grow shrink-0 min-h-fit min-w-fit")}>
       <div
         className={tx(
-          "flex flex-grow shrink-0 min-h-fit flex-col overflow-hidden ",
+          "flex flex-grow shrink-0 min-h-fit flex-col overflow-hidden relative",
           Object.values(otherStyles),
           props.gap,
         )}
       >
+        {editable && items.length === 0 && (
+          <div className="absolute top-0 left-0 right-0 bottom-0 rounded-lg flex items-center justify-center text-center p-10 z-10 bg-gray-50">
+            <div className="text-base text-gray-400">Add content to this accordion in the panel</div>
+          </div>
+        )}
         {items.map((item, index) => {
           const isOpen = !props.restrictOneOpen ? openedItems[index] : itemOpened === index;
           return (

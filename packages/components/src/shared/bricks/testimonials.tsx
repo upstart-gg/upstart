@@ -27,7 +27,13 @@ const Testimonials = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, 
         ];
 
   return (
-    <div ref={ref} className={tx("flex flex-1 gap-6 flex-row flex-wrap min-h-fit", containerClasses)}>
+    <div
+      ref={ref}
+      className={tx(
+        "flex flex-1 gap-6 @mobile:flex-col @desktop:flex-row flex-wrap min-h-fit",
+        containerClasses,
+      )}
+    >
       {testimonials.map((testimonial, index) => (
         <div
           key={index}

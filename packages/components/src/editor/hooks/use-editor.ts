@@ -955,17 +955,6 @@ export const createDraftStore = (
                     lastTouched: Date.now(),
                   });
                 }
-                // Also update the brick in the sections
-                // This is necessary to ensure the brick is updated in the sections as well
-                // This is necessary because the brickMap is not the source of truth for the sections
-                const brickObj = getBrickFromDraft(id, state);
-                if (!brickObj) {
-                  console.error("Cannot update brick %s, it does not exist in the draft", id);
-                  return;
-                }
-                brickObj.props = brick.props;
-                brickObj.mobileProps = brick.mobileProps;
-
                 // rebuild map
                 state.brickMap = buildBrickMap(state.sections);
               } else {

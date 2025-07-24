@@ -32,23 +32,19 @@ export const AlignBasicField: FC<FieldProps<AlignBasicSettings>> = (props) => {
             defaultValue={currentValue?.horizontal}
             size="1"
             radius="medium"
-            className="!h-[24px] -mt-0.5 -mb-0.5"
+            className="!h-[26px] -mt-0.5 -mb-0.5"
           >
             {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
             {schema.properties.horizontal.anyOf.map((option: any) => (
-              <SegmentedControl.Item
-                key={option.const}
-                value={option.const}
-                className={tx("[&_.rt-SegmentedControlItemLabel]:px-[7px]")}
-              >
+              <SegmentedControl.Item key={option.const} value={option.const}>
                 {option.const === "start" && (
-                  <InlineIcon icon="fluent:align-start-horizontal-20-regular" className="w-5 h-5" />
+                  <InlineIcon icon="fluent:align-start-horizontal-20-regular" className="w-5 h-5 mx-1" />
                 )}
                 {option.const === "center" && (
-                  <InlineIcon icon="fluent:center-horizontal-20-regular" className="w-5 h-5" />
+                  <InlineIcon icon="fluent:center-horizontal-20-regular" className="w-5 h-5 mx-1" />
                 )}
                 {option.const === "end" && (
-                  <InlineIcon icon="fluent:align-end-horizontal-20-regular" className="w-5 h-5" />
+                  <InlineIcon icon="fluent:align-end-horizontal-20-regular" className="w-5 h-5 mx-1" />
                 )}
               </SegmentedControl.Item>
             ))}
@@ -69,18 +65,14 @@ export const AlignBasicField: FC<FieldProps<AlignBasicSettings>> = (props) => {
             defaultValue={currentValue?.vertical}
             size="1"
             radius="medium"
-            className="!h-[24px] -mt-0.5 -mb-0.5"
+            className="!h-[26px] -mt-0.5 -mb-0.5"
           >
             {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
             {schema.properties.vertical.anyOf.map((option: any) => (
-              <SegmentedControl.Item
-                key={option.const}
-                value={option.const}
-                className={tx("[&_.rt-SegmentedControlItemLabel]:px-[7px]")}
-              >
-                {option.const === "start" && <PiAlignTop className="w-4 h-4" />}
-                {option.const === "center" && <PiAlignCenterVertical className="w-4 h-4" />}
-                {option.const === "end" && <PiAlignBottom className="w-4 h-4" />}
+              <SegmentedControl.Item key={option.const} value={option.const}>
+                {option.const === "start" && <PiAlignTop className="w-4 h-4 mx-1" />}
+                {option.const === "center" && <PiAlignCenterVertical className="w-4 h-4 mx-1" />}
+                {option.const === "end" && <PiAlignBottom className="w-4 h-4 mx-1" />}
               </SegmentedControl.Item>
             ))}
           </SegmentedControl.Root>

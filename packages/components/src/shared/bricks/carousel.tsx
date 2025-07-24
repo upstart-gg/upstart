@@ -5,10 +5,10 @@ import { forwardRef, useState } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useBrickStyle } from "../hooks/use-brick-style";
 
-const Carousel = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, ref) => {
+const Carousel = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const { props } = brick;
   const styles = useBrickStyle<Manifest>(brick);
-  const staticImages = props.staticImages || [];
+  const images = props.images || [];
   const title = props.title;
   const navigation = props.navigation || "pager-dots";
 
@@ -30,14 +30,14 @@ const Carousel = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, re
   };
 
   const goToNext = () => {
-    setCurrentIndex((prevIndex) => Math.min(staticImages.length - 1, prevIndex + 1));
+    setCurrentIndex((prevIndex) => Math.min(images.length - 1, prevIndex + 1));
   };
 
   const goToSlide = (index: number) => {
     setCurrentIndex(index);
   };
 
-  if (staticImages.length === 0) {
+  if (images.length === 0) {
     return (
       <div
         ref={ref}
@@ -56,7 +56,7 @@ const Carousel = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, re
       )}
 
       <div className="relative group flex-1 flex flex-col min-h-0 gap-2">
-        {props.editable && staticImages.length === 0 && (
+        {editable && images.length === 0 && (
           <div className="absolute top-0 left-0 right-0 bottom-0 bg-white/30 rounded-lg flex items-center justify-center z-10">
             <div className="text-white text-center rounded-md bg-black/30 p-4">
               <div className="text-2xl font-bold">Carousel</div>
@@ -71,25 +71,27 @@ const Carousel = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, re
             className="flex transition-transform duration-300 ease-in-out absolute inset-0"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
           >
-            {staticImages.map((image, index) => (
-              <div key={index} className="w-full flex-shrink-0 relative flex items-center justify-center">
-                <img
-                  src={image.src.src}
-                  alt={image.src.alt}
-                  className={tx("w-full h-full object-cover", borderRadius)}
-                  style={{ display: "block" }}
-                />
-                {image.legend && (
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-sm p-3">
-                    {image.legend}
-                  </div>
-                )}
-              </div>
-            ))}
+            {images
+              .filter((image) => typeof image.src.src === "string" && image.src.src !== "")
+              .map((image, index) => (
+                <div key={index} className="w-full flex-shrink-0 relative flex items-center justify-center">
+                  <img
+                    src={image.src.src}
+                    alt={image.src.alt}
+                    className={tx("w-full h-full object-cover", borderRadius)}
+                    style={{ display: "block" }}
+                  />
+                  {image.legend && (
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-sm p-3">
+                      {image.legend}
+                    </div>
+                  )}
+                </div>
+              ))}
           </div>
 
           {/* Navigation arrows - show only when navigation is possible in that direction */}
-          {staticImages.length > 1 && (
+          {images.length > 1 && (
             <>
               {/* Previous button - only show if not on first slide */}
               {currentIndex > 0 && (
@@ -109,7 +111,7 @@ const Carousel = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, re
               )}
 
               {/* Next button - only show if not on last slide */}
-              {currentIndex < staticImages.length - 1 && (
+              {currentIndex < images.length - 1 && (
                 <button
                   type="button"
                   onClick={goToNext}
@@ -129,11 +131,11 @@ const Carousel = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, re
         </div>
 
         {/* Pagination indicators - show based on selected variant */}
-        {staticImages.length > 1 && (showDots || showNumbers) && (
+        {images.length > 1 && (showDots || showNumbers) && (
           <div className="flex justify-center gap-1 pb-2">
             {showNumbers
               ? // Numbered pagination
-                staticImages.map((_, index: number) => (
+                images.map((_, index: number) => (
                   <button
                     key={index}
                     type="button"
@@ -150,7 +152,7 @@ const Carousel = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, re
                   </button>
                 ))
               : // Dots pagination
-                staticImages.map((_, index: number) => (
+                images.map((_, index: number) => (
                   <button
                     key={index}
                     type="button"

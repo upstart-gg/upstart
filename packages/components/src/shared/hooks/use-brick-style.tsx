@@ -92,21 +92,19 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
     manifest.staticClasses,
     props.className as string,
     props.preset as string,
-    "brick-wrapper group/brick flex min-h-fit min-w-min",
+    "brick-wrapper group/brick flex",
 
-    !mobileProps?.width && manifest.minWidth?.mobile && `@mobile:w-[${manifest.minWidth.mobile}px]`,
-    !props.width && manifest.minWidth?.desktop && `@desktop:w-[${manifest.minWidth.desktop}px]`,
+    manifest.minWidth?.mobile ? `@mobile:min-w-[${manifest.minWidth.mobile}px]` : "@mobile:min-w-min",
+    manifest.minWidth?.desktop ? `@desktop:min-w-[${manifest.minWidth.desktop}px]` : "@desktop:min-w-min",
 
-    manifest.minHeight?.mobile && `@mobile:h-[${manifest.minHeight.mobile}px]`,
-    manifest.minHeight?.desktop && `@desktop:h-[${manifest.minHeight.desktop}px]`,
+    manifest.minHeight?.mobile ? `@mobile:min-h-[${manifest.minHeight.mobile}px]` : "@mobile:min-h-fit",
+    manifest.minHeight?.desktop ? `@desktop:min-h-[${manifest.minHeight.desktop}px]` : "@desktop:min-h-fit",
 
     manifest.maxHeight?.mobile && `@mobile:max-h-[${manifest.maxHeight.mobile}px]`,
     manifest.maxHeight?.desktop && `@desktop:max-h-[${manifest.maxHeight.desktop}px]`,
 
     // Always respect the parent container width
     isContainerChild && "flex-grow",
-    /*!isContainerChild &&*/ manifest.maxWidth?.mobile && `@mobile:max-w-[${manifest.maxWidth.mobile}px]`,
-    /*!isContainerChild &&*/ manifest.maxWidth?.desktop && `@desktop:max-w-[${manifest.maxWidth.desktop}px]`,
 
     !isContainerChild && typeof props.width !== "undefined" && `@desktop:w-[${props.width}]`,
 
@@ -115,8 +113,16 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
       `@desktop:w-[${manifest.defaultWidth.desktop}]`,
 
     !isContainerChild && typeof mobileProps?.width !== "undefined"
-      ? `@mobile:w-[${mobileProps.width}]`
+      ? `@mobile:min-w-[${mobileProps.width}]`
       : `@mobile:w-[${manifest.defaultWidth.mobile}]`,
+
+    // Max width
+    manifest.maxWidth?.mobile && `@mobile:max-w-[${manifest.maxWidth.mobile}px]`,
+    manifest.maxWidth?.desktop
+      ? `@desktop:max-w-[${manifest.maxWidth.desktop}px]`
+      : typeof props.width !== "undefined"
+        ? `@desktop:max-w-[${props.width}px]`
+        : null,
 
     typeof props.height !== "undefined" &&
       css({
