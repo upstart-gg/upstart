@@ -5,10 +5,12 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { forwardRef } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { InlineIcon } from "@iconify/react";
+import { useColorPreset } from "../hooks/use-color-preset";
 
 const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
   const { props } = brick;
+  const presetClasses = useColorPreset<Manifest>(brick);
   // Ensure links is an array - allow empty arrays
   const links = Array.isArray(props.links) ? props.links : [];
 
@@ -18,6 +20,7 @@ const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, e
       className={tx(
         "flex flex-grow shrink-0 justify-start items-start min-h-fit min-w-fit gap-2",
         Object.values(styles),
+        presetClasses.main,
       )}
     >
       {editable && links.length === 0 && (

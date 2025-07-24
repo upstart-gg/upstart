@@ -79,7 +79,9 @@ export const manifest = defineBrickManifest({
         "ui:field": "slider",
       }),
     ),
-    gap: basicGapRef(),
+    gap: basicGapRef({
+      default: "gap-4",
+    }),
     padding: paddingRef({
       default: {
         desktop: "p-4",
