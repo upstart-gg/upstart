@@ -14,11 +14,7 @@ const Hero = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
   const presetClasses = useColorPreset<Manifest>(brick);
   return (
     <div
-      className={tx(
-        "flex-grow flex shrink-0 flex-col gap-[1.5rem] min-h-fit",
-        ...classes,
-        presetClasses.main,
-      )}
+      className={tx("flex-grow flex flex-col gap-[1.5rem] min-h-fit", ...classes, presetClasses.main)}
       ref={ref}
     >
       <TextContent

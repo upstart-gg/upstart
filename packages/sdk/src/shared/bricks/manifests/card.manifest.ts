@@ -6,7 +6,7 @@ import { imageRef } from "../props/image";
 import { type Static, type TObject, Type } from "@sinclair/typebox";
 import type { BrickProps } from "../props/types";
 import { shadowRef } from "../props/effects";
-import { borderRef } from "../props/border";
+import { borderRef, roundingRef } from "../props/border";
 import { colorPresetRef } from "../props/preset";
 import { StringEnum } from "~/shared/utils/string-enum";
 
@@ -311,13 +311,14 @@ export const manifest = defineBrickManifest({
     ),
     cardTitle: Type.Optional(textContentRef({ title: "Title" })),
     cardBody: Type.Optional(textContentRef({ title: "Body" })),
-
+    rounding: Type.Optional(
+      roundingRef({
+        default: "rounded-md",
+      }),
+    ),
     border: Type.Optional(
       borderRef({
-        default: {
-          width: "border",
-          rounding: "rounded-md",
-        },
+        default: "border",
       }),
     ),
     shadow: Type.Optional(shadowRef()),

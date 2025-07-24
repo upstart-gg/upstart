@@ -38,12 +38,15 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
   const previewMode = usePreviewMode();
   const [tabsMapping, setTabsMapping] = useLocalStorage<Record<string, TabType>>("inspector_tabs_map", {});
   const section = useSectionByBrickId(brick.id);
-  const selectedTab = tabsMapping[brick.id] ?? "settings";
   const manifest = manifests[brick.type];
-
   const hasContentProperties = hasFilteredProperties(manifest, (prop) => {
     return prop.metadata?.category === "content";
   });
+
+  const showTabsList =
+    (!!manifest.props.properties.preset && previewMode === "desktop") || hasContentProperties;
+
+  const selectedTab = tabsMapping[brick.id] ?? (hasContentProperties ? "content" : "settings");
 
   useEffect(() => {
     if (!hasContentProperties && selectedTab === "content") {
@@ -55,9 +58,6 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
     console.warn(`No section found for brick: ${brick.id}`);
     return null;
   }
-
-  const showTabsList =
-    (!!manifest.props.properties.preset && previewMode === "desktop") || hasContentProperties;
 
   return (
     <div key={`brick-inspector-${brick.id}`} className="flex flex-col flex-grow h-full">
@@ -139,14 +139,6 @@ function ContentTab({ brick, section, hasTabs }: { brick: Brick; section: Sectio
   const previewMode = usePreviewMode();
   return (
     <form className={tx("flex flex-col h-full")} onSubmit={(e) => e.preventDefault()}>
-      {previewMode === "mobile" && (
-        <Callout.Root size="1">
-          <Callout.Text size="1">
-            <strong>Note</strong>: You are editing mobile-only styles. Any changes here will only affect how
-            the brick appears on mobile devices.
-          </Callout.Text>
-        </Callout.Root>
-      )}
       <div className="basis-[50%] shrink-0 grow flex flex-col">
         <BrickSettingsView
           brick={brick}

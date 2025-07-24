@@ -1,18 +1,21 @@
 import { Type } from "@sinclair/typebox";
 import { TiSocialFlickr } from "react-icons/ti";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { StringEnum } from "~/shared/utils/string-enum";
 import { defineProps } from "../props/helpers";
 import { iconRef, string } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { fontSizeRef } from "../props/text";
 import { paddingRef } from "../props/padding";
+import { directionRef } from "../props/direction";
 
 export const manifest = defineBrickManifest({
   type: "social-links",
   name: "Social links",
   description: "A list of social media links",
   icon: TiSocialFlickr,
+  defaultWidth: {
+    mobile: "100%",
+  },
   props: defineProps({
     links: Type.Array(
       Type.Object({
@@ -56,11 +59,9 @@ export const manifest = defineBrickManifest({
         },
       },
     ),
-    display: Type.Optional(
-      StringEnum(["row", "col"], {
-        enumNames: ["Horizontal", "Vertical"],
-        title: "Display",
-        default: "row",
+    direction: Type.Optional(
+      directionRef({
+        default: "flex-row",
       }),
     ),
     fontSize: Type.Optional(fontSizeRef()),
@@ -114,7 +115,7 @@ export const examples: {
     type: "social-links",
     props: {
       icononly: true,
-      display: "col",
+      direction: "flex-col",
       links: [
         {
           href: "https://facebook.com/company",
@@ -168,7 +169,7 @@ export const examples: {
     type: "social-links",
     props: {
       icononly: false,
-      display: "col",
+      direction: "flex-col",
       links: [
         {
           href: "https://facebook.com/company",
@@ -261,7 +262,7 @@ export const examples: {
     type: "social-links",
     props: {
       icononly: false,
-      display: "col",
+      direction: "flex-col",
       links: [
         {
           href: "https://github.com/developer",
@@ -291,7 +292,7 @@ export const examples: {
     type: "social-links",
     props: {
       icononly: true,
-      display: "col",
+      direction: "flex-col",
       links: [
         {
           href: "https://spotify.com/artist/musician",
@@ -384,7 +385,7 @@ export const examples: {
     type: "social-links",
     props: {
       icononly: false,
-      display: "col",
+      direction: "flex-col",
       links: [
         {
           href: "https://facebook.com/restaurant",
@@ -419,7 +420,7 @@ export const examples: {
     type: "social-links",
     props: {
       icononly: true,
-      display: "row",
+      direction: "flex-row",
       links: [
         {
           href: "https://twitter.com/company",
@@ -444,7 +445,7 @@ export const examples: {
     type: "social-links",
     props: {
       icononly: false,
-      display: "row",
+      direction: "flex-row",
       links: [
         {
           href: "https://facebook.com/store",

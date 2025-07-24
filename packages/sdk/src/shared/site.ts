@@ -475,8 +475,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 type: "text",
                 props: {
                   preset: "subtle-accent",
-                  width: "600px",
-                  columns: 3,
+                  width: "400px",
                   content: `
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam placerat mollis justo in imperdiet. Nulla in commodo magna. Donec placerat varius tincidunt. Phasellus tincidunt, nunc in vehicula elementum, augue diam ultrices urna, vel tempor massa libero non tortor. Suspendisse fermentum nisi consectetur porta ultricies. Nunc sem eros, elementum eget ex nec, blandit tristique mi. Morbi eu enim dignissim augue dapibus euismod non ut velit. Nulla a orci mauris. Morbi ante nibh, porttitor rhoncus elit at, accumsan scelerisque est. Mauris molestie augue vel purus sollicitudin, vitae euismod magna consectetur. Sed iaculis tincidunt nulla. Aenean neque mauris, pretium ut ex ut, placerat suscipit arcu. Etiam et risus orci.
 
@@ -705,13 +704,14 @@ Praesent rutrum fermentum neque varius blandit. Cras dignissim eleifend tortor, 
             order: ++order,
             props: {
               minHeight: "400px",
-              // backgroundColor: "secondary-dark",
             },
             bricks: [
               {
                 id: `b_${generateId()}`,
                 type: "hero",
-                props: {},
+                props: {
+                  color: "primary",
+                },
               },
             ],
           },

@@ -208,7 +208,6 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   } = brick.props;
 
   const buttonProps = brick.props.button || {};
-  const buttonColor = buttonProps.color as string | undefined;
 
   const { datarecord, schema, error } = useDatarecord(datarecordId);
   const [formData, setFormData] = useState<Record<string, unknown>>({});
@@ -305,7 +304,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
             disabled={submitState === "submitting"}
             className={tx(
               "btn",
-              buttonColor,
+              buttonProps.color,
               buttonProps.size === "wide" ? "w-full" : "",
               Object.values(button),
             )}

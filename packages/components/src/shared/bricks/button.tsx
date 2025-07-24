@@ -1,10 +1,8 @@
 import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/button.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { toast } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import { forwardRef } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import { InlineIcon } from "@iconify/react/dist/iconify.js";
 
 const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
@@ -13,12 +11,7 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, edi
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (editable) {
-      // toast(`This button is not clickable in edit mode`, {
-      //   id: `button-no-click-toast`,
-      //   style: {
-      //     minWidth: "max-content",
-      //   },
-      // });
+      e.preventDefault();
       return;
     }
     if (props.linkToUrlOrPageId) {
@@ -38,7 +31,7 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, edi
         classes,
         props.color,
         props.size,
-        "btn h-full w-full font-medium",
+        "h-full w-full font-medium min-w-fit text-nowrap min-h-fit",
         editable && "pointer-events-none",
       )}
       data-prevented-by-editor={editable ? "true" : "false"}

@@ -6,6 +6,7 @@ import { defineProps } from "../props/helpers";
 import { imageRef } from "../props/image";
 import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
+import { roundingRef } from "../props/border";
 
 export const manifest = defineBrickManifest({
   type: "carousel",
@@ -38,7 +39,7 @@ export const manifest = defineBrickManifest({
         },
       ),
     ),
-    staticImages: Type.Optional(
+    images: Type.Optional(
       Type.Array(
         Type.Object({
           src: imageRef({
@@ -59,10 +60,7 @@ export const manifest = defineBrickManifest({
       ),
     ),
     borderRadius: Type.Optional(
-      StringEnum(["rounded-none", "rounded-sm", "rounded-md", "rounded-lg", "rounded-xl", "rounded-full"], {
-        enumNames: ["None", "Small", "Medium", "Large", "Extra large", "Full"],
-        title: "Border",
-        description: "Rounded corners for images",
+      roundingRef({
         default: "rounded-md",
       }),
     ),
@@ -82,7 +80,7 @@ export const examples: {
     props: {
       title: "Featured Images",
       navigation: "pager-dots",
-      staticImages: [
+      images: [
         {
           src: {
             src: "https://via.placeholder.com/800x400.png?text=Slide+1",

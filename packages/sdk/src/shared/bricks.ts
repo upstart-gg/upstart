@@ -114,7 +114,7 @@ export const sectionProps = Type.Object(
   {
     backgroundColor: Type.Optional(
       colorPresetRef({
-        title: "Background color",
+        title: "Color",
         "ui:presets": {
           "primary-light": {
             previewBgClass: "bg-primary-light text-primary-content-light",
@@ -323,6 +323,7 @@ export const sectionProps = Type.Object(
         {
           enumNames: ["Left", "Center", "Right", "Space between", "Space around", "Evenly distributed"],
           title: "Horizontal align.",
+          description: "The horizontal alignment of bricks within the section.",
           "ui:placeholder": "Not specified",
           default: "justify-center",
           "ui:display": "icon-group",
@@ -342,6 +343,7 @@ export const sectionProps = Type.Object(
       StringEnum(["items-start", "items-center", "items-end"], {
         enumNames: ["Top", "Center", "Bottom"],
         title: "Vertical alignment",
+        description: "The vertical alignment of bricks within the section.",
         "ui:placeholder": "Not specified",
         default: "items-center",
         "ui:responsive": "desktop",

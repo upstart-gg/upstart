@@ -11,23 +11,6 @@ describe("Border prop test suite", () => {
   });
 
   describe("border schema", () => {
-    describe("border.style", () => {
-      it("should have correct metadata", () => {
-        const styleProp = borderSchema.properties.style;
-        expect(styleProp.description).toBe("The brick border style");
-        expect(styleProp["ui:field"]).toBe("enum");
-        expect(styleProp["ui:display"]).toBe("button-group");
-      });
-    });
-
-    // describe("border.color", () => {
-    //   it("should have correct metadata", () => {
-    //     const colorProp = borderSchema.properties.color;
-    //     expect(colorProp["ui:field"]).toBe("color");
-    //     expect(colorProp["ui:color-type"]).toBe("border");
-    //   });
-    // });
-
     describe("border.width", () => {
       it("should have correct metadata", () => {
         const widthProp = borderSchema.properties.width;

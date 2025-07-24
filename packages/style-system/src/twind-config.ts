@@ -36,11 +36,10 @@ export default defineConfig({
         borderRadius: "inherit",
       },
     ],
-    ["btn", "py-2 px-4"],
     [
       "btn-color-",
       ({ $$ }) => ({
-        borderColor: `var(--color-${$$})`,
+        borderColor: `var(--color-${$$}-dark)`,
         backgroundColor: `var(--color-${$$})`,
         color: `var(--color-${$$}-content)`,
         "&:hover": {
@@ -49,34 +48,10 @@ export default defineConfig({
         },
       }),
     ],
-    [
-      "btn-size-large",
-      {
-        paddingLeft: "1.5rem",
-        paddingRight: "1.5rem",
-        height: "3rem",
-        fontSize: "1.125rem",
-        lineHeight: "1.75rem",
-      },
-    ],
-    [
-      "btn-size-medium",
-      {
-        paddingLeft: "1.25rem",
-        paddingRight: "1.25rem",
-        height: "2.5rem",
-      },
-    ],
-    [
-      "btn-size-small",
-      {
-        paddingLeft: "1rem",
-        paddingRight: "1rem",
-        height: "2rem",
-        fontSize: "0.875rem",
-        lineHeight: "1.25rem",
-      },
-    ],
+    ["btn", "py-2 px-4 text-base"],
+    ["btn-size-small", "py-1.5 px-2 text-sm"],
+    ["btn-size-medium", "py-2 px-4 text-base"],
+    ["btn-size-large", "py-3 px-5 text-lg"],
     [
       "rounded-auto",
       {

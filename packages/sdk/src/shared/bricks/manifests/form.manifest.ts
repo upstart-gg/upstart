@@ -3,7 +3,7 @@ import { FaWpforms } from "react-icons/fa6";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
 import { basicAlignRef } from "../props/align";
-import { borderRef } from "../props/border";
+import { borderRef, roundingRef } from "../props/border";
 import { datarecord } from "../props/datarecord";
 import { defineProps, group } from "../props/helpers";
 import { paddingRef } from "../props/padding";
@@ -254,7 +254,7 @@ There is no need to define the form fields manually and the form does not accept
       basicAlignRef({
         title: "Button Position",
         description: "The position of the button.",
-        defaultValue: { horizontal: "justify-end" },
+        defaultValue: { horizontal: "end" },
         "ui:no-vertical-align": true,
         "ui:horizontal-align-label": "Button position",
       }),
@@ -265,15 +265,14 @@ There is no need to define the form fields manually and the form does not accept
       children: {
         color: Type.Union(
           [
-            Type.Literal("btn-color-neutral", { title: "Neutral", "ui:variant-type": "color" }),
-            Type.Literal("btn-color-primary", { title: "Primary", "ui:variant-type": "color" }),
-            Type.Literal("btn-color-secondary", { title: "Secondary", "ui:variant-type": "color" }),
-            Type.Literal("btn-color-accent", { title: "Accent", "ui:variant-type": "color" }),
+            Type.Literal("btn-color-neutral", { title: "Neutral" }),
+            Type.Literal("btn-color-primary", { title: "Primary" }),
+            Type.Literal("btn-color-secondary", { title: "Secondary" }),
+            Type.Literal("btn-color-accent", { title: "Accent" }),
           ],
           {
-            title: "Variant",
-            description: "Button variants.",
-            "ai:tip": "Those are  button variants",
+            title: "Color",
+            default: "btn-color-primary",
           },
         ),
         size: StringEnum(["block", "wide"], {
@@ -282,6 +281,7 @@ There is no need to define the form fields manually and the form does not accept
           enumNames: ["Block", "Wide"],
           default: "block",
         }),
+        rounding: Type.Optional(roundingRef({ default: "rounded-md" })),
         border: Type.Optional(
           borderRef({
             default: {

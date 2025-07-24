@@ -9,7 +9,7 @@ import { useBrickStyle } from "../hooks/use-brick-style";
  * `props.childrenBricks` are present only when the container is in Static mode. Its children are the bricks that are inside the container.
  * Otherwise, the children data are fetched from the datasource and rendered accordingly.
  */
-const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, ref) => {
+const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const { props } = brick;
   const styles = useBrickStyle<Manifest>(brick);
   const images = props.images || [];
@@ -48,21 +48,9 @@ const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, 
     setSelectedImageIndex(null);
   };
 
-  if (images.length === 0) {
-    return (
-      <div
-        ref={ref}
-        className={tx("flex flex-col flex-1 items-center justify-center p-8 bg-gray-100", borderRadius)}
-      >
-        {title && <div className={tx("text-lg font-semibold mb-4", styles.title)}>{title}</div>}
-        <div className="text-gray-500">No images to display</div>
-      </div>
-    );
-  }
-
   return (
     <div>
-      <div ref={ref} className={tx("flex flex-1")}>
+      <div ref={ref} className={tx("flex flex-grow shrink-0 min-h-fit")}>
         <div className={"flex flex-col flex-1"}>
           {title && (
             <div className={tx("text-[110%] w-full text-center font-semibold", styles.title)}>{title}</div>
@@ -70,14 +58,6 @@ const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick }, 
           <div
             className={tx("h-full", "overflow-visible", `grid ${getGridClasses()}`, Object.values(styles))}
           >
-            {props.editable && !images.length && (
-              <div className="absolute top-0 left-0 right-0 bottom-0 bg-white/30 rounded-lg flex items-center justify-center">
-                <div className="text-white text-center rounded-md bg-black/30 p-4">
-                  <div className="text-2xl font-bold">Images Wall</div>
-                  <div className="text-base">Drag and drop images here or edit content in the panel</div>
-                </div>
-              </div>
-            )}
             {images.map((image, index) => {
               return (
                 <div key={index} className={tx("grid relative justify-center items-center  hover:scale-105")}>
