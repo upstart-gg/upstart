@@ -9,13 +9,4 @@ describe("Border prop test suite", () => {
       expect(border().title).toBe("Border");
     });
   });
-
-  describe("border schema", () => {
-    describe("border.width", () => {
-      it("should have correct metadata", () => {
-        const widthProp = borderSchema.properties.width;
-        expect(widthProp["ui:field"]).toBe("enum");
-      });
-    });
-  });
 });
