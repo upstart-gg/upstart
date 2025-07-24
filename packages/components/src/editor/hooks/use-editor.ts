@@ -971,7 +971,7 @@ export const createDraftStore = (
                     lastTouched: Date.now(),
                   });
                 } else {
-                  section.props = merge({}, section.props, props, {
+                  section.props = mergeIgnoringArrays({}, section.props, props, {
                     lastTouched: Date.now(),
                   });
                 }

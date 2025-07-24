@@ -27,7 +27,6 @@ export default function BrickSettingsView({
 }: BrickSettingsViewProps) {
   const { updateBrickProps } = useDraftHelpers();
   const manifest = useBrickManifest(brick.type);
-  const [showAdvanced, setShowAdvanced] = useLocalStorage("upstart:editor:show-advanced", false);
   const previewMode = usePreviewMode();
   const getBrickInfo = useGetBrick();
   const brickInfo = getBrickInfo(brick.id);
@@ -40,11 +39,10 @@ export default function BrickSettingsView({
         (typeof prop["ui:responsive"] === "undefined" ||
           prop["ui:responsive"] === true ||
           prop["ui:responsive"] === previewMode) &&
-        categoryFilter(prop.metadata?.category) &&
-        (!prop["ui:advanced"] || showAdvanced)
+        categoryFilter(prop.metadata?.category)
       );
     },
-    [previewMode, showAdvanced, categoryFilter],
+    [previewMode, categoryFilter],
   );
 
   const navItems = useMemo(() => getNavItemsFromManifest(manifest.props, filter), [filter, manifest.props]);
@@ -52,7 +50,7 @@ export default function BrickSettingsView({
     const defProps = defaultProps[brick.type].props;
     return previewMode === "mobile"
       ? mergeIgnoringArrays({}, defProps, brick.mobileProps ?? {})
-      : mergeIgnoringArrays(defProps, brick.props ?? {});
+      : mergeIgnoringArrays({}, defProps, brick.props ?? {});
   }, [brick, previewMode]);
 
   const onChange = useCallback(
