@@ -1,6 +1,5 @@
 import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/footer.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { toast } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import { forwardRef, type MouseEventHandler } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
@@ -14,12 +13,6 @@ const Footer = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
   const onClick: MouseEventHandler | undefined = editable
     ? (e) => {
         e.preventDefault();
-        // toast(`This link is not clickable in edit mode.`, {
-        //   id: `footer-link-no-click-toast`,
-        //   style: {
-        //     minWidth: "max-content",
-        //   },
-        // });
       }
     : undefined;
   return (
@@ -43,7 +36,7 @@ const Footer = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
         </div>
       )}
       {props.linksSections?.map((section, index) => (
-        <nav key={index} className={tx("flex flex-col @mobile:gap-3 @desktop:gap-2", props.fontSize)}>
+        <nav key={index} className={tx("flex flex-col @mobile:gap-3 @desktop:gap-2")}>
           <h6 className={tx("uppercase font-bold opacity-80")}>{section.sectionTitle}</h6>
           {section.links?.map((link, linkIndex) => (
             <a key={linkIndex} href={link.url} onClick={onClick} className={tx("link link-hover max-w-fit")}>

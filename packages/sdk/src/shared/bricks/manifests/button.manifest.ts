@@ -22,6 +22,9 @@ export const manifest = defineBrickManifest({
     desktop: 120,
     mobile: 120,
   },
+  defaultWidth: {
+    mobile: "100%",
+  },
   props: defineProps({
     color: StringEnum(["btn-color-neutral", "btn-color-primary", "btn-color-secondary", "btn-color-accent"], {
       title: "Color",
