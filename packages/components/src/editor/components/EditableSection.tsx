@@ -6,17 +6,14 @@ import {
   useDraggingBrickType,
   useEditingTextForBrickId,
   useEditorHelpers,
-  useGridConfig,
   useIsMouseOverPanel,
   usePreviewMode,
   useSection,
   useSections,
-  useSelectedBrickId,
   useSelectedSectionId,
 } from "../hooks/use-editor";
 import { HiOutlineCog6Tooth } from "react-icons/hi2";
-
-import { ContextMenu, DropdownMenu, Inset, Popover, Portal, Tooltip } from "@upstart.gg/style-system/system";
+import { ContextMenu, DropdownMenu, Portal, Tooltip } from "@upstart.gg/style-system/system";
 import EditableBrickWrapper from "./EditableBrick";
 import { useSectionStyle } from "~/shared/hooks/use-section-style";
 import { TbArrowAutofitHeight, TbBorderCorners, TbDots, TbCirclePlus } from "react-icons/tb";
@@ -26,20 +23,15 @@ import {
   startTransition,
   useCallback,
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
   type MouseEvent,
 } from "react";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
-import { getBrickResizeOptions, getBrickPosition } from "~/shared/utils/layout-utils";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
-import SectionSettingsView from "./SectionSettingsView";
-import { tx, css } from "@upstart.gg/style-system/twind";
-import { Draggable, Droppable } from "@hello-pangea/dnd";
-import { useMutationObserver } from "../hooks/use-mutation-observer";
+import { tx } from "@upstart.gg/style-system/twind";
+import { Droppable } from "@hello-pangea/dnd";
 import { useDeepCompareEffect } from "use-deep-compare";
-import { useMediaQuery } from "usehooks-ts";
 import { useDeviceInfo } from "../hooks/use-device-info";
 
 type EditableSectionProps = {

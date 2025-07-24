@@ -3,9 +3,9 @@ import { RxButton } from "react-icons/rx";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
 import { defineProps } from "../props/helpers";
-import { iconRef, string, urlOrPageIdRef } from "../props/string";
+import { string, urlOrPageIdRef } from "../props/string";
 import type { BrickProps } from "../props/types";
-import { borderRef } from "../props/border";
+import { borderRef, roundingRef } from "../props/border";
 
 export const manifest = defineBrickManifest({
   type: "button",
@@ -13,9 +13,14 @@ export const manifest = defineBrickManifest({
   repeatable: true,
   category: "basic",
   description: "A button with text and optional icon",
+  resizable: "horizontal",
   icon: RxButton,
   maxHeight: {
     desktop: 50,
+  },
+  minWidth: {
+    desktop: 120,
+    mobile: 120,
   },
   props: defineProps({
     color: StringEnum(["btn-color-neutral", "btn-color-primary", "btn-color-secondary", "btn-color-accent"], {
@@ -23,6 +28,7 @@ export const manifest = defineBrickManifest({
       enumNames: ["Neutral", "Primary", "Secondary", "Accent"],
       description: "Button variants.",
       default: "btn-color-primary",
+      "ui:responsive": "desktop",
     }),
     label: string("Label", { default: "My button", metadata: { category: "content" } }),
     size: StringEnum(["btn-size-small", "btn-size-medium", "btn-size-large"], {
@@ -30,15 +36,15 @@ export const manifest = defineBrickManifest({
       description: "Button size.",
       enumNames: ["Small", "Medium", "Large"],
       default: "btn-size-medium",
+      "ui:responsive": "desktop",
     }),
-    border: Type.Optional(
-      borderRef({
-        default: {
-          width: "border",
-          rounding: "rounded-md",
-        },
+    rounding: Type.Optional(
+      roundingRef({
+        default: "rounded-md",
+        "ui:responsive": "desktop",
       }),
     ),
+    border: Type.Optional(borderRef({ default: "border-0", "ui:responsive": "desktop" })),
     linkToUrlOrPageId: Type.Optional(urlOrPageIdRef({ title: "Link", metadata: { category: "content" } })),
   }),
 });

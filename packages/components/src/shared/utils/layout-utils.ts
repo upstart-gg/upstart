@@ -54,14 +54,14 @@ export function getGridConfig(sectionElement: HTMLElement, previewMode: Resoluti
 }
 
 /**
- *  Todo
+ *  This function does not actually check min/max size constraints but only take the "resizable" property into account.
  */
-export function getBrickResizeOptions(brick: Brick, manifest: BrickManifest, currentBp: Resolution) {
-  const { maxHeight, maxWidth, minHeight, minWidth } = manifest;
+export function getBrickResizeOptions(manifest: BrickManifest) {
+  const { resizable } = manifest;
   return {
-    canGrowVertical: true,
-    canGrowHorizontal: true,
-    canShrinkVertical: true,
-    canShrinkHorizontal: true,
+    canGrowVertical: resizable === true || resizable === "vertical",
+    canGrowHorizontal: resizable === true || resizable === "horizontal",
+    canShrinkVertical: resizable === true || resizable === "vertical",
+    canShrinkHorizontal: resizable === true || resizable === "horizontal",
   };
 }

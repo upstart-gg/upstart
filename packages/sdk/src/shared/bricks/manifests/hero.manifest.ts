@@ -8,7 +8,7 @@ import { type Static, type TObject, Type } from "@sinclair/typebox";
 import { textShadowRef } from "../props/effects";
 import { backgroundColorRef } from "../props/background";
 import { colorRef } from "../props/color";
-import { borderRef } from "../props/border";
+import { borderRef, rounding } from "../props/border";
 import { basicAlignRef } from "../props/align";
 import { StringEnum } from "~/shared/utils/string-enum";
 import { colorPresetRef } from "../props/preset";
@@ -25,7 +25,7 @@ It is typically used on home pages to grab the user's attention.
   icon: BsAlphabetUppercase,
 
   defaultWidth: { desktop: "60dvw", mobile: "auto" },
-  minWidth: { desktop: 800 },
+  // minWidth: { desktop: 800 },
 
   props: defineProps({
     content: textContentRef({
@@ -261,6 +261,7 @@ It is typically used on home pages to grab the user's attention.
         default: "p-8",
       }),
     ),
+    rounding: rounding(),
     verticalAlign: Type.Optional(
       basicAlignRef({
         title: "Vertical align",

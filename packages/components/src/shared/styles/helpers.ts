@@ -44,23 +44,12 @@ function getBackgroundColorStyles(value: BackgroundColorSettings, mobileValue?: 
 }
 
 function getColorStyles(value: ColorSettings, mobileValue?: ColorSettings) {
-  // if (!mobileValue) {
-  //   return propToClass(value, "text");
-  // }
-  // return `@desktop:(${propToClass(value, "text")}) @mobile:(${propToClass(mobileValue, "text")})`;
   return propToStyle(value, "color");
 }
 
 function getOpacityStyles(opacity: OpacitySettings) {
   return propToStyle(opacity, "opacity");
 }
-
-// function getPaddingStyles(value: PaddingSettings, mobileValue?: PaddingSettings) {
-//   if (!mobileValue) {
-//     return value;
-//   }
-//   return `@desktop:(${value ?? mobileValue}) @mobile:(${mobileValue})`;
-// }
 
 export function simpleClassHandler(value: string, mobileValue?: string) {
   if (!mobileValue) {
@@ -72,7 +61,6 @@ export function simpleClassHandler(value: string, mobileValue?: string) {
   if (mobileValue) {
     return `@mobile:(${mobileValue})`;
   }
-  // return `@desktop:(${value ?? mobileValue}) @mobile:(${mobileValue})`;
 }
 
 function getFixedPositionedStyles(value: FixedPositionedSettings) {
@@ -80,35 +68,6 @@ function getFixedPositionedStyles(value: FixedPositionedSettings) {
     return null;
   }
   return "sticky top-0 left-0 right-0 self-start w-fill z-[99999] isolate";
-}
-
-function getBorderStyles(props?: Partial<BorderSettings>) {
-  if (!props) {
-    return null;
-  }
-  const {
-    width = "border-0",
-    sides = [],
-    // color,
-    // color = "border-transparent",
-    style = "border-solid",
-    rounding = "",
-  } = props;
-  let borderProcessedClass = "";
-
-  const originalWith = width.includes("-") ? width.split("-")[1] : null;
-
-  if (sides?.length) {
-    borderProcessedClass = sides
-      .map((side) => {
-        return `${side}${originalWith ? `-${originalWith}` : ""}`;
-      })
-      .join(" ");
-  } else {
-    borderProcessedClass = width;
-  }
-
-  return [style, borderProcessedClass, rounding];
 }
 
 export function getBasicAlignmentStyles(
@@ -155,12 +114,13 @@ export const brickStylesHelpersMap = {
   "styles:fontSize": simpleClassHandler,
   "styles:padding": simpleClassHandler, // test
   "styles:gap": getGapStyles,
-  "styles:border": getBorderStyles,
+  "styles:border": simpleClassHandler,
   "styles:gradientDirection": simpleClassHandler,
   "styles:backgroundColor": getBackgroundColorStyles,
   "styles:background": getBackgroundStyles,
   "styles:shadow": simpleClassHandler,
   "styles:rounding": simpleClassHandler,
+  "styles:direction": simpleClassHandler,
 };
 
 export const brickWrapperStylesHelpersMap = {

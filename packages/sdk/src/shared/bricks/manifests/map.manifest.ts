@@ -1,7 +1,7 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps, group } from "../props/helpers";
 import { LiaMapMarkedAltSolid } from "react-icons/lia";
-import { borderRef } from "../props/border";
+import { borderRef, roundingRef } from "../props/border";
 import { shadowRef } from "../props/effects";
 import type { BrickProps } from "../props/types";
 import { geolocation } from "../props/geolocation";
@@ -68,11 +68,9 @@ export const manifest = defineBrickManifest({
         },
       }),
     ),
-    border: Type.Optional(
-      borderRef({
-        default: {
-          rounding: "rounded-xl",
-        },
+    rounding: Type.Optional(
+      roundingRef({
+        default: "rounded-xl",
       }),
     ),
     shadow: Type.Optional(shadowRef()),
@@ -105,11 +103,6 @@ export const examples: {
       lng: -74.006,
       address: "New York, NY",
       tooltip: "New York, NY",
-      border: {
-        // color: "border-gray-300",
-        width: "border",
-        rounding: "rounded-lg",
-      },
       shadow: "shadow-lg",
     },
   },

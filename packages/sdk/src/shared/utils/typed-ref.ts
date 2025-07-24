@@ -2,7 +2,7 @@ import { type SchemaOptions, Type } from "@sinclair/typebox";
 import type { basicAlign } from "../bricks/props/align";
 import type { basicGap } from "../bricks/props/gap";
 import type { background, backgroundColor } from "../bricks/props/background";
-import type { border } from "../bricks/props/border";
+import type { border, rounding } from "../bricks/props/border";
 import type { color } from "../bricks/props/color";
 import type { hidden } from "../bricks/props/common";
 import type { cssLength } from "../bricks/props/css-length";
@@ -12,6 +12,7 @@ import type { icon, urlOrPageId } from "../bricks/props/string";
 import type { padding } from "../bricks/props/padding";
 import type { colorPreset } from "../bricks/props/preset";
 import type { image } from "../bricks/props/image";
+import type { direction } from "../bricks/props/direction";
 
 export interface SchemaTypeMap {
   "styles:background": ReturnType<typeof background>;
@@ -22,10 +23,12 @@ export interface SchemaTypeMap {
   "styles:border": ReturnType<typeof border>;
   "styles:padding": ReturnType<typeof padding>;
   "styles:color": ReturnType<typeof color>;
+  "styles:direction": ReturnType<typeof direction>;
   "styles:shadow": ReturnType<typeof shadow>;
   "styles:textShadow": ReturnType<typeof textShadow>;
   "styles:cssLength": ReturnType<typeof cssLength>;
   "styles:basicGap": ReturnType<typeof basicGap>;
+  "styles:rounding": ReturnType<typeof rounding>;
   "presets:color": ReturnType<typeof colorPreset>;
   "assets:image": ReturnType<typeof image>;
   "content:text": ReturnType<typeof textContent>;

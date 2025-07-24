@@ -11,14 +11,12 @@ const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, e
   const { props } = brick;
   // Ensure links is an array - allow empty arrays
   const links = Array.isArray(props.links) ? props.links : [];
-  const isRowDisplay = props.display?.includes("row") ?? false;
 
   return (
     <div
       ref={ref}
       className={tx(
         "flex flex-grow shrink-0 justify-start items-start min-h-fit min-w-fit gap-2",
-        isRowDisplay ? "flex-row" : "flex-col items-stretch",
         Object.values(styles),
       )}
     >

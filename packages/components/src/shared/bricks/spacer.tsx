@@ -4,7 +4,7 @@ import { css, tx } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 
-const Divider = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable, selected }, ref) => {
+const Spacer = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable, selected }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
   const { props } = brick;
   return (
@@ -21,4 +21,4 @@ const Divider = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edita
   );
 });
 
-export default Divider;
+export default Spacer;

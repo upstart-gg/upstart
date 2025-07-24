@@ -6,8 +6,6 @@ import type { ReactNode } from "react";
 import { AlignBasicField } from "./fields/align-basic";
 import { ArrayField } from "./fields/array";
 import BackgroundField from "./fields/background";
-import { BorderField } from "./fields/border";
-import { BorderSideField } from "./fields/border-side";
 import ColorField from "./fields/color";
 import DatasourceRefField from "./fields/datasource-ref";
 import EnumField from "./fields/enum";
@@ -22,7 +20,6 @@ import VariantGroupField from "./fields/variant-group";
 // Import types
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
-import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import type { GeolocationSettings } from "@upstart.gg/sdk/shared/bricks/props/geolocation";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
@@ -130,30 +127,6 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
           key={`field-${id}`}
           currentValue={currentValue}
           onChange={(value: GeolocationSettings["address"] | null) => onChange({ [id]: value }, id)}
-          {...commonProps}
-        />
-      );
-    }
-
-    case "border": {
-      const currentValue = (get(formData, id) ?? commonProps.schema.default) as BorderSettings;
-      return (
-        <BorderField
-          key={`field-${id}`}
-          currentValue={currentValue}
-          onChange={(value: BorderSettings | null) => onChange({ [id]: value }, id)}
-          {...commonProps}
-        />
-      );
-    }
-
-    case "border-side": {
-      const currentValue = (get(formData, id) ?? commonProps.schema.default) as BorderSettings["sides"];
-      return (
-        <BorderSideField
-          key={`field-${id}`}
-          currentValue={currentValue}
-          onChange={(value: BorderSettings["sides"] | null) => onChange({ [id]: value }, id)}
           {...commonProps}
         />
       );

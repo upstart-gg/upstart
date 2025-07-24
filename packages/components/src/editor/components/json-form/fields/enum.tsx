@@ -78,7 +78,7 @@ const EnumField: FC<FieldProps<string>> = (props) => {
             defaultValue={currentValue as string}
             size="1"
             radius="medium"
-            className="!h-[24px] -mt-0.5 -mb-0.5"
+            className="!h-[26px] -mt-0.5 -mb-0.5"
           >
             {options
               .filter((o) => !o["ui:hidden-option"])
@@ -105,7 +105,7 @@ const EnumField: FC<FieldProps<string>> = (props) => {
             defaultValue={currentValue as string}
             size="1"
             radius="medium"
-            className="!h-[24px] -mt-0.5 -mb-0.5"
+            className="!h-[26px] -mt-0.5 -mb-0.5"
           >
             {options
               .filter((o) => !o["ui:hidden-option"])
