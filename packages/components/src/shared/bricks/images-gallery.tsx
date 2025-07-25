@@ -4,7 +4,7 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { forwardRef, useCallback, useEffect, useState } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { useColorPreset } from "../hooks/use-color-preset";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { MdClose, MdChevronLeft, MdChevronRight } from "react-icons/md";
 
 const ImagesGallery = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const { props } = brick;
@@ -154,6 +154,9 @@ const ImagesGallery = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick,
                 {images[selectedImageIndex].legend}
               </div>
             )}
+            <div className="absolute top-2 right-2 w-10 h-10 flex items-center justify-center bg-black/60 text-white cursor-pointer rounded-full">
+              <MdClose className="h-6 w-6" onClick={handleClosePopover} aria-label="Close image" />
+            </div>
             {/* Previous button - only show if not on first slide */}
             {selectedImageIndex > 0 && (
               <button
@@ -166,7 +169,7 @@ const ImagesGallery = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick,
                 )}
                 aria-label="Previous image"
               >
-                <FiChevronLeft className="w-7 h-7" />
+                <MdChevronLeft className="w-7 h-7" />
               </button>
             )}
 
@@ -182,7 +185,7 @@ const ImagesGallery = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick,
                 )}
                 aria-label="Next image"
               >
-                <FiChevronRight className="w-7 h-7" />
+                <MdChevronRight className="w-7 h-7" />
               </button>
             )}
           </div>
