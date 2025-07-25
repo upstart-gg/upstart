@@ -7,7 +7,7 @@ import { useColorPreset } from "../hooks/use-color-preset";
 
 const Footer = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const props = brick.props;
-  const presetClasses = useColorPreset<Manifest["props"]["properties"]["color"]>(brick);
+  const presetClasses = useColorPreset<Manifest>(brick);
   const styles = useBrickStyle<Manifest>(brick);
   const classes = Object.values(styles);
   const onClick: MouseEventHandler | undefined = editable
