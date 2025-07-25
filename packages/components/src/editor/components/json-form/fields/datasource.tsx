@@ -67,7 +67,6 @@ const DatasourceField: FC<FieldProps<DatasourceSettings | undefined>> = (props) 
   const {
     currentValue,
     onChange,
-    required,
     title,
     description,
     placeholder,

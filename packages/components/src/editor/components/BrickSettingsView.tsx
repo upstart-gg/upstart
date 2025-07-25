@@ -6,6 +6,7 @@ import { get, set } from "lodash-es";
 import { useCallback, useMemo } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import { useDatasource } from "~/editor/hooks/use-datasource";
+
 import { useDraftHelpers, useGetBrick, usePreviewMode } from "~/editor/hooks/use-editor";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
@@ -58,7 +59,7 @@ export default function BrickSettingsView({
 
   // Get datasource if one is selected
   const datasourceId = (baseFormData.datasource as { id: string })?.id;
-  const { datasource } = useDatasource(datasourceId);
+  const datasource = useDatasource(datasourceId);
 
   // Enrich form data with datasource
   const formData = useMemo(() => {
