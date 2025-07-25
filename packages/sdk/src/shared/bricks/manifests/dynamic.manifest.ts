@@ -1,13 +1,14 @@
-import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps } from "../props/helpers";
-import { backgroundRef } from "../props/background";
-import { makeContainerProps } from "../props/container";
 import { Type } from "@sinclair/typebox";
+import { BsDatabaseDown } from "react-icons/bs";
+import { defineBrickManifest } from "~/shared/brick-manifest";
+import { backgroundRef } from "../props/background";
 import { borderRef } from "../props/border";
+import { makeContainerProps } from "../props/container";
+import { datasource } from "../props/datasource";
 import { shadowRef } from "../props/effects";
+import { defineProps } from "../props/helpers";
 import { paddingRef } from "../props/padding";
 import type { BrickProps } from "../props/types";
-import { BsDatabaseDown } from "react-icons/bs";
 
 export const manifest = defineBrickManifest({
   type: "dynamic",
@@ -24,16 +25,11 @@ export const manifest = defineBrickManifest({
   },
   icon: BsDatabaseDown,
   props: defineProps({
-    datasource: Type.Object(
-      {
-        id: Type.String({ title: "Datasource ID", description: "The ID of the datasource to use." }),
-      },
-      { title: "Datasource", metadata: { category: "content" } },
-    ),
     background: Type.Optional(backgroundRef()),
     border: Type.Optional(borderRef()),
     padding: Type.Optional(paddingRef()),
     shadow: Type.Optional(shadowRef()),
+    datasource: datasource(),
     ...makeContainerProps(),
   }),
 });
