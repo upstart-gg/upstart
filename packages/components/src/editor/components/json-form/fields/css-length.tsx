@@ -4,7 +4,7 @@ import { FieldTitle } from "../field-factory";
 import { type FC, useEffect, useState } from "react";
 
 export const CssLengthField: FC<FieldProps<string>> = (props) => {
-  const { currentValue, onChange, schema, required, title, description, placeholder } = props;
+  const { currentValue, onChange, schema, title, description, placeholder } = props;
 
   // remove leading slash
   const rx = /([0-9\.]+)(lh|rlh|px|em|rem|%|dvh|vh|vw|dvw|cqw|cqh|cqi|cqb|cqmin|cqmax)/;
@@ -39,7 +39,6 @@ export const CssLengthField: FC<FieldProps<string>> = (props) => {
           }))
         }
         className="!pr-1 !basis-[90px] focus:(!ring-0 !border-0)"
-        required={required}
       >
         <TextField.Slot side="right" className="!mr-px">
           <Select.Root

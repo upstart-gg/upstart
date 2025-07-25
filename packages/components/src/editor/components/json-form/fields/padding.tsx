@@ -10,7 +10,7 @@ export type TempPadding = {
 };
 
 export const PagePaddingField: FC<FieldProps<TempPadding>> = (props) => {
-  const { currentValue, onChange, required, title, description, placeholder, schema } = props;
+  const { currentValue, onChange, title, description, placeholder, schema } = props;
   const onSettingsChange = (newVal: Partial<TempPadding>) => onChange({ ...currentValue, ...newVal });
 
   return (

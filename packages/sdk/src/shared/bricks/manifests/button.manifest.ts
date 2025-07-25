@@ -44,7 +44,6 @@ export const manifest = defineBrickManifest({
     rounding: Type.Optional(
       roundingRef({
         default: "rounded-md",
-        "ui:responsive": "desktop",
       }),
     ),
     border: Type.Optional(borderRef({ default: "border-0", "ui:responsive": "desktop" })),

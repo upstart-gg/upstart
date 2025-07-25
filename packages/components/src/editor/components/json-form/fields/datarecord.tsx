@@ -8,7 +8,7 @@ import { fieldLabel } from "../form-class";
 import type { FieldProps } from "./types";
 
 export const DatarecordField: FC<FieldProps<DatarecordSettings | undefined>> = (props) => {
-  const { currentValue, onChange, required, title, description, placeholder, schema } = props;
+  const { currentValue, onChange, title, description, placeholder, schema } = props;
   const editorHelpers = useEditorHelpers();
   const { options } = useDatarecords();
 

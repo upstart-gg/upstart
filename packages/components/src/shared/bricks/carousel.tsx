@@ -42,7 +42,10 @@ const Carousel = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edit
   }
 
   return (
-    <div ref={ref} className={tx("flex flex-col grow shrink-0", Object.values(styles), presetClasses.main)}>
+    <div
+      ref={ref}
+      className={tx("flex flex-col grow shrink-0 min-w-fit", Object.values(styles), presetClasses.main)}
+    >
       <div className={tx("relative overflow-hidden group flex-1")}>
         <div
           className="flex transition-transform duration-300 ease-in-out absolute inset-0"

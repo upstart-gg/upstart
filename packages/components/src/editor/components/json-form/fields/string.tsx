@@ -9,7 +9,7 @@ import { type ChangeEvent, type FC, useRef, useState } from "react";
 import { useDraftHelpers, useSitemap } from "~/editor/hooks/use-editor";
 
 export const StringField: FC<FieldProps<string>> = (props) => {
-  const { currentValue, onChange, required, title, description, placeholder, schema } = props;
+  const { currentValue, onChange, title, description, placeholder, schema } = props;
   const onChangeDebounced = useDebounceCallback(onChange, 300);
   return (
     <div className="field field-string basis-full">
@@ -19,7 +19,6 @@ export const StringField: FC<FieldProps<string>> = (props) => {
           defaultValue={currentValue}
           onChange={(e) => onChangeDebounced(e.target.value)}
           className={tx("!mt-1.5 scrollbar-thin", schema["ui:textarea-class"] ?? "h-24")}
-          required={required}
           placeholder={placeholder}
           resize="vertical"
           size={"2"}
@@ -31,7 +30,6 @@ export const StringField: FC<FieldProps<string>> = (props) => {
           onChange={(e) => onChangeDebounced(e.target.value)}
           className="!mt-1"
           size={"2"}
-          required={required}
           placeholder={placeholder}
           spellCheck={!!schema["ui:spellcheck"]}
         />
@@ -41,7 +39,7 @@ export const StringField: FC<FieldProps<string>> = (props) => {
 };
 
 export const PathField: FC<FieldProps<string>> = (props) => {
-  const { currentValue, onChange, required, title, description, placeholder } = props;
+  const { currentValue, onChange, title, description, placeholder } = props;
   const onChangeDebounced = useDebounceCallback(onChange, 300);
   // remove leading slash
   const path = (currentValue || "").toString().replace(/^\//, "");
@@ -53,7 +51,6 @@ export const PathField: FC<FieldProps<string>> = (props) => {
         defaultValue={path}
         onChange={(e) => onChangeDebounced(e.target.value)}
         className="!mt-1.5"
-        required={required}
         placeholder={placeholder}
       >
         <TextField.Slot>
@@ -65,7 +62,7 @@ export const PathField: FC<FieldProps<string>> = (props) => {
 };
 
 export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (props) => {
-  const { currentValue, onChange, required, title, description, placeholder, schema } = props;
+  const { currentValue, onChange, title, description, placeholder, schema } = props;
   const sitemap = useSitemap();
   const [type, setType] = useState<"url" | "pageId">(
     currentValue?.startsWith("http") || sitemap.length === 1 ? "url" : "pageId",
@@ -91,7 +88,6 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (pro
           defaultValue={currentValue?.startsWith("http") ? currentValue : ""}
           onChange={(e) => onChange(e.target.value)}
           className="!mt-2 max-w-full"
-          required={required}
           placeholder="https://example.com"
           spellCheck={!!schema["ui:spellcheck"]}
         />
@@ -123,7 +119,7 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (pro
 };
 
 export const GeoAddressField: FC<FieldProps<string>> = (props) => {
-  const { currentValue, onChange, required, title, description, placeholder, formData, brickId } = props;
+  const { currentValue, onChange, title, description, placeholder, formData, brickId } = props;
   const { updateBrickProps } = useDraftHelpers();
   const [searchResults, setSearchResults] = useState<SearchResults[]>([]);
 

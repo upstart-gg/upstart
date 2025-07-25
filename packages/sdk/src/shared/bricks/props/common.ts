@@ -79,5 +79,17 @@ export const commonProps = {
       "ui:styleId": "styles:alignSelf",
     }),
   ),
+  dynamicContent: Type.Optional(
+    Type.Boolean({
+      title: "Use dynamic content",
+      description: "If enabled, the brick will use dynamic content from the closest 'Dynamic' brick.",
+      "ai:instructions":
+        "If set, the brick will use dynamic content from the closest brick of type 'dynamic'. It can only be set to true if the brick is a child of a 'dynamic' brick.",
+      metadata: {
+        category: "content",
+      },
+      "ui:field": "hidden",
+    }),
+  ),
   // preset: Type.Optional(presetRef()),
 };

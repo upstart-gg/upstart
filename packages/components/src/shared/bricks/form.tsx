@@ -195,7 +195,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   const presetClasses = useColorPreset<Manifest>(brick);
   const styles = useBrickStyle<Manifest>(brick);
   const [submitState, setSubmitState] = useState<"idle" | "submitting" | "error" | "success">("idle");
-  const { button, buttonPosition, ...rest } = styles;
+  const { button, buttonPosition, direction, ...rest } = styles;
   const {
     title,
     buttonLabel,
@@ -203,13 +203,11 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
     errorMessage,
     intro,
     datarecordId,
-    align = "vertical",
     editable = true,
   } = brick.props;
 
   const buttonProps = brick.props.button || {};
-
-  const { datarecord, schema, error } = useDatarecord(datarecordId);
+  const datarecord = useDatarecord(datarecordId);
   const [formData, setFormData] = useState<Record<string, unknown>>({});
 
   const handleFieldChange = (data: Record<string, unknown>, fieldPath: string) => {
@@ -236,7 +234,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
       method: "POST",
       body: new FormData(e.target as HTMLFormElement),
       headers: {
-        "X-DataRecord-Id": datarecordId,
+        "X-DataRecord-Id": datarecordId!,
       },
     })
       .then((response) => {
@@ -251,17 +249,15 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
       });
   };
 
-  if (error && editable) {
-    return (
+  if (datarecordId && !datarecord) {
+    return editable ? (
       <div ref={ref} className="p-4 border border-red-200 bg-red-50 text-red-600 rounded">
-        Error loading datarecord: {error.message}
+        Error loading datarecord
       </div>
-    );
-  } else if (error) {
-    return null; // If not editable, we don't show the error in the form
+    ) : null;
   }
 
-  if (!datarecord || !schema) {
+  if (!datarecord) {
     return (
       <div
         ref={ref}
@@ -284,18 +280,18 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   }
 
   // Convertir le schema en format TypeBox
-  const typeboxSchema = schema as unknown as TObject<TProperties>;
+  const typeboxSchema = datarecord.schema as unknown as TObject<TProperties>;
   const fields = processDatarecordSchemaToFields(typeboxSchema, formData, handleFieldChange);
 
   return (
-    <div ref={ref} className={tx("flex-grow shrink-0 min-h-fit", Object.values(rest), presetClasses.main)}>
+    <div
+      ref={ref}
+      className={tx("flex-grow shrink-0 min-h-fit max-w-fit", Object.values(rest), presetClasses.main)}
+    >
       {title && <h2 className="form-title text-[110%] font-semibold mb-4">{title}</h2>}
       {intro && <p className="form-intro  mb-6">{intro}</p>}
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <input id={"datarecord-id"} name="datarecord-id" type="hidden" value={datarecordId} />
-        <div className={tx("flex", align === "horizontal" ? "flex-row flex-wrap gap-4" : "flex-col gap-2")}>
-          {fields}
-        </div>
+        <div className={tx("flex gap-4 @mobile:flex-col", direction)}>{fields}</div>
         {submitState === "error" && <div>{errorMessage}</div>}
         {submitState === "success" && <div>{successMessage}</div>}
         <div className={tx("flex pt-1", Object.values(buttonPosition))}>
@@ -303,7 +299,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
             type="submit"
             disabled={submitState === "submitting"}
             className={tx(
-              "btn",
+              "btn @mobile:min-w-full",
               buttonProps.color,
               buttonProps.size === "wide" ? "w-full" : "",
               Object.values(button),

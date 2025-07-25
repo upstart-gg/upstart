@@ -7,7 +7,7 @@ import type { FC } from "react";
 import { RxCross2 } from "react-icons/rx";
 
 const ColorPresetField: FC<FieldProps<string>> = (props) => {
-  const { schema, currentValue, formData, onChange, required, title, description } = props;
+  const { schema, currentValue, formData, onChange, title, description } = props;
   const presets = schema["ui:presets"] as ColorPresets;
 
   return (

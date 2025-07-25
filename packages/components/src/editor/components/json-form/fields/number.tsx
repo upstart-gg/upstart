@@ -5,7 +5,7 @@ import { FieldTitle } from "../field-factory";
 import { useState, type FC } from "react";
 
 export const SliderField: FC<FieldProps<number>> = (props) => {
-  const { schema, currentValue, onChange, required, title, description } = props;
+  const { schema, currentValue, onChange, title, description } = props;
   const unit = schema["ui:unit"] ?? "";
   const multiplier = schema["ui:multiplier"] ?? 1;
   const [val, setVal] = useState(currentValue);
@@ -38,7 +38,7 @@ export const SliderField: FC<FieldProps<number>> = (props) => {
 };
 
 export const NumberField: FC<FieldProps<number>> = (props) => {
-  const { currentValue, onChange, schema, required, title, description, placeholder } = props;
+  const { currentValue, onChange, schema, title, description, placeholder } = props;
   return (
     <div className="number-field flex-1 flex justify-between gap-3 items-center">
       <FieldTitle title={title} description={description} />
@@ -51,7 +51,6 @@ export const NumberField: FC<FieldProps<number>> = (props) => {
         min={schema.minimum}
         max={schema.maximum}
         step={schema.multipleOf ?? 1}
-        required={required}
         placeholder={placeholder ?? schema["ui:placeholder"]}
       />
     </div>

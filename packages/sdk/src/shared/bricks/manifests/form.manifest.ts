@@ -12,6 +12,7 @@ import type { BrickProps } from "../props/types";
 import { fontSizeRef } from "../props/text";
 import { colorPresetRef } from "../props/preset";
 import { gradientDirectionRef } from "../props/color";
+import { directionRef } from "../props/direction";
 
 export const manifest = defineBrickManifest({
   type: "form",
@@ -25,9 +26,12 @@ There is no need to define the form fields manually and the form does not accept
     desktop: 300,
   },
   props: defineProps({
-    datarecordId: datarecord("Datarecord ID", {
-      description: "The ID of the datarecord to use to generate the form fields",
-    }),
+    datarecordId: Type.Optional(
+      datarecord("Datarecord ID", {
+        description: "The ID of the datarecord to use to generate the form fields",
+        "ui:responsive": "desktop",
+      }),
+    ),
     color: Type.Optional(
       colorPresetRef({
         title: "Color",
@@ -208,11 +212,12 @@ There is no need to define the form fields manually and the form does not accept
         default: "bg-gradient-to-br",
       }),
     ),
-    align: Type.Optional(
-      StringEnum(["vertical", "horizontal"], {
-        default: "vertical",
-        title: "Alignment",
-        description: "The alignment of the form fields. Default is vertical",
+    direction: Type.Optional(
+      directionRef({
+        title: "Direction",
+        description: "The direction of the form fields",
+        defaultValue: "vertical",
+        "ui:responsive": "desktop",
       }),
     ),
     padding: Type.Optional(
@@ -232,6 +237,7 @@ There is no need to define the form fields manually and the form does not accept
         defaultValue: { horizontal: "end" },
         "ui:no-vertical-align": true,
         "ui:horizontal-align-label": "Button position",
+        "ui:responsive": "desktop",
       }),
     ),
     fontSize: Type.Optional(fontSizeRef({ default: "inherit", "ui:no-extra-large-sizes": true })),
@@ -255,6 +261,7 @@ There is no need to define the form fields manually and the form does not accept
           description: "Button sizes.",
           enumNames: ["Block", "Wide"],
           default: "block",
+          "ui:responsive": "desktop",
         }),
         rounding: Type.Optional(roundingRef({ default: "rounded-md" })),
         border: Type.Optional(
@@ -328,7 +335,7 @@ export const examples: {
     props: {
       title: "Contact Us",
       intro: "We'd love to hear from you. Send us a message and we'll respond as soon as possible.",
-      align: "vertical",
+      direction: "flex-row",
       datarecordId: "contacts",
       buttonPosition: {
         horizontal: "end",
@@ -346,7 +353,7 @@ export const examples: {
     props: {
       title: "Create Account",
       intro: "Join our platform and start your journey today.",
-      align: "vertical",
+      direction: "flex-row",
       datarecordId: "user-registration",
       buttonPosition: {
         horizontal: "end",
@@ -364,7 +371,7 @@ export const examples: {
     props: {
       title: "Stay Updated",
       intro: "Subscribe to our newsletter for the latest updates and exclusive content.",
-      align: "horizontal",
+      direction: "flex-col",
       datarecordId: "newsletter-subscription",
       buttonPosition: {
         horizontal: "center",
@@ -382,7 +389,7 @@ export const examples: {
     props: {
       title: "Conference Registration",
       intro: "Register for the Annual Tech Conference 2025. Early bird pricing ends soon!",
-      align: "vertical",
+      direction: "flex-col",
       datarecordId: "event-registration",
       buttonPosition: {
         horizontal: "end",
@@ -400,7 +407,7 @@ export const examples: {
     props: {
       title: "Apply for Position",
       intro: "We're excited to learn more about you! Please fill out this application form completely.",
-      align: "vertical",
+      direction: "flex-col",
       datarecordId: "job-application",
       buttonPosition: {
         horizontal: "start",
@@ -418,7 +425,7 @@ export const examples: {
     props: {
       title: "Share Your Feedback",
       intro: "Your opinion matters to us. Help us improve our products and services.",
-      align: "vertical",
+      direction: "flex-col",
       datarecordId: "customer-feedback",
       buttonPosition: {
         horizontal: "end",

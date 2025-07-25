@@ -273,6 +273,7 @@ export const manifest = defineBrickManifest({
         maximum: 6,
         default: 3,
         "ui:field": "slider",
+        "ui:responsive": "desktop",
       }),
     ),
     gap: Type.Optional(

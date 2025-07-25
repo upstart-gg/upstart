@@ -8,7 +8,7 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { InlineIcon } from "@iconify/react/dist/iconify.js";
 
 export const AlignBasicField: FC<FieldProps<AlignBasicSettings>> = (props) => {
-  const { currentValue, onChange, required, title, description, placeholder, schema } = props;
+  const { currentValue, onChange, title, description, placeholder, schema } = props;
 
   const onSettingsChange = (newVal: Partial<AlignBasicSettings>) => {
     const newProps = { ...(currentValue ?? {}), ...newVal };

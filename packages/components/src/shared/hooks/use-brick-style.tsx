@@ -137,6 +137,9 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
     // container children expand to fill the space
     isContainerChild && "container-child",
 
+    // When a brick is hidden on mobile, hide the wrapper as well
+    "@mobile:[&:has([data-mobile-hidden])]:hidden",
+
     getBrickWrapperEditorStyles(editable === true, manifest.isContainer, isContainerChild, selected),
 
     ...Object.values(classes).flat(),
