@@ -10,9 +10,6 @@ const Carousel = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edit
   const { props } = brick;
   const styles = useBrickStyle<Manifest>(brick);
   const presetClasses = useColorPreset<Manifest>(brick);
-
-  console.log("carousel presetClasses", presetClasses);
-
   const images = (props.images || []).filter(
     (image) => typeof image.src.src === "string" && image.src.src !== "",
   );

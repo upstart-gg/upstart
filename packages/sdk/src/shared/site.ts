@@ -367,6 +367,11 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             bricks: [
               {
                 id: generateId(),
+                type: "images-gallery",
+                props: {},
+              },
+              {
+                id: generateId(),
                 type: "form",
                 props: {
                   padding: "p-4",
