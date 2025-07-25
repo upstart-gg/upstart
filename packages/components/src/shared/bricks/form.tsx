@@ -195,7 +195,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   const presetClasses = useColorPreset<Manifest>(brick);
   const styles = useBrickStyle<Manifest>(brick);
   const [submitState, setSubmitState] = useState<"idle" | "submitting" | "error" | "success">("idle");
-  const { button, buttonPosition, ...rest } = styles;
+  const { button, buttonPosition, direction, ...rest } = styles;
   const {
     title,
     buttonLabel,
@@ -203,7 +203,6 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
     errorMessage,
     intro,
     datarecordId,
-    align = "vertical",
     editable = true,
   } = brick.props;
 
@@ -288,14 +287,14 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   const fields = processDatarecordSchemaToFields(typeboxSchema, formData, handleFieldChange);
 
   return (
-    <div ref={ref} className={tx("flex-grow shrink-0 min-h-fit", Object.values(rest), presetClasses.main)}>
+    <div
+      ref={ref}
+      className={tx("flex-grow shrink-0 min-h-fit max-w-fit", Object.values(rest), presetClasses.main)}
+    >
       {title && <h2 className="form-title text-[110%] font-semibold mb-4">{title}</h2>}
       {intro && <p className="form-intro  mb-6">{intro}</p>}
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <input id={"datarecord-id"} name="datarecord-id" type="hidden" value={datarecordId} />
-        <div className={tx("flex", align === "horizontal" ? "flex-row flex-wrap gap-4" : "flex-col gap-2")}>
-          {fields}
-        </div>
+        <div className={tx("flex gap-4 @mobile:flex-col", direction)}>{fields}</div>
         {submitState === "error" && <div>{errorMessage}</div>}
         {submitState === "success" && <div>{successMessage}</div>}
         <div className={tx("flex pt-1", Object.values(buttonPosition))}>
@@ -303,7 +302,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
             type="submit"
             disabled={submitState === "submitting"}
             className={tx(
-              "btn",
+              "btn @mobile:min-w-full",
               buttonProps.color,
               buttonProps.size === "wide" ? "w-full" : "",
               Object.values(button),
