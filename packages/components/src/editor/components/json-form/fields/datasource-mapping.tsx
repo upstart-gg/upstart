@@ -25,7 +25,7 @@ const DatasourceMappingField: FC<FieldProps<DatasourceMapping>> = (props) => {
   invariant(brickInfo, `Could not find brick info for ${brickId} in DatasourceRefField`);
 
   const brickManifest = useBrickManifest(brickInfo.type);
-  const { datasource } = useDatasource(currentValue.datasourceId ?? "1");
+  const datasource = useDatasource(currentValue.datasourceId ?? "1");
 
   const onDataSourceChange = useCallback(
     (data: Partial<DatasourceRefSettings>) => {

@@ -207,8 +207,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   } = brick.props;
 
   const buttonProps = brick.props.button || {};
-
-  const { datarecord, schema, error } = useDatarecord(datarecordId);
+  const datarecord = useDatarecord(datarecordId);
   const [formData, setFormData] = useState<Record<string, unknown>>({});
 
   const handleFieldChange = (data: Record<string, unknown>, fieldPath: string) => {
@@ -235,7 +234,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
       method: "POST",
       body: new FormData(e.target as HTMLFormElement),
       headers: {
-        "X-DataRecord-Id": datarecordId,
+        "X-DataRecord-Id": datarecordId!,
       },
     })
       .then((response) => {
@@ -250,17 +249,15 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
       });
   };
 
-  if (error && editable) {
-    return (
+  if (datarecordId && !datarecord) {
+    return editable ? (
       <div ref={ref} className="p-4 border border-red-200 bg-red-50 text-red-600 rounded">
-        Error loading datarecord: {error.message}
+        Error loading datarecord
       </div>
-    );
-  } else if (error) {
-    return null; // If not editable, we don't show the error in the form
+    ) : null;
   }
 
-  if (!datarecord || !schema) {
+  if (!datarecord) {
     return (
       <div
         ref={ref}
@@ -283,7 +280,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   }
 
   // Convertir le schema en format TypeBox
-  const typeboxSchema = schema as unknown as TObject<TProperties>;
+  const typeboxSchema = datarecord.schema as unknown as TObject<TProperties>;
   const fields = processDatarecordSchemaToFields(typeboxSchema, formData, handleFieldChange);
 
   return (
