@@ -64,17 +64,8 @@ export function getDatasourceIndexedFieldsWithTitles(
 }
 
 const DatasourceField: FC<FieldProps<DatasourceSettings | undefined>> = (props) => {
-  const {
-    currentValue,
-    onChange,
-    title,
-    description,
-    placeholder,
-    schema,
-    formData,
-    formSchema,
-    brickId,
-  } = props;
+  const { currentValue, onChange, title, description, placeholder, schema, formData, formSchema, brickId } =
+    props;
   const { options } = useDatasources();
 
   const handleChange = (field: string, value: unknown) => {
