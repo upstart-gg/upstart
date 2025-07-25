@@ -23,33 +23,31 @@ function useDatasourceContext() {
 /**
  * Uses a datasource declared in a brick manifest
  */
-export function useDatasource<
-  S extends DatasourceSchema | null = null,
-  D extends DatasourceRefSettings = DatasourceRefSettings,
->(dsRef: D | undefined, schema: S) {
-  const datasources = useDatasourceContext();
+// export function useDatasource<
+//   S extends DatasourceSchema | null = null,
+//   D extends DatasourceRefSettings = DatasourceRefSettings,
+// >(dsRef: D | undefined, schema: S) {
+//   const datasources = useDatasourceContext();
 
-  // console.log("datasources", { datasources, dsRef });
+//   type DatasourceInfo = {
+//     datasourceId: string | null;
+//     data: S extends DatasourceSchema ? Static<S> : Record<string, unknown>[];
+//     isSample: boolean;
+//   };
 
-  type DatasourceInfo = {
-    datasourceId: string | null;
-    data: S extends DatasourceSchema ? Static<S> : Record<string, unknown>[];
-    isSample: boolean;
-  };
+//   if (!dsRef) {
+//     return {
+//       datasourceId: null,
+//       data: schema?.examples ?? [],
+//       isSample: true,
+//     } as DatasourceInfo;
+//   }
 
-  if (!dsRef) {
-    return {
-      datasourceId: null,
-      data: schema?.examples ?? [],
-      isSample: true,
-    } as DatasourceInfo;
-  }
+//   const data = dsRef?.id ? datasources.get(dsRef.id) : null;
 
-  const data = dsRef?.id ? datasources.get(dsRef.id) : null;
-
-  return {
-    datasourceId: dsRef?.id,
-    data: data ?? schema?.examples ?? [],
-    isSample: !data,
-  } as DatasourceInfo;
-}
+//   return {
+//     datasourceId: dsRef?.id,
+//     data: data ?? schema?.examples ?? [],
+//     isSample: !data,
+//   } as DatasourceInfo;
+// }

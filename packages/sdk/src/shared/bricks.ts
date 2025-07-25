@@ -90,20 +90,6 @@ export const brickSchema = Type.Object(
         },
       ),
     ),
-    // absolutePosition: Type.Optional(
-    //   Type.Object(
-    //     {
-    //       mobile: brickAbsolutePositionSchema,
-    //       desktop: brickAbsolutePositionSchema,
-    //     },
-    //     {
-    //       title: "Position",
-    //       description:
-    //         "The position of the brick in the layout. Optional when the brick is a container child",
-    //       additionalProperties: false,
-    //     },
-    //   ),
-    // ),
   },
   { $id: "brick", additionalProperties: true },
 );

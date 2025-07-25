@@ -12,7 +12,7 @@ import { FieldTitle } from "../field-factory";
 import { useUploader } from "../../UploaderContext";
 
 const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
-  const { schema, formData, onChange, required, title, description, currentValue } = props;
+  const { schema, formData, onChange, title, description, currentValue } = props;
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);
   const { onImageUpload } = useUploader();
@@ -43,7 +43,6 @@ const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
                 onPropsChange({ src: url });
               }
             }}
-            required={required}
           />
           <span className="flex-1">&nbsp;</span>
           <Button
@@ -95,7 +94,6 @@ const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
                   defaultValue={currentValue.alt}
                   className="!flex-1"
                   onChange={(e) => debouncedOnPropsChange({ alt: e.target.value })}
-                  required={required}
                   spellCheck={!!schema["ui:spellcheck"]}
                 />
               </div>

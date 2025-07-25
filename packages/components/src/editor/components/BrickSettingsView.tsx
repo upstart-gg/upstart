@@ -2,7 +2,7 @@ import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
 import { tx } from "@upstart.gg/style-system/twind";
-import { set } from "lodash-es";
+import { get, set } from "lodash-es";
 import { useCallback, useMemo } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import { useDatasource } from "~/editor/hooks/use-datasource";
@@ -28,7 +28,6 @@ export default function BrickSettingsView({
 }: BrickSettingsViewProps) {
   const { updateBrickProps } = useDraftHelpers();
   const manifest = useBrickManifest(brick.type);
-  const [showAdvanced, setShowAdvanced] = useLocalStorage("upstart:editor:show-advanced", false);
   const previewMode = usePreviewMode();
   const getBrickInfo = useGetBrick();
   const brickInfo = getBrickInfo(brick.id);
@@ -41,11 +40,10 @@ export default function BrickSettingsView({
         (typeof prop["ui:responsive"] === "undefined" ||
           prop["ui:responsive"] === true ||
           prop["ui:responsive"] === previewMode) &&
-        categoryFilter(prop.metadata?.category) &&
-        (!prop["ui:advanced"] || showAdvanced)
+        categoryFilter(prop.metadata?.category)
       );
     },
-    [previewMode, showAdvanced, categoryFilter],
+    [previewMode, categoryFilter],
   );
 
   const navItems = useMemo(() => getNavItemsFromManifest(manifest.props, filter), [filter, manifest.props]);
@@ -54,8 +52,8 @@ export default function BrickSettingsView({
   const baseFormData = useMemo(() => {
     const defProps = defaultProps[brick.type].props;
     return previewMode === "mobile"
-      ? mergeIgnoringArrays({}, defProps, brick.mobileProps ?? {})
-      : mergeIgnoringArrays(defProps, brick.props ?? {});
+      ? mergeIgnoringArrays({}, defProps, brick.props, brick.mobileProps ?? {})
+      : mergeIgnoringArrays({}, defProps, brick.props ?? {});
   }, [brick, previewMode]);
 
   // Get datasource if one is selected
@@ -77,16 +75,26 @@ export default function BrickSettingsView({
         // ignore changes unrelated to the brick
         return;
       }
+
+      // Get property schema from the manifest
+      const manifestField = get(manifest.props.properties, propertyChangedPath);
+
+      // All content props should be set on the brick props, not mobileProps
+      const isMobileProps = previewMode === "mobile" && manifestField?.metadata?.category !== "content";
+      console.log("manifestField", manifestField);
+
       // Note: this is a weird way to update the brick props, but it'it allows us to deal with frozen trees
-      const props = structuredClone(brickInfo?.props ?? {});
+      const props = structuredClone(
+        isMobileProps ? (brickInfo?.mobileProps ?? {}) : (brickInfo?.props ?? {}),
+      );
       // `propertyChangedPath` can take the form of `a.b.c` which means we need to update `props.a.b.c`
       // For this we use lodash.set
       set(props, propertyChangedPath, data[propertyChangedPath]);
 
       // Update the brick props in the store
-      updateBrickProps(brick.id, props, previewMode === "mobile");
+      updateBrickProps(brick.id, props, isMobileProps);
     },
-    [brick.id, previewMode, updateBrickProps, brickInfo],
+    [brick.id, manifest, previewMode, updateBrickProps, brickInfo],
   );
 
   return (

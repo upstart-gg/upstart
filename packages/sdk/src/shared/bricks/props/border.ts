@@ -11,6 +11,7 @@ export function border(opts: StringOptions = {}) {
     "ui:display": "button-group",
     "ui:placeholder": "None",
     "ui:styleId": "styles:border",
+    "ui:responsive": "desktop",
     $id: "styles:border",
     default: "border-0",
     ...opts,

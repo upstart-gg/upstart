@@ -35,7 +35,7 @@ import { DatarecordField } from "./fields/datarecord";
 import { fieldLabel } from "./form-class";
 
 export interface FieldFactoryOptions {
-  brickId?: string;
+  brickId: string;
   fieldName: string;
   fieldSchema: TSchema;
   formSchema: TObject<TProperties>;
@@ -487,7 +487,7 @@ type ProcessObjectSchemaToFieldsProps = {
   formSchema: TObject<TProperties>;
   onChange: (data: Record<string, unknown>, propPath: string) => void;
   options: {
-    brickId?: string;
+    brickId: string;
     filter?: (field: TSchema) => boolean;
     parents?: string[];
   };
@@ -542,8 +542,6 @@ export function processObjectSchemaToFields({
 
     if (fieldComponent) {
       fields.push(fieldComponent);
-    } else {
-      console.log("!!! No field component created for", fieldName);
     }
   });
 

@@ -16,7 +16,6 @@ const Vbox = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
   const props = brick.props;
   const styles = useBrickStyle<Manifest>(brick);
   const classes = Object.values(styles);
-  // const ds = useDatasource(props.datasource, manifest.datasource);
 
   if (editable) {
     return (
@@ -83,7 +82,6 @@ function DroppableVbox({ brick }: BrickProps<Manifest>) {
   const { isDesktop } = useDeviceInfo();
   const draggingBrickType = useDraggingBrickType();
   const previewMode = usePreviewMode();
-  // const ds = useDatasource(props.datasource, manifest.datasource);
   return (
     <Droppable
       droppableId={brick.id}

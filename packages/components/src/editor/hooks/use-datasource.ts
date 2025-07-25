@@ -1,15 +1,9 @@
-import type { TObject } from "@sinclair/typebox";
 import { useDraft } from "./use-editor";
 
 export function useDatasource(datasourceId?: string) {
   const draft = useDraft();
   const datasource = datasourceId ? draft.datasources?.[datasourceId] : null;
-  const schema = datasource?.schema as TObject | null;
-  return {
-    datasource,
-    schema,
-    error: datasourceId && !datasource ? new Error(`Datasource ${datasourceId} not found`) : null,
-  };
+  return datasource ?? null;
 }
 
 export function useDatasources() {

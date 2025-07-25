@@ -31,7 +31,7 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, edi
         classes,
         props.color,
         props.size,
-        "h-full w-full font-medium min-w-fit text-nowrap min-h-fit",
+        "flex-grow shrink-0 h-full font-medium min-w-fit text-nowrap min-h-fit",
         editable && "pointer-events-none",
       )}
       data-prevented-by-editor={editable ? "true" : "false"}

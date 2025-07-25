@@ -22,6 +22,9 @@ export const manifest = defineBrickManifest({
     desktop: 120,
     mobile: 120,
   },
+  defaultWidth: {
+    mobile: "100%",
+  },
   props: defineProps({
     color: StringEnum(["btn-color-neutral", "btn-color-primary", "btn-color-secondary", "btn-color-accent"], {
       title: "Color",
@@ -41,7 +44,6 @@ export const manifest = defineBrickManifest({
     rounding: Type.Optional(
       roundingRef({
         default: "rounded-md",
-        "ui:responsive": "desktop",
       }),
     ),
     border: Type.Optional(borderRef({ default: "border-0", "ui:responsive": "desktop" })),

@@ -7,7 +7,7 @@ import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
  * F: All form fields data type
  */
 export type FieldProps<T = unknown, F = Record<string, unknown>> = {
-  brickId?: string;
+  brickId: string;
   onChange: (value: T | null) => void;
   currentValue: T;
   /**
@@ -22,7 +22,7 @@ export type FieldProps<T = unknown, F = Record<string, unknown>> = {
    * Form data
    */
   formData: F;
-  required: boolean;
+  // required: boolean;
   title?: string;
   description?: string;
   placeholder?: string;

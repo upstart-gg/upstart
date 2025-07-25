@@ -21,13 +21,9 @@ import type { FieldProps } from "./types";
 // This is useful for displaying text content without HTML formatting (ie for items title).
 function stripHtml(html: string) {
   if (!html) return "";
-  if (typeof window !== "undefined") {
-    const div = document.createElement("div");
-    div.innerHTML = html;
-    return div.textContent || div.innerText || "";
-  }
-  // SSR fallback
-  return html.replace(/<[^>]+>/g, "");
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  return div.textContent || div.innerText || "";
 }
 
 export interface ArrayFieldProps extends FieldProps<unknown[]> {

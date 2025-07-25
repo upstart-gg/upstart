@@ -60,6 +60,7 @@ export default function AttributesSettingsView({
 
   return (
     <FormNavigator
+      brickId="none"
       title={title}
       initialGroup={group}
       navItems={navItems}
