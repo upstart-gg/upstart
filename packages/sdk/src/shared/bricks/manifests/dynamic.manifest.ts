@@ -25,12 +25,6 @@ export const manifest = defineBrickManifest({
   },
   icon: BsDatabaseDown,
   props: defineProps({
-    datasource: Type.Object(
-      {
-        id: Type.String({ title: "Datasource ID", description: "The ID of the datasource to use." }),
-      },
-      { title: "Datasource", metadata: { category: "content" } },
-    ),
     background: Type.Optional(backgroundRef()),
     border: Type.Optional(borderRef()),
     padding: Type.Optional(paddingRef()),
