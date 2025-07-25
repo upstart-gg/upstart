@@ -15,7 +15,7 @@ import { useIsPremiumPlan } from "~/editor/hooks/use-editor";
 import { tx } from "@upstart.gg/style-system/twind";
 
 const BackgroundField: FC<FieldProps<BackgroundSettings>> = (props) => {
-  const { schema, formData, onChange, required, title, description, currentValue = {} } = props;
+  const { schema, formData, onChange, title, description, currentValue = {} } = props;
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);
   const { onImageUpload } = useUploader();
@@ -57,7 +57,6 @@ const BackgroundField: FC<FieldProps<BackgroundSettings>> = (props) => {
                   onChange({ ...currentValue, image: tempUrl as string });
                 }
               }}
-              required={required}
             />
             <Button variant="soft" size="1" radius="full" type="button">
               <label

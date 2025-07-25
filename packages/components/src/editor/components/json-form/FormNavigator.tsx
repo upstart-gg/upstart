@@ -21,7 +21,7 @@ type FormNavigatorContextType = {
   formData: Record<string, unknown>;
   formSchema: TObject;
   isRootView: boolean;
-  brickId?: string;
+  brickId: string;
 };
 
 // Create context for navigation
@@ -94,7 +94,7 @@ type FormNavigatorProps = {
   className?: string;
   // style?: CSSProperties;
   initialGroup?: string;
-  brickId?: string;
+  brickId: string;
 };
 
 const FormNavigator: FC<FormNavigatorProps> = ({

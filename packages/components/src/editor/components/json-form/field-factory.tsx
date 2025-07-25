@@ -7,7 +7,6 @@ import { AlignBasicField } from "./fields/align-basic";
 import { ArrayField } from "./fields/array";
 import BackgroundField from "./fields/background";
 import ColorField from "./fields/color";
-import DatasourceRefField from "./fields/datasource-ref";
 import EnumField from "./fields/enum";
 import IconifyField from "./fields/iconify";
 import ImageField from "./fields/image";
@@ -20,7 +19,6 @@ import VariantGroupField from "./fields/variant-group";
 // Import types
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
-import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import type { GeolocationSettings } from "@upstart.gg/sdk/shared/bricks/props/geolocation";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
@@ -33,7 +31,7 @@ import { DatarecordField } from "./fields/datarecord";
 import { fieldLabel } from "./form-class";
 
 export interface FieldFactoryOptions {
-  brickId?: string;
+  brickId: string;
   fieldName: string;
   fieldSchema: TSchema;
   formSchema: TObject<TProperties>;
@@ -143,42 +141,6 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
         />
       );
     }
-
-    case "datasource-ref": {
-      const currentValue = (get(formData, id) ?? commonProps.schema.default) as DatasourceRefSettings;
-      return (
-        <DatasourceRefField
-          key={`field-${id}`}
-          currentValue={currentValue}
-          onChange={(value: DatasourceRefSettings | null) => onChange({ [id]: value }, id)}
-          {...commonProps}
-        />
-      );
-    }
-
-    // case "flex": {
-    //   const currentValue = (get(formData, id) ?? commonProps.schema.default) as FlexSettings;
-    //   return (
-    //     <FlexField
-    //       key={`field-${id}`}
-    //       currentValue={currentValue}
-    //       onChange={(value: FlexSettings | null) => onChange({ [id]: value }, id)}
-    //       {...commonProps}
-    //     />
-    //   );
-    // }
-
-    // case "grid": {
-    //   const currentValue = (get(formData, id) ?? commonProps.schema.default) as GridSettings;
-    //   return (
-    //     <GridField
-    //       key={`field-${id}`}
-    //       currentValue={currentValue}
-    //       onChange={(value: GridSettings | null) => onChange({ [id]: value }, id)}
-    //       {...commonProps}
-    //     />
-    //   );
-    // }
 
     case "padding": {
       const currentValue = (get(formData, id) ?? commonProps.schema.default) as TempPadding;
@@ -473,7 +435,7 @@ type ProcessObjectSchemaToFieldsProps = {
   formSchema: TObject<TProperties>;
   onChange: (data: Record<string, unknown>, propPath: string) => void;
   options: {
-    brickId?: string;
+    brickId: string;
     filter?: (field: TSchema) => boolean;
     parents?: string[];
   };

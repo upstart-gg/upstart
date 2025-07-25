@@ -3,7 +3,6 @@ import { manifest, type Manifest } from "@upstart.gg/sdk/shared/bricks/manifests
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import TextContent from "../components/TextContent";
-import { useDatasource } from "../hooks/use-datasource";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { useColorPreset } from "../hooks/use-color-preset";
@@ -12,7 +11,6 @@ const Navbar = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
   const styles = useBrickStyle<Manifest>(brick);
   const presetClasses = useColorPreset<Manifest>(brick);
   const props = brick.props;
-  // const ds = useDatasource(props.navigation.datasource, manifest.datasource);
 
   return (
     <header

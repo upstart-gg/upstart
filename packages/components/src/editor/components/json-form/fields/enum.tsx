@@ -16,7 +16,7 @@ interface EnumOption {
 }
 
 const EnumField: FC<FieldProps<string>> = (props) => {
-  const { schema, currentValue, formData, onChange, required, title, description } = props;
+  const { schema, currentValue, formData, onChange, title, description } = props;
 
   // console.log("EnumField props", schema);
   // const context = formContext as { brickId: Brick["id"] };
@@ -55,7 +55,6 @@ const EnumField: FC<FieldProps<string>> = (props) => {
                       value={option.const}
                       checked={currentValue === option.const}
                       onChange={() => onChange(option.const)}
-                      required={required}
                       className="form-radio mr-1 text-upstart-600 ring-upstart-600 focus:ring-transparent"
                     />
                     <span className="font-medium">{option.title}</span>

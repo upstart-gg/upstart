@@ -28,6 +28,7 @@ There is no need to define the form fields manually and the form does not accept
   props: defineProps({
     datarecordId: datarecord("Datarecord ID", {
       description: "The ID of the datarecord to use to generate the form fields",
+      "ui:responsive": "desktop",
     }),
     color: Type.Optional(
       colorPresetRef({

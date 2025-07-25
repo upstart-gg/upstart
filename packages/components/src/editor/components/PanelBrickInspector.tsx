@@ -1,6 +1,12 @@
-import { usePreviewMode, useSectionByBrickId } from "../hooks/use-editor";
+import {
+  useDraftHelpers,
+  useDynamicParent,
+  useHasDynamicParent,
+  usePreviewMode,
+  useSectionByBrickId,
+} from "../hooks/use-editor";
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
-import { Callout, Tabs } from "@upstart.gg/style-system/system";
+import { Callout, SegmentedControl, Tabs } from "@upstart.gg/style-system/system";
 import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import { useLocalStorage } from "usehooks-ts";
@@ -12,6 +18,10 @@ import { PanelBlockTitle } from "./PanelBlockTitle";
 import PageHierarchy from "./PageHierarchy";
 import { IconRender } from "./IconRender";
 import type { TObject, TSchema } from "@sinclair/typebox";
+import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
+import DatasourceMappingField from "./json-form/fields/datasource-mapping";
+import { useDatasource } from "../hooks/use-datasource";
+import SwitchField from "./json-form/fields/switch";
 
 type TabType = "preset" | "settings" | "content";
 
@@ -38,7 +48,7 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
   const previewMode = usePreviewMode();
   const [tabsMapping, setTabsMapping] = useLocalStorage<Record<string, TabType>>("inspector_tabs_map", {});
   const section = useSectionByBrickId(brick.id);
-  const manifest = manifests[brick.type];
+  const manifest = useBrickManifest(brick.type);
   const hasContentProperties = hasFilteredProperties(manifest, (prop) => {
     return (
       prop.metadata?.category === "content" &&
@@ -92,7 +102,6 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
         onValueChange={(val) => {
           setTabsMapping((prev) => ({ ...prev, [brick.id]: val as TabType }));
         }}
-        // className="contents"
         className="flex-1 flex flex-col"
       >
         {showTabsList && (
@@ -143,22 +152,63 @@ function SettingsTab({ brick, section, hasTabs }: { brick: Brick; section: Secti
     </form>
   );
 }
+
 function ContentTab({ brick, section, hasTabs }: { brick: Brick; section: Section; hasTabs: boolean }) {
-  const previewMode = usePreviewMode();
+  const dynamicParent = useDynamicParent(brick.id);
+  const dynamicContent = !!brick.props.dynamicContent;
+  const ds = useDatasource(brick.props.datasource?.id);
+  const { updateBrickProps } = useDraftHelpers();
   return (
-    <form className={tx("flex flex-col h-full")} onSubmit={(e) => e.preventDefault()}>
+    <div className={tx("flex flex-col h-full")}>
       <div className="basis-[50%] shrink-0 grow flex flex-col">
-        <BrickSettingsView
-          brick={brick}
-          label="content"
-          categoryFilter={(category) => category === "content"}
-        />
+        {dynamicParent !== null && (
+          <div className="flex flex-col">
+            <Callout.Root size="1">
+              <Callout.Text size="1">
+                This brick is inside a dynamic parent brick so you can choose to use dynamic content in it.
+              </Callout.Text>
+            </Callout.Root>
+            <div className="flex p-2">
+              <SwitchField
+                brickId={brick.id}
+                currentValue={dynamicContent}
+                onChange={(value) => {
+                  updateBrickProps(brick.id, { dynamicContent: value });
+                }}
+                title="Use dynamic content"
+                description="Enable this to allow dynamic content mapping for this brick."
+                formData={brick.props}
+                formSchema={manifests[brick.type].props as TObject}
+                schema={manifests[brick.type].props as TObject}
+              />
+            </div>
+          </div>
+        )}
+        {!dynamicContent && (
+          <BrickSettingsView
+            brick={brick}
+            label="content"
+            categoryFilter={(category) => category === "content"}
+          />
+        )}
+        {dynamicParent !== null && dynamicContent && (
+          <DatasourceMappingField
+            currentValue={brick.props.datasourceMapping}
+            formData={brick.props}
+            schema={manifests[brick.type].props}
+            formSchema={manifests[brick.type].props as TObject}
+            brickId={brick.id}
+            onChange={(data) => {
+              // Handle the change in datasource mapping
+            }}
+          />
+        )}
       </div>
       <PageHierarchy
         brick={brick}
         section={section}
         className={tx(hasTabs ? "h-[calc(50cqh-58px)]" : "h-[50cqh]")}
       />
-    </form>
+    </div>
   );
 }

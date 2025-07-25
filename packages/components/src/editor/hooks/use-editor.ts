@@ -1574,6 +1574,34 @@ export const useDraft = () => {
   return useStore(ctx);
 };
 
+export function useHasDynamicParent(brickId: string) {
+  const ctx = useDraftStoreContext();
+  const getParentBrick = useStore(ctx, (state) => state.getParentBrick);
+  let tmp = getParentBrick(brickId);
+  while (tmp) {
+    if (tmp.type === "dynamic") {
+      return true;
+    }
+    brickId = tmp.id;
+    tmp = getParentBrick(brickId);
+  }
+  return false;
+}
+
+export function useDynamicParent(brickId: string) {
+  const ctx = useDraftStoreContext();
+  const getParentBrick = useStore(ctx, (state) => state.getParentBrick);
+  let tmp = getParentBrick(brickId);
+  while (tmp) {
+    if (tmp.type === "dynamic") {
+      return tmp;
+    }
+    brickId = tmp.id;
+    tmp = getParentBrick(brickId);
+  }
+  return null;
+}
+
 export const useGetBrick = () => {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => state.getBrick);
