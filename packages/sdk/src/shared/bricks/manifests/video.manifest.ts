@@ -6,6 +6,7 @@ import type { BrickProps } from "../props/types";
 import { borderRef } from "../props/border";
 import { shadowRef } from "../props/effects";
 import { Type } from "@sinclair/typebox";
+import { paddingRef } from "../props/padding";
 
 export const manifest = defineBrickManifest({
   type: "video",
@@ -28,7 +29,7 @@ export const manifest = defineBrickManifest({
       description: "URL of the video to embed. It can be a YouTube link or an embed link.",
       default: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     }),
-    border: Type.Optional(borderRef()),
+    padding: Type.Optional(paddingRef()),
     shadow: Type.Optional(shadowRef()),
   }),
 });

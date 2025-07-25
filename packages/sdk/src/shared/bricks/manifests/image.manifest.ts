@@ -20,13 +20,11 @@ export const manifest = defineBrickManifest({
   icon: RxImage,
   props: defineProps({
     image: imageRef(),
-    backgroundColor: Type.Optional(backgroundColorRef()),
-    border: Type.Optional(borderRef()),
     padding: Type.Optional(paddingRef()),
     shadow: Type.Optional(shadowRef()),
     blurHash: Type.Optional(
       string("Blur Hash", {
-        "ui:fied": "hidden",
+        "ui:field": "hidden",
         description: "A placeholder for the image while it is loading. Use a blur hash string.",
       }),
     ),
@@ -79,7 +77,6 @@ export const examples: {
         alt: "Team member profile photo",
       },
       shadow: "shadow-md",
-      border: "border-2",
     },
   },
   {
@@ -141,10 +138,8 @@ export const examples: {
         src: "https://via.placeholder.com/120x120.png?text=Customer",
         alt: "Happy customer testimonial photo",
       },
-      border: "border-2",
       shadow: "shadow-lg",
       padding: "p-2",
-      backgroundColor: "#ffffff",
     },
   },
   {
@@ -155,7 +150,6 @@ export const examples: {
         src: "https://via.placeholder.com/800x200.png?text=Event+Banner",
         alt: "Annual conference event banner",
       },
-      border: "border-2",
       shadow: "shadow-xl",
       author: {
         name: "Event Photographer",
@@ -172,9 +166,7 @@ export const examples: {
         src: "https://via.placeholder.com/150x150.png?text=Blabla+Feature",
         alt: "Feature illustration",
       },
-      backgroundColor: "#f0f9ff",
       padding: "p-8",
-      border: "border-2",
       shadow: "shadow-sm",
     },
   },
@@ -186,7 +178,6 @@ export const examples: {
         src: "https://via.placeholder.com/300x200.png?text=Card+Image",
         alt: "My image",
       },
-      border: "border-2",
       shadow: "shadow-md",
       blurHash: "L6PZfSi_.AyE_3t7t7R**0o#DgR4",
     },

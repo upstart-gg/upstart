@@ -9,7 +9,7 @@ import get from "lodash-es/get";
  * If a preset is provided, it will return the class name for that preset.
  * If no preset is provided, it will return undefined.
  */
-export function useColorPreset<T = BrickManifest>(brick: BrickProps<T>["brick"]) {
+export function useColorPreset<T extends BrickManifest>(brick: BrickProps<T>["brick"]) {
   const manifest = useBrickManifest(brick.type);
   for (const [path, schema] of Object.entries(manifest.props.properties)) {
     if (schema["ui:presets"]) {
@@ -17,7 +17,7 @@ export function useColorPreset<T = BrickManifest>(brick: BrickProps<T>["brick"])
       const currentPreset = get(brick.props, path) as keyof ColorPresets;
       if (currentPreset && availablePresets[currentPreset]) {
         return availablePresets[currentPreset].value as ColorPresets[keyof ColorPresets]["value"];
-      } else {
+      } else if (schema.default) {
         return schema.default as ColorPresets[keyof ColorPresets]["value"];
       }
     }

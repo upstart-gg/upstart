@@ -1,4 +1,4 @@
-import { Type, type TObject } from "@sinclair/typebox";
+import { type Static, Type, type TObject } from "@sinclair/typebox";
 import { TfiLayoutAccordionSeparated } from "react-icons/tfi";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
@@ -8,6 +8,7 @@ import { defineProps } from "../props/helpers";
 import { colorPresetRef } from "../props/preset";
 import { fontSizeRef, textContentRef } from "../props/text";
 import type { BrickProps } from "../props/types";
+import { gradientDirectionRef } from "../props/color";
 
 export const manifest = defineBrickManifest({
   type: "accordion",
@@ -21,324 +22,281 @@ Multiple panels can be open simultaneously or limited to one at a time.
   `.trim(),
   icon: TfiLayoutAccordionSeparated,
 
-  defaultWidth: { desktop: "250px", mobile: "100%" },
+  defaultWidth: { desktop: "450px", mobile: "100%" },
 
-  props: defineProps(
-    {
-      items: Type.Array(
-        Type.Object({
-          title: textContentRef({
-            title: "Title",
-            default: "My title",
-            disableSizing: true,
-            showInSettings: true,
-          }),
-          content: textContentRef({ title: "Content", default: "Expandable content goes here" }),
-          defaultOpen: Type.Optional(boolean("Open by default", false)),
+  props: defineProps({
+    items: Type.Array(
+      Type.Object({
+        title: textContentRef({
+          title: "Title",
+          default: "My title",
+          disableSizing: true,
+          showInSettings: true,
         }),
-        {
-          title: "Accordion items",
-          metadata: {
-            category: "content",
-          },
-        },
-      ),
-      fontSize: Type.Optional(fontSizeRef({ default: "inherit" })),
-      restrictOneOpen: boolean("Restrict to one open item", false, {
-        description:
-          "Restrict to one open item at a time. If false, multiple items can be open simultaneously.",
+        content: textContentRef({ title: "Content", default: "Expandable content goes here" }),
+        defaultOpen: Type.Optional(boolean("Open by default", false)),
       }),
-      gap: basicGapRef({ allowNoGap: false }),
-      rounding: Type.Optional(
-        StringEnum(
-          [
-            "rounded-auto",
-            "rounded-none",
-            "rounded-sm",
-            "rounded-md",
-            "rounded-lg",
-            "rounded-xl",
-            "rounded-2xl",
-            "rounded-3xl",
-          ],
-          {
-            title: "Corner rounding",
-            enumNames: ["Auto", "None", "Small", "Medium", "Large", "Extra large", "2xl", "3xl"],
-            "ui:placeholder": "Not specified",
-            "ui:field": "enum",
-            "ui:display": "select",
-            "ui:styleId": "styles:rounding",
-            default: "rounded-auto",
-          },
-        ),
-      ),
-      colorPreset: Type.Optional(
-        colorPresetRef({
-          title: "Color preset",
-          "ui:presets": {
-            "primary-light": {
-              previewBgClass: "bg-primary-light text-primary-content-light",
-              value: {
-                title: "bg-primary-light text-primary-content-light",
-                border: "border-primary-light",
-              },
-              label: "Primary light",
-            },
-            "primary-light-gradient": {
-              previewBgClass: "bg-gradient-to-br from-primary-300 to-primary-500 text-primary-content-light",
-              value: {
-                title: "from-primary-300 to-primary-500 text-primary-content-light",
-                border: "border-primary",
-              },
-              label: "Primary light gradient",
-            },
-            primary: {
-              previewBgClass: "bg-primary text-primary-content",
-              label: "Primary",
-              value: {
-                title: "bg-primary text-primary-content",
-                border: "border-primary",
-              },
-            },
-            "primary-gradient": {
-              previewBgClass: "bg-gradient-to-br from-primary-500 to-primary-700 text-primary-content",
-              label: "Primary gradient",
-              value: {
-                title: "from-primary-500 to-primary-700 text-primary-content",
-                border: "border-primary",
-              },
-            },
-            "primary-dark": {
-              previewBgClass: "bg-primary-dark text-primary-content",
-              label: "Primary dark",
-              value: {
-                title: "bg-primary-dark text-primary-content",
-                border: "border-primary-dark",
-              },
-            },
-            "primary-dark-gradient": {
-              previewBgClass: "bg-gradient-to-br from-primary-700 to-primary-900 text-primary-content",
-              label: "Primary dark gradient",
-              value: {
-                title: "from-primary-700 to-primary-900 text-primary-content",
-                border: "border-primary-dark",
-              },
-            },
-            "secondary-light": {
-              previewBgClass: "bg-secondary-light text-secondary-content-light",
-              label: "Secondary light",
-              value: {
-                title: "bg-secondary-light text-secondary-content-light",
-                border: "border-secondary-light",
-              },
-            },
-            "secondary-light-gradient": {
-              previewBgClass:
-                "bg-gradient-to-br from-secondary-300 to-secondary-500 text-secondary-content-light",
-              label: "Secondary light gradient",
-              value: {
-                title: "from-secondary-300 to-secondary-500 text-secondary-content-light",
-                border: "border-secondary",
-              },
-            },
-            secondary: {
-              previewBgClass: "bg-secondary text-secondary-content",
-              label: "Secondary",
-              value: {
-                title: "bg-secondary text-secondary-content",
-                border: "border-secondary",
-              },
-            },
-            "secondary-gradient": {
-              previewBgClass: "bg-gradient-to-br from-secondary-500 to-secondary-700 text-secondary-content",
-              label: "Secondary gradient",
-              value: {
-                title: "from-secondary-500 to-secondary-700 text-secondary-content",
-                border: "border-secondary",
-              },
-            },
-            "secondary-dark": {
-              previewBgClass: "bg-secondary-dark text-secondary-content",
-              label: "Secondary dark",
-              value: {
-                title: "bg-secondary-dark text-secondary-content",
-                border: "border-secondary-dark",
-              },
-            },
-
-            "secondary-dark-gradient": {
-              previewBgClass: "bg-gradient-to-br from-secondary-700 to-secondary-900 text-secondary-content",
-              label: "Secondary dark gradient",
-              value: {
-                title: "from-secondary-700 to-secondary-900 text-secondary-content",
-                border: "border-secondary-dark",
-              },
-            },
-
-            "accent-light": {
-              previewBgClass: "bg-accent-light text-accent-content-light",
-              label: "Accent lighter",
-              value: {
-                title: "bg-accent-light text-accent-content-light",
-                border: "border-accent-light",
-              },
-            },
-
-            "accent-light-gradient": {
-              previewBgClass: "bg-gradient-to-br from-accent-300 to-accent-500 text-accent-content-light",
-              label: "Accent light gradient",
-              value: {
-                title: "from-accent-300 to-accent-500 text-accent-content-light",
-                border: "border-accent",
-              },
-            },
-            accent: {
-              previewBgClass: "bg-accent text-accent-content",
-              label: "Accent",
-              value: {
-                title: "bg-accent text-accent-content",
-                border: "border-accent",
-              },
-            },
-
-            "accent-gradient": {
-              previewBgClass: "bg-gradient-to-br from-accent-500 to-accent-700 text-accent-content",
-              label: "Accent gradient",
-              value: {
-                title: "from-accent-500 to-accent-700 text-accent-content",
-                border: "border-accent",
-              },
-            },
-            "accent-dark": {
-              previewBgClass: "bg-accent-dark text-accent-content",
-              label: "Accent dark",
-              value: {
-                title: "bg-accent-dark text-accent-content",
-                border: "border-accent-dark",
-              },
-            },
-
-            "accent-dark-gradient": {
-              previewBgClass: "bg-gradient-to-br from-accent-700 to-accent-900 text-accent-content",
-              label: "Accent dark gradient",
-              value: {
-                title: "from-accent-700 to-accent-900 text-accent-content",
-                border: "border-accent-dark",
-              },
-            },
-            "neutral-light": {
-              previewBgClass: "bg-neutral-light text-neutral-content-light",
-              label: "Neutral light",
-              value: {
-                title: "bg-neutral-light text-neutral-content-light",
-                border: "border-neutral-light",
-              },
-            },
-
-            "neutral-light-gradient": {
-              previewBgClass: "bg-gradient-to-br from-neutral-300 to-neutral-500 text-neutral-content-light",
-              label: "Neutral light gradient",
-              value: {
-                title: "from-neutral-300 to-neutral-500 text-neutral-content-light",
-                border: "border-neutral",
-              },
-            },
-
-            neutral: {
-              previewBgClass: "bg-neutral text-neutral-content",
-              label: "Neutral",
-              value: {
-                title: "bg-neutral text-neutral-content",
-                border: "border-neutral",
-              },
-            },
-
-            "neutral-gradient": {
-              previewBgClass: "bg-gradient-to-br from-neutral-500 to-neutral-700 text-neutral-content",
-              label: "Neutral gradient",
-              value: {
-                title: "from-neutral-500 to-neutral-700 text-neutral-content",
-                border: "border-neutral",
-              },
-            },
-
-            "neutral-dark": {
-              previewBgClass: "bg-neutral-dark text-neutral-content",
-              label: "Neutral dark",
-              value: {
-                title: "bg-neutral-dark text-neutral-content",
-                border: "border-neutral-dark",
-              },
-            },
-
-            "neutral-dark-gradient": {
-              previewBgClass: "bg-gradient-to-br from-neutral-700 to-neutral-900 text-neutral-content",
-              label: "Neutral dark gradient",
-              value: {
-                title: "from-neutral-700 to-neutral-900 text-neutral-content",
-                border: "border-neutral-dark",
-              },
-            },
-            base100: {
-              previewBgClass: "bg-base-100 text-base-content border-base-200 border-2",
-              label: "Base 100",
-              value: {
-                title: "bg-base-300 text-base-content border-base-300",
-                border: "border-base-300",
-              },
-            },
-          },
-          default: "primary",
-        }),
-      ),
-      gradientDirection: Type.Optional(
-        StringEnum(
-          [
-            "bg-gradient-to-t",
-            "bg-gradient-to-r",
-            "bg-gradient-to-b",
-            "bg-gradient-to-l",
-            "bg-gradient-to-tl",
-            "bg-gradient-to-tr",
-            "bg-gradient-to-br",
-            "bg-gradient-to-bl",
-          ],
-          {
-            title: "Gradient direction",
-            description: "The direction of the gradient. Only applies when color preset is a gradient.",
-            enumNames: [
-              "Top",
-              "Right",
-              "Bottom",
-              "Left",
-              "Top left",
-              "Top right",
-              "Bottom right",
-              "Bottom left",
-            ],
-            default: "bg-gradient-to-br",
-            "ui:responsive": "desktop",
-            "ui:styleId": "styles:gradientDirection",
-            metadata: {
-              filter: (manifestProps: TObject, formData: Manifest["props"]) => {
-                return formData.colorPreset?.includes("gradient") === true;
-              },
-            },
-          },
-        ),
-      ),
-    },
-    {
-      default: {
-        container: {
-          padding: "p-6",
-          backgroundColor: "bg-transparent",
+      {
+        title: "Accordion items",
+        metadata: {
+          category: "content",
         },
-        allowMultiple: true,
-        variants: ["collapse-arrow"],
       },
-    },
-  ),
+    ),
+    fontSize: Type.Optional(fontSizeRef({ default: "inherit" })),
+    restrictOneOpen: boolean("Restrict to one open item", false, {
+      description:
+        "Restrict to one open item at a time. If false, multiple items can be open simultaneously.",
+    }),
+    gap: Type.Optional(basicGapRef({ allowNoGap: false, default: "gap-px" })),
+    rounding: Type.Optional(
+      StringEnum(
+        [
+          "rounded-auto",
+          "rounded-none",
+          "rounded-sm",
+          "rounded-md",
+          "rounded-lg",
+          "rounded-xl",
+          "rounded-2xl",
+          "rounded-3xl",
+        ],
+        {
+          title: "Corner rounding",
+          enumNames: ["Auto", "None", "Small", "Medium", "Large", "Extra large", "2xl", "3xl"],
+          "ui:placeholder": "Not specified",
+          "ui:field": "enum",
+          "ui:display": "select",
+          "ui:styleId": "styles:rounding",
+          default: "rounded-auto",
+        },
+      ),
+    ),
+    color: Type.Optional(
+      colorPresetRef({
+        title: "Color",
+        "ui:presets": {
+          "primary-light": {
+            previewBgClass: "bg-primary-light text-primary-content-light",
+            value: {
+              title: "bg-primary-light text-primary-content-light",
+              border: "border-primary-light",
+            },
+            label: "Primary light",
+          },
+          "primary-light-gradient": {
+            previewBgClass: "bg-gradient-to-br from-primary-300 to-primary-500 text-primary-content-light",
+            value: {
+              title: "from-primary-300 to-primary-500 text-primary-content-light",
+              border: "border-primary",
+            },
+            label: "Primary light gradient",
+          },
+          primary: {
+            previewBgClass: "bg-primary text-primary-content",
+            label: "Primary",
+            value: {
+              title: "bg-primary text-primary-content",
+              border: "border-primary",
+            },
+          },
+          "primary-gradient": {
+            previewBgClass: "bg-gradient-to-br from-primary-500 to-primary-700 text-primary-content",
+            label: "Primary gradient",
+            value: {
+              title: "from-primary-500 to-primary-700 text-primary-content",
+              border: "border-primary",
+            },
+          },
+          "primary-dark": {
+            previewBgClass: "bg-primary-dark text-primary-content",
+            label: "Primary dark",
+            value: {
+              title: "bg-primary-dark text-primary-content",
+              border: "border-primary-dark",
+            },
+          },
+          "primary-dark-gradient": {
+            previewBgClass: "bg-gradient-to-br from-primary-700 to-primary-900 text-primary-content",
+            label: "Primary dark gradient",
+            value: {
+              title: "from-primary-700 to-primary-900 text-primary-content",
+              border: "border-primary-dark",
+            },
+          },
+          "secondary-light": {
+            previewBgClass: "bg-secondary-light text-secondary-content-light",
+            label: "Secondary light",
+            value: {
+              title: "bg-secondary-light text-secondary-content-light",
+              border: "border-secondary-light",
+            },
+          },
+          "secondary-light-gradient": {
+            previewBgClass:
+              "bg-gradient-to-br from-secondary-300 to-secondary-500 text-secondary-content-light",
+            label: "Secondary light gradient",
+            value: {
+              title: "from-secondary-300 to-secondary-500 text-secondary-content-light",
+              border: "border-secondary",
+            },
+          },
+          secondary: {
+            previewBgClass: "bg-secondary text-secondary-content",
+            label: "Secondary",
+            value: {
+              title: "bg-secondary text-secondary-content",
+              border: "border-secondary",
+            },
+          },
+          "secondary-gradient": {
+            previewBgClass: "bg-gradient-to-br from-secondary-500 to-secondary-700 text-secondary-content",
+            label: "Secondary gradient",
+            value: {
+              title: "from-secondary-500 to-secondary-700 text-secondary-content",
+              border: "border-secondary",
+            },
+          },
+          "secondary-dark": {
+            previewBgClass: "bg-secondary-dark text-secondary-content",
+            label: "Secondary dark",
+            value: {
+              title: "bg-secondary-dark text-secondary-content",
+              border: "border-secondary-dark",
+            },
+          },
+
+          "secondary-dark-gradient": {
+            previewBgClass: "bg-gradient-to-br from-secondary-700 to-secondary-900 text-secondary-content",
+            label: "Secondary dark gradient",
+            value: {
+              title: "from-secondary-700 to-secondary-900 text-secondary-content",
+              border: "border-secondary-dark",
+            },
+          },
+
+          "accent-light": {
+            previewBgClass: "bg-accent-light text-accent-content-light",
+            label: "Accent lighter",
+            value: {
+              title: "bg-accent-light text-accent-content-light",
+              border: "border-accent-light",
+            },
+          },
+
+          "accent-light-gradient": {
+            previewBgClass: "bg-gradient-to-br from-accent-300 to-accent-500 text-accent-content-light",
+            label: "Accent light gradient",
+            value: {
+              title: "from-accent-300 to-accent-500 text-accent-content-light",
+              border: "border-accent",
+            },
+          },
+          accent: {
+            previewBgClass: "bg-accent text-accent-content",
+            label: "Accent",
+            value: {
+              title: "bg-accent text-accent-content",
+              border: "border-accent",
+            },
+          },
+
+          "accent-gradient": {
+            previewBgClass: "bg-gradient-to-br from-accent-500 to-accent-700 text-accent-content",
+            label: "Accent gradient",
+            value: {
+              title: "from-accent-500 to-accent-700 text-accent-content",
+              border: "border-accent",
+            },
+          },
+          "accent-dark": {
+            previewBgClass: "bg-accent-dark text-accent-content",
+            label: "Accent dark",
+            value: {
+              title: "bg-accent-dark text-accent-content",
+              border: "border-accent-dark",
+            },
+          },
+
+          "accent-dark-gradient": {
+            previewBgClass: "bg-gradient-to-br from-accent-700 to-accent-900 text-accent-content",
+            label: "Accent dark gradient",
+            value: {
+              title: "from-accent-700 to-accent-900 text-accent-content",
+              border: "border-accent-dark",
+            },
+          },
+          "neutral-light": {
+            previewBgClass: "bg-neutral-light text-neutral-content-light",
+            label: "Neutral light",
+            value: {
+              title: "bg-neutral-light text-neutral-content-light",
+              border: "border-neutral-light",
+            },
+          },
+
+          "neutral-light-gradient": {
+            previewBgClass: "bg-gradient-to-br from-neutral-300 to-neutral-500 text-neutral-content-light",
+            label: "Neutral light gradient",
+            value: {
+              title: "from-neutral-300 to-neutral-500 text-neutral-content-light",
+              border: "border-neutral",
+            },
+          },
+
+          neutral: {
+            previewBgClass: "bg-neutral text-neutral-content",
+            label: "Neutral",
+            value: {
+              title: "bg-neutral text-neutral-content",
+              border: "border-neutral",
+            },
+          },
+
+          "neutral-gradient": {
+            previewBgClass: "bg-gradient-to-br from-neutral-500 to-neutral-700 text-neutral-content",
+            label: "Neutral gradient",
+            value: {
+              title: "from-neutral-500 to-neutral-700 text-neutral-content",
+              border: "border-neutral",
+            },
+          },
+
+          "neutral-dark": {
+            previewBgClass: "bg-neutral-dark text-neutral-content",
+            label: "Neutral dark",
+            value: {
+              title: "bg-neutral-dark text-neutral-content",
+              border: "border-neutral-dark",
+            },
+          },
+
+          "neutral-dark-gradient": {
+            previewBgClass: "bg-gradient-to-br from-neutral-700 to-neutral-900 text-neutral-content",
+            label: "Neutral dark gradient",
+            value: {
+              title: "from-neutral-700 to-neutral-900 text-neutral-content",
+              border: "border-neutral-dark",
+            },
+          },
+          base100: {
+            previewBgClass: "bg-base-100 text-base-content border-base-200 border-2",
+            label: "Base 100",
+            value: {
+              title: "bg-base-300 text-base-content border-base-300",
+              border: "border-base-300",
+            },
+          },
+        },
+        default: "primary",
+      }),
+    ),
+    gradientDirection: Type.Optional(
+      gradientDirectionRef("color", {
+        default: "bg-gradient-to-br",
+      }),
+    ),
+  }),
 });
 
 export type Manifest = typeof manifest;

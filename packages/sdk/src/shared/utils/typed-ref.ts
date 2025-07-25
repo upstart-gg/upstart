@@ -3,7 +3,7 @@ import type { basicAlign } from "../bricks/props/align";
 import type { basicGap } from "../bricks/props/gap";
 import type { background, backgroundColor } from "../bricks/props/background";
 import type { border, rounding } from "../bricks/props/border";
-import type { color } from "../bricks/props/color";
+import type { color, gradientDirection } from "../bricks/props/color";
 import type { hidden } from "../bricks/props/common";
 import type { cssLength } from "../bricks/props/css-length";
 import type { shadow, textShadow } from "../bricks/props/effects";
@@ -24,6 +24,7 @@ export interface SchemaTypeMap {
   "styles:padding": ReturnType<typeof padding>;
   "styles:color": ReturnType<typeof color>;
   "styles:direction": ReturnType<typeof direction>;
+  "styles:gradientDirection": ReturnType<typeof gradientDirection>;
   "styles:shadow": ReturnType<typeof shadow>;
   "styles:textShadow": ReturnType<typeof textShadow>;
   "styles:cssLength": ReturnType<typeof cssLength>;

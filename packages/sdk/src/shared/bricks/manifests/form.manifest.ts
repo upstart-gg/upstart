@@ -11,6 +11,7 @@ import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { fontSizeRef } from "../props/text";
 import { colorPresetRef } from "../props/preset";
+import { gradientDirectionRef } from "../props/color";
 
 export const manifest = defineBrickManifest({
   type: "form",
@@ -203,40 +204,9 @@ There is no need to define the form fields manually and the form does not accept
       }),
     ),
     gradientDirection: Type.Optional(
-      StringEnum(
-        [
-          "bg-gradient-to-t",
-          "bg-gradient-to-r",
-          "bg-gradient-to-b",
-          "bg-gradient-to-l",
-          "bg-gradient-to-tl",
-          "bg-gradient-to-tr",
-          "bg-gradient-to-br",
-          "bg-gradient-to-bl",
-        ],
-        {
-          title: "Gradient direction",
-          description: "The direction of the gradient. Only applies when color preset is a gradient.",
-          enumNames: [
-            "Top",
-            "Right",
-            "Bottom",
-            "Left",
-            "Top left",
-            "Top right",
-            "Bottom right",
-            "Bottom left",
-          ],
-          default: "bg-gradient-to-br",
-          "ui:responsive": "desktop",
-          "ui:styleId": "styles:gradientDirection",
-          metadata: {
-            filter: (manifestProps: TObject, formData: Static<Manifest["props"]>) => {
-              return formData.color?.includes("gradient") === true;
-            },
-          },
-        },
-      ),
+      gradientDirectionRef("color", {
+        default: "bg-gradient-to-br",
+      }),
     ),
     align: Type.Optional(
       StringEnum(["vertical", "horizontal"], {
@@ -248,6 +218,11 @@ There is no need to define the form fields manually and the form does not accept
     padding: Type.Optional(
       paddingRef({
         default: "p-4",
+      }),
+    ),
+    rounding: Type.Optional(
+      roundingRef({
+        default: "rounded-md",
       }),
     ),
     buttonPosition: Type.Optional(

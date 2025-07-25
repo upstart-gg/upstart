@@ -528,8 +528,6 @@ export function processObjectSchemaToFields({
 
     if (fieldComponent) {
       fields.push(fieldComponent);
-    } else {
-      console.log("!!! No field component created for", fieldName);
     }
   });
 

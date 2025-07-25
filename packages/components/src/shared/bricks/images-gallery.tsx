@@ -1,25 +1,24 @@
 import type { Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/images-gallery.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
-import { forwardRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useState } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
+import { useColorPreset } from "../hooks/use-color-preset";
+import { MdClose, MdChevronLeft, MdChevronRight } from "react-icons/md";
 
-/**
- * Containers can operate in two modes: Static and Dynamic.
- * `props.childrenBricks` are present only when the container is in Static mode. Its children are the bricks that are inside the container.
- * Otherwise, the children data are fetched from the datasource and rendered accordingly.
- */
-const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+const ImagesGallery = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const { props } = brick;
   const styles = useBrickStyle<Manifest>(brick);
-  const images = props.images || [];
-  const title = props.title;
+  const presetClasses = useColorPreset<Manifest>(brick);
+
+  const images = (props.images || []).filter(
+    (image) => typeof image.src.src === "string" && image.src.src !== "",
+  );
 
   // State for managing the selected image in the popover
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
   const columns = Number(props.columns) || 3;
-  const borderRadius = props.borderRadius || "rounded-md";
 
   const getGridClasses = () => {
     const colsMap: Record<number, string> = {
@@ -48,61 +47,147 @@ const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, ed
     setSelectedImageIndex(null);
   };
 
-  return (
-    <div>
-      <div ref={ref} className={tx("flex flex-grow shrink-0 min-h-fit")}>
-        <div className={"flex flex-col flex-1"}>
-          {title && (
-            <div className={tx("text-[110%] w-full text-center font-semibold", styles.title)}>{title}</div>
-          )}
-          <div
-            className={tx("h-full", "overflow-visible", `grid ${getGridClasses()}`, Object.values(styles))}
-          >
-            {images.map((image, index) => {
-              return (
-                <div key={index} className={tx("grid relative justify-center items-center  hover:scale-105")}>
-                  <img
-                    src={image.src.src}
-                    alt={image.src.alt}
-                    className={tx("w-full transition-all object-contain cursor-pointer", borderRadius)}
-                    onClick={(e) => handleImageClick(e, index)}
-                  />
-                  {image.legend && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-sm p-2">
-                      {image.legend}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+  const goToNext = useCallback(() => {
+    if (selectedImageIndex === null) return;
+    setSelectedImageIndex((prevIndex) => Math.min(images.length - 1, prevIndex! + 1));
+  }, [selectedImageIndex, images.length]);
+
+  const goToPrevious = useCallback(() => {
+    if (selectedImageIndex === null) return;
+    setSelectedImageIndex((prevIndex) => Math.max(0, prevIndex! - 1));
+  }, [selectedImageIndex]);
+
+  useEffect(() => {
+    if (selectedImageIndex === null) return;
+    // use a signal to close the popover when the user clicks outside of the image
+    const ctrl = new AbortController();
+    const signal = ctrl.signal;
+    // When Esc is pressed GLOBALLY, close the popover
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setSelectedImageIndex(null);
+      } else if (e.key === "ArrowRight") {
+        goToNext();
+      } else if (e.key === "ArrowLeft") {
+        goToPrevious();
+      }
+      e.stopPropagation();
+    };
+    window.addEventListener("keydown", handleKeyDown, { signal });
+    return () => {
+      ctrl.abort();
+    };
+  }, [selectedImageIndex, goToNext, goToPrevious]);
+
+  if (images.length === 0) {
+    return (
+      <div
+        ref={ref}
+        className={tx(
+          "flex flex-col grow items-center justify-center min-w-fit text-center",
+          Object.values(styles),
+          presetClasses.main,
+        )}
+      >
+        <div className="p-8">
+          {editable ? "Add images to this gallery in the panel" : "No images to display"}
         </div>
       </div>
+    );
+  }
 
+  return (
+    <div
+      ref={ref}
+      className={tx(
+        "grid grow shrink-0 min-h-fit max-w-full",
+        `auto-rows-fr @mobile:grid-cols-2 @desktop:${getGridClasses()}`,
+        Object.values(styles),
+        presetClasses.main,
+      )}
+    >
+      {images.map((image, index) => {
+        return (
+          <div
+            key={index}
+            className={tx(
+              "group relative transition-all justify-center items-center overflow-hidden rounded-lg shadow-md hover:scale-105 min-h-fit col-span-1",
+            )}
+          >
+            <img
+              src={image.src.src}
+              alt={image.src.alt}
+              className={tx(`w-full h-full object-cover cursor-pointer`)}
+              onClick={(e) => handleImageClick(e, index)}
+            />
+          </div>
+        );
+      })}
       {selectedImageIndex !== null && images[selectedImageIndex] && (
         <div
           className={tx(
             "fixed top-0 left-0 w-screen h-screen",
             "bg-black/80",
             "flex items-center justify-center",
-            "z-[9999]",
+            "z-[99999]",
           )}
           onClick={(e) => {
             // close the popover if clicked outside the image
             if (e.target === e.currentTarget) {
               handleClosePopover(e);
             }
+            e.stopPropagation();
           }}
         >
           <div
-            className={tx("relative max-w-[50vw] max-h-[50vh]", "flex items-center justify-center")}
-            onClick={(e) => e.stopPropagation()}
+            className={tx(
+              "relative group @mobile:w-[80dvw] @desktop:w-[60dvw] h-[60vh] overflow-y-hidden overflow-x-visible bg-black rounded-xl",
+            )}
           >
             <img
               src={images[selectedImageIndex].src.src}
               alt={images[selectedImageIndex].src.alt}
-              className={"max-w-full max-h-full object-contain"}
+              className={"w-full h-full  object-contain"}
             />
+            {images[selectedImageIndex].legend && (
+              <div className="absolute left-0 right-0 bottom-0 bg-black/60 text-white text-sm p-2 translate-y-full group-hover:translate-y-0 transition-transform">
+                {images[selectedImageIndex].legend}
+              </div>
+            )}
+            <div className="absolute top-2 right-2 w-10 h-10 flex items-center justify-center bg-black/60 text-white cursor-pointer rounded-full">
+              <MdClose className="h-6 w-6" onClick={handleClosePopover} aria-label="Close image" />
+            </div>
+            {/* Previous button - only show if not on first slide */}
+            {selectedImageIndex > 0 && (
+              <button
+                type="button"
+                onClick={goToPrevious}
+                className={tx(
+                  "absolute aspect-square h-14 left-2 top-1/2 -translate-y-1/2 bg-black/60 text-white/80",
+                  // "bg-primary-light hover:bg-primary text-primary-content-light",
+                  "rounded-full p-2 duration-200  opacity-0 group-hover:opacity-100 transition-opacity flex justify-center items-center",
+                )}
+                aria-label="Previous image"
+              >
+                <MdChevronLeft className="w-7 h-7" />
+              </button>
+            )}
+
+            {/* Next button - only show if not on last slide */}
+            {selectedImageIndex < images.length - 1 && (
+              <button
+                type="button"
+                onClick={goToNext}
+                className={tx(
+                  "absolute aspect-square h-14 right-2 top-1/2 -translate-y-1/2 bg-black/60 text-white/80",
+                  // "bg-primary-light hover:bg-primary text-primary-content-light",
+                  "rounded-full p-2 duration-200  opacity-0 group-hover:opacity-100 transition-opacity flex justify-center items-center",
+                )}
+                aria-label="Next image"
+              >
+                <MdChevronRight className="w-7 h-7" />
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -110,4 +195,4 @@ const ImagesWall = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, ed
   );
 });
 
-export default ImagesWall;
+export default ImagesGallery;

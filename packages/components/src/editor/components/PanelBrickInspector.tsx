@@ -40,7 +40,15 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
   const section = useSectionByBrickId(brick.id);
   const manifest = manifests[brick.type];
   const hasContentProperties = hasFilteredProperties(manifest, (prop) => {
-    return prop.metadata?.category === "content";
+    return (
+      prop.metadata?.category === "content" &&
+      (typeof prop.metadata?.["ui:responsive"] === "undefined" ||
+        prop.metadata?.["ui:responsive"] === true ||
+        prop.metadata?.["ui:responsive"] === previewMode) &&
+      (typeof prop["ui:responsive"] === "undefined" ||
+        prop["ui:responsive"] === true ||
+        prop["ui:responsive"] === previewMode)
+    );
   });
 
   const showTabsList =
