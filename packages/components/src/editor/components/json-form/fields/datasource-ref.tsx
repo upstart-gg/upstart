@@ -1,14 +1,13 @@
-import type { FieldProps } from "./types";
-import { Text } from "@upstart.gg/style-system/system";
-import { SegmentedControl, Select } from "@upstart.gg/style-system/system";
-import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
-import { fieldLabel } from "../form-class";
 import { type TProperties, type TSchema, Type } from "@sinclair/typebox";
-import { useGetBrick } from "~/editor/hooks/use-editor";
+import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource-ref";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
-import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
-import { type FC, useCallback } from "react";
+import { SegmentedControl, Select, Text } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
+import { type FC, useCallback } from "react";
+import { useGetBrick } from "~/editor/hooks/use-editor";
+import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
+import { fieldLabel } from "../form-class";
+import type { FieldProps } from "./types";
 
 const DatasourceRefField: FC<FieldProps<DatasourceRefSettings>> = (props) => {
   const { onChange, currentValue = {} as DatasourceRefSettings, brickId } = props;

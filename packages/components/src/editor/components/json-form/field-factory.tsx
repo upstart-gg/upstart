@@ -7,6 +7,7 @@ import { AlignBasicField } from "./fields/align-basic";
 import { ArrayField } from "./fields/array";
 import BackgroundField from "./fields/background";
 import ColorField from "./fields/color";
+import DatasourceField from "./fields/datasource";
 import DatasourceRefField from "./fields/datasource-ref";
 import EnumField from "./fields/enum";
 import IconifyField from "./fields/iconify";
@@ -20,7 +21,8 @@ import VariantGroupField from "./fields/variant-group";
 // Import types
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
-import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
+import type { DatasourceSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
+import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource-ref";
 import type { GeolocationSettings } from "@upstart.gg/sdk/shared/bricks/props/geolocation";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
@@ -139,6 +141,18 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
           key={`field-${id}`}
           currentValue={currentValue}
           onChange={(value: AlignBasicSettings | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
+    case "datasource": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as DatasourceSettings;
+      return (
+        <DatasourceField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: DatasourceSettings | undefined | null) => onChange({ [id]: value }, id)}
           {...commonProps}
         />
       );
