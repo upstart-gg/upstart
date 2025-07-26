@@ -6,12 +6,12 @@ import { tx } from "@upstart.gg/style-system/twind";
 import type L from "leaflet";
 import { Map as LMap, TileLayer, Marker, LatLng, Point } from "leaflet";
 import "leaflet/dist/leaflet.css";
+import BrickRoot from "../components/BrickRoot";
 
-export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
+export default function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
   const styles = useBrickStyle<Manifest>(brick);
   const classes = Object.values(styles);
   const props = brick.props;
-
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -134,13 +134,8 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
   }, []);
 
   return (
-    <div
-      className={tx("flex-grow rounded-[inherit] relative overflow-hidden max-sm:w-full", ...classes)}
-      ref={containerRef}
-    >
+    <BrickRoot className={tx("rounded-[inherit] relative overflow-hidden", ...classes)} ref={containerRef}>
       <div ref={mapRef} className={tx("h-full w-full rounded-[inherit] absolute inset-0 z-40")} />
-    </div>
+    </BrickRoot>
   );
 }
-
-export default WidgetMap;

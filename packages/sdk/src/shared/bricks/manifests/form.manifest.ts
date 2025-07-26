@@ -216,7 +216,7 @@ There is no need to define the form fields manually and the form does not accept
       directionRef({
         title: "Direction",
         description: "The direction of the form fields",
-        defaultValue: "vertical",
+        default: "vertical",
         "ui:responsive": "desktop",
       }),
     ),
@@ -234,7 +234,7 @@ There is no need to define the form fields manually and the form does not accept
       basicAlignRef({
         title: "Button Position",
         description: "The position of the button.",
-        defaultValue: { horizontal: "end" },
+        default: { horizontal: "end" },
         "ui:no-vertical-align": true,
         "ui:horizontal-align-label": "Button position",
         "ui:responsive": "desktop",

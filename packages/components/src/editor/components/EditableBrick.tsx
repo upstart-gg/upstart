@@ -37,7 +37,7 @@ import {
   type Placement,
   FloatingPortal,
 } from "@upstart.gg/style-system/system";
-import BaseBrick from "~/shared/components/BaseBrick";
+import BaseComponent from "~/shared/components/BrickComponent";
 import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
 import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
 import { menuNavBarCls } from "~/shared/styles/menubar-styles";
@@ -75,16 +75,8 @@ function getDropAnimationStyle(
       transform: `${translate}`,
     };
   }
-  //else {
-  //   const translate = `translate(0px, ${moveTo.y}px)`;
-  //   return {
-  //     ...style,
-  //     transform: `${translate}`,
-  //   };
-  // }
-  return {
-    ...style,
-  };
+
+  return style;
 }
 
 function useBarPlacements(brick: Brick): Placement[] {
@@ -281,12 +273,12 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 className={tx(
                   wrapperClass,
                   snapshot.isDragging
-                    ? "opacity-90 !z-[9999] shadow-xl overflow-hidden !cursor-grabbing"
+                    ? "!z-[9999] !shadow-2xl overflow-hidden !cursor-grabbing"
                     : "hover:cursor-auto",
                 )}
                 onClick={onBrickWrapperClick}
               >
-                <BaseBrick brick={brick} selectedBrickId={selectedBrickId} editable />
+                <BaseComponent brick={brick} selectedBrickId={selectedBrickId} editable />
                 {!manifest.isContainer && <BrickDebugLabel brick={brick} />}
                 <FloatingPortal>
                   <BrickMenuBarsContainer

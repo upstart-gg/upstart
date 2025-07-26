@@ -1,12 +1,12 @@
 import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/testimonials.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
-import { forwardRef } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { useColorPreset } from "../hooks/use-color-preset";
 import { InlineIcon } from "@iconify/react";
+import BrickRoot from "../components/BrickRoot";
 
-const Testimonials = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+export default function Testimonials({ brick, editable }: BrickProps<Manifest>) {
   const { props } = brick;
   const { gradientDirection, ...styles } = useBrickStyle<Manifest>(brick);
   const presetClasses = useColorPreset<Manifest>(brick);
@@ -27,13 +27,7 @@ const Testimonials = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, 
         ];
 
   return (
-    <div
-      ref={ref}
-      className={tx(
-        "flex flex-1 gap-6 @mobile:flex-col @desktop:flex-row flex-wrap min-h-fit",
-        containerClasses,
-      )}
-    >
+    <BrickRoot className={tx("flex gap-6 @mobile:flex-col @desktop:flex-row", containerClasses)}>
       {testimonials.map((testimonial, index) => (
         <div
           key={index}
@@ -67,10 +61,6 @@ const Testimonials = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, 
           </div>
         </div>
       ))}
-    </div>
+    </BrickRoot>
   );
-});
-
-Testimonials.displayName = "Testimonials";
-
-export default Testimonials;
+}

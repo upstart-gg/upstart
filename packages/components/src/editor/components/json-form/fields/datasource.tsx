@@ -243,10 +243,10 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
               {filters.map((filter, index) => (
                 <div
                   key={index}
-                  className="grid grid-cols-[1fr_1fr_1fr_1fr_auto] gap-2 items-center bg-gray-50 p-2 rounded"
+                  className="grid grid-cols-[1fr_1fr_1fr_1fr_auto] gap-2 items-center p-2 rounded"
                 >
                   {/* Field Selector */}
-                  <div>
+                  <div className="bg-gray-50">
                     <Select.Root
                       defaultValue={filter.field}
                       size="1"

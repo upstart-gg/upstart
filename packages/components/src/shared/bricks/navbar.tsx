@@ -1,27 +1,23 @@
-import { forwardRef } from "react";
-import { manifest, type Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/navbar.manifest";
+import type { Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/navbar.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import TextContent from "../components/TextContent";
 import { RxHamburgerMenu } from "react-icons/rx";
-import { tx, css } from "@upstart.gg/style-system/twind";
+import { tx } from "@upstart.gg/style-system/twind";
 import { useColorPreset } from "../hooks/use-color-preset";
+import BrickRoot from "../components/BrickRoot";
 
-const Navbar = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+export default function Navbar({ brick, editable }: BrickProps<Manifest>) {
   const styles = useBrickStyle<Manifest>(brick);
   const presetClasses = useColorPreset<Manifest>(brick);
   const props = brick.props;
 
   return (
-    <header
-      ref={ref}
+    <BrickRoot
+      as="header"
       data-brick-group="container"
       data-is-navbar
-      className={tx(
-        "flex-1 flex px-4 brick basis-full h-[60px]",
-        styles.gradientDirection,
-        presetClasses.main,
-      )}
+      className={tx("flex px-4 brick basis-full h-[60px]", styles.gradientDirection, presetClasses.main)}
     >
       <div
         className={tx(
@@ -85,8 +81,6 @@ const Navbar = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
           <RxHamburgerMenu className="w-6 h-6" />
         </div>
       </div>
-    </header>
+    </BrickRoot>
   );
-});
-
-export default Navbar;
+}

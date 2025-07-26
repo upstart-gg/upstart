@@ -25,7 +25,7 @@ describe("Background prop test suite", () => {
 
     it("should accept custom default values", () => {
       const customBg = background({
-        defaultValue: {
+        default: {
           color: "#000000",
           size: "cover",
           repeat: "repeat",
@@ -80,7 +80,7 @@ describe("Background prop test suite", () => {
     });
 
     it("should accept custom title", () => {
-      expect(backgroundColor("red", "Custom Title").title).toBe("Custom Title");
+      expect(backgroundColor({ title: "Custom Title" }).title).toBe("Custom Title");
     });
 
     it("should have correct schema structure", () => {
@@ -96,7 +96,6 @@ describe("Background prop test suite", () => {
 
     it("should have correct default value", () => {
       expect(backgroundColor().default).toBeUndefined();
-      expect(backgroundColor("red").default).toBe("red");
     });
   });
 });

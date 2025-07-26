@@ -5,8 +5,9 @@ import { forwardRef, useState } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { useColorPreset } from "../hooks/use-color-preset";
+import BrickRoot from "../components/BrickRoot";
 
-const Carousel = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+export default function Carousel({ brick, editable }: BrickProps<Manifest>) {
   const { props } = brick;
   const styles = useBrickStyle<Manifest>(brick);
   const presetClasses = useColorPreset<Manifest>(brick);
@@ -26,10 +27,9 @@ const Carousel = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edit
 
   if (images.length === 0) {
     return (
-      <div
-        ref={ref}
+      <BrickRoot
         className={tx(
-          "flex flex-col grow items-center justify-center min-w-fit text-center",
+          "flex flex-col items-center justify-center text-center",
           presetClasses.main,
           Object.values(styles),
         )}
@@ -37,15 +37,12 @@ const Carousel = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edit
         <div className="p-8">
           {editable ? "Add images to this carousel in the panel" : "No images to display"}
         </div>
-      </div>
+      </BrickRoot>
     );
   }
 
   return (
-    <div
-      ref={ref}
-      className={tx("flex flex-col grow shrink-0 min-w-fit", Object.values(styles), presetClasses.main)}
-    >
+    <BrickRoot className={tx("flex flex-col", Object.values(styles), presetClasses.main)}>
       <div className={tx("relative overflow-hidden group flex-1")}>
         <div
           className="flex transition-transform duration-300 ease-in-out absolute inset-0"
@@ -109,8 +106,6 @@ const Carousel = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edit
           </>
         )}
       </div>
-    </div>
+    </BrickRoot>
   );
-});
-
-export default Carousel;
+}
