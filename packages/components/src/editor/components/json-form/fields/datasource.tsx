@@ -16,9 +16,15 @@ import { FieldTitle } from "../field-factory";
  * @returns Objet contenant enum (noms des champs) et enumNames (titres des champs)
  */
 export function getDatasourceIndexedFieldsWithTitles(datasource: Datasource) {
+  const defaultIndexes = [
+    {
+      value: "$publishedAt",
+      title: "Publication date",
+    },
+  ];
   if ("indexes" in datasource === false) {
     console.log("no datasource or indexes found", datasource);
-    return [];
+    return defaultIndexes;
   }
 
   const properties = datasource.schema?.items?.properties || {};
@@ -31,10 +37,12 @@ export function getDatasourceIndexedFieldsWithTitles(datasource: Datasource) {
     ),
   );
 
-  return uniqueFields.map((field) => ({
-    value: field,
-    title: properties[field]?.title || field,
-  }));
+  return uniqueFields
+    .map((field) => ({
+      value: field,
+      title: properties[field]?.title || field,
+    }))
+    .concat(defaultIndexes);
 }
 
 const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
