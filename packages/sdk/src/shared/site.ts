@@ -231,6 +231,115 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           provider: "internal",
         },
       },
+      datasources: {
+        employees: {
+          id: "employees",
+          name: "Company employees",
+          provider: "custom",
+          schema: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                firstName: {
+                  type: "string",
+                  title: "First Name",
+                },
+                lastName: {
+                  type: "string",
+                  title: "Last Name",
+                },
+                email: {
+                  type: "string",
+                  format: "email",
+                  title: "Email",
+                },
+                height: {
+                  type: "number",
+                  title: "Height",
+                },
+                admin: {
+                  type: "boolean",
+                  title: "Is Admin",
+                },
+                startedOn: {
+                  type: "string",
+                  format: "date",
+                  title: "Started On",
+                },
+              },
+              required: ["firstName", "lastName", "email"],
+            },
+          },
+          indexes: [
+            {
+              fields: ["email"],
+              unique: true,
+              name: "idx_unique_email",
+            },
+            {
+              fields: ["lastName"],
+              unique: true,
+              name: "idx_unique_lastName",
+            },
+            {
+              fields: ["height"],
+              name: "idx_unique_height",
+            },
+            {
+              fields: ["admin"],
+              name: "idx_unique_admin",
+            },
+            {
+              fields: ["startedOn"],
+              name: "idx_unique_startedOn",
+            },
+          ],
+          sampleData: [
+            {
+              firstName: "John",
+              lastName: "Doe",
+              email: "john.doe@example.com",
+            },
+          ],
+        },
+        employees2: {
+          id: "employees2",
+          name: "Company employees 2",
+          provider: "custom",
+          schema: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                firstName: {
+                  type: "string",
+                  title: "First Name",
+                },
+                lastName: {
+                  type: "string",
+                  title: "Last Name",
+                },
+              },
+              required: ["firstName", "lastName"],
+            },
+          },
+          indexes: [
+            {
+              fields: ["lastName"],
+              unique: true,
+              name: "idx_unique_lastName",
+            },
+          ],
+          sampleData: [
+            {
+              firstName: "John",
+              lastName: "Doe",
+              email: "john.doe@example.com",
+            },
+          ],
+        },
+      },
     },
     // we need a fake page
     pages: [
@@ -262,8 +371,104 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           },
           {
             id: `s_${generateId()}`,
+            order: ++order,
+            label: "Dynamic",
+            bricks: [
+              {
+                type: "dynamic",
+                props: {
+                  alignSelf: "self-auto",
+                  datasource: {},
+                  $children: [],
+                  height: "104.390625px",
+                  width: "29.03826810534016%",
+                  growHorizontally: false,
+                  lastTouched: 1753359079542,
+                },
+                id: generateId(),
+              },
+            ],
+            props: {},
+          },
+          {
+            id: `s_${generateId()}`,
+            order: ++order,
+            label: "Section 8",
+            bricks: [
+              {
+                type: "form",
+                props: {
+                  alignSelf: "self-auto",
+                  color: "base100",
+                  gradientDirection: "bg-gradient-to-br",
+                  align: "vertical",
+                  padding: "p-4",
+                  fontSize: "inherit",
+                  button: {
+                    color: "btn-color-primary",
+                    size: "block",
+                    rounding: "rounded-md",
+                    border: {
+                      width: "border",
+                      rounding: "rounded-md",
+                    },
+                  },
+                  title: "My form",
+                  buttonLabel: "Submit",
+                  successMessage: "Thank you for your submission!",
+                  errorMessage: "There was an error submitting the form. Please try again later.",
+                  height: "104.4px",
+                },
+                id: "brick-OKkJLZl",
+              },
+            ],
+            props: {},
+          },
+          // {
+          //   id: `s_${generateId()}`,
+          //   order: 2,
+          //   label: "Bikes",
+          //   bricks: [
+          //     {
+          //       type: "images-gallery",
+          //       props: {
+          //         alignSelf: "self-start",
+          //         useDatabase: false,
+          //         datasource: {
+          //           mapping: {},
+          //           filters: {
+          //             patternProperties: {
+          //               "^(.*)$": {
+          //                 op: {},
+          //               },
+          //             },
+          //           },
+          //           sort: {
+          //             patternProperties: {
+          //               "^(.*)$": {},
+          //             },
+          //           },
+          //         },
+          //         images: [],
+          //         columns: 3,
+          //         gap: "gap-4",
+          //         padding: "p-4",
+          //         aspectRatio: "aspect-[4/3]",
+          //         height: "104.4px",
+          //         lastTouched: 1752850834838,
+          //       },
+          //       id: "brick-YCqqkii",
+          //     },
+          //   ],
+          //   props: {
+          //     minHeight: "524px",
+          //     lastTouched: 1752850818572,
+          //   },
+          // },
+          {
+            id: `s_${generateId()}`,
             label: "Testimonial",
-            order: 2,
+            order: ++order,
             props: {
               justifyContent: "justify-center",
               alignItems: "items-start",

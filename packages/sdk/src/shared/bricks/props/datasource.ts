@@ -1,18 +1,46 @@
-import { Type, type SchemaOptions, type Static } from "@sinclair/typebox";
+import { Type, type Static } from "@sinclair/typebox";
+import { StringEnum } from "~/shared/utils/string-enum";
 
-export function datasourceRef(options: SchemaOptions = {}) {
+export function datasource(title = "Database") {
   return Type.Object(
     {
       id: Type.String({
-        title: "Data Source ID",
+        title: "Database",
       }),
-      mapping: Type.Record(Type.String(), Type.String(), {
-        description: "Mapping of data source fields to brick props",
-      }),
+      offset: Type.Optional(
+        Type.Number({
+          title: "Offset",
+          description: "Offset the records to fetch from the datasource",
+          minimum: 0,
+          default: 0,
+        }),
+      ),
+      limit: Type.Optional(
+        Type.Number({
+          title: "Limit",
+          description: "Limit the number of records to fetch from the datasource",
+          minimum: 1,
+          default: 10,
+        }),
+      ),
+      sortDirection: Type.Optional(
+        StringEnum(["asc", "desc", "rand"], {
+          title: "Sort Direction",
+          description: "Direction to sort the records by",
+          default: "asc",
+          "ui:display": "select",
+        }),
+      ),
+      sortField: Type.Optional(
+        Type.String({
+          title: "Sort Field",
+          description: "Select a field to sort by (must be indexed)",
+        }),
+      ),
       filters: Type.Optional(
-        Type.Record(
-          Type.String(),
+        Type.Array(
           Type.Object({
+            field: Type.String(),
             op: Type.Union([
               Type.Literal("eq"),
               Type.Literal("ne"),
@@ -25,33 +53,33 @@ export function datasourceRef(options: SchemaOptions = {}) {
               Type.Literal("contains"),
               Type.Literal("startsWith"),
               Type.Literal("endsWith"),
+              Type.Literal("exists"),
+              Type.Literal("not_exists"),
+              Type.Literal("before"),
+              Type.Literal("after"),
+              Type.Literal("between"),
+              Type.Literal("last"),
+              Type.Literal("next"),
             ]),
             value: Type.String(),
+            unit: Type.Optional(
+              StringEnum(["minute", "hour", "day", "week", "month", "year"], {
+                title: "Time Unit",
+                description: "Time unit for relative date comparisons",
+              }),
+            ),
           }),
-          { description: "Filter data source records" },
         ),
       ),
-      sort: Type.Optional(
-        Type.Record(
-          Type.String(),
-          Type.Union([
-            Type.Literal("asc", { title: "Ascending" }),
-            Type.Literal("desc", { title: "Descending" }),
-          ]),
-          { description: "Sort data source records" },
-        ),
-      ),
-      limit: Type.Optional(Type.Number({ description: "Limit the number of records to fetch" })),
-      offset: Type.Optional(Type.Number({ description: "Offset the records to fetch" })),
     },
     {
-      "ui:field": "datasource-ref",
-      "ui:meta-type": "datasource-ref",
-      title: "Database",
-      description: "Datasource reference. Only used for dynamic websites. Do not use for static websites",
-      ...options,
+      "ui:field": "datasource",
+      title,
+      metadata: {
+        category: "content",
+      },
     },
   );
 }
 
-export type DatasourceRefSettings = Static<ReturnType<typeof datasourceRef>>;
+export type DatasourceSettings = Static<ReturnType<typeof datasource>>;
