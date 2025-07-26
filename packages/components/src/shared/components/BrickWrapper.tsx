@@ -1,9 +1,9 @@
 import { forwardRef, memo } from "react";
-import BaseBrick from "./BaseBrick";
+import BaseComponent from "./BrickComponent";
 import { useBrickWrapperStyle } from "../hooks/use-brick-style";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 
-const MemoBrickComponent = memo(BaseBrick);
+const MemoBrickComponent = memo(BaseComponent);
 
 type BrickWrapperProps = {
   brick: Brick;

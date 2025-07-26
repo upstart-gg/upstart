@@ -35,6 +35,7 @@ export function image(title = "Image", options: PropImageOptions = {}) {
           {
             title: "Fit",
             description: "How the image should be resized to fit its container",
+            default: "object-cover",
             "ui:field": "enum",
             "ui:styleId": "styles:objectFit",
           },
@@ -75,6 +76,9 @@ export function image(title = "Image", options: PropImageOptions = {}) {
         position: "object-center",
       },
       "ui:responsive": "desktop",
+      metadata: {
+        category: "content",
+      },
       ...options,
     },
   );
@@ -82,7 +86,7 @@ export function image(title = "Image", options: PropImageOptions = {}) {
 }
 
 export function imageRef(options: PropImageOptions & SchemaOptions = {}) {
-  return typedRef("assets:image", { ...options });
+  return typedRef("assets:image", options);
 }
 
 export type ImageProps = Static<ReturnType<typeof image>>;

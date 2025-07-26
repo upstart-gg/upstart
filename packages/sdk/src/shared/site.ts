@@ -372,6 +372,33 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           {
             id: `s_${generateId()}`,
             order: ++order,
+            label: "Media",
+            props: {},
+            bricks: [
+              {
+                id: generateId(),
+                type: "video",
+                props: {
+                  url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                },
+              },
+              {
+                id: generateId(),
+                type: "image",
+                props: {
+                  image: {
+                    // src: "https://placehold.co/600x400@2x/EEEEEE/333333/svg?text=Sample+Image",
+                    alt: "Sample Image",
+                  },
+                  width: "300px",
+                  height: "200px",
+                },
+              },
+            ],
+          },
+          {
+            id: `s_${generateId()}`,
+            order: ++order,
             label: "Dynamic",
             bricks: [
               {

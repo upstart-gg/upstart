@@ -1,21 +1,21 @@
-import { forwardRef } from "react";
 import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/card.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import TextContent from "../components/TextContent";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { useColorPreset } from "../hooks/use-color-preset";
+import BrickRoot from "../components/BrickRoot";
 
-const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+export default function Card({ brick, editable }: BrickProps<Manifest>) {
   const props = brick.props;
   const styles = useBrickStyle<Manifest>(brick);
   const presetClasses = useColorPreset<Manifest>(brick);
   const classes = Object.values(styles);
   const isOverlay = props.cardImage && props.imagePosition === "overlay";
   return (
-    <div
+    <BrickRoot
       className={tx(
-        "flex flex-1 relative overflow-hidden max-w-[100cqw] min-h-fit",
+        "flex relative overflow-hidden",
         props.imagePosition === "side" ? "flex-row" : "flex-col",
         presetClasses.container,
         classes,
@@ -28,7 +28,6 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
           }),
         isOverlay && "justify-center",
       )}
-      ref={ref}
     >
       {isOverlay && <div className="absolute inset-0 bg-[inherit] opacity-20 -z-1" />}
       <div className={tx("card-inner-wrapper", props.imagePosition === "top" ? "order-2" : "order-1")}>
@@ -84,8 +83,6 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
           />
         </div>
       )}
-    </div>
+    </BrickRoot>
   );
-});
-
-export default Card;
+}

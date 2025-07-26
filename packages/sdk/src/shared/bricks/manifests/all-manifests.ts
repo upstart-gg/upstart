@@ -17,7 +17,6 @@ import { examples as socialLinksExamples, manifest as socialLinksManifest } from
 import { examples as spacerExamples, manifest as spacerManifest } from "./spacer.manifest";
 import { examples as testimonialsExamples, manifest as testimonialsManifest } from "./testimonials.manifest";
 import { examples as textExamples, manifest as textManifest } from "./text.manifest";
-import { examples as timelineExamples, manifest as timelineManifest } from "./timeline.manifest";
 import { examples as videoExamples, manifest as videoManifest } from "./video.manifest";
 
 import { getBrickManifestDefaults, type BrickDefaults, type BrickManifest } from "../../brick-manifest";
@@ -42,7 +41,6 @@ export const manifests: Record<string, BrickManifest> = {
   [dynamicManifest.type]: dynamicManifest,
   [spacerManifest.type]: spacerManifest,
   [testimonialsManifest.type]: testimonialsManifest,
-  [timelineManifest.type]: timelineManifest,
   [accordionManifest.type]: accordionManifest,
 };
 
@@ -66,7 +64,6 @@ export const defaultProps: Record<string, BrickDefaults> = {
   [dynamicManifest.type]: getBrickManifestDefaults(dynamicManifest),
   [spacerManifest.type]: getBrickManifestDefaults(spacerManifest),
   [testimonialsManifest.type]: getBrickManifestDefaults(testimonialsManifest),
-  [timelineManifest.type]: getBrickManifestDefaults(timelineManifest),
   [accordionManifest.type]: getBrickManifestDefaults(accordionManifest),
 };
 
@@ -91,6 +88,5 @@ export const examples: Record<string, { description: string; type: string; props
   [dynamicManifest.type]: dynamicExamples,
   [spacerManifest.type]: spacerExamples,
   [testimonialsManifest.type]: testimonialsExamples,
-  [timelineManifest.type]: timelineExamples,
   [accordionManifest.type]: accordionExamples,
 };

@@ -8,19 +8,20 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { type DraggableChildrenFn, Droppable } from "@hello-pangea/dnd";
 import { useDeviceInfo } from "~/editor/hooks/use-device-info";
 import { useDraggingBrickType, usePreviewMode } from "~/editor/hooks/use-editor";
+import BrickRoot from "../components/BrickRoot";
 
-const Box = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+export default function Box({ brick, editable }: BrickProps<Manifest>) {
   const styles = useBrickStyle<Manifest>(brick);
   return (
-    <div className={tx("flex flex-1 min-h-fit", Object.values(styles))} ref={ref}>
+    <BrickRoot className={tx("flex flex-1 min-h-fit", Object.values(styles))}>
       {editable ? (
         <DroppableBox brick={brick} />
       ) : (
         brick.props.$children?.map((brick) => <BrickWrapper key={brick.id} brick={brick} />)
       )}
-    </div>
+    </BrickRoot>
   );
-});
+}
 
 const renderClone2: DraggableChildrenFn = (provided, snapshot, rubric) => {
   return null;
@@ -79,5 +80,3 @@ function DroppableBox({ brick }: BrickProps<Manifest>) {
     </Droppable>
   );
 }
-
-export default Box;

@@ -18,7 +18,7 @@ const bricksMap = Object.entries(bricks).reduce(
   {} as Record<string, LazyExoticComponent<ComponentType<any>>>,
 );
 
-const BaseBrick = ({
+const BaseComponent = ({
   brick,
   editable,
   selectedBrickId,
@@ -45,4 +45,4 @@ const BaseBrick = ({
   );
 };
 
-export default BaseBrick;
+export default BaseComponent;

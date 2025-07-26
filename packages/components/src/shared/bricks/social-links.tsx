@@ -1,13 +1,12 @@
 import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/social-links.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { toast } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
-import { forwardRef } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { InlineIcon } from "@iconify/react";
 import { useColorPreset } from "../hooks/use-color-preset";
+import BrickRoot from "../components/BrickRoot";
 
-const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+export default function SocialLinks({ brick, editable }: BrickProps<Manifest>) {
   const styles = useBrickStyle<Manifest>(brick);
   const { props } = brick;
   const presetClasses = useColorPreset<Manifest>(brick);
@@ -15,13 +14,8 @@ const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, e
   const links = Array.isArray(props.links) ? props.links : [];
 
   return (
-    <div
-      ref={ref}
-      className={tx(
-        "flex flex-grow shrink-0 justify-start items-start min-h-fit min-w-fit gap-2",
-        Object.values(styles),
-        presetClasses.main,
-      )}
+    <BrickRoot
+      className={tx("flex justify-start items-start gap-2", Object.values(styles), presetClasses.main)}
     >
       {editable && links.length === 0 && (
         <div className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-md">
@@ -53,10 +47,6 @@ const SocialLinks = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, e
           </a>
         );
       })}
-    </div>
+    </BrickRoot>
   );
-});
-
-SocialLinks.displayName = "SocialLinks";
-
-export default SocialLinks;
+}
