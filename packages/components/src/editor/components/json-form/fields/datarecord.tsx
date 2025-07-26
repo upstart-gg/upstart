@@ -2,13 +2,13 @@ import type { DatarecordSettings } from "@upstart.gg/sdk/shared/bricks/props/dat
 import { IconButton, Select } from "@upstart.gg/style-system/system";
 import type { FC } from "react";
 import { BsDatabaseAdd } from "react-icons/bs";
-import { useDatarecord, useDatarecords } from "~/editor/hooks/use-datarecord";
+import { useDatarecords } from "~/editor/hooks/use-datarecord";
 import { useEditorHelpers } from "~/editor/hooks/use-editor";
 import { fieldLabel } from "../form-class";
 import type { FieldProps } from "./types";
 
 export const DatarecordField: FC<FieldProps<DatarecordSettings | undefined>> = (props) => {
-  const { currentValue, onChange, title, description, placeholder, schema } = props;
+  const { currentValue, onChange, schema } = props;
   const editorHelpers = useEditorHelpers();
   const datarecords = useDatarecords();
 
