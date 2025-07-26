@@ -59,7 +59,6 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
   };
 
   // Get Indexed Fields for filter and sort
-  const datasourceId = currentValue?.id;
   const indexedFields = datasource ? getDatasourceIndexedFieldsWithTitles(datasource) : [];
   const filters = currentValue.filters ?? [];
 
@@ -130,12 +129,16 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
   // Function to get the field type based on the datasource schema
   const getFieldType = (fieldName: string): string => {
     if (!datasource) return "string";
-    const property = datasource.schema?.items?.properties?.[fieldName] as TSchema;
+    const property = datasource.schema?.items?.properties?.[fieldName] as TSchema | undefined;
 
-    if (property.type === "string" && property.format === "date") return "date";
-    if (property.type === "string" && property.format === "date-time") return "datetime";
+    if (!property) {
+      console.warn(`Field "${fieldName}" not found in datasource schema.`);
+    }
 
-    return property.type || "string";
+    if (property?.type === "string" && property.format === "date") return "date";
+    if (property?.type === "string" && property.format === "date-time") return "datetime";
+
+    return property?.type ?? "string";
   };
 
   // Function to get operators based on field type
@@ -227,15 +230,14 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
 
       {/* Filters Section */}
       {indexedFields.length > 0 && (
-        <>
-          <div className="flex flex-1 justify-between items-center pt-2 px-2.5">
+        <div className="flex flex-col gap-2 flex-1 justify-between pt-2 px-2.5">
+          <div className="flex gap-1 flex-1 w-full justify-between items-center">
             <FieldTitle title="Filters" description="Add filters to narrow down your query" />
             <Button type="button" radius="full" variant="soft" size="1" onClick={addFilter}>
               <TbPlus className="w-3 h-3" />
               Add Filter
             </Button>
           </div>
-
           {filters.length > 0 && (
             <div className="basis-full">
               {filters.map((filter, index) => (
@@ -387,7 +389,7 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
               ))}
             </div>
           )}
-        </>
+        </div>
       )}
 
       {/* Sort Fields - only show if datasource is selected and has indexed fields */}
@@ -467,11 +469,11 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
           <label className={fieldLabel}>Limit</label>
           <TextField.Root
             type="number"
-            color="purple"
             value={currentValue?.limit?.toString() || "10"}
             onChange={(e) => handleChange("limit", parseInt(e.target.value) || 10)}
             min="1"
-            className="max-w-[50px] px-2 py-1 border border-gray-300 rounded text-sm"
+            max="30"
+            className="!w-[40px]"
           />
         </div>
       )}
