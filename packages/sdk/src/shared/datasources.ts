@@ -1,17 +1,13 @@
-import type { DatasourcesMap, DatasourceProvider } from "./datasources/types";
+import type { DatasourcesList, DatasourceProvider } from "./datasources/types";
 import { schemasMap } from "./datasources/schemas";
-import { type TArray, Type } from "@sinclair/typebox";
+import type { TArray } from "@sinclair/typebox";
 
-export function defineDataSources(datasources: DatasourcesMap) {
-  const datasourcesMapped: DatasourcesMap = {};
-  for (const [key, value] of Object.entries(datasources)) {
-    datasourcesMapped[key] = {
-      ...value,
-      // @ts-ignore Seems like TS can't infer properly here
-      schema: "schema" in value ? value.schema : getSchemaByProvider(value.provider),
-    };
-  }
-  return datasourcesMapped;
+export function defineDataSources<T extends DatasourcesList>(datasources: T) {
+  return datasources.map((datasource) => ({
+    ...datasource,
+    // @ts-ignore Seems like TS can't infer properly here
+    schema: "schema" in datasource ? datasource.schema : getSchemaByProvider(datasource.provider),
+  })) as T;
 }
 
 function getSchemaByProvider(provider: DatasourceProvider) {

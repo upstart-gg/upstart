@@ -1,5 +1,4 @@
 import type { DatasourceSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
-// import { getDatasourceIndexedFieldsWithTitles } from "@upstart.gg/sdk/shared/utils/datasource-enum";
 import type { TObject } from "@sinclair/typebox";
 import { Button, Select, TextField } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
@@ -63,10 +62,9 @@ export function getDatasourceIndexedFieldsWithTitles(
   return result;
 }
 
-const DatasourceField: FC<FieldProps<DatasourceSettings | undefined>> = (props) => {
-  const { currentValue, onChange, title, description, placeholder, schema, formData, formSchema, brickId } =
-    props;
-  const { options } = useDatasources();
+const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
+  const { currentValue, onChange, formData, formSchema } = props;
+  const datasources = useDatasources();
 
   const handleChange = (field: string, value: unknown) => {
     const newValue = { ...currentValue, [field]: value };
@@ -236,9 +234,9 @@ const DatasourceField: FC<FieldProps<DatasourceSettings | undefined>> = (props) 
           />
           <Select.Content position="popper">
             <Select.Group>
-              {options.map((option: { value: string; label: string }) => (
-                <Select.Item key={option.value} value={option.value}>
-                  {option.label}
+              {datasources.map((ds) => (
+                <Select.Item key={ds.id} value={ds.id}>
+                  {ds.name}
                 </Select.Item>
               ))}
             </Select.Group>

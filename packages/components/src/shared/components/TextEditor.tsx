@@ -32,7 +32,7 @@ import {
 import { MdOutlineFormatItalic } from "react-icons/md";
 import { MdStrikethroughS } from "react-icons/md";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
-import { useDatasourcesSchemas, useEditor } from "~/editor/hooks/use-editor";
+import { useEditor } from "~/editor/hooks/use-editor";
 import { JSONSchemaView } from "~/editor/components/json-form/SchemaView";
 import Mention from "@tiptap/extension-mention";
 import datasourceFieldSuggestions from "./datasourceFieldSuggestions";
@@ -42,6 +42,7 @@ import { menuBarBtnActiveCls, menuBarBtnCls, menuBarBtnCommonCls } from "../styl
 import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
 import type { TSchema } from "@sinclair/typebox";
 import { tx } from "@upstart.gg/style-system/twind";
+import { useDatasources } from "~/editor/hooks/use-datasource";
 
 // function DatasourceFieldNode(props: NodeViewProps) {
 //   return (
@@ -154,7 +155,7 @@ const TextEditor = <T extends ElementType = "div">({
 }: TextEditorProps<T>) => {
   const onUpdate = useTextEditorUpdateHandler(brickId, propPath);
   const mainEditor = useEditor();
-  const datasources = useDatasourcesSchemas();
+  const datasources = useDatasources();
   const [menuBarContainer, setMenuBarContainer] = useState<HTMLDivElement | null>(null);
   const [currentContent, setContent] = useState(content);
 
@@ -394,11 +395,8 @@ type DatasourceFieldPickerModalProps = {
 
 function DatasourceFieldPickerModal(props: DatasourceFieldPickerModalProps) {
   const [currentDatasourceId, setCurrentDatasourceId] = useState<string | null>(null);
-  const datasources = useDatasourcesSchemas();
-  const selectedSchema = useMemo(() => {
-    if (!datasources || !currentDatasourceId) return null;
-    return datasources[currentDatasourceId].schema;
-  }, [currentDatasourceId, datasources]);
+  const datasources = useDatasources();
+  const selectedSchema = datasources.find((ds) => ds.id === currentDatasourceId)?.schema;
 
   return (
     <div className="bg-white min-w-80 min-h-80 flex flex-col gap-4">
@@ -461,7 +459,7 @@ function DatasourceFieldPickerModal(props: DatasourceFieldPickerModalProps) {
 }
 
 function DatasourceItemButton({ editor }: { editor: Editor }) {
-  const sources = useDatasourcesSchemas();
+  const sources = useDatasources();
   const mainEditor = useEditor();
   // const end = editor.state.
 

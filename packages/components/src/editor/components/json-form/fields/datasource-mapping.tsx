@@ -1,10 +1,8 @@
 import type { FieldProps } from "./types";
 import { Text } from "@upstart.gg/style-system/system";
-import { SegmentedControl, Select } from "@upstart.gg/style-system/system";
-import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
-import { fieldLabel } from "../form-class";
+import { Select } from "@upstart.gg/style-system/system";
 import { type TArray, type TObject, type TProperties, type TSchema, Type } from "@sinclair/typebox";
-import { useGetBrick } from "~/editor/hooks/use-editor";
+import { useBrick } from "~/editor/hooks/use-editor";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { type FC, useCallback } from "react";
@@ -19,16 +17,14 @@ type DatasourceMapping = {
 
 const DatasourceMappingField: FC<FieldProps<DatasourceMapping>> = (props) => {
   const { onChange, currentValue = { datasourceId: "1" } as DatasourceMapping, brickId } = props;
-  const getBrickInfo = useGetBrick();
-
-  const brickInfo = getBrickInfo(brickId);
+  const brickInfo = useBrick(brickId);
   invariant(brickInfo, `Could not find brick info for ${brickId} in DatasourceRefField`);
 
   const brickManifest = useBrickManifest(brickInfo.type);
   const datasource = useDatasource(currentValue.datasourceId ?? "1");
 
   const onDataSourceChange = useCallback(
-    (data: Partial<DatasourceRefSettings>) => {
+    (data: Partial<DatasourceMapping>) => {
       if (!currentValue?.datasourceId) {
         return;
       }
@@ -125,7 +121,7 @@ const DatasourceMappingField: FC<FieldProps<DatasourceMapping>> = (props) => {
           <Select.Root
             value={currentValue.datasourceId}
             size="2"
-            onValueChange={(value) => onDataSourceChange({ id: value })}
+            // onValueChange={(value) => onDataSourceChange({ id: value })}
           >
             <Select.Trigger radius="large" variant="surface" placeholder="Select a database" />
             <Select.Content position="popper">
@@ -151,7 +147,7 @@ const DatasourceMappingField: FC<FieldProps<DatasourceMapping>> = (props) => {
             <FieldsMapper
               externalFields={externalFields}
               schemaFields={schemaFields}
-              onChange={(mapping) => onDataSourceChange({ mapping })}
+              onChange={(mapping) => onDataSourceChange({ $mapping: mapping })}
               currentMapping={currentValue.$mapping ?? {}}
             />
           </div>

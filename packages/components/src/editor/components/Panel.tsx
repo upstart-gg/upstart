@@ -1,6 +1,6 @@
 import {
+  useBrick,
   useEditorHelpers,
-  useGetBrick,
   usePanel,
   usePreviewMode,
   useSelectedBrickId,
@@ -29,8 +29,7 @@ export default function Panel({ className, ...props }: PanelProps) {
   const selectedBrickId = useSelectedBrickId();
   const selectedSection = useSelectedSection();
   const { togglePanelPosition, hidePanel } = useEditorHelpers();
-  const getBrickInfo = useGetBrick();
-  const selectedBrick = selectedBrickId ? getBrickInfo(selectedBrickId) : null;
+  const selectedBrick = useBrick(selectedBrickId);
 
   return (
     <aside

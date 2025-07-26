@@ -10,7 +10,7 @@ import type { FieldProps } from "./types";
 export const DatarecordField: FC<FieldProps<DatarecordSettings | undefined>> = (props) => {
   const { currentValue, onChange, title, description, placeholder, schema } = props;
   const editorHelpers = useEditorHelpers();
-  const { options } = useDatarecords();
+  const datarecords = useDatarecords();
 
   const onSettingsChange = (newVal: string) => {
     // console.log("DatarecordField onSettingsChange", newVal);
@@ -34,13 +34,11 @@ export const DatarecordField: FC<FieldProps<DatarecordSettings | undefined>> = (
             />
             <Select.Content position="popper">
               <Select.Group>
-                {options
-                  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-                  .map((option: any) => (
-                    <Select.Item key={option.value} value={option.value}>
-                      {option.label}
-                    </Select.Item>
-                  ))}
+                {datarecords.map((dr) => (
+                  <Select.Item key={dr.id} value={dr.id}>
+                    {dr.label}
+                  </Select.Item>
+                ))}
               </Select.Group>
             </Select.Content>
           </Select.Root>

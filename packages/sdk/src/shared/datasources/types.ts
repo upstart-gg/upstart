@@ -1,12 +1,7 @@
 import { Type, type Static, type TObject, type TArray } from "@sinclair/typebox";
 import { youtubeListOptions } from "./external/youtube/list/options";
-import { metaOptions } from "./external/meta/options";
-import { mastodonCommonOptions } from "./external/mastodon/options";
 import { httpJsonOptions } from "./external/http-json/options";
 import { rssOptions } from "./external/rss/options";
-import { tiktokVideoOptions } from "./external/tiktok/video/options";
-import { jsonArraySchema, jsonObjectSchema } from "./external/http-json/schema";
-import { schemasMap } from "./schemas";
 
 export const providersSchema = Type.Union([
   // Type.Literal("facebook-posts"),
@@ -253,24 +248,10 @@ export const datasourceManifest = Type.Union([
   datasourceProviderManifest,
 ]);
 
-export const datasourcesMap = Type.Record(Type.String(), datasourceManifest, {
-  title: "Datasources map",
-  description: "The map of datasources available in the system",
-});
+export type Datasource = Static<typeof datasourceManifest>;
+export const datasourcesList = Type.Array(datasourceManifest);
+export type DatasourcesList = Static<typeof datasourcesList>;
 
-export type DatasourcesMap = Record<
-  string,
-  | (Omit<Static<typeof datasourceCustomManifest>, "schema"> & {
-      schema: (typeof datasourceCustomManifest)["schema"];
-    })
-  | (Omit<Static<typeof datasourceJsonManifest>, "schema"> & {
-      schema: (typeof datasourceJsonManifest)["schema"];
-    })
-  | (Omit<Static<typeof datasourceProviderManifest>, "schema"> & {
-      schema?: (typeof datasourceProviderManifest)["schema"];
-    })
->;
-
-export type DatasourcesResolved<T extends DatasourcesMap = DatasourcesMap> = {
-  [K in keyof T]: unknown;
-};
+// export type DatasourcesResolved<T extends DatasourcesList = DatasourcesList> = {
+//   [K in keyof T]: unknown;
+// };

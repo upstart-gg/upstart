@@ -135,16 +135,11 @@ const datarecordMetadata = Type.Object({
 const datarecordManifest = Type.Composite([datarecordsConnectors, datarecordMetadata]);
 
 export const internalDatarecordManifest = Type.Composite([datarecordMetadata, internalDatarecord]);
+export type Datarecord = Static<typeof datarecordManifest>;
 
-export type DatarecordManifest = Static<typeof datarecordManifest>;
+export const datarecordsList = Type.Array(datarecordManifest);
+export type DatarecordsList = Static<typeof datarecordsList>;
 
-export const datarecordsMap = Type.Record(Type.String(), datarecordManifest, {
-  title: "Datarecords map",
-  description: "The map of Datarecords available",
-});
-
-export type DatarecordsMap = Static<typeof datarecordsMap>;
-
-export type DatarecordResolved<T extends DatarecordsMap> = {
-  [K in keyof T]: unknown;
-};
+// export type DatarecordResolved<T extends DatarecordsMap> = {
+//   [K in keyof T]: unknown;
+// };

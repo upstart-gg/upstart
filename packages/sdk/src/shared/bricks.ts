@@ -419,3 +419,13 @@ export function processBrick<T extends Brick>(brick: T): T | false {
   };
   return result;
 }
+
+export function createEmptyBrick(type: string): Brick {
+  const props = { ...defaultProps[type].props };
+  const newBrick = {
+    id: `b-${generateId()}`,
+    type,
+    props,
+  };
+  return newBrick;
+}
