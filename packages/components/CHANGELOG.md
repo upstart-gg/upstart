@@ -1,5 +1,19 @@
 # @upstart.gg/components
 
+## 0.0.121
+
+### Patch Changes
+
+- [#385](https://github.com/upstart-gg/upstart/pull/385) [`7ce4150`](https://github.com/upstart-gg/upstart/commit/7ce41506ef3cea69866392bfd92937bcbb4f17b7) Thanks [@mattallty](https://github.com/mattallty)! - More fixes
+
+- [#379](https://github.com/upstart-gg/upstart/pull/379) [`4671531`](https://github.com/upstart-gg/upstart/commit/4671531d31032daa502609e0bcfe9e5a96936db1) Thanks [@mattallty](https://github.com/mattallty)! - More fixes on various bricks
+
+- [#384](https://github.com/upstart-gg/upstart/pull/384) [`451de2a`](https://github.com/upstart-gg/upstart/commit/451de2a33b57e4f6e6d1281431af78577cbc789b) Thanks [@mattallty](https://github.com/mattallty)! - Bricks improvements
+
+- Updated dependencies [[`7ce4150`](https://github.com/upstart-gg/upstart/commit/7ce41506ef3cea69866392bfd92937bcbb4f17b7), [`4671531`](https://github.com/upstart-gg/upstart/commit/4671531d31032daa502609e0bcfe9e5a96936db1), [`451de2a`](https://github.com/upstart-gg/upstart/commit/451de2a33b57e4f6e6d1281431af78577cbc789b)]:
+  - @upstart.gg/sdk@0.0.121
+  - @upstart.gg/style-system@0.0.121
+
 ## 0.0.120
 
 ### Patch Changes
