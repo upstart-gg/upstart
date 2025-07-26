@@ -1,8 +1,8 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { defaultAttributesSchema, resolveAttributes, type AttributesSchema } from "./attributes";
 import { generateId, type Section } from "./bricks";
-import { datarecordsMap } from "./datarecords/types";
-import { datasourcesMap } from "./datasources/types";
+import { datarecordsList } from "./datarecords/types";
+import { datasourcesList } from "./datasources/types";
 import { pageSchema } from "./page";
 import { sitePrompt } from "./prompt";
 import { pageInfoSchema, sitemapSchema } from "./sitemap";
@@ -14,8 +14,8 @@ export const siteSchema = Type.Object({
   hostname: Type.String(),
   attributes: defaultAttributesSchema,
   attr: defaultAttributesSchema,
-  datasources: Type.Optional(datasourcesMap),
-  datarecords: Type.Optional(datarecordsMap),
+  datasources: datasourcesList,
+  datarecords: datarecordsList,
   themes: Type.Array(themeSchema),
   theme: themeSchema,
   sitemap: sitemapSchema,
@@ -75,8 +75,8 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
       ],
       attributes: defaultAttributesSchema,
       attr: resolveAttributes(),
-      datarecords: {
-        "a7f26d80-d68e-4b7a-a4a3-e41c454670ce": {
+      datarecords: [
+        {
           id: "a7f26d80-d68e-4b7a-a4a3-e41c454670ce",
           label: "Simple Datarecord",
           schema: {
@@ -102,7 +102,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           },
           provider: "internal",
         },
-        "aacfe76d-4309-466c-83ad-fda8b02b043d": {
+        {
           id: "aacfe76d-4309-466c-83ad-fda8b02b043d",
           label: "Complex Datarecord",
           schema: {
@@ -230,9 +230,9 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           },
           provider: "internal",
         },
-      },
-      datasources: {
-        employees: {
+      ],
+      datasources: [
+        {
           id: "employees",
           name: "Company employees",
           provider: "custom",
@@ -303,7 +303,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             },
           ],
         },
-        employees2: {
+        {
           id: "employees2",
           name: "Company employees 2",
           provider: "custom",
@@ -339,7 +339,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             },
           ],
         },
-      },
+      ],
     },
     // we need a fake page
     pages: [

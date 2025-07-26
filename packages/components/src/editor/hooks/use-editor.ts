@@ -1,7 +1,9 @@
 import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
 import { generateId, processSections } from "@upstart.gg/sdk/shared/bricks";
-import type { CallContextProps, GenerationState } from "@upstart.gg/sdk/shared/context";
+import type { GenerationState } from "@upstart.gg/sdk/shared/context";
+import type { DatasourcesList, Datasource } from "@upstart.gg/sdk/shared/datasources/types";
+import type { DatarecordsList, Datarecord } from "@upstart.gg/sdk/shared/datarecords/types";
 import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
 import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
@@ -389,9 +391,9 @@ export interface DraftStateProps {
   path: string;
   label: string;
   sections: Section[];
-  data: Record<string, unknown>;
-  datasources?: Site["datasources"];
-  datarecords?: Site["datarecords"];
+  data: Record<string, unknown[]>;
+  datasources: DatasourcesList;
+  datarecords: DatarecordsList;
   /**
    * Site attributes key/value pairs
    */
@@ -441,7 +443,6 @@ export interface DraftState extends DraftStateProps {
   moveBrickToSection: (id: string, sectionId: string | null, index?: number) => void;
   detachBrickFromContainer: (id: string) => void;
   addBrick: (brick: Brick, sectiondId: string, index: number, parentContainerId: Brick["id"] | null) => void;
-  updateBrick: (id: string, brick: Partial<Brick>) => void;
   updateBrickProps: (id: string, props: Record<string, unknown>, isMobileProps?: boolean) => void;
   toggleBrickVisibility: (id: string, resolution: Resolution) => void;
   setPreviewTheme: (theme: Theme) => void;
@@ -458,8 +459,8 @@ export interface DraftState extends DraftStateProps {
   adjustMobileLayout(): void;
 
   addPage: (page: GenericPageConfig) => void;
-  addDatasource: (datasource: ValueOfObj<NonNullable<Site["datasources"]>>) => void;
-  addDatarecord: (datarecord: ValueOfObj<NonNullable<Site["datarecords"]>>) => void;
+  addDatasource: (datasource: Datasource) => void;
+  addDatarecord: (datarecord: Datarecord) => void;
 
   setSitemap(sitemap: Site["sitemap"]): void;
 
@@ -515,6 +516,8 @@ export const createDraftStore = (
     brickMap: buildBrickMap(initProps.sections),
     themes: [],
     pages: [],
+    datasources: [],
+    datarecords: [],
     // themes: [defaultTheme, { ...defaultTheme, id: "t2" }, { ...defaultTheme, id: "t3" }],
   };
   return createStore<DraftState>()(
@@ -654,28 +657,22 @@ export const createDraftStore = (
 
           addDatasource: (datasource) =>
             set((state) => {
-              if (!state.datasources) {
-                state.datasources = {};
-              }
-              const existing = Object.values(state.datasources).find((ds) => ds.id === datasource.id);
+              const existing = state.datasources.find((ds) => ds.id === datasource.id);
               if (existing) {
                 console.error("Cannot add datasource %s, it already exists", datasource.id);
                 return;
               }
-              state.datasources[datasource.id] = datasource;
+              state.datasources.push(datasource);
             }),
 
           addDatarecord: (datarecord) =>
             set((state) => {
-              if (!state.datarecords) {
-                state.datarecords = {};
-              }
-              const existing = Object.values(state.datarecords).find((dr) => dr.id === datarecord.id);
+              const existing = state.datarecords.find((dr) => dr.id === datarecord.id);
               if (existing) {
                 console.error("Cannot add datarecord %s, it already exists", datarecord.id);
                 return;
               }
-              state.datarecords[datarecord.id] = datarecord;
+              state.datarecords.push(datarecord);
             }),
 
           addSection: (section) =>
@@ -931,14 +928,6 @@ export const createDraftStore = (
 
               // Update the brickMap with the new brick and all its children
               updateBrickMap(newBrick, sectionId, parentId);
-            }),
-
-          updateBrick: (id, brick) =>
-            set((state) => {
-              const original = getBrickFromMap(id, state);
-              if (original) {
-                Object.assign(original, brick);
-              }
             }),
 
           updateBrickProps: (id, props, isMobileProps) =>
@@ -1310,8 +1299,6 @@ export const createDraftStore = (
                   return;
                 }
 
-                console.log("PArent BRICK", parentBrickInSection);
-
                 if (!parentBrickInSection.props.$children) {
                   console.warn("Brick added to a container without $children, initializing it");
                   parentBrickInSection.props.$children = [];
@@ -1529,7 +1516,7 @@ export const useSiteAndPages = () => {
   return {
     site,
     pages,
-  } satisfies Pick<CallContextProps, "site" | "pages">;
+  };
 };
 
 export const useThemes = () => {
@@ -1602,11 +1589,6 @@ export function useDynamicParent(brickId: string) {
   return null;
 }
 
-export const useGetBrick = () => {
-  const ctx = useDraftStoreContext();
-  return useStore(ctx, (state) => state.getBrick);
-};
-
 export function usePageVersion() {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => state.version);
@@ -1642,6 +1624,13 @@ export const useSection = (sectionId?: string) => {
   });
 };
 
+export const useBrick = (brickId?: string) => {
+  const ctx = useDraftStoreContext();
+  return useStore(ctx, (state) => {
+    return brickId ? getBrickFromDraft(brickId, state) : null;
+  });
+};
+
 export const useSectionByBrickId = (brickId: string) => {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => getBrickSection(brickId, state));
@@ -1655,11 +1644,6 @@ export const useAttributes = () => {
 export const useAttributesSchema = () => {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => state.attributes ?? state.siteAttributes);
-};
-
-export const useDatasourcesSchemas = () => {
-  const ctx = useDraftStoreContext();
-  return useStore(ctx, (state) => state.datasources);
 };
 
 export const useDraggingBrickType = () => {
@@ -1734,7 +1718,6 @@ export const useDraftHelpers = () => {
     duplicateSection: state.duplicateSection,
     toggleBrickVisibilityPerBreakpoint: state.toggleBrickVisibility,
     getParentBrick: state.getParentBrick,
-    updateBrick: state.updateBrick,
     updateBrickProps: state.updateBrickProps,
     moveBrickWithin: state.moveBrickWithin,
     reorderBrickWithin: state.reorderBrickWithin,
@@ -1774,26 +1757,24 @@ export const usePageInfo = () => {
 
 export const useSite = () => {
   const draft = useDraftStoreContext();
-  const draftData = useStore(
-    draft,
-    (state) =>
-      ({
-        id: state.siteId,
-        label: state.label,
-        sitemap: state.sitemap,
-        attr: state.attr,
-        theme: state.theme,
-        themes: state.themes,
-        attributes: state.siteAttributes,
-        hostname: state.hostname,
-      }) satisfies Omit<Site, "sitePrompt">,
-  );
+  const draftData = useStore(draft, (state) => ({
+    id: state.siteId,
+    label: state.label,
+    sitemap: state.sitemap,
+    attr: state.attr,
+    theme: state.theme,
+    themes: state.themes,
+    attributes: state.siteAttributes,
+    hostname: state.hostname,
+    datasources: state.datasources,
+    datarecords: state.datarecords,
+  }));
   const editor = useEditorStoreContext();
   const sitePrompt = useStore(editor, (state) => state.sitePrompt);
   return {
     ...draftData,
     sitePrompt,
-  } satisfies Site;
+  };
 };
 
 export const useTheme = () => {

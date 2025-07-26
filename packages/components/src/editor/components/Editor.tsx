@@ -29,7 +29,7 @@ import {
   type OnBeforeCaptureResponder,
 } from "@hello-pangea/dnd";
 import { defaultProps, manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
-import { type Brick, generateId } from "@upstart.gg/sdk/shared/bricks";
+import { type Brick, createEmptyBrick, generateId } from "@upstart.gg/sdk/shared/bricks";
 import { Toaster } from "@upstart.gg/style-system/system";
 import { useIsLocalDev } from "../hooks/use-is-local-dev";
 import { useDeviceInfo } from "../hooks/use-device-info";
@@ -112,20 +112,7 @@ export default function Editor(props: EditorProps) {
 
       // Destination is a section
       if (destinationSection) {
-        // compute the section height
-        const sectionHeight = document.getElementById(destinationSection.id)!.clientHeight;
-
-        // create brick from manifest
-        const props = { ...defaultProps[draggableId].props };
-
-        // compute minHeight based on section height
-        props.height = `${sectionHeight * 0.9}px`; // 90% of the section height
-
-        const newBrick = {
-          type: draggableId,
-          props,
-          id: `brick-${generateId()}`,
-        } satisfies Brick;
+        const newBrick = createEmptyBrick(draggableId);
 
         // Add a new brick to the section
         draftHelpers.addBrick(newBrick, destinationSection.id, destination.index, null);
@@ -140,12 +127,7 @@ export default function Editor(props: EditorProps) {
         manifests[destinationContainer.type] &&
         manifests[destinationContainer.type].isContainer
       ) {
-        // create brick from manifest
-        const newBrick = {
-          ...defaultProps[draggableId],
-          id: `b_${generateId()}`,
-        } satisfies Brick;
-
+        const newBrick = createEmptyBrick(draggableId);
         // If the destination is a container, we need to find the section ID
         const sectionId = draft.brickMap.get(destinationContainer.id)?.sectionId;
 
@@ -165,10 +147,7 @@ export default function Editor(props: EditorProps) {
         console.log("Brick has been dropped on page!");
         const newSectionId = `s_${generateId()}`;
         draftHelpers.createEmptySection(newSectionId);
-        const newBrick = {
-          ...defaultProps[draggableId],
-          id: `b_${generateId()}`,
-        } satisfies Brick;
+        const newBrick = createEmptyBrick(draggableId);
         // Add a new brick to the page
         draftHelpers.addBrick(newBrick, newSectionId, 0, null);
       }

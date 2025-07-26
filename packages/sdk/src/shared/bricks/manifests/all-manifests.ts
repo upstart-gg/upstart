@@ -1,5 +1,5 @@
 import { examples as accordionExamples, manifest as accordionManifest } from "./accordion.manifest";
-import { examples as boxExamples, manifest as boxManifest } from "./hbox.manifest";
+import { examples as boxExamples, manifest as boxManifest } from "./box.manifest";
 import { examples as buttonExamples, manifest as buttonManifest } from "./button.manifest";
 import { examples as cardExamples, manifest as cardManifest } from "./card.manifest";
 import { examples as carouselExamples, manifest as carouselManifest } from "./carousel.manifest";
@@ -18,7 +18,6 @@ import { examples as spacerExamples, manifest as spacerManifest } from "./spacer
 import { examples as testimonialsExamples, manifest as testimonialsManifest } from "./testimonials.manifest";
 import { examples as textExamples, manifest as textManifest } from "./text.manifest";
 import { examples as timelineExamples, manifest as timelineManifest } from "./timeline.manifest";
-import { examples as vboxExamples, manifest as vboxManifest } from "./vbox.manifest";
 import { examples as videoExamples, manifest as videoManifest } from "./video.manifest";
 
 import { getBrickManifestDefaults, type BrickDefaults, type BrickManifest } from "../../brick-manifest";
@@ -39,7 +38,6 @@ export const manifests: Record<string, BrickManifest> = {
   [buttonManifest.type]: buttonManifest,
   [iconManifest.type]: iconManifest,
   [socialLinksManifest.type]: socialLinksManifest,
-  [vboxManifest.type]: vboxManifest,
   [boxManifest.type]: boxManifest,
   [dynamicManifest.type]: dynamicManifest,
   [spacerManifest.type]: spacerManifest,
@@ -64,7 +62,6 @@ export const defaultProps: Record<string, BrickDefaults> = {
   [buttonManifest.type]: getBrickManifestDefaults(buttonManifest),
   [iconManifest.type]: getBrickManifestDefaults(iconManifest),
   [socialLinksManifest.type]: getBrickManifestDefaults(socialLinksManifest),
-  [vboxManifest.type]: getBrickManifestDefaults(vboxManifest),
   [boxManifest.type]: getBrickManifestDefaults(boxManifest),
   [dynamicManifest.type]: getBrickManifestDefaults(dynamicManifest),
   [spacerManifest.type]: getBrickManifestDefaults(spacerManifest),
@@ -90,7 +87,6 @@ export const examples: Record<string, { description: string; type: string; props
   [buttonManifest.type]: buttonExamples,
   [iconManifest.type]: iconExamples,
   [socialLinksManifest.type]: socialLinksExamples,
-  [vboxManifest.type]: vboxExamples,
   [boxManifest.type]: boxExamples,
   [dynamicManifest.type]: dynamicExamples,
   [spacerManifest.type]: spacerExamples,

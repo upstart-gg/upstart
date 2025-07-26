@@ -284,10 +284,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   const fields = processDatarecordSchemaToFields(typeboxSchema, formData, handleFieldChange);
 
   return (
-    <div
-      ref={ref}
-      className={tx("flex-grow shrink-0 min-h-fit max-w-fit", Object.values(rest), presetClasses.main)}
-    >
+    <div ref={ref} className={tx("flex-grow shrink-0 min-h-fit", Object.values(rest), presetClasses.main)}>
       {title && <h2 className="form-title text-[110%] font-semibold mb-4">{title}</h2>}
       {intro && <p className="form-intro  mb-6">{intro}</p>}
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">

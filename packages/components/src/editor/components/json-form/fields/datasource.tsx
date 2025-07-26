@@ -1,72 +1,57 @@
 import type { DatasourceSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
-// import { getDatasourceIndexedFieldsWithTitles } from "@upstart.gg/sdk/shared/utils/datasource-enum";
-import type { TObject } from "@sinclair/typebox";
+import type { TObject, TSchema } from "@sinclair/typebox";
 import { Button, Select, TextField } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { FC } from "react";
-import { IoMdAdd, IoMdClose } from "react-icons/io";
-import { useDatasources } from "~/editor/hooks/use-datasource";
+import { RxCross2 } from "react-icons/rx";
+import { useDatasource, useDatasources } from "~/editor/hooks/use-datasource";
 import { fieldLabel } from "../form-class";
 import type { FieldProps } from "./types";
-
-interface DatasourceFieldsResult {
-  value: string;
-  title: string;
-}
-
-interface DatasourceWithIndexes {
-  indexes?: Array<{ fields: string[] }>;
-  schema?: {
-    type: string;
-    items?: {
-      type: string;
-      properties?: Record<string, { type: string; title?: string; [key: string]: unknown }>;
-    };
-  };
-}
-
+import type { Datasource } from "@upstart.gg/sdk/shared/datasources/types";
+import { TbPlus } from "react-icons/tb";
+import { FieldTitle } from "../field-factory";
 /**
  * Extract the indexed fields of a datasource with their titles
  * @param manifestProps - Les propriétés du manifest (non utilisé actuellement)
- * @param formData - Les données du formulaire contenant datasourceId et __datasource
  * @returns Objet contenant enum (noms des champs) et enumNames (titres des champs)
  */
-export function getDatasourceIndexedFieldsWithTitles(
-  manifestProps: TObject,
-  formData: Record<string, unknown>,
-): DatasourceFieldsResult[] {
-  if (
-    !formData ||
-    !formData.datasourceId ||
-    !formData.__datasource ||
-    !Array.isArray((formData.__datasource as DatasourceWithIndexes)?.indexes)
-  ) {
-    return [];
+export function getDatasourceIndexedFieldsWithTitles(datasource: Datasource) {
+  const defaultIndexes = [
+    {
+      value: "$publishedAt",
+      title: "Publication date",
+    },
+  ];
+  if ("indexes" in datasource === false) {
+    console.log("no datasource or indexes found", datasource);
+    return defaultIndexes;
   }
 
-  const ds = formData.__datasource as DatasourceWithIndexes;
-  const properties = ds.schema?.items?.properties || {};
+  const properties = datasource.schema?.items?.properties || {};
 
   const uniqueFields = Array.from(
     new Set(
-      ds.indexes?.flatMap((idx: { fields: string[] }) => (Array.isArray(idx.fields) ? idx.fields : [])) ?? [],
+      datasource.indexes?.flatMap((idx: { fields: string[] }) =>
+        Array.isArray(idx.fields) ? idx.fields : [],
+      ) ?? [],
     ),
   );
 
-  const fieldValues: string[] = [];
-  const fieldTitles: string[] = [];
-  const result = [];
-
-  for (const field of uniqueFields) {
-    result.push({ value: field, title: properties[field]?.title || field });
-  }
-  return result;
+  return uniqueFields
+    .map((field) => ({
+      value: field,
+      title: properties[field]?.title || field,
+    }))
+    .concat(defaultIndexes);
 }
 
-const DatasourceField: FC<FieldProps<DatasourceSettings | undefined>> = (props) => {
-  const { currentValue, onChange, title, description, placeholder, schema, formData, formSchema, brickId } =
-    props;
-  const { options } = useDatasources();
+const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
+  const { currentValue, onChange, formData, formSchema } = props;
+  const datasources = useDatasources();
+  const datasource = useDatasource(currentValue?.id);
+
+  console.log("DatasourceField props", props);
+  console.log("DatasourceField datasource", datasource);
 
   const handleChange = (field: string, value: unknown) => {
     const newValue = { ...currentValue, [field]: value };
@@ -75,10 +60,8 @@ const DatasourceField: FC<FieldProps<DatasourceSettings | undefined>> = (props) 
 
   // Get Indexed Fields for filter and sort
   const datasourceId = currentValue?.id;
-  const enrichedFormData = datasourceId && formData?.__datasource ? { ...formData, datasourceId } : formData;
-  const indexedFields = getDatasourceIndexedFieldsWithTitles(formSchema, enrichedFormData);
-
-  const filters = Array.isArray(currentValue?.filters) ? currentValue.filters : [];
+  const indexedFields = datasource ? getDatasourceIndexedFieldsWithTitles(datasource) : [];
+  const filters = currentValue.filters ?? [];
 
   const addFilter = () => {
     const newFilters = [...filters, { field: "", op: "eq", value: "" }];
@@ -146,11 +129,8 @@ const DatasourceField: FC<FieldProps<DatasourceSettings | undefined>> = (props) 
 
   // Function to get the field type based on the datasource schema
   const getFieldType = (fieldName: string): string => {
-    if (!datasourceId || !formData?.__datasource) return "string";
-
-    const ds = formData.__datasource as DatasourceWithIndexes;
-    const property = ds.schema?.items?.properties?.[fieldName];
-    if (!property) return "string";
+    if (!datasource) return "string";
+    const property = datasource.schema?.items?.properties?.[fieldName] as TSchema;
 
     if (property.type === "string" && property.format === "date") return "date";
     if (property.type === "string" && property.format === "date-time") return "datetime";
@@ -160,8 +140,7 @@ const DatasourceField: FC<FieldProps<DatasourceSettings | undefined>> = (props) 
 
   // Function to get operators based on field type
   const getOperatorOptionsForField = (fieldName: string) => {
-    if (!datasourceId || !formData?.__datasource) return [];
-
+    if (!datasource) return [];
     const fieldType = getFieldType(fieldName);
 
     const baseOperators = [
@@ -219,26 +198,26 @@ const DatasourceField: FC<FieldProps<DatasourceSettings | undefined>> = (props) 
   };
 
   return (
-    <>
+    <div className="flex flex-col gap-3 flex-1 -mx-2.5 divide-y divide-gray-200">
       {/* Database Selection */}
-      <div className="flex justify-between gap-12 flex-1 items-center">
-        <label className={fieldLabel}>Database</label>
+      <div className="flex justify-between gap-10 flex-1 items-center py-0.5 px-2.5">
+        <FieldTitle title="Database" description="Select a database to query" />
         <Select.Root
           defaultValue={currentValue?.id}
           size="2"
           onValueChange={(value: string) => handleChange("id", value)}
         >
           <Select.Trigger
-            radius="large"
+            radius="medium"
             variant="ghost"
             placeholder="Select a database"
-            className="!flex-1"
+            className="!max-w-2/3 !ml-auto"
           />
           <Select.Content position="popper">
             <Select.Group>
-              {options.map((option: { value: string; label: string }) => (
-                <Select.Item key={option.value} value={option.value}>
-                  {option.label}
+              {datasources.map((ds) => (
+                <Select.Item key={ds.id} value={ds.id}>
+                  {ds.name}
                 </Select.Item>
               ))}
             </Select.Group>
@@ -247,19 +226,18 @@ const DatasourceField: FC<FieldProps<DatasourceSettings | undefined>> = (props) 
       </div>
 
       {/* Filters Section */}
-      {datasourceId && indexedFields.length > 0 && (
+      {indexedFields.length > 0 && (
         <>
-          <div className="basis-full w-0" />
-          <div className="flex flex-1 justify-between items-center mt-3">
-            <label className={fieldLabel}>Filters</label>
-            <Button type="button" variant="soft" size="1" onClick={addFilter}>
-              <IoMdAdd size={14} />
+          <div className="flex flex-1 justify-between items-center pt-2 px-2.5">
+            <FieldTitle title="Filters" description="Add filters to narrow down your query" />
+            <Button type="button" radius="full" variant="soft" size="1" onClick={addFilter}>
+              <TbPlus className="w-3 h-3" />
               Add Filter
             </Button>
           </div>
 
           {filters.length > 0 && (
-            <div className="space-y-2 mt-2 basis-full">
+            <div className="basis-full">
               {filters.map((filter, index) => (
                 <div
                   key={index}
@@ -403,7 +381,7 @@ const DatasourceField: FC<FieldProps<DatasourceSettings | undefined>> = (props) 
                     onClick={() => removeFilter(index)}
                     className="!text-red-500 hover:!bg-red-100"
                   >
-                    <IoMdClose size={14} />
+                    <RxCross2 size={14} />
                   </Button>
                 </div>
               ))}
@@ -413,64 +391,61 @@ const DatasourceField: FC<FieldProps<DatasourceSettings | undefined>> = (props) 
       )}
 
       {/* Sort Fields - only show if datasource is selected and has indexed fields */}
-      {datasourceId && indexedFields.length > 0 && (
-        <>
-          <div className="basis-full w-0" />
-          <div className="flex gap-4 flex-1 mt-3 pr-1.5">
-            <div className="flex flex-col gap-1 flex-1 ">
-              <label className={tx(fieldLabel, currentValue?.sortDirection === "rand" && "opacity-40")}>
-                Field
-              </label>
-              <Select.Root
-                defaultValue={currentValue?.sortField}
-                size="2"
-                onValueChange={
-                  currentValue?.sortDirection === "rand"
-                    ? undefined
-                    : (value: string) => handleChange("sortField", value)
-                }
-                disabled={currentValue?.sortDirection === "rand"}
-              >
-                <Select.Trigger
-                  radius="large"
-                  variant="ghost"
-                  placeholder="Select a field"
-                  className={tx(
-                    currentValue?.sortDirection === "rand" && "cursor-not-allowed pointer-events-none",
-                  )}
-                  style={currentValue?.sortDirection === "rand" ? { opacity: 0.3 } : undefined}
-                />
-                <Select.Content position="popper">
-                  <Select.Group>
-                    {indexedFields.map((field) => (
-                      <Select.Item key={field.value} value={field.value}>
-                        {field.title}
-                      </Select.Item>
-                    ))}
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
-            </div>
-
-            <div className="flex flex-col gap-1 w-24">
-              <label className={fieldLabel}>Direction </label>
-              <Select.Root
-                defaultValue={currentValue?.sortDirection || "asc"}
-                size="2"
-                onValueChange={(value: string) => handleChange("sortDirection", value)}
-              >
-                <Select.Trigger radius="large" variant="ghost" placeholder="Select direction" />
-                <Select.Content position="popper">
-                  <Select.Group>
-                    <Select.Item value="asc">Ascending</Select.Item>
-                    <Select.Item value="desc">Descending</Select.Item>
-                    <Select.Item value="rand">Random</Select.Item>
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
-            </div>
+      {indexedFields.length > 0 && (
+        <div className="flex flex-1 gap-8 justify-between items-center pt-2 pb-1 px-2.5">
+          <div className="flex flex-col gap-1 flex-1 ">
+            <label className={tx(fieldLabel, currentValue?.sortDirection === "rand" && "opacity-40")}>
+              Field
+            </label>
+            <Select.Root
+              defaultValue={currentValue?.sortField}
+              size="2"
+              onValueChange={
+                currentValue?.sortDirection === "rand"
+                  ? undefined
+                  : (value: string) => handleChange("sortField", value)
+              }
+              disabled={currentValue?.sortDirection === "rand"}
+            >
+              <Select.Trigger
+                radius="large"
+                variant="ghost"
+                placeholder="Select a field"
+                className={tx(
+                  currentValue?.sortDirection === "rand" && "cursor-not-allowed pointer-events-none",
+                )}
+                style={currentValue?.sortDirection === "rand" ? { opacity: 0.3 } : undefined}
+              />
+              <Select.Content position="popper">
+                <Select.Group>
+                  {indexedFields.map((field) => (
+                    <Select.Item key={field.value} value={field.value}>
+                      {field.title}
+                    </Select.Item>
+                  ))}
+                </Select.Group>
+              </Select.Content>
+            </Select.Root>
           </div>
-        </>
+
+          <div className="flex flex-col gap-1 flex-1">
+            <label className={fieldLabel}>Direction </label>
+            <Select.Root
+              defaultValue={currentValue?.sortDirection || "asc"}
+              size="2"
+              onValueChange={(value: string) => handleChange("sortDirection", value)}
+            >
+              <Select.Trigger radius="large" variant="ghost" placeholder="Select direction" />
+              <Select.Content position="popper">
+                <Select.Group>
+                  <Select.Item value="asc">Ascending</Select.Item>
+                  <Select.Item value="desc">Descending</Select.Item>
+                  <Select.Item value="rand">Random</Select.Item>
+                </Select.Group>
+              </Select.Content>
+            </Select.Root>
+          </div>
+        </div>
       )}
       {/* {datasourceId && fieldValues.length > 0 && currentValue?.sortDirection !== "rand" && (
         <>
@@ -487,22 +462,20 @@ const DatasourceField: FC<FieldProps<DatasourceSettings | undefined>> = (props) 
           </div>
         </>
       )} */}
-      {datasourceId && indexedFields.length > 0 && (
-        <>
-          <div className="basis-full w-0" />
-          <div className="flex gap-12 flex-1 mt-3 pr-1.5 justify-between">
-            <label className={fieldLabel}>Limit</label>
-            <TextField.Root
-              type="number"
-              value={currentValue?.limit?.toString() || "10"}
-              onChange={(e) => handleChange("limit", parseInt(e.target.value) || 10)}
-              min="1"
-              className="max-w-[50px] px-2 py-1 border border-gray-300 rounded text-sm"
-            />
-          </div>
-        </>
+      {indexedFields.length > 0 && (
+        <div className="flex flex-1 justify-between items-center pt-2 px-2.5">
+          <label className={fieldLabel}>Limit</label>
+          <TextField.Root
+            type="number"
+            color="purple"
+            value={currentValue?.limit?.toString() || "10"}
+            onChange={(e) => handleChange("limit", parseInt(e.target.value) || 10)}
+            min="1"
+            className="max-w-[50px] px-2 py-1 border border-gray-300 rounded text-sm"
+          />
+        </div>
       )}
-    </>
+    </div>
   );
 };
 

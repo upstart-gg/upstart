@@ -1,15 +1,14 @@
 import { type Attributes, defaultAttributesSchema, type AttributesSchema } from "./attributes";
 import { type Section, sectionSchema } from "./bricks";
-import invariant from "./utils/invariant";
 import type { Theme } from "./theme";
 import { Type, type Static } from "@sinclair/typebox";
-import type { DatasourcesMap, DatasourcesResolved } from "./datasources/types";
+import type { DatasourcesList } from "./datasources/types";
 import type { PageInfo, Sitemap } from "./sitemap";
 
 /**
  * The Page config represents the page configuration (datasources, attributes, etc)
  */
-export type PageConfig<D extends DatasourcesMap> = PageInfo & {
+export type PageConfig<D extends DatasourcesList> = PageInfo & {
   /**
    * Data sources manifests for the page. Undefined if no data sources are defined.
    */
@@ -18,7 +17,7 @@ export type PageConfig<D extends DatasourcesMap> = PageInfo & {
    * Resolved static data sources for the page.
    * Undefined if no data sources are defined.
    */
-  data?: D extends DatasourcesMap ? DatasourcesResolved<D> : undefined;
+  data?: Record<string, unknown[]>;
   /**
    * Page attributes. (can override site attributes)
    */
@@ -31,7 +30,7 @@ export type PageConfig<D extends DatasourcesMap> = PageInfo & {
   tags: string[];
 };
 
-export type GenericPageConfig = PageConfig<DatasourcesMap>;
+export type GenericPageConfig = PageConfig<DatasourcesList>;
 
 /**
  * Page context has attr (possibly inherited from site) but not attributes declaration, as they are not needed to render the page.

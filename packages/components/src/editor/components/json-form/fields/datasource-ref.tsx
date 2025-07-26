@@ -4,17 +4,14 @@ import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { SegmentedControl, Select, Text } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import { type FC, useCallback } from "react";
-import { useGetBrick } from "~/editor/hooks/use-editor";
+import { useBrick } from "~/editor/hooks/use-editor";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { fieldLabel } from "../form-class";
 import type { FieldProps } from "./types";
 
 const DatasourceRefField: FC<FieldProps<DatasourceRefSettings>> = (props) => {
   const { onChange, currentValue = {} as DatasourceRefSettings, brickId } = props;
-  const getBrickInfo = useGetBrick();
-  invariant(brickId, `Could not find brick info for ${brickId} in DatasourceRefField`);
-
-  const brickInfo = getBrickInfo(brickId);
+  const brickInfo = useBrick(brickId);
   invariant(brickInfo, `Could not find brick info for ${brickId} in DatasourceRefField`);
 
   const brickManifest = useBrickManifest(brickInfo.type);

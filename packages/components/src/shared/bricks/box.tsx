@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import type { Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/dynamic.manifest";
+import type { Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/hbox.manifest";
 import EditableBrickWrapper from "~/editor/components/EditableBrick";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import BrickWrapper from "../components/BrickWrapper";
@@ -9,7 +9,7 @@ import { type DraggableChildrenFn, Droppable } from "@hello-pangea/dnd";
 import { useDeviceInfo } from "~/editor/hooks/use-device-info";
 import { useDraggingBrickType, usePreviewMode } from "~/editor/hooks/use-editor";
 
-const Dynamic = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+const Box = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
   const styles = useBrickStyle<Manifest>(brick);
   return (
     <div className={tx("flex flex-1 min-h-fit", Object.values(styles))} ref={ref}>
@@ -48,7 +48,7 @@ function DroppableBox({ brick }: BrickProps<Manifest>) {
           {...droppableProvided.droppableProps}
           ref={droppableProvided.innerRef}
           className={tx(
-            "flex-1 flex flex-col",
+            "flex-1 flex",
             droppableSnapshot.isDraggingOver && "!outline !outline-2 !outline-orange-300",
             (droppableSnapshot.isDraggingOver || draggingBrickType) && "!overflow-y-hidden",
             droppableSnapshot.isDraggingOver && "[&>*]:(!transform-none)",
@@ -69,7 +69,7 @@ function DroppableBox({ brick }: BrickProps<Manifest>) {
                 "w-full h-full text-center p-4 rounded flex justify-center items-center text-base font-medium",
               )}
             >
-              This is a dynamic box.
+              This is a box.
               <br />
               Drag bricks here to stack them inside.
             </div>
@@ -80,4 +80,4 @@ function DroppableBox({ brick }: BrickProps<Manifest>) {
   );
 }
 
-export default Dynamic;
+export default Box;
