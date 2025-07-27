@@ -100,6 +100,7 @@ export const brickStylesHelpersMap = {
   "styles:direction": simpleClassHandler,
   // test putting here
   "styles:alignItems": simpleClassHandler,
+  "styles:justifyContent": simpleClassHandler,
 };
 
 export const brickWrapperStylesHelpersMap = {
