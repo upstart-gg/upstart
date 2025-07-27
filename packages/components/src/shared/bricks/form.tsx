@@ -211,6 +211,8 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   const datarecord = useDatarecord(datarecordId);
   const [formData, setFormData] = useState<Record<string, unknown>>({});
 
+  console.log("form full styles", styles);
+
   const handleFieldChange = (data: Record<string, unknown>, fieldPath: string) => {
     const newData = { ...formData, ...data };
     setFormData(newData);
@@ -219,12 +221,6 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editable) {
-      toast(`This form is not clickable in edit mode but will lead to form submission when published.`, {
-        id: `form-no-click-toast`,
-        style: {
-          minWidth: "max-content",
-        },
-      });
       return;
     }
 
@@ -296,14 +292,14 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
       <div className={tx("flex gap-4 @mobile:flex-col", direction)}>{fields}</div>
       {submitState === "error" && <div>{errorMessage}</div>}
       {submitState === "success" && <div>{successMessage}</div>}
-      <div className={tx("flex", Object.values(buttonPosition))}>
+      <div className={tx("flex", Object.values(buttonPosition ?? {}))}>
         <button
           type="submit"
           disabled={submitState === "submitting"}
           className={tx(
             "btn @mobile:min-w-full",
             buttonProps.color,
-            buttonProps.size === "wide" ? "w-full" : "",
+            buttonProps.size === "wide" ? "@desktop:w-full" : "@desktop:min-w-fit",
             Object.values(button),
           )}
         >

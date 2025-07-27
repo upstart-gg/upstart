@@ -1,4 +1,3 @@
-import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
 import type {
   BackgroundColorSettings,
   BackgroundSettings,
@@ -69,26 +68,6 @@ function getFixedPositionedStyles(value: FixedPositionedSettings) {
   return "sticky top-0 left-0 right-0 self-start w-fill z-[99999] isolate";
 }
 
-export function getBasicAlignmentStyles(
-  props?: AlignBasicSettings,
-  mobileProps?: AlignBasicSettings,
-  schema?: TSchema,
-) {
-  if (!props || !schema) {
-    return null;
-  }
-  if (schema["ui:flex-mode"] === "column") {
-    return [
-      props.vertical ? `justify-${props.vertical}` : null,
-      props.horizontal ? `items-${props.horizontal}` : null,
-    ];
-  }
-  return [
-    props.horizontal ? `justify-${props.horizontal}` : null,
-    props.vertical ? `items-${props.vertical}` : null,
-  ];
-}
-
 export function getBasicGapStyles(props?: GapBasicSettings, mobileProps?: GapBasicSettings) {
   return props;
 }
@@ -103,7 +82,6 @@ function getGrowHorizontallyStyles(props?: boolean, mobileProps?: boolean) {
 
 export const brickStylesHelpersMap = {
   "styles:color": getColorStyles,
-  "styles:basicAlign": getBasicAlignmentStyles,
   "styles:basicGap": getBasicGapStyles,
   "styles:textShadow": simpleClassHandler,
   "styles:opacity": getOpacityStyles,
@@ -122,6 +100,7 @@ export const brickStylesHelpersMap = {
   "styles:direction": simpleClassHandler,
   // test putting here
   "styles:alignItems": simpleClassHandler,
+  "styles:justifyContent": simpleClassHandler,
 };
 
 export const brickWrapperStylesHelpersMap = {
@@ -130,6 +109,7 @@ export const brickWrapperStylesHelpersMap = {
   // "styles:alignItems": simpleClassHandler,
   "styles:shadow": simpleClassHandler,
   "styles:justifyContent": simpleClassHandler,
+  "styles:alignItems": simpleClassHandler,
   "styles:fixedPositioned": getFixedPositionedStyles,
   "styles:alignSelf": simpleClassHandler,
   "styles:growHorizontally": getGrowHorizontallyStyles,

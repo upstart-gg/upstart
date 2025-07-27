@@ -716,12 +716,8 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   datarecordId: "a7f26d80-d68e-4b7a-a4a3-e41c454670ce",
                   title: "Simple Form",
                   intro: "This is a simple form to collect user information.",
-                  align: "horizontal",
                   button: {
                     label: "Register",
-                    position: {
-                      horizontal: "justify-center",
-                    },
                     size: "block",
                     borderRadius: "rounded-lg",
                     color: "btn-color-primary",
@@ -736,13 +732,8 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   datarecordId: "aacfe76d-4309-466c-83ad-fda8b02b043d",
                   title: "Complex Form",
                   intro: "This is a complex form with various field types.",
-                  align: "vertical",
                   button: {
                     label: "Submit Form",
-                    position: {
-                      horizontal: "justify-end",
-                    },
-                    size: "wide",
                     borderRadius: "rounded-md",
                     color: "btn-color-accent",
                   },

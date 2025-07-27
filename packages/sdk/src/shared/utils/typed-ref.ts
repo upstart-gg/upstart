@@ -1,5 +1,5 @@
 import { type SchemaOptions, Type } from "@sinclair/typebox";
-import type { basicAlign } from "../bricks/props/align";
+import type { alignItems, justifyContent } from "../bricks/props/align";
 import type { basicGap } from "../bricks/props/gap";
 import type { background, backgroundColor } from "../bricks/props/background";
 import type { border, rounding } from "../bricks/props/border";
@@ -17,7 +17,8 @@ import type { direction } from "../bricks/props/direction";
 export interface SchemaTypeMap {
   "styles:background": ReturnType<typeof background>;
   "styles:backgroundColor": ReturnType<typeof backgroundColor>;
-  "styles:basicAlign": ReturnType<typeof basicAlign>;
+  "styles:justifyContent": ReturnType<typeof justifyContent>;
+  "styles:alignItems": ReturnType<typeof alignItems>;
   "styles:fontSize": ReturnType<typeof fontSize>;
   "styles:hidden": ReturnType<typeof hidden>;
   "styles:border": ReturnType<typeof border>;
