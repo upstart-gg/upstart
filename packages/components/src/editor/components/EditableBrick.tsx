@@ -280,7 +280,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 onClick={onBrickWrapperClick}
               >
                 <BaseComponent brick={brick} selectedBrickId={selectedBrickId} editable />
-                {!manifest.isContainer && <BrickDebugLabel brick={brick} />}
                 <FloatingPortal>
                   <BrickMenuBarsContainer
                     ref={barsRefs.setFloating}
@@ -328,18 +327,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     );
   },
 );
-
-function BrickDebugLabel({ brick }: { brick: Brick }) {
-  const debug = useDebugMode();
-  if (!debug) {
-    return null;
-  }
-  return (
-    <div className="absolute hidden group-hover/brick:block bottom-1 right-1 text-xs text-black/40">
-      {brick.id}
-    </div>
-  );
-}
 
 type BrickMenuBarProps = ComponentProps<"div"> &
   PropsWithChildren<{
