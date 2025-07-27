@@ -49,7 +49,10 @@ function getOpacityStyles(opacity: OpacitySettings) {
   return propToStyle(opacity, "opacity");
 }
 
-export function simpleClassHandler(value: string, mobileValue?: string) {
+export function simpleClassHandler(value: string, mobileValue?: string, schema?: TSchema) {
+  if (schema?.["ui:desktop-only"]) {
+    return `@desktop:(${value})`;
+  }
   if (!mobileValue) {
     return value;
   }
@@ -76,8 +79,19 @@ export function getBasicGapStyles(props?: GapBasicSettings, mobileProps?: GapBas
 //   return props?.type === "grid" ? getGridStyles(props, mobileProps) : getFlexStyles(props, mobileProps);
 // }
 
-function getGrowHorizontallyStyles(props?: boolean, mobileProps?: boolean) {
-  return props ? "grow" : null;
+function getGrowHorizontallyStyles(props?: boolean, mobileProps?: boolean, schema?: TSchema) {
+  if (schema?.["ui:desktop-only"]) {
+    return `@desktop:(flex-grow)`;
+  }
+  if (props && mobileProps) {
+    return `flex-grow`;
+  }
+  if (!mobileProps) {
+    return props ? "@desktop:(flex-grow)" : null;
+  }
+  if (mobileProps) {
+    return `@mobile:(flex-grow) @desktop:(grow-0)`;
+  }
 }
 
 export const brickStylesHelpersMap = {

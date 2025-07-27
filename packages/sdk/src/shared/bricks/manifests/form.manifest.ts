@@ -218,6 +218,7 @@ There is no need to define the form fields manually and the form does not accept
         description: "The direction of the form fields",
         default: "flex-col",
         "ui:responsive": "desktop",
+        "ui:desktop-only": true,
       }),
     ),
     padding: Type.Optional(

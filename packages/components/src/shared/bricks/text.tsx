@@ -16,7 +16,7 @@ export default function Text({ brick, editable }: BrickProps<Manifest>) {
   const presetClasses = useColorPreset<Manifest>(brick);
 
   return (
-    <BrickRoot manifest={manifest} className={tx("flex", ...classes, presetClasses.main)}>
+    <BrickRoot manifest={manifest} className={tx("flex", classes, presetClasses.main)}>
       <TextContent
         propPath="content"
         className={tx("first-child:first-line:leading-[100%] text-wrap")}

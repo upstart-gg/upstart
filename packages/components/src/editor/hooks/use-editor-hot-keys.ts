@@ -108,7 +108,9 @@ export function useEditorHotKeys() {
     e.preventDefault();
     if (selectedBrickId) {
       draftHelpers.duplicateBrick(selectedBrickId);
-      toast("Brick duplicated");
+      toast("Brick duplicated", {
+        id: "duplicate-brick",
+      });
     }
   });
 
