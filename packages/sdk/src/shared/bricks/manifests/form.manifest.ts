@@ -261,14 +261,6 @@ There is no need to define the form fields manually and the form does not accept
           "ui:responsive": "desktop",
         }),
         rounding: Type.Optional(roundingRef({ default: "rounded-md" })),
-        border: Type.Optional(
-          borderRef({
-            default: {
-              width: "border",
-              rounding: "rounded-md",
-            },
-          }),
-        ),
       },
     }),
 
