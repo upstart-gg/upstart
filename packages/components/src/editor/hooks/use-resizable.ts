@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef } from "react";
+import { startTransition, useCallback, useEffect, useRef } from "react";
 import interact from "interactjs";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
-import { usePreviewMode } from "./use-editor";
+import { useEditorHelpers, usePreviewMode } from "./use-editor";
 
 export interface ResizeEvent {
   target: HTMLElement;
@@ -78,7 +78,6 @@ export function useResizable(cssQuery: string, options: UseResizableOptions): vo
   const interactablesRef = useRef<Set<Interact.Interactable>>(new Set());
   const observerRef = useRef<MutationObserver | null>(null);
   const previewMode = usePreviewMode();
-
   const { enabledDirections, gridSnap, onResizeStart, onResize, onResizeEnd, enabled = true } = options;
 
   // Extract active direction from handle element
@@ -126,7 +125,9 @@ export function useResizable(cssQuery: string, options: UseResizableOptions): vo
       const hasHandles = htmlElement.querySelector(".resizable-handle");
       if (!hasHandles) return;
 
-      const interactable = interact(htmlElement).resizable({
+      const interactable = interact(htmlElement, {
+        preventDefault: "always",
+      }).resizable({
         edges: {
           top: ".resizable-handle-n, .resizable-handle-ne, .resizable-handle-nw",
           right: ".resizable-handle-e, .resizable-handle-ne, .resizable-handle-se",
@@ -206,6 +207,9 @@ export function useResizable(cssQuery: string, options: UseResizableOptions): vo
           },
 
           end(event) {
+            event.stopPropagation();
+            console.log("END RESIZE", event);
+
             const target = event.target as HTMLElement;
             const rect = target.getBoundingClientRect();
             const activeHandle = event.interaction.downEvent?.target as HTMLElement;
@@ -254,7 +258,8 @@ export function useResizable(cssQuery: string, options: UseResizableOptions): vo
               }
               const manifest = manifests[brickType];
               const maxWidth = manifest.maxWidth?.[previewMode] ?? Infinity;
-              const maxHeight = manifest.maxHeight?.[previewMode] ?? parentHeight;
+              const maxHeight = manifest.maxHeight?.[previewMode] ?? Infinity; // Using Infinity allows resizing higher than the section height
+              // const maxHeight = manifest.maxHeight?.[previewMode] ?? parentHeight;
               return { width: maxWidth, height: maxHeight };
             },
           }),
@@ -281,6 +286,18 @@ export function useResizable(cssQuery: string, options: UseResizableOptions): vo
             : []),
         ].filter(Boolean),
       });
+
+      // DO NOT REMOVE
+      // IMPORTANT: This prevents the default click event from propagating and
+      // causing selection of other elements like the upper section or container.
+      interactable.on("resizeend", function () {
+        console.log("resizeend ended");
+        window.addEventListener("click", (ev: MouseEvent) => ev.stopImmediatePropagation(), {
+          capture: true,
+          once: true,
+        });
+      });
+      // END OF DO NOT REMOVE
 
       interactablesRef.current.add(interactable);
     });

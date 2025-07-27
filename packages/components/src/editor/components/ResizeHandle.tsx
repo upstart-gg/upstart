@@ -1,5 +1,6 @@
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import { tx } from "@upstart.gg/style-system/twind";
+import { usePreviewMode } from "../hooks/use-editor";
 
 export default function ResizeHandle({
   direction,
@@ -9,7 +10,12 @@ export default function ResizeHandle({
   direction: "s" | "w" | "e" | "n" | "sw" | "nw" | "se" | "ne";
   show: boolean;
   manifest: BrickManifest;
+  isContainerChild?: boolean;
 }) {
+  const previewMode = usePreviewMode();
+  if (previewMode === "mobile" && direction !== "s" && direction !== "n") {
+    return null; // Hide resize handles for mobile view except for vertical resizing
+  }
   return (
     <button
       type="button"

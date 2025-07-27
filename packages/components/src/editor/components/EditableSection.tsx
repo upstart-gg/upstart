@@ -7,6 +7,7 @@ import {
   useEditingTextForBrickId,
   useEditorHelpers,
   useIsMouseOverPanel,
+  useIsResizing,
   usePreviewMode,
   useSection,
   useSections,
@@ -41,9 +42,7 @@ type EditableSectionProps = {
 
 export default function EditableSection({ section, index }: EditableSectionProps) {
   const { bricks, id } = section;
-  const { setSelectedSectionId, setPanel, togglePanel, setSelectedBrickId, setIsEditingText } =
-    useEditorHelpers();
-  const { resizing } = useResizableSection(section);
+  const { setSelectedSectionId, setPanel, setSelectedBrickId, setIsEditingText } = useEditorHelpers();
   const draftHelpers = useDraftHelpers();
   const previewMode = usePreviewMode();
   const selectedSectionId = useSelectedSectionId();
@@ -58,6 +57,9 @@ export default function EditableSection({ section, index }: EditableSectionProps
     previewMode,
   });
   const sectionObj = useSection(section.id);
+
+  useResizableSection(section);
+
   const isSpecialSection = typeof section.props.purpose !== "undefined";
 
   useDeepCompareEffect(() => {
@@ -96,7 +98,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
       const target = e.target as HTMLElement;
       if (
         !target.closest("[data-trigger-section-inspector]") &&
-        (e.defaultPrevented || resizing || target.nodeName !== "SECTION" || draggingBrickType)
+        (e.defaultPrevented || target.nodeName !== "SECTION" || draggingBrickType)
       ) {
         console.log("Click prevented on section", target);
         // If the click was handled by a child element, do not propagate
@@ -108,7 +110,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
       setIsEditingText(false);
       setPanel("inspector");
     },
-    [resizing, draggingBrickType, section.id],
+    [draggingBrickType, section.id],
   );
 
   const dropDisabled =
@@ -202,8 +204,6 @@ function useResizableSection(section: SectionType) {
   // Use interact.js to allow resizing a section manually
   const interactable = useRef<Interact.Interactable | null>(null);
   const draftHelpers = useDraftHelpers();
-  const previewMode = usePreviewMode();
-  const [resizing, setResizing] = useState(false);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -212,7 +212,7 @@ function useResizableSection(section: SectionType) {
     invariant(sectionEl, "Section element not found");
 
     interactable.current = interact(`#${section.id}`);
-    interactable.current.resizable({
+    const resizable = interactable.current.resizable({
       edges: {
         top: false,
         left: false,
@@ -224,7 +224,6 @@ function useResizableSection(section: SectionType) {
       listeners: {
         start: (event) => {
           event.stopPropagation();
-          setResizing(true);
         },
         move: (event) => {
           event.stopPropagation();
@@ -253,21 +252,24 @@ function useResizableSection(section: SectionType) {
           draftHelpers.updateSectionProps(section.id, {
             minHeight,
           });
-          startTransition(() => {
-            setResizing(false);
-          });
         },
       },
     });
+    // DO NOT REMOVE
+    // IMPORTANT: This prevents the default click event from propagating and
+    // causing selection of elements like the section itself or other bricks
+    resizable.on("resizeend", function () {
+      window.addEventListener("click", (ev) => ev.stopImmediatePropagation(), {
+        capture: true,
+        once: true,
+      });
+    });
+    // END OF DO NOT REMOVE
     return () => {
       interactable.current?.unset();
       interactable.current = null;
     };
   }, []);
-
-  return {
-    resizing,
-  };
 }
 
 function SectionOptionsButtons({ section }: { section: SectionType }) {

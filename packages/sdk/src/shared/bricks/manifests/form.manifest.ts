@@ -216,7 +216,7 @@ There is no need to define the form fields manually and the form does not accept
       directionRef({
         title: "Direction",
         description: "The direction of the form fields",
-        default: "vertical",
+        default: "flex-col",
         "ui:responsive": "desktop",
       }),
     ),

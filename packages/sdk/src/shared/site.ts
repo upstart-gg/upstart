@@ -399,6 +399,104 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           {
             id: `s_${generateId()}`,
             order: ++order,
+            label: "Containers",
+            props: {},
+            bricks: [
+              {
+                // horizontal box
+                id: generateId(),
+                type: "box",
+                props: {
+                  direction: "flex-row",
+                  $children: [
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                  ],
+                },
+              },
+              {
+                // vertical box
+                id: generateId(),
+                type: "box",
+                props: {
+                  direction: "flex-col",
+                  $children: [
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                  ],
+                },
+              },
+              {
+                // dynamic box
+                id: generateId(),
+                type: "dynamic",
+                props: {
+                  direction: "flex-col",
+                  $children: [
+                    {
+                      id: generateId(),
+                      type: "text",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+          {
+            id: `s_${generateId()}`,
+            order: ++order,
             label: "Dynamic",
             bricks: [
               {
@@ -566,7 +664,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                       icon: "mdi:twitter",
                     },
                   ],
-                  variants: ["icon-only", "display-inline"],
                 },
                 id: generateId(),
               },

@@ -54,6 +54,7 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
   const hasContentProperties = hasFilteredProperties(manifest, (prop) => {
     return (
       prop.metadata?.category === "content" &&
+      prop["ui:field"] !== "hidden" &&
       (typeof prop.metadata?.["ui:responsive"] === "undefined" ||
         prop.metadata?.["ui:responsive"] === true ||
         prop.metadata?.["ui:responsive"] === previewMode) &&

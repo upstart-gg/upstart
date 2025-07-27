@@ -6,6 +6,7 @@ import { defineProps } from "../props/helpers";
 import { string, urlOrPageIdRef } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { borderRef, roundingRef } from "../props/border";
+import { LAYOUT_ROW_HEIGHT } from "~/shared/layout-constants";
 
 export const manifest = defineBrickManifest({
   type: "button",
@@ -16,7 +17,7 @@ export const manifest = defineBrickManifest({
   resizable: "horizontal",
   icon: RxButton,
   maxHeight: {
-    desktop: 50,
+    desktop: LAYOUT_ROW_HEIGHT * 2,
   },
   minWidth: {
     desktop: 120,

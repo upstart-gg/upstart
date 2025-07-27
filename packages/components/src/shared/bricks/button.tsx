@@ -33,7 +33,7 @@ export default function Button({ brick, editable }: BrickProps<Manifest>) {
         classes,
         props.color,
         props.size,
-        "h-full font-medium text-nowrap",
+        "h-full font-medium text-nowrap max-h-fit my-auto",
         editable && "pointer-events-none",
       )}
       data-prevented-by-editor={editable ? "true" : "false"}

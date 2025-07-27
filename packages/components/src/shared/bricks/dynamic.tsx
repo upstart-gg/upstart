@@ -48,7 +48,7 @@ function DroppableBox({ brick }: BrickProps<Manifest>) {
           {...droppableProvided.droppableProps}
           ref={droppableProvided.innerRef}
           className={tx(
-            "flex-1 flex flex-col",
+            "flex-1 flex",
             droppableSnapshot.isDraggingOver && "!outline !outline-2 !outline-orange-300",
             (droppableSnapshot.isDraggingOver || draggingBrickType) && "!overflow-y-hidden",
             droppableSnapshot.isDraggingOver && "[&>*]:(!transform-none)",

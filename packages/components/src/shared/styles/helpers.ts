@@ -3,7 +3,6 @@ import type {
   BackgroundColorSettings,
   BackgroundSettings,
 } from "@upstart.gg/sdk/shared/bricks/props/background";
-import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import type { ColorSettings } from "@upstart.gg/sdk/shared/bricks/props/color";
 import type { OpacitySettings } from "@upstart.gg/sdk/shared/bricks/props/effects";
 import type { GapBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/gap";

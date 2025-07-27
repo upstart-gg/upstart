@@ -109,21 +109,21 @@ const EnumField: FC<FieldProps<string>> = (props) => {
             {options
               .filter((o) => !o["ui:hidden-option"])
               .map((option) => (
-                <SegmentedControl.Item
+                <Tooltip
+                  content={<span className="block text-xs p-0.5">{option.title}</span>}
+                  className="!z-[99999]"
                   key={option.const}
-                  value={option.const}
-                  className={tx("[&_.rt-SegmentedControlItemLabel]:px-[7px]")}
                 >
-                  <Tooltip
-                    content={
-                      <span className="block text-xs p-0.5">{`${option.title}${option.description ? ` - ${option.description}` : ""}`}</span>
-                    }
-                    className="!z-[10000]"
+                  <SegmentedControl.Item
+                    value={option.const}
+                    className={tx("[&_.rt-SegmentedControlItemLabel]:px-[7px]")}
                   >
                     <Icon icon={option["ui:icon"] as string} className="w-5 h-5 pointer-events-none" />
-                  </Tooltip>
-                </SegmentedControl.Item>
+                  </SegmentedControl.Item>
+                </Tooltip>
               ))}
+
+            {/* </Tooltip> */}
           </SegmentedControl.Root>
         </div>
       );

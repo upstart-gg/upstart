@@ -1,5 +1,5 @@
 import { tx } from "@upstart.gg/style-system/twind";
-import { useEffect, useRef } from "react";
+import { startTransition, useEffect, useRef } from "react";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
 import {
   useAttributes,
@@ -61,7 +61,9 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
             s: true,
           },
     onResizeStart: (event) => {
-      const target = event.target as HTMLElement;
+      // startTransition(() => {
+      //   editorHelpers.setIsResizing(true);
+      // });
       // disable flex-grow temporarily to allow resize
       //target.style.setProperty("flex-grow", "0");
       // Disable fixed height of the upper section ?

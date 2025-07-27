@@ -87,12 +87,15 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
   const stylesProps = getStyleProperties(manifest.props);
   const styleIds = Object.values(stylesProps);
   const classes = useClassesFromStyleProps(stylesProps, brick, "wrapper");
+  const isContainer = !!manifest.isContainer;
 
   return tx(
     manifest.staticClasses,
     props.className as string,
     props.preset as string,
-    "brick-wrapper group/brick flex min-w-min min-h-min",
+    "brick-wrapper group/brick flex",
+
+    isContainer ? "min-w-fit min-h-fit" : "min-w-min min-h-min",
 
     manifest.maxHeight?.mobile && `@mobile:max-h-[${manifest.maxHeight.mobile}px]`,
     manifest.maxHeight?.desktop && `@desktop:max-h-[${manifest.maxHeight.desktop}px]`,
@@ -151,7 +154,11 @@ function getBrickWrapperEditorStyles(
   return [
     "select-none transition-[outline] duration-[200ms]",
     "outline outline-2 outline-transparent outline-dashed",
-    !isContainer ? "outline-offset-2" : "outline-offset-2",
+    {
+      "outline-offset-2": !isContainer && !isContainerChild,
+      "outline-offset-4": isContainer,
+      "outline-offset-0": isContainerChild,
+    },
     selected && !isContainer && "!outline-upstart-400",
     selected && isContainer && "!outline-orange-300",
     !selected && !isContainerChild && !isContainer && "hover:(outline-upstart-400/60)",

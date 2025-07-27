@@ -1,6 +1,5 @@
-import { forwardRef } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import type { Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/hbox.manifest";
+import type { Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/box.manifest";
 import EditableBrickWrapper from "~/editor/components/EditableBrick";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import BrickWrapper from "../components/BrickWrapper";
@@ -13,7 +12,7 @@ import BrickRoot from "../components/BrickRoot";
 export default function Box({ brick, editable }: BrickProps<Manifest>) {
   const styles = useBrickStyle<Manifest>(brick);
   return (
-    <BrickRoot className={tx("flex flex-1 min-h-fit", Object.values(styles))}>
+    <BrickRoot className={tx("flex", Object.values(styles))}>
       {editable ? (
         <DroppableBox brick={brick} />
       ) : (

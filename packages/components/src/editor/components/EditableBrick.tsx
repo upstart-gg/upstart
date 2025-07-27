@@ -119,6 +119,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const allowedPlacements = useBarPlacements(brick);
     const draggingBrickType = useDraggingBrickType();
     const isMouseOverPanel = useIsMouseOverPanel();
+    const isContainer = !!manifest.isContainer;
 
     // brick = brickWithDefaults(brick);
     const {
@@ -292,9 +293,9 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 </FloatingPortal>
                 {/* Children contains resizable handles and other elements */}
                 {manifests[brick.type]?.resizable &&
-                  !isContainerChild &&
                   !draggingBrickType &&
-                  !snapshot.isDragging && (
+                  !snapshot.isDragging &&
+                  selectedBrickId === brick.id && (
                     <>
                       {(resizeOpts.canGrowVertical || resizeOpts.canShrinkVertical) && (
                         <>
@@ -302,23 +303,21 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                           <ResizeHandle direction="n" show={isHovered} manifest={manifest} />
                         </>
                       )}
-                      {(resizeOpts.canGrowHorizontal || resizeOpts.canShrinkHorizontal) &&
-                        previewMode === "desktop" && (
-                          <>
-                            <ResizeHandle direction="w" show={isHovered} manifest={manifest} />
-                            <ResizeHandle direction="e" show={isHovered} manifest={manifest} />
-                          </>
-                        )}
+                      {(resizeOpts.canGrowHorizontal || resizeOpts.canShrinkHorizontal) && (
+                        <>
+                          <ResizeHandle direction="w" show={isHovered} manifest={manifest} />
+                          <ResizeHandle direction="e" show={isHovered} manifest={manifest} />
+                        </>
+                      )}
                       {((resizeOpts.canGrowVertical && resizeOpts.canGrowHorizontal) ||
-                        (resizeOpts.canShrinkVertical && resizeOpts.canShrinkHorizontal)) &&
-                        previewMode === "desktop" && (
-                          <>
-                            <ResizeHandle direction="se" show={isHovered} manifest={manifest} />
-                            <ResizeHandle direction="sw" show={isHovered} manifest={manifest} />
-                            <ResizeHandle direction="ne" show={isHovered} manifest={manifest} />
-                            <ResizeHandle direction="nw" show={isHovered} manifest={manifest} />
-                          </>
-                        )}
+                        (resizeOpts.canShrinkVertical && resizeOpts.canShrinkHorizontal)) && (
+                        <>
+                          <ResizeHandle direction="se" show={isHovered} manifest={manifest} />
+                          <ResizeHandle direction="sw" show={isHovered} manifest={manifest} />
+                          <ResizeHandle direction="ne" show={isHovered} manifest={manifest} />
+                          <ResizeHandle direction="nw" show={isHovered} manifest={manifest} />
+                        </>
+                      )}
                     </>
                   )}
               </div>
