@@ -16,6 +16,7 @@ export default function ResizeHandle({
   if (previewMode === "mobile" && direction !== "s" && direction !== "n") {
     return null; // Hide resize handles for mobile view except for vertical resizing
   }
+  const dotShift = manifest.isContainer ? 8 : 4; // Adjust dot position based on whether it's a container
   return (
     <button
       type="button"
@@ -43,18 +44,18 @@ export default function ResizeHandle({
           manifest.isContainer ? "border-orange-500" : "border-upstart-500",
           show && "opacity-100",
           {
-            "top-1/2 -translate-y-1/2 -left-[5px]": direction === "w",
-            "top-1/2 -translate-y-1/2 -right-[5px]": direction === "e",
-            "left-1/2 -translate-x-1/2 -top-[5px]": direction === "n",
-            "left-1/2 -translate-x-1/2 -bottom-[5px]": direction === "s",
+            [`top-1/2 -translate-y-1/2 -left-[${dotShift}px]`]: direction === "w",
+            [`top-1/2 -translate-y-1/2 -right-[${dotShift}px]`]: direction === "e",
+            [`left-1/2 -translate-x-1/2 -top-[${dotShift}px]`]: direction === "n",
+            [`left-1/2 -translate-x-1/2 -bottom-[${dotShift}px]`]: direction === "s",
 
             // sw and nw
-            "-bottom-[5px] -left-[5px]": direction === "sw",
-            "-top-[5px] -left-[5px]": direction === "nw",
+            [`-bottom-[${dotShift}px] -left-[${dotShift}px]`]: direction === "sw",
+            [`-top-[${dotShift}px] -left-[${dotShift}px]`]: direction === "nw",
 
             // se and ne
-            "-bottom-[5px] -right-[5px]": direction === "se",
-            "-top-[5px] -right-[5px]": direction === "ne",
+            [`-bottom-[${dotShift}px] -right-[${dotShift}px]`]: direction === "se",
+            [`-top-[${dotShift}px] -right-[${dotShift}px]`]: direction === "ne",
           },
         )}
       />
