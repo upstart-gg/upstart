@@ -113,17 +113,22 @@ export const brickStylesHelpersMap = {
   "styles:fontSize": simpleClassHandler,
   "styles:padding": simpleClassHandler, // test
   "styles:gap": getGapStyles,
-  "styles:border": simpleClassHandler,
+
   "styles:gradientDirection": simpleClassHandler,
   "styles:backgroundColor": getBackgroundColorStyles,
   "styles:background": getBackgroundStyles,
-  "styles:shadow": simpleClassHandler,
+
   "styles:rounding": simpleClassHandler,
   "styles:direction": simpleClassHandler,
+  // test putting here
+  "styles:alignItems": simpleClassHandler,
 };
 
 export const brickWrapperStylesHelpersMap = {
-  "styles:alignItems": simpleClassHandler,
+  "styles:rounding": simpleClassHandler,
+  "styles:border": simpleClassHandler,
+  // "styles:alignItems": simpleClassHandler,
+  "styles:shadow": simpleClassHandler,
   "styles:justifyContent": simpleClassHandler,
   "styles:fixedPositioned": getFixedPositionedStyles,
   "styles:alignSelf": simpleClassHandler,

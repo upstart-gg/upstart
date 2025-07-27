@@ -1,4 +1,4 @@
-import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/card.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/card.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import TextContent from "../components/TextContent";
 import { tx, css } from "@upstart.gg/style-system/twind";
@@ -14,6 +14,7 @@ export default function Card({ brick, editable }: BrickProps<Manifest>) {
   const isOverlay = props.cardImage && props.imagePosition === "overlay";
   return (
     <BrickRoot
+      manifest={manifest}
       className={tx(
         "flex relative overflow-hidden",
         props.imagePosition === "side" ? "flex-row" : "flex-col",

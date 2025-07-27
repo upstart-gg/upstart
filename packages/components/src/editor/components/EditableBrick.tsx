@@ -398,6 +398,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
     const draftHelpers = useDraftHelpers();
     const editorHelpers = useEditorHelpers();
     const debugMode = useDebugMode();
+    const previewMode = usePreviewMode();
     const manifest = useBrickManifest(brick.type);
     const canMovePrev = draftHelpers.canMoveToWithinParent(brick.id, "previous");
     const canMoveNext = draftHelpers.canMoveToWithinParent(brick.id, "next");
@@ -494,20 +495,25 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                 </ContextMenu.CheckboxItem>
               </ContextMenu.SubContent>
             </ContextMenu.Sub>
-            {!isContainerChild && (
-              <ContextMenu.CheckboxItem
-                checked={brick.props.growHorizontally}
-                onCheckedChange={(newVal) => {
-                  // e.stopPropagation();
-                  draftHelpers.updateBrickProps(brick.id, {
+            <ContextMenu.CheckboxItem
+              checked={
+                previewMode === "mobile" ? brick.mobileProps?.growHorizontally : brick.props.growHorizontally
+              }
+              onCheckedChange={(newVal) => {
+                // e.stopPropagation();
+                draftHelpers.updateBrickProps(
+                  brick.id,
+                  {
                     growHorizontally: newVal,
-                  });
-                }}
-              >
-                Grow horizontally
-              </ContextMenu.CheckboxItem>
-            )}
-            {!isContainerChild && (
+                    width: "auto",
+                  },
+                  previewMode === "mobile",
+                );
+              }}
+            >
+              Grow horizontally
+            </ContextMenu.CheckboxItem>
+            {!isContainerChild && previewMode !== "mobile" && (
               <ContextMenu.Sub>
                 <ContextMenu.SubTrigger>Vertical Position</ContextMenu.SubTrigger>
                 <ContextMenu.SubContent>

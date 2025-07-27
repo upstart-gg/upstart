@@ -1,4 +1,4 @@
-import type { Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/spacer.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/spacer.manifest";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
@@ -8,6 +8,7 @@ export default function Spacer({ brick, editable, selected }: BrickProps<Manifes
   const styles = useBrickStyle<Manifest>(brick);
   return (
     <BrickRoot
+      manifest={manifest}
       data-mobile-hidden
       className={tx(
         "@mobile:hidden h-full",

@@ -1,4 +1,4 @@
-import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/testimonials.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/testimonials.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
@@ -27,7 +27,10 @@ export default function Testimonials({ brick, editable }: BrickProps<Manifest>) 
         ];
 
   return (
-    <BrickRoot className={tx("flex gap-6 @mobile:flex-col @desktop:flex-row", containerClasses)}>
+    <BrickRoot
+      manifest={manifest}
+      className={tx("flex gap-6 @mobile:flex-col @desktop:flex-row", containerClasses)}
+    >
       {testimonials.map((testimonial, index) => (
         <div
           key={index}

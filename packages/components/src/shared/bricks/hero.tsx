@@ -1,4 +1,4 @@
-import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/hero.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/hero.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import TextContent from "../components/TextContent";
@@ -13,7 +13,10 @@ export default function Hero({ brick, editable, selected }: BrickProps<Manifest>
   const classes = Object.values(styles);
   const presetClasses = useColorPreset<Manifest>(brick);
   return (
-    <BrickRoot className={tx("flex flex-col gap-[1.5rem]", ...classes, presetClasses.main)}>
+    <BrickRoot
+      manifest={manifest}
+      className={tx("flex flex-col gap-[1.5rem]", ...classes, presetClasses.main)}
+    >
       <TextContent
         as="h1"
         propPath="content"

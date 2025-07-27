@@ -1,4 +1,4 @@
-import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/accordion.manifest";
+import { type Manifest, manifest } from "@upstart.gg/sdk/bricks/manifests/accordion.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useState } from "react";
@@ -22,7 +22,10 @@ export default function Accordion({ brick, editable }: BrickProps<Manifest>) {
   const [openedItems, setOpenedItems] = useState(() => items.map((item) => !!item.defaultOpen));
 
   return (
-    <BrickRoot className={tx("flex flex-col overflow-hidden relative", Object.values(otherStyles))}>
+    <BrickRoot
+      manifest={manifest}
+      className={tx("flex flex-col overflow-hidden relative", Object.values(otherStyles))}
+    >
       {editable && items.length === 0 && (
         <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-center p-8">
           <div className="text-base">Add content to this accordion in the panel</div>

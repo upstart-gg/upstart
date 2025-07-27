@@ -5,7 +5,7 @@ import { SegmentedControl, Tooltip } from "@upstart.gg/style-system/system";
 import { PiAlignCenterVertical, PiAlignBottom, PiAlignTop } from "react-icons/pi";
 import type { FC } from "react";
 import { tx } from "@upstart.gg/style-system/twind";
-import { InlineIcon } from "@iconify/react/dist/iconify.js";
+import { InlineIcon } from "@iconify/react";
 
 export const AlignBasicField: FC<FieldProps<AlignBasicSettings>> = (props) => {
   const { currentValue, onChange, title, description, placeholder, schema } = props;

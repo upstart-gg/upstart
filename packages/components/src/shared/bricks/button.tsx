@@ -1,4 +1,4 @@
-import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/button.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/button.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
@@ -27,13 +27,14 @@ export default function Button({ brick, editable }: BrickProps<Manifest>) {
 
   return (
     <BrickRoot
+      manifest={manifest}
       as="button"
       type="button"
       className={tx(
         classes,
         props.color,
         props.size,
-        "h-full font-medium text-nowrap max-h-fit my-auto",
+        "h-full font-medium text-nowrap min-h-max max-h-fit my-auto",
         editable && "pointer-events-none",
       )}
       data-prevented-by-editor={editable ? "true" : "false"}

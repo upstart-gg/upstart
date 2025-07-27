@@ -1,5 +1,5 @@
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
-import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/form.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/form.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 import { toast } from "@upstart.gg/style-system/system";
@@ -252,7 +252,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
 
   if (datarecordId && !datarecord) {
     return editable ? (
-      <BrickRoot className="p-4 border border-red-200 bg-red-50 text-red-600 rounded">
+      <BrickRoot manifest={manifest} className="p-4 border border-red-200 bg-red-50 text-red-600 rounded">
         Error loading datarecord
       </BrickRoot>
     ) : null;
@@ -261,6 +261,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   if (!datarecord) {
     return (
       <BrickRoot
+        manifest={manifest}
         className={tx(
           "text-center p-4 flex items-center justify-center",
           Object.values(rest),
@@ -285,6 +286,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
 
   return (
     <BrickRoot
+      manifest={manifest}
       as="form"
       onSubmit={handleSubmit}
       className={tx("flex flex-col gap-4", Object.values(rest), presetClasses.main)}

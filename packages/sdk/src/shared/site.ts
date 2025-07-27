@@ -394,6 +394,13 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   height: "200px",
                 },
               },
+              {
+                id: generateId(),
+                type: "icon",
+                props: {
+                  icon: "mdi:heart",
+                },
+              },
             ],
           },
           {
@@ -472,7 +479,9 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                     {
                       id: generateId(),
                       type: "text",
-                      props: {},
+                      props: {
+                        width: "45%",
+                      },
                     },
                     {
                       id: generateId(),

@@ -1,4 +1,4 @@
-import type { Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/carousel.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/carousel.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
 import { forwardRef, useState } from "react";
@@ -28,6 +28,7 @@ export default function Carousel({ brick, editable }: BrickProps<Manifest>) {
   if (images.length === 0) {
     return (
       <BrickRoot
+        manifest={manifest}
         className={tx(
           "flex flex-col items-center justify-center text-center",
           presetClasses.main,
@@ -42,7 +43,7 @@ export default function Carousel({ brick, editable }: BrickProps<Manifest>) {
   }
 
   return (
-    <BrickRoot className={tx("flex flex-col", Object.values(styles), presetClasses.main)}>
+    <BrickRoot manifest={manifest} className={tx("flex flex-col", Object.values(styles), presetClasses.main)}>
       <div className={tx("relative overflow-hidden group flex-1")}>
         <div
           className="flex transition-transform duration-300 ease-in-out absolute inset-0"

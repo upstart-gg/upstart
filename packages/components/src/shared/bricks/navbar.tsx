@@ -1,4 +1,4 @@
-import type { Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/navbar.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/navbar.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import TextContent from "../components/TextContent";
@@ -14,6 +14,7 @@ export default function Navbar({ brick, editable }: BrickProps<Manifest>) {
 
   return (
     <BrickRoot
+      manifest={manifest}
       as="header"
       data-brick-group="container"
       data-is-navbar

@@ -2,7 +2,7 @@ import { Type } from "@sinclair/typebox";
 import { BsDatabaseDown } from "react-icons/bs";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { backgroundRef } from "../props/background";
-import { borderRef } from "../props/border";
+import { borderRef, roundingRef } from "../props/border";
 import { makeContainerProps } from "../props/container";
 import { datasource } from "../props/datasource";
 import { shadowRef } from "../props/effects";
@@ -49,7 +49,16 @@ export const manifest = defineBrickManifest({
         "ui:styleId": "styles:gap",
       }),
     ),
-    padding: Type.Optional(paddingRef()),
+    padding: Type.Optional(
+      paddingRef({
+        default: "p-1",
+      }),
+    ),
+    rounding: Type.Optional(
+      roundingRef({
+        default: "rounded-md",
+      }),
+    ),
     border: Type.Optional(borderRef()),
     shadow: Type.Optional(shadowRef()),
     datasource: datasource(),

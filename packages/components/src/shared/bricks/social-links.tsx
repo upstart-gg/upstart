@@ -1,4 +1,4 @@
-import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/social-links.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/social-links.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
@@ -15,6 +15,7 @@ export default function SocialLinks({ brick, editable }: BrickProps<Manifest>) {
 
   return (
     <BrickRoot
+      manifest={manifest}
       className={tx("flex justify-start items-start gap-2", Object.values(styles), presetClasses.main)}
     >
       {editable && links.length === 0 && (

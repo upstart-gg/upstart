@@ -1,5 +1,5 @@
 import { useBrickStyle } from "../hooks/use-brick-style";
-import type { Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/dynamic.manifest";
+import { type Manifest, manifest } from "@upstart.gg/sdk/shared/bricks/manifests/dynamic.manifest";
 import EditableBrickWrapper from "~/editor/components/EditableBrick";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import BrickWrapper from "../components/BrickWrapper";
@@ -12,7 +12,7 @@ import BrickRoot from "../components/BrickRoot";
 export default function Dynamic({ brick, editable }: BrickProps<Manifest>) {
   const styles = useBrickStyle<Manifest>(brick);
   return (
-    <BrickRoot className={tx("flex", Object.values(styles))}>
+    <BrickRoot manifest={manifest} className={tx("flex @mobile:flex-wrap", Object.values(styles))}>
       {editable ? (
         <DroppableBox brick={brick} />
       ) : (
@@ -48,7 +48,7 @@ function DroppableBox({ brick }: BrickProps<Manifest>) {
           {...droppableProvided.droppableProps}
           ref={droppableProvided.innerRef}
           className={tx(
-            "flex-1 flex",
+            "flex-1 flex @mobile:flex-wrap",
             droppableSnapshot.isDraggingOver && "!outline !outline-2 !outline-orange-300",
             (droppableSnapshot.isDraggingOver || draggingBrickType) && "!overflow-y-hidden",
             droppableSnapshot.isDraggingOver && "[&>*]:(!transform-none)",

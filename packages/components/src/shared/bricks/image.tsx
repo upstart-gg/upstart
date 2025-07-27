@@ -1,5 +1,5 @@
 import { useBrickStyle } from "../hooks/use-brick-style";
-import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/image.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/image.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
 import BrickRoot from "../components/BrickRoot";
@@ -12,6 +12,7 @@ export default function Image({ brick, editable }: BrickProps<Manifest>) {
 
   return (
     <BrickRoot
+      manifest={manifest}
       as="picture"
       className={tx("group/image flex items-center justify-center", Object.values(containerStyles))}
     >

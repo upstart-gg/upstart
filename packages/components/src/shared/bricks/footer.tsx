@@ -1,4 +1,4 @@
-import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/footer.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/footer.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { MouseEventHandler } from "react";
@@ -18,6 +18,7 @@ export default function Footer({ brick, editable }: BrickProps<Manifest>) {
     : undefined;
   return (
     <BrickRoot
+      manifest={manifest}
       as="footer"
       className={tx(
         // Force 2 cols on mobile

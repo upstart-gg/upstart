@@ -77,17 +77,19 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       const parentElement = target.parentElement as HTMLElement;
       const parentWidth = parentElement.clientWidth;
       if (!parentWidth) {
-        console.warn("Page width is not available, cannot update brick props.");
+        console.warn("Parent element width is not available, cannot update brick props.");
         return;
       }
 
+      const width = previewMode === "mobile" ? "auto" : `${(event.rect.width / parentWidth) * 100}%`;
+
+      console.log("Resizing with parentBrick:", parentBrick);
+      console.log("Resizing with parentElement:", parentElement);
+      console.log("Resizing with parentWidth:", parentWidth);
+      console.log("Resizing with width:", width);
+
       draftHelpers.updateBrickProps(brickId, {
-        width:
-          previewMode === "mobile"
-            ? "auto"
-            : parentBrick
-              ? `${event.rect.width}px`
-              : `${(event.rect.width / parentWidth) * 100}%`,
+        width,
         height: `${event.rect.height}px`,
         growHorizontally: event.edges.left || event.edges.right ? false : existingBrick?.growHorizontally,
       });

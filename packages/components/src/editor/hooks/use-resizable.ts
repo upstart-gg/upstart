@@ -1,7 +1,7 @@
-import { startTransition, useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import interact from "interactjs";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
-import { useEditorHelpers, usePreviewMode } from "./use-editor";
+import { usePreviewMode } from "./use-editor";
 
 export interface ResizeEvent {
   target: HTMLElement;
@@ -263,12 +263,6 @@ export function useResizable(cssQuery: string, options: UseResizableOptions): vo
               return { width: maxWidth, height: maxHeight };
             },
           }),
-          // interact.modifiers.restrictRect({
-          //   restriction: "parent",
-          // }),
-          // interact.modifiers.restrictSize({
-          //   max: "parent",
-          // }),
           ...(gridSnap?.enabled !== false && gridSnap
             ? [
                 interact.modifiers.snapSize({

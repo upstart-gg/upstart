@@ -1,4 +1,4 @@
-import type { Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/images-gallery.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/images-gallery.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useCallback, useEffect, useState } from "react";
@@ -83,6 +83,7 @@ export default function ImagesGallery({ brick, editable }: BrickProps<Manifest>)
   if (images.length === 0) {
     return (
       <BrickRoot
+        manifest={manifest}
         className={tx(
           "flex flex-col grow items-center justify-center text-center",
           Object.values(styles),
@@ -98,6 +99,7 @@ export default function ImagesGallery({ brick, editable }: BrickProps<Manifest>)
 
   return (
     <BrickRoot
+      manifest={manifest}
       className={tx(
         `grid auto-rows-fr @mobile:grid-cols-2 @desktop:${getGridClasses()}`,
         Object.values(styles),

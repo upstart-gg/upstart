@@ -1,5 +1,5 @@
 import { useBrickStyle } from "../hooks/use-brick-style";
-import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/text.manifest";
+import { type Manifest, manifest } from "@upstart.gg/sdk/bricks/manifests/text.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import TextContent from "../components/TextContent";
 import { tx } from "@upstart.gg/style-system/twind";
@@ -16,7 +16,7 @@ export default function Text({ brick, editable }: BrickProps<Manifest>) {
   const presetClasses = useColorPreset<Manifest>(brick);
 
   return (
-    <BrickRoot className={tx("flex", ...classes, presetClasses.main)}>
+    <BrickRoot manifest={manifest} className={tx("flex", ...classes, presetClasses.main)}>
       <TextContent
         propPath="content"
         className={tx("first-child:first-line:leading-[100%] text-wrap")}

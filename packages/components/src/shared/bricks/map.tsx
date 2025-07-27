@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { type Manifest, DEFAULTS } from "@upstart.gg/sdk/bricks/manifests/map.manifest";
+import { type Manifest, DEFAULTS, manifest } from "@upstart.gg/sdk/bricks/manifests/map.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { tx } from "@upstart.gg/style-system/twind";
@@ -134,7 +134,11 @@ export default function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
   }, []);
 
   return (
-    <BrickRoot className={tx("rounded-[inherit] relative overflow-hidden", ...classes)} ref={containerRef}>
+    <BrickRoot
+      manifest={manifest}
+      className={tx("rounded-[inherit] relative overflow-hidden", ...classes)}
+      ref={containerRef}
+    >
       <div ref={mapRef} className={tx("h-full w-full rounded-[inherit] absolute inset-0 z-40")} />
     </BrickRoot>
   );
