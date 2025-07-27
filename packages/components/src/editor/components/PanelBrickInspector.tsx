@@ -23,27 +23,9 @@ import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import DatasourceMappingField from "./json-form/fields/datasource-mapping";
 import { useDatasource } from "../hooks/use-datasource";
 import SwitchField from "./json-form/fields/switch";
+import { filterSchemaProperties } from "@upstart.gg/sdk/shared/utils/schema";
 
 type TabType = "preset" | "settings" | "content";
-
-function hasFilteredProperties(manifest: BrickManifest, filter: (prop: TSchema) => boolean): boolean {
-  function extractProperties(schema: TObject): Record<string, TSchema> {
-    const contentProps: Record<string, TSchema> = {};
-    for (const [key, prop] of Object.entries(schema.properties)) {
-      if (filter(prop)) {
-        contentProps[key] = prop;
-      } else if (prop.type === "object" && prop.properties) {
-        const nestedContentProps = extractProperties(prop as TObject);
-        if (Object.keys(nestedContentProps).length > 0) {
-          Object.assign(contentProps, nestedContentProps);
-        }
-      }
-    }
-    return contentProps;
-  }
-  const filteredProps = extractProperties(manifest.props as TObject);
-  return Object.keys(filteredProps).length > 0;
-}
 
 export default function PanelBrickInspector({ brick }: { brick: Brick }) {
   const previewMode = usePreviewMode();
@@ -51,7 +33,7 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
   const section = useSectionByBrickId(brick.id);
   const debugMode = useDebugMode();
   const manifest = useBrickManifest(brick.type);
-  const hasContentProperties = hasFilteredProperties(manifest, (prop) => {
+  const contentProperties = filterSchemaProperties(manifest.props, (prop) => {
     return (
       prop.metadata?.category === "content" &&
       prop["ui:field"] !== "hidden" &&
@@ -63,6 +45,14 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
         prop["ui:responsive"] === previewMode)
     );
   });
+  const hasContentProperties = Object.keys(contentProperties).length > 0;
+
+  console.log(
+    "brick of type %s has content properties: %s",
+    brick.type,
+    hasContentProperties,
+    manifest.props.properties,
+  );
 
   const showTabsList =
     (!!manifest.props.properties.preset && previewMode === "desktop") || hasContentProperties || debugMode;
@@ -219,7 +209,7 @@ function ContentTab({ brick, section, hasTabs }: { brick: Brick; section: Sectio
                 This brick is inside a dynamic parent brick so you can choose to use dynamic content in it.
               </Callout.Text>
             </Callout.Root>
-            <div className="flex p-2">
+            <div className="flex py-2.5 px-2 border-b border-gray-100">
               <SwitchField
                 brickId={brick.id}
                 currentValue={dynamicContent}

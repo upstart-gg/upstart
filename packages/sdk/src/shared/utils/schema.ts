@@ -1,5 +1,6 @@
-import type { Static, TSchema } from "@sinclair/typebox";
+import type { Static, TObject, TSchema } from "@sinclair/typebox";
 import { jsonDefault } from "json-schema-default";
+import type { BrickManifest } from "../brick-manifest";
 
 export function normalizeSchemaEnum(schema: TSchema): Array<{ const: string; title: string }> {
   if (!("enum" in schema)) {
@@ -29,3 +30,21 @@ export type FieldFilter<
   T extends TSchema = TSchema,
   P extends Record<string, unknown> = Record<string, unknown>,
 > = (propsSchema: T, formData: P) => boolean;
+
+export function filterSchemaProperties(schema: TObject, filter: (prop: TSchema) => boolean) {
+  function extractProperties(schema: TObject): Record<string, TSchema> {
+    const props: Record<string, TSchema> = {};
+    for (const [key, prop] of Object.entries(schema.properties)) {
+      if (filter(prop)) {
+        props[key] = prop;
+      } else if (prop.type === "object" && prop.properties) {
+        const nestedContentProps = extractProperties(prop as TObject);
+        if (Object.keys(nestedContentProps).length > 0) {
+          Object.assign(props, nestedContentProps);
+        }
+      }
+    }
+    return props;
+  }
+  return extractProperties(schema);
+}

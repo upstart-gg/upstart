@@ -57,6 +57,7 @@ export const commonProps = {
       description:
         "If set, the brick will grow to fill the available width of its parent section. If not set, the brick will have a fixed width.",
       "ui:styleId": "styles:growHorizontally",
+      "ui:field": "hidden",
     }),
   ),
   alignSelf: Type.Optional(

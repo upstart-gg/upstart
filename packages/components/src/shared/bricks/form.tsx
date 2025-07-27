@@ -211,8 +211,6 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   const datarecord = useDatarecord(datarecordId);
   const [formData, setFormData] = useState<Record<string, unknown>>({});
 
-  console.log("form full styles", styles);
-
   const handleFieldChange = (data: Record<string, unknown>, fieldPath: string) => {
     const newData = { ...formData, ...data };
     setFormData(newData);
