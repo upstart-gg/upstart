@@ -98,6 +98,8 @@ export interface EditorStateProps {
   selectedGroup?: Brick["id"][];
   selectedSectionId?: string;
 
+  resizing?: boolean;
+
   isEditingTextForBrickId?: string;
   panel?: "library" | "inspector" | "theme" | "settings" | "data";
   modal?: "image-search" | "datasources";
@@ -133,6 +135,7 @@ export interface EditorState extends EditorStateProps {
   setGridConfig: (config: EditorStateProps["gridConfig"]) => void;
   setTextEditMode: (mode: EditorStateProps["textEditMode"]) => void;
   setIsEditingText: (forBrickId: string | false) => void;
+  setIsResizing: (resizing: boolean) => void;
   setLastTextEditPosition: (position?: number) => void;
   setPanel: (panel?: EditorStateProps["panel"]) => void;
   togglePanel: (panel?: EditorStateProps["panel"]) => void;
@@ -217,6 +220,10 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
           immer((set, _get) => ({
             ...DEFAULT_PROPS,
             ...initProps,
+            setIsResizing: (resizing) =>
+              set((state) => {
+                state.resizing = resizing;
+              }),
             setMouseOverPanel: (over) =>
               set((state) => {
                 state.isMouseOverPanel = over;
@@ -1556,6 +1563,11 @@ export const useTextEditMode = () => {
   return useStore(ctx, (state) => state.textEditMode);
 };
 
+export const useIsResizing = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.resizing);
+};
+
 export const useDraft = () => {
   const ctx = useDraftStoreContext();
   return useStore(ctx);
@@ -1664,6 +1676,7 @@ export const useIsMouseOverPanel = () => {
 export const useEditorHelpers = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => ({
+    setIsResizing: state.setIsResizing,
     setMouseOverPanel: state.setMouseOverPanel,
     toggleDebugMode: state.toggleDebugMode,
     setContextMenuVisible: state.setContextMenuVisible,

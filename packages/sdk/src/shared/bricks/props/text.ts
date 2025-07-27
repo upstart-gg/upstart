@@ -36,10 +36,7 @@ export function fontSize(options: Options = {}) {
 export type FontSizeSettings = Static<ReturnType<typeof fontSize>>;
 
 export function fontSizeRef(options: Options = {}) {
-  return typedRef("styles:fontSize", {
-    ...options,
-    "ui:styleId": "styles:fontSize",
-  });
+  return typedRef("styles:fontSize", options);
 }
 
 type TextContentOptions = {

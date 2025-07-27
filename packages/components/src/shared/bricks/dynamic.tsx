@@ -1,6 +1,5 @@
-import { forwardRef } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import type { Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/dynamic.manifest";
+import { type Manifest, manifest } from "@upstart.gg/sdk/shared/bricks/manifests/dynamic.manifest";
 import EditableBrickWrapper from "~/editor/components/EditableBrick";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import BrickWrapper from "../components/BrickWrapper";
@@ -8,19 +7,20 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { type DraggableChildrenFn, Droppable } from "@hello-pangea/dnd";
 import { useDeviceInfo } from "~/editor/hooks/use-device-info";
 import { useDraggingBrickType, usePreviewMode } from "~/editor/hooks/use-editor";
+import BrickRoot from "../components/BrickRoot";
 
-const Dynamic = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+export default function Dynamic({ brick, editable }: BrickProps<Manifest>) {
   const styles = useBrickStyle<Manifest>(brick);
   return (
-    <div className={tx("flex flex-1 min-h-fit", Object.values(styles))} ref={ref}>
+    <BrickRoot manifest={manifest} className={tx("flex @mobile:flex-wrap", Object.values(styles))}>
       {editable ? (
         <DroppableBox brick={brick} />
       ) : (
         brick.props.$children?.map((brick) => <BrickWrapper key={brick.id} brick={brick} />)
       )}
-    </div>
+    </BrickRoot>
   );
-});
+}
 
 const renderClone2: DraggableChildrenFn = (provided, snapshot, rubric) => {
   return null;
@@ -48,7 +48,7 @@ function DroppableBox({ brick }: BrickProps<Manifest>) {
           {...droppableProvided.droppableProps}
           ref={droppableProvided.innerRef}
           className={tx(
-            "flex-1 flex flex-col",
+            "flex-1 flex @mobile:flex-wrap",
             droppableSnapshot.isDraggingOver && "!outline !outline-2 !outline-orange-300",
             (droppableSnapshot.isDraggingOver || draggingBrickType) && "!overflow-y-hidden",
             droppableSnapshot.isDraggingOver && "[&>*]:(!transform-none)",
@@ -79,5 +79,3 @@ function DroppableBox({ brick }: BrickProps<Manifest>) {
     </Droppable>
   );
 }
-
-export default Dynamic;

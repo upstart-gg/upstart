@@ -70,6 +70,9 @@ export function datasource(title = "Database") {
               }),
             ),
           }),
+          {
+            default: [],
+          },
         ),
       ),
     },

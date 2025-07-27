@@ -28,11 +28,10 @@ import {
   type DropResult,
   type OnBeforeCaptureResponder,
 } from "@hello-pangea/dnd";
-import { defaultProps, manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
+import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { type Brick, createEmptyBrick, generateId } from "@upstart.gg/sdk/shared/bricks";
 import { Toaster } from "@upstart.gg/style-system/system";
 import { useIsLocalDev } from "../hooks/use-is-local-dev";
-import { useDeviceInfo } from "../hooks/use-device-info";
 
 const Tour = lazy(() => import("./Tour"));
 const NavBar = lazy(() => import("./NavBar"));

@@ -87,23 +87,26 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
   const stylesProps = getStyleProperties(manifest.props);
   const styleIds = Object.values(stylesProps);
   const classes = useClassesFromStyleProps(stylesProps, brick, "wrapper");
+  const isContainer = !!manifest.isContainer;
 
   return tx(
     manifest.staticClasses,
     props.className as string,
     props.preset as string,
-    "brick-wrapper group/brick flex min-w-min min-h-min",
+    "brick-wrapper group/brick flex",
+
+    isContainer ? "@desktop:min-w-min min-h-fit shrink-0 h-auto @mobile:flex-wrap" : "min-w-min min-h-min",
 
     manifest.maxHeight?.mobile && `@mobile:max-h-[${manifest.maxHeight.mobile}px]`,
     manifest.maxHeight?.desktop && `@desktop:max-h-[${manifest.maxHeight.desktop}px]`,
 
     // Always respect the parent container width
-    isContainerChild && "flex-grow",
+    // isContainerChild && "flex-grow",
 
-    !isContainerChild &&
-      (typeof props.width !== "undefined"
-        ? `@desktop:w-[${props.width}]`
-        : `@desktop:w-[${manifest.defaultWidth.desktop}]`),
+    // !isContainerChild &&
+    typeof props.width !== "undefined"
+      ? `@desktop:w-[${props.width}]`
+      : `@desktop:w-[${manifest.defaultWidth.desktop}]`,
 
     !isContainerChild &&
       (typeof mobileProps?.width !== "undefined"
@@ -112,17 +115,13 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
 
     // Max width
     manifest.maxWidth?.mobile && `@mobile:max-w-[${manifest.maxWidth.mobile}px]`,
-    manifest.maxWidth?.desktop
-      ? `@desktop:max-w-[${manifest.maxWidth.desktop}px]`
-      : typeof props.width !== "undefined"
-        ? `@desktop:max-w-[${props.width}px]`
-        : null,
+    manifest.maxWidth?.desktop && `@desktop:max-w-[${manifest.maxWidth.desktop}px]`,
 
     typeof props.height !== "undefined"
       ? css({
-          height: `${props.height}`,
+          minHeight: `${props.height}`,
         })
-      : `@mobile:h-[${manifest.defaultHeight.mobile}] @desktop:h-[${manifest.defaultHeight.desktop}]`,
+      : `@mobile:min-h-[${manifest.defaultHeight.mobile}] @desktop:min-h-[${manifest.defaultHeight.desktop}]`,
 
     styleIds.includes("styles:fixedPositioned") === false && "relative",
 
@@ -151,7 +150,11 @@ function getBrickWrapperEditorStyles(
   return [
     "select-none transition-[outline] duration-[200ms]",
     "outline outline-2 outline-transparent outline-dashed",
-    !isContainer ? "outline-offset-2" : "outline-offset-2",
+    {
+      "outline-offset-2": !isContainer && !isContainerChild,
+      "outline-offset-4": isContainer,
+      "outline-offset-0": isContainerChild,
+    },
     selected && !isContainer && "!outline-upstart-400",
     selected && isContainer && "!outline-orange-300",
     !selected && !isContainerChild && !isContainer && "hover:(outline-upstart-400/60)",

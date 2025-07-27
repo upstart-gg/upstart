@@ -1,10 +1,10 @@
-import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/button.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/button.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
-import { forwardRef } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
+import BrickRoot from "../components/BrickRoot";
 
-const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+export default function Button({ brick, editable }: BrickProps<Manifest>) {
   const styles = useBrickStyle<Manifest>(brick);
   const { props } = brick;
   const classes = Object.values(styles);
@@ -18,6 +18,7 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, edi
       if (props.linkToUrlOrPageId.startsWith("http")) {
         window.open(props.linkToUrlOrPageId, "_blank");
       } else {
+        // TODO: Handle internal page navigation
         // Handle page navigation logic here
         console.log(`Navigate to page ID: ${props.linkToUrlOrPageId}`);
       }
@@ -25,22 +26,21 @@ const Button = forwardRef<HTMLButtonElement, BrickProps<Manifest>>(({ brick, edi
   };
 
   return (
-    <button
+    <BrickRoot
+      manifest={manifest}
+      as="button"
       type="button"
       className={tx(
         classes,
         props.color,
         props.size,
-        "flex-grow shrink-0 h-full font-medium min-w-fit text-nowrap min-h-fit",
+        "h-full font-medium text-nowrap min-h-max max-h-fit my-auto",
         editable && "pointer-events-none",
       )}
       data-prevented-by-editor={editable ? "true" : "false"}
-      ref={ref}
       onClick={handleClick}
     >
       {props.label}
-    </button>
+    </BrickRoot>
   );
-});
-
-export default Button;
+}

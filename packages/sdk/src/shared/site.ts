@@ -372,6 +372,140 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           {
             id: `s_${generateId()}`,
             order: ++order,
+            label: "Media",
+            props: {},
+            bricks: [
+              {
+                id: generateId(),
+                type: "video",
+                props: {
+                  url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                },
+              },
+              {
+                id: generateId(),
+                type: "image",
+                props: {
+                  image: {
+                    // src: "https://placehold.co/600x400@2x/EEEEEE/333333/svg?text=Sample+Image",
+                    alt: "Sample Image",
+                  },
+                  width: "300px",
+                  height: "200px",
+                },
+              },
+              {
+                id: generateId(),
+                type: "icon",
+                props: {
+                  icon: "mdi:heart",
+                },
+              },
+            ],
+          },
+          {
+            id: `s_${generateId()}`,
+            order: ++order,
+            label: "Containers",
+            props: {},
+            bricks: [
+              {
+                // horizontal box
+                id: generateId(),
+                type: "box",
+                props: {
+                  direction: "flex-row",
+                  $children: [
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                  ],
+                },
+              },
+              {
+                // vertical box
+                id: generateId(),
+                type: "box",
+                props: {
+                  direction: "flex-col",
+                  $children: [
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                  ],
+                },
+              },
+              {
+                // dynamic box
+                id: generateId(),
+                type: "dynamic",
+                props: {
+                  direction: "flex-col",
+                  $children: [
+                    {
+                      id: generateId(),
+                      type: "text",
+                      props: {
+                        width: "45%",
+                      },
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+          {
+            id: `s_${generateId()}`,
+            order: ++order,
             label: "Dynamic",
             bricks: [
               {
@@ -539,7 +673,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                       icon: "mdi:twitter",
                     },
                   ],
-                  variants: ["icon-only", "display-inline"],
                 },
                 id: generateId(),
               },

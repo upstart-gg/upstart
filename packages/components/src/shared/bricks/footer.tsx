@@ -1,11 +1,12 @@
-import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/footer.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/footer.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
-import { forwardRef, type MouseEventHandler } from "react";
+import type { MouseEventHandler } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { useColorPreset } from "../hooks/use-color-preset";
+import BrickRoot from "../components/BrickRoot";
 
-const Footer = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+export default function Footer({ brick, editable }: BrickProps<Manifest>) {
   const props = brick.props;
   const presetClasses = useColorPreset<Manifest>(brick);
   const styles = useBrickStyle<Manifest>(brick);
@@ -16,11 +17,12 @@ const Footer = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
       }
     : undefined;
   return (
-    // Force 2 cols on mobile
-    <footer
-      ref={ref}
+    <BrickRoot
+      manifest={manifest}
+      as="footer"
       className={tx(
-        `flex-1 grid gap-6 @desktop:grid-flow-col @mobile:grid-cols-2 @desktop:auto-cols-fr `,
+        // Force 2 cols on mobile
+        `grid gap-6 @desktop:grid-flow-col @mobile:grid-cols-2 @desktop:auto-cols-fr `,
         classes,
         presetClasses.container,
       )}
@@ -45,8 +47,6 @@ const Footer = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editab
           ))}
         </nav>
       ))}
-    </footer>
+    </BrickRoot>
   );
-});
-
-export default Footer;
+}

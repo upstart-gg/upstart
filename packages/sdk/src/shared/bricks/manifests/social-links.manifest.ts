@@ -191,7 +191,7 @@ export const manifest = defineBrickManifest({
 
           none: { label: "None", value: {} },
         },
-        default: "base100",
+        default: "none",
       }),
     ),
     gradientDirection: Type.Optional(

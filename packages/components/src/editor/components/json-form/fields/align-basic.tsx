@@ -1,11 +1,11 @@
 import type { FieldProps } from "./types";
 import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
 import { fieldLabel } from "../form-class";
-import { SegmentedControl } from "@upstart.gg/style-system/system";
+import { SegmentedControl, Tooltip } from "@upstart.gg/style-system/system";
 import { PiAlignCenterVertical, PiAlignBottom, PiAlignTop } from "react-icons/pi";
 import type { FC } from "react";
 import { tx } from "@upstart.gg/style-system/twind";
-import { InlineIcon } from "@iconify/react/dist/iconify.js";
+import { InlineIcon } from "@iconify/react";
 
 export const AlignBasicField: FC<FieldProps<AlignBasicSettings>> = (props) => {
   const { currentValue, onChange, title, description, placeholder, schema } = props;
@@ -36,17 +36,23 @@ export const AlignBasicField: FC<FieldProps<AlignBasicSettings>> = (props) => {
           >
             {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
             {schema.properties.horizontal.anyOf.map((option: any) => (
-              <SegmentedControl.Item key={option.const} value={option.const}>
-                {option.const === "start" && (
-                  <InlineIcon icon="fluent:align-start-horizontal-20-regular" className="w-5 h-5 mx-1" />
-                )}
-                {option.const === "center" && (
-                  <InlineIcon icon="fluent:center-horizontal-20-regular" className="w-5 h-5 mx-1" />
-                )}
-                {option.const === "end" && (
-                  <InlineIcon icon="fluent:align-end-horizontal-20-regular" className="w-5 h-5 mx-1" />
-                )}
-              </SegmentedControl.Item>
+              <Tooltip
+                content={<span className="block text-xs p-0.5">{option.title}</span>}
+                className="!z-[99999]"
+                key={option.const}
+              >
+                <SegmentedControl.Item value={option.const}>
+                  {option.const === "start" && (
+                    <InlineIcon icon="fluent:align-start-horizontal-20-regular" className="w-5 h-5 mx-1" />
+                  )}
+                  {option.const === "center" && (
+                    <InlineIcon icon="fluent:center-horizontal-20-regular" className="w-5 h-5 mx-1" />
+                  )}
+                  {option.const === "end" && (
+                    <InlineIcon icon="fluent:align-end-horizontal-20-regular" className="w-5 h-5 mx-1" />
+                  )}
+                </SegmentedControl.Item>
+              </Tooltip>
             ))}
           </SegmentedControl.Root>
         </div>
@@ -69,11 +75,17 @@ export const AlignBasicField: FC<FieldProps<AlignBasicSettings>> = (props) => {
           >
             {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
             {schema.properties.vertical.anyOf.map((option: any) => (
-              <SegmentedControl.Item key={option.const} value={option.const}>
-                {option.const === "start" && <PiAlignTop className="w-4 h-4 mx-1" />}
-                {option.const === "center" && <PiAlignCenterVertical className="w-4 h-4 mx-1" />}
-                {option.const === "end" && <PiAlignBottom className="w-4 h-4 mx-1" />}
-              </SegmentedControl.Item>
+              <Tooltip
+                content={<span className="block text-xs p-0.5">{option.title}</span>}
+                className="!z-[99999]"
+                key={option.const}
+              >
+                <SegmentedControl.Item value={option.const}>
+                  {option.const === "start" && <PiAlignTop className="w-4 h-4 mx-1" />}
+                  {option.const === "center" && <PiAlignCenterVertical className="w-4 h-4 mx-1" />}
+                  {option.const === "end" && <PiAlignBottom className="w-4 h-4 mx-1" />}
+                </SegmentedControl.Item>
+              </Tooltip>
             ))}
           </SegmentedControl.Root>
         </div>

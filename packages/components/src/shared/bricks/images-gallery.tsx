@@ -1,12 +1,13 @@
-import type { Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/images-gallery.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/images-gallery.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
-import { forwardRef, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { useColorPreset } from "../hooks/use-color-preset";
 import { MdClose, MdChevronLeft, MdChevronRight } from "react-icons/md";
+import BrickRoot from "../components/BrickRoot";
 
-const ImagesGallery = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+export default function ImagesGallery({ brick, editable }: BrickProps<Manifest>) {
   const { props } = brick;
   const styles = useBrickStyle<Manifest>(brick);
   const presetClasses = useColorPreset<Manifest>(brick);
@@ -81,10 +82,10 @@ const ImagesGallery = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick,
 
   if (images.length === 0) {
     return (
-      <div
-        ref={ref}
+      <BrickRoot
+        manifest={manifest}
         className={tx(
-          "flex flex-col grow items-center justify-center min-w-fit text-center",
+          "flex flex-col grow items-center justify-center text-center",
           Object.values(styles),
           presetClasses.main,
         )}
@@ -92,16 +93,15 @@ const ImagesGallery = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick,
         <div className="p-8">
           {editable ? "Add images to this gallery in the panel" : "No images to display"}
         </div>
-      </div>
+      </BrickRoot>
     );
   }
 
   return (
-    <div
-      ref={ref}
+    <BrickRoot
+      manifest={manifest}
       className={tx(
-        "grid grow shrink-0 min-h-fit max-w-full",
-        `auto-rows-fr @mobile:grid-cols-2 @desktop:${getGridClasses()}`,
+        `grid auto-rows-fr @mobile:grid-cols-2 @desktop:${getGridClasses()}`,
         Object.values(styles),
         presetClasses.main,
       )}
@@ -191,8 +191,6 @@ const ImagesGallery = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick,
           </div>
         </div>
       )}
-    </div>
+    </BrickRoot>
   );
-});
-
-export default ImagesGallery;
+}
