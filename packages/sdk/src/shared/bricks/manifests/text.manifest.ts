@@ -6,7 +6,7 @@ import { borderRef } from "../props/border";
 import { RxTextAlignLeft } from "react-icons/rx";
 import type { BrickProps } from "../props/types";
 import { type Static, type TObject, Type } from "@sinclair/typebox";
-import { basicAlignRef } from "../props/align";
+import { alignItemsRef } from "../props/align";
 import { shadowRef } from "../props/effects";
 import { colorPresetRef } from "../props/preset";
 import { StringEnum } from "~/shared/utils/string-enum";
@@ -244,12 +244,8 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
       ),
       content: textContentRef(),
       verticalAlign: Type.Optional(
-        basicAlignRef({
-          title: "Vertical align",
-          description: "Vertical alignment of the text within the brick.",
-          "ui:no-horizontal-align": true,
-          "ui:vertical-align-label": "Vertical Align",
-          default: { vertical: "start" },
+        alignItemsRef({
+          default: "items-start",
         }),
       ),
       padding: Type.Optional(paddingRef({ default: "p-4" })),

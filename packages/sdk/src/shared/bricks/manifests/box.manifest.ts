@@ -8,11 +8,9 @@ import { shadowRef } from "../props/effects";
 import { paddingRef } from "../props/padding";
 import type { BrickProps } from "../props/types";
 import { cssLengthRef } from "../props/css-length";
-import { StringEnum } from "~/shared/utils/string-enum";
-import { RxViewHorizontal } from "react-icons/rx";
 import { directionRef } from "../props/direction";
 import { RxBox } from "react-icons/rx";
-import { basicAlignRef } from "../props/align";
+import { alignItemsRef, justifyContentRef } from "../props/align";
 
 // Generic container can hold any type of array data source
 export const manifest = defineBrickManifest({
@@ -35,17 +33,12 @@ export const manifest = defineBrickManifest({
       title: "Direction",
       description: "Direction of the box layout",
     }),
-    // TODO: add also a justify content prop
-    alignItems: Type.Optional(
-      StringEnum(["items-start", "items-center", "items-end", "items-stretch"], {
-        enumNames: ["Start", "Center", "End", "Stretch"],
-        default: "items-stretch",
-        title: "Align bricks",
-        description: "Align bricks",
-        "ui:placeholder": "Not specified",
-        "ui:styleId": "styles:alignItems",
+    justifyContent: Type.Optional(
+      justifyContentRef({
+        default: "justify-start",
       }),
     ),
+    alignItems: Type.Optional(alignItemsRef({})),
     gap: Type.Optional(
       cssLengthRef({
         title: "Gap",
