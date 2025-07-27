@@ -95,7 +95,7 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
     props.preset as string,
     "brick-wrapper group/brick flex",
 
-    isContainer ? "@desktop:min-w-fit min-h-fit shrink-0 h-auto @mobile:flex-wrap" : "min-w-min min-h-min",
+    isContainer ? "@desktop:min-w-min min-h-fit shrink-0 h-auto @mobile:flex-wrap" : "min-w-min min-h-min",
 
     manifest.maxHeight?.mobile && `@mobile:max-h-[${manifest.maxHeight.mobile}px]`,
     manifest.maxHeight?.desktop && `@desktop:max-h-[${manifest.maxHeight.desktop}px]`,
