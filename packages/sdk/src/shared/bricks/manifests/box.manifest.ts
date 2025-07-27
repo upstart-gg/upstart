@@ -35,6 +35,7 @@ export const manifest = defineBrickManifest({
       title: "Direction",
       description: "Direction of the box layout",
     }),
+    // TODO: add also a justify content prop
     alignItems: Type.Optional(
       StringEnum(["items-start", "items-center", "items-end", "items-stretch"], {
         enumNames: ["Start", "Center", "End", "Stretch"],
