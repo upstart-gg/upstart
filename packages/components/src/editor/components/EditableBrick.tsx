@@ -511,7 +511,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                 );
               }}
             >
-              Grow horizontally
+              Expand horizontally
             </ContextMenu.CheckboxItem>
             {!isContainerChild && previewMode !== "mobile" && (
               <ContextMenu.Sub>
