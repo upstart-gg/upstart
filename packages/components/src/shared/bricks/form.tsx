@@ -211,8 +211,6 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   const datarecord = useDatarecord(datarecordId);
   const [formData, setFormData] = useState<Record<string, unknown>>({});
 
-  console.log("form full styles", styles);
-
   const handleFieldChange = (data: Record<string, unknown>, fieldPath: string) => {
     const newData = { ...formData, ...data };
     setFormData(newData);
@@ -289,7 +287,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
     >
       {title && <h2 className="text-[110%] font-semibold">{title}</h2>}
       {intro && <p>{intro}</p>}
-      <div className={tx("flex gap-4 @mobile:flex-col", direction)}>{fields}</div>
+      <div className={tx("flex gap-4 flex-wrap @mobile:flex-col", Object.values(direction))}>{fields}</div>
       {submitState === "error" && <div>{errorMessage}</div>}
       {submitState === "success" && <div>{successMessage}</div>}
       <div className={tx("flex", Object.values(buttonPosition ?? {}))}>

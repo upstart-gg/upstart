@@ -31,7 +31,7 @@ export const manifest = defineBrickManifest({
     alignItems: Type.Optional(
       StringEnum(["items-start", "items-center", "items-end", "items-stretch"], {
         enumNames: ["Start", "Center", "End", "Stretch"],
-        default: "items-stretch",
+        default: "items-center",
         title: "Align bricks",
         description: "Align bricks",
         "ui:placeholder": "Not specified",

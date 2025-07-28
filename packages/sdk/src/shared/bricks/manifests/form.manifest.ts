@@ -218,6 +218,7 @@ There is no need to define the form fields manually and the form does not accept
         description: "The direction of the form fields",
         default: "flex-col",
         "ui:responsive": "desktop",
+        "ui:desktop-only": true,
       }),
     ),
     padding: Type.Optional(
@@ -230,6 +231,12 @@ There is no need to define the form fields manually and the form does not accept
         default: "rounded-md",
       }),
     ),
+    border: Type.Optional(
+      borderRef({
+        default: "border-0",
+      }),
+    ),
+    fontSize: Type.Optional(fontSizeRef({ default: "inherit", "ui:no-extra-large-sizes": true })),
     buttonPosition: Type.Optional(
       justifyContentRef({
         title: "Button Position",
@@ -237,7 +244,6 @@ There is no need to define the form fields manually and the form does not accept
         "ui:responsive": "desktop",
       }),
     ),
-    fontSize: Type.Optional(fontSizeRef({ default: "inherit", "ui:no-extra-large-sizes": true })),
     button: group({
       title: "Button",
       children: {

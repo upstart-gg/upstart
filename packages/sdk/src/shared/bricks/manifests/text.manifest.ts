@@ -245,10 +245,11 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
       content: textContentRef(),
       verticalAlign: Type.Optional(
         alignItemsRef({
-          default: "items-start",
+          default: "items-center",
+          title: "Align",
         }),
       ),
-      padding: Type.Optional(paddingRef({ default: "p-4" })),
+      padding: Type.Optional(paddingRef({ default: "p-2" })),
       border: Type.Optional(borderRef()),
       shadow: Type.Optional(shadowRef()),
     },

@@ -35,10 +35,14 @@ export const manifest = defineBrickManifest({
     }),
     justifyContent: Type.Optional(
       justifyContentRef({
-        default: "justify-start",
+        default: "justify-center",
       }),
     ),
-    alignItems: Type.Optional(alignItemsRef({})),
+    alignItems: Type.Optional(
+      alignItemsRef({
+        default: "items-center",
+      }),
+    ),
     gap: Type.Optional(
       cssLengthRef({
         title: "Gap",

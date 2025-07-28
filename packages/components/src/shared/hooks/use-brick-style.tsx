@@ -100,9 +100,6 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
     manifest.maxHeight?.mobile && `@mobile:max-h-[${manifest.maxHeight.mobile}px]`,
     manifest.maxHeight?.desktop && `@desktop:max-h-[${manifest.maxHeight.desktop}px]`,
 
-    // Always respect the parent container width
-    // isContainerChild && "flex-grow",
-
     // !isContainerChild &&
     typeof props.width !== "undefined"
       ? `@desktop:w-[${props.width}]`

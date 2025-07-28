@@ -75,7 +75,7 @@ export function image(title = "Image", options: PropImageOptions = {}) {
         fit: "object-cover",
         position: "object-center",
       },
-      "ui:responsive": "desktop",
+      // "ui:responsive": "desktop",
       metadata: {
         category: "content",
       },

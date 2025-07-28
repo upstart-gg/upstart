@@ -29,7 +29,7 @@ export default function Image({ brick, editable }: BrickProps<Manifest>) {
       {editable && !src && (
         <div
           className={tx(
-            "rounded-[inherit] transition-opacity duration-300 group-hover/image:opacity-100 flex absolute inset-0 bg-gray-100 items-center justify-center text-gray-700 font-semibold",
+            "rounded-[inherit] transition-opacity duration-300 group-hover/image:opacity-100 flex absolute inset-0 items-center justify-center font-semibold",
             src && "opacity-0",
           )}
         >
