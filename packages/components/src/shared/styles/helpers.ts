@@ -115,11 +115,12 @@ export const brickStylesHelpersMap = {
   // test putting here
   "styles:alignItems": simpleClassHandler,
   "styles:justifyContent": simpleClassHandler,
+
+  "styles:border": simpleClassHandler,
 };
 
 export const brickWrapperStylesHelpersMap = {
   "styles:rounding": simpleClassHandler,
-  "styles:border": simpleClassHandler,
   // "styles:alignItems": simpleClassHandler,
   "styles:shadow": simpleClassHandler,
   "styles:justifyContent": simpleClassHandler,

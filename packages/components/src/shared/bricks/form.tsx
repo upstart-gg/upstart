@@ -287,7 +287,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
     >
       {title && <h2 className="text-[110%] font-semibold">{title}</h2>}
       {intro && <p>{intro}</p>}
-      <div className={tx("flex gap-4 @mobile:flex-col", Object.values(direction))}>{fields}</div>
+      <div className={tx("flex gap-4 flex-wrap @mobile:flex-col", Object.values(direction))}>{fields}</div>
       {submitState === "error" && <div>{errorMessage}</div>}
       {submitState === "success" && <div>{successMessage}</div>}
       <div className={tx("flex", Object.values(buttonPosition ?? {}))}>
