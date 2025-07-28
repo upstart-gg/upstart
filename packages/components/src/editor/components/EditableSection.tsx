@@ -170,12 +170,12 @@ export default function EditableSection({ section, index }: EditableSectionProps
                   data-trigger-section-inspector
                   className={tx(
                     "w-full min-w-full self-stretch py-6 h-auto flex-grow text-center rounded",
-                    " text-white flex justify-center items-center text-lg font-medium text-shadow",
-                    droppableSnapshot.isDraggingOver ? "bg-upstart-700/60" : "bg-black/20",
-                    "opacity-0 hover:opacity-100 transition-opacity duration-300",
+                    "  flex justify-center items-center text-lg font-normal",
+                    droppableSnapshot.isDraggingOver && "bg-upstart-50",
+                    "opacity-0 hover:opacity-80 transition-opacity duration-300",
                   )}
                 >
-                  This section is empty. Drag bricks here to stack them inside, or&nbsp;
+                  This section is empty. Drag bricks here to stack them inside,&nbsp;
                   <button
                     type="button"
                     onClick={(e) => {
@@ -188,7 +188,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
                   >
                     delete it
                   </button>
-                  .
+                  , or leave it empty.
                 </div>
               )}
               {bricks.length === 0 ? null : droppableProvided.placeholder}

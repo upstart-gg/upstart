@@ -15,7 +15,6 @@ import { Callout, Popover, DropdownMenu, Select, ToggleGroup, Portal } from "@up
 import {
   useState,
   useEffect,
-  useMemo,
   type PropsWithChildren,
   type MouseEventHandler,
   type ElementType,
@@ -40,7 +39,6 @@ import { getJSONSchemaFieldsList } from "../utils/json-field-list";
 import Highlight from "@tiptap/extension-highlight";
 import { menuBarBtnActiveCls, menuBarBtnCls, menuBarBtnCommonCls } from "../styles/menubar-styles";
 import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
-import type { TSchema } from "@sinclair/typebox";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useDatasource, useDatasources } from "~/editor/hooks/use-datasource";
 
@@ -128,6 +126,8 @@ export type TextEditorProps<E extends ElementType> = PolymorphicProps<E> & {
   noTextAlign?: boolean;
   noTextStrike?: boolean;
   textSizeMode?: "hero" | "classic" | false;
+  placeholder?: string;
+  disableMenuBar?: boolean;
   /**
    * Whether the editor is inlined in the page or appears in the panel
    */
@@ -152,6 +152,8 @@ const TextEditor = <T extends ElementType = "div">({
   noTextAlign,
   noTextStrike,
   textSizeMode = "classic",
+  placeholder,
+  disableMenuBar,
 }: TextEditorProps<T>) => {
   const onUpdate = useTextEditorUpdateHandler(brickId, propPath);
   const mainEditor = useEditor();
@@ -178,7 +180,7 @@ const TextEditor = <T extends ElementType = "div">({
       mergeNestedSpanStyles: false,
     }),
     Placeholder.configure({
-      placeholder: "Write something...",
+      placeholder: placeholder ?? "Write something...",
     }),
     ...(inline ? [Document.extend({ content: "paragraph" })] : []),
     ...(textSizeMode === "hero"
@@ -214,15 +216,17 @@ const TextEditor = <T extends ElementType = "div">({
           "span",
           {
             "data-type": "mention",
-            class: tx("bg-upstart-500 text-white text-[94%] px-0.5 py-0.5 rounded "),
+            class: tx(
+              "bg-upstart-50 text-black text-[97%] inline-block outline outline-upstart-50 px-1.5 rounded-sm mx-1",
+            ),
             "data-field": field,
           },
-          `${options.suggestion.char}${field}}}`,
+          `${options.suggestion.char}${field}`.replace("{{", ""),
         ];
       },
       renderText: ({ options, node }) => {
         const field = node.attrs["data-field"] ?? node.attrs.label ?? node.attrs.id;
-        return `${options.suggestion.char}${field}}}`;
+        return `${options.suggestion.char}${field}`.replace("{{", "");
       },
     }),
     OverrideEscape,
@@ -237,7 +241,7 @@ const TextEditor = <T extends ElementType = "div">({
       editable: true,
       editorProps: {
         attributes: {
-          class: tx(className),
+          class: tx(className, inline && "singleline"),
         },
       },
     },
@@ -250,6 +254,9 @@ const TextEditor = <T extends ElementType = "div">({
       mainEditor.setIsEditingText(brickId);
       mainEditor.setSelectedBrickId(brickId);
       setFocused(true);
+      if (disableMenuBar) {
+        return;
+      }
       setTimeout(() => {
         const container = document.querySelector<HTMLDivElement>(`#text-editor-menu-${brickId}`);
         if (container) {
@@ -280,7 +287,7 @@ const TextEditor = <T extends ElementType = "div">({
       // mainEditor.togglePanel("inspector");
 
       // reset the selection to the end of the document
-      const unselected = e.editor.commands.setTextSelection({
+      e.editor.commands.setTextSelection({
         from: e.editor.state.doc.content.size,
         to: e.editor.state.doc.content.size,
       });
@@ -295,19 +302,11 @@ const TextEditor = <T extends ElementType = "div">({
       editor?.off("focus", onFocus);
       editor?.off("blur", onBlur);
     };
-  }, [editor, mainEditor, brickId]);
+  }, [editor, mainEditor, brickId, disableMenuBar]);
 
   return (
     <>
-      <EditorContent
-        autoCorrect="false"
-        spellCheck="false"
-        editor={editor}
-        // test not growing the text editor so that the brick can be more easily dragged
-        className={tx("contents")}
-        // className={tx("outline-none ring-0 flex")}
-        // className={tx("outline-none ring-0 min-h-full flex flex-1")}
-      />
+      <EditorContent autoCorrect="false" spellCheck="false" editor={editor} className={tx("contents")} />
       {focused && menuBarContainer && (
         <Portal container={menuBarContainer} asChild>
           <TextEditorMenuBar
@@ -399,12 +398,14 @@ type DatasourceFieldPickerModalProps = {
 
 function DatasourceFieldPickerModal({ brickId, onFieldSelect }: DatasourceFieldPickerModalProps) {
   const dynamicParent = useDynamicParent(brickId);
-  if (!dynamicParent?.props?.datasource?.id) {
-    return null;
-  }
-  const datasource = useDatasource(dynamicParent.props.datasource.id);
+  const datasource = useDatasource(dynamicParent?.props?.datasource?.id);
+
   if (!datasource) {
-    return null;
+    return (
+      <div className="bg-white min-w-80 min-h-80 flex flex-col gap-4">
+        No database selected in the dynamic parent brick.
+      </div>
+    );
   }
   return (
     <div className="bg-white min-w-80 min-h-80 flex flex-col gap-4">

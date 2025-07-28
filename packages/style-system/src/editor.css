@@ -15,10 +15,20 @@ body {
   syntax: "<angle>";
 }
 
-.tiptap p.is-editor-empty:first-child::before {
+.tiptap:not(.singleline) p.is-editor-empty:first-child::before {
   color: #adb5bd;
   content: attr(data-placeholder);
   float: left;
+  margin-top: -4px;
+  font-size: inherit;
+  height: 0;
+  pointer-events: none;
+}
+.tiptap.singleline p.is-editor-empty:first-child::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  font-size: inherit;
   height: 0;
   pointer-events: none;
 }

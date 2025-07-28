@@ -21,7 +21,7 @@ export default function Text({ brick, editable }: BrickProps<Manifest>) {
         propPath="content"
         className={tx("first-child:first-line:leading-[100%] text-wrap")}
         brickId={brick.id}
-        content={props.content ?? "Your text here..."}
+        content={props.content}
         editable={editable}
       />
     </BrickRoot>

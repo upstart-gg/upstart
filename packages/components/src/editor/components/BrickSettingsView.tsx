@@ -4,7 +4,7 @@ import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
 import { tx } from "@upstart.gg/style-system/twind";
 import { get, set } from "lodash-es";
 import { useCallback, useMemo } from "react";
-import { useBrick, useDraftHelpers, usePreviewMode } from "~/editor/hooks/use-editor";
+import { useBrick, useDraftHelpers, useDynamicParent, usePreviewMode } from "~/editor/hooks/use-editor";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
 import FormNavigator from "./json-form/FormNavigator";
@@ -26,6 +26,7 @@ export default function BrickSettingsView({
 }: BrickSettingsViewProps) {
   const { updateBrickProps } = useDraftHelpers();
   const manifest = useBrickManifest(brick.type);
+  const dynamicParent = useDynamicParent(brick.id);
   const previewMode = usePreviewMode();
   const brickInfo = useBrick(brick.id);
   const filter: SchemaFilter = useCallback(
@@ -52,18 +53,6 @@ export default function BrickSettingsView({
       ? mergeIgnoringArrays({}, defProps, brick.props, brick.mobileProps ?? {})
       : mergeIgnoringArrays({}, defProps, brick.props ?? {});
   }, [brick, previewMode]);
-
-  // // Get datasource if one is selected
-  // const datasourceId = (baseFormData.datasource as { id: string })?.id;
-  // const datasource = useDatasource(datasourceId);
-
-  // // Enrich form data with datasource
-  // const formData = useMemo(() => {
-  //   if (datasourceId && datasource) {
-  //     return { ...baseFormData, __datasource: datasource };
-  //   }
-  //   return baseFormData;
-  // }, [baseFormData, datasource, datasourceId]);
 
   const onChange = useCallback(
     (data: Record<string, unknown>, propertyChangedPath: string) => {

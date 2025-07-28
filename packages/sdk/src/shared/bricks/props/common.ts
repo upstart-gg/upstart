@@ -53,7 +53,7 @@ export const commonProps = {
   ),
   growHorizontally: Type.Optional(
     Type.Boolean({
-      title: "Expand horizontally",
+      title: "Auto expand",
       description:
         "If set, the brick will grow to fill the available width of its parent section. If not set, the brick will have a fixed width.",
       "ui:styleId": "styles:growHorizontally",
@@ -78,18 +78,18 @@ export const commonProps = {
       "ui:styleId": "styles:alignSelf",
     }),
   ),
-  dynamicContent: Type.Optional(
-    Type.Boolean({
-      title: "Use dynamic content",
-      description: "If enabled, the brick will use dynamic content from the closest 'Dynamic' brick.",
-      "ai:instructions":
-        "If set, the brick will use dynamic content from the closest brick of type 'dynamic'. It can only be set to true if the brick is a child of a 'dynamic' brick.",
-      metadata: {
-        category: "content",
-      },
-      "ui:field": "hidden",
-      "ui:no-mapping": true,
-    }),
-  ),
+  // dynamicContent: Type.Optional(
+  //   Type.Boolean({
+  //     title: "Use dynamic content",
+  //     description: "If enabled, the brick will use dynamic content from the closest 'Dynamic' brick.",
+  //     "ai:instructions":
+  //       "If set, the brick will use dynamic content from the closest brick of type 'dynamic'. It can only be set to true if the brick is a child of a 'dynamic' brick.",
+  //     metadata: {
+  //       category: "content",
+  //     },
+  //     "ui:field": "hidden",
+  //     "ui:no-mapping": true,
+  //   }),
+  // ),
   // preset: Type.Optional(presetRef()),
 };

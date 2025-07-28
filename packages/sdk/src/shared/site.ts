@@ -475,6 +475,9 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 type: "dynamic",
                 props: {
                   direction: "flex-col",
+                  datasource: {
+                    id: "employees",
+                  },
                   $children: [
                     {
                       id: generateId(),

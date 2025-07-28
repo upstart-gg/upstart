@@ -103,20 +103,22 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         });
       }
 
-      target.style.removeProperty("top");
-      target.style.removeProperty("left");
-      target.style.removeProperty("right");
-      target.style.removeProperty("bottom");
-      target.style.removeProperty("margin-bottom");
-      target.style.removeProperty("margin-top");
-      target.style.removeProperty("margin-left");
-      target.style.removeProperty("margin-right");
-      target.style.removeProperty("width");
-      target.style.removeProperty("height");
-      target.style.removeProperty("min-height");
-      target.style.removeProperty("min-width");
-      target.style.removeProperty("flex-grow");
-      target.style.removeProperty("transform");
+      requestAnimationFrame(() => {
+        target.style.removeProperty("top");
+        target.style.removeProperty("left");
+        target.style.removeProperty("right");
+        target.style.removeProperty("bottom");
+        target.style.removeProperty("margin-bottom");
+        target.style.removeProperty("margin-top");
+        target.style.removeProperty("margin-left");
+        target.style.removeProperty("margin-right");
+        target.style.removeProperty("width");
+        target.style.removeProperty("height");
+        target.style.removeProperty("min-height");
+        target.style.removeProperty("min-width");
+        target.style.removeProperty("flex-grow");
+        target.style.removeProperty("transform");
+      });
     },
   });
 
