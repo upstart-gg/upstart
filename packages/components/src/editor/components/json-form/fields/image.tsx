@@ -1,6 +1,6 @@
 import type { FieldProps } from "./types";
 import { nanoid } from "nanoid";
-import { Button, TextField, Select } from "@upstart.gg/style-system/system";
+import { Button, TextField, Select, Tooltip, IconButton } from "@upstart.gg/style-system/system";
 import { type FC, useMemo, useState } from "react";
 import ModalSearchImage from "~/editor/components/ModalSearchImage";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
@@ -10,12 +10,16 @@ import { debounce } from "lodash-es";
 import { IoMdClose } from "react-icons/io";
 import { FieldTitle } from "../field-factory";
 import { useUploader } from "../../UploaderContext";
+import { useDynamicParent } from "~/editor/hooks/use-editor";
+import TextEditor from "~/shared/components/TextEditor";
+import { RiBracesLine } from "react-icons/ri";
 
 const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
-  const { schema, formData, onChange, title, description, currentValue } = props;
+  const { schema, formData, onChange, title, description, currentValue, brickId } = props;
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);
   const { onImageUpload } = useUploader();
+  const dynamicParent = useDynamicParent(brickId);
 
   // const [src, setSrc] = useState<string | null>(currentValue.src);
 
@@ -24,6 +28,38 @@ const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
   };
 
   const debouncedOnPropsChange = debounce(onPropsChange, 300);
+
+  if (dynamicParent) {
+    return (
+      <div className="field field-string basis-full flex flex-col gap-1">
+        <FieldTitle title={title} description={description} />
+        <div className="field field-string flex items-center gap-2">
+          <div className="rounded-md border border-gray-300 focus:border-upstart-600 focus:ring-1 focus:ring-upstart-600 px-2 py-1.5 text-sm w-full bg-white">
+            <TextEditor
+              content={currentValue?.src}
+              brickId={brickId}
+              propPath="content"
+              inline={!schema["ui:multiline"]}
+              placeholder="Image URL with possible placeholders"
+              // TODO: implement onChange
+              // onChange={(e) => onChangeDebounced(e.target.value)}
+              spellCheck={!!schema["ui:spellcheck"]}
+              disableMenuBar
+            />
+          </div>
+          <Tooltip
+            content={<span className="block text-xs p-0.5">Available variables from your database</span>}
+            className="!z-[10000]"
+            delayDuration={300}
+          >
+            <IconButton variant="outline">
+              <RiBracesLine />
+            </IconButton>
+          </Tooltip>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

@@ -79,13 +79,24 @@ export const brickSchema = Type.Object(
     type: brickTypeSchema,
     props: Type.Any({
       title: "Props",
-      description: "The props of the brick. The available props depends on the brick type.",
+      description: "The static props of the brick. The available props depends on the brick type.",
     }),
     mobileProps: Type.Optional(
       Type.Any({
         title: "Props",
-        description: "The props for mobile, merged with desktop props.",
+        description: "The overriden props for mobile, merged with desktop props.",
       }),
+    ),
+    propsMapping: Type.Optional(
+      Type.Object(
+        {},
+        {
+          description:
+            "Dynamic props mapping for the brick. Used to map dynamic content to the brick's props. Can only be used if the brick is a child of a 'dynamic' brick.",
+          "ui:field": "hidden",
+          additionalProperties: true,
+        },
+      ),
     ),
   },
   { $id: "brick", additionalProperties: true },

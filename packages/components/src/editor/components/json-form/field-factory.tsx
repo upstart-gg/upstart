@@ -26,11 +26,11 @@ import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 import { Tooltip } from "@upstart.gg/style-system/system";
-import clsx from "clsx";
 import ColorPresetField from "./fields/color-preset";
 import { CssLengthField } from "./fields/css-length";
 import { DatarecordField } from "./fields/datarecord";
 import { fieldLabel } from "./form-class";
+import { tx } from "@upstart.gg/style-system/twind";
 
 export interface FieldFactoryOptions {
   brickId: string;
@@ -534,7 +534,11 @@ export function processObjectSchemaToFields({
   return fields;
 }
 
-export function FieldTitle({ title, description }: { title?: string; description?: string }) {
+export function FieldTitle({
+  title,
+  description,
+  className,
+}: { title?: string; description?: string; className?: string }) {
   if (!title) return null;
   return (
     <div className="flex items-center text-nowrap text-sm">
@@ -545,7 +549,8 @@ export function FieldTitle({ title, description }: { title?: string; description
           align="start"
         >
           <label
-            className={clsx(
+            className={tx(
+              className,
               fieldLabel,
               "underline-offset-4 no-underline hover:underline decoration-upstart-300 decoration-dotted cursor-default",
             )}
@@ -554,7 +559,7 @@ export function FieldTitle({ title, description }: { title?: string; description
           </label>
         </Tooltip>
       ) : (
-        <label className={fieldLabel}>{title}</label>
+        <label className={tx(className, fieldLabel)}>{title}</label>
       )}
     </div>
   );

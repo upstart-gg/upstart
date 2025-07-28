@@ -612,6 +612,31 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             },
             bricks: [
               {
+                id: generateId(),
+                type: "dynamic",
+                props: {
+                  alignSelf: "self-auto",
+                  datasource: {
+                    id: "employees2",
+                  },
+                  $children: [
+                    {
+                      id: generateId(),
+                      type: "testimonials",
+                      props: {
+                        testimonials: {
+                          author: "{{firstName}} {{lastName}}",
+                          text: "{{testimonial}}",
+                          socialIcon: "{{icon}}",
+                          company: "{{company}}",
+                        },
+                      },
+                    },
+                  ],
+                  growHorizontally: true,
+                },
+              },
+              {
                 type: "testimonials",
                 props: {
                   alignSelf: "self-auto",

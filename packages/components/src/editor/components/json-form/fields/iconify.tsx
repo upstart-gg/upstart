@@ -64,10 +64,6 @@ const IconifyField: FC<
     defaultCollection?: string;
   }
 > = ({ currentValue, onChange, title, description, schema, defaultCollection }) => {
-  console.log("IconifyField props:", {
-    defaultCollection,
-    schema,
-  });
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState<string>(
@@ -95,8 +91,6 @@ const IconifyField: FC<
           return {} as IconifyCategories;
         }
         const data = (await response.json()) as IconifyJSON & { uncategorized?: string[]; icons?: string[] };
-        console.log("data from API:", data);
-        console.log("Available icons for collection:", selectedCollection, data);
 
         // Process the API response properly
         const processedCategories: IconifyCategories = {};
@@ -120,7 +114,6 @@ const IconifyField: FC<
           processedCategories.uncategorized = data.icons;
         }
 
-        console.log("Processed categories:", processedCategories);
         // Set categories which will trigger icon list generation
         setCategories(processedCategories);
       } catch (error) {
@@ -174,7 +167,6 @@ const IconifyField: FC<
   const collectionIcons = useMemo(() => {
     // If searching, use search results instead of collection icons
     if (searchQuery.trim()) {
-      console.log("Using icons earch results:", searchResults.length);
       return searchResults;
     }
 
@@ -187,7 +179,6 @@ const IconifyField: FC<
     // We still need the full array for virtualization, but generator helps with memory during processing
     const iconGenerator = generateIconsFromCategories(categories, selectedCollection);
     const icons = Array.from(iconGenerator);
-    console.log("Icons from categories:", icons);
     return icons;
   }, [categories, selectedCollection, searchQuery, searchResults]);
 

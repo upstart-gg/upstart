@@ -63,7 +63,7 @@ export const commonProps = {
   alignSelf: Type.Optional(
     StringEnum(["self-auto", "self-start", "self-center", "self-end"], {
       title: "Vertical position",
-      "ui:field": "hidden",
+      // "ui:field": "hidden",
       "ui:display": "icon-group",
       description: "How the brick vertically aligns itself within its parent section.",
       enumNames: ["Auto", "Top", "Center", "Bottom"],
@@ -78,18 +78,4 @@ export const commonProps = {
       "ui:styleId": "styles:alignSelf",
     }),
   ),
-  // dynamicContent: Type.Optional(
-  //   Type.Boolean({
-  //     title: "Use dynamic content",
-  //     description: "If enabled, the brick will use dynamic content from the closest 'Dynamic' brick.",
-  //     "ai:instructions":
-  //       "If set, the brick will use dynamic content from the closest brick of type 'dynamic'. It can only be set to true if the brick is a child of a 'dynamic' brick.",
-  //     metadata: {
-  //       category: "content",
-  //     },
-  //     "ui:field": "hidden",
-  //     "ui:no-mapping": true,
-  //   }),
-  // ),
-  // preset: Type.Optional(presetRef()),
 };

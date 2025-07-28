@@ -54,7 +54,11 @@ export function getGroupInfo(schema: TSchema) {
 
 export function defineProps<P extends TProperties>(
   props: P,
-  options?: ObjectOptions & { noGrow?: boolean; noAlignSelf?: boolean; defaultPreset?: string },
+  options?: ObjectOptions & {
+    noGrow?: boolean;
+    noAlignSelf?: boolean;
+    defaultPreset?: string;
+  },
 ) {
   const allProps = { ...commonProps, ...props };
   const { alignSelf, growHorizontally, ...rest } = allProps;

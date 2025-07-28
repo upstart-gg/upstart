@@ -119,7 +119,7 @@ type PolymorphicProps<E extends ElementType> = PropsWithChildren<
 >;
 
 export type TextEditorProps<E extends ElementType> = PolymorphicProps<E> & {
-  content: string;
+  content: string | undefined;
   className?: string;
   brickId: Brick["id"];
   propPath: string;

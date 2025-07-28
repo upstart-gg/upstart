@@ -101,7 +101,7 @@ const EnumField: FC<FieldProps<string>> = (props) => {
           <FieldTitle title={title} description={description} />
           <SegmentedControl.Root
             onValueChange={onChange}
-            defaultValue={currentValue as string}
+            defaultValue={currentValue}
             size="1"
             radius="medium"
             className="!h-[26px] -mt-0.5 -mb-0.5"

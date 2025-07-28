@@ -24,28 +24,32 @@ export const StringField: FC<FieldProps<string>> = (props) => {
 
   if (dynamicParent) {
     return (
-      <div className="field field-string basis-full flex items-start gap-2">
-        <div className="rounded-md border border-gray-300 focus:border-upstart-600 focus:ring-1 focus:ring-upstart-600 px-2 py-1.5 text-sm w-full">
-          <TextEditor
-            content={currentValue}
-            brickId={brickId}
-            propPath="content"
-            inline={!schema["ui:multiline"]}
-            // TODO: implement onChange
-            // onChange={(e) => onChangeDebounced(e.target.value)}
-            spellCheck={!!schema["ui:spellcheck"]}
-            disableMenuBar
-          />
+      <div className="field field-string basis-full flex flex-col gap-1">
+        <FieldTitle title={title} description={description} />
+        <div className="field field-string flex items-center gap-2">
+          <div className="rounded-md border border-gray-300 focus:border-upstart-600 focus:ring-1 focus:ring-upstart-600 px-2 py-1.5 text-sm w-full bg-white">
+            <TextEditor
+              content={currentValue}
+              brickId={brickId}
+              propPath="content"
+              inline={!schema["ui:multiline"]}
+              placeholder=""
+              // TODO: implement onChange
+              // onChange={(e) => onChangeDebounced(e.target.value)}
+              spellCheck={!!schema["ui:spellcheck"]}
+              disableMenuBar
+            />
+          </div>
+          <Tooltip
+            content={<span className="block text-xs p-0.5">Available variables from your database</span>}
+            className="!z-[10000]"
+            delayDuration={300}
+          >
+            <IconButton variant="outline">
+              <RiBracesLine />
+            </IconButton>
+          </Tooltip>
         </div>
-        <Tooltip
-          content={<span className="block text-xs p-0.5">Available variables from your database</span>}
-          className="!z-[10000]"
-          delayDuration={300}
-        >
-          <IconButton variant="outline">
-            <RiBracesLine />
-          </IconButton>
-        </Tooltip>
       </div>
     );
   }
@@ -130,7 +134,7 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (pro
       {type === "url" ? (
         dynamicParent ? (
           <div className="field field-string basis-full flex items-start gap-2 mt-2">
-            <div className="rounded-md border border-gray-300 focus:border-upstart-600 focus:ring-1 focus:ring-upstart-600 px-2 py-1.5 text-sm w-full">
+            <div className="rounded-md border border-gray-300 focus:border-upstart-600 focus:ring-1 focus:ring-upstart-600 px-2 py-1.5 text-sm w-full bg-white">
               <TextEditor
                 content={currentValue?.startsWith("http") ? currentValue : ""}
                 brickId={brickId}

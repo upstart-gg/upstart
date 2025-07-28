@@ -50,9 +50,6 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
   const datasources = useDatasources();
   const datasource = useDatasource(currentValue?.id);
 
-  console.log("DatasourceField props", props);
-  console.log("DatasourceField datasource", datasource);
-
   const handleChange = (field: string, value: unknown) => {
     const newValue = { ...currentValue, [field]: value };
     onChange(newValue as DatasourceSettings);

@@ -16,6 +16,7 @@ import { RxCross2 } from "react-icons/rx";
 import { TbPlus } from "react-icons/tb";
 import { FieldTitle, processObjectSchemaToFields } from "../field-factory";
 import type { FieldProps } from "./types";
+import { useDynamicParent } from "~/editor/hooks/use-editor";
 
 // If the HTML contains any tags, this function will strip them out and return plain text.
 // This is useful for displaying text content without HTML formatting (ie for items title).
@@ -46,6 +47,7 @@ export function ArrayField({
   parents = [],
   schema,
 }: ArrayFieldProps) {
+  const dynamicParent = useDynamicParent(brickId);
   const [isDragging, setIsDragging] = useState(false);
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -238,17 +240,18 @@ export function ArrayField({
           className={tx(
             "border rounded",
             isExpanded ? "border-gray-300" : "border-gray-200",
-            `${snapshot?.isDragging && "shadow-lg"}`,
+            snapshot?.isDragging && "shadow-lg",
           )}
         >
           {/* Header row - always visible */}
           <div
             className={tx(
-              "flex items-center cursor-pointer justify-between p-2 bg-gray-100 hover:bg-upstart-50",
+              "flex items-center cursor-pointer justify-between p-2 bg-gray-100 hover:bg-upstart-50 rounded-t",
+              !isExpanded && "rounded-b",
             )}
             onClick={() => toggleExpanded(index)}
           >
-            <div className="flex items-center gap-2 min-w-0 flex-1">
+            <div className="flex items-center gap-2 min-w-0 flex-1 rounded-[inherit]">
               {/* Drag handle */}
               {orderable && (
                 <div
@@ -361,8 +364,12 @@ export function ArrayField({
     <div className="space-y-3 flex-1 min-w-0">
       {/* Header with title and add button */}
       <div className="flex w-full items-center justify-between">
-        <FieldTitle title={title} description={description} />
-        {addable && (
+        <FieldTitle
+          title={title}
+          description={description}
+          className={tx(!!dynamicParent && "font-medium")}
+        />
+        {addable && !dynamicParent && (
           <Button type="button" onClick={handleAddItem} variant="soft" size="1" radius="full">
             <TbPlus className="w-3 h-3" /> Add item
           </Button>
@@ -370,11 +377,34 @@ export function ArrayField({
       </div>
 
       {/* Array items */}
-      {orderable ? (
+      {dynamicParent ? (
+        <div className="space-y-1 -mx-1">
+          <div className="px-1">
+            <div className="space-y-3">
+              {/* Edit fields */}
+              {processObjectSchemaToFields({
+                schema: resolvedItemSchema as TObject<TProperties>,
+                formData: {},
+                formSchema,
+                onChange: (itemData, itemFieldId) => {
+                  // const newArray = [...currentValue];
+                  // const currentItem = (newArray[index] as Record<string, unknown>) || {};
+                  // newArray[index] = { ...currentItem, ...itemData };
+                  // onChange(newArray);
+                },
+                options: {
+                  brickId,
+                  parents: [...parents, `${fieldName}[0]`],
+                },
+              })}
+            </div>
+          </div>
+        </div>
+      ) : orderable ? (
         <DragDropContext onDragEnd={handleDragEnd} onDragStart={() => setIsDragging(true)}>
           <Droppable droppableId={`array-${id}`} direction="vertical">
             {(provided, snapshot) => (
-              <div {...provided.droppableProps} ref={provided.innerRef} className={`space-y-1`}>
+              <div {...provided.droppableProps} ref={provided.innerRef} className={`space-y-1 rounded`}>
                 {currentValue.map((item, index) => {
                   // Create stable key for drag and drop
                   const stableKey = `item-${index}`;
@@ -398,7 +428,7 @@ export function ArrayField({
         </div>
       )}
 
-      {currentValue.length === 0 && (
+      {!dynamicParent && currentValue.length === 0 && (
         <div className="text-center py-6 text-gray-400 text-sm border-2 border-dashed border-gray-200 rounded">
           No items added yet.
         </div>
