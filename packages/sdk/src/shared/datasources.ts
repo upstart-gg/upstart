@@ -5,8 +5,10 @@ import type { TArray } from "@sinclair/typebox";
 export function defineDataSources<T extends DatasourcesList>(datasources: T) {
   return datasources.map((datasource) => ({
     ...datasource,
-    // @ts-ignore Seems like TS can't infer properly here
-    schema: "schema" in datasource ? datasource.schema : getSchemaByProvider(datasource.provider),
+    schema: mapDatasourceSchema(
+      // @ts-ignore Seems like TS can't infer properly here
+      "schema" in datasource ? datasource.schema : getSchemaByProvider(datasource.provider),
+    ),
   })) as T;
 }
 

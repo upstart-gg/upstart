@@ -59,9 +59,9 @@ export function defineProps<P extends TProperties>(
   const allProps = { ...commonProps, ...props };
   const { alignSelf, growHorizontally, ...rest } = allProps;
   const finalProps = {
+    ...rest,
     ...(options?.noAlignSelf ? {} : { alignSelf }),
     ...(options?.noGrow ? {} : { growHorizontally }),
-    ...rest,
   } as typeof allProps;
   // if (!options?.noAlignSelf) {
   //   finalProps.alignSelf = alignSelf;

@@ -81,18 +81,27 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         return;
       }
 
-      const width = previewMode === "mobile" ? "auto" : `${(event.rect.width / parentWidth) * 100}%`;
+      const width =
+        previewMode === "mobile" ? "auto" : `${((event.rect.width / parentWidth) * 100).toFixed(0)}%`;
 
       console.log("Resizing with parentBrick:", parentBrick);
       console.log("Resizing with parentElement:", parentElement);
       console.log("Resizing with parentWidth:", parentWidth);
       console.log("Resizing with width:", width);
 
-      draftHelpers.updateBrickProps(brickId, {
-        width,
-        height: `${event.rect.height}px`,
-        growHorizontally: event.edges.left || event.edges.right ? false : existingBrick?.growHorizontally,
-      });
+      // Horizontal resizing
+      if (event.edges.left || event.edges.right) {
+        draftHelpers.updateBrickProps(brickId, {
+          width,
+          growHorizontally: event.edges.left || event.edges.right ? false : existingBrick?.growHorizontally,
+        });
+      }
+
+      if (event.edges.top || event.edges.bottom) {
+        draftHelpers.updateBrickProps(brickId, {
+          height: `${event.rect.height}px`,
+        });
+      }
 
       target.style.removeProperty("top");
       target.style.removeProperty("left");

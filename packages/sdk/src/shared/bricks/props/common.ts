@@ -88,6 +88,7 @@ export const commonProps = {
         category: "content",
       },
       "ui:field": "hidden",
+      "ui:no-mapping": true,
     }),
   ),
   // preset: Type.Optional(presetRef()),

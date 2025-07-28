@@ -1,9 +1,15 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { tx } from "@upstart.gg/style-system/twind";
 
-export default forwardRef((props, ref) => {
+type Props = {
+  items: string[];
+  command: (args: { id: string }) => void;
+};
+
+const DatasourceFieldList = forwardRef<HTMLElement, Props>((props, ref) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const selectItem = (index) => {
+  const selectItem = (index: number) => {
     const item = props.items[index];
     if (item) {
       props.command({ id: item });
@@ -25,8 +31,9 @@ export default forwardRef((props, ref) => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => setSelectedIndex(0), [props.items]);
 
+  // @ts-ignore
   useImperativeHandle(ref, () => ({
-    onKeyDown: ({ event }) => {
+    onKeyDown: ({ event }: { event: KeyboardEvent }) => {
       if (event.key === "ArrowUp") {
         upHandler();
         return true;
@@ -47,15 +54,19 @@ export default forwardRef((props, ref) => {
   }));
 
   return (
-    <div className="bg-white text-xs border border-gray-300 rounded-lg shadow-md flex flex-col gap-0.5 overflow-auto p-2 relative">
+    <div
+      className={tx(
+        "bg-white border border-gray-200 rounded-lg shadow-lg min-w-[200px] flex flex-col gap-0.5 overflow-auto p-2 z-auto",
+      )}
+    >
       {props.items.length ? (
         props.items.map((item, index) => (
           <button
             type="button"
             role="menuitem"
             className={tx(
-              index === selectedIndex && "bg-upstart-200",
-              "flex text-left w-full items-center px-1.5 py-0.5 rounded",
+              index === selectedIndex && "bg-upstart-100",
+              "flex text-sm text-left w-full items-center px-1.5 py-1 rounded",
             )}
             key={index}
             onClick={() => selectItem(index)}
@@ -69,3 +80,5 @@ export default forwardRef((props, ref) => {
     </div>
   );
 });
+
+export default DatasourceFieldList;

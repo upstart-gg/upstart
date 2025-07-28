@@ -32,7 +32,7 @@ import {
 import { MdOutlineFormatItalic } from "react-icons/md";
 import { MdStrikethroughS } from "react-icons/md";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
-import { useEditor } from "~/editor/hooks/use-editor";
+import { useDynamicParent, useEditor } from "~/editor/hooks/use-editor";
 import { JSONSchemaView } from "~/editor/components/json-form/SchemaView";
 import Mention from "@tiptap/extension-mention";
 import datasourceFieldSuggestions from "./datasourceFieldSuggestions";
@@ -42,7 +42,7 @@ import { menuBarBtnActiveCls, menuBarBtnCls, menuBarBtnCommonCls } from "../styl
 import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
 import type { TSchema } from "@sinclair/typebox";
 import { tx } from "@upstart.gg/style-system/twind";
-import { useDatasources } from "~/editor/hooks/use-datasource";
+import { useDatasource, useDatasources } from "~/editor/hooks/use-datasource";
 
 // function DatasourceFieldNode(props: NodeViewProps) {
 //   return (
@@ -209,13 +209,12 @@ const TextEditor = <T extends ElementType = "div">({
         },
       },
       renderHTML: ({ options, node }) => {
-        // console.log("RENDER ATTRS", options, node);
         const field = node.attrs["data-field"] ?? node.attrs.label ?? node.attrs.id;
         return [
           "span",
           {
             "data-type": "mention",
-            class: tx("bg-upstart-500 text-white text-[94%] px-0.5 py-0.5 rounded"),
+            class: tx("bg-upstart-500 text-white text-[94%] px-0.5 py-0.5 rounded "),
             "data-field": field,
           },
           `${options.suggestion.char}${field}}}`,
@@ -312,6 +311,7 @@ const TextEditor = <T extends ElementType = "div">({
       {focused && menuBarContainer && (
         <Portal container={menuBarContainer} asChild>
           <TextEditorMenuBar
+            brickId={brickId}
             editor={editor}
             noTextAlign={noTextAlign}
             noTextStrike={noTextStrike}
@@ -328,17 +328,20 @@ const TextEditorMenuBar = ({
   textSizeMode,
   noTextAlign,
   noTextStrike,
+  brickId,
 }: {
   editor: Editor;
+  brickId: string;
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 } & Omit<TextEditorProps<any>, "content" | "brickId" | "propPath">) => {
+  const dynParent = useDynamicParent(brickId);
   return (
     <>
       {textSizeMode === "classic" && <TextSizeClassicDropdown editor={editor} />}
       {textSizeMode === "hero" && <TextSizeHeroDropdown editor={editor} />}
       {!noTextAlign && <TextAlignButtonGroup editor={editor} />}
       <TextStyleButtonGroup editor={editor} noTextStrike={noTextStrike} textSizeMode={textSizeMode} />
-      <DatasourceItemButton editor={editor} />
+      {dynParent !== null && <DatasourceItemButton editor={editor} brickId={brickId} />}
     </>
   );
 };
@@ -391,74 +394,28 @@ function TextAlignButtonGroup({ editor }: { editor: Editor }) {
 
 type DatasourceFieldPickerModalProps = {
   onFieldSelect: (field: string) => void;
+  brickId: string;
 };
 
-function DatasourceFieldPickerModal(props: DatasourceFieldPickerModalProps) {
-  const [currentDatasourceId, setCurrentDatasourceId] = useState<string | null>(null);
-  const datasources = useDatasources();
-  const selectedSchema = datasources.find((ds) => ds.id === currentDatasourceId)?.schema;
-
+function DatasourceFieldPickerModal({ brickId, onFieldSelect }: DatasourceFieldPickerModalProps) {
+  const dynamicParent = useDynamicParent(brickId);
+  if (!dynamicParent?.props?.datasource?.id) {
+    return null;
+  }
+  const datasource = useDatasource(dynamicParent.props.datasource.id);
+  if (!datasource) {
+    return null;
+  }
   return (
     <div className="bg-white min-w-80 min-h-80 flex flex-col gap-4">
-      <h3 className="text-base font-medium">Data sources fields</h3>
-      <Callout.Root>
-        <Callout.Icon>
-          <RiBracesLine />
-        </Callout.Icon>
-        <Callout.Text>
-          Use dynamic data thanks to data sources! Choose a data source field you'd like to display.
-        </Callout.Text>
-      </Callout.Root>
-      <div className="flex flex-col gap-3">
-        <div className="inline-flex gap-2 items-center">
-          <span className="font-semibold inline-flex justify-center items-center bg-upstart-500 rounded-full w-6 aspect-square text-white">
-            1
-          </span>
-          <span className="text-sm font-medium">Select a data source</span>
-        </div>
-        <div className="flex flex-col gap-1 flex-1">
-          <Select.Root
-            defaultValue={currentDatasourceId ?? undefined}
-            size="2"
-            onValueChange={setCurrentDatasourceId}
-          >
-            <Select.Trigger radius="large" placeholder="Select a Data source" />
-            <Select.Content position="popper">
-              <Select.Group>
-                <Select.Label>Datasource</Select.Label>
-                {Object.entries(datasources ?? {}).map(([dsId, dsSchema]) => (
-                  <Select.Item key={dsId} value={dsId}>
-                    {dsSchema.name}
-                  </Select.Item>
-                ))}
-              </Select.Group>
-            </Select.Content>
-          </Select.Root>
-        </div>
-        {currentDatasourceId && selectedSchema && (
-          <>
-            <div className="inline-flex gap-2 items-center">
-              <span className="font-semibold inline-flex justify-center items-center bg-upstart-500 rounded-full w-6 aspect-square text-white">
-                2
-              </span>
-              <span className="text-sm font-medium">Select a field</span>
-            </div>
-            <div className="flex items-center justify-between flex-1">
-              <JSONSchemaView
-                // @ts-ignore
-                schema={selectedSchema as TSchema}
-                rootName={currentDatasourceId}
-                onFieldSelect={props.onFieldSelect}
-              />
-            </div>
-          </>
-        )}
-      </div>
+      <h3 className="text-base font-medium">Insert database field</h3>
+      <JSONSchemaView schema={datasource.schema} onFieldSelect={onFieldSelect} />
     </div>
   );
 }
 
-function DatasourceItemButton({ editor }: { editor: Editor }) {
+function DatasourceItemButton({ editor, brickId }: { editor: Editor; brickId: string }) {
+  const dynParent = useDynamicParent(brickId);
   const sources = useDatasources();
   const mainEditor = useEditor();
   // const end = editor.state.
@@ -496,7 +453,7 @@ function DatasourceItemButton({ editor }: { editor: Editor }) {
         </button>
       </Popover.Trigger>
       <Popover.Content width="460px" side="right" align="start" size="2" maxHeight="50vh" sideOffset={10}>
-        <DatasourceFieldPickerModal onFieldSelect={onFieldSelect} />
+        <DatasourceFieldPickerModal onFieldSelect={onFieldSelect} brickId={brickId} />
       </Popover.Content>
     </Popover.Root>
   );

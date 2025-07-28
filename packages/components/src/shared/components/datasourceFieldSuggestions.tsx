@@ -1,8 +1,7 @@
 import { ReactRenderer } from "@tiptap/react";
 import type { MentionNodeAttrs } from "@tiptap/extension-mention";
 import tippy, { type GetReferenceClientRect } from "tippy.js";
-// @ts-ignore
-import MentionList from "./DatasourceFieldList.jsx";
+import DatasourceFieldList from "./DatasourceFieldList";
 import type { SuggestionOptions } from "@tiptap/suggestion";
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -10,12 +9,13 @@ const config: Omit<SuggestionOptions<any, MentionNodeAttrs>, "editor"> = {
   char: "{{",
 
   render: () => {
-    let component: ReactRenderer<MentionList>;
+    let component: ReactRenderer<typeof DatasourceFieldList>;
     let popup: ReturnType<typeof tippy>;
 
     return {
       onStart: (props) => {
-        component = new ReactRenderer(MentionList, {
+        // @ts-ignore
+        component = new ReactRenderer(DatasourceFieldList, {
           props,
           editor: props.editor,
         });
@@ -31,7 +31,7 @@ const config: Omit<SuggestionOptions<any, MentionNodeAttrs>, "editor"> = {
           showOnCreate: true,
           interactive: true,
           trigger: "manual",
-          placement: "bottom-start",
+          placement: "top-start",
         });
       },
 
@@ -54,6 +54,7 @@ const config: Omit<SuggestionOptions<any, MentionNodeAttrs>, "editor"> = {
           return true;
         }
 
+        // @ts-ignore
         return component.ref?.onKeyDown(props);
       },
 

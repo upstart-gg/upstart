@@ -101,9 +101,11 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
     manifest.maxHeight?.desktop && `@desktop:max-h-[${manifest.maxHeight.desktop}px]`,
 
     // !isContainerChild &&
-    typeof props.width !== "undefined"
-      ? `@desktop:w-[${props.width}]`
-      : `@desktop:w-[${manifest.defaultWidth.desktop}]`,
+    props.growHorizontally
+      ? "@desktop:w-auto"
+      : typeof props.width !== "undefined"
+        ? `@desktop:w-[${props.width}]`
+        : `@desktop:w-[${manifest.defaultWidth.desktop}]`,
 
     !isContainerChild &&
       (typeof mobileProps?.width !== "undefined"

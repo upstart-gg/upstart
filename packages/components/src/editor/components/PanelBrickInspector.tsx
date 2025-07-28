@@ -46,14 +46,6 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
     );
   });
   const hasContentProperties = Object.keys(contentProperties).length > 0;
-
-  console.log(
-    "brick of type %s has content properties: %s",
-    brick.type,
-    hasContentProperties,
-    manifest.props.properties,
-  );
-
   const showTabsList =
     (!!manifest.props.properties.preset && previewMode === "desktop") || hasContentProperties || debugMode;
 
@@ -137,25 +129,39 @@ function DebugTab({ brick, section, hasTabs }: { brick: Brick; section: Section;
     css({
       display: "block",
       fontFamily: "monospace",
-      fontSize: "0.75rem",
-      lineHeight: "1.6",
+      fontSize: "0.7rem",
+      lineHeight: "1.3",
     }),
   );
+  const { getParentBrick } = useDraftHelpers();
+  const parentBrick = getParentBrick(brick.id);
   return (
     <div className="flex flex-col h-full">
       <div className="h-[50cqh] grow-0 overflow-y-auto">
         <PanelBlockTitle>
           Brick <code className="text-xs">Id: {brick.id}</code>
         </PanelBlockTitle>
-        <div className="flex-1 bg-gray-100">
+        <div className="flex-1 ">
           <pre className="p-1">
             <code className={codeClassName}>{JSON.stringify(brick, null, 2)}</code>
           </pre>
         </div>
+        {parentBrick && (
+          <>
+            <PanelBlockTitle>
+              Parent Brick <code className="text-xs">Id: {parentBrick.id}</code>
+            </PanelBlockTitle>
+            <div className="flex-1 ">
+              <pre className="p-1">
+                <code className={codeClassName}>{JSON.stringify(parentBrick, null, 2)}</code>
+              </pre>
+            </div>
+          </>
+        )}
         <PanelBlockTitle>
           Section <code className="text-xs">Id: {section.id}</code>
         </PanelBlockTitle>
-        <div className="flex-1 bg-gray-100">
+        <div className="flex-1 ">
           <pre className="p-1">
             <code className={codeClassName}>{JSON.stringify(section, null, 2)}</code>
           </pre>
