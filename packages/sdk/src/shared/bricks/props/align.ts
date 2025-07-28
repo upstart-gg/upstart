@@ -1,55 +1,43 @@
-import { type SchemaOptions, Type, type Static } from "@sinclair/typebox";
+import { type SchemaOptions, type StringOptions, Type, type Static } from "@sinclair/typebox";
+import { StringEnum } from "~/shared/utils/string-enum";
 import { typedRef } from "~/shared/utils/typed-ref";
 
-type AlignBasicOptions = SchemaOptions & {
-  "ui:no-horizontal-align"?: boolean;
-  "ui:no-vertical-align"?: boolean;
-  "ui:horizontal-align-label"?: string;
-  "ui:vertical-align-label"?: string;
-  "ui:flex-mode"?: "row" | "column";
-};
-
-export function basicAlign(opts: AlignBasicOptions = {}) {
-  return Type.Object(
+export function justifyContent(options: StringOptions = {}) {
+  return StringEnum(
+    [
+      "justify-start",
+      "justify-center",
+      "justify-end",
+      "justify-between",
+      "justify-around",
+      "justify-stretch",
+    ],
     {
-      horizontal: Type.Optional(
-        Type.Union(
-          [
-            Type.Literal("start", { title: "Left" }),
-            Type.Literal("center", { title: "Center" }),
-            Type.Literal("end", { title: "Right" }),
-          ],
-          {
-            title: "Horizontal",
-          },
-        ),
-      ),
-      vertical: Type.Optional(
-        Type.Union(
-          [
-            Type.Literal("start", { title: "Top" }),
-            Type.Literal("center", { title: "Center" }),
-            Type.Literal("end", { title: "Bottom" }),
-          ],
-          {
-            title: "Vertical",
-          },
-        ),
-      ),
-    },
-    {
-      $id: "styles:basicAlign",
-      title: "Align",
+      enumNames: ["Start", "Center", "End", "Between", "Around", "Stretch"],
+      $id: "styles:justifyContent",
+      title: "Justify bricks",
       "ui:responsive": true,
-      "ui:field": "align-basic",
-      "ui:styleId": "styles:basicAlign",
-      ...opts,
+      "ui:styleId": "styles:justifyContent",
+      ...options,
     },
   );
 }
 
-export type AlignBasicSettings = Static<ReturnType<typeof basicAlign>>;
+export function justifyContentRef(options: StringOptions = {}) {
+  return typedRef("styles:justifyContent", options);
+}
 
-export function basicAlignRef(options: AlignBasicOptions = {}) {
-  return typedRef("styles:basicAlign", options);
+export function alignItems(options: StringOptions = {}) {
+  return StringEnum(["items-start", "items-center", "items-end", "items-stretch"], {
+    enumNames: ["Start", "Center", "End", "Stretch"],
+    $id: "styles:alignItems",
+    title: "Align bricks",
+    "ui:responsive": true,
+    "ui:styleId": "styles:alignItems",
+    ...options,
+  });
+}
+
+export function alignItemsRef(options: StringOptions = {}) {
+  return typedRef("styles:alignItems", options);
 }

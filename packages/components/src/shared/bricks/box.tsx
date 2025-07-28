@@ -1,5 +1,5 @@
 import { useBrickStyle } from "../hooks/use-brick-style";
-import { type Manifest, manifest } from "@upstart.gg/sdk/shared/bricks/manifests/dynamic.manifest";
+import { type Manifest, manifest } from "@upstart.gg/sdk/shared/bricks/manifests/box.manifest";
 import EditableBrickWrapper from "~/editor/components/EditableBrick";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import BrickWrapper from "../components/BrickWrapper";
@@ -9,7 +9,7 @@ import { useDeviceInfo } from "~/editor/hooks/use-device-info";
 import { useDraggingBrickType, usePreviewMode } from "~/editor/hooks/use-editor";
 import BrickRoot from "../components/BrickRoot";
 
-export default function Dynamic({ brick, editable }: BrickProps<Manifest>) {
+export default function Box({ brick, editable }: BrickProps<Manifest>) {
   const styles = useBrickStyle<Manifest>(brick);
   return (
     <BrickRoot manifest={manifest} className={tx("flex @mobile:flex-wrap", Object.values(styles))}>
@@ -69,7 +69,7 @@ function DroppableBox({ brick }: BrickProps<Manifest>) {
                 "w-full h-full text-center p-4 rounded flex justify-center items-center text-base font-medium",
               )}
             >
-              This is a dynamic box.
+              This is a box.
               <br />
               Drag bricks here to stack them inside.
             </div>

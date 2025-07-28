@@ -37,7 +37,7 @@ import {
   type Placement,
   FloatingPortal,
 } from "@upstart.gg/style-system/system";
-import BaseBrick from "~/shared/components/BaseBrick";
+import BaseComponent from "~/shared/components/BrickComponent";
 import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
 import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
 import { menuNavBarCls } from "~/shared/styles/menubar-styles";
@@ -75,16 +75,8 @@ function getDropAnimationStyle(
       transform: `${translate}`,
     };
   }
-  //else {
-  //   const translate = `translate(0px, ${moveTo.y}px)`;
-  //   return {
-  //     ...style,
-  //     transform: `${translate}`,
-  //   };
-  // }
-  return {
-    ...style,
-  };
+
+  return style;
 }
 
 function useBarPlacements(brick: Brick): Placement[] {
@@ -127,6 +119,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const allowedPlacements = useBarPlacements(brick);
     const draggingBrickType = useDraggingBrickType();
     const isMouseOverPanel = useIsMouseOverPanel();
+    const isContainer = !!manifest.isContainer;
 
     // brick = brickWithDefaults(brick);
     const {
@@ -281,13 +274,12 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 className={tx(
                   wrapperClass,
                   snapshot.isDragging
-                    ? "opacity-90 !z-[9999] shadow-xl overflow-hidden !cursor-grabbing"
+                    ? "!z-[9999] !shadow-2xl overflow-hidden !cursor-grabbing"
                     : "hover:cursor-auto",
                 )}
                 onClick={onBrickWrapperClick}
               >
-                <BaseBrick brick={brick} selectedBrickId={selectedBrickId} editable />
-                {!manifest.isContainer && <BrickDebugLabel brick={brick} />}
+                <BaseComponent brick={brick} selectedBrickId={selectedBrickId} editable />
                 <FloatingPortal>
                   <BrickMenuBarsContainer
                     ref={barsRefs.setFloating}
@@ -300,9 +292,9 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 </FloatingPortal>
                 {/* Children contains resizable handles and other elements */}
                 {manifests[brick.type]?.resizable &&
-                  !isContainerChild &&
                   !draggingBrickType &&
-                  !snapshot.isDragging && (
+                  !snapshot.isDragging &&
+                  selectedBrickId === brick.id && (
                     <>
                       {(resizeOpts.canGrowVertical || resizeOpts.canShrinkVertical) && (
                         <>
@@ -310,23 +302,21 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                           <ResizeHandle direction="n" show={isHovered} manifest={manifest} />
                         </>
                       )}
-                      {(resizeOpts.canGrowHorizontal || resizeOpts.canShrinkHorizontal) &&
-                        previewMode === "desktop" && (
-                          <>
-                            <ResizeHandle direction="w" show={isHovered} manifest={manifest} />
-                            <ResizeHandle direction="e" show={isHovered} manifest={manifest} />
-                          </>
-                        )}
+                      {(resizeOpts.canGrowHorizontal || resizeOpts.canShrinkHorizontal) && (
+                        <>
+                          <ResizeHandle direction="w" show={isHovered} manifest={manifest} />
+                          <ResizeHandle direction="e" show={isHovered} manifest={manifest} />
+                        </>
+                      )}
                       {((resizeOpts.canGrowVertical && resizeOpts.canGrowHorizontal) ||
-                        (resizeOpts.canShrinkVertical && resizeOpts.canShrinkHorizontal)) &&
-                        previewMode === "desktop" && (
-                          <>
-                            <ResizeHandle direction="se" show={isHovered} manifest={manifest} />
-                            <ResizeHandle direction="sw" show={isHovered} manifest={manifest} />
-                            <ResizeHandle direction="ne" show={isHovered} manifest={manifest} />
-                            <ResizeHandle direction="nw" show={isHovered} manifest={manifest} />
-                          </>
-                        )}
+                        (resizeOpts.canShrinkVertical && resizeOpts.canShrinkHorizontal)) && (
+                        <>
+                          <ResizeHandle direction="se" show={isHovered} manifest={manifest} />
+                          <ResizeHandle direction="sw" show={isHovered} manifest={manifest} />
+                          <ResizeHandle direction="ne" show={isHovered} manifest={manifest} />
+                          <ResizeHandle direction="nw" show={isHovered} manifest={manifest} />
+                        </>
+                      )}
                     </>
                   )}
               </div>
@@ -337,18 +327,6 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     );
   },
 );
-
-function BrickDebugLabel({ brick }: { brick: Brick }) {
-  const debug = useDebugMode();
-  if (!debug) {
-    return null;
-  }
-  return (
-    <div className="absolute hidden group-hover/brick:block bottom-1 right-1 text-xs text-black/40">
-      {brick.id}
-    </div>
-  );
-}
 
 type BrickMenuBarProps = ComponentProps<"div"> &
   PropsWithChildren<{
@@ -420,6 +398,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
     const draftHelpers = useDraftHelpers();
     const editorHelpers = useEditorHelpers();
     const debugMode = useDebugMode();
+    const previewMode = usePreviewMode();
     const manifest = useBrickManifest(brick.type);
     const canMovePrev = draftHelpers.canMoveToWithinParent(brick.id, "previous");
     const canMoveNext = draftHelpers.canMoveToWithinParent(brick.id, "next");
@@ -516,20 +495,25 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                 </ContextMenu.CheckboxItem>
               </ContextMenu.SubContent>
             </ContextMenu.Sub>
-            {!isContainerChild && (
-              <ContextMenu.CheckboxItem
-                checked={brick.props.growHorizontally}
-                onCheckedChange={(newVal) => {
-                  // e.stopPropagation();
-                  draftHelpers.updateBrickProps(brick.id, {
+            <ContextMenu.CheckboxItem
+              checked={
+                previewMode === "mobile" ? brick.mobileProps?.growHorizontally : brick.props.growHorizontally
+              }
+              onCheckedChange={(newVal) => {
+                // e.stopPropagation();
+                draftHelpers.updateBrickProps(
+                  brick.id,
+                  {
                     growHorizontally: newVal,
-                  });
-                }}
-              >
-                Grow horizontally
-              </ContextMenu.CheckboxItem>
-            )}
-            {!isContainerChild && (
+                    width: "auto",
+                  },
+                  previewMode === "mobile",
+                );
+              }}
+            >
+              Expand horizontally
+            </ContextMenu.CheckboxItem>
+            {!isContainerChild && previewMode !== "mobile" && (
               <ContextMenu.Sub>
                 <ContextMenu.SubTrigger>Vertical Position</ContextMenu.SubTrigger>
                 <ContextMenu.SubContent>

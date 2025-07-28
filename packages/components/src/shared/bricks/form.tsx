@@ -1,5 +1,5 @@
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
-import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/form.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/form.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 import { toast } from "@upstart.gg/style-system/system";
@@ -22,6 +22,7 @@ import {
   type BaseFieldProps,
 } from "./form/Fields";
 import { useColorPreset } from "../hooks/use-color-preset";
+import BrickRoot from "../components/BrickRoot";
 
 // Helper function to detect datarecord field types
 function getDatarecordFieldType(schema: TSchema): string | null {
@@ -218,12 +219,6 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editable) {
-      toast(`This form is not clickable in edit mode but will lead to form submission when published.`, {
-        id: `form-no-click-toast`,
-        style: {
-          minWidth: "max-content",
-        },
-      });
       return;
     }
 
@@ -251,18 +246,18 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
 
   if (datarecordId && !datarecord) {
     return editable ? (
-      <div ref={ref} className="p-4 border border-red-200 bg-red-50 text-red-600 rounded">
+      <BrickRoot manifest={manifest} className="p-4 border border-red-200 bg-red-50 text-red-600 rounded">
         Error loading datarecord
-      </div>
+      </BrickRoot>
     ) : null;
   }
 
   if (!datarecord) {
     return (
-      <div
-        ref={ref}
+      <BrickRoot
+        manifest={manifest}
         className={tx(
-          "flex-grow min-h-fit text-center shrink-0 p-4 flex items-center justify-center",
+          "text-center p-4 flex items-center justify-center",
           Object.values(rest),
           presetClasses.main,
         )}
@@ -275,7 +270,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
             <br /> you want to connect this form with.
           </span>
         )}
-      </div>
+      </BrickRoot>
     );
   }
 
@@ -284,32 +279,32 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   const fields = processDatarecordSchemaToFields(typeboxSchema, formData, handleFieldChange);
 
   return (
-    <div
-      ref={ref}
-      className={tx("flex-grow shrink-0 min-h-fit max-w-fit", Object.values(rest), presetClasses.main)}
+    <BrickRoot
+      manifest={manifest}
+      as="form"
+      onSubmit={handleSubmit}
+      className={tx("flex flex-col gap-4", Object.values(rest), presetClasses.main)}
     >
-      {title && <h2 className="form-title text-[110%] font-semibold mb-4">{title}</h2>}
-      {intro && <p className="form-intro  mb-6">{intro}</p>}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className={tx("flex gap-4 @mobile:flex-col", direction)}>{fields}</div>
-        {submitState === "error" && <div>{errorMessage}</div>}
-        {submitState === "success" && <div>{successMessage}</div>}
-        <div className={tx("flex pt-1", Object.values(buttonPosition))}>
-          <button
-            type="submit"
-            disabled={submitState === "submitting"}
-            className={tx(
-              "btn @mobile:min-w-full",
-              buttonProps.color,
-              buttonProps.size === "wide" ? "w-full" : "",
-              Object.values(button),
-            )}
-          >
-            {buttonLabel || "Submit"}
-          </button>
-        </div>
-      </form>
-    </div>
+      {title && <h2 className="text-[110%] font-semibold">{title}</h2>}
+      {intro && <p>{intro}</p>}
+      <div className={tx("flex gap-4 flex-wrap @mobile:flex-col", Object.values(direction))}>{fields}</div>
+      {submitState === "error" && <div>{errorMessage}</div>}
+      {submitState === "success" && <div>{successMessage}</div>}
+      <div className={tx("flex", Object.values(buttonPosition ?? {}))}>
+        <button
+          type="submit"
+          disabled={submitState === "submitting"}
+          className={tx(
+            "btn @mobile:min-w-full",
+            buttonProps.color,
+            buttonProps.size === "wide" ? "@desktop:w-full" : "@desktop:min-w-fit",
+            Object.values(button),
+          )}
+        >
+          {buttonLabel || "Submit"}
+        </button>
+      </div>
+    </BrickRoot>
   );
 });
 

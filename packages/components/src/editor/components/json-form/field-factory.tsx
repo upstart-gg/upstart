@@ -3,7 +3,6 @@ import get from "lodash-es/get";
 import type { ReactNode } from "react";
 
 // Import field components
-import { AlignBasicField } from "./fields/align-basic";
 import { ArrayField } from "./fields/array";
 import BackgroundField from "./fields/background";
 import ColorField from "./fields/color";
@@ -19,7 +18,6 @@ import SwitchField from "./fields/switch";
 import VariantGroupField from "./fields/variant-group";
 
 // Import types
-import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
 import type { DatasourceSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource-ref";
@@ -129,18 +127,6 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
           key={`field-${id}`}
           currentValue={currentValue}
           onChange={(value: GeolocationSettings["address"] | null) => onChange({ [id]: value }, id)}
-          {...commonProps}
-        />
-      );
-    }
-
-    case "align-basic": {
-      const currentValue = (get(formData, id) ?? commonProps.schema.default) as AlignBasicSettings;
-      return (
-        <AlignBasicField
-          key={`field-${id}`}
-          currentValue={currentValue}
-          onChange={(value: AlignBasicSettings | null) => onChange({ [id]: value }, id)}
           {...commonProps}
         />
       );

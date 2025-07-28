@@ -6,10 +6,8 @@ import { BsAlphabetUppercase } from "react-icons/bs";
 import type { BrickProps } from "../props/types";
 import { type Static, type TObject, Type } from "@sinclair/typebox";
 import { textShadowRef } from "../props/effects";
-import { backgroundColorRef } from "../props/background";
-import { colorRef } from "../props/color";
 import { borderRef, rounding } from "../props/border";
-import { basicAlignRef } from "../props/align";
+import { alignItemsRef } from "../props/align";
 import { StringEnum } from "~/shared/utils/string-enum";
 import { colorPresetRef } from "../props/preset";
 
@@ -262,14 +260,9 @@ It is typically used on home pages to grab the user's attention.
       }),
     ),
     rounding: rounding(),
-    verticalAlign: Type.Optional(
-      basicAlignRef({
-        title: "Vertical align",
-        description: "Vertical alignment of the text within the brick.",
-        "ui:flex-mode": "column",
-        "ui:no-horizontal-align": true,
-        "ui:vertical-align-label": "Vertical Align",
-        default: { vertical: "center" },
+    alignItems: Type.Optional(
+      alignItemsRef({
+        default: "items-center",
       }),
     ),
   }),

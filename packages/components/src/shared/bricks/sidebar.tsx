@@ -1,9 +1,7 @@
-import { forwardRef } from "react";
-import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/sidebar.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/sidebar.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
+import BrickRoot from "../components/BrickRoot";
 
-const Sidebar = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
-  return <div>Im a sidebar</div>;
-});
-
-export default Sidebar;
+export default function Sidebar({ brick, editable }: BrickProps<Manifest>) {
+  return <BrickRoot manifest={manifest}>Im a sidebar</BrickRoot>;
+}

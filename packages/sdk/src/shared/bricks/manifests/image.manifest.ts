@@ -1,14 +1,13 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
 import { imageRef } from "../props/image";
-import { backgroundColorRef } from "../props/background";
-import { borderRef } from "../props/border";
 import { shadowRef } from "../props/effects";
 import { paddingRef } from "../props/padding";
 import { RxImage } from "react-icons/rx";
 import { string } from "../props/string";
 import { Type } from "@sinclair/typebox";
 import type { BrickProps } from "../props/types";
+import { backgroundColorRef } from "../props/background";
 
 export const manifest = defineBrickManifest({
   type: "image",
@@ -19,7 +18,12 @@ export const manifest = defineBrickManifest({
   defaultWidth: { desktop: "300px", mobile: "100%" },
   icon: RxImage,
   props: defineProps({
-    image: imageRef(),
+    image: imageRef({
+      metadata: {
+        category: "content",
+      },
+    }),
+    backgroundColor: Type.Optional(backgroundColorRef()),
     padding: Type.Optional(paddingRef()),
     shadow: Type.Optional(shadowRef()),
     blurHash: Type.Optional(
@@ -29,21 +33,23 @@ export const manifest = defineBrickManifest({
       }),
     ),
     author: Type.Optional(
-      Type.Object({
-        name: string("Image Author", {
+      Type.Object(
+        {
+          name: string("Image Author", {
+            description: "Image author. Use this to give credit to the author",
+          }),
+          url: string("Image Author URL", {
+            description: "Image author URL. Use this to give credit to the author",
+          }),
+        },
+        {
           "ui:field": "hidden",
-          description: "Image author. Use this to give credit to the author",
-        }),
-        url: string("Image Author URL", {
-          "ui:field": "hidden",
-          description: "Image author URL. Use this to give credit to the author",
-        }),
-      }),
+        },
+      ),
     ),
     provider: Type.Optional(
       string("Image Provider", {
         "ui:field": "hidden",
-        description: "Image provider. Use this to give credit to the author",
         "ai:instructions": "The provider of the image, e.g. 'unsplash', 'pexels', etc.",
       }),
     ),

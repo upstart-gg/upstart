@@ -1,28 +1,22 @@
-import { forwardRef } from "react";
-import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/card.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/card.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import TextContent from "../components/TextContent";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { useColorPreset } from "../hooks/use-color-preset";
+import BrickRoot from "../components/BrickRoot";
 
-const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
-  const props = structuredClone(brick.props);
+export default function Card({ brick, editable }: BrickProps<Manifest>) {
+  const props = brick.props;
   const styles = useBrickStyle<Manifest>(brick);
   const presetClasses = useColorPreset<Manifest>(brick);
   const classes = Object.values(styles);
-
-  if (!props.cardTitle && !props.cardBody) {
-    // Put some sample content in the card if both title and body are empty
-    props.cardTitle = "Card Title";
-    props.cardBody = "This is the body of the card. You can edit this content.";
-  }
-
   const isOverlay = props.cardImage && props.imagePosition === "overlay";
   return (
-    <div
+    <BrickRoot
+      manifest={manifest}
       className={tx(
-        "flex flex-1 relative overflow-hidden max-w-[100cqw] min-h-fit",
+        "flex relative overflow-hidden",
         props.imagePosition === "side" ? "flex-row" : "flex-col",
         presetClasses.container,
         classes,
@@ -35,11 +29,10 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
           }),
         isOverlay && "justify-center",
       )}
-      ref={ref}
     >
       {isOverlay && <div className="absolute inset-0 bg-[inherit] opacity-20 -z-1" />}
       <div className={tx("card-inner-wrapper", props.imagePosition === "top" ? "order-2" : "order-1")}>
-        {props.cardTitle && !props.noTitle && (
+        {!props.noTitle && (
           <div className={tx("text-[120%] font-semibold z-auto my-4 mx-4")}>
             <TextContent
               propPath="cardTitle.content"
@@ -51,11 +44,11 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
             />
           </div>
         )}
-        {props.cardBody && props.imagePosition !== "middle" && (
+        {props.imagePosition !== "middle" && (
           <div className={tx("z-auto p-4", !props.noTitle && "pt-0")}>
             <TextContent
               propPath="cardBody.content"
-              className={tx("flex-1")}
+              className={tx("flex-grow")}
               brickId={brick.id}
               content={props.cardBody}
               editable={editable}
@@ -91,8 +84,6 @@ const Card = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
           />
         </div>
       )}
-    </div>
+    </BrickRoot>
   );
-});
-
-export default Card;
+}

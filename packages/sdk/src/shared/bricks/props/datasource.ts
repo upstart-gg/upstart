@@ -27,7 +27,7 @@ export function datasource(title = "Database") {
         StringEnum(["asc", "desc", "rand"], {
           title: "Sort Direction",
           description: "Direction to sort the records by",
-          default: "asc",
+          default: "desc",
           "ui:display": "select",
         }),
       ),
@@ -35,6 +35,7 @@ export function datasource(title = "Database") {
         Type.String({
           title: "Sort Field",
           description: "Select a field to sort by (must be indexed)",
+          default: "$publishedAt",
         }),
       ),
       filters: Type.Optional(
@@ -69,6 +70,9 @@ export function datasource(title = "Database") {
               }),
             ),
           }),
+          {
+            default: [],
+          },
         ),
       ),
     },

@@ -1,8 +1,8 @@
-import { type Static, type TObject, Type } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { FaWpforms } from "react-icons/fa6";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { basicAlignRef } from "../props/align";
+import { justifyContentRef } from "../props/align";
 import { borderRef, roundingRef } from "../props/border";
 import { datarecord } from "../props/datarecord";
 import { defineProps, group } from "../props/helpers";
@@ -216,8 +216,9 @@ There is no need to define the form fields manually and the form does not accept
       directionRef({
         title: "Direction",
         description: "The direction of the form fields",
-        defaultValue: "vertical",
+        default: "flex-col",
         "ui:responsive": "desktop",
+        "ui:desktop-only": true,
       }),
     ),
     padding: Type.Optional(
@@ -230,17 +231,19 @@ There is no need to define the form fields manually and the form does not accept
         default: "rounded-md",
       }),
     ),
-    buttonPosition: Type.Optional(
-      basicAlignRef({
-        title: "Button Position",
-        description: "The position of the button.",
-        defaultValue: { horizontal: "end" },
-        "ui:no-vertical-align": true,
-        "ui:horizontal-align-label": "Button position",
-        "ui:responsive": "desktop",
+    border: Type.Optional(
+      borderRef({
+        default: "border-0",
       }),
     ),
     fontSize: Type.Optional(fontSizeRef({ default: "inherit", "ui:no-extra-large-sizes": true })),
+    buttonPosition: Type.Optional(
+      justifyContentRef({
+        title: "Button Position",
+        default: "justify-end",
+        "ui:responsive": "desktop",
+      }),
+    ),
     button: group({
       title: "Button",
       children: {
@@ -264,14 +267,6 @@ There is no need to define the form fields manually and the form does not accept
           "ui:responsive": "desktop",
         }),
         rounding: Type.Optional(roundingRef({ default: "rounded-md" })),
-        border: Type.Optional(
-          borderRef({
-            default: {
-              width: "border",
-              rounding: "rounded-md",
-            },
-          }),
-        ),
       },
     }),
 
@@ -337,9 +332,7 @@ export const examples: {
       intro: "We'd love to hear from you. Send us a message and we'll respond as soon as possible.",
       direction: "flex-row",
       datarecordId: "contacts",
-      buttonPosition: {
-        horizontal: "end",
-      },
+      buttonPosition: "justify-end",
       buttonLabel: "Send Message",
       button: {
         color: "btn-color-primary",
@@ -355,9 +348,7 @@ export const examples: {
       intro: "Join our platform and start your journey today.",
       direction: "flex-row",
       datarecordId: "user-registration",
-      buttonPosition: {
-        horizontal: "end",
-      },
+      buttonPosition: "justify-end",
       buttonLabel: "Register",
       button: {
         color: "btn-color-secondary",
@@ -373,9 +364,7 @@ export const examples: {
       intro: "Subscribe to our newsletter for the latest updates and exclusive content.",
       direction: "flex-col",
       datarecordId: "newsletter-subscription",
-      buttonPosition: {
-        horizontal: "center",
-      },
+      buttonPosition: "justify-center",
       buttonLabel: "Subscribe",
       button: {
         color: "btn-color-accent",
@@ -391,9 +380,6 @@ export const examples: {
       intro: "Register for the Annual Tech Conference 2025. Early bird pricing ends soon!",
       direction: "flex-col",
       datarecordId: "event-registration",
-      buttonPosition: {
-        horizontal: "end",
-      },
       buttonLabel: "Register Now",
       button: {
         color: "btn-color-primary",
@@ -409,31 +395,10 @@ export const examples: {
       intro: "We're excited to learn more about you! Please fill out this application form completely.",
       direction: "flex-col",
       datarecordId: "job-application",
-      buttonPosition: {
-        horizontal: "start",
-      },
       buttonLabel: "Submit Application",
       button: {
         color: "btn-color-secondary",
         size: "block",
-      },
-    },
-  },
-  {
-    description: "Customer feedback form",
-    type: "form",
-    props: {
-      title: "Share Your Feedback",
-      intro: "Your opinion matters to us. Help us improve our products and services.",
-      direction: "flex-col",
-      datarecordId: "customer-feedback",
-      buttonPosition: {
-        horizontal: "end",
-      },
-      buttonLabel: "Submit Feedback",
-      button: {
-        color: "btn-color-accent",
-        size: "wide",
       },
     },
   },

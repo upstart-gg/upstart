@@ -1,9 +1,7 @@
-import type { AlignBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
 import type {
   BackgroundColorSettings,
   BackgroundSettings,
 } from "@upstart.gg/sdk/shared/bricks/props/background";
-import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import type { ColorSettings } from "@upstart.gg/sdk/shared/bricks/props/color";
 import type { OpacitySettings } from "@upstart.gg/sdk/shared/bricks/props/effects";
 import type { GapBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/gap";
@@ -51,7 +49,10 @@ function getOpacityStyles(opacity: OpacitySettings) {
   return propToStyle(opacity, "opacity");
 }
 
-export function simpleClassHandler(value: string, mobileValue?: string) {
+export function simpleClassHandler(value: string, mobileValue?: string, schema?: TSchema) {
+  if (schema?.["ui:desktop-only"]) {
+    return `@desktop:(${value})`;
+  }
   if (!mobileValue) {
     return value;
   }
@@ -70,26 +71,6 @@ function getFixedPositionedStyles(value: FixedPositionedSettings) {
   return "sticky top-0 left-0 right-0 self-start w-fill z-[99999] isolate";
 }
 
-export function getBasicAlignmentStyles(
-  props?: AlignBasicSettings,
-  mobileProps?: AlignBasicSettings,
-  schema?: TSchema,
-) {
-  if (!props || !schema) {
-    return null;
-  }
-  if (schema["ui:flex-mode"] === "column") {
-    return [
-      props.vertical ? `justify-${props.vertical}` : null,
-      props.horizontal ? `items-${props.horizontal}` : null,
-    ];
-  }
-  return [
-    props.horizontal ? `justify-${props.horizontal}` : null,
-    props.vertical ? `items-${props.vertical}` : null,
-  ];
-}
-
 export function getBasicGapStyles(props?: GapBasicSettings, mobileProps?: GapBasicSettings) {
   return props;
 }
@@ -98,13 +79,23 @@ export function getBasicGapStyles(props?: GapBasicSettings, mobileProps?: GapBas
 //   return props?.type === "grid" ? getGridStyles(props, mobileProps) : getFlexStyles(props, mobileProps);
 // }
 
-function getGrowHorizontallyStyles(props?: boolean, mobileProps?: boolean) {
-  return props ? "grow" : null;
+function getGrowHorizontallyStyles(props?: boolean, mobileProps?: boolean, schema?: TSchema) {
+  if (schema?.["ui:desktop-only"]) {
+    return `@desktop:(flex-grow)`;
+  }
+  if (props && mobileProps) {
+    return `flex-grow`;
+  }
+  if (!mobileProps) {
+    return props ? "@desktop:(flex-grow)" : null;
+  }
+  if (mobileProps) {
+    return `@mobile:(flex-grow) @desktop:(grow-0)`;
+  }
 }
 
 export const brickStylesHelpersMap = {
   "styles:color": getColorStyles,
-  "styles:basicAlign": getBasicAlignmentStyles,
   "styles:basicGap": getBasicGapStyles,
   "styles:textShadow": simpleClassHandler,
   "styles:opacity": getOpacityStyles,
@@ -114,18 +105,26 @@ export const brickStylesHelpersMap = {
   "styles:fontSize": simpleClassHandler,
   "styles:padding": simpleClassHandler, // test
   "styles:gap": getGapStyles,
-  "styles:border": simpleClassHandler,
+
   "styles:gradientDirection": simpleClassHandler,
   "styles:backgroundColor": getBackgroundColorStyles,
   "styles:background": getBackgroundStyles,
-  "styles:shadow": simpleClassHandler,
+
   "styles:rounding": simpleClassHandler,
   "styles:direction": simpleClassHandler,
+  // test putting here
+  "styles:alignItems": simpleClassHandler,
+  "styles:justifyContent": simpleClassHandler,
+
+  "styles:border": simpleClassHandler,
 };
 
 export const brickWrapperStylesHelpersMap = {
-  "styles:alignItems": simpleClassHandler,
+  "styles:rounding": simpleClassHandler,
+  // "styles:alignItems": simpleClassHandler,
+  "styles:shadow": simpleClassHandler,
   "styles:justifyContent": simpleClassHandler,
+  "styles:alignItems": simpleClassHandler,
   "styles:fixedPositioned": getFixedPositionedStyles,
   "styles:alignSelf": simpleClassHandler,
   "styles:growHorizontally": getGrowHorizontallyStyles,

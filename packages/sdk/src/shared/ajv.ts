@@ -1,6 +1,6 @@
 import Ajv, { type ErrorObject } from "ajv";
 import addFormats from "ajv-formats";
-import { basicAlign } from "./bricks/props/align";
+import { alignItems, justifyContent } from "./bricks/props/align";
 import { basicGap } from "./bricks/props/gap";
 import { background, backgroundColor } from "./bricks/props/background";
 import { border, rounding } from "./bricks/props/border";
@@ -28,7 +28,8 @@ export const ajv = new Ajv({
 
 ajv.addSchema(background(), "styles:background");
 ajv.addSchema(backgroundColor(), "styles:backgroundColor");
-ajv.addSchema(basicAlign(), "styles:basicAlign");
+ajv.addSchema(justifyContent(), "styles:justifyContent");
+ajv.addSchema(alignItems(), "styles:alignItems");
 ajv.addSchema(basicGap(), "styles:basicGap");
 ajv.addSchema(rounding(), "styles:rounding");
 ajv.addSchema(fontSize(), "styles:fontSize");

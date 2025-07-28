@@ -28,6 +28,10 @@ export const manifest = defineBrickManifest({
     url: string("Video URL", {
       description: "URL of the video to embed. It can be a YouTube link or an embed link.",
       default: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      metadata: {
+        category: "content",
+        "ui:responsive": "desktop",
+      },
     }),
     padding: Type.Optional(paddingRef()),
     shadow: Type.Optional(shadowRef()),

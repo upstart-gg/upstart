@@ -1,8 +1,8 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { defaultAttributesSchema, resolveAttributes, type AttributesSchema } from "./attributes";
 import { generateId, type Section } from "./bricks";
-import { datarecordsMap } from "./datarecords/types";
-import { datasourcesMap } from "./datasources/types";
+import { datarecordsList } from "./datarecords/types";
+import { datasourcesList } from "./datasources/types";
 import { pageSchema } from "./page";
 import { sitePrompt } from "./prompt";
 import { pageInfoSchema, sitemapSchema } from "./sitemap";
@@ -14,8 +14,8 @@ export const siteSchema = Type.Object({
   hostname: Type.String(),
   attributes: defaultAttributesSchema,
   attr: defaultAttributesSchema,
-  datasources: Type.Optional(datasourcesMap),
-  datarecords: Type.Optional(datarecordsMap),
+  datasources: datasourcesList,
+  datarecords: datarecordsList,
   themes: Type.Array(themeSchema),
   theme: themeSchema,
   sitemap: sitemapSchema,
@@ -75,8 +75,8 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
       ],
       attributes: defaultAttributesSchema,
       attr: resolveAttributes(),
-      datarecords: {
-        "a7f26d80-d68e-4b7a-a4a3-e41c454670ce": {
+      datarecords: [
+        {
           id: "a7f26d80-d68e-4b7a-a4a3-e41c454670ce",
           label: "Simple Datarecord",
           schema: {
@@ -102,7 +102,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           },
           provider: "internal",
         },
-        "aacfe76d-4309-466c-83ad-fda8b02b043d": {
+        {
           id: "aacfe76d-4309-466c-83ad-fda8b02b043d",
           label: "Complex Datarecord",
           schema: {
@@ -230,9 +230,9 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           },
           provider: "internal",
         },
-      },
-      datasources: {
-        employees: {
+      ],
+      datasources: [
+        {
           id: "employees",
           name: "Company employees",
           provider: "custom",
@@ -303,7 +303,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             },
           ],
         },
-        employees2: {
+        {
           id: "employees2",
           name: "Company employees 2",
           provider: "custom",
@@ -339,7 +339,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             },
           ],
         },
-      },
+      ],
     },
     // we need a fake page
     pages: [
@@ -365,6 +365,140 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   navigation: {
                     staticItems: [{ urlOrPageId: "/about" }, { urlOrPageId: "/contact" }],
                   },
+                },
+              },
+            ],
+          },
+          {
+            id: `s_${generateId()}`,
+            order: ++order,
+            label: "Media",
+            props: {},
+            bricks: [
+              {
+                id: generateId(),
+                type: "video",
+                props: {
+                  url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                },
+              },
+              {
+                id: generateId(),
+                type: "image",
+                props: {
+                  image: {
+                    // src: "https://placehold.co/600x400@2x/EEEEEE/333333/svg?text=Sample+Image",
+                    alt: "Sample Image",
+                  },
+                  width: "300px",
+                  height: "200px",
+                },
+              },
+              {
+                id: generateId(),
+                type: "icon",
+                props: {
+                  icon: "mdi:heart",
+                },
+              },
+            ],
+          },
+          {
+            id: `s_${generateId()}`,
+            order: ++order,
+            label: "Containers",
+            props: {},
+            bricks: [
+              {
+                // horizontal box
+                id: generateId(),
+                type: "box",
+                props: {
+                  direction: "flex-row",
+                  $children: [
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                  ],
+                },
+              },
+              {
+                // vertical box
+                id: generateId(),
+                type: "box",
+                props: {
+                  direction: "flex-col",
+                  $children: [
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                  ],
+                },
+              },
+              {
+                // dynamic box
+                id: generateId(),
+                type: "dynamic",
+                props: {
+                  direction: "flex-col",
+                  $children: [
+                    {
+                      id: generateId(),
+                      type: "text",
+                      props: {
+                        width: "45%",
+                      },
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {},
+                    },
+                  ],
                 },
               },
             ],
@@ -539,7 +673,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                       icon: "mdi:twitter",
                     },
                   ],
-                  variants: ["icon-only", "display-inline"],
                 },
                 id: generateId(),
               },
@@ -583,12 +716,8 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   datarecordId: "a7f26d80-d68e-4b7a-a4a3-e41c454670ce",
                   title: "Simple Form",
                   intro: "This is a simple form to collect user information.",
-                  align: "horizontal",
                   button: {
                     label: "Register",
-                    position: {
-                      horizontal: "justify-center",
-                    },
                     size: "block",
                     borderRadius: "rounded-lg",
                     color: "btn-color-primary",
@@ -603,13 +732,8 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   datarecordId: "aacfe76d-4309-466c-83ad-fda8b02b043d",
                   title: "Complex Form",
                   intro: "This is a complex form with various field types.",
-                  align: "vertical",
                   button: {
                     label: "Submit Form",
-                    position: {
-                      horizontal: "justify-end",
-                    },
-                    size: "wide",
                     borderRadius: "rounded-md",
                     color: "btn-color-accent",
                   },

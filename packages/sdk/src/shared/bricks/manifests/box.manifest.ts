@@ -7,34 +7,40 @@ import { borderRef } from "../props/border";
 import { shadowRef } from "../props/effects";
 import { paddingRef } from "../props/padding";
 import type { BrickProps } from "../props/types";
-import { RxViewVertical } from "react-icons/rx";
 import { cssLengthRef } from "../props/css-length";
-import { StringEnum } from "~/shared/utils/string-enum";
+import { directionRef } from "../props/direction";
+import { RxBox } from "react-icons/rx";
+import { alignItemsRef, justifyContentRef } from "../props/align";
 
 // Generic container can hold any type of array data source
 export const manifest = defineBrickManifest({
-  type: "hbox",
+  type: "box",
   category: "container",
-  name: "Horizontal Box",
-  description: "A horizontal container for stacking bricks",
+  name: "Box",
+  description: "A box for stacking bricks horizontally or vertically",
   isContainer: true,
   defaultWidth: {
     desktop: "auto",
     mobile: "100%",
   },
   defaultHeight: {
-    desktop: "380px",
+    desktop: "auto",
   },
-  icon: RxViewVertical,
+  icon: RxBox,
   props: defineProps({
+    direction: directionRef({
+      default: "flex-col",
+      title: "Direction",
+      description: "Direction of the box layout",
+    }),
     justifyContent: Type.Optional(
-      StringEnum(["justify-start", "justify-center", "justify-end", "justify-stretch"], {
-        enumNames: ["Top", "Center", "Bottom", "Stretch"],
-        default: "justify-stretch",
-        title: "Justify bricks",
-        description: "Justify bricks horizontally",
-        "ui:placeholder": "Not specified",
-        "ui:styleId": "styles:justifyContent",
+      justifyContentRef({
+        default: "justify-center",
+      }),
+    ),
+    alignItems: Type.Optional(
+      alignItemsRef({
+        default: "items-center",
       }),
     ),
     gap: Type.Optional(
@@ -50,7 +56,11 @@ export const manifest = defineBrickManifest({
     ),
     background: Type.Optional(backgroundRef()),
     border: Type.Optional(borderRef()),
-    padding: Type.Optional(paddingRef()),
+    padding: Type.Optional(
+      paddingRef({
+        default: "p-1",
+      }),
+    ),
     shadow: Type.Optional(shadowRef()),
     ...makeContainerProps(),
   }),

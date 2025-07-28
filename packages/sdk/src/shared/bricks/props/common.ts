@@ -53,12 +53,11 @@ export const commonProps = {
   ),
   growHorizontally: Type.Optional(
     Type.Boolean({
-      title: "Grow horizontally",
-      "ui:field": "hidden",
+      title: "Expand horizontally",
       description:
         "If set, the brick will grow to fill the available width of its parent section. If not set, the brick will have a fixed width.",
-      "ui:responsive": "desktop",
       "ui:styleId": "styles:growHorizontally",
+      // "ui:field": "hidden",
     }),
   ),
   alignSelf: Type.Optional(

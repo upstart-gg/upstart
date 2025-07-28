@@ -4,7 +4,6 @@ import type { Attributes, AttributesSchema } from "@upstart.gg/sdk/shared/attrib
 import { Tabs, Spinner, IconButton } from "@upstart.gg/style-system/system";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import { tx, css } from "@upstart.gg/style-system/twind";
-import FormNavigator from "./json-form/FormNavigator";
 import AttributesSettingsView from "./AttributesSettingsView";
 
 export default function SettingsForm() {

@@ -1,9 +1,11 @@
 import { useHotkeys } from "react-hotkeys-hook";
 import {
+  useBrick,
   useDraft,
   useDraftHelpers,
   useDraftUndoManager,
   useEditorHelpers,
+  usePreviewMode,
   useSelectedBrickId,
 } from "./use-editor";
 import { toast } from "@upstart.gg/style-system/system";
@@ -12,7 +14,9 @@ export function useEditorHotKeys() {
   const editorHelpers = useEditorHelpers();
   const draftHelpers = useDraftHelpers();
   const draft = useDraft();
+  const previewMode = usePreviewMode();
   const selectedBrickId = useSelectedBrickId();
+  const selectedBrick = useBrick(selectedBrickId);
   const { undo, redo } = useDraftUndoManager();
 
   useHotkeys("esc", () => {
@@ -108,7 +112,9 @@ export function useEditorHotKeys() {
     e.preventDefault();
     if (selectedBrickId) {
       draftHelpers.duplicateBrick(selectedBrickId);
-      toast("Brick duplicated");
+      toast("Brick duplicated", {
+        id: "duplicate-brick",
+      });
     }
   });
 
@@ -123,4 +129,30 @@ export function useEditorHotKeys() {
     const { sections, themes, siteAttr, sitemap, attr, brickMap } = draft;
     console.log({ sections, themes, siteAttr, sitemap, attr, brickMap });
   });
+
+  useHotkeys(
+    "space",
+    (e) => {
+      console.log("space pressed", e);
+
+      const target = e.target as HTMLElement;
+      if (target.classList.contains("tiptap")) {
+        return;
+      }
+      e.preventDefault();
+      e.stopPropagation();
+      if (selectedBrick) {
+        draftHelpers.updateBrickProps(
+          selectedBrick.id,
+          {
+            growHorizontally: !selectedBrick.props.growHorizontally,
+          },
+          previewMode === "mobile",
+        );
+      }
+    },
+    {
+      enableOnContentEditable: true,
+    },
+  );
 }

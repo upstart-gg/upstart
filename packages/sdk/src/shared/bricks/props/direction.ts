@@ -5,7 +5,7 @@ import { typedRef } from "~/shared/utils/typed-ref";
 export function direction(options: StringOptions = {}) {
   return StringEnum(["flex-row", "flex-col"], {
     title: "Direction",
-    enumNames: ["Row", "Column"],
+    enumNames: ["Horizontal", "Vertical"],
     $id: "styles:direction",
     "ui:styleId": "styles:direction",
     ...options,

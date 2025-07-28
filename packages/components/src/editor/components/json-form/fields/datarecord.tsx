@@ -2,15 +2,15 @@ import type { DatarecordSettings } from "@upstart.gg/sdk/shared/bricks/props/dat
 import { IconButton, Select } from "@upstart.gg/style-system/system";
 import type { FC } from "react";
 import { BsDatabaseAdd } from "react-icons/bs";
-import { useDatarecord, useDatarecords } from "~/editor/hooks/use-datarecord";
+import { useDatarecords } from "~/editor/hooks/use-datarecord";
 import { useEditorHelpers } from "~/editor/hooks/use-editor";
 import { fieldLabel } from "../form-class";
 import type { FieldProps } from "./types";
 
 export const DatarecordField: FC<FieldProps<DatarecordSettings | undefined>> = (props) => {
-  const { currentValue, onChange, title, description, placeholder, schema } = props;
+  const { currentValue, onChange, schema } = props;
   const editorHelpers = useEditorHelpers();
-  const { options } = useDatarecords();
+  const datarecords = useDatarecords();
 
   const onSettingsChange = (newVal: string) => {
     // console.log("DatarecordField onSettingsChange", newVal);
@@ -34,13 +34,11 @@ export const DatarecordField: FC<FieldProps<DatarecordSettings | undefined>> = (
             />
             <Select.Content position="popper">
               <Select.Group>
-                {options
-                  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-                  .map((option: any) => (
-                    <Select.Item key={option.value} value={option.value}>
-                      {option.label}
-                    </Select.Item>
-                  ))}
+                {datarecords.map((dr) => (
+                  <Select.Item key={dr.id} value={dr.id}>
+                    {dr.label}
+                  </Select.Item>
+                ))}
               </Select.Group>
             </Select.Content>
           </Select.Root>

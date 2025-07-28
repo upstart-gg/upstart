@@ -1,4 +1,5 @@
 import {
+  useDebugMode,
   useDraftHelpers,
   useDynamicParent,
   useHasDynamicParent,
@@ -13,7 +14,7 @@ import { useLocalStorage } from "usehooks-ts";
 import { useEffect } from "react";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import BrickSettingsView from "./BrickSettingsView";
-import { tx } from "@upstart.gg/style-system/twind";
+import { css, tx } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";
 import PageHierarchy from "./PageHierarchy";
 import { IconRender } from "./IconRender";
@@ -22,36 +23,20 @@ import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import DatasourceMappingField from "./json-form/fields/datasource-mapping";
 import { useDatasource } from "../hooks/use-datasource";
 import SwitchField from "./json-form/fields/switch";
+import { filterSchemaProperties } from "@upstart.gg/sdk/shared/utils/schema";
 
 type TabType = "preset" | "settings" | "content";
-
-function hasFilteredProperties(manifest: BrickManifest, filter: (prop: TSchema) => boolean): boolean {
-  function extractProperties(schema: TObject): Record<string, TSchema> {
-    const contentProps: Record<string, TSchema> = {};
-    for (const [key, prop] of Object.entries(schema.properties)) {
-      if (filter(prop)) {
-        contentProps[key] = prop;
-      } else if (prop.type === "object" && prop.properties) {
-        const nestedContentProps = extractProperties(prop as TObject);
-        if (Object.keys(nestedContentProps).length > 0) {
-          Object.assign(contentProps, nestedContentProps);
-        }
-      }
-    }
-    return contentProps;
-  }
-  const filteredProps = extractProperties(manifest.props as TObject);
-  return Object.keys(filteredProps).length > 0;
-}
 
 export default function PanelBrickInspector({ brick }: { brick: Brick }) {
   const previewMode = usePreviewMode();
   const [tabsMapping, setTabsMapping] = useLocalStorage<Record<string, TabType>>("inspector_tabs_map", {});
   const section = useSectionByBrickId(brick.id);
+  const debugMode = useDebugMode();
   const manifest = useBrickManifest(brick.type);
-  const hasContentProperties = hasFilteredProperties(manifest, (prop) => {
+  const contentProperties = filterSchemaProperties(manifest.props, (prop) => {
     return (
       prop.metadata?.category === "content" &&
+      prop["ui:field"] !== "hidden" &&
       (typeof prop.metadata?.["ui:responsive"] === "undefined" ||
         prop.metadata?.["ui:responsive"] === true ||
         prop.metadata?.["ui:responsive"] === previewMode) &&
@@ -60,9 +45,17 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
         prop["ui:responsive"] === previewMode)
     );
   });
+  const hasContentProperties = Object.keys(contentProperties).length > 0;
+
+  console.log(
+    "brick of type %s has content properties: %s",
+    brick.type,
+    hasContentProperties,
+    manifest.props.properties,
+  );
 
   const showTabsList =
-    (!!manifest.props.properties.preset && previewMode === "desktop") || hasContentProperties;
+    (!!manifest.props.properties.preset && previewMode === "desktop") || hasContentProperties || debugMode;
 
   const selectedTab = tabsMapping[brick.id] ?? (hasContentProperties ? "content" : "settings");
 
@@ -114,6 +107,11 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
             <Tabs.Trigger value="settings" className="!flex-1">
               {previewMode === "mobile" ? "Mobile settings" : "Settings"}
             </Tabs.Trigger>
+            {debugMode && (
+              <Tabs.Trigger value="debug" className="!flex-1">
+                Debug
+              </Tabs.Trigger>
+            )}
           </Tabs.List>
         )}
         <ScrollablePanelTab tab="settings">
@@ -124,7 +122,50 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
             <ContentTab brick={brick} section={section} hasTabs={showTabsList} />
           </ScrollablePanelTab>
         )}
+        {debugMode && (
+          <ScrollablePanelTab tab="debug">
+            <DebugTab brick={brick} section={section} hasTabs={showTabsList} />
+          </ScrollablePanelTab>
+        )}
       </Tabs.Root>
+    </div>
+  );
+}
+
+function DebugTab({ brick, section, hasTabs }: { brick: Brick; section: Section; hasTabs: boolean }) {
+  const codeClassName = tx(
+    css({
+      display: "block",
+      fontFamily: "monospace",
+      fontSize: "0.75rem",
+      lineHeight: "1.6",
+    }),
+  );
+  return (
+    <div className="flex flex-col h-full">
+      <div className="h-[50cqh] grow-0 overflow-y-auto">
+        <PanelBlockTitle>
+          Brick <code className="text-xs">Id: {brick.id}</code>
+        </PanelBlockTitle>
+        <div className="flex-1 bg-gray-100">
+          <pre className="p-1">
+            <code className={codeClassName}>{JSON.stringify(brick, null, 2)}</code>
+          </pre>
+        </div>
+        <PanelBlockTitle>
+          Section <code className="text-xs">Id: {section.id}</code>
+        </PanelBlockTitle>
+        <div className="flex-1 bg-gray-100">
+          <pre className="p-1">
+            <code className={codeClassName}>{JSON.stringify(section, null, 2)}</code>
+          </pre>
+        </div>
+      </div>
+      <PageHierarchy
+        brick={brick}
+        section={section}
+        className={tx(hasTabs ? "h-[calc(50cqh-58px)]" : "h-[50cqh]")}
+      />
     </div>
   );
 }
@@ -168,7 +209,7 @@ function ContentTab({ brick, section, hasTabs }: { brick: Brick; section: Sectio
                 This brick is inside a dynamic parent brick so you can choose to use dynamic content in it.
               </Callout.Text>
             </Callout.Root>
-            <div className="flex p-2">
+            <div className="flex py-2.5 px-2 border-b border-gray-100">
               <SwitchField
                 brickId={brick.id}
                 currentValue={dynamicContent}

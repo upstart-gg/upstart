@@ -1,21 +1,21 @@
-import { forwardRef } from "react";
-import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/hero.manifest";
+import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/hero.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import TextContent from "../components/TextContent";
 import { tx } from "@upstart.gg/style-system/twind";
 import { isTextContentEmpty } from "../utils/text-content";
 import { useColorPreset } from "../hooks/use-color-preset";
+import BrickRoot from "../components/BrickRoot";
 
-const Hero = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable, selected }, ref) => {
+export default function Hero({ brick, editable, selected }: BrickProps<Manifest>) {
   const props = brick.props;
   const styles = useBrickStyle<Manifest>(brick);
   const classes = Object.values(styles);
   const presetClasses = useColorPreset<Manifest>(brick);
   return (
-    <div
-      className={tx("flex-grow flex flex-col gap-[1.5rem] min-h-fit", ...classes, presetClasses.main)}
-      ref={ref}
+    <BrickRoot
+      manifest={manifest}
+      className={tx("flex flex-col gap-[1.5rem]", ...classes, presetClasses.main)}
     >
       <TextContent
         as="h1"
@@ -37,9 +37,6 @@ const Hero = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable
         content={props.tagline}
         editable={editable}
       />
-    </div>
+    </BrickRoot>
   );
-});
-
-// export default memoizeIgnoringPaths(Hero, ["brick.props.content"]);
-export default Hero;
+}

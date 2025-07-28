@@ -4,6 +4,8 @@ import { PiConfetti } from "react-icons/pi";
 import { iconRef, string, urlOrPageIdRef } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { Type } from "@sinclair/typebox";
+import { cssLengthRef } from "../props/css-length";
+import { colorRef } from "../props/color";
 
 export const manifest = defineBrickManifest({
   type: "icon",
@@ -11,15 +13,27 @@ export const manifest = defineBrickManifest({
   category: "basic",
   description: "An icon with optional text",
   repeatable: true,
+  resizable: false,
   icon: PiConfetti,
   props: defineProps({
-    icon: Type.Optional(iconRef()),
-    size: string("Size", {
-      title: "Size",
-      default: "1em",
-      description: "Size of the icon",
-      "ai:instructions": "The size of the icon can be set using 'em' or '%' unit.",
+    icon: iconRef({
+      default: "mdi:heart",
     }),
+    size: Type.Optional(
+      cssLengthRef({
+        title: "Size",
+        description: "The size of the icon. Can be a CSS length value (e.g. '2em', '24px')",
+        default: "1em",
+        "ui:css-units": ["em", "rem", "px"],
+        "ai:instructions": "Use 'em', 'rem', or 'px' for units. Example: '2em', '24px'",
+      }),
+    ),
+    color: Type.Optional(
+      colorRef({
+        title: "Color",
+        default: "currentColor",
+      }),
+    ),
     link: Type.Optional(urlOrPageIdRef({ title: "Link" })),
   }),
 });

@@ -1,17 +1,17 @@
 import { useEffect, useRef } from "react";
-import { type Manifest, DEFAULTS } from "@upstart.gg/sdk/bricks/manifests/map.manifest";
+import { type Manifest, DEFAULTS, manifest } from "@upstart.gg/sdk/bricks/manifests/map.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { tx } from "@upstart.gg/style-system/twind";
 import type L from "leaflet";
 import { Map as LMap, TileLayer, Marker, LatLng, Point } from "leaflet";
 import "leaflet/dist/leaflet.css";
+import BrickRoot from "../components/BrickRoot";
 
-export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
+export default function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
   const styles = useBrickStyle<Manifest>(brick);
   const classes = Object.values(styles);
   const props = brick.props;
-
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -134,13 +134,12 @@ export function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
   }, []);
 
   return (
-    <div
-      className={tx("flex-grow rounded-[inherit] relative overflow-hidden max-sm:w-full", ...classes)}
+    <BrickRoot
+      manifest={manifest}
+      className={tx("rounded-[inherit] relative overflow-hidden", ...classes)}
       ref={containerRef}
     >
       <div ref={mapRef} className={tx("h-full w-full rounded-[inherit] absolute inset-0 z-40")} />
-    </div>
+    </BrickRoot>
   );
 }
-
-export default WidgetMap;

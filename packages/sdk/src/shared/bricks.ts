@@ -82,13 +82,10 @@ export const brickSchema = Type.Object(
       description: "The props of the brick. The available props depends on the brick type.",
     }),
     mobileProps: Type.Optional(
-      Type.Object(
-        {},
-        {
-          additionalProperties: true,
-          description: "The props for mobile, merged with the default props",
-        },
-      ),
+      Type.Any({
+        title: "Props",
+        description: "The props for mobile, merged with desktop props.",
+      }),
     ),
   },
   { $id: "brick", additionalProperties: true },
@@ -418,4 +415,14 @@ export function processBrick<T extends Brick>(brick: T): T | false {
     }),
   };
   return result;
+}
+
+export function createEmptyBrick(type: string): Brick {
+  const props = { ...defaultProps[type].props };
+  const newBrick = {
+    id: `b-${generateId()}`,
+    type,
+    props,
+  };
+  return newBrick;
 }

@@ -1,13 +1,14 @@
-import type { Manifest } from "@upstart.gg/sdk/bricks/manifests/accordion.manifest";
+import { type Manifest, manifest } from "@upstart.gg/sdk/bricks/manifests/accordion.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
-import { forwardRef, useState } from "react";
+import { useState } from "react";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import TextContent from "../components/TextContent";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { useColorPreset } from "../hooks/use-color-preset";
+import BrickRoot from "../components/BrickRoot";
 
-const Accordion = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, editable }, ref) => {
+export default function Accordion({ brick, editable }: BrickProps<Manifest>) {
   const styles = useBrickStyle<Manifest>(brick);
   const { props } = brick;
   const items = Array.isArray(props.items) ? props.items : [];
@@ -21,12 +22,9 @@ const Accordion = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edi
   const [openedItems, setOpenedItems] = useState(() => items.map((item) => !!item.defaultOpen));
 
   return (
-    <div
-      ref={ref}
-      className={tx(
-        "flex flex-grow shrink-0 min-h-fit min-w-fit flex-col overflow-hidden relative",
-        Object.values(otherStyles),
-      )}
+    <BrickRoot
+      manifest={manifest}
+      className={tx("flex flex-col overflow-hidden relative", Object.values(otherStyles))}
     >
       {editable && items.length === 0 && (
         <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-center p-8">
@@ -87,8 +85,6 @@ const Accordion = forwardRef<HTMLDivElement, BrickProps<Manifest>>(({ brick, edi
           </div>
         );
       })}
-    </div>
+    </BrickRoot>
   );
-});
-
-export default Accordion;
+}

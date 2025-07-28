@@ -1,5 +1,25 @@
 # @upstart.gg/components
 
+## 0.0.121
+
+### Patch Changes
+
+- [#385](https://github.com/upstart-gg/upstart/pull/385) [`7ce4150`](https://github.com/upstart-gg/upstart/commit/7ce41506ef3cea69866392bfd92937bcbb4f17b7) Thanks [@mattallty](https://github.com/mattallty)! - More fixes
+
+- [#379](https://github.com/upstart-gg/upstart/pull/379) [`4671531`](https://github.com/upstart-gg/upstart/commit/4671531d31032daa502609e0bcfe9e5a96936db1) Thanks [@mattallty](https://github.com/mattallty)! - More fixes on various bricks
+
+- [#389](https://github.com/upstart-gg/upstart/pull/389) [`3e8a245`](https://github.com/upstart-gg/upstart/commit/3e8a245fedbe866989d70b487581768435d0bc30) Thanks [@mattallty](https://github.com/mattallty)! - Split basicAlign() into alignItems() and justifyContent()
+
+- [#388](https://github.com/upstart-gg/upstart/pull/388) [`bc6ffc6`](https://github.com/upstart-gg/upstart/commit/bc6ffc610e78c83ebb5e5bfaca991b4323afec7e) Thanks [@mattallty](https://github.com/mattallty)! - - Add <BrickRoot /> to serve as a common root element for bricks
+
+  - More fixes on styles
+
+- [#384](https://github.com/upstart-gg/upstart/pull/384) [`451de2a`](https://github.com/upstart-gg/upstart/commit/451de2a33b57e4f6e6d1281431af78577cbc789b) Thanks [@mattallty](https://github.com/mattallty)! - Bricks improvements
+
+- Updated dependencies [[`7ce4150`](https://github.com/upstart-gg/upstart/commit/7ce41506ef3cea69866392bfd92937bcbb4f17b7), [`4671531`](https://github.com/upstart-gg/upstart/commit/4671531d31032daa502609e0bcfe9e5a96936db1), [`3e8a245`](https://github.com/upstart-gg/upstart/commit/3e8a245fedbe866989d70b487581768435d0bc30), [`bc6ffc6`](https://github.com/upstart-gg/upstart/commit/bc6ffc610e78c83ebb5e5bfaca991b4323afec7e), [`451de2a`](https://github.com/upstart-gg/upstart/commit/451de2a33b57e4f6e6d1281431af78577cbc789b)]:
+  - @upstart.gg/sdk@0.0.121
+  - @upstart.gg/style-system@0.0.121
+
 ## 0.0.120
 
 ### Patch Changes

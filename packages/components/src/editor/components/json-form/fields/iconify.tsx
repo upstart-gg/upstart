@@ -246,7 +246,7 @@ const IconifyField: FC<
         {/* Current icon preview */}
         {currentValue && (
           <div className="flex items-center">
-            <Icon icon={currentValue} className="w-6 h-6" />
+            <Icon icon={currentValue} className="w-6 h-6 text-upstart-500" />
           </div>
         )}
 

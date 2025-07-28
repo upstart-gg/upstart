@@ -4,7 +4,7 @@ import { typedRef } from "~/shared/utils/typed-ref";
 
 type BackgroundOptions = {
   title?: string;
-  defaultValue?: {
+  default?: {
     color?: string;
     image?: string;
     size?: string;
@@ -14,12 +14,12 @@ type BackgroundOptions = {
 };
 
 export function background(opts: BackgroundOptions = {}) {
-  const { title = "Background", defaultValue, colorType = "background" } = opts;
+  const { default: defValue, colorType = "background", ...restOpts } = opts;
   return Type.Object(
     {
       color: Type.Optional(
         Type.String({
-          default: defaultValue?.color,
+          default: defValue?.color,
           title: "Color",
           description:
             "Use `bg-<variant>-<shade>`, variants being 'primary', 'secondary', 'accent' and 'neutral', and shades between 50 and 900. Can also be a gradient using 'bg-gradient-to-<direction> from-<color> to-<color>'",
@@ -44,7 +44,7 @@ export function background(opts: BackgroundOptions = {}) {
             Type.Literal("contain", { title: "Contain" }),
           ],
           {
-            default: defaultValue?.size ?? "auto",
+            default: defValue?.size ?? "auto",
             "ai:instructions": "Only use this when the image is set.",
           },
         ),
@@ -60,7 +60,7 @@ export function background(opts: BackgroundOptions = {}) {
             Type.Literal("round", { title: "Round" }),
           ],
           {
-            default: defaultValue?.repeat ?? "no-repeat",
+            default: defValue?.repeat ?? "no-repeat",
             "ai:instructions": "Only use this when the image is set.",
           },
         ),
@@ -73,16 +73,17 @@ export function background(opts: BackgroundOptions = {}) {
       "ui:group": "background",
       "ui:group:title": "Background",
       "ui:color-type": colorType,
-      title,
+      title: "Background",
       // disable for now
       // "ui:show-img-search": true,
-      default: defaultValue
+      default: defValue
         ? {
-            color: defaultValue.color,
-            size: defaultValue.size,
-            repeat: defaultValue.repeat,
+            color: defValue.color,
+            size: defValue.size,
+            repeat: defValue.repeat,
           }
         : undefined,
+      ...restOpts,
     },
   );
 }
@@ -93,25 +94,22 @@ export function backgroundRef(options: SchemaOptions = {}) {
   return typedRef("styles:background", options);
 }
 
-export function backgroundColor(defaultValue?: string, title = "Background color") {
+export function backgroundColor(options: SchemaOptions = {}) {
   return Type.String({
-    title,
+    title: "Background color",
     $id: "styles:backgroundColor",
     "ai:instructions":
       "Can be set to transparent, hex/rgb/rgba color, or classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 100 and 900. Use bg-<variant>-<shade> classes as much as possible.",
-    default: defaultValue,
     "ui:field": "color",
     "ui:color-type": "background",
     // "ui:advanced": true,
     "ui:styleId": "styles:backgroundColor",
+    ...options,
   });
 }
 
 export type BackgroundColorSettings = Static<ReturnType<typeof backgroundColor>>;
 
 export function backgroundColorRef(options: SchemaOptions = {}) {
-  return typedRef("styles:backgroundColor", {
-    ...options,
-    "ui:styleId": "styles:backgroundColor",
-  });
+  return typedRef("styles:backgroundColor", options);
 }
