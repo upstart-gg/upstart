@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 // Import field components
 import { ArrayField } from "./fields/array";
 import BackgroundField from "./fields/background";
+import BorderField from "./fields/border";
 import AlignSelfField from "./fields/align-self";
 import AlignItemsField from "./fields/align-items";
 import JustifyContentField from "./fields/justify-content";
@@ -22,6 +23,7 @@ import VariantGroupField from "./fields/variant-group";
 
 // Import types
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
+import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import type { DatasourceSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource-ref";
 import type { GeolocationSettings } from "@upstart.gg/sdk/shared/bricks/props/geolocation";
@@ -92,6 +94,18 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
   switch (fieldType) {
     case "hidden":
       return null;
+
+    case "border": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as BorderSettings;
+      return (
+        <BorderField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: BorderSettings | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
 
     case "color": {
       const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;

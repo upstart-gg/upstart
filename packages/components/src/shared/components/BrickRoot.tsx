@@ -24,7 +24,7 @@ const BrickRoot = forwardRef<HTMLElement, BrickRootProps<ElementType>>(function 
       ref={ref}
       className={tx(
         manifest.isContainer ? "grow self-stretch" : "flex-1 min-h-fit min-w-fit",
-        "rounded-[inherit] border-inherit",
+        "flex rounded-[inherit]",
         className,
       )}
     >

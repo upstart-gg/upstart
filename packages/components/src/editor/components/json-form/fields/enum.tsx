@@ -15,8 +15,8 @@ interface EnumOption {
   "ui:hidden-option"?: boolean;
 }
 
-const EnumField: FC<FieldProps<string>> = (props) => {
-  const { schema, currentValue, formData, onChange, title, description } = props;
+const EnumField: FC<FieldProps<string> & { noFieldGrow?: boolean }> = (props) => {
+  const { schema, currentValue, formData, onChange, title, description, noFieldGrow } = props;
 
   // console.log("EnumField props", schema);
   // const context = formContext as { brickId: Brick["id"] };
@@ -70,7 +70,9 @@ const EnumField: FC<FieldProps<string>> = (props) => {
 
     case "button-group": {
       return (
-        <div className="button-group-field flex-1 flex justify-between gap-2">
+        <div
+          className={tx("button-group-field flex-1 flex justify-between gap-2", !noFieldGrow && "flex-grow")}
+        >
           <FieldTitle title={title} description={description} />
           <SegmentedControl.Root
             onValueChange={onChange}
@@ -97,7 +99,12 @@ const EnumField: FC<FieldProps<string>> = (props) => {
 
     case "icon-group":
       return (
-        <div className="icon-group-field flex flex-grow shrink-0 justify-between gap-2">
+        <div
+          className={tx(
+            "icon-group-field flex flex-grow shrink-0 justify-between gap-2",
+            !noFieldGrow && "flex-grow",
+          )}
+        >
           <FieldTitle title={title} description={description} />
           <SegmentedControl.Root
             onValueChange={onChange}
@@ -138,7 +145,7 @@ const EnumField: FC<FieldProps<string>> = (props) => {
 
     default:
       return (
-        <div className="flex justify-between flex-grow pr-1 gap-4">
+        <div className={tx("flex justify-between pr-1 gap-4", !noFieldGrow && "flex-grow")}>
           <FieldTitle title={title} description={description} />
           <Select.Root defaultValue={currentValue} size="2" onValueChange={(value) => onChange(value)}>
             <Select.Trigger

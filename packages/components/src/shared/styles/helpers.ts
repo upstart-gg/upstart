@@ -9,6 +9,7 @@ import type { FixedPositionedSettings } from "@upstart.gg/sdk/shared/bricks/prop
 import { propToClass, propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
 import { css } from "@upstart.gg/style-system/twind";
 import type { TSchema } from "@sinclair/typebox";
+import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 
 export function getBackgroundStyles(props?: BackgroundSettings) {
   if (!props) {
@@ -75,6 +76,13 @@ export function getBasicGapStyles(props?: GapBasicSettings, mobileProps?: GapBas
   return props;
 }
 
+export function getBorderStyles(props?: BorderSettings, mobileProps?: BorderSettings, schema?: TSchema) {
+  if (!props) {
+    return null;
+  }
+  return [props.width, props.color];
+}
+
 // function getContainerLayoutStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {
 //   return props?.type === "grid" ? getGridStyles(props, mobileProps) : getFlexStyles(props, mobileProps);
 // }
@@ -115,7 +123,7 @@ export const brickStylesHelpersMap = {
   // test putting here
   "styles:alignItems": simpleClassHandler,
   "styles:justifyContent": simpleClassHandler,
-  "styles:border": simpleClassHandler,
+  "styles:border": getBorderStyles,
 };
 
 export const brickWrapperStylesHelpersMap = {

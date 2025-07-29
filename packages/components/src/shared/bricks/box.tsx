@@ -13,7 +13,7 @@ import { useColorPreset } from "../hooks/use-color-preset";
 export default function Box({ brick, editable }: BrickProps<Manifest>) {
   const presetClasses = useColorPreset<Manifest>(brick);
   return (
-    <BrickRoot manifest={manifest} className={tx("flex @mobile:flex-wrap", presetClasses.main)}>
+    <BrickRoot manifest={manifest} className={tx("@mobile:flex-wrap", presetClasses.main)}>
       {editable ? (
         <DroppableBox brick={brick} />
       ) : (
