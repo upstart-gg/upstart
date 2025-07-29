@@ -90,10 +90,9 @@ export default function Editor(props: EditorProps) {
       element.classList.add(tx("shadow-2xl"));
       element.style.setProperty("max-height", "25dvh", "important");
       element.style.setProperty("overflow", "hidden", "important");
-      element.style.setProperty("scale", "0.85", "important");
-      element.style.setProperty("transform-origin", "center", "important");
+      // element.style.setProperty("transform-origin", "center", "important");
       // Transition scale
-      element.style.setProperty("transition", "scale 0.3s ease-in-out", "important");
+      // element.style.setProperty("transition", "scale 0.3s ease-in-out", "important");
     }
   };
 
@@ -163,7 +162,6 @@ export default function Editor(props: EditorProps) {
       }
 
       if (destination.droppableId === "page") {
-        console.log("Brick has been dropped on page!");
         const newSectionId = `s_${generateId()}`;
         draftHelpers.createEmptySection(newSectionId);
         const newBrick = createEmptyBrick(draggableId);

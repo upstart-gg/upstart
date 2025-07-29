@@ -8,11 +8,12 @@ import { type DraggableChildrenFn, Droppable } from "@hello-pangea/dnd";
 import { useDeviceInfo } from "~/editor/hooks/use-device-info";
 import { useDraggingBrickType, usePreviewMode } from "~/editor/hooks/use-editor";
 import BrickRoot from "../components/BrickRoot";
+import { useColorPreset } from "../hooks/use-color-preset";
 
 export default function Box({ brick, editable }: BrickProps<Manifest>) {
-  const styles = useBrickStyle<Manifest>(brick);
+  const presetClasses = useColorPreset<Manifest>(brick);
   return (
-    <BrickRoot manifest={manifest} className={tx("flex @mobile:flex-wrap", Object.values(styles))}>
+    <BrickRoot manifest={manifest} className={tx("flex @mobile:flex-wrap", presetClasses.main)}>
       {editable ? (
         <DroppableBox brick={brick} />
       ) : (

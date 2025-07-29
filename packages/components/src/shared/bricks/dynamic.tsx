@@ -8,13 +8,14 @@ import { type DraggableChildrenFn, Droppable } from "@hello-pangea/dnd";
 import { useDeviceInfo } from "~/editor/hooks/use-device-info";
 import { useDraggingBrickType, usePreviewMode } from "~/editor/hooks/use-editor";
 import BrickRoot from "../components/BrickRoot";
+import { useColorPreset } from "../hooks/use-color-preset";
 
 export default function Dynamic({ brick, editable }: BrickProps<Manifest>) {
-  const styles = useBrickStyle<Manifest>(brick);
+  const presetClasses = useColorPreset<Manifest>(brick);
   return (
-    <BrickRoot manifest={manifest} className={tx("flex @mobile:flex-wrap", Object.values(styles))}>
+    <BrickRoot manifest={manifest} className={tx("flex @mobile:flex-wrap", presetClasses.main)}>
       {editable ? (
-        <DroppableBox brick={brick} />
+        <DroppableDynamic brick={brick} />
       ) : (
         brick.props.$children?.map((brick) => <BrickWrapper key={brick.id} brick={brick} />)
       )}
@@ -26,7 +27,7 @@ const renderClone2: DraggableChildrenFn = (provided, snapshot, rubric) => {
   return null;
 };
 
-function DroppableBox({ brick }: BrickProps<Manifest>) {
+function DroppableDynamic({ brick }: BrickProps<Manifest>) {
   const props = brick.props;
   const styles = useBrickStyle<Manifest>(brick);
   const classes = Object.values(styles);

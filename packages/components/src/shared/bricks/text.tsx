@@ -19,7 +19,7 @@ export default function Text({ brick, editable }: BrickProps<Manifest>) {
     <BrickRoot manifest={manifest} className={tx("flex", classes, presetClasses.main)}>
       <TextContent
         propPath="content"
-        className={tx("first-child:first-line:leading-[100%] text-wrap")}
+        className={tx("text-pretty grow")}
         brickId={brick.id}
         content={props.content}
         editable={editable}

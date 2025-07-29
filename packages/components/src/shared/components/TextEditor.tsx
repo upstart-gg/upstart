@@ -180,7 +180,7 @@ const TextEditor = <T extends ElementType = "div">({
       mergeNestedSpanStyles: false,
     }),
     Placeholder.configure({
-      placeholder: placeholder ?? "Write something...",
+      placeholder: placeholder ?? "My text...",
     }),
     ...(inline ? [Document.extend({ content: "paragraph" })] : []),
     ...(textSizeMode === "hero"

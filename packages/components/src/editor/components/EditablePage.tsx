@@ -93,7 +93,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       if (event.edges.left || event.edges.right) {
         draftHelpers.updateBrickProps(brickId, {
           width,
-          growHorizontally: event.edges.left || event.edges.right ? false : existingBrick?.growHorizontally,
+          grow: event.edges.left || event.edges.right ? false : existingBrick?.grow,
         });
       }
 

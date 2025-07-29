@@ -16,9 +16,9 @@ export const manifest = defineBrickManifest({
   description: "A button with text and optional icon",
   resizable: "horizontal",
   icon: RxButton,
-  maxHeight: {
-    desktop: LAYOUT_ROW_HEIGHT * 2,
-  },
+  // maxHeight: {
+  //   desktop: LAYOUT_ROW_HEIGHT * 2,
+  // },
   minWidth: {
     desktop: 120,
     mobile: 120,

@@ -7,6 +7,7 @@ import { pageSchema } from "./page";
 import { sitePrompt } from "./prompt";
 import { pageInfoSchema, sitemapSchema } from "./sitemap";
 import { defaultTheme, themeSchema } from "./theme";
+import { lab } from "chroma-js";
 
 export const siteSchema = Type.Object({
   id: Type.String(),
@@ -483,23 +484,72 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                       id: generateId(),
                       type: "text",
                       props: {
-                        width: "45%",
+                        content:
+                          "Hello this is the first text in the dynamic box.<br />I'm on a new line explicitly.<br />I'm the third line and I'm the longest of them all! Yeah!",
                       },
                     },
                     {
                       id: generateId(),
                       type: "button",
-                      props: {},
+                      props: {
+                        label: "Button #1 in dynamic box",
+                      },
                     },
                     {
                       id: generateId(),
                       type: "button",
-                      props: {},
+                      props: {
+                        label: "Small label",
+                      },
                     },
                     {
                       id: generateId(),
                       type: "button",
-                      props: {},
+                      props: {
+                        label: "Button #3 width the largest label",
+                      },
+                    },
+                  ],
+                },
+              },
+              {
+                // dynamic box
+                id: generateId(),
+                type: "dynamic",
+                props: {
+                  direction: "flex-row",
+                  datasource: {
+                    id: "employees",
+                  },
+                  $children: [
+                    {
+                      id: generateId(),
+                      type: "text",
+                      props: {
+                        content:
+                          "Hello this is the first text in the dynamic box.<br />I'm on a new line explicitly.<br />I'm the third line and I'm the longest of them all! Yeah!",
+                      },
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {
+                        label: "Button #1 in dynamic box",
+                      },
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {
+                        label: "Small label",
+                      },
+                    },
+                    {
+                      id: generateId(),
+                      type: "button",
+                      props: {
+                        label: "Button #3 width the largest label",
+                      },
                     },
                   ],
                 },
@@ -517,10 +567,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   alignSelf: "self-auto",
                   datasource: {},
                   $children: [],
-                  height: "104.390625px",
-                  width: "29.03826810534016%",
-                  growHorizontally: false,
-                  lastTouched: 1753359079542,
                 },
                 id: generateId(),
               },
@@ -633,7 +679,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                       },
                     },
                   ],
-                  growHorizontally: true,
                 },
               },
               {
@@ -711,11 +756,8 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   label: "My button",
                   justifyContent: "justify-center",
                   type: "button",
-                  modifier: "btn-block",
                   color: "btn-color-primary",
-                  width: "20.834446225071225%",
                   height: "42px",
-                  growHorizontally: false,
                 },
                 id: generateId(),
               },

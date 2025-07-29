@@ -2,6 +2,7 @@ import { type TString, Type } from "@sinclair/typebox";
 import { typedRef } from "~/shared/utils/typed-ref";
 import { cssLengthRef } from "./css-length";
 import { StringEnum } from "~/shared/utils/string-enum";
+import { alignSelfRef } from "./align";
 
 export function hidden() {
   return Type.Object(
@@ -51,31 +52,13 @@ export const commonProps = {
       "ui:field": "hidden",
     }),
   ),
-  growHorizontally: Type.Optional(
+  grow: Type.Optional(
     Type.Boolean({
       title: "Auto expand",
-      description:
-        "If set, the brick will grow to fill the available width of its parent section. If not set, the brick will have a fixed width.",
-      "ui:styleId": "styles:growHorizontally",
+      description: "If set, the brick will grow to fill the available space of its parent section or box.",
+      "ui:styleId": "styles:grow",
       // "ui:field": "hidden",
     }),
   ),
-  alignSelf: Type.Optional(
-    StringEnum(["self-auto", "self-start", "self-center", "self-end"], {
-      title: "Vertical position",
-      // "ui:field": "hidden",
-      "ui:display": "icon-group",
-      description: "How the brick vertically aligns itself within its parent section.",
-      enumNames: ["Auto", "Top", "Center", "Bottom"],
-      "ui:icons": [
-        "fluent:auto-fit-height-20-regular",
-        "fluent:align-start-vertical-20-regular",
-        "fluent:center-vertical-20-regular",
-        "fluent:align-end-vertical-20-regular",
-      ],
-      default: "self-auto",
-      "ui:placeholder": "Not specified",
-      "ui:styleId": "styles:alignSelf",
-    }),
-  ),
+  alignSelf: Type.Optional(alignSelfRef()),
 };

@@ -495,7 +495,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                 </ContextMenu.CheckboxItem>
               </ContextMenu.SubContent>
             </ContextMenu.Sub>
-            <ContextMenu.CheckboxItem
+            {/* <ContextMenu.CheckboxItem
               checked={
                 previewMode === "mobile" ? brick.mobileProps?.growHorizontally : brick.props.growHorizontally
               }
@@ -512,8 +512,8 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
               }}
             >
               Auto expand
-            </ContextMenu.CheckboxItem>
-            {!isContainerChild && previewMode !== "mobile" && (
+            </ContextMenu.CheckboxItem> */}
+            {/* {!isContainerChild && previewMode !== "mobile" && (
               <ContextMenu.Sub>
                 <ContextMenu.SubTrigger>Vertical Position</ContextMenu.SubTrigger>
                 <ContextMenu.SubContent>
@@ -537,7 +537,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                   </ContextMenu.RadioGroup>
                 </ContextMenu.SubContent>
               </ContextMenu.Sub>
-            )}
+            )} */}
 
             {parentContainer && (
               <>

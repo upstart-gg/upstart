@@ -1,0 +1,50 @@
+import type { FieldProps } from "./types";
+import type { AlignItemsSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
+import invariant from "@upstart.gg/sdk/shared/utils/invariant";
+import EnumField from "./enum";
+
+export default function AlignItemsField(props: FieldProps<AlignItemsSettings>) {
+  const { brickId, onChange, schema } = props;
+  const htmlElement = document.getElementById(brickId);
+  invariant(htmlElement, "HTML element not found for AlignItemsField");
+
+  const flexOrientation = getComputedStyle(htmlElement).flexDirection;
+
+  const customSchema = {
+    ...schema,
+    title: flexOrientation === "column" ? "Horizontal Alignment" : "Vertical Alignment",
+    "ui:display": "icon-group",
+    description:
+      flexOrientation === "column"
+        ? "Aligns the bricks horizontally within the container."
+        : "Aligns the bricks vertically within the container.",
+    enumNames:
+      flexOrientation === "column"
+        ? ["Left", "Center", "Right", "Stretch"]
+        : ["Top", "Center", "Bottom", "Stretch"],
+    "ui:icons":
+      flexOrientation === "column"
+        ? [
+            "fluent:align-start-horizontal-20-regular",
+            "fluent:center-horizontal-20-regular",
+            "fluent:align-end-horizontal-20-regular",
+            "fluent:auto-fit-width-20-regular",
+          ]
+        : [
+            "fluent:align-start-vertical-20-regular",
+            "fluent:center-vertical-20-regular",
+            "fluent:align-end-vertical-20-regular",
+            "fluent:auto-fit-height-20-regular",
+          ],
+  };
+
+  return (
+    <EnumField
+      {...props}
+      schema={customSchema}
+      title={customSchema.title}
+      description={customSchema.description}
+      onChange={onChange as (value: string | null) => void}
+    />
+  );
+}

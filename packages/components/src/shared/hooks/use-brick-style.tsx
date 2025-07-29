@@ -95,13 +95,16 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
     props.preset as string,
     "brick-wrapper group/brick flex",
 
-    isContainer ? "@desktop:min-w-min min-h-fit shrink-0 h-auto @mobile:flex-wrap" : "min-w-min min-h-min",
+    isContainer
+      ? "@desktop:min-w-min min-h-fit shrink-0 h-auto flex-wrap"
+      : // ? "@desktop:min-w-min min-h-fit shrink-0 h-auto @mobile:flex-wrap @desktop:flex-nowrap"
+        "min-w-min min-h-min",
 
     manifest.maxHeight?.mobile && `@mobile:max-h-[${manifest.maxHeight.mobile}px]`,
     manifest.maxHeight?.desktop && `@desktop:max-h-[${manifest.maxHeight.desktop}px]`,
 
     // !isContainerChild &&
-    props.growHorizontally
+    props.grow
       ? "@desktop:w-auto"
       : typeof props.width !== "undefined"
         ? `@desktop:w-[${props.width}]`
@@ -170,6 +173,8 @@ function getBrickWrapperEditorStyles(
       },
       "&.resizing": {
         outlineColor: "var(--violet-8)",
+        minHeight: "min-content",
+        overflow: "hidden",
       },
       "& [data-brick-group]:hover": {
         outline: "1px dashed var(--violet-8)",

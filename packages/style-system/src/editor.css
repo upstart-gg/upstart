@@ -23,6 +23,7 @@ body {
   font-size: inherit;
   height: 0;
   pointer-events: none;
+  white-space: preserve nowrap;
 }
 .tiptap.singleline p.is-editor-empty:first-child::before {
   color: #adb5bd;
@@ -31,9 +32,5 @@ body {
   font-size: inherit;
   height: 0;
   pointer-events: none;
+  white-space: preserve nowrap;
 }
-
-/* .tiptap > *:first-child {
-  text-box-trim: trim-start;
-  text-box-edge: cap alphabetic;
-} */

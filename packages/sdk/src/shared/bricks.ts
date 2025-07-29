@@ -336,8 +336,7 @@ export const sectionProps = Type.Object(
     alignItems: Type.Optional(
       StringEnum(["items-start", "items-center", "items-end"], {
         enumNames: ["Top", "Center", "Bottom"],
-        title: "Vertical alignment",
-        description: "The vertical alignment of bricks within the section.",
+        title: "Align items",
         "ui:placeholder": "Not specified",
         default: "items-center",
         "ui:responsive": "desktop",

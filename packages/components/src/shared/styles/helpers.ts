@@ -79,7 +79,7 @@ export function getBasicGapStyles(props?: GapBasicSettings, mobileProps?: GapBas
 //   return props?.type === "grid" ? getGridStyles(props, mobileProps) : getFlexStyles(props, mobileProps);
 // }
 
-function getGrowHorizontallyStyles(props?: boolean, mobileProps?: boolean, schema?: TSchema) {
+function getGrowStyles(props?: boolean, mobileProps?: boolean, schema?: TSchema) {
   if (schema?.["ui:desktop-only"]) {
     return `@desktop:(flex-grow)`;
   }
@@ -115,11 +115,11 @@ export const brickStylesHelpersMap = {
   // test putting here
   "styles:alignItems": simpleClassHandler,
   "styles:justifyContent": simpleClassHandler,
-
   "styles:border": simpleClassHandler,
 };
 
 export const brickWrapperStylesHelpersMap = {
+  "styles:direction": simpleClassHandler,
   "styles:rounding": simpleClassHandler,
   // "styles:alignItems": simpleClassHandler,
   "styles:shadow": simpleClassHandler,
@@ -127,7 +127,7 @@ export const brickWrapperStylesHelpersMap = {
   "styles:alignItems": simpleClassHandler,
   "styles:fixedPositioned": getFixedPositionedStyles,
   "styles:alignSelf": simpleClassHandler,
-  "styles:growHorizontally": getGrowHorizontallyStyles,
+  "styles:grow": getGrowStyles,
 };
 
 // Return the upper path without the last part (the property name)

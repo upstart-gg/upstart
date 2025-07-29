@@ -49,13 +49,13 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
   const showTabsList =
     (!!manifest.props.properties.preset && previewMode === "desktop") || hasContentProperties || debugMode;
 
-  const selectedTab = tabsMapping[brick.id] ?? (hasContentProperties ? "content" : "settings");
+  const selectedTab = tabsMapping[brick.type] ?? (hasContentProperties ? "content" : "settings");
 
   useEffect(() => {
     if (!hasContentProperties && selectedTab === "content") {
-      setTabsMapping((prev) => ({ ...prev, [brick.id]: "settings" }));
+      setTabsMapping((prev) => ({ ...prev, [brick.type]: "settings" }));
     }
-  }, [setTabsMapping, brick?.id, selectedTab, hasContentProperties]);
+  }, [setTabsMapping, brick.type, selectedTab, hasContentProperties]);
 
   if (!section) {
     console.warn(`No section found for brick: ${brick.id}`);
@@ -85,7 +85,7 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
       <Tabs.Root
         value={selectedTab}
         onValueChange={(val) => {
-          setTabsMapping((prev) => ({ ...prev, [brick.id]: val as TabType }));
+          setTabsMapping((prev) => ({ ...prev, [brick.type]: val as TabType }));
         }}
         className="flex-1 flex flex-col"
       >

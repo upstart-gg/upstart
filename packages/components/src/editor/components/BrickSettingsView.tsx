@@ -67,8 +67,6 @@ export default function BrickSettingsView({
       // All content props should be set on the brick props, not mobileProps
       const isMobileProps = previewMode === "mobile" && manifestField?.metadata?.category !== "content";
 
-      console.log("brick props before clone", brickInfo?.props);
-
       // Note: this is a weird way to update the brick props, but it'it allows us to deal with frozen trees
       const props = structuredClone(
         isMobileProps ? (brickInfo?.mobileProps ?? {}) : (brickInfo?.props ?? {}),
@@ -76,6 +74,8 @@ export default function BrickSettingsView({
       // `propertyChangedPath` can take the form of `a.b.c` which means we need to update `props.a.b.c`
       // For this we use lodash.set
       set(props, propertyChangedPath, data[propertyChangedPath]);
+
+      console.debug("Props update for brick %s: %o", brick.id, props);
 
       // Update the brick props in the store
       updateBrickProps(brick.id, props, isMobileProps);

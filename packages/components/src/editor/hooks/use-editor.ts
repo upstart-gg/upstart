@@ -1601,6 +1601,12 @@ export function useDynamicParent(brickId: string) {
   return null;
 }
 
+export function useParentBrick(brickId: string) {
+  const ctx = useDraftStoreContext();
+  const getParentBrick = useStore(ctx, (state) => state.getParentBrick);
+  return getParentBrick(brickId);
+}
+
 export function usePageVersion() {
   const ctx = useDraftStoreContext();
   return useStore(ctx, (state) => state.version);
