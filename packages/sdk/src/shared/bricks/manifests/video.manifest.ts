@@ -3,7 +3,7 @@ import { defineProps } from "../props/helpers";
 import { RxVideo } from "react-icons/rx";
 import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
-import { borderRef } from "../props/border";
+import { borderRef, roundingRef } from "../props/border";
 import { shadowRef } from "../props/effects";
 import { Type } from "@sinclair/typebox";
 import { paddingRef } from "../props/padding";
@@ -33,7 +33,13 @@ export const manifest = defineBrickManifest({
         "ui:responsive": "desktop",
       },
     }),
-    padding: Type.Optional(paddingRef()),
+    padding: Type.Optional(paddingRef({})),
+    rounding: Type.Optional(
+      roundingRef({
+        default: "rounded-md",
+      }),
+    ),
+    border: Type.Optional(borderRef()),
     shadow: Type.Optional(shadowRef()),
   }),
 });

@@ -33,6 +33,7 @@ export const manifest = defineBrickManifest({
         colorRef({
           title: "Color",
           default: "currentColor",
+          "ui:hide-color-label": true,
         }),
       ),
       link: Type.Optional(urlOrPageIdRef({ title: "Link" })),

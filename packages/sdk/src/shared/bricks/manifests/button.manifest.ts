@@ -47,7 +47,7 @@ export const manifest = defineBrickManifest({
         default: "rounded-md",
       }),
     ),
-    border: Type.Optional(borderRef({ default: "border-0", "ui:responsive": "desktop" })),
+    border: Type.Optional(borderRef({ default: { width: "border-0" }, "ui:responsive": "desktop" })),
     linkToUrlOrPageId: Type.Optional(urlOrPageIdRef({ title: "Link", metadata: { category: "content" } })),
   }),
 });

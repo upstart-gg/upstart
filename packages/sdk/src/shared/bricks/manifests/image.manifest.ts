@@ -8,6 +8,7 @@ import { string } from "../props/string";
 import { Type } from "@sinclair/typebox";
 import type { BrickProps } from "../props/types";
 import { backgroundColorRef } from "../props/background";
+import { borderRef, roundingRef } from "../props/border";
 
 export const manifest = defineBrickManifest({
   type: "image",
@@ -24,7 +25,13 @@ export const manifest = defineBrickManifest({
       },
     }),
     backgroundColor: Type.Optional(backgroundColorRef()),
-    padding: Type.Optional(paddingRef()),
+    padding: Type.Optional(paddingRef({})),
+    rounding: Type.Optional(
+      roundingRef({
+        default: "rounded-md",
+      }),
+    ),
+    border: Type.Optional(borderRef()),
     shadow: Type.Optional(shadowRef()),
     blurHash: Type.Optional(
       string("Blur Hash", {

@@ -26,7 +26,7 @@ const ColorField: FC<FieldProps<string | undefined> & { hideColorLabel?: boolean
       required={schema.required}
       onChange={onChange}
       elementColorType={elementColorType}
-      hideColorLabel={props.hideColorLabel}
+      hideColorLabel={props.hideColorLabel ?? schema["ui:hide-color-label"]}
     />
   );
 };

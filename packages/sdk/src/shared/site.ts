@@ -1083,18 +1083,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   content: "Irure dolor sit amet, consectetur adipiscing elit.",
                 },
               },
-              // {
-              //   id: `b_${generateId()}`,
-              //   type: "card",
-              //   props: {
-              //     cardTitle: "Welcome to My Site",
-              //     cardBody: "This is a sample card body. You can edit this content.",
-              //     cardImage: {
-              //       src: "https://images.unsplash.com/photo-1636828982375-a4ec8b809e5e?q=80&w=3456&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-              //       alt: "Sample Card Image",
-              //     },
-              //   },
-              // },
+
               {
                 id: `b_${generateId()}`,
                 type: "spacer",

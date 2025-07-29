@@ -18,7 +18,7 @@ export function border(opts: ObjectOptions = {}) {
       color: colorRef({
         title: "Color",
         description: "The color of the border.",
-        default: "currentColor",
+        default: "border-current",
       }),
     },
     {
@@ -32,11 +32,13 @@ export function border(opts: ObjectOptions = {}) {
   );
 }
 
-export function borderRef(options: StringOptions = {}) {
+export type BorderSettings = Static<ReturnType<typeof border>>;
+
+export function borderRef(
+  options: Omit<ObjectOptions, "default"> & { default?: Partial<BorderSettings> } = {},
+) {
   return typedRef("styles:border", options);
 }
-
-export type BorderSettings = Static<ReturnType<typeof border>>;
 
 export function rounding(opts: StringOptions = {}) {
   return Type.Optional(
