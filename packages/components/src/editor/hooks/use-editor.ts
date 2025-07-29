@@ -1,26 +1,20 @@
-import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
-import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
-import { generateId, processSections } from "@upstart.gg/sdk/shared/bricks";
-import type { GenerationState } from "@upstart.gg/sdk/shared/context";
-import type { DatasourcesList, Datasource } from "@upstart.gg/sdk/shared/datasources/types";
-import type { DatarecordsList, Datarecord } from "@upstart.gg/sdk/shared/datarecords/types";
+import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
 import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
-import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
+import type { GenericPageConfig } from "@upstart.gg/sdk/shared/page";
 import type { SitePrompt } from "@upstart.gg/sdk/shared/prompt";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
 import type { Site, SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
-import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
 import { enableMapSet } from "immer";
-import { debounce, isEqual, merge } from "lodash-es";
-import { createContext, useContext, useEffect } from "react";
+import { isEqual } from "lodash-es";
+import { createContext, useContext } from "react";
 import { temporal } from "zundo";
 import { createStore, useStore } from "zustand";
 import { persist, subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import { type DraftState, useDraftStoreContext } from "./use-page-data";
+import { type DraftState, usePageContext } from "./use-page-data";
 export type { Immer } from "immer";
 
 enableMapSet();
@@ -431,7 +425,7 @@ export function useSelectedSectionId() {
 
 export function useSelectedSection() {
   const ctx = useEditorStoreContext();
-  const draft = useDraftStoreContext();
+  const draft = usePageContext();
   return useStore(ctx, (state) => {
     const section = draft.getState().sections.find((s) => s.id === state.selectedSectionId);
     if (!section) {

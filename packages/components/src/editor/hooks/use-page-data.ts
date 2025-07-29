@@ -4,21 +4,18 @@ import { generateId, processSections } from "@upstart.gg/sdk/shared/bricks";
 import type { GenerationState } from "@upstart.gg/sdk/shared/context";
 import type { DatasourcesList, Datasource } from "@upstart.gg/sdk/shared/datasources/types";
 import type { DatarecordsList, Datarecord } from "@upstart.gg/sdk/shared/datarecords/types";
-import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
-import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
-import { sitePrompt, type SitePrompt } from "@upstart.gg/sdk/shared/prompt";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
-import type { Site, SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
+import type { Site } from "@upstart.gg/sdk/shared/site";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
 import { enableMapSet } from "immer";
-import { debounce, isEqual, merge } from "lodash-es";
+import { debounce, isEqual } from "lodash-es";
 import { createContext, useContext, useEffect } from "react";
 import { temporal } from "zundo";
 import { createStore, useStore } from "zustand";
-import { persist, subscribeWithSelector } from "zustand/middleware";
+import { subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 export type { Immer } from "immer";
 
@@ -61,7 +58,6 @@ export interface DraftStateProps {
   dirty?: boolean;
   lastLoaded?: Date;
   brickMap: Map<string, { brick: Brick; sectionId: string; parentId: string | null }>;
-
   // All pages in the site, used when in setup mode
   pages: GenericPageConfig[];
 }
@@ -1021,24 +1017,24 @@ type DraftStore = ReturnType<typeof createDraftStore>;
 
 export const DraftStoreContext = createContext<DraftStore | null>(null);
 
-export const useDraftStoreContext = () => {
+export const usePageContext = () => {
   const store = useContext(DraftStoreContext);
   invariant(store, "useDraftStoreContext must be used within a DraftStoreContext");
   return store;
 };
 
 export const useDraftUndoManager = () => {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   return ctx.temporal.getState();
 };
 
 export const useSitemap = () => {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   return useStore(ctx, (state) => state.sitemap);
 };
 
 export const useGenerationState = () => {
-  const draft = useDraftStoreContext();
+  const draft = usePageContext();
   return useStore(draft, (state) => {
     const hasSitemap = state.sitemap.length > 0;
     const hasThemesGenerated = state.themes.length > 0;
@@ -1055,7 +1051,7 @@ export const useGenerationState = () => {
 };
 
 export const useSiteAndPages = () => {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   const pages = useStore(ctx, (state) => state.pages);
   const site = useSite();
   return {
@@ -1065,17 +1061,17 @@ export const useSiteAndPages = () => {
 };
 
 export const useThemes = () => {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   return useStore(ctx, (state) => state.themes);
 };
 
 export const useDraft = () => {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   return useStore(ctx);
 };
 
 export function useHasDynamicParent(brickId: string) {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   const getParentBrick = useStore(ctx, (state) => state.getParentBrick);
   let tmp = getParentBrick(brickId);
   while (tmp) {
@@ -1089,7 +1085,7 @@ export function useHasDynamicParent(brickId: string) {
 }
 
 export function useDynamicParent(brickId: string) {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   const getParentBrick = useStore(ctx, (state) => state.getParentBrick);
   let tmp = getParentBrick(brickId);
   while (tmp) {
@@ -1103,29 +1099,29 @@ export function useDynamicParent(brickId: string) {
 }
 
 export function useParentBrick(brickId: string) {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   const getParentBrick = useStore(ctx, (state) => state.getParentBrick);
   return getParentBrick(brickId);
 }
 
 export function usePageVersion() {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   return useStore(ctx, (state) => state.version);
 }
 
 export function useLastSaved() {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   return useStore(ctx, (state) => state.lastSaved);
 }
 
 export const useSections = () => {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   const sections = useStore(ctx, (state) => state.sections);
   return processSections(sections);
 };
 
 export const useSection = (sectionId?: string) => {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   return useStore(ctx, (state) => {
     const section = state.sections.find((s) => sectionId && s.id === sectionId);
     if (!section) {
@@ -1139,29 +1135,29 @@ export const useSection = (sectionId?: string) => {
 };
 
 export const useBrick = (brickId?: string) => {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   return useStore(ctx, (state) => {
     return brickId ? getBrickFromDraft(brickId, state) : null;
   });
 };
 
 export const useSectionByBrickId = (brickId: string) => {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   return useStore(ctx, (state) => getBrickSection(brickId, state));
 };
 
 export const useAttributes = () => {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   return useStore(ctx, (state) => state.attr);
 };
 
 export const useAttributesSchema = () => {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   return useStore(ctx, (state) => state.attributes ?? state.siteAttributes);
 };
 
 export const useDraftHelpers = () => {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   return useStore(ctx, (state) => ({
     deleteBrick: state.deleteBrick,
     detachBrickFromContainer: state.detachBrickFromContainer,
@@ -1202,7 +1198,7 @@ export const useDraftHelpers = () => {
 };
 
 export const usePageInfo = () => {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   return useStore(ctx, (state) => ({
     id: state.id,
     path: state.path,
@@ -1214,7 +1210,7 @@ export const usePageInfo = () => {
 };
 
 export const useSite = () => {
-  const draft = useDraftStoreContext();
+  const draft = usePageContext();
   const draftData = useStore(draft, (state) => ({
     id: state.siteId,
     label: state.label,
@@ -1232,12 +1228,12 @@ export const useSite = () => {
 };
 
 export const useTheme = () => {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   return useStore(ctx, (state) => state.theme);
 };
 
 export const useSectionsSubscribe = (callback: (sections: DraftState["sections"]) => void) => {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     return ctx.subscribe((state) => state?.sections ?? [], debounce(callback, 200), {
@@ -1247,7 +1243,7 @@ export const useSectionsSubscribe = (callback: (sections: DraftState["sections"]
 };
 
 export const useAttributesSubscribe = (callback: (attr: DraftState["attr"]) => void) => {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     return ctx.subscribe((state) => state.attr, callback, {
@@ -1257,7 +1253,7 @@ export const useAttributesSubscribe = (callback: (attr: DraftState["attr"]) => v
 };
 
 export const useThemeSubscribe = (callback: (theme: DraftState["theme"]) => void) => {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     return ctx.subscribe((state) => state.theme, callback);
@@ -1265,7 +1261,7 @@ export const useThemeSubscribe = (callback: (theme: DraftState["theme"]) => void
 };
 
 export const usePagePathSubscribe = (callback: (path: DraftState["path"]) => void) => {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     return ctx.subscribe((state) => state.path, callback);
@@ -1315,7 +1311,7 @@ function getBrickFromDraft(id: string, state: DraftState) {
 }
 
 export const useSitePrompt = () => {
-  const ctx = useDraftStoreContext();
+  const ctx = usePageContext();
   return useStore(ctx, (state) => state.sitePrompt);
 };
 
