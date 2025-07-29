@@ -11,7 +11,7 @@ export default function Testimonials({ brick, editable }: BrickProps<Manifest>) 
   const { gradientDirection, ...styles } = useBrickStyle<Manifest>(brick);
   const presetClasses = useColorPreset<Manifest>(brick);
   const containerClasses = Object.values(styles);
-  const testimonials = props.testimonials || [];
+  const testimonials = props.testimonials && Array.isArray(props.testimonials) ? props.testimonials : [];
 
   return (
     <BrickRoot
