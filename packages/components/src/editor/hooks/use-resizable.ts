@@ -357,12 +357,6 @@ export function useResizable(cssQuery: string, options: UseResizableOptions): vo
 
 // helper to Set element dimensions
 function setElementSize(element: HTMLElement, width: number, height: number, event: ResizeEvent) {
-  element.style.width = `${width}px`;
-  element.style.height = `${height}px`;
-  element.style.minWidth = `${width}px`;
-
-  // disable flex-grow temporarily to allow resize
-  element.style.setProperty("flex-grow", "0");
   // element.style.minHeight = `${height}px`;
 
   let { x = 0, y = 0 } = element.dataset;
@@ -372,5 +366,13 @@ function setElementSize(element: HTMLElement, width: number, height: number, eve
   y = (parseFloat(`${y}`) || 0) + event.deltaRect.top;
 
   // Update position to maintain the correct anchor point
-  element.style.transform = `translate(${x}px, ${y}px)`;
+  requestAnimationFrame(() => {
+    element.style.width = `${width}px`;
+    element.style.height = `${height}px`;
+    element.style.minWidth = `${width}px`;
+
+    // disable flex-grow temporarily to allow resize
+    element.style.setProperty("flex-grow", "0");
+    element.style.transform = `translate(${x}px, ${y}px)`;
+  });
 }

@@ -13,21 +13,21 @@ const ChoiceContext = createContext<ChoiceContextProps>({
   onFieldSelect: () => {},
 });
 
-function SchemaEntry({ schema, rootName }: { schema: TSchema; rootName: string }) {
+function SchemaEntry({ schema }: { schema: TSchema }) {
   const nestingLevel = useContext(NestingContext);
   const { onFieldSelect } = useContext(ChoiceContext);
   return (
     <NestingContext.Provider value={nestingLevel + 1}>
       <ul id={`${schema.name}_level-${nestingLevel}`} className="mb-1 list-[square] pl-2">
         {schema.type === "object" ? (
-          <SchemaObject schema={schema as TObject} rootName={rootName} />
+          <SchemaObject schema={schema as TObject} />
         ) : schema.type === "array" ? (
-          <SchemaArray schema={schema as TArray} rootName={rootName} />
+          <SchemaArray schema={schema as TArray} />
         ) : (
           <li>
             <Text
               size="2"
-              onClick={() => onFieldSelect(`${rootName}.${schema.name}`)}
+              onClick={() => onFieldSelect(schema.name)}
               className="hover:bg-upstart-200 bg-upstart-100 cursor-pointer px-1.5 py-1 rounded"
             >
               {schema.name}
@@ -47,7 +47,7 @@ function SchemaEntry({ schema, rootName }: { schema: TSchema; rootName: string }
   );
 }
 
-function SchemaArray({ schema, rootName }: { schema: TArray; rootName: string }) {
+function SchemaArray({ schema }: { schema: TArray }) {
   const { items, name, required } = schema;
   const { onFieldSelect, allowArraySelection } = useContext(ChoiceContext);
   return (
@@ -56,7 +56,7 @@ function SchemaArray({ schema, rootName }: { schema: TArray; rootName: string })
         <li>
           <Text size="2">
             {allowArraySelection ? (
-              <Text size="2" onClick={() => onFieldSelect(`${rootName}.${name}`)}>
+              <Text size="2" onClick={() => onFieldSelect(name)}>
                 {name}
               </Text>
             ) : (
@@ -71,18 +71,12 @@ function SchemaArray({ schema, rootName }: { schema: TArray; rootName: string })
         </li>
       )}
 
-      <SchemaEntry
-        rootName={rootName}
-        schema={{ ...items, optional: required && !required.includes(name) }}
-      />
+      <SchemaEntry schema={{ ...items, optional: required && !required.includes(name) }} />
     </ul>
   );
 }
 
-function SchemaObject({
-  rootName,
-  schema: { name, required, allOf, properties },
-}: { schema: TObject; rootName: string }) {
+function SchemaObject({ schema: { name, required, allOf, properties } }: { schema: TObject }) {
   const renderProperties = properties;
   // if (allOf) {
   //   const newProperties = allOf.reduce((acc, obj) => {
@@ -108,7 +102,6 @@ function SchemaObject({
           <SchemaEntry
             key={`${name}-${i}`}
             schema={{ ...value, name, optional: required && !required.includes(name) }}
-            rootName={rootName}
           />
         ))}
       </ul>
@@ -119,12 +112,11 @@ function SchemaObject({
 export function JSONSchemaView({
   schema,
   onFieldSelect,
-  rootName,
-}: { rootName: string; schema: TSchema; onFieldSelect: ChoiceContextProps["onFieldSelect"] }) {
+}: { schema: TSchema; onFieldSelect: ChoiceContextProps["onFieldSelect"] }) {
   return (
     <ChoiceContext.Provider value={{ onFieldSelect }}>
       <NestingContext.Provider value={0}>
-        <SchemaEntry schema={schema} rootName={rootName} />
+        <SchemaEntry schema={schema} />
       </NestingContext.Provider>
     </ChoiceContext.Provider>
   );

@@ -4,7 +4,7 @@ import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
 import { tx } from "@upstart.gg/style-system/twind";
 import { get, set } from "lodash-es";
 import { useCallback, useMemo } from "react";
-import { useBrick, useDraftHelpers, usePreviewMode } from "~/editor/hooks/use-editor";
+import { useBrick, useDraftHelpers, useDynamicParent, usePreviewMode } from "~/editor/hooks/use-editor";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
 import FormNavigator from "./json-form/FormNavigator";
@@ -26,6 +26,7 @@ export default function BrickSettingsView({
 }: BrickSettingsViewProps) {
   const { updateBrickProps } = useDraftHelpers();
   const manifest = useBrickManifest(brick.type);
+  const dynamicParent = useDynamicParent(brick.id);
   const previewMode = usePreviewMode();
   const brickInfo = useBrick(brick.id);
   const filter: SchemaFilter = useCallback(
@@ -53,18 +54,6 @@ export default function BrickSettingsView({
       : mergeIgnoringArrays({}, defProps, brick.props ?? {});
   }, [brick, previewMode]);
 
-  // // Get datasource if one is selected
-  // const datasourceId = (baseFormData.datasource as { id: string })?.id;
-  // const datasource = useDatasource(datasourceId);
-
-  // // Enrich form data with datasource
-  // const formData = useMemo(() => {
-  //   if (datasourceId && datasource) {
-  //     return { ...baseFormData, __datasource: datasource };
-  //   }
-  //   return baseFormData;
-  // }, [baseFormData, datasource, datasourceId]);
-
   const onChange = useCallback(
     (data: Record<string, unknown>, propertyChangedPath: string) => {
       if (!propertyChangedPath) {
@@ -78,8 +67,6 @@ export default function BrickSettingsView({
       // All content props should be set on the brick props, not mobileProps
       const isMobileProps = previewMode === "mobile" && manifestField?.metadata?.category !== "content";
 
-      console.log("brick props before clone", brickInfo?.props);
-
       // Note: this is a weird way to update the brick props, but it'it allows us to deal with frozen trees
       const props = structuredClone(
         isMobileProps ? (brickInfo?.mobileProps ?? {}) : (brickInfo?.props ?? {}),
@@ -87,6 +74,8 @@ export default function BrickSettingsView({
       // `propertyChangedPath` can take the form of `a.b.c` which means we need to update `props.a.b.c`
       // For this we use lodash.set
       set(props, propertyChangedPath, data[propertyChangedPath]);
+
+      console.debug("Props update for brick %s: %o", brick.id, props);
 
       // Update the brick props in the store
       updateBrickProps(brick.id, props, isMobileProps);

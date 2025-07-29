@@ -15,27 +15,30 @@ export const manifest = defineBrickManifest({
   repeatable: true,
   resizable: false,
   icon: PiConfetti,
-  props: defineProps({
-    icon: iconRef({
-      default: "mdi:heart",
-    }),
-    size: Type.Optional(
-      cssLengthRef({
-        title: "Size",
-        description: "The size of the icon. Can be a CSS length value (e.g. '2em', '24px')",
-        default: "1em",
-        "ui:css-units": ["em", "rem", "px"],
-        "ai:instructions": "Use 'em', 'rem', or 'px' for units. Example: '2em', '24px'",
+  props: defineProps(
+    {
+      icon: iconRef({
+        default: "mdi:heart",
       }),
-    ),
-    color: Type.Optional(
-      colorRef({
-        title: "Color",
-        default: "currentColor",
-      }),
-    ),
-    link: Type.Optional(urlOrPageIdRef({ title: "Link" })),
-  }),
+      size: Type.Optional(
+        cssLengthRef({
+          title: "Size",
+          description: "The size of the icon. Can be a CSS length value (e.g. '2em', '24px')",
+          default: "1em",
+          "ui:css-units": ["em", "rem", "px"],
+          "ai:instructions": "Use 'em', 'rem', or 'px' for units. Example: '2em', '24px'",
+        }),
+      ),
+      color: Type.Optional(
+        colorRef({
+          title: "Color",
+          default: "currentColor",
+        }),
+      ),
+      link: Type.Optional(urlOrPageIdRef({ title: "Link" })),
+    },
+    { noGrow: true },
+  ),
 });
 
 export type Manifest = typeof manifest;

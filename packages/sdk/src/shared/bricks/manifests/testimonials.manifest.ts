@@ -250,34 +250,35 @@ export const manifest = defineBrickManifest({
           "ui:styleId": "styles:gap",
         }),
       ),
-      testimonials: Type.Array(
-        Type.Object({
-          text: string("Text", {
-            default: "Amazing product!",
-            "ui:multiline": true,
-            "ui:textarea-class": "h-20",
+      testimonials: Type.Optional(
+        Type.Array(
+          Type.Object({
+            text: string("Text", {
+              default: "Amazing product!",
+              "ui:multiline": true,
+              "ui:textarea-class": "h-20",
+            }),
+            author: string("Author", { default: "John Doe" }),
+            company: Type.Optional(string("Company")),
+            avatar: Type.Optional(imageRef({ title: "Avatar" })),
+            socialIcon: Type.Optional(iconRef()),
           }),
-          author: string("Author", { default: "John Doe" }),
-          company: Type.Optional(string("Company")),
-          avatar: Type.Optional(imageRef({ title: "Avatar" })),
-          socialIcon: Type.Optional(iconRef()),
-        }),
-        {
-          title: "Testimonials",
-          description: "List of testimonials",
-          default: [], // Empty array by default
-          "ui:tab": "content",
-          "ui:widget": "array",
-          "ui:displayField": "author", // Affiche le nom de l'auteur dans la vue compacte
-          "ui:options": {
-            orderable: true, // Enable drag & drop reordering
-            removable: true, // Enable delete button
-            addable: true, // Enable add button
+          {
+            title: "Testimonials",
+            default: [], // Empty array by default
+            "ui:tab": "content",
+            "ui:widget": "array",
+            "ui:displayField": "author", // Affiche le nom de l'auteur dans la vue compacte
+            "ui:options": {
+              orderable: true, // Enable drag & drop reordering
+              removable: true, // Enable delete button
+              addable: true, // Enable add button
+            },
+            metadata: {
+              category: "content",
+            },
           },
-          metadata: {
-            category: "content",
-          },
-        },
+        ),
       ),
     },
     {

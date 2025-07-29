@@ -15,8 +15,8 @@ interface EnumOption {
   "ui:hidden-option"?: boolean;
 }
 
-const EnumField: FC<FieldProps<string>> = (props) => {
-  const { schema, currentValue, formData, onChange, title, description } = props;
+const EnumField: FC<FieldProps<string> & { noFieldGrow?: boolean }> = (props) => {
+  const { schema, currentValue, formData, onChange, title, description, noFieldGrow } = props;
 
   // console.log("EnumField props", schema);
   // const context = formContext as { brickId: Brick["id"] };
@@ -70,14 +70,16 @@ const EnumField: FC<FieldProps<string>> = (props) => {
 
     case "button-group": {
       return (
-        <div className="button-group-field flex-1 flex justify-between flex-wrap gap-1">
+        <div
+          className={tx("button-group-field flex-1 flex justify-between gap-2", !noFieldGrow && "flex-grow")}
+        >
           <FieldTitle title={title} description={description} />
           <SegmentedControl.Root
             onValueChange={onChange}
             defaultValue={currentValue as string}
             size="1"
             radius="medium"
-            className="!h-[26px] -mt-0.5 -mb-0.5"
+            className="!h-[26px]"
           >
             {options
               .filter((o) => !o["ui:hidden-option"])
@@ -97,30 +99,43 @@ const EnumField: FC<FieldProps<string>> = (props) => {
 
     case "icon-group":
       return (
-        <div className="icon-group-field flex flex-1 justify-between flex-wrap gap-3">
+        <div
+          className={tx(
+            "icon-group-field flex flex-grow shrink-0 justify-between gap-2",
+            !noFieldGrow && "flex-grow",
+          )}
+        >
           <FieldTitle title={title} description={description} />
           <SegmentedControl.Root
             onValueChange={onChange}
-            defaultValue={currentValue as string}
+            defaultValue={currentValue}
             size="1"
             radius="medium"
-            className="!h-[26px] -mt-0.5 -mb-0.5"
+            className="!h-[26px]"
           >
             {options
               .filter((o) => !o["ui:hidden-option"])
               .map((option) => (
-                <Tooltip
-                  content={<span className="block text-xs p-0.5">{option.title}</span>}
-                  className="!z-[99999]"
+                <SegmentedControl.Item
                   key={option.const}
+                  value={option.const}
+                  className={tx("[&_.rt-SegmentedControlItemLabel]:px-[6px]")}
                 >
-                  <SegmentedControl.Item
-                    value={option.const}
-                    className={tx("[&_.rt-SegmentedControlItemLabel]:px-[7px]")}
+                  <Tooltip
+                    content={<span className="block text-xs p-0.5">{option.title}</span>}
+                    className="!z-[99999]"
+                    key={option.const}
                   >
-                    <Icon icon={option["ui:icon"] as string} className="w-5 h-5 pointer-events-none" />
-                  </SegmentedControl.Item>
-                </Tooltip>
+                    {/* KEEP THIS DIV OTHERWISE TOOLTIP WILL NOT WORK */}
+                    <div>
+                      {option["ui:icon"] ? (
+                        <Icon icon={option["ui:icon"] as string} className="w-5 h-5 pointer-events-none" />
+                      ) : (
+                        option.title
+                      )}
+                    </div>
+                  </Tooltip>
+                </SegmentedControl.Item>
               ))}
 
             {/* </Tooltip> */}
@@ -130,7 +145,7 @@ const EnumField: FC<FieldProps<string>> = (props) => {
 
     default:
       return (
-        <div className="flex justify-between flex-grow pr-1 gap-4">
+        <div className={tx("flex justify-between pr-1 gap-4", !noFieldGrow && "flex-grow")}>
           <FieldTitle title={title} description={description} />
           <Select.Root defaultValue={currentValue} size="2" onValueChange={(value) => onChange(value)}>
             <Select.Trigger

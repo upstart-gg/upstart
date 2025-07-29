@@ -54,21 +54,18 @@ export function getGroupInfo(schema: TSchema) {
 
 export function defineProps<P extends TProperties>(
   props: P,
-  options?: ObjectOptions & { noGrow?: boolean; noAlignSelf?: boolean; defaultPreset?: string },
+  options?: ObjectOptions & {
+    noGrow?: boolean;
+    noAlignSelf?: boolean;
+  },
 ) {
   const allProps = { ...commonProps, ...props };
-  const { alignSelf, growHorizontally, ...rest } = allProps;
+  const { alignSelf, grow, ...rest } = allProps;
   const finalProps = {
-    ...(options?.noAlignSelf ? {} : { alignSelf }),
-    ...(options?.noGrow ? {} : { growHorizontally }),
     ...rest,
+    ...(options?.noAlignSelf ? {} : { alignSelf }),
+    ...(options?.noGrow ? {} : { grow }),
   } as typeof allProps;
-  // if (!options?.noAlignSelf) {
-  //   finalProps.alignSelf = alignSelf;
-  // }
-  // if (!options?.noGrow) {
-  //   finalProps.growHorizontally = growHorizontally;
-  // }
   return Type.Object(finalProps, options);
 }
 

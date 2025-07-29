@@ -81,33 +81,44 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         return;
       }
 
-      const width = previewMode === "mobile" ? "auto" : `${(event.rect.width / parentWidth) * 100}%`;
+      const width =
+        previewMode === "mobile" ? "auto" : `${((event.rect.width / parentWidth) * 100).toFixed(0)}%`;
 
       console.log("Resizing with parentBrick:", parentBrick);
       console.log("Resizing with parentElement:", parentElement);
       console.log("Resizing with parentWidth:", parentWidth);
       console.log("Resizing with width:", width);
 
-      draftHelpers.updateBrickProps(brickId, {
-        width,
-        height: `${event.rect.height}px`,
-        growHorizontally: event.edges.left || event.edges.right ? false : existingBrick?.growHorizontally,
-      });
+      // Horizontal resizing
+      if (event.edges.left || event.edges.right) {
+        draftHelpers.updateBrickProps(brickId, {
+          width,
+          grow: event.edges.left || event.edges.right ? false : existingBrick?.grow,
+        });
+      }
 
-      target.style.removeProperty("top");
-      target.style.removeProperty("left");
-      target.style.removeProperty("right");
-      target.style.removeProperty("bottom");
-      target.style.removeProperty("margin-bottom");
-      target.style.removeProperty("margin-top");
-      target.style.removeProperty("margin-left");
-      target.style.removeProperty("margin-right");
-      target.style.removeProperty("width");
-      target.style.removeProperty("height");
-      target.style.removeProperty("min-height");
-      target.style.removeProperty("min-width");
-      target.style.removeProperty("flex-grow");
-      target.style.removeProperty("transform");
+      if (event.edges.top || event.edges.bottom) {
+        draftHelpers.updateBrickProps(brickId, {
+          height: `${event.rect.height}px`,
+        });
+      }
+
+      requestAnimationFrame(() => {
+        target.style.removeProperty("top");
+        target.style.removeProperty("left");
+        target.style.removeProperty("right");
+        target.style.removeProperty("bottom");
+        target.style.removeProperty("margin-bottom");
+        target.style.removeProperty("margin-top");
+        target.style.removeProperty("margin-left");
+        target.style.removeProperty("margin-right");
+        target.style.removeProperty("width");
+        target.style.removeProperty("height");
+        target.style.removeProperty("min-height");
+        target.style.removeProperty("min-width");
+        target.style.removeProperty("flex-grow");
+        target.style.removeProperty("transform");
+      });
     },
   });
 

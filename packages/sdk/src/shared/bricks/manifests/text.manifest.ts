@@ -2,7 +2,7 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { textContentRef } from "../props/text";
 import { defineProps } from "../props/helpers";
 import { paddingRef } from "../props/padding";
-import { borderRef } from "../props/border";
+import { borderRef, roundingRef } from "../props/border";
 import { RxTextAlignLeft } from "react-icons/rx";
 import type { BrickProps } from "../props/types";
 import { type Static, type TObject, Type } from "@sinclair/typebox";
@@ -20,7 +20,6 @@ export const manifest = defineBrickManifest({
 Only 'align' is supported as an inline style, so don't use other inline styles like 'font-size' or 'color' in the content prop.
 `,
   defaultWidth: {
-    desktop: "200px",
     mobile: "100%",
   },
   defaultHeight: {
@@ -203,7 +202,7 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
 
             none: { label: "None", value: {} },
           },
-          default: "base100",
+          default: "none",
         }),
       ),
       gradientDirection: Type.Optional(
@@ -249,7 +248,12 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
           title: "Align",
         }),
       ),
-      padding: Type.Optional(paddingRef({ default: "p-2" })),
+      padding: Type.Optional(paddingRef({ default: "p-4" })),
+      rounding: Type.Optional(
+        roundingRef({
+          default: "rounded-md",
+        }),
+      ),
       border: Type.Optional(borderRef()),
       shadow: Type.Optional(shadowRef()),
     },

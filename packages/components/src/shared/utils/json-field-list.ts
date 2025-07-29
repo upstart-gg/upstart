@@ -1,18 +1,13 @@
 import type { TArray, TObject, TSchema } from "@sinclair/typebox";
 import type { Site } from "@upstart.gg/sdk/shared/site";
 
-function getSchemaObject({
-  rootName,
-  schema: { required, properties },
-  level,
-}: { schema: TObject; rootName: string; level: number }) {
+function getSchemaObject({ schema: { required, properties }, level }: { schema: TObject; level: number }) {
   const renderProperties = properties;
 
   if (properties) {
     return Object.entries(renderProperties).flatMap(([name, value], i) =>
       getSchemaEntry({
         schema: { ...value, name, optional: required && !required.includes(name) },
-        rootName,
         level: level + 1,
       }),
     );
@@ -21,31 +16,25 @@ function getSchemaObject({
 }
 
 function getSchemaArray({
-  rootName,
   schema: { name, items, required, allOf, properties },
   level,
-}: { schema: TArray; rootName: string; level: number }) {
+}: { schema: TArray; level: number }) {
   if (items) {
     return getSchemaEntry({
       schema: { ...items, name, optional: required && !required.includes(name) },
-      rootName,
       level: level + 1,
     });
   }
   return [];
 }
 
-function getSchemaEntry({
-  schema,
-  rootName,
-  level,
-}: { schema: TSchema; rootName: string; level: number }): string | string[] {
+function getSchemaEntry({ schema, level }: { schema: TSchema; level: number }): string | string[] {
   if (schema.type === "object") {
-    return getSchemaObject({ schema: schema as TObject, rootName, level });
+    return getSchemaObject({ schema: schema as TObject, level });
   } else if (schema.type === "array") {
-    return getSchemaArray({ schema: schema as TArray, rootName, level });
+    return getSchemaArray({ schema: schema as TArray, level });
   }
-  return `${rootName}.${schema.name}`;
+  return `${schema.name}`;
 }
 
 export function getJSONSchemaFieldsList(schemasMap?: Site["datasources"]) {
@@ -55,6 +44,6 @@ export function getJSONSchemaFieldsList(schemasMap?: Site["datasources"]) {
       .filter(([, ds]) => !!ds.schema)
       // todo fix this
       // @ts-ignore
-      .flatMap(([name, ds]) => getSchemaEntry({ schema: ds.schema as TSchema, rootName: name, level: 0 }))
+      .flatMap(([name, ds]) => getSchemaEntry({ schema: ds.schema as TSchema, level: 0 }))
   );
 }

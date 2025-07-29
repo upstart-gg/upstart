@@ -161,7 +161,7 @@ function getColorPillBackgroundClass(color: string) {
   return `bg-${color}`;
 }
 
-function ColorElementPreviewPill({
+export function ColorElementPreviewPill({
   color,
   onChange,
   elementColorType,

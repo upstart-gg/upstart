@@ -145,7 +145,7 @@ export function useEditorHotKeys() {
         draftHelpers.updateBrickProps(
           selectedBrick.id,
           {
-            growHorizontally: !selectedBrick.props.growHorizontally,
+            grow: !selectedBrick.props.grow,
           },
           previewMode === "mobile",
         );

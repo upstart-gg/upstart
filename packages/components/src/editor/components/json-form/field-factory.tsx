@@ -5,6 +5,10 @@ import type { ReactNode } from "react";
 // Import field components
 import { ArrayField } from "./fields/array";
 import BackgroundField from "./fields/background";
+import BorderField from "./fields/border";
+import AlignSelfField from "./fields/align-self";
+import AlignItemsField from "./fields/align-items";
+import JustifyContentField from "./fields/justify-content";
 import ColorField from "./fields/color";
 import DatasourceField from "./fields/datasource";
 import DatasourceRefField from "./fields/datasource-ref";
@@ -19,18 +23,24 @@ import VariantGroupField from "./fields/variant-group";
 
 // Import types
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
+import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import type { DatasourceSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource-ref";
 import type { GeolocationSettings } from "@upstart.gg/sdk/shared/bricks/props/geolocation";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
+import type {
+  AlignSelfSettings,
+  AlignItemsSettings,
+  JustifyContentSettings,
+} from "@upstart.gg/sdk/shared/bricks/props/align";
 import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 import { Tooltip } from "@upstart.gg/style-system/system";
-import clsx from "clsx";
 import ColorPresetField from "./fields/color-preset";
 import { CssLengthField } from "./fields/css-length";
 import { DatarecordField } from "./fields/datarecord";
 import { fieldLabel } from "./form-class";
+import { tx } from "@upstart.gg/style-system/twind";
 
 export interface FieldFactoryOptions {
   brickId: string;
@@ -84,6 +94,18 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
   switch (fieldType) {
     case "hidden":
       return null;
+
+    case "border": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as BorderSettings;
+      return (
+        <BorderField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: BorderSettings | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
 
     case "color": {
       const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;
@@ -156,30 +178,6 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       );
     }
 
-    // case "flex": {
-    //   const currentValue = (get(formData, id) ?? commonProps.schema.default) as FlexSettings;
-    //   return (
-    //     <FlexField
-    //       key={`field-${id}`}
-    //       currentValue={currentValue}
-    //       onChange={(value: FlexSettings | null) => onChange({ [id]: value }, id)}
-    //       {...commonProps}
-    //     />
-    //   );
-    // }
-
-    // case "grid": {
-    //   const currentValue = (get(formData, id) ?? commonProps.schema.default) as GridSettings;
-    //   return (
-    //     <GridField
-    //       key={`field-${id}`}
-    //       currentValue={currentValue}
-    //       onChange={(value: GridSettings | null) => onChange({ [id]: value }, id)}
-    //       {...commonProps}
-    //     />
-    //   );
-    // }
-
     case "padding": {
       const currentValue = (get(formData, id) ?? commonProps.schema.default) as TempPadding;
       return (
@@ -199,6 +197,42 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
           key={`field-${id}`}
           currentValue={currentValue}
           onChange={(value: BackgroundSettings | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
+    case "align-self": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as AlignSelfSettings;
+      return (
+        <AlignSelfField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: AlignSelfSettings | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
+    case "align-items": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as AlignItemsSettings;
+      return (
+        <AlignItemsField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: AlignItemsSettings | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
+    case "justify-content": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as JustifyContentSettings;
+      return (
+        <JustifyContentField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: JustifyContentSettings | null) => onChange({ [id]: value }, id)}
           {...commonProps}
         />
       );
@@ -534,10 +568,14 @@ export function processObjectSchemaToFields({
   return fields;
 }
 
-export function FieldTitle({ title, description }: { title?: string; description?: string }) {
+export function FieldTitle({
+  title,
+  description,
+  className,
+}: { title?: string; description?: string; className?: string }) {
   if (!title) return null;
   return (
-    <div className="flex items-center text-nowrap text-sm">
+    <div className="flex items-center text-nowrap text-sm basis-[45%]">
       {description ? (
         <Tooltip
           content={<span className="block text-xs p-1">{description}</span>}
@@ -545,7 +583,8 @@ export function FieldTitle({ title, description }: { title?: string; description
           align="start"
         >
           <label
-            className={clsx(
+            className={tx(
+              className,
               fieldLabel,
               "underline-offset-4 no-underline hover:underline decoration-upstart-300 decoration-dotted cursor-default",
             )}
@@ -554,7 +593,7 @@ export function FieldTitle({ title, description }: { title?: string; description
           </label>
         </Tooltip>
       ) : (
-        <label className={fieldLabel}>{title}</label>
+        <label className={tx(className, fieldLabel)}>{title}</label>
       )}
     </div>
   );

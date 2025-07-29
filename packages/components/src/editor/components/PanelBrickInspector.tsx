@@ -46,24 +46,16 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
     );
   });
   const hasContentProperties = Object.keys(contentProperties).length > 0;
-
-  console.log(
-    "brick of type %s has content properties: %s",
-    brick.type,
-    hasContentProperties,
-    manifest.props.properties,
-  );
-
   const showTabsList =
     (!!manifest.props.properties.preset && previewMode === "desktop") || hasContentProperties || debugMode;
 
-  const selectedTab = tabsMapping[brick.id] ?? (hasContentProperties ? "content" : "settings");
+  const selectedTab = tabsMapping[brick.type] ?? (hasContentProperties ? "content" : "settings");
 
   useEffect(() => {
     if (!hasContentProperties && selectedTab === "content") {
-      setTabsMapping((prev) => ({ ...prev, [brick.id]: "settings" }));
+      setTabsMapping((prev) => ({ ...prev, [brick.type]: "settings" }));
     }
-  }, [setTabsMapping, brick?.id, selectedTab, hasContentProperties]);
+  }, [setTabsMapping, brick.type, selectedTab, hasContentProperties]);
 
   if (!section) {
     console.warn(`No section found for brick: ${brick.id}`);
@@ -93,7 +85,7 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
       <Tabs.Root
         value={selectedTab}
         onValueChange={(val) => {
-          setTabsMapping((prev) => ({ ...prev, [brick.id]: val as TabType }));
+          setTabsMapping((prev) => ({ ...prev, [brick.type]: val as TabType }));
         }}
         className="flex-1 flex flex-col"
       >
@@ -137,25 +129,39 @@ function DebugTab({ brick, section, hasTabs }: { brick: Brick; section: Section;
     css({
       display: "block",
       fontFamily: "monospace",
-      fontSize: "0.75rem",
-      lineHeight: "1.6",
+      fontSize: "0.7rem",
+      lineHeight: "1.3",
     }),
   );
+  const { getParentBrick } = useDraftHelpers();
+  const parentBrick = getParentBrick(brick.id);
   return (
     <div className="flex flex-col h-full">
       <div className="h-[50cqh] grow-0 overflow-y-auto">
         <PanelBlockTitle>
           Brick <code className="text-xs">Id: {brick.id}</code>
         </PanelBlockTitle>
-        <div className="flex-1 bg-gray-100">
+        <div className="flex-1 ">
           <pre className="p-1">
             <code className={codeClassName}>{JSON.stringify(brick, null, 2)}</code>
           </pre>
         </div>
+        {parentBrick && (
+          <>
+            <PanelBlockTitle>
+              Parent Brick <code className="text-xs">Id: {parentBrick.id}</code>
+            </PanelBlockTitle>
+            <div className="flex-1 ">
+              <pre className="p-1">
+                <code className={codeClassName}>{JSON.stringify(parentBrick, null, 2)}</code>
+              </pre>
+            </div>
+          </>
+        )}
         <PanelBlockTitle>
           Section <code className="text-xs">Id: {section.id}</code>
         </PanelBlockTitle>
-        <div className="flex-1 bg-gray-100">
+        <div className="flex-1 ">
           <pre className="p-1">
             <code className={codeClassName}>{JSON.stringify(section, null, 2)}</code>
           </pre>
@@ -196,54 +202,28 @@ function SettingsTab({ brick, section, hasTabs }: { brick: Brick; section: Secti
 
 function ContentTab({ brick, section, hasTabs }: { brick: Brick; section: Section; hasTabs: boolean }) {
   const dynamicParent = useDynamicParent(brick.id);
-  const dynamicContent = !!brick.props.dynamicContent;
-  const ds = useDatasource(brick.props.datasource?.id);
-  const { updateBrickProps } = useDraftHelpers();
+  const kbdClassname = tx("shadow-sm border px-1 py-[3px] rounded border-upstart-300 text-[80%] bg-white/80");
   return (
     <div className={tx("flex flex-col h-full")}>
       <div className="basis-[50%] shrink-0 grow flex flex-col">
         {dynamicParent !== null && (
-          <div className="flex flex-col">
-            <Callout.Root size="1">
-              <Callout.Text size="1">
-                This brick is inside a dynamic parent brick so you can choose to use dynamic content in it.
-              </Callout.Text>
-            </Callout.Root>
-            <div className="flex py-2.5 px-2 border-b border-gray-100">
-              <SwitchField
-                brickId={brick.id}
-                currentValue={dynamicContent}
-                onChange={(value) => {
-                  updateBrickProps(brick.id, { dynamicContent: value });
-                }}
-                title="Use dynamic content"
-                description="Enable this to allow dynamic content mapping for this brick."
-                formData={brick.props}
-                formSchema={manifests[brick.type].props as TObject}
-                schema={manifests[brick.type].props as TObject}
-              />
-            </div>
-          </div>
+          <Callout.Root size="1">
+            <Callout.Text size="1" className="gap-2 flex-col flex">
+              <span className="block">
+                This brick is inside a dynamic parent brick so it will be rendered with dynamic content.
+              </span>
+              <span className="block">
+                Start typing <kbd className={kbdClassname}>{`{{`}</kbd> or simply click the associated button{" "}
+                <kbd className={kbdClassname}>{`{}`}</kbd> to insert a variable from your database.
+              </span>
+            </Callout.Text>
+          </Callout.Root>
         )}
-        {!dynamicContent && (
-          <BrickSettingsView
-            brick={brick}
-            label="content"
-            categoryFilter={(category) => category === "content"}
-          />
-        )}
-        {dynamicParent !== null && dynamicContent && (
-          <DatasourceMappingField
-            currentValue={brick.props.datasourceMapping}
-            formData={brick.props}
-            schema={manifests[brick.type].props}
-            formSchema={manifests[brick.type].props as TObject}
-            brickId={brick.id}
-            onChange={(data) => {
-              // Handle the change in datasource mapping
-            }}
-          />
-        )}
+        <BrickSettingsView
+          brick={brick}
+          label="content"
+          categoryFilter={(category) => category === "content"}
+        />
       </div>
       <PageHierarchy
         brick={brick}

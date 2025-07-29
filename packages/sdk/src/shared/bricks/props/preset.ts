@@ -9,6 +9,7 @@ export function colorPreset(opts?: ColorPresetOptions) {
   const { title = "Color preset", ...options } = opts ?? {};
   return Type.String({
     title,
+    description: "Color preset to apply to background and text",
     $id: "presets:color",
     "ui:styleId": "presets:color",
     "ui:field": "color-preset",

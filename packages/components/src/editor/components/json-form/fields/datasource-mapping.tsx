@@ -27,7 +27,7 @@ const DatasourceMappingField: FC<FieldProps<DatasourceMapping>> = (props) => {
   const brickManifest = useBrickManifest(brickInfo.type);
   const datasource = useDatasource(dynamicParent?.props.datasource?.id);
   const schemaFields = filterSchemaProperties(brickManifest.props, (prop) => {
-    return prop.metadata?.category === "content";
+    return prop.metadata?.category === "content" && !prop["ui:no-mapping"];
   });
 
   if (!datasource) {

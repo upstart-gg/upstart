@@ -86,12 +86,31 @@ export default function Editor(props: EditorProps) {
       if (computedStyle.getPropertyValue("background-color") === "rgba(0, 0, 0, 0)") {
         element.classList.add(tx("!bg-upstart-100"));
       }
+
+      element.classList.add(tx("shadow-2xl"));
+      element.style.setProperty("max-height", "25dvh", "important");
+      element.style.setProperty("overflow", "hidden", "important");
+      // element.style.setProperty("transform-origin", "center", "important");
+      // Transition scale
+      // element.style.setProperty("transition", "scale 0.3s ease-in-out", "important");
     }
   };
 
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId, type, combine } = result;
     setDraggingBrickType(null);
+
+    const element = document.getElementById(draggableId);
+    if (element) {
+      element.classList.remove(tx("moving"));
+      element.classList.remove(tx("shadow-2xl"));
+      element.style.removeProperty("box-shadow");
+      element.style.removeProperty("max-height");
+      element.style.removeProperty("overflow");
+      element.style.removeProperty("scale");
+      element.style.removeProperty("transform-origin");
+      element.style.removeProperty("transition");
+    }
 
     // If dropped outside a valid droppable area
     if (!destination) {
@@ -143,7 +162,6 @@ export default function Editor(props: EditorProps) {
       }
 
       if (destination.droppableId === "page") {
-        console.log("Brick has been dropped on page!");
         const newSectionId = `s_${generateId()}`;
         draftHelpers.createEmptySection(newSectionId);
         const newBrick = createEmptyBrick(draggableId);

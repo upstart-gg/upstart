@@ -10,11 +10,7 @@ const TextContent = forwardRef<HTMLDivElement, TextEditorProps<any>>(
     if (props.editable) {
       return (
         <Suspense>
-          <TextEditor
-            ref={ref}
-            {...props}
-            content={props.content?.length > 0 ? props.content : "Type your text here..."}
-          />
+          <TextEditor ref={ref} {...props} content={props.content} />
         </Suspense>
       );
     }
