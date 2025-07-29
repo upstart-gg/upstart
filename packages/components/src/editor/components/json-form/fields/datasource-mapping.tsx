@@ -2,7 +2,7 @@ import type { FieldProps } from "./types";
 import { Text } from "@upstart.gg/style-system/system";
 import { Select } from "@upstart.gg/style-system/system";
 import { type TArray, type TObject, type TProperties, type TSchema, Type } from "@sinclair/typebox";
-import { useBrick, useDynamicParent } from "~/editor/hooks/use-editor";
+import { useBrick, useDynamicParent } from "~/editor/hooks/use-page-data";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { type FC, useCallback } from "react";

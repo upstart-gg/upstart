@@ -1,29 +1,17 @@
-import {
-  useDebugMode,
-  useDraftHelpers,
-  useDynamicParent,
-  useHasDynamicParent,
-  usePreviewMode,
-  useSectionByBrickId,
-} from "../hooks/use-editor";
+import { useDebugMode, usePreviewMode } from "../hooks/use-editor";
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
-import { Callout, SegmentedControl, Tabs } from "@upstart.gg/style-system/system";
-import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
+import { Callout, Tabs } from "@upstart.gg/style-system/system";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import { useLocalStorage } from "usehooks-ts";
 import { useEffect } from "react";
-import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import BrickSettingsView from "./BrickSettingsView";
 import { css, tx } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";
 import PageHierarchy from "./PageHierarchy";
 import { IconRender } from "./IconRender";
-import type { TObject, TSchema } from "@sinclair/typebox";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
-import DatasourceMappingField from "./json-form/fields/datasource-mapping";
-import { useDatasource } from "../hooks/use-datasource";
-import SwitchField from "./json-form/fields/switch";
 import { filterSchemaProperties } from "@upstart.gg/sdk/shared/utils/schema";
+import { useSectionByBrickId, useDraftHelpers, useDynamicParent } from "../hooks/use-page-data";
 
 type TabType = "preset" | "settings" | "content";
 

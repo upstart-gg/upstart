@@ -14,13 +14,11 @@ import {
 import {
   useContextMenuVisible,
   useDebugMode,
-  useDraftHelpers,
   useDraggingBrickType,
   useEditorHelpers,
   useIsMouseOverPanel,
   usePanel,
   usePreviewMode,
-  useSectionByBrickId,
   useSelectedBrickId,
 } from "../hooks/use-editor";
 import {
@@ -49,6 +47,7 @@ import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests
 import { commonProps } from "@upstart.gg/sdk/shared/bricks/props/common";
 import { getBrickResizeOptions } from "~/shared/utils/layout-utils";
 import useIsHovered from "../hooks/use-is-hovered";
+import { useDraftHelpers, useSectionByBrickId } from "../hooks/use-page-data";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;

@@ -31,7 +31,7 @@ import {
 import { MdOutlineFormatItalic } from "react-icons/md";
 import { MdStrikethroughS } from "react-icons/md";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
-import { useDynamicParent, useEditor } from "~/editor/hooks/use-editor";
+import { useEditor } from "~/editor/hooks/use-editor";
 import { JSONSchemaView } from "~/editor/components/json-form/SchemaView";
 import Mention from "@tiptap/extension-mention";
 import datasourceFieldSuggestions from "./datasourceFieldSuggestions";
@@ -41,6 +41,7 @@ import { menuBarBtnActiveCls, menuBarBtnCls, menuBarBtnCommonCls } from "../styl
 import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useDatasource, useDatasources } from "~/editor/hooks/use-datasource";
+import { useDynamicParent } from "~/editor/hooks/use-page-data";
 
 // function DatasourceFieldNode(props: NodeViewProps) {
 //   return (

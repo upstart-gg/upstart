@@ -1,17 +1,12 @@
 import {
   useChatVisible,
   useDebugMode,
-  useDraft,
-  useDraftHelpers,
   useEditorEnabled,
   useEditorHelpers,
-  useGenerationState,
   usePanel,
   usePreviewMode,
-  useSections,
   useSelectedBrickId,
   useSelectedSectionId,
-  useThemes,
 } from "../hooks/use-editor";
 import { lazy, startTransition, Suspense, useEffect, useRef, type ComponentProps } from "react";
 import { css, tx, tw } from "@upstart.gg/style-system/twind";
@@ -32,6 +27,13 @@ import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests
 import { type Brick, createEmptyBrick, generateId } from "@upstart.gg/sdk/shared/bricks";
 import { Toaster } from "@upstart.gg/style-system/system";
 import { useIsLocalDev } from "../hooks/use-is-local-dev";
+import {
+  useDraft,
+  useSections,
+  useThemes,
+  useGenerationState,
+  useDraftHelpers,
+} from "../hooks/use-page-data";
 
 const Tour = lazy(() => import("./Tour"));
 const NavBar = lazy(() => import("./NavBar"));

@@ -9,6 +9,27 @@ import { useDeviceInfo } from "~/editor/hooks/use-device-info";
 import { useDraggingBrickType, usePreviewMode } from "~/editor/hooks/use-editor";
 import BrickRoot from "../components/BrickRoot";
 import { useColorPreset } from "../hooks/use-color-preset";
+import get from "lodash-es/get";
+import { useDynamicParent } from "~/editor/hooks/use-page-data";
+
+function useDynamicProps({ brick, editable }: BrickProps<Manifest>) {
+  const { props, propsMapping } = brick;
+  if (!propsMapping || Object.keys(propsMapping).length === 0) {
+    return props;
+  }
+  const dynamicParent = useDynamicParent(brick.id);
+  if (!dynamicParent) {
+    return props;
+  }
+  // load data
+  // const data = useData()
+  const dynamicProps: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(propsMapping)) {
+    // Remove $. from the key to get the actual property name
+    const propKey = key.replace(/^\$\./, "");
+    // use load get to handle dynamic properties
+  }
+}
 
 export default function Dynamic({ brick, editable }: BrickProps<Manifest>) {
   const presetClasses = useColorPreset<Manifest>(brick);

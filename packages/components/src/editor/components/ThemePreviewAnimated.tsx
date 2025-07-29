@@ -1,8 +1,8 @@
 import { motion } from "motion/react";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import { tx } from "@upstart.gg/style-system/twind";
-import { useDraftHelpers, useEditorHelpers } from "../hooks/use-editor";
 import type { FC } from "react";
+import { useDraftHelpers } from "../hooks/use-page-data";
 
 interface ThemePreviewProps {
   theme: Theme;

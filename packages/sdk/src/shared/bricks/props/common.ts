@@ -1,7 +1,6 @@
 import { type TString, Type } from "@sinclair/typebox";
 import { typedRef } from "~/shared/utils/typed-ref";
 import { cssLengthRef } from "./css-length";
-import { StringEnum } from "~/shared/utils/string-enum";
 import { alignSelfRef } from "./align";
 
 export function hidden() {
@@ -57,7 +56,6 @@ export const commonProps = {
       title: "Auto expand",
       description: "If set, the brick will grow to fill the available space of its parent section or box.",
       "ui:styleId": "styles:grow",
-      // "ui:field": "hidden",
     }),
   ),
   alignSelf: Type.Optional(alignSelfRef()),

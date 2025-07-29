@@ -1,10 +1,4 @@
-import {
-  useDraftHelpers,
-  useEditorHelpers,
-  useSections,
-  useSelectedBrickId,
-  useSelectedSectionId,
-} from "../hooks/use-editor";
+import { useEditorHelpers, useSelectedBrickId, useSelectedSectionId } from "../hooks/use-editor";
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
 import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { tx } from "@upstart.gg/style-system/twind";
@@ -13,6 +7,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { RxDragHandleHorizontal } from "react-icons/rx";
 import { HelpIcon } from "./json-form/HelpIcon";
 import { DragDropContext, Draggable, Droppable, type DropResult } from "@hello-pangea/dnd";
+import { useSections, useDraftHelpers } from "../hooks/use-page-data";
 
 export default function PageHierarchy({
   brick: selectedBrick,

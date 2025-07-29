@@ -5,12 +5,11 @@ import { type FC, useMemo, useState } from "react";
 import ModalSearchImage from "~/editor/components/ModalSearchImage";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import { fieldLabel } from "../form-class";
-import trans from "./trans.svg?url";
 import { debounce } from "lodash-es";
 import { IoMdClose } from "react-icons/io";
 import { FieldTitle } from "../field-factory";
 import { useUploader } from "../../UploaderContext";
-import { useDynamicParent } from "~/editor/hooks/use-editor";
+import { useDynamicParent } from "~/editor/hooks/use-page-data";
 import TextEditor from "~/shared/components/TextEditor";
 import { RiBracesLine } from "react-icons/ri";
 
