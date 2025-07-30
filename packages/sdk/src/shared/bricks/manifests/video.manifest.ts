@@ -13,16 +13,22 @@ export const manifest = defineBrickManifest({
   name: "Video",
   category: "media",
   description: "Youtube video",
-  repeatable: true,
   icon: RxVideo,
-
+  defaultWidth: {
+    mobile: "300px",
+    desktop: `${(360 * 16) / 9}px`, // 16:9 aspect ratio
+  },
+  defaultHeight: {
+    mobile: "168px",
+    desktop: "360px", // 16:9 aspect ratio
+  },
   minWidth: {
-    mobile: 380,
-    desktop: 380,
+    mobile: 300,
+    desktop: (360 * 16) / 9,
   },
   minHeight: {
     mobile: 168,
-    desktop: 168,
+    desktop: 360, // 16:9 aspect ratio
   },
   props: defineProps({
     url: string("Video URL", {

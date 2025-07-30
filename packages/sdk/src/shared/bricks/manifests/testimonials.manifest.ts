@@ -18,7 +18,6 @@ export const manifest = defineBrickManifest({
   name: "Testimonials",
   description: "Display testimonials from users",
   defaultWidth: { desktop: "100%" },
-  repeatable: false,
   icon: HiOutlineChatBubbleBottomCenter,
   props: defineProps(
     {

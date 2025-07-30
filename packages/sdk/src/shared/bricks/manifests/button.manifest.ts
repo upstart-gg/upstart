@@ -11,7 +11,6 @@ import { LAYOUT_ROW_HEIGHT } from "~/shared/layout-constants";
 export const manifest = defineBrickManifest({
   type: "button",
   name: "Button",
-  repeatable: true,
   category: "basic",
   description: "A button with text and optional icon",
   resizable: "horizontal",

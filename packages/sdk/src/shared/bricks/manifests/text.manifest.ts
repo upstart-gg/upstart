@@ -26,7 +26,6 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
     desktop: "auto",
     mobile: "auto",
   },
-  repeatable: true,
   icon: RxTextAlignLeft,
   props: defineProps(
     {

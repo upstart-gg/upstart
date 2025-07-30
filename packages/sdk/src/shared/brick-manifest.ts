@@ -47,7 +47,6 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
   defaultInspectorTab?: "preset" | "style" | "content";
   deletable?: boolean;
   movable?: boolean;
-  repeatable?: boolean;
   resizable?: boolean | "horizontal" | "vertical";
   duplicatable?: boolean;
   /**
@@ -68,7 +67,6 @@ export function defineBrickManifest<BProps extends TProperties, DSSchema extends
   deletable = true,
   movable = true,
   resizable = true,
-  repeatable = false,
   duplicatable = true,
   defaultInspectorTab = "preset",
   icon,
@@ -84,7 +82,6 @@ export function defineBrickManifest<BProps extends TProperties, DSSchema extends
     deletable,
     movable,
     resizable,
-    repeatable,
     duplicatable,
     isContainer,
     defaultWidth: { mobile: defaultWidth?.mobile ?? "auto", desktop: defaultWidth?.desktop ?? "auto" },

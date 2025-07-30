@@ -24,7 +24,6 @@ import VariantGroupField from "./fields/variant-group";
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import type { DatasourceSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
-import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource-ref";
 import type { GeolocationSettings } from "@upstart.gg/sdk/shared/bricks/props/geolocation";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import type {

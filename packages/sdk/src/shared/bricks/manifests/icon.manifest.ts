@@ -12,7 +12,6 @@ export const manifest = defineBrickManifest({
   name: "Icon",
   category: "basic",
   description: "An icon with optional text",
-  repeatable: true,
   resizable: false,
   icon: PiConfetti,
   props: defineProps(

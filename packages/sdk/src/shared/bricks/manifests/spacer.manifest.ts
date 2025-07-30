@@ -10,7 +10,6 @@ export const manifest = defineBrickManifest({
   name: "Spacer",
   category: "container",
   description: "A flexible element to create space between bricks.",
-  repeatable: true,
   staticClasses: "self-stretch",
   minWidth: {
     desktop: 50,

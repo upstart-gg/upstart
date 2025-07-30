@@ -14,7 +14,6 @@ export const manifest = defineBrickManifest({
   type: "card",
   name: "Card",
   description: "A card that can have a title, image, and content",
-  repeatable: true,
   icon: BsCardText,
   defaultWidth: { desktop: "400px", mobile: "100%" },
   minWidth: { desktop: 400 },
