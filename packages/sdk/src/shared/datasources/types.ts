@@ -128,7 +128,6 @@ const datasourceProviderManifest = Type.Composite([
     schema: Type.Null({
       description: "Always null for provider datasources. The schema is defined by the provider.",
     }),
-    sampleData: Type.Optional(Type.Any()),
     ttlMinutes: Type.Optional(
       Type.Number({
         title: "Time to live",
@@ -185,10 +184,6 @@ const datasourceCustomManifest = Type.Object(
         },
       ),
     ),
-    sampleData: Type.Array(Type.Ref("datasource:custom"), {
-      title: "Sample data",
-      description: "Sample data (examples) for the datasource. Should match the declared schema.",
-    }),
   },
   { $id: "datasource:custom" },
 );
@@ -232,12 +227,6 @@ const datasourceJsonManifest = Type.Object({
   }),
   name: Type.String({ title: "Name of the datasource", comment: "For example, 'My data'" }),
   description: Type.Optional(Type.String({ title: "Description of the datasource" })),
-  sampleData: Type.Optional(
-    Type.Any({
-      title: "Sample data",
-      description: "Sample data for the datasource. Should match the declared schema.",
-    }),
-  ),
 });
 
 export type DatasourceJsonArrayManifest = Static<typeof datasourceJsonManifest>;

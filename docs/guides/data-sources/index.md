@@ -95,13 +95,6 @@ export const datasources = defineDataSources({
         rank: ds.Optional(ds.Number()),
       }),
     ),
-    // Sample data that will be used during development
-    // or when the template is first loaded in the Upstart Editor
-    sampleData: [
-      { firstName: "John", lastName: "Doe", rank: 1 },
-      { firstName: "Jane", lastName: "Smith", rank: 2 },
-      { firstName: "Alice", lastName: "Brown" },
-    ]
   }
 });
 ```
@@ -130,7 +123,6 @@ export const datasources = defineDataSources({
     name: "My Videos",
     // use the built-in youtube-feed provider
     provider: "youtube-feed"
-    // sampleData is optional, if not provided, a default sample data will be used
   }
 });
 ```

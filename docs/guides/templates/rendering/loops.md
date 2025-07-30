@@ -88,13 +88,7 @@ export const datasources = defineDataSources({
         icon: z.string().optional(),
       }),
     ),
-    // Sample data that will be used during development
-    // or when first loaded in the Upstart Editor
-    sampleData: [
-      { title: "Enpage", url: "https://enpage.co" },
-      { title: "Google", url: "https://google.com" },
-      { title: "Benj", url: "https://google.com" },
-    ],
+
   },
 });
 ```

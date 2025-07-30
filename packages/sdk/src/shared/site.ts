@@ -7,7 +7,6 @@ import { pageSchema } from "./page";
 import { sitePrompt } from "./prompt";
 import { pageInfoSchema, sitemapSchema } from "./sitemap";
 import { defaultTheme, themeSchema } from "./theme";
-import { lab } from "chroma-js";
 
 export const siteSchema = Type.Object({
   id: Type.String(),
@@ -271,6 +270,13 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               },
               required: ["firstName", "lastName", "email"],
             },
+            examples: [
+              {
+                firstName: "John",
+                lastName: "Doe",
+                email: "john.doe@example.com",
+              },
+            ],
           },
           indexes: [
             {
@@ -294,13 +300,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             {
               fields: ["startedOn"],
               name: "idx_unique_startedOn",
-            },
-          ],
-          sampleData: [
-            {
-              firstName: "John",
-              lastName: "Doe",
-              email: "john.doe@example.com",
             },
           ],
         },
@@ -330,13 +329,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               fields: ["lastName"],
               unique: true,
               name: "idx_unique_lastName",
-            },
-          ],
-          sampleData: [
-            {
-              firstName: "John",
-              lastName: "Doe",
-              email: "john.doe@example.com",
             },
           ],
         },
