@@ -11,7 +11,11 @@ const LazyDroppableBox = lazy(() => import("../../editor/components/DroppableBox
 export default function Box({ brick, editable }: BrickProps<Manifest>) {
   const presetClasses = useColorPreset<Manifest>(brick);
   return (
-    <BrickRoot manifest={manifest} className={tx("@mobile:flex-wrap", presetClasses.main)}>
+    <BrickRoot
+      editable={editable}
+      manifest={manifest}
+      className={tx("@mobile:flex-wrap", presetClasses.main)}
+    >
       {editable ? (
         <Suspense>
           <LazyDroppableBox brick={brick} />

@@ -1,6 +1,6 @@
 import { type Static, type TObject, Type } from "@sinclair/typebox";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, group } from "../props/helpers";
+import { defineProps } from "../props/helpers";
 import { string, urlOrPageIdRef } from "../props/string";
 import { imageRef } from "../props/image";
 import { textContentRef } from "../props/text";
@@ -8,32 +8,8 @@ import { shadowRef } from "../props/effects";
 import { boolean } from "../props/boolean";
 import { VscLayoutPanelOff } from "react-icons/vsc";
 import type { BrickProps } from "../props/types";
-import { colorRef } from "../props/color";
 import { colorPresetRef } from "../props/preset";
 import { StringEnum } from "~/shared/utils/string-enum";
-
-export const datasource = Type.Array(
-  Type.Object({
-    href: urlOrPageIdRef(),
-    label: Type.String(),
-  }),
-  {
-    default: [
-      {
-        href: "#",
-        label: "Link 1",
-      },
-      {
-        href: "#",
-        label: "Link 2",
-      },
-      {
-        href: "#",
-        label: "Link 3",
-      },
-    ],
-  },
-);
 
 export const manifest = defineBrickManifest({
   type: "navbar",
@@ -41,7 +17,6 @@ export const manifest = defineBrickManifest({
   category: "layout",
   description: "A navigation bar with logo and navigation",
   aiInstructions: "This brick should be used on most sites/pages.",
-  datasource,
   duplicatable: false,
   resizable: false,
   staticClasses: "flex-1 flex-grow",

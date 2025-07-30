@@ -14,6 +14,7 @@ export default function Hero({ brick, editable, selected }: BrickProps<Manifest>
   const presetClasses = useColorPreset<Manifest>(brick);
   return (
     <BrickRoot
+      editable={editable}
       manifest={manifest}
       className={tx("flex flex-col gap-[1.5rem]", ...classes, presetClasses.main)}
     >

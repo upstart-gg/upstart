@@ -1,6 +1,6 @@
 import type { DatasourceSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import type { TObject, TSchema } from "@sinclair/typebox";
-import { Button, Select, TextField } from "@upstart.gg/style-system/system";
+import { Button, IconButton, SegmentedControl, Select, TextField } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { FC } from "react";
 import { RxCross2 } from "react-icons/rx";
@@ -10,39 +10,27 @@ import type { FieldProps } from "./types";
 import type { Datasource } from "@upstart.gg/sdk/shared/datasources/types";
 import { TbPlus } from "react-icons/tb";
 import { FieldTitle } from "../field-factory";
+import { IoIosReturnRight } from "react-icons/io";
+import { BsArrowReturnRight } from "react-icons/bs";
+import debounce from "lodash-es/debounce";
+
 /**
  * Extract the indexed fields of a datasource with their titles
- * @param manifestProps - Les propriétés du manifest (non utilisé actuellement)
- * @returns Objet contenant enum (noms des champs) et enumNames (titres des champs)
  */
-export function getDatasourceIndexedFieldsWithTitles(datasource: Datasource) {
-  const defaultIndexes = [
-    {
-      value: "$publishedAt",
-      title: "Publication date",
-    },
-  ];
+function getDatasourceIndexedFieldsWithTitles(datasource: Datasource) {
   if ("indexes" in datasource === false) {
-    console.log("no datasource or indexes found", datasource);
-    return defaultIndexes;
+    console.error("no datasource or indexes found", datasource);
+    return [];
   }
 
   const properties = datasource.schema?.items?.properties || {};
 
-  const uniqueFields = Array.from(
-    new Set(
-      datasource.indexes?.flatMap((idx: { fields: string[] }) =>
-        Array.isArray(idx.fields) ? idx.fields : [],
-      ) ?? [],
-    ),
-  );
+  const uniqueFields = Array.from(new Set(datasource.indexes?.map((idx) => idx.fields[0]) ?? []));
 
-  return uniqueFields
-    .map((field) => ({
-      value: field,
-      title: properties[field]?.title || field,
-    }))
-    .concat(defaultIndexes);
+  return uniqueFields.map((field) => ({
+    value: field,
+    title: properties[field]?.title || field,
+  }));
 }
 
 const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
@@ -51,13 +39,88 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
   const datasource = useDatasource(currentValue?.id);
 
   const handleChange = (field: string, value: unknown) => {
-    const newValue = { ...currentValue, [field]: value };
-    onChange(newValue as DatasourceSettings);
+    const newValue = { ...currentValue, [field]: value } satisfies DatasourceSettings;
+
+    // const validatedFilters =
+    //   newValue.filters?.filter((filter) => {
+    //     const type = getFieldType(filter.field);
+    //     // Vérifier que le champ est défini
+    //     return (
+    //       filter.field !== "" &&
+    //       ((type === "string" && typeof filter.value === "string") ||
+    //         (type === "number" && typeof filter.value === "number") ||
+    //         (type === "boolean" && typeof filter.value === "boolean"))
+    //     );
+    //   }) ?? [];
+
+    console.log("DatasourceField handleChange", newValue);
+    onChange(newValue);
   };
 
   // Get Indexed Fields for filter and sort
   const indexedFields = datasource ? getDatasourceIndexedFieldsWithTitles(datasource) : [];
+  const sortableFields = indexedFields.filter((field) => ["$id", "$slug"].includes(field.value) === false);
   const filters = currentValue.filters ?? [];
+
+  // Function to get operators based on field type
+  const getOperatorOptionsForField = (fieldName: string) => {
+    if (!datasource) return [];
+    const fieldType = getFieldType(fieldName);
+
+    const baseOperators = [
+      { value: "eq", label: "Equals" },
+      { value: "ne", label: "Not equals" },
+    ];
+
+    const stringOperators = [
+      { value: "contains", label: "Contains" },
+      { value: "notContains", label: "Not contains" },
+      { value: "startsWith", label: "Starts with" },
+      { value: "notStartsWith", label: "Not starts with" },
+      { value: "endsWith", label: "Ends with" },
+      { value: "notEndsWith", label: "Not ends with" },
+    ];
+
+    const arrayOperators = [
+      { value: "contains", label: "Contains" },
+      { value: "notContains", label: "Not contains" },
+      { value: "containsAll", label: "Contains all" },
+      { value: "containsAny", label: "Contains any" },
+      { value: "notContainsAny", label: "Not contains any" },
+    ];
+
+    const numberOperators = [
+      { value: "lt", label: "Less than" },
+      { value: "lte", label: "Less than or equal" },
+      { value: "gt", label: "Greater than" },
+      { value: "gte", label: "Greater than or equal" },
+    ];
+
+    const dateOperators = [
+      { value: "before", label: "Before Date" },
+      { value: "after", label: "After Date" },
+      { value: "$beforeNow", label: "Before Now" },
+      { value: "$afterNow", label: "After Now" },
+    ];
+
+    switch (fieldType) {
+      case "array":
+        return arrayOperators;
+      case "string":
+        return [...baseOperators, ...stringOperators];
+      case "number":
+      case "integer":
+        return [...baseOperators, ...numberOperators];
+      case "boolean":
+        return [{ value: "eq", label: "Equals" }];
+      case "date":
+      case "datetime":
+        return [...dateOperators, baseOperators[0]];
+      default:
+        // Type inconnu, on donne tous les opérateurs
+        return [...baseOperators, ...stringOperators, ...numberOperators, ...dateOperators];
+    }
+  };
 
   const addFilter = () => {
     const newFilters = [...filters, { field: "", op: "eq", value: "" }];
@@ -69,26 +132,21 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
     handleChange("filters", newFilters);
   };
 
-  const updateFilter = (index: number, key: string, value: string) => {
+  const updateFilter = (index: number, key: string, value: string | number | boolean) => {
     const newFilters = [...filters];
     const currentFilter = { ...newFilters[index] };
 
     // Si on change le champ, on remet l'opérateur par défaut et vide la valeur
     if (key === "field") {
-      newFilters[index] = { field: value, op: "eq", value: "" };
+      const op = (
+        value ? getOperatorOptionsForField(value as string)[0].value : "eq"
+      ) as typeof currentFilter.op;
+      newFilters[index] = { field: value as string, op, value: "" };
     }
     // Si on change l'opérateur vers/depuis un opérateur relatif, on vide la valeur
     else if (key === "op") {
-      if (value === "last" || value === "next") {
-        // Ajouter une unité par défaut appropriée selon le type de champ
-        const fieldType = getFieldType(currentFilter.field);
-        const defaultUnit = fieldType === "datetime" ? "hour" : "day";
-        newFilters[index] = { ...currentFilter, op: value, value: "", unit: defaultUnit };
-      } else {
-        // Créer un nouvel objet sans l'unité pour les opérateurs absolus
-        const { unit, ...filterWithoutUnit } = currentFilter;
-        newFilters[index] = { ...filterWithoutUnit, op: value as typeof currentFilter.op, value: "" };
-      }
+      // Créer un nouvel objet sans l'unité pour les opérateurs absolus
+      newFilters[index] = { ...currentFilter, op: value as typeof currentFilter.op, value: "" };
     }
     // Pour les autres clés, mettre à jour normalement
     else {
@@ -127,74 +185,10 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
   const getFieldType = (fieldName: string): string => {
     if (!datasource) return "string";
     const property = datasource.schema?.items?.properties?.[fieldName] as TSchema | undefined;
-
-    if (!property) {
-      console.warn(`Field "${fieldName}" not found in datasource schema.`);
-    }
-
     if (property?.type === "string" && property.format === "date") return "date";
     if (property?.type === "string" && property.format === "date-time") return "datetime";
 
     return property?.type ?? "string";
-  };
-
-  // Function to get operators based on field type
-  const getOperatorOptionsForField = (fieldName: string) => {
-    if (!datasource) return [];
-    const fieldType = getFieldType(fieldName);
-
-    const baseOperators = [
-      { value: "eq", label: "Equals" },
-      { value: "ne", label: "Not equals" },
-    ];
-
-    // const existenceOperators = [
-    //   { value: "exists", label: "Exists" },
-    //   { value: "not_exists", label: "Does not exist" },
-    // ];
-
-    const stringOperators = [
-      { value: "contains", label: "Contains" },
-      { value: "startsWith", label: "Starts with" },
-      { value: "endsWith", label: "Ends with" },
-      // { value: "in", label: "In" },
-      // { value: "nin", label: "Not in" },
-    ];
-
-    const numberOperators = [
-      { value: "lt", label: "Less than" },
-      { value: "lte", label: "Less than or equal" },
-      // { value: "gt", label: "Greater than" },
-      // { value: "gte", label: "Greater than or equal" },
-      // { value: "in", label: "In" },
-      // { value: "nin", label: "Not in" },
-    ];
-
-    const dateOperators = [
-      { value: "before", label: "Before Date" },
-      { value: "after", label: "After Date" },
-      { value: "beforeNow", label: "Before Now" },
-      { value: "afterNow", label: "After Now" },
-      // { value: "between", label: "Between" },
-      // { value: "last", label: "In the last" },
-      // { value: "next", label: "In the next" },
-    ];
-
-    switch (fieldType) {
-      case "string":
-        return [...baseOperators, ...stringOperators];
-      case "number":
-      case "integer":
-        return [...baseOperators, ...numberOperators];
-      case "boolean":
-        return [{ value: "eq", label: "Equals" }];
-      case "date":
-      case "datetime":
-        return [...baseOperators, ...dateOperators];
-      default:
-        // Type inconnu, on donne tous les opérateurs
-        return [...baseOperators, ...stringOperators, ...numberOperators, ...dateOperators];
-    }
   };
 
   return (
@@ -211,7 +205,7 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
             radius="medium"
             variant="ghost"
             placeholder="Select a database"
-            className="!max-w-2/3 !ml-auto"
+            className="!max-w-2/3 !ml-auto !mr-[1px]"
           />
           <Select.Content position="popper">
             <Select.Group>
@@ -227,7 +221,7 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
 
       {/* Filters Section */}
       {indexedFields.length > 0 && (
-        <div className="flex flex-col gap-2 flex-1 justify-between pt-2 px-2.5">
+        <div className="flex flex-col gap-2 flex-1 justify-between pt-2.5 px-2.5">
           <div className="flex gap-1 flex-1 w-full justify-between items-center">
             <FieldTitle title="Filters" description="Add filters to narrow down your query" />
             <Button type="button" radius="full" variant="soft" size="1" onClick={addFilter}>
@@ -236,20 +230,29 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
             </Button>
           </div>
           {filters.length > 0 && (
-            <div className="basis-full">
+            <div className="basis-full flex flex-col gap-3 mt-1">
               {filters.map((filter, index) => (
-                <div
-                  key={index}
-                  className="grid grid-cols-[1fr_1fr_1fr_1fr_auto] gap-2 items-center p-2 rounded"
-                >
+                <div key={index} className="grid grid-cols-5 gap-x-2 gap-y-0.5 auto-rows-[30px]">
                   {/* Field Selector */}
-                  <div className="bg-gray-50">
+                  <div className="col-span-5 flex items-center gap-3 pr-1">
+                    <IconButton
+                      type="button"
+                      variant="ghost"
+                      className="hover:(bg-red-100 text-red-800)"
+                      onClick={() => removeFilter(index)}
+                    >
+                      <RxCross2 size={14} />
+                    </IconButton>
                     <Select.Root
                       defaultValue={filter.field}
-                      size="1"
                       onValueChange={(value: string) => updateFilter(index, "field", value)}
                     >
-                      <Select.Trigger radius="large" variant="ghost" placeholder="Select field" />
+                      <Select.Trigger
+                        radius="medium"
+                        className="!flex-1 !font-medium"
+                        variant="ghost"
+                        placeholder="Select field"
+                      />
                       <Select.Content position="popper">
                         <Select.Group>
                           {indexedFields.map((field) => (
@@ -263,14 +266,21 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
                   </div>
 
                   {/* Operator Selector */}
-                  <div>
+                  <div className={tx("flex gap-2 items-center col-span-2", !filter.field && "hidden")}>
+                    <BsArrowReturnRight className="w-3 h-3 ml-1 mr-1.5" />
                     <Select.Root
                       key={`operator-${index}-${filter.field}`} // Force re-render when field changes
                       defaultValue={filter.op}
-                      size="1"
+                      size="2"
                       onValueChange={(value: string) => updateFilter(index, "op", value)}
+                      disabled={!filter.field}
                     >
-                      <Select.Trigger radius="large" variant="ghost" placeholder="Select operator" />
+                      <Select.Trigger
+                        radius="medium"
+                        variant="ghost"
+                        placeholder="Select operator"
+                        className="!flex-1 !mr-1"
+                      />
                       <Select.Content position="popper">
                         <Select.Group>
                           {getOperatorOptionsForField(filter.field).map((option) => (
@@ -285,103 +295,52 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
 
                   {/* Value Input - for relative dates, use two columns, otherwise span both */}
                   {getFieldType(filter.field) === "date" || getFieldType(filter.field) === "datetime" ? (
-                    filter.op === "last" || filter.op === "next" ? (
-                      // Relative date: use two separate columns
-                      <>
-                        {/* Number Input */}
-                        <div>
-                          <input
-                            type="number"
-                            value={filter.value}
-                            onChange={(e) => updateFilter(index, "value", e.target.value)}
-                            placeholder="Number"
-                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                            min="1"
-                          />
-                        </div>
-                        {/* Unit Selector */}
-                        <div>
-                          <Select.Root
-                            key={`unit-${index}-${filter.field}`}
-                            defaultValue={
-                              filter.unit || (getFieldType(filter.field) === "datetime" ? "hour" : "day")
-                            }
-                            size="1"
-                            onValueChange={(value: string) => updateFilter(index, "unit", value)}
-                          >
-                            <Select.Trigger radius="large" variant="ghost" placeholder="Unit" />
-                            <Select.Content position="popper">
-                              <Select.Group>
-                                {getTimeUnitsForField(filter.field).map((unit) => (
-                                  <Select.Item key={unit.value} value={unit.value}>
-                                    {unit.label}
-                                  </Select.Item>
-                                ))}
-                              </Select.Group>
-                            </Select.Content>
-                          </Select.Root>
-                        </div>
-                      </>
-                    ) : (
+                    (filter.op === "before" || filter.op === "after" || filter.op === "eq") && (
                       // Absolute date: span both columns
-                      <>
-                        <div className="col-span-2">
-                          <input
-                            type={getFieldType(filter.field) === "datetime" ? "datetime-local" : "date"}
-                            value={filter.value}
-                            onChange={(e) => updateFilter(index, "value", e.target.value)}
-                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                          />
-                        </div>
-                      </>
+                      <div className={tx("col-span-3 flex justify-end", !filter.field && "hidden")}>
+                        <TextField.Root
+                          size="2"
+                          type={getFieldType(filter.field) === "datetime" ? "datetime-local" : "date"}
+                          defaultValue={String(filter.value)}
+                          onChange={(e) => updateFilter(index, "value", e.target.value)}
+                          disabled={!filter.field}
+                        />
+                      </div>
                     )
                   ) : (
                     // Non-date fields: span both columns
-                    <div className="col-span-2">
+                    <div className={tx("col-span-3 flex justify-end ", !filter.field && "hidden")}>
                       {getFieldType(filter.field) === "number" || getFieldType(filter.field) === "integer" ? (
-                        <input
+                        <TextField.Root
                           type="number"
-                          value={filter.value}
-                          onChange={(e) => updateFilter(index, "value", e.target.value)}
+                          size="2"
+                          defaultValue={String(filter.value)}
+                          onChange={(e) => updateFilter(index, "value", Number(e.target.value))}
                           placeholder="Value"
-                          className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          min="1"
+                          disabled={!filter.field}
                         />
                       ) : getFieldType(filter.field) === "boolean" ? (
-                        <Select.Root
-                          key={`value-${index}-${filter.field}`}
-                          defaultValue={filter.value}
+                        <SegmentedControl.Root
                           size="1"
-                          onValueChange={(value: string) => updateFilter(index, "value", value)}
+                          defaultValue={String(filter.value)}
+                          onValueChange={(value) => updateFilter(index, "value", Boolean(value))}
+                          className={tx("!mt-0.5 [&_.rt-SegmentedControlItemLabel]:(px-3)")}
                         >
-                          <Select.Trigger radius="large" variant="ghost" placeholder="Select value" />
-                          <Select.Content position="popper">
-                            <Select.Group>
-                              <Select.Item value="true">True</Select.Item>
-                              <Select.Item value="false">False</Select.Item>
-                            </Select.Group>
-                          </Select.Content>
-                        </Select.Root>
+                          <SegmentedControl.Item value="true">True</SegmentedControl.Item>
+                          <SegmentedControl.Item value="false">False</SegmentedControl.Item>
+                        </SegmentedControl.Root>
                       ) : (
                         <TextField.Root
-                          value={filter.value}
-                          onChange={(e) => updateFilter(index, "value", e.target.value)}
+                          disabled={!filter.field}
+                          defaultValue={String(filter.value)}
+                          onChange={debounce((e) => updateFilter(index, "value", e.target.value), 400)}
                           placeholder="Value"
-                          size="1"
+                          size="2"
                         />
                       )}
                     </div>
                   )}
-
-                  {/* Remove Button */}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="1"
-                    onClick={() => removeFilter(index)}
-                    className="!text-red-500 hover:!bg-red-100"
-                  >
-                    <RxCross2 size={14} />
-                  </Button>
                 </div>
               ))}
             </div>
@@ -389,63 +348,57 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
         </div>
       )}
 
-      {/* Sort Fields - only show if datasource is selected and has indexed fields */}
-      {indexedFields.length > 0 && (
-        <div className="flex flex-1 gap-8 justify-between items-center pt-2 pb-1 px-2.5">
-          <div className="flex flex-col gap-1 flex-1 ">
-            <label className={tx(fieldLabel, currentValue?.sortDirection === "rand" && "opacity-40")}>
-              Field
-            </label>
-            <Select.Root
-              defaultValue={currentValue?.sortField}
-              size="2"
-              onValueChange={
-                currentValue?.sortDirection === "rand"
-                  ? undefined
-                  : (value: string) => handleChange("sortField", value)
-              }
-              disabled={currentValue?.sortDirection === "rand"}
-            >
-              <Select.Trigger
-                radius="large"
-                variant="ghost"
-                placeholder="Select a field"
-                className={tx(
-                  currentValue?.sortDirection === "rand" && "cursor-not-allowed pointer-events-none",
-                )}
-                style={currentValue?.sortDirection === "rand" ? { opacity: 0.3 } : undefined}
-              />
-              <Select.Content position="popper">
-                <Select.Group>
-                  {indexedFields.map((field) => (
-                    <Select.Item key={field.value} value={field.value}>
-                      {field.title}
-                    </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Content>
-            </Select.Root>
-          </div>
-
-          <div className="flex flex-col gap-1 flex-1">
-            <label className={fieldLabel}>Direction </label>
-            <Select.Root
-              defaultValue={currentValue?.sortDirection || "asc"}
-              size="2"
-              onValueChange={(value: string) => handleChange("sortDirection", value)}
-            >
-              <Select.Trigger radius="large" variant="ghost" placeholder="Select direction" />
-              <Select.Content position="popper">
-                <Select.Group>
-                  <Select.Item value="asc">Ascending</Select.Item>
-                  <Select.Item value="desc">Descending</Select.Item>
-                  <Select.Item value="rand">Random</Select.Item>
-                </Select.Group>
-              </Select.Content>
-            </Select.Root>
-          </div>
+      {/* Sort Fields  */}
+      <div className="flex flex-1 gap-8 justify-between items-center pt-2.5 pb-1 px-2.5">
+        <div className="flex flex-col gap-1 flex-1 ">
+          <label className={tx(fieldLabel)}>Order by</label>
+          <Select.Root
+            defaultValue={currentValue?.sortField}
+            size="2"
+            onValueChange={(value: string) => handleChange("sortField", value)}
+          >
+            <Select.Trigger radius="medium" variant="ghost" placeholder="Select a field" />
+            <Select.Content position="popper">
+              <Select.Group>
+                {sortableFields.map((field) => (
+                  <Select.Item key={field.value} value={field.value}>
+                    {field.title}
+                  </Select.Item>
+                ))}
+              </Select.Group>
+              <Select.Separator />
+              <Select.Group>
+                <Select.Item value="random()">Random</Select.Item>
+              </Select.Group>
+            </Select.Content>
+          </Select.Root>
         </div>
-      )}
+
+        <div
+          className={tx("flex flex-col gap-1 flex-1", currentValue?.sortField === "random()" && "opacity-40")}
+        >
+          <label className={fieldLabel}>Direction </label>
+          <Select.Root
+            disabled={currentValue?.sortField === "random()"}
+            defaultValue={currentValue?.sortDirection || "asc"}
+            size="2"
+            onValueChange={(value: string) => handleChange("sortDirection", value)}
+          >
+            <Select.Trigger
+              radius="medium"
+              variant="ghost"
+              placeholder="Select direction"
+              className="!mr-[1px]"
+            />
+            <Select.Content position="popper">
+              <Select.Group>
+                <Select.Item value="asc">Ascending</Select.Item>
+                <Select.Item value="desc">Descending</Select.Item>
+              </Select.Group>
+            </Select.Content>
+          </Select.Root>
+        </div>
+      </div>
       {/* {datasourceId && fieldValues.length > 0 && currentValue?.sortDirection !== "rand" && (
         <>
           <div className="basis-full w-0" />
@@ -463,7 +416,7 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
       )} */}
       {indexedFields.length > 0 && (
         <div className="flex flex-1 justify-between items-center pt-2 px-2.5">
-          <label className={fieldLabel}>Limit</label>
+          <label className={fieldLabel}>Number of items</label>
           <TextField.Root
             type="number"
             value={currentValue?.limit?.toString() || "10"}

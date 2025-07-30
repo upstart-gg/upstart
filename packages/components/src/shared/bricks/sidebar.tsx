@@ -3,5 +3,9 @@ import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import BrickRoot from "../components/BrickRoot";
 
 export default function Sidebar({ brick, editable }: BrickProps<Manifest>) {
-  return <BrickRoot manifest={manifest}>Im a sidebar</BrickRoot>;
+  return (
+    <BrickRoot editable={editable} manifest={manifest}>
+      Im a sidebar
+    </BrickRoot>
+  );
 }

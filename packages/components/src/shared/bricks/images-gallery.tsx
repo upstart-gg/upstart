@@ -83,6 +83,7 @@ export default function ImagesGallery({ brick, editable }: BrickProps<Manifest>)
   if (images.length === 0) {
     return (
       <BrickRoot
+        editable={editable}
         manifest={manifest}
         className={tx(
           "flex flex-col grow items-center justify-center text-center",
@@ -99,6 +100,7 @@ export default function ImagesGallery({ brick, editable }: BrickProps<Manifest>)
 
   return (
     <BrickRoot
+      editable={editable}
       manifest={manifest}
       className={tx(
         `grid auto-rows-fr @mobile:grid-cols-2 @desktop:${getGridClasses()}`,

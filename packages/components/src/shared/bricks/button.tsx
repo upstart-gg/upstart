@@ -28,6 +28,7 @@ export default function Button({ brick, editable }: BrickProps<Manifest>) {
   return (
     <BrickRoot
       manifest={manifest}
+      editable={editable}
       as="button"
       type="button"
       className={tx(

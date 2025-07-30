@@ -15,6 +15,7 @@ export default function Testimonials({ brick, editable }: BrickProps<Manifest>) 
 
   return (
     <BrickRoot
+      editable={editable}
       manifest={manifest}
       className={tx("flex gap-6 @mobile:flex-col @desktop:flex-row", containerClasses)}
     >

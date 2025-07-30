@@ -264,7 +264,7 @@ export const manifest = defineBrickManifest({
     ),
     border: Type.Optional(borderRef()),
     shadow: Type.Optional(shadowRef()),
-    datasource: datasource(),
+    datasource: Type.Optional(datasource()),
     ...makeContainerProps(),
   }),
 });

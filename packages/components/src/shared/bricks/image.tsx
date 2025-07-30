@@ -12,6 +12,7 @@ export default function Image({ brick, editable }: BrickProps<Manifest>) {
 
   return (
     <BrickRoot
+      editable={editable}
       manifest={manifest}
       as="picture"
       className={tx("group/image flex items-center justify-center", Object.values(containerStyles))}

@@ -246,7 +246,11 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
 
   if (datarecordId && !datarecord) {
     return editable ? (
-      <BrickRoot manifest={manifest} className="p-4 border border-red-200 bg-red-50 text-red-600 rounded">
+      <BrickRoot
+        editable={editable}
+        manifest={manifest}
+        className="p-4 border border-red-200 bg-red-50 text-red-600 rounded"
+      >
         Error loading datarecord
       </BrickRoot>
     ) : null;
@@ -255,6 +259,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   if (!datarecord) {
     return (
       <BrickRoot
+        editable={editable}
         manifest={manifest}
         className={tx(
           "text-center p-4 flex items-center justify-center",
@@ -280,6 +285,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
 
   return (
     <BrickRoot
+      editable={editable}
       manifest={manifest}
       as="form"
       onSubmit={handleSubmit}

@@ -9,7 +9,7 @@ const bricks = import.meta.glob<false, string, { default: ComponentType<unknown>
 const bricksMap = Object.entries(bricks).reduce(
   (acc, [path, importFn]) => {
     // Extract component name from path (e.g., ./components/Button.jsx -> Button)
-    const componentName = path.match(/\.\/bricks\/(.*)\.tsx$/)![1];
+    const componentName = path.match(/\.\/bricks\/(.*)\.(j|t)sx?$/)![1];
     // Create lazy component using React.lazy
     acc[componentName] = lazy(importFn);
     return acc;

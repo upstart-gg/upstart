@@ -135,6 +135,7 @@ export default function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
 
   return (
     <BrickRoot
+      editable={editable}
       manifest={manifest}
       className={tx("rounded-[inherit] relative overflow-hidden", ...classes)}
       ref={containerRef}

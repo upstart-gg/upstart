@@ -84,9 +84,14 @@ export default function Editor(props: EditorProps) {
 
     if (element) {
       const computedStyle = window.getComputedStyle(element);
+      console.log(
+        "Original compute style background color:",
+        computedStyle.getPropertyValue("background-color"),
+      );
       // Change the background color only if it is transparent
       if (computedStyle.getPropertyValue("background-color") === "rgba(0, 0, 0, 0)") {
-        element.classList.add(tx("!bg-upstart-100"));
+        console.log("Changing background color to upstart-200");
+        element.style.setProperty("background-color", "rgba(229, 231, 235, .85)", "important");
       }
 
       element.classList.add(tx("shadow-2xl"));
@@ -107,6 +112,7 @@ export default function Editor(props: EditorProps) {
       element.classList.remove(tx("moving"));
       element.classList.remove(tx("shadow-2xl"));
       element.style.removeProperty("box-shadow");
+      element.style.removeProperty("background-color");
       element.style.removeProperty("max-height");
       element.style.removeProperty("overflow");
       element.style.removeProperty("scale");

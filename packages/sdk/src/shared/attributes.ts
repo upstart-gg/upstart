@@ -1,11 +1,11 @@
 import { Type, type TProperties, type Static, type TObject } from "@sinclair/typebox";
 import type { JSONSchemaType } from "ajv";
 import { backgroundColorRef } from "./bricks/props/background";
+import { getSchemaDefaults } from "../shared/utils/schema";
 import { string } from "./bricks/props/string";
 import { boolean } from "./bricks/props/boolean";
 import { datetime } from "./bricks/props/date";
 import { enumProp } from "./bricks/props/enum";
-import { jsonDefault } from "json-schema-default";
 import { imageRef } from "./bricks/props/image";
 import { colorRef } from "./bricks/props/color";
 
@@ -284,7 +284,7 @@ export function resolveAttributes(
   data: Record<string, unknown> = {},
 ) {
   // To get default values from the custom attributes schema,
-  const defaultAttrValues = jsonDefault(defaultAttributesSchema) as Attributes<
+  const defaultAttrValues = getSchemaDefaults(defaultAttributesSchema) as Attributes<
     Static<typeof defaultAttributesSchema>
   >;
   return { ...defaultAttrValues, ...data } as Attributes<Static<typeof customAttrsSchema>>;

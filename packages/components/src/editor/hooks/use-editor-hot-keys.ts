@@ -1,5 +1,5 @@
 import { useHotkeys } from "react-hotkeys-hook";
-import { useEditorHelpers, usePreviewMode, useSelectedBrickId } from "./use-editor";
+import { useEditorHelpers, usePreviewMode, useSelectedBrickId, useSelectedSectionId } from "./use-editor";
 import { toast } from "@upstart.gg/style-system/system";
 import { useBrick, useDraft, useDraftHelpers, useDraftUndoManager } from "./use-page-data";
 
@@ -9,6 +9,7 @@ export function useEditorHotKeys() {
   const draft = useDraft();
   const previewMode = usePreviewMode();
   const selectedBrickId = useSelectedBrickId();
+  const selectedSectionId = useSelectedSectionId();
   const selectedBrick = useBrick(selectedBrickId);
   const { undo, redo } = useDraftUndoManager();
 
@@ -55,24 +56,6 @@ export function useEditorHotKeys() {
     editorHelpers.togglePanel();
   });
 
-  /**
-   * Move brick to the left or up within a container
-   */
-  useHotkeys(
-    ["mod+up", "mod+left"],
-    (e) => {
-      e.preventDefault();
-      if (selectedBrickId) {
-        // console
-        console.log("Moving %s up", selectedBrickId);
-        draftHelpers.moveBrickWithin(selectedBrickId, "previous");
-      }
-    },
-    {
-      enableOnContentEditable: true,
-    },
-  );
-
   // Undo
   useHotkeys(["mod+z", "ctrl+z"], (e) => {
     e.preventDefault();
@@ -85,6 +68,31 @@ export function useEditorHotKeys() {
     redo();
   });
 
+  /**
+   * Move brick to the left or up within a container
+   */
+  useHotkeys(
+    ["mod+up", "mod+left"],
+    (e) => {
+      e.preventDefault();
+      if (selectedBrickId) {
+        // console
+        console.log("Moving %s up", selectedBrickId);
+        draftHelpers.moveBrickWithin(selectedBrickId, "previous");
+      } else if (selectedSectionId) {
+        console.log("Moving section %s up", selectedSectionId);
+        draftHelpers.moveSectionUp(selectedSectionId);
+        const element = document.getElementById(selectedSectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }
+    },
+    {
+      enableOnContentEditable: true,
+    },
+  );
+
   useHotkeys(
     ["mod+down", "mod+right"],
     (e) => {
@@ -93,6 +101,13 @@ export function useEditorHotKeys() {
         // console
         console.log("Moving %s to right", selectedBrickId);
         draftHelpers.moveBrickWithin(selectedBrickId, "next");
+      } else if (selectedSectionId) {
+        console.log("Moving section %s down", selectedSectionId);
+        draftHelpers.moveSectionDown(selectedSectionId);
+        const element = document.getElementById(selectedSectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
       }
     },
     {

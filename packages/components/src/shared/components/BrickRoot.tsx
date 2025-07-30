@@ -6,6 +6,7 @@ import { forwardRef } from "react";
 type BrickRootProps<T extends ElementType> = ComponentPropsWithoutRef<T> & {
   as?: T;
   manifest: BrickManifest;
+  editable: boolean;
 };
 
 /**
@@ -14,7 +15,7 @@ type BrickRootProps<T extends ElementType> = ComponentPropsWithoutRef<T> & {
  *  It renders a div by default, but can be customized to render any element using the `as` prop.
  */
 const BrickRoot = forwardRef<HTMLElement, BrickRootProps<ElementType>>(function BrickRoot(
-  { as, children, manifest, className, ...props },
+  { as, children, manifest, className, editable, ...props },
   ref,
 ) {
   const Component = as || "div";

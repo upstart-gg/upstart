@@ -1,5 +1,5 @@
 import FormNavigator from "./json-form/FormNavigator";
-import { getSchemaObjectDefaults } from "@upstart.gg/sdk/shared/utils/schema";
+import { getSchemaDefaults } from "@upstart.gg/sdk/shared/utils/schema";
 import { useCallback, useMemo } from "react";
 import { merge, set } from "lodash-es";
 import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
@@ -39,7 +39,7 @@ export default function AttributesSettingsView({
 
   const formData = useMemo(() => {
     // const resolvedSchema = resolveSchema(attributesSchema);
-    const defProps = getSchemaObjectDefaults(attributesSchema);
+    const defProps = getSchemaDefaults(attributesSchema);
     return merge({}, defProps, attr ?? {});
   }, [attr, attributesSchema]);
 

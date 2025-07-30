@@ -5,11 +5,11 @@ import { InlineIcon } from "@iconify/react";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { tx } from "@upstart.gg/style-system/twind";
 
-export default function Icon({ brick }: BrickProps<Manifest>) {
+export default function Icon({ brick, editable }: BrickProps<Manifest>) {
   const { props } = brick;
   const styles = useBrickStyle(brick);
   return (
-    <BrickRoot manifest={manifest} className={tx(Object.values(styles))}>
+    <BrickRoot editable={editable} manifest={manifest} className={tx(Object.values(styles))}>
       <InlineIcon icon={props.icon} width={props.size} height={props.size} />
     </BrickRoot>
   );

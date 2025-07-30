@@ -14,6 +14,7 @@ export default function Card({ brick, editable }: BrickProps<Manifest>) {
   const isOverlay = props.cardImage && props.imagePosition === "overlay";
   return (
     <BrickRoot
+      editable={editable}
       manifest={manifest}
       className={tx(
         "flex relative overflow-hidden",
