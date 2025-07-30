@@ -234,7 +234,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
       datasources: [
         {
           id: "employees",
-          name: "Company employees",
+          label: "Company employees",
           provider: "custom",
           schema: {
             type: "array",
@@ -305,7 +305,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
         },
         {
           id: "employees2",
-          name: "Company employees 2",
+          label: "Company employees 2",
           provider: "custom",
           schema: {
             type: "array",

@@ -2,14 +2,14 @@ import type { DatasourceProvider, Datasource } from "./datasources/types";
 import { schemasMap } from "./datasources/schemas";
 import type { TArray } from "@sinclair/typebox";
 
-export function defineDatasource<D extends Datasource>(datasource: D) {
+export function defineDatasource<D extends Omit<Datasource, "id">>(datasource: D) {
   return {
+    id: crypto.randomUUID(),
     ...datasource,
     schema: mapDatasourceSchema(
-      // @ts-ignore Seems like TS can't infer properly here
-      "schema" in datasource ? datasource.schema : getSchemaByProvider(datasource.provider),
+      datasource.provider === "custom" ? datasource.schema : getSchemaByProvider(datasource.provider),
     ),
-  } as D;
+  };
 }
 
 function getSchemaByProvider(provider: DatasourceProvider) {
@@ -19,7 +19,7 @@ function getSchemaByProvider(provider: DatasourceProvider) {
 /**
  * Map a datasource schema to include $id, $createdAt, and $updatedAt properties.
  */
-export function mapDatasourceSchema(schema: TArray) {
+export function mapDatasourceSchema(schema: TArray): Datasource["schema"] {
   const { items, ...rest } = schema;
   return {
     items: {
