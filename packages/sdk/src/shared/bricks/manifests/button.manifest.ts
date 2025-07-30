@@ -11,7 +11,6 @@ import { LAYOUT_ROW_HEIGHT } from "~/shared/layout-constants";
 export const manifest = defineBrickManifest({
   type: "button",
   name: "Button",
-  repeatable: true,
   category: "basic",
   description: "A button with text and optional icon",
   resizable: "horizontal",
@@ -47,7 +46,7 @@ export const manifest = defineBrickManifest({
         default: "rounded-md",
       }),
     ),
-    border: Type.Optional(borderRef({ default: "border-0", "ui:responsive": "desktop" })),
+    border: Type.Optional(borderRef({ default: { width: "border-0" }, "ui:responsive": "desktop" })),
     linkToUrlOrPageId: Type.Optional(urlOrPageIdRef({ title: "Link", metadata: { category: "content" } })),
   }),
 });

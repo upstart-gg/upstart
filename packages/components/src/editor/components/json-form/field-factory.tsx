@@ -11,7 +11,6 @@ import AlignItemsField from "./fields/align-items";
 import JustifyContentField from "./fields/justify-content";
 import ColorField from "./fields/color";
 import DatasourceField from "./fields/datasource";
-import DatasourceRefField from "./fields/datasource-ref";
 import EnumField from "./fields/enum";
 import IconifyField from "./fields/iconify";
 import ImageField from "./fields/image";
@@ -25,7 +24,6 @@ import VariantGroupField from "./fields/variant-group";
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import type { DatasourceSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
-import type { DatasourceRefSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource-ref";
 import type { GeolocationSettings } from "@upstart.gg/sdk/shared/bricks/props/geolocation";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import type {
@@ -161,18 +159,6 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
           key={`field-${id}`}
           currentValue={currentValue}
           onChange={(value: DatasourceSettings | undefined | null) => onChange({ [id]: value }, id)}
-          {...commonProps}
-        />
-      );
-    }
-
-    case "datasource-ref": {
-      const currentValue = (get(formData, id) ?? commonProps.schema.default) as DatasourceRefSettings;
-      return (
-        <DatasourceRefField
-          key={`field-${id}`}
-          currentValue={currentValue}
-          onChange={(value: DatasourceRefSettings | null) => onChange({ [id]: value }, id)}
           {...commonProps}
         />
       );

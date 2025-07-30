@@ -3,11 +3,8 @@ import { Theme } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useEffect, useRef, forwardRef, useImperativeHandle, type PropsWithChildren } from "react";
 import { useDarkMode } from "usehooks-ts";
-import { DatasourceProvider } from "~/shared/hooks/use-datasource";
 import {
-  DraftStoreContext,
   EditorStoreContext,
-  createDraftStore,
   createEditorStore,
   type EditorState,
   type EditorStateProps,
@@ -20,6 +17,7 @@ import "@upstart.gg/style-system/radix.css";
 import "@upstart.gg/style-system/default-theme.css";
 import "@upstart.gg/style-system/react-resizable.css";
 import "@upstart.gg/style-system/tiptap-text-editor.css";
+import { createDraftStore, DraftStoreContext } from "../hooks/use-page-data";
 
 // Define the interface for accessing stores
 export interface EditorWrapperRef {
@@ -127,21 +125,19 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
     useEffect(onReady, []);
 
     return (
-      <DatasourceProvider>
-        <UploaderProvider onImageUpload={onImageUpload}>
-          <EditorStoreContext.Provider value={editorStore} key="EditorStoreContext">
-            <DraftStoreContext.Provider value={draftStore} key="DraftStoreContext">
-              <Theme
-                accentColor="violet"
-                className={tx("w-full flex flex-col")}
-                appearance={isDarkMode ? "dark" : "light"}
-              >
-                {children}
-              </Theme>
-            </DraftStoreContext.Provider>
-          </EditorStoreContext.Provider>
-        </UploaderProvider>
-      </DatasourceProvider>
+      <UploaderProvider onImageUpload={onImageUpload}>
+        <EditorStoreContext.Provider value={editorStore} key="EditorStoreContext">
+          <DraftStoreContext.Provider value={draftStore} key="DraftStoreContext">
+            <Theme
+              accentColor="violet"
+              className={tx("w-full flex flex-col")}
+              appearance={isDarkMode ? "dark" : "light"}
+            >
+              {children}
+            </Theme>
+          </DraftStoreContext.Provider>
+        </EditorStoreContext.Provider>
+      </UploaderProvider>
     );
   },
 );

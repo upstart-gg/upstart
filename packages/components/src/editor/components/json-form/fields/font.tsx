@@ -16,7 +16,7 @@ import Select, {
 } from "react-select";
 import { createRef, useMemo, useState } from "react";
 import googleFonts from "../../../utils/fonts.json";
-import { useTheme } from "~/editor/hooks/use-editor";
+import { useTheme } from "~/editor/hooks/use-page-data";
 import { fontStacks, type FontType } from "@upstart.gg/sdk/shared/theme";
 import { type FixedSizeList, FixedSizeList as List, type ListChildComponentProps } from "react-window";
 import { tx, css } from "@upstart.gg/style-system/twind";

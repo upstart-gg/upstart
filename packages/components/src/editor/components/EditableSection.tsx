@@ -2,15 +2,11 @@ import interact from "interactjs";
 import { generateId, type Section, type Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
 import {
   useDebugMode,
-  useDraftHelpers,
   useDraggingBrickType,
   useEditingTextForBrickId,
   useEditorHelpers,
   useIsMouseOverPanel,
-  useIsResizing,
   usePreviewMode,
-  useSection,
-  useSections,
   useSelectedSectionId,
 } from "../hooks/use-editor";
 import { HiOutlineCog6Tooth } from "react-icons/hi2";
@@ -34,6 +30,7 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { Droppable } from "@hello-pangea/dnd";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { useDeviceInfo } from "../hooks/use-device-info";
+import { useDraftHelpers, useSection, useSections } from "../hooks/use-page-data";
 
 type EditableSectionProps = {
   section: SectionType;

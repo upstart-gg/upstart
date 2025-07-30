@@ -1,4 +1,4 @@
-import { tx, css } from "@upstart.gg/style-system/twind";
+import { tx } from "@upstart.gg/style-system/twind";
 import type { PropsWithChildren } from "react";
 
 export function PanelBlockTitle({ children, className }: PropsWithChildren<{ className?: string }>) {

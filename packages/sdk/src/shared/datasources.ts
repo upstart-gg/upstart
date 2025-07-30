@@ -1,15 +1,15 @@
-import type { DatasourcesList, DatasourceProvider } from "./datasources/types";
+import type { DatasourceProvider, Datasource } from "./datasources/types";
 import { schemasMap } from "./datasources/schemas";
 import type { TArray } from "@sinclair/typebox";
 
-export function defineDataSources<T extends DatasourcesList>(datasources: T) {
-  return datasources.map((datasource) => ({
+export function defineDatasource<D extends Omit<Datasource, "id">>(datasource: D) {
+  return {
+    id: crypto.randomUUID(),
     ...datasource,
     schema: mapDatasourceSchema(
-      // @ts-ignore Seems like TS can't infer properly here
-      "schema" in datasource ? datasource.schema : getSchemaByProvider(datasource.provider),
+      datasource.provider === "custom" ? datasource.schema : getSchemaByProvider(datasource.provider),
     ),
-  })) as T;
+  };
 }
 
 function getSchemaByProvider(provider: DatasourceProvider) {
@@ -19,22 +19,20 @@ function getSchemaByProvider(provider: DatasourceProvider) {
 /**
  * Map a datasource schema to include $id, $createdAt, and $updatedAt properties.
  */
-export function mapDatasourceSchema(schema: TArray) {
-  const { items, title, description } = schema;
-  // Add $id, $createdAt, $updatedAt to the schema
+export function mapDatasourceSchema(schema: TArray): Datasource["schema"] {
+  const { items, ...rest } = schema;
   return {
-    type: "array",
     items: {
       type: "object",
       properties: {
-        $id: { type: "string", title: "ID" },
-        $createdAt: { type: "string", format: "date-time", title: "Created At" },
-        $updatedAt: { type: "string", format: "date-time", title: "Updated At" },
+        _id: { type: "string", title: "Id" },
+        _slug: { type: "string", format: "slug", title: "Slug" },
+        _publicationDate: { type: "string", format: "date-time", title: "Publication Date" },
+        _lastModificationDate: { type: "string", format: "date-time", title: "Last Modification Date" },
         ...items.properties,
       },
-      required: ["$id", "$createdAt", "$updatedAt", ...items.required],
+      required: ["_id", "_slug", "_publicationDate", "_lastModificationDate", ...items.required],
     },
-    title,
-    description,
+    ...rest,
   };
 }

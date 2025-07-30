@@ -1,5 +1,5 @@
 import { css, tx } from "@upstart.gg/style-system/twind";
-import { useGenerationState, useTheme } from "../hooks/use-editor";
+import { useGenerationState, useTheme } from "../hooks/use-page-data";
 
 export default function BlankWaitPage() {
   const genState = useGenerationState();

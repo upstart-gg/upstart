@@ -13,7 +13,7 @@ import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { UrlOrPageIdSettings } from "@upstart.gg/sdk/shared/bricks/props/string";
 import { type ChangeEvent, type FC, useRef, useState } from "react";
-import { useDraftHelpers, useDynamicParent, useSitemap } from "~/editor/hooks/use-editor";
+import { useDraftHelpers, useDynamicParent, useSitemap } from "~/editor/hooks/use-page-data";
 import TextEditor from "~/shared/components/TextEditor";
 import { RiBracesLine } from "react-icons/ri";
 

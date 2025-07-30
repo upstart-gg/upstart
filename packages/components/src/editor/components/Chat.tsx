@@ -9,14 +9,11 @@ import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState, lazy
 import { createIdGenerator, type ToolInvocation } from "ai";
 import {
   useDraftHelpers,
-  useEditorHelpers,
   useGenerationState,
-  useSite,
   useSiteAndPages,
   useSitePrompt,
-  useTheme,
   useThemes,
-} from "../hooks/use-editor";
+} from "../hooks/use-page-data";
 import { MdDone } from "react-icons/md";
 import { useDebounceCallback } from "usehooks-ts";
 import { Spinner } from "@upstart.gg/style-system/system";
@@ -27,6 +24,7 @@ import { useDeepCompareEffect } from "use-deep-compare";
 import type { ImageSearchResultsType, SimpleImageMetadata } from "@upstart.gg/sdk/shared/images";
 import type { GenericPageConfig } from "@upstart.gg/sdk/shared/page";
 import type { Sitemap } from "@upstart.gg/sdk/shared/sitemap";
+import { useEditorHelpers } from "../hooks/use-editor";
 
 const WEB_SEARCH_ENABLED = false;
 
@@ -93,7 +91,7 @@ const userMsgClass = tx(
 );
 
 export default function Chat() {
-  const prompt = useSitePrompt();
+  const sitePrompt = useSitePrompt();
   const setupRef = useRef(false);
   const draftHelpers = useDraftHelpers();
   const { setImagesSearchResults } = useEditorHelpers();
@@ -206,7 +204,7 @@ Let's start by generating some color themes for your website. This will help us 
               {
                 id: "init-generate",
                 role: "user",
-                content: `Create a website based on this prompt:\n${prompt}`,
+                content: `Create a website based on this prompt:\n${sitePrompt}`,
               },
             ]
         : [

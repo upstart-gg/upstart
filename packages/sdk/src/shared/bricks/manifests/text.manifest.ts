@@ -26,7 +26,6 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
     desktop: "auto",
     mobile: "auto",
   },
-  repeatable: true,
   icon: RxTextAlignLeft,
   props: defineProps(
     {
@@ -180,24 +179,9 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
               },
             },
             base100: {
-              previewBgClass: "bg-base-100 text-base-content border-base-200 border-2",
+              previewBgClass: "bg-base-100 text-base-content",
               label: "Base 100",
-              value: { main: "bg-base-100 text-base-content border-base-200" },
-            },
-            base100_primary: {
-              previewBgClass: "bg-base-100 text-base-content border-primary border-2",
-              label: "Base 100 / Primary",
-              value: { main: "bg-base-100 text-base-content border-primary" },
-            },
-            base100_secondary: {
-              previewBgClass: "bg-base-100 text-base-content border-secondary border-2",
-              label: "Base 100 / Secondary",
-              value: { main: "bg-base-100 text-base-content border-secondary" },
-            },
-            base100_accent: {
-              previewBgClass: "bg-base-100 text-base-content border-accent border-2",
-              label: "Base 100 / Accent",
-              value: { main: "bg-base-100 text-base-content border-accent" },
+              value: { main: "bg-base-100 text-base-content" },
             },
 
             none: { label: "None", value: {} },

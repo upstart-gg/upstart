@@ -1,12 +1,11 @@
 import FormNavigator from "./json-form/FormNavigator";
-import { sectionSchema } from "@upstart.gg/sdk/shared/bricks";
 import { getSchemaObjectDefaults } from "@upstart.gg/sdk/shared/utils/schema";
 import { useCallback, useMemo } from "react";
 import { merge, set } from "lodash-es";
-import { useAttributes, useDraft, useDraftHelpers, usePreviewMode } from "~/editor/hooks/use-editor";
 import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
-import type { Attributes, AttributesSchema } from "@upstart.gg/sdk/shared/attributes";
-import { tx } from "@upstart.gg/style-system/twind";
+import type { AttributesSchema } from "@upstart.gg/sdk/shared/attributes";
+import { usePreviewMode } from "../hooks/use-editor";
+import { useAttributes, useDraft } from "../hooks/use-page-data";
 
 type AttributesSettingsViewProps = {
   attributesSchema: AttributesSchema;

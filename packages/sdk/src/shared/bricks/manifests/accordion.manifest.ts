@@ -280,7 +280,7 @@ Multiple panels can be open simultaneously or limited to one at a time.
             },
           },
           base100: {
-            previewBgClass: "bg-base-100 text-base-content border-base-200 border-2",
+            previewBgClass: "bg-base-100 text-base-content",
             label: "Base 100",
             value: {
               title: "bg-base-300 text-base-content border-base-300",

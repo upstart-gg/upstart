@@ -14,7 +14,6 @@ export const manifest = defineBrickManifest({
   type: "card",
   name: "Card",
   description: "A card that can have a title, image, and content",
-  repeatable: true,
   icon: BsCardText,
   defaultWidth: { desktop: "400px", mobile: "100%" },
   minWidth: { desktop: 400 },
@@ -163,24 +162,9 @@ export const manifest = defineBrickManifest({
             value: { container: "from-neutral-700 to-neutral-900 text-neutral-content border-neutral-dark" },
           },
           base100: {
-            previewBgClass: "bg-base-100 text-base-content border-base-200 border-2",
+            previewBgClass: "bg-base-100 text-base-content",
             label: "Base 100",
-            value: { container: "bg-base-100 text-base-content border-base-200" },
-          },
-          base100_primary: {
-            previewBgClass: "bg-base-100 text-base-content border-primary border-2",
-            label: "Base 100 / Primary",
-            value: { container: "bg-base-100 text-base-content border-primary" },
-          },
-          base100_secondary: {
-            previewBgClass: "bg-base-100 text-base-content border-secondary border-2",
-            label: "Base 100 / Secondary",
-            value: { container: "bg-base-100 text-base-content border-secondary" },
-          },
-          base100_accent: {
-            previewBgClass: "bg-base-100 text-base-content border-accent border-2",
-            label: "Base 100 / Accent",
-            value: { container: "bg-base-100 text-base-content border-accent" },
+            value: { container: "bg-base-100 text-base-content" },
           },
 
           none: { label: "None", value: {} },
@@ -319,7 +303,7 @@ export const manifest = defineBrickManifest({
     ),
     border: Type.Optional(
       borderRef({
-        default: "border",
+        default: { width: "border" },
       }),
     ),
     shadow: Type.Optional(shadowRef()),

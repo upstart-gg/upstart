@@ -1,17 +1,13 @@
 import { useDebounceCallback } from "usehooks-ts";
+import { useEditorHelpers, useEditorMode, type PageSavePayload, type SiteSavePayload } from "./use-editor";
 import {
-  useAttributesSubscribe,
-  useSectionsSubscribe,
   useDraft,
-  useEditorHelpers,
-  useEditorMode,
   usePageInfo,
+  useSectionsSubscribe,
+  useAttributesSubscribe,
   usePagePathSubscribe,
   useThemeSubscribe,
-  type PageSavePayload,
-  type SiteSavePayload,
-  useSiteAndPages,
-} from "./use-editor";
+} from "./use-page-data";
 
 const AUTO_SAVE_MIN_INTERVAL = 1000; // Auto save every N seconds
 

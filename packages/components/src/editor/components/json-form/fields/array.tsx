@@ -16,7 +16,7 @@ import { RxCross2 } from "react-icons/rx";
 import { TbPlus } from "react-icons/tb";
 import { FieldTitle, processObjectSchemaToFields } from "../field-factory";
 import type { FieldProps } from "./types";
-import { useDynamicParent } from "~/editor/hooks/use-editor";
+import { useDynamicParent } from "~/editor/hooks/use-page-data";
 
 // If the HTML contains any tags, this function will strip them out and return plain text.
 // This is useful for displaying text content without HTML formatting (ie for items title).

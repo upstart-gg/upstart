@@ -9,6 +9,7 @@ import { paddingRef } from "../props/padding";
 import { directionRef } from "../props/direction";
 import { gradientDirectionRef } from "../props/color";
 import { colorPresetRef } from "../props/preset";
+import { borderRef, roundingRef } from "../props/border";
 
 export const manifest = defineBrickManifest({
   type: "social-links",
@@ -169,24 +170,9 @@ export const manifest = defineBrickManifest({
             },
           },
           base100: {
-            previewBgClass: "bg-base-100 text-base-content border-base-200 border-2",
+            previewBgClass: "bg-base-100 text-base-content",
             label: "Base 100",
-            value: { main: "bg-base-100 text-base-content border-base-200" },
-          },
-          base100_primary: {
-            previewBgClass: "bg-base-100 text-base-content border-primary border-2",
-            label: "Base 100 / Primary",
-            value: { main: "bg-base-100 text-base-content border-primary" },
-          },
-          base100_secondary: {
-            previewBgClass: "bg-base-100 text-base-content border-secondary border-2",
-            label: "Base 100 / Secondary",
-            value: { main: "bg-base-100 text-base-content border-secondary" },
-          },
-          base100_accent: {
-            previewBgClass: "bg-base-100 text-base-content border-accent border-2",
-            label: "Base 100 / Accent",
-            value: { main: "bg-base-100 text-base-content border-accent" },
+            value: { main: "bg-base-100 text-base-content" },
           },
 
           none: { label: "None", value: {} },
@@ -252,6 +238,12 @@ export const manifest = defineBrickManifest({
         default: "p-2",
       }),
     ),
+    rounding: Type.Optional(
+      roundingRef({
+        default: "rounded-md",
+      }),
+    ),
+    border: Type.Optional(borderRef()),
     icononly: Type.Optional(
       Type.Boolean({
         title: "Only icons",

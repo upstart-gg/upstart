@@ -1,6 +1,6 @@
 import type { EditorEvents } from "@tiptap/react";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
-import { useBrick, useDraftHelpers } from "~/editor/hooks/use-editor";
+import { useBrick, useDraftHelpers } from "~/editor/hooks/use-page-data";
 import { set } from "lodash-es";
 
 export function useTextEditorUpdateHandler(brickId: Brick["id"], propPath = "textContent") {

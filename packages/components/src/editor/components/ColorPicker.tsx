@@ -10,7 +10,7 @@ import { Text, Select, Tabs, Inset, Callout, Button } from "@upstart.gg/style-sy
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { tx } from "@upstart.gg/style-system/twind";
 import { colorPalette } from "@upstart.gg/style-system/colors";
-import { useTheme } from "../hooks/use-editor";
+import { useTheme } from "../hooks/use-page-data";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 
 const gradientMixs = [

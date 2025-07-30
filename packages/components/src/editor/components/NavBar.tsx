@@ -14,17 +14,11 @@ import { RiArrowDownSLine } from "react-icons/ri";
 import { RxRocket } from "react-icons/rx";
 import {
   useChatVisible,
-  useDraft,
-  useDraftUndoManager,
   useEditorHelpers,
   useEditorMode,
-  useGenerationState,
-  useLastSaved,
   useLogoLink,
-  usePageVersion,
   usePanel,
   usePreviewMode,
-  useSitemap,
   useZoom,
 } from "~/editor/hooks/use-editor";
 import dark from "../../../../../creatives/upstart-dark.svg";
@@ -34,6 +28,14 @@ import { LuPlus } from "react-icons/lu";
 import { PiPalette } from "react-icons/pi";
 import { VscSettings } from "react-icons/vsc";
 import { useUserConfig } from "../hooks/use-user-config";
+import {
+  useDraft,
+  usePageVersion,
+  useLastSaved,
+  useSitemap,
+  useDraftUndoManager,
+  useGenerationState,
+} from "../hooks/use-page-data";
 
 export default function NavBar() {
   const editorHelpers = useEditorHelpers();

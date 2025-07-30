@@ -18,7 +18,6 @@ export const manifest = defineBrickManifest({
   name: "Testimonials",
   description: "Display testimonials from users",
   defaultWidth: { desktop: "100%" },
-  repeatable: false,
   icon: HiOutlineChatBubbleBottomCenter,
   props: defineProps(
     {
@@ -172,24 +171,9 @@ export const manifest = defineBrickManifest({
               },
             },
             base100: {
-              previewBgClass: "bg-base-100 text-base-content border-base-200 border-2",
+              previewBgClass: "bg-base-100 text-base-content",
               label: "Base 100",
-              value: { card: "bg-base-100 text-base-content border-base-200" },
-            },
-            base100_primary: {
-              previewBgClass: "bg-base-100 text-base-content border-primary border-2",
-              label: "Base 100 / Primary",
-              value: { card: "bg-base-100 text-base-content border-primary" },
-            },
-            base100_secondary: {
-              previewBgClass: "bg-base-100 text-base-content border-secondary border-2",
-              label: "Base 100 / Secondary",
-              value: { card: "bg-base-100 text-base-content border-secondary" },
-            },
-            base100_accent: {
-              previewBgClass: "bg-base-100 text-base-content border-accent border-2",
-              label: "Base 100 / Accent",
-              value: { card: "bg-base-100 text-base-content border-accent" },
+              value: { card: "bg-base-100 text-base-content" },
             },
 
             none: { label: "None", value: {} },

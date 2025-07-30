@@ -217,7 +217,7 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
             <Select.Group>
               {datasources.map((ds) => (
                 <Select.Item key={ds.id} value={ds.id}>
-                  {ds.name}
+                  {ds.label}
                 </Select.Item>
               ))}
             </Select.Group>

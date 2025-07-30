@@ -1,10 +1,10 @@
-import { useAttributes, useAttributesSchema, useDraft, useEditorHelpers } from "../hooks/use-editor";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import type { Attributes, AttributesSchema } from "@upstart.gg/sdk/shared/attributes";
-import { Tabs, Spinner, IconButton } from "@upstart.gg/style-system/system";
+import { useEffect, useMemo, useState } from "react";
+import type { AttributesSchema } from "@upstart.gg/sdk/shared/attributes";
+import { Tabs, Spinner } from "@upstart.gg/style-system/system";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
-import { tx, css } from "@upstart.gg/style-system/twind";
+import { tx } from "@upstart.gg/style-system/twind";
 import AttributesSettingsView from "./AttributesSettingsView";
+import { useAttributesSchema } from "../hooks/use-page-data";
 
 export default function SettingsForm() {
   const attrSchema = useAttributesSchema();

@@ -1,14 +1,11 @@
 import { Tabs, Callout, useAutoAnimate, Text, Select } from "@upstart.gg/style-system/system";
-import { forwardRef, useState, type ComponentProps } from "react";
-import { LuArrowRightCircle } from "react-icons/lu";
-import { nanoid } from "nanoid";
-import { type Theme, themeSchema, type FontType } from "@upstart.gg/sdk/shared/theme";
-import { useDraft, useEditorHelpers, useTheme, useThemes } from "~/editor/hooks/use-editor";
+import { themeSchema, type FontType } from "@upstart.gg/sdk/shared/theme";
+import { useDraft, useTheme, useThemes } from "~/editor/hooks/use-page-data";
 import { ColorFieldRow } from "./json-form/fields/color";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import { getContrastingTextColor, chroma, type ColorType } from "@upstart.gg/sdk/shared/themes/color-system";
 import FontPicker from "./json-form/fields/font";
-import { tx, css } from "@upstart.gg/style-system/twind";
+import { tx } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";
 import ThemePreview from "./ThemePreview";
 import { generateRelatedNeutral } from "./ColorPicker";

@@ -1,21 +1,18 @@
 import { tx } from "@upstart.gg/style-system/twind";
-import { startTransition, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
-import {
-  useAttributes,
-  useDraft,
-  useDraftHelpers,
-  useEditorHelpers,
-  useGenerationState,
-  useGridConfig,
-  usePreviewMode,
-  useSections,
-  useZoom,
-} from "../hooks/use-editor";
+import { useEditorHelpers, useGridConfig, usePreviewMode, useZoom } from "../hooks/use-editor";
 import { useFontWatcher } from "../hooks/use-font-watcher";
 import { useGridObserver } from "../hooks/use-grid-observer";
 import { useResizable } from "../hooks/use-resizable";
 import Section from "./EditableSection";
+import {
+  useDraftHelpers,
+  useDraft,
+  useAttributes,
+  useSections,
+  useGenerationState,
+} from "../hooks/use-page-data";
 
 type EditablePageProps = {
   showIntro?: boolean;

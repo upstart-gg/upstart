@@ -3,7 +3,7 @@ import { defineProps } from "../props/helpers";
 import { RxVideo } from "react-icons/rx";
 import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
-import { borderRef } from "../props/border";
+import { borderRef, roundingRef } from "../props/border";
 import { shadowRef } from "../props/effects";
 import { Type } from "@sinclair/typebox";
 import { paddingRef } from "../props/padding";
@@ -13,16 +13,22 @@ export const manifest = defineBrickManifest({
   name: "Video",
   category: "media",
   description: "Youtube video",
-  repeatable: true,
   icon: RxVideo,
-
+  defaultWidth: {
+    mobile: "300px",
+    desktop: `${(360 * 16) / 9}px`, // 16:9 aspect ratio
+  },
+  defaultHeight: {
+    mobile: "168px",
+    desktop: "360px", // 16:9 aspect ratio
+  },
   minWidth: {
-    mobile: 380,
-    desktop: 380,
+    mobile: 300,
+    desktop: (360 * 16) / 9,
   },
   minHeight: {
     mobile: 168,
-    desktop: 168,
+    desktop: 360, // 16:9 aspect ratio
   },
   props: defineProps({
     url: string("Video URL", {
@@ -33,7 +39,13 @@ export const manifest = defineBrickManifest({
         "ui:responsive": "desktop",
       },
     }),
-    padding: Type.Optional(paddingRef()),
+    padding: Type.Optional(paddingRef({})),
+    rounding: Type.Optional(
+      roundingRef({
+        default: "rounded-md",
+      }),
+    ),
+    border: Type.Optional(borderRef()),
     shadow: Type.Optional(shadowRef()),
   }),
 });

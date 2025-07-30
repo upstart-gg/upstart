@@ -14,11 +14,7 @@ export const datasources = defineDataSources({
   myfaq: {
     name: "Frequently Asked Questions",
     provider: "faq",
-    sampleData: [
-      { question: "What is Enpage?", answer: "Enpage is a platform that allows you to create dynamic websites and web applications using templates and data sources." },
-      { question: "How do I get started with Enpage?", answer: "To get started with Enpage, sign up for an account on the Enpage website and follow the instructions to create your first project." },
-      { question: "Can I use my own custom templates with Enpage?", answer: "Yes, you can create your own custom templates using HTML, CSS, and JavaScript and use them with Enpage." },
-    ]
+
   }
 });
 ```

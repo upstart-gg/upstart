@@ -17,13 +17,7 @@ export const datasources = defineDataSources({
     name: "Links",
     // use the built-in "links" provider
     provider: "links",
-    // Sample data that will be used during development
-    // or when the template is first loaded in the Upstart Editor
-    sampleData: [
-      { title: "Enpage", url: "https://enpage.co" },
-      { title: "Google", url: "https://google.com" },
-      { title: "Example", url: "https://example.com", icon: "home" },
-    ]
+
   }
 });
 ```

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useTheme } from "./use-editor";
+import { useTheme } from "./use-page-data";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 
 /**

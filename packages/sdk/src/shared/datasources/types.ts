@@ -115,20 +115,24 @@ const providersChoices = Type.Union([
   // }),
 ]);
 
+const datasourceBaseFields = Type.Object({
+  id: Type.String({
+    title: "ID",
+    description:
+      "Unique identifier of the datasource. Used to reference the datasource in the system. Use a url-safe string like a slug.",
+  }),
+  label: Type.Optional(
+    Type.String({ title: "Label", description: "Label of the datasource displayed in the UI" }),
+  ),
+});
+
 const datasourceProviderManifest = Type.Composite([
   providersChoices,
+  datasourceBaseFields,
   Type.Object({
-    id: Type.String({
-      title: "ID",
-      description:
-        "Unique identifier of the datasource. Used to reference the datasource in the system. Use a url-safe string like a slug.",
-    }),
-    name: Type.String({ title: "Name of the datasource", comment: "For example, 'My data'" }),
-    description: Type.Optional(Type.String({ title: "Description of the datasource" })),
     schema: Type.Null({
       description: "Always null for provider datasources. The schema is defined by the provider.",
     }),
-    sampleData: Type.Optional(Type.Any()),
     ttlMinutes: Type.Optional(
       Type.Number({
         title: "Time to live",
@@ -153,92 +157,74 @@ const datasourceProviderManifest = Type.Composite([
 
 export type DatasourceProviderManifest = Static<typeof datasourceProviderManifest>;
 
-const datasourceCustomManifest = Type.Object(
-  {
-    id: Type.String({
-      title: "ID",
-      description:
-        "Unique identifier of the datasource. Used to reference the datasource in the system. Use a url-safe string like a slug.",
-    }),
-    provider: Type.Literal("custom", {
-      title: "Custom",
-      description: "Custom datasource saved locally in Upstart.",
-    }),
-    options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-    schema: Type.Any({
-      title: "Schema",
-      description: "JSON Schema of datasource. Always an array of objects.",
-    }),
-    name: Type.String({ title: "Name of the datasource", comment: "For example, 'My data'" }),
-    description: Type.Optional(Type.String({ title: "Description of the datasource" })),
-    indexes: Type.Optional(
-      Type.Array(
-        Type.Object({
-          name: Type.String({ title: "Index name" }),
-          fields: Type.Array(Type.String(), { title: "Fields to index" }),
-          unique: Type.Optional(Type.Boolean({ title: "Unique index", default: false })),
-        }),
-        {
-          title: "Indexes",
-          description:
-            "IMPORTANT: Indexes to create on the datasource. use it to enforce uniqueness or improve query performance.",
-        },
+const datasourceCustomManifest = Type.Composite([
+  datasourceBaseFields,
+  Type.Object(
+    {
+      provider: Type.Literal("custom", {
+        title: "Custom",
+        description: "Custom datasource saved locally in Upstart.",
+      }),
+      options: Type.Optional(Type.Object({}, { additionalProperties: true })),
+      schema: Type.Any({
+        title: "Schema",
+        description: "JSON Schema of datasource. Always an array of objects.",
+      }),
+      indexes: Type.Optional(
+        Type.Array(
+          Type.Object({
+            name: Type.String({ title: "Index name" }),
+            fields: Type.Array(Type.String(), { title: "Fields to index" }),
+            unique: Type.Optional(Type.Boolean({ title: "Unique index", default: false })),
+          }),
+          {
+            title: "Indexes",
+            description:
+              "IMPORTANT: Indexes to create on the datasource. use it to enforce uniqueness or improve query performance.",
+          },
+        ),
       ),
-    ),
-    sampleData: Type.Array(Type.Ref("datasource:custom"), {
-      title: "Sample data",
-      description: "Sample data (examples) for the datasource. Should match the declared schema.",
-    }),
-  },
-  { $id: "datasource:custom" },
-);
+    },
+    { $id: "datasource:custom" },
+  ),
+]);
 
 export type DatasourceCustomManifest = Static<typeof datasourceCustomManifest>;
 
-const datasourceJsonManifest = Type.Object({
-  id: Type.String({
-    title: "ID",
-    description:
-      "Unique identifier of the datasource. Used to reference the datasource in the system. Use a url-safe string like a slug.",
-  }),
-  provider: Type.Literal("http-json", {
-    title: "JSON Array",
-    description: "JSON array datasource.",
-  }),
-  options: httpJsonOptions,
-  schema: Type.Any({
-    title: "Schema",
-    description: "JSON Schema of datasource. Always an array of objects.",
-    examples: [
-      {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            id: { type: "string", title: "ID" },
-            title: { type: "string", title: "Title" },
-            firstname: { type: "string", title: "Firstname" },
-            lastname: { type: "string", title: "Lastname" },
-            createdAt: { type: "string", format: "date-time", title: "Created at" },
-            email: { type: "string", format: "email", title: "Email" },
-          },
-          required: ["id", "title", "firstname", "lastname", "email", "createdAt"],
-          title: "Employee",
-        },
-        title: "Employees",
-        description: "Employees list",
-      },
-    ],
-  }),
-  name: Type.String({ title: "Name of the datasource", comment: "For example, 'My data'" }),
-  description: Type.Optional(Type.String({ title: "Description of the datasource" })),
-  sampleData: Type.Optional(
-    Type.Any({
-      title: "Sample data",
-      description: "Sample data for the datasource. Should match the declared schema.",
+const datasourceJsonManifest = Type.Composite([
+  datasourceBaseFields,
+  Type.Object({
+    provider: Type.Literal("http-json", {
+      title: "JSON Array",
+      description: "JSON array datasource.",
     }),
-  ),
-});
+    options: httpJsonOptions,
+    schema: Type.Any({
+      title: "Schema",
+      description: "JSON Schema of datasource. Always an array of objects.",
+      examples: [
+        {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string", title: "ID" },
+              title: { type: "string", title: "Title" },
+              firstname: { type: "string", title: "Firstname" },
+              lastname: { type: "string", title: "Lastname" },
+              createdAt: { type: "string", format: "date-time", title: "Created at" },
+              email: { type: "string", format: "email", title: "Email" },
+            },
+            required: ["id", "title", "firstname", "lastname", "email", "createdAt"],
+            title: "Employee",
+          },
+          title: "Employees",
+          description: "Employees list",
+        },
+      ],
+    }),
+  }),
+]);
 
 export type DatasourceJsonArrayManifest = Static<typeof datasourceJsonManifest>;
 
@@ -251,7 +237,3 @@ export const datasourceManifest = Type.Union([
 export type Datasource = Static<typeof datasourceManifest>;
 export const datasourcesList = Type.Array(datasourceManifest);
 export type DatasourcesList = Static<typeof datasourcesList>;
-
-// export type DatasourcesResolved<T extends DatasourcesList = DatasourcesList> = {
-//   [K in keyof T]: unknown;
-// };

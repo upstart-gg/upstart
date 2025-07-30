@@ -7,7 +7,6 @@ import { pageSchema } from "./page";
 import { sitePrompt } from "./prompt";
 import { pageInfoSchema, sitemapSchema } from "./sitemap";
 import { defaultTheme, themeSchema } from "./theme";
-import { lab } from "chroma-js";
 
 export const siteSchema = Type.Object({
   id: Type.String(),
@@ -235,7 +234,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
       datasources: [
         {
           id: "employees",
-          name: "Company employees",
+          label: "Company employees",
           provider: "custom",
           schema: {
             type: "array",
@@ -271,6 +270,13 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               },
               required: ["firstName", "lastName", "email"],
             },
+            examples: [
+              {
+                firstName: "John",
+                lastName: "Doe",
+                email: "john.doe@example.com",
+              },
+            ],
           },
           indexes: [
             {
@@ -296,17 +302,10 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               name: "idx_unique_startedOn",
             },
           ],
-          sampleData: [
-            {
-              firstName: "John",
-              lastName: "Doe",
-              email: "john.doe@example.com",
-            },
-          ],
         },
         {
           id: "employees2",
-          name: "Company employees 2",
+          label: "Company employees 2",
           provider: "custom",
           schema: {
             type: "array",
@@ -330,13 +329,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               fields: ["lastName"],
               unique: true,
               name: "idx_unique_lastName",
-            },
-          ],
-          sampleData: [
-            {
-              firstName: "John",
-              lastName: "Doe",
-              email: "john.doe@example.com",
             },
           ],
         },
@@ -1083,18 +1075,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   content: "Irure dolor sit amet, consectetur adipiscing elit.",
                 },
               },
-              // {
-              //   id: `b_${generateId()}`,
-              //   type: "card",
-              //   props: {
-              //     cardTitle: "Welcome to My Site",
-              //     cardBody: "This is a sample card body. You can edit this content.",
-              //     cardImage: {
-              //       src: "https://images.unsplash.com/photo-1636828982375-a4ec8b809e5e?q=80&w=3456&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-              //       alt: "Sample Card Image",
-              //     },
-              //   },
-              // },
+
               {
                 id: `b_${generateId()}`,
                 type: "spacer",

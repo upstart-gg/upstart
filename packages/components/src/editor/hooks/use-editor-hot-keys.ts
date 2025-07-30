@@ -1,14 +1,7 @@
 import { useHotkeys } from "react-hotkeys-hook";
-import {
-  useBrick,
-  useDraft,
-  useDraftHelpers,
-  useDraftUndoManager,
-  useEditorHelpers,
-  usePreviewMode,
-  useSelectedBrickId,
-} from "./use-editor";
+import { useEditorHelpers, usePreviewMode, useSelectedBrickId } from "./use-editor";
 import { toast } from "@upstart.gg/style-system/system";
+import { useBrick, useDraft, useDraftHelpers, useDraftUndoManager } from "./use-page-data";
 
 export function useEditorHotKeys() {
   const editorHelpers = useEditorHelpers();

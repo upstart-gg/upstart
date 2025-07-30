@@ -12,7 +12,6 @@ export const manifest = defineBrickManifest({
   name: "Icon",
   category: "basic",
   description: "An icon with optional text",
-  repeatable: true,
   resizable: false,
   icon: PiConfetti,
   props: defineProps(
@@ -33,6 +32,7 @@ export const manifest = defineBrickManifest({
         colorRef({
           title: "Color",
           default: "currentColor",
+          "ui:hide-color-label": true,
         }),
       ),
       link: Type.Optional(urlOrPageIdRef({ title: "Link" })),

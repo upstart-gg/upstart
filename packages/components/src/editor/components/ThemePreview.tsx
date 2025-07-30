@@ -1,5 +1,5 @@
 import { css, tx } from "@upstart.gg/style-system/twind";
-import { useDraft } from "../hooks/use-editor";
+import { useDraft } from "../hooks/use-page-data";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 
 export default function ThemePreview({

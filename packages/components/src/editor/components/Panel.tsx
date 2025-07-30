@@ -1,5 +1,4 @@
 import {
-  useBrick,
   useEditorHelpers,
   usePanel,
   usePreviewMode,
@@ -10,13 +9,13 @@ import { RxCross2 } from "react-icons/rx";
 import { LuPanelLeft, LuPanelRight } from "react-icons/lu";
 import type { ComponentProps } from "react";
 import { tx } from "@upstart.gg/style-system/twind";
-import DataPanel from "./PanelData";
 import PanelSettings from "./PanelAttributes";
 import PanelTheme from "./PanelTheme";
 import PanelBrickInspector from "./PanelBrickInspector";
 import PanelSectionInspector from "./PanelSectionInspector";
 import PanelLibrary from "./PanelLibrary";
 import { Tooltip } from "@upstart.gg/style-system/system";
+import { useBrick } from "../hooks/use-page-data";
 
 type PanelProps = ComponentProps<"aside">;
 
@@ -57,7 +56,6 @@ export default function Panel({ className, ...props }: PanelProps) {
         )}
         {panel === "theme" && <PanelTheme />}
         {panel === "settings" && <PanelSettings />}
-        {panel === "data" && <DataPanel />}
 
         {panel && (
           <>

@@ -5,12 +5,22 @@ import type { Brick } from "~/shared/bricks";
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export type BrickProps<T extends BrickManifest> = {
-  brick: Omit<Brick, "props" | "mobileProps"> & {
+  brick: Omit<Brick, "props" | "mobileProps" | "propsMapping"> & {
     props: Static<T["props"]>;
     mobileProps?: Partial<Static<T["props"]>>;
+    propsMapping?: Record<`$.${string}`, `$.${string}`>;
   };
+  /**
+   * True if we are in the context of the Editor
+   */
   editable?: boolean;
+  /**
+   * True if the brick is selected in the Editor
+   */
   selected?: boolean;
+  /**
+   * True if the brick is a child of a container (e.g. Section, Box)
+   */
   isContainerChild?: boolean;
 };
 
