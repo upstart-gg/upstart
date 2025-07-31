@@ -14,6 +14,7 @@ export default function Navbar({ brick, editable }: BrickProps<Manifest>) {
 
   return (
     <BrickRoot
+      editable={editable}
       manifest={manifest}
       as="header"
       data-brick-group="container"

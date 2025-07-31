@@ -261,6 +261,18 @@ export const manifest = defineBrickManifest({
             metadata: {
               category: "content",
             },
+            examples: [
+              {
+                text: "This is a great product! It has changed my life.",
+                author: "John Doe",
+                company: "Acme Inc.",
+                avatar: {
+                  src: "https://via.placeholder.com/80x80.png?text=JD",
+                  alt: "John Doe profile photo",
+                },
+                socialIcon: "mdi:linkedin",
+              },
+            ],
           },
         ),
       ),

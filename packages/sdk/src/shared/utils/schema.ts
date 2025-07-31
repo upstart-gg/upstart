@@ -1,6 +1,4 @@
-import type { Static, TObject, TSchema } from "@sinclair/typebox";
-import { jsonDefault } from "json-schema-default";
-import type { BrickManifest } from "../brick-manifest";
+import type { Static, TArray, TObject, TSchema } from "@sinclair/typebox";
 
 export function normalizeSchemaEnum(schema: TSchema): Array<{ const: string; title: string }> {
   if (!("enum" in schema)) {
@@ -19,11 +17,77 @@ export function normalizeSchemaEnum(schema: TSchema): Array<{ const: string; tit
   }));
 }
 
-/**
- * @warning DOES NOT HANDLE ARRAYs, just OBJECTs
- */
-export function getSchemaObjectDefaults<T extends TSchema>(schema: T) {
-  return jsonDefault(schema) as Static<T>;
+export function getSchemaDefaults<T extends TObject | TArray>(
+  schema: T,
+): T extends TObject ? Record<string, unknown> : unknown[] {
+  // Handle object schemas
+  if (schema.type === "object" && "properties" in schema) {
+    const objectSchema = schema as TObject;
+    const defaults: Record<string, unknown> = {};
+
+    for (const [key, propertySchema] of Object.entries(objectSchema.properties)) {
+      const defaultValue = getNestedDefaults(propertySchema as TSchema);
+
+      // Only include properties that have explicit defaults
+      if (defaultValue !== undefined) {
+        defaults[key] = defaultValue;
+      }
+    }
+
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    return defaults as any;
+  }
+
+  // Handle array schemas
+  if (schema.type === "array" && "items" in schema) {
+    const arraySchema = schema as TArray;
+
+    // If the array itself has an explicit default, return it
+    if (arraySchema.default) {
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      return arraySchema.default as any;
+    }
+
+    // Otherwise return empty array
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    return [] as any;
+  }
+
+  throw new Error("Schema must be either TObject or TArray");
+}
+
+// Helper function for nested schema processing
+function getNestedDefaults(schema: TSchema): unknown {
+  // Handle schemas with explicit default values
+  if ("default" in schema && schema.default !== undefined) {
+    return schema.default;
+  }
+
+  // Handle nested object schemas
+  if (schema.type === "object" && "properties" in schema) {
+    const objectSchema = schema as TObject;
+    const defaults: Record<string, unknown> = {};
+
+    for (const [key, propertySchema] of Object.entries(objectSchema.properties)) {
+      const defaultValue = getNestedDefaults(propertySchema as TSchema);
+
+      // Only include properties that have explicit defaults
+      if (defaultValue !== undefined) {
+        defaults[key] = defaultValue;
+      }
+    }
+
+    return Object.keys(defaults).length > 0 ? defaults : undefined;
+  }
+
+  // Handle nested array schemas
+  if (schema.type === "array" && "items" in schema) {
+    // Arrays only contribute defaults if explicitly set
+    return undefined;
+  }
+
+  // No implicit defaults for any type
+  return undefined;
 }
 
 export type FieldFilter<

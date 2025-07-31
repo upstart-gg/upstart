@@ -28,13 +28,14 @@ export default function Button({ brick, editable }: BrickProps<Manifest>) {
   return (
     <BrickRoot
       manifest={manifest}
+      editable={editable}
       as="button"
       type="button"
       className={tx(
         classes,
         props.color,
         props.size,
-        "h-full font-medium text-nowrap min-h-max max-h-fit my-auto",
+        "font-medium text-nowrap min-h-fit max-h-fit inline-flex items-center text-center justify-center",
         editable && "pointer-events-none",
       )}
       data-prevented-by-editor={editable ? "true" : "false"}

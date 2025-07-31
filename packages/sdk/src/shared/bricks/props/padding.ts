@@ -7,7 +7,7 @@ export function padding() {
     title: "Padding",
     $id: "styles:padding",
     enumNames: [
-      "No padding",
+      "None",
       "Minimal",
       "Small",
       "Medium",

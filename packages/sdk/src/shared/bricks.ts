@@ -5,8 +5,9 @@ import { cssLengthRef } from "./bricks/props/css-length";
 import { enumProp } from "./bricks/props/enum";
 import { colorPresetRef } from "./bricks/props/preset";
 import { mergeIgnoringArrays } from "./utils/merge";
-import { getSchemaObjectDefaults } from "./utils/schema";
+import { getSchemaDefaults } from "./utils/schema";
 import { StringEnum } from "./utils/string-enum";
+import { alignItemsRef } from "./bricks/props/align";
 
 /**
  * Generates a unique identifier for bricks.
@@ -282,7 +283,7 @@ export const sectionProps = Type.Object(
     purpose: Type.Optional(
       StringEnum(["navbar", "sidebar"], {
         title: "Specific purpose",
-        description: "The purpose of the section. Used for styling and layout.",
+        description: "The purpose of the section. Used for custom styling and layout.",
         enumNames: ["Navbar", "Sidebar"],
         "ui:field": "hidden",
       }),
@@ -346,18 +347,9 @@ export const sectionProps = Type.Object(
       ),
     ),
     alignItems: Type.Optional(
-      StringEnum(["items-start", "items-center", "items-end"], {
-        enumNames: ["Top", "Center", "Bottom"],
-        title: "Align items",
-        "ui:placeholder": "Not specified",
+      alignItemsRef({
         default: "items-center",
-        "ui:responsive": "desktop",
-        "ui:display": "icon-group",
-        "ui:icons": [
-          "fluent:align-start-vertical-20-regular",
-          "fluent:center-vertical-20-regular",
-          "fluent:align-end-vertical-20-regular",
-        ],
+        description: "The vertical alignment of bricks within the section.",
       }),
     ),
     gap: Type.Optional(
@@ -405,7 +397,7 @@ export const sectionSchema = Type.Object(
   },
 );
 
-export const sectionDefaultprops = getSchemaObjectDefaults(sectionSchema.properties.props);
+export const sectionDefaultprops = getSchemaDefaults(sectionSchema.properties.props);
 export type Section = Static<typeof sectionSchema>;
 
 export function processSections(sections: Section[]) {

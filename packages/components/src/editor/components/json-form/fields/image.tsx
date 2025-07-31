@@ -43,7 +43,7 @@ const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
               // TODO: implement onChange
               // onChange={(e) => onChangeDebounced(e.target.value)}
               spellCheck={!!schema["ui:spellcheck"]}
-              disableMenuBar
+              noMenuBar
             />
           </div>
           <Tooltip

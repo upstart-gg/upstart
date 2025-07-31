@@ -1,6 +1,7 @@
 import type { TObject, TProperties, TArray } from "@sinclair/typebox";
-import type { IconBase } from "react-icons/lib";
-import { getSchemaObjectDefaults } from "./utils/schema";
+import type { IconBase, IconType } from "react-icons/lib";
+import { getSchemaDefaults } from "./utils/schema";
+import type { ReactNode } from "react";
 
 export type BrickCategory = "layout" | "basic" | "media" | "widgets" | "container";
 
@@ -8,7 +9,7 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
   type: string;
   category?: BrickCategory;
   name: string;
-  icon: typeof IconBase;
+  icon: IconType;
   iconClassName?: string;
   staticClasses?: string;
   description?: string;
@@ -42,7 +43,6 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
     desktop?: string;
   };
   props: TObject<BProps>;
-  datasource?: DSSchema;
   hideInLibrary?: boolean;
   defaultInspectorTab?: "preset" | "style" | "content";
   deletable?: boolean;
@@ -97,9 +97,8 @@ export type BrickManifest = ReturnType<typeof defineBrickManifest>;
 export function getBrickManifestDefaults<M extends BrickManifest>(manifest: M) {
   return {
     ...manifest,
-    props: getSchemaObjectDefaults(manifest.props),
+    props: getSchemaDefaults(manifest.props),
     // mobileProps: {},
-    ...(manifest.datasource ? { datasource: getSchemaObjectDefaults(manifest.datasource) } : {}),
     // ...(manifest.datarecord ? { datarecord: Value.Create(manifest.datarecord) } : {}),
   };
 }

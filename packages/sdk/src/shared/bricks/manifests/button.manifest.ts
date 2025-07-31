@@ -25,30 +25,36 @@ export const manifest = defineBrickManifest({
   defaultWidth: {
     mobile: "100%",
   },
-  props: defineProps({
-    color: StringEnum(["btn-color-neutral", "btn-color-primary", "btn-color-secondary", "btn-color-accent"], {
-      title: "Color",
-      enumNames: ["Neutral", "Primary", "Secondary", "Accent"],
-      description: "Button variants.",
-      default: "btn-color-primary",
-      "ui:responsive": "desktop",
-    }),
-    label: string("Label", { default: "My button", metadata: { category: "content" } }),
-    size: StringEnum(["btn-size-small", "btn-size-medium", "btn-size-large"], {
-      title: "Size",
-      description: "Button size.",
-      enumNames: ["Small", "Medium", "Large"],
-      default: "btn-size-medium",
-      "ui:responsive": "desktop",
-    }),
-    rounding: Type.Optional(
-      roundingRef({
-        default: "rounded-md",
+  props: defineProps(
+    {
+      color: StringEnum(
+        ["btn-color-neutral", "btn-color-primary", "btn-color-secondary", "btn-color-accent"],
+        {
+          title: "Color",
+          enumNames: ["Neutral", "Primary", "Secondary", "Accent"],
+          description: "Button variants.",
+          default: "btn-color-primary",
+          "ui:responsive": "desktop",
+        },
+      ),
+      label: string("Label", { default: "My button", metadata: { category: "content" } }),
+      size: StringEnum(["btn-size-small", "btn-size-medium", "btn-size-large"], {
+        title: "Size",
+        description: "Button size.",
+        enumNames: ["Small", "Medium", "Large"],
+        default: "btn-size-medium",
+        "ui:responsive": "desktop",
       }),
-    ),
-    border: Type.Optional(borderRef({ default: { width: "border-0" }, "ui:responsive": "desktop" })),
-    linkToUrlOrPageId: Type.Optional(urlOrPageIdRef({ title: "Link", metadata: { category: "content" } })),
-  }),
+      rounding: Type.Optional(
+        roundingRef({
+          default: "rounded-md",
+        }),
+      ),
+      border: Type.Optional(borderRef({ default: { width: "border-0" }, "ui:responsive": "desktop" })),
+      linkToUrlOrPageId: Type.Optional(urlOrPageIdRef({ title: "Link", metadata: { category: "content" } })),
+    },
+    { noGrow: true },
+  ),
 });
 
 export type Manifest = typeof manifest;

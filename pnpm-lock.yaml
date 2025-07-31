@@ -378,9 +378,6 @@ importers:
       immer:
         specifier: 10.1.1
         version: 10.1.1
-      json-schema-default:
-        specifier: 1.0.2
-        version: 1.0.2
       lodash-es:
         specifier: 4.17.21
         version: 4.17.21
@@ -406,8 +403,8 @@ importers:
         specifier: 4.5.1
         version: 4.5.1(react-dom@18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124))(react@18.3.0-canary-3d9b20132-20240124)
       react-icons:
-        specifier: 5.3.0
-        version: 5.3.0(react@18.3.0-canary-3d9b20132-20240124)
+        specifier: 5.5.0
+        version: 5.5.0(react@18.3.0-canary-3d9b20132-20240124)
       react-selecto:
         specifier: 1.26.3
         version: 1.26.3
@@ -5046,10 +5043,6 @@ packages:
   json-parse-even-better-errors@2.3.1:
     resolution: {integrity: sha512-xyFwyhro/JEof6Ghe2iz2NcXoj2sloNsWr/XsERDK/oiPCfaNhl5ONfp+jQdAZRQQ0IJWNzH9zIZF7li91kh2w==}
 
-  json-schema-default@1.0.2:
-    resolution: {integrity: sha512-Ox5wyQLmmmZeY7WKwwj6D0AfTZV915lCoKuaa3WpzTD656KUev5ivKsXgkZ/xpZVJ5tsDYgaznD/hkFQUyJ/EA==}
-    engines: {node: '>=18'}
-
   json-schema-deref-sync@0.14.0:
     resolution: {integrity: sha512-yGR1xmhdiD6R0MSrwWcFxQzAj5b3i5Gb/mt5tvQKgFMMeNe0KZYNEN/jWr7G+xn39Azqgcvk4ZKMs8dQl8e4wA==}
     engines: {node: '>=6.0.0'}
@@ -6328,6 +6321,11 @@ packages:
     peerDependencies:
       react: 18.3.0-canary-3d9b20132-20240124
 
+  react-icons@5.5.0:
+    resolution: {integrity: sha512-MEFcXdkP3dLo8uumGI5xN3lDFNsRtrjbOEKDLD7yv76v4wpnEq2Lt2qeHaQOr34I/wPN3s3+N08WkQ+CW37Xiw==}
+    peerDependencies:
+      react: 18.3.0-canary-3d9b20132-20240124
+
   react-innertext@1.1.5:
     resolution: {integrity: sha512-PWAqdqhxhHIv80dT9znP2KvS+hfkbRovFp4zFYHFFlOoQLRiawIic81gKb3U1wEyJZgMwgs3JoLtwryASRWP3Q==}
     peerDependencies:
@@ -6717,6 +6715,7 @@ packages:
   source-map@0.8.0-beta.0:
     resolution: {integrity: sha512-2ymg6oRBpebeZi9UUNsgQ89bhx01TcTkmNTGnNO88imTmbSgy4nfujrgVEFKWpMTEGA11EDkTt7mqObTPdigIA==}
     engines: {node: '>= 8'}
+    deprecated: The work that was done in this beta branch won't be included in future versions
 
   space-separated-tokens@2.0.2:
     resolution: {integrity: sha512-PEGlAwrG8yXGXRjW32fGbg66JAlOAwbObuqVoJpv/mRgoWDQfgH1wDPvtzWyUSNAXBGSk8h755YDbbcEy3SH2Q==}
@@ -12444,11 +12443,6 @@ snapshots:
 
   json-parse-even-better-errors@2.3.1: {}
 
-  json-schema-default@1.0.2:
-    dependencies:
-      json-schema: 0.4.0
-      json-schema-traverse: 1.0.0
-
   json-schema-deref-sync@0.14.0:
     dependencies:
       clone: 2.1.2
@@ -13979,6 +13973,10 @@ snapshots:
       react-dom: 18.3.0-canary-3d9b20132-20240124(react@18.3.0-canary-3d9b20132-20240124)
 
   react-icons@5.3.0(react@18.3.0-canary-3d9b20132-20240124):
+    dependencies:
+      react: 18.3.0-canary-3d9b20132-20240124
+
+  react-icons@5.5.0(react@18.3.0-canary-3d9b20132-20240124):
     dependencies:
       react: 18.3.0-canary-3d9b20132-20240124
 

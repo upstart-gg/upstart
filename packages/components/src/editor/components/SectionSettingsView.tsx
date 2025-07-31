@@ -2,7 +2,7 @@ import FormNavigator from "./json-form/FormNavigator";
 import { type Section, sectionSchema } from "@upstart.gg/sdk/shared/bricks";
 import { useCallback, useMemo } from "react";
 import { merge, set } from "lodash-es";
-import { getSchemaObjectDefaults } from "@upstart.gg/sdk/shared/utils/schema";
+import { getSchemaDefaults } from "@upstart.gg/sdk/shared/utils/schema";
 import { usePreviewMode } from "~/editor/hooks/use-editor";
 import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
 import { useLocalStorage } from "usehooks-ts";
@@ -39,7 +39,7 @@ export default function SectionSettingsView({ section, group }: SectionSettingsV
   const navItems = useMemo(() => getNavItemsFromManifest(sectionSchema.properties.props, filter), [filter]);
 
   const formData = useMemo(() => {
-    const defProps = getSchemaObjectDefaults(sectionSchema.properties.props);
+    const defProps = getSchemaDefaults(sectionSchema.properties.props);
     return previewMode === "mobile"
       ? merge({}, defProps, section.props, section.mobileProps)
       : merge({}, defProps, section.props ?? {});

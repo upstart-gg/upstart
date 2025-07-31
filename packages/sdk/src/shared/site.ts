@@ -241,6 +241,24 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             items: {
               type: "object",
               properties: {
+                $id: {
+                  type: "string",
+                  title: "ID",
+                },
+                $publicationDate: {
+                  type: "string",
+                  format: "date-time",
+                  title: "Publication Date",
+                },
+                $lastModificationDate: {
+                  type: "string",
+                  format: "date-time",
+                  title: "Last Modification Date",
+                },
+                $slug: {
+                  type: "string",
+                  title: "Slug",
+                },
                 firstName: {
                   type: "string",
                   title: "First Name",
@@ -267,8 +285,23 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   format: "date",
                   title: "Started On",
                 },
+                tags: {
+                  type: "array",
+                  items: {
+                    type: "string",
+                  },
+                  title: "Tags",
+                },
               },
-              required: ["firstName", "lastName", "email"],
+              required: [
+                "firstName",
+                "lastName",
+                "email",
+                "$id",
+                "$slug",
+                "$publicationDate",
+                "$lastModificationDate",
+              ],
             },
             examples: [
               {
@@ -280,13 +313,31 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           },
           indexes: [
             {
+              fields: ["$id"],
+              name: "idx_unique_id",
+            },
+            {
+              fields: ["$slug"],
+              name: "idx_unique_slug",
+            },
+            {
+              fields: ["$publicationDate"],
+              name: "idx_unique_publicationDate",
+            },
+            {
+              fields: ["$lastModificationDate"],
+              name: "idx_unique_lastModificationDate",
+            },
+            {
+              fields: ["firstName"],
+              name: "idx_unique_firstName",
+            },
+            {
               fields: ["email"],
-              unique: true,
               name: "idx_unique_email",
             },
             {
               fields: ["lastName"],
-              unique: true,
               name: "idx_unique_lastName",
             },
             {
@@ -301,6 +352,10 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               fields: ["startedOn"],
               name: "idx_unique_startedOn",
             },
+            {
+              fields: ["tags"],
+              name: "idx_unique_tags",
+            },
           ],
         },
         {
@@ -312,6 +367,24 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             items: {
               type: "object",
               properties: {
+                $id: {
+                  type: "string",
+                  title: "ID",
+                },
+                $publicationDate: {
+                  type: "string",
+                  format: "date-time",
+                  title: "Publication Date",
+                },
+                $lastModificationDate: {
+                  type: "string",
+                  format: "date-time",
+                  title: "Last Modification Date",
+                },
+                $slug: {
+                  type: "string",
+                  title: "Slug",
+                },
                 firstName: {
                   type: "string",
                   title: "First Name",
@@ -320,15 +393,48 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   type: "string",
                   title: "Last Name",
                 },
+                tags: {
+                  type: "array",
+                  items: {
+                    type: "string",
+                  },
+                  title: "Tags",
+                },
               },
-              required: ["firstName", "lastName"],
+              required: [
+                "firstName",
+                "lastName",
+                "$id",
+                "$slug",
+                "$publicationDate",
+                "$lastModificationDate",
+              ],
             },
           },
           indexes: [
             {
+              fields: ["$id"],
+              name: "idx_unique_id",
+            },
+            {
+              fields: ["$slug"],
+              name: "idx_unique_slug",
+            },
+            {
+              fields: ["$publicationDate"],
+              name: "idx_unique_publicationDate",
+            },
+            {
+              fields: ["$lastModificationDate"],
+              name: "idx_unique_lastModificationDate",
+            },
+            {
               fields: ["lastName"],
-              unique: true,
               name: "idx_unique_lastName",
+            },
+            {
+              fields: ["tags"],
+              name: "idx_unique_tags",
             },
           ],
         },
@@ -504,48 +610,48 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   ],
                 },
               },
-              {
-                // dynamic box
-                id: generateId(),
-                type: "dynamic",
-                props: {
-                  direction: "flex-row",
-                  datasource: {
-                    id: "employees",
-                  },
-                  $children: [
-                    {
-                      id: generateId(),
-                      type: "text",
-                      props: {
-                        content:
-                          "Hello this is the first text in the dynamic box.<br />I'm on a new line explicitly.<br />I'm the third line and I'm the longest of them all! Yeah!",
-                      },
-                    },
-                    {
-                      id: generateId(),
-                      type: "button",
-                      props: {
-                        label: "Button #1 in dynamic box",
-                      },
-                    },
-                    {
-                      id: generateId(),
-                      type: "button",
-                      props: {
-                        label: "Small label",
-                      },
-                    },
-                    {
-                      id: generateId(),
-                      type: "button",
-                      props: {
-                        label: "Button #3 width the largest label",
-                      },
-                    },
-                  ],
-                },
-              },
+              // {
+              //   // dynamic box
+              //   id: generateId(),
+              //   type: "dynamic",
+              //   props: {
+              //     direction: "flex-row",
+              //     datasource: {
+              //       id: "employees",
+              //     },
+              //     $children: [
+              //       {
+              //         id: generateId(),
+              //         type: "text",
+              //         props: {
+              //           content:
+              //             "Hello this is the first text in the dynamic box.<br />I'm on a new line explicitly.<br />I'm the third line and I'm the longest of them all! Yeah!",
+              //         },
+              //       },
+              //       {
+              //         id: generateId(),
+              //         type: "button",
+              //         props: {
+              //           label: "Button #1 in dynamic box",
+              //         },
+              //       },
+              //       {
+              //         id: generateId(),
+              //         type: "button",
+              //         props: {
+              //           label: "Small label",
+              //         },
+              //       },
+              //       {
+              //         id: generateId(),
+              //         type: "button",
+              //         props: {
+              //           label: "Button #3 width the largest label",
+              //         },
+              //       },
+              //     ],
+              //   },
+              // },
             ],
           },
           {
@@ -611,18 +717,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           //         useDatabase: false,
           //         datasource: {
           //           mapping: {},
-          //           filters: {
-          //             patternProperties: {
-          //               "^(.*)$": {
-          //                 op: {},
-          //               },
-          //             },
-          //           },
-          //           sort: {
-          //             patternProperties: {
-          //               "^(.*)$": {},
-          //             },
-          //           },
+          //           filters: []
           //         },
           //         images: [],
           //         columns: 3,

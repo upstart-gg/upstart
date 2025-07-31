@@ -22,17 +22,17 @@ function getSchemaByProvider(provider: DatasourceProvider) {
 export function mapDatasourceSchema(schema: TArray): Datasource["schema"] {
   const { items, ...rest } = schema;
   return {
+    ...rest,
     items: {
       type: "object",
       properties: {
-        _id: { type: "string", title: "Id" },
-        _slug: { type: "string", format: "slug", title: "Slug" },
-        _publicationDate: { type: "string", format: "date-time", title: "Publication Date" },
-        _lastModificationDate: { type: "string", format: "date-time", title: "Last Modification Date" },
+        $id: { type: "string", title: "Id" },
+        $slug: { type: "string", format: "slug", title: "Slug" },
+        $publicationDate: { type: "string", format: "date-time", title: "Publication Date" },
+        $lastModificationDate: { type: "string", format: "date-time", title: "Last Modification Date" },
         ...items.properties,
       },
-      required: ["_id", "_slug", "_publicationDate", "_lastModificationDate", ...items.required],
+      required: ["$id", "$slug", "$publicationDate", "$lastModificationDate", ...items.required],
     },
-    ...rest,
   };
 }

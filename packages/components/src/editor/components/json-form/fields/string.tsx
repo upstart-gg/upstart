@@ -14,13 +14,21 @@ import { tx } from "@upstart.gg/style-system/twind";
 import type { UrlOrPageIdSettings } from "@upstart.gg/sdk/shared/bricks/props/string";
 import { type ChangeEvent, type FC, useRef, useState } from "react";
 import { useDraftHelpers, useDynamicParent, useSitemap } from "~/editor/hooks/use-page-data";
-import TextEditor from "~/shared/components/TextEditor";
+import TextEditor, {
+  type TextEditorRef,
+  DatasourceItemButton,
+  getEditorNodeFromField,
+  insertInEditor,
+} from "~/shared/components/TextEditor";
 import { RiBracesLine } from "react-icons/ri";
+import { useEditor } from "~/editor/hooks/use-editor";
 
 export const StringField: FC<FieldProps<string>> = (props) => {
   const { currentValue, onChange, title, description, placeholder, schema, brickId } = props;
   const dynamicParent = useDynamicParent(brickId);
   const onChangeDebounced = useDebounceCallback(onChange, 300);
+  const textEditorRef = useRef<TextEditorRef>(null);
+  const { lastTextEditPosition } = useEditor();
 
   if (dynamicParent) {
     return (
@@ -33,22 +41,28 @@ export const StringField: FC<FieldProps<string>> = (props) => {
               brickId={brickId}
               propPath="content"
               inline={!schema["ui:multiline"]}
+              ref={textEditorRef}
               placeholder=""
               // TODO: implement onChange
               // onChange={(e) => onChangeDebounced(e.target.value)}
               spellCheck={!!schema["ui:spellcheck"]}
-              disableMenuBar
+              noMenuBar
             />
           </div>
-          <Tooltip
-            content={<span className="block text-xs p-0.5">Available variables from your database</span>}
-            className="!z-[10000]"
-            delayDuration={300}
+          <DatasourceItemButton
+            brickId={brickId}
+            onFieldClick={(field) => {
+              console.log("DatasourceItemButton clicked for field:", field);
+              if (textEditorRef.current?.editor) {
+                // console.log("Inserting field into editor at position:", lastTextEditPosition);
+                insertInEditor(textEditorRef.current.editor, getEditorNodeFromField(field));
+              }
+            }}
           >
             <IconButton variant="outline">
               <RiBracesLine />
             </IconButton>
-          </Tooltip>
+          </DatasourceItemButton>
         </div>
       </div>
     );
@@ -141,7 +155,7 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (pro
                 propPath="content"
                 inline={!schema["ui:multiline"]}
                 placeholder="https://example.com"
-                disableMenuBar
+                noMenuBar
                 // TODO: implement onChange
                 // onChange={(e) => onChangeDebounced(e.target.value)}
                 spellCheck={!!schema["ui:spellcheck"]}

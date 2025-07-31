@@ -1,8 +1,6 @@
-import { type Static, Type, type TObject } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { IoGridOutline } from "react-icons/io5";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { canvasDataURI } from "~/shared/utils/canvas-data-uri";
-import { StringEnum } from "~/shared/utils/string-enum";
 import { basicGapRef } from "../props/gap";
 import { defineProps } from "../props/helpers";
 import { imageRef } from "../props/image";
@@ -12,28 +10,6 @@ import type { BrickProps } from "../props/types";
 import { gradientDirectionRef } from "../props/color";
 import { colorPresetRef } from "../props/preset";
 import { borderRef, roundingRef } from "../props/border";
-
-export const datasource = Type.Array(
-  Type.Object({
-    src: Type.String({ format: "uri", title: "Image URL" }),
-    alt: Type.String({ default: "", title: "Alt text" }),
-  }),
-  {
-    default: [
-      {
-        src: canvasDataURI,
-        alt: "my image",
-      },
-      { src: canvasDataURI, alt: "my image" },
-      { src: canvasDataURI, alt: "my image" },
-      { src: canvasDataURI, alt: "my image" },
-      { src: canvasDataURI, alt: "my image" },
-      { src: canvasDataURI, alt: "my image" },
-    ],
-  },
-);
-
-export type Datasource = typeof datasource;
 
 export const manifest = defineBrickManifest({
   type: "images-gallery",
@@ -275,7 +251,6 @@ export const manifest = defineBrickManifest({
     rounding: Type.Optional(roundingRef()),
     border: Type.Optional(borderRef()),
   }),
-  datasource,
 });
 
 export type Manifest = typeof manifest;

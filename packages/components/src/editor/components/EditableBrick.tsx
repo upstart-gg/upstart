@@ -104,7 +104,7 @@ function useBarPlacements(brick: Brick): Placement[] {
 }
 
 const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
-  ({ brick, children, isContainerChild, index }, ref) => {
+  ({ brick, isContainerChild, index }, ref) => {
     const hasMouseMoved = useRef(false);
     const selectedBrickId = useSelectedBrickId();
     const previewMode = usePreviewMode();
@@ -118,9 +118,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const allowedPlacements = useBarPlacements(brick);
     const draggingBrickType = useDraggingBrickType();
     const isMouseOverPanel = useIsMouseOverPanel();
-    const isContainer = !!manifest.isContainer;
 
-    // brick = brickWithDefaults(brick);
     const {
       refs: barsRefs,
       floatingStyles: barsFloatingStyles,
@@ -402,6 +400,8 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
     const canMovePrev = draftHelpers.canMoveToWithinParent(brick.id, "previous");
     const canMoveNext = draftHelpers.canMoveToWithinParent(brick.id, "next");
     const parentContainer = draftHelpers.getParentBrick(brick.id);
+    const parentElement = parentContainer ? document.getElementById(parentContainer.id) : null;
+    const flexOrientation = parentElement ? getComputedStyle(parentElement).flexDirection || "row" : "row";
 
     return (
       <ContextMenu.Root
@@ -460,7 +460,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                   draftHelpers.moveBrickWithin(brick.id, "previous");
                 }}
               >
-                {isContainerChild ? "Move up" : "Move left"}
+                {isContainerChild && flexOrientation === "column" ? "Move up" : "Move left"}
               </ContextMenu.Item>
             )}
             {canMoveNext && (
@@ -471,7 +471,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                   draftHelpers.moveBrickWithin(brick.id, "next");
                 }}
               >
-                {isContainerChild ? "Move down" : "Move right"}
+                {isContainerChild && flexOrientation === "column" ? "Move down" : "Move right"}
               </ContextMenu.Item>
             )}
             <ContextMenu.Sub>

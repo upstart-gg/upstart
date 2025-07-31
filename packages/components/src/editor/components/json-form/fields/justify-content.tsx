@@ -12,7 +12,7 @@ export default function JustifyContentField(props: FieldProps<JustifyContentSett
 
   const customSchema = {
     ...schema,
-    title: flexOrientation === "row" ? "Horizontal Alignment" : "Vertical Alignment",
+    title: flexOrientation === "row" ? "Horizontal Align." : "Vertical Align.",
     description:
       flexOrientation === "row"
         ? "Aligns the bricks horizontally within the container."
@@ -20,8 +20,8 @@ export default function JustifyContentField(props: FieldProps<JustifyContentSett
     "ui:display": "icon-group",
     enumNames:
       flexOrientation === "row"
-        ? ["Left", "Center", "Right", "Between", "Around", "Stretch"]
-        : ["Top", "Center", "Bottom", "Between", "Around", "Stretch"],
+        ? ["Left", "Center", "Right", "Between", "Around", "Evenly", "Stretch"]
+        : ["Top", "Center", "Bottom", "Between", "Around", "Evenly", "Stretch"],
     "ui:icons":
       flexOrientation === "row"
         ? [
@@ -30,6 +30,7 @@ export default function JustifyContentField(props: FieldProps<JustifyContentSett
             "fluent:align-end-horizontal-20-regular",
             "fluent:align-space-between-vertical-20-regular",
             "fluent:align-space-around-vertical-20-regular",
+            "fluent:align-space-evenly-horizontal-20-regular",
             "fluent:auto-fit-width-20-regular",
           ]
         : [
@@ -38,6 +39,7 @@ export default function JustifyContentField(props: FieldProps<JustifyContentSett
             "fluent:align-end-vertical-20-regular",
             "fluent:align-space-between-horizontal-20-regular",
             "fluent:align-space-around-horizontal-20-regular",
+            "fluent:align-space-evenly-vertical-20-regular",
             "fluent:auto-fit-height-20-regular",
           ],
   };

@@ -10,10 +10,11 @@ export function justifyContent(options: StringOptions = {}) {
       "justify-end",
       "justify-between",
       "justify-around",
+      "justify-evenly",
       "justify-stretch",
     ],
     {
-      enumNames: ["Start", "Center", "End", "Between", "Around", "Stretch"],
+      enumNames: ["Start", "Center", "End", "Between", "Around", "Evenly", "Stretch"],
       $id: "styles:justifyContent",
       title: "Justify bricks",
       "ui:field": "justify-content",

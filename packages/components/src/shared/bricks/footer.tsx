@@ -18,6 +18,7 @@ export default function Footer({ brick, editable }: BrickProps<Manifest>) {
     : undefined;
   return (
     <BrickRoot
+      editable={editable}
       manifest={manifest}
       as="footer"
       className={tx(

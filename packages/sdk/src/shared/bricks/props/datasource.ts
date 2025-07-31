@@ -18,24 +18,25 @@ export function datasource(title = "Database") {
       limit: Type.Optional(
         Type.Number({
           title: "Limit",
-          description: "Limit the number of records to fetch from the datasource",
+          description:
+            "Limit the number of records to fetch from the datasource. Setting to 1 will fetch and render only one item.",
           minimum: 1,
           default: 10,
         }),
       ),
       sortDirection: Type.Optional(
-        StringEnum(["asc", "desc", "rand"], {
-          title: "Sort Direction",
+        StringEnum(["asc", "desc"], {
+          title: "Sort",
+          enumNames: ["Ascending", "Descending"],
           description: "Direction to sort the records by",
           default: "desc",
-          "ui:display": "select",
         }),
       ),
       sortField: Type.Optional(
         Type.String({
           title: "Sort Field",
           description: "Select a field to sort by (must be indexed)",
-          default: "$publishedAt",
+          default: "$publicationDate",
         }),
       ),
       filters: Type.Optional(
@@ -52,23 +53,15 @@ export function datasource(title = "Database") {
               Type.Literal("in"),
               Type.Literal("nin"),
               Type.Literal("contains"),
+              Type.Literal("notContains"),
               Type.Literal("startsWith"),
+              Type.Literal("notStartsWith"),
               Type.Literal("endsWith"),
-              Type.Literal("exists"),
-              Type.Literal("not_exists"),
+              Type.Literal("notEndsWith"),
               Type.Literal("before"),
               Type.Literal("after"),
-              Type.Literal("between"),
-              Type.Literal("last"),
-              Type.Literal("next"),
             ]),
-            value: Type.String(),
-            unit: Type.Optional(
-              StringEnum(["minute", "hour", "day", "week", "month", "year"], {
-                title: "Time Unit",
-                description: "Time unit for relative date comparisons",
-              }),
-            ),
+            value: Type.Union([Type.String(), Type.Number(), Type.Boolean()]),
           }),
           {
             default: [],

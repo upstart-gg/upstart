@@ -46,7 +46,7 @@ export const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
           <li
             key={item.id}
             className={tx(
-              `select-none p-2.5 flex items-center text-[0.9rem]
+              `select-none px-2.5 py-3 flex items-center text-[0.85rem]
               justify-between border-b last:border-b-0 border-gray-100
             dark:border-dark-800 transition-colors duration-200 flex-wrap`,
               // if empty, hide
@@ -220,17 +220,6 @@ const FormNavigator: FC<FormNavigatorProps> = ({
             </div>
           )}
           {currentView.content}
-          {/* <div
-            ref={scrollViewRef}
-            // className="pb-2 overflow-y-auto scroll-smooth scrollbar-thin"
-            onScroll={() => {
-              startTransition(() => {
-                setIsOverflowing(false);
-              });
-            }}
-          >
-            {currentView.content}
-          </div> */}
         </div>
       </div>
     </FormNavigatorContext.Provider>

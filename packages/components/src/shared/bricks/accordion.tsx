@@ -23,6 +23,7 @@ export default function Accordion({ brick, editable }: BrickProps<Manifest>) {
 
   return (
     <BrickRoot
+      editable={editable}
       manifest={manifest}
       className={tx("flex flex-col overflow-hidden relative", Object.values(otherStyles))}
     >

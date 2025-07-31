@@ -17,7 +17,6 @@ import { TbArrowAutofitHeight, TbBorderCorners, TbDots, TbCirclePlus } from "rea
 import {
   forwardRef,
   type PropsWithChildren,
-  startTransition,
   useCallback,
   useEffect,
   useRef,

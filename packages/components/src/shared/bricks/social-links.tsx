@@ -15,6 +15,7 @@ export default function SocialLinks({ brick, editable }: BrickProps<Manifest>) {
 
   return (
     <BrickRoot
+      editable={editable}
       manifest={manifest}
       className={tx("flex justify-start items-start gap-2", Object.values(styles), presetClasses.main)}
     >

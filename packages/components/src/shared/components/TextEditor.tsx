@@ -4,6 +4,7 @@ import {
   type EditorEvents,
   type Editor,
   Extension,
+  type Content,
 } from "@tiptap/react";
 import Placeholder from "@tiptap/extension-placeholder";
 import { RiArrowDownSLine, RiBracesLine } from "react-icons/ri";
@@ -15,6 +16,8 @@ import { Callout, Popover, DropdownMenu, Select, ToggleGroup, Portal } from "@up
 import {
   useState,
   useEffect,
+  useImperativeHandle,
+  forwardRef,
   type PropsWithChildren,
   type MouseEventHandler,
   type ElementType,
@@ -42,6 +45,7 @@ import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useDatasource, useDatasources } from "~/editor/hooks/use-datasource";
 import { useDynamicParent } from "~/editor/hooks/use-page-data";
+import type { Fragment } from "@tiptap/pm/model";
 
 // function DatasourceFieldNode(props: NodeViewProps) {
 //   return (
@@ -128,11 +132,15 @@ export type TextEditorProps<E extends ElementType> = PolymorphicProps<E> & {
   noTextStrike?: boolean;
   textSizeMode?: "hero" | "classic" | false;
   placeholder?: string;
-  disableMenuBar?: boolean;
+  noMenuBar?: boolean;
   /**
    * Whether the editor is inlined in the page or appears in the panel
    */
   inline?: boolean;
+};
+
+export type TextEditorRef = {
+  editor: Editor | null;
 };
 
 const OverrideEscape = Extension.create({
@@ -144,184 +152,201 @@ const OverrideEscape = Extension.create({
   },
 });
 
-const TextEditor = <T extends ElementType = "div">({
-  content,
-  className,
-  brickId,
-  inline,
-  propPath,
-  noTextAlign,
-  noTextStrike,
-  textSizeMode = "classic",
-  placeholder,
-  disableMenuBar,
-}: TextEditorProps<T>) => {
-  const onUpdate = useTextEditorUpdateHandler(brickId, propPath);
-  const mainEditor = useEditor();
-  const datasources = useDatasources();
-  const [menuBarContainer, setMenuBarContainer] = useState<HTMLDivElement | null>(null);
-  const [currentContent, setContent] = useState(content);
-
-  // const [editable, setEditable] = useState(/*enabled*/ false);
-  const [focused, setFocused] = useState(false);
-  const fields = getJSONSchemaFieldsList(datasources);
-
-  const extensions = [
-    StarterKit.configure({
-      ...((inline || textSizeMode === "hero") && {
-        document: false,
-      }),
-      dropcursor: {
-        class: "drop-cursor",
-        color: "#FF9900",
-      },
-      heading: textSizeMode === "hero" ? false : {},
-    }),
-    TextStyle.configure({
-      mergeNestedSpanStyles: false,
-    }),
-    Placeholder.configure({
-      placeholder: placeholder ?? "My text...",
-    }),
-    ...(inline ? [Document.extend({ content: "paragraph" })] : []),
-    ...(textSizeMode === "hero"
-      ? [
-          HeroHeading,
-          Document.extend({
-            content: "heading*",
-          }),
-        ]
-      : []),
-    ...(!noTextAlign
-      ? [
-          TextAlign.configure({
-            types: ["heading", "paragraph"],
-          }),
-        ]
-      : []),
-    Highlight.configure({ multicolor: true }),
-    // DatasourceFieldExtension,
-    Mention.configure({
-      HTMLAttributes: {
-        class: "mention",
-      },
-      suggestion: {
-        ...datasourceFieldSuggestions,
-        items: ({ query }) => {
-          return fields.filter((field) => field.toLowerCase().includes(query.toLowerCase()));
-        },
-      },
-      renderHTML: ({ options, node }) => {
-        const field = node.attrs["data-field"] ?? node.attrs.label ?? node.attrs.id;
-        return [
-          "span",
-          {
-            "data-type": "mention",
-            class: tx(
-              "bg-upstart-50 text-black text-[97%] inline-block outline outline-upstart-50 px-1.5 rounded-sm mx-1",
-            ),
-            "data-field": field,
-          },
-          `${options.suggestion.char}${field}`.replace("{{", ""),
-        ];
-      },
-      renderText: ({ options, node }) => {
-        const field = node.attrs["data-field"] ?? node.attrs.label ?? node.attrs.id;
-        return `${options.suggestion.char}${field}`.replace("{{", "");
-      },
-    }),
-    OverrideEscape,
-  ] as Extension[];
-
-  const editor = useTextEditor(
+const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
+  (
     {
-      extensions,
-      content: currentContent,
-      onUpdate,
-      immediatelyRender: true,
-      editable: true,
-      editorProps: {
-        attributes: {
-          class: tx(className, inline && "singleline"),
+      content,
+      className,
+      brickId,
+      inline,
+      propPath,
+      noTextAlign,
+      noTextStrike,
+      textSizeMode = "classic",
+      placeholder,
+      noMenuBar,
+    },
+    ref,
+  ) => {
+    const onUpdate = useTextEditorUpdateHandler(brickId, propPath);
+    const mainEditor = useEditor();
+    const dynParent = useDynamicParent(brickId);
+    const datasource = useDatasource(dynParent?.props?.datasource?.id);
+    const [menuBarContainer, setMenuBarContainer] = useState<HTMLDivElement | null>(null);
+    const [currentContent, setContent] = useState(content);
+
+    // const [editable, setEditable] = useState(/*enabled*/ false);
+    const [focused, setFocused] = useState(false);
+    const fields = getJSONSchemaFieldsList(datasource?.schema);
+
+    const extensions = [
+      StarterKit.configure({
+        ...((inline || textSizeMode === "hero") && {
+          document: false,
+        }),
+        dropcursor: {
+          class: "drop-cursor",
+          color: "#FF9900",
+        },
+        heading: textSizeMode === "hero" ? false : {},
+      }),
+      TextStyle.configure({
+        mergeNestedSpanStyles: false,
+      }),
+      Placeholder.configure({
+        placeholder: placeholder ?? "My text...",
+      }),
+      ...(inline ? [Document.extend({ content: "paragraph" })] : []),
+      ...(textSizeMode === "hero"
+        ? [
+            HeroHeading,
+            Document.extend({
+              content: "heading*",
+            }),
+          ]
+        : []),
+      ...(!noTextAlign
+        ? [
+            TextAlign.configure({
+              types: ["heading", "paragraph"],
+            }),
+          ]
+        : []),
+      Highlight.configure({ multicolor: true }),
+      // DatasourceFieldExtension,
+      Mention.configure({
+        HTMLAttributes: {
+          class: "mention",
+        },
+        suggestion: {
+          ...datasourceFieldSuggestions,
+          items: ({ query }) => {
+            return fields.filter((field) => field.toLowerCase().includes(query.toLowerCase()));
+          },
+        },
+        renderHTML: ({ options, node }) => {
+          const field = node.attrs["data-field"] ?? node.attrs.label ?? node.attrs.id;
+          return [
+            "span",
+            {
+              "data-type": "mention",
+              class: tx(
+                "bg-upstart-50 text-black text-[92%] inline-block outline outline-upstart-50 px-1 rounded-sm mx-0.5",
+              ),
+              "data-field": field,
+            },
+            `${options.suggestion.char}${field}`.replace("{{", ""),
+          ];
+        },
+        renderText: ({ options, node }) => {
+          const field = node.attrs["data-field"] ?? node.attrs.label ?? node.attrs.id;
+          return `${options.suggestion.char}${field}`.replace("{{", "");
+        },
+      }),
+      OverrideEscape,
+    ] as Extension[];
+
+    const editor = useTextEditor(
+      {
+        extensions,
+        content: currentContent,
+        onUpdate,
+        immediatelyRender: true,
+        editable: true,
+        editorProps: {
+          attributes: {
+            class: tx(className, inline && "singleline"),
+          },
         },
       },
-    },
-    [brickId, mainEditor.textEditMode],
-  );
+      [brickId, mainEditor.textEditMode],
+    );
 
-  useEffect(() => {
-    const onFocus = (e: EditorEvents["focus"]) => {
-      // e.event.stopPropagation();
-      mainEditor.setIsEditingText(brickId);
-      mainEditor.setSelectedBrickId(brickId);
-      setFocused(true);
-      if (disableMenuBar) {
-        return;
-      }
-      setTimeout(() => {
-        const container = document.querySelector<HTMLDivElement>(`#text-editor-menu-${brickId}`);
-        if (container) {
-          setMenuBarContainer(container);
+    useEffect(() => {
+      const onFocus = (e: EditorEvents["focus"]) => {
+        // e.event.stopPropagation();
+        mainEditor.setIsEditingText(brickId);
+        mainEditor.setSelectedBrickId(brickId);
+        setFocused(true);
+        if (noMenuBar) {
+          return;
         }
-      }, 0);
-    };
+        setTimeout(() => {
+          const container = document.querySelector<HTMLDivElement>(`#text-editor-menu-${brickId}`);
+          if (container) {
+            setMenuBarContainer(container);
+          }
+        }, 0);
+      };
 
-    const onBlur = (e: EditorEvents["blur"]) => {
-      // For whatever reason, the editor content is not updated when the blur event is triggered the first time
-      // So we need to manually update the content here
-      setContent(e.editor.getHTML());
+      const onBlur = (e: EditorEvents["blur"]) => {
+        // For whatever reason, the editor content is not updated when the blur event is triggered the first time
+        // So we need to manually update the content here
+        setContent(e.editor.getHTML());
 
-      // If there is a related target, it means the blur event was triggered by a click on the editor buttons
-      if (e.event.relatedTarget && !(e.event.relatedTarget as HTMLElement).classList.contains("tiptap")) {
-        // setFocused(false);
-        console.debug("Editor blur triggered by editor buttons, ignoring", e.event.relatedTarget);
-        return;
-      }
+        // If there is a related target, it means the blur event was triggered by a click on the editor buttons
+        if (e.event.relatedTarget && !(e.event.relatedTarget as HTMLElement).classList.contains("tiptap")) {
+          // setFocused(false);
+          console.debug("Editor blur triggered by editor buttons, ignoring", e.event.relatedTarget);
+          return;
+        }
 
-      console.log("Editor blur", e);
+        console.log("Editor blur", e);
 
-      mainEditor.setIsEditingText(false);
-      mainEditor.setLastTextEditPosition(e.editor.state.selection.anchor);
+        mainEditor.setIsEditingText(false);
+        mainEditor.setLastTextEditPosition(e.editor.state.selection.anchor);
 
-      // Test commenting this out to see if it helps with the focus issue
-      // mainEditor.setSelectedBrickId();
-      // mainEditor.togglePanel("inspector");
+        // Test commenting this out to see if it helps with the focus issue
+        // mainEditor.setSelectedBrickId();
+        // mainEditor.togglePanel("inspector");
 
-      // reset the selection to the end of the document
-      e.editor.commands.setTextSelection({
-        from: e.editor.state.doc.content.size,
-        to: e.editor.state.doc.content.size,
-      });
+        // reset the selection to the end of the document
+        e.editor.commands.setTextSelection({
+          from: e.editor.state.doc.content.size,
+          to: e.editor.state.doc.content.size,
+        });
 
-      setFocused(false);
-    };
+        setFocused(false);
+      };
 
-    editor?.on("focus", onFocus);
-    editor?.on("blur", onBlur);
+      editor?.on("focus", onFocus);
+      editor?.on("blur", onBlur);
 
-    return () => {
-      editor?.off("focus", onFocus);
-      editor?.off("blur", onBlur);
-    };
-  }, [editor, mainEditor, brickId, disableMenuBar]);
+      return () => {
+        editor?.off("focus", onFocus);
+        editor?.off("blur", onBlur);
+      };
+    }, [editor, mainEditor, brickId, noMenuBar]);
 
-  return (
-    <>
-      <EditorContent autoCorrect="false" spellCheck="false" editor={editor} className={tx("contents")} />
-      {focused && menuBarContainer && (
-        <Portal container={menuBarContainer} asChild>
-          <TextEditorMenuBar
-            brickId={brickId}
-            editor={editor}
-            noTextAlign={noTextAlign}
-            noTextStrike={noTextStrike}
-            textSizeMode={textSizeMode}
-          />
-        </Portal>
-      )}
-    </>
-  );
-};
+    // Expose the editor instance through the ref
+    useImperativeHandle(
+      ref,
+      () => ({
+        editor,
+      }),
+      [editor],
+    );
+
+    return (
+      <>
+        <EditorContent autoCorrect="false" spellCheck="false" editor={editor} className={tx("contents")} />
+        {focused && menuBarContainer && (
+          <Portal container={menuBarContainer} asChild>
+            <TextEditorMenuBar
+              brickId={brickId}
+              editor={editor}
+              noTextAlign={noTextAlign}
+              noTextStrike={noTextStrike}
+              textSizeMode={textSizeMode}
+            />
+          </Portal>
+        )}
+      </>
+    );
+  },
+);
+
+TextEditor.displayName = "TextEditor";
 
 const TextEditorMenuBar = ({
   editor,
@@ -341,7 +366,13 @@ const TextEditorMenuBar = ({
       {textSizeMode === "hero" && <TextSizeHeroDropdown editor={editor} />}
       {!noTextAlign && <TextAlignButtonGroup editor={editor} />}
       <TextStyleButtonGroup editor={editor} noTextStrike={noTextStrike} textSizeMode={textSizeMode} />
-      {dynParent !== null && <DatasourceItemButton editor={editor} brickId={brickId} />}
+      {dynParent !== null && (
+        <DatasourceItemButton editor={editor} brickId={brickId}>
+          <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
+            <RiBracesLine className="w-5 h-5" />
+          </button>
+        </DatasourceItemButton>
+      )}
     </>
   );
 };
@@ -403,58 +434,101 @@ function DatasourceFieldPickerModal({ brickId, onFieldSelect }: DatasourceFieldP
 
   if (!datasource) {
     return (
-      <div className="bg-white min-w-80 min-h-80 flex flex-col gap-4">
+      <div className="bg-white min-w-52 min-h-80 flex flex-col gap-4">
         No database selected in the dynamic parent brick.
       </div>
     );
   }
   return (
-    <div className="bg-white min-w-80 min-h-80 flex flex-col gap-4">
+    <div className="bg-white min-w-52 min-h-80 flex flex-col gap-4">
       <h3 className="text-base font-medium">Insert database field</h3>
       <JSONSchemaView schema={datasource.schema} onFieldSelect={onFieldSelect} />
     </div>
   );
 }
 
-function DatasourceItemButton({ editor, brickId }: { editor: Editor; brickId: string }) {
-  const dynParent = useDynamicParent(brickId);
-  const sources = useDatasources();
-  const mainEditor = useEditor();
-  // const end = editor.state.
+export function insertInEditor(editor: Editor, content: Content | Node | Fragment, position?: number) {
+  console.log("Inserting content at position %d: %s", position, content);
 
-  const onFieldSelect = (field: string) => {
-    const content = [
-      {
-        type: "mention",
-        attrs: { "data-field": field, label: field },
-      },
-      {
-        type: "text",
-        text: ` `,
-      },
-    ];
-
-    const { size } = editor.view.state.doc.content;
-
+  if (typeof position === "undefined") {
     editor
       .chain()
-      .focus()
-      .insertContentAt(mainEditor.lastTextEditPosition ?? size, content, {
+      .insertContent(content, {
         parseOptions: {
           preserveWhitespace: "full",
         },
       })
       .run();
+  } else {
+    try {
+      // editor
+      //   .chain()
+      //   .insertContentAt(position, content, {
+      //     parseOptions: {
+      //       preserveWhitespace: "full",
+      //     },
+      //   })
+      //   .run();
+      editor
+        .chain()
+        .insertContent(content, {
+          parseOptions: {
+            preserveWhitespace: "full",
+          },
+        })
+        .run();
+    } catch (error) {
+      if (error instanceof RangeError) {
+        console.log("RangeError:", error.message);
+        editor
+          .chain()
+          .insertContent(content, {
+            parseOptions: {
+              preserveWhitespace: "full",
+            },
+          })
+          .run();
+      }
+    }
+  }
+}
+
+export function getEditorNodeFromField(field: string) {
+  return [
+    {
+      type: "mention",
+      attrs: { "data-field": field, label: field },
+    },
+    {
+      type: "text",
+      text: ` `,
+    },
+  ];
+}
+
+export function DatasourceItemButton({
+  editor,
+  brickId,
+  children,
+  onFieldClick,
+}: PropsWithChildren<{ editor?: Editor | null; brickId: string; onFieldClick?: (field: string) => void }>) {
+  const mainEditor = useEditor();
+
+  const onFieldSelect = (field: string) => {
+    onFieldClick?.(field);
+
+    if (!editor) {
+      return;
+    }
+
+    const content = getEditorNodeFromField(field);
+    insertInEditor(editor, content, mainEditor.lastTextEditPosition);
   };
 
   return (
     <Popover.Root>
-      <Popover.Trigger>
-        <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
-          <RiBracesLine className="w-5 h-5" />
-        </button>
-      </Popover.Trigger>
-      <Popover.Content width="460px" side="right" align="start" size="2" maxHeight="50vh" sideOffset={10}>
+      <Popover.Trigger>{children}</Popover.Trigger>
+      <Popover.Content width="360px" side="top" align="start" size="2" maxHeight="50vh" sideOffset={10}>
         <DatasourceFieldPickerModal onFieldSelect={onFieldSelect} brickId={brickId} />
       </Popover.Content>
     </Popover.Root>

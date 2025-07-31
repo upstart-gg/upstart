@@ -3,7 +3,7 @@
  * I tried to use react-window for performance but encountered issues with scrolling to
  * the selected item because we use groups of items with react-select.
  *
- * TODO: use Combobox from @headlessui/react
+ * TODO: use tanstack virtual for better performance
  */
 
 import Select, {

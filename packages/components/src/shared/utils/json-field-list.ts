@@ -1,5 +1,4 @@
 import type { TArray, TObject, TSchema } from "@sinclair/typebox";
-import type { Site } from "@upstart.gg/sdk/shared/site";
 
 function getSchemaObject({ schema: { required, properties }, level }: { schema: TObject; level: number }) {
   const renderProperties = properties;
@@ -37,13 +36,7 @@ function getSchemaEntry({ schema, level }: { schema: TSchema; level: number }): 
   return `${schema.name}`;
 }
 
-export function getJSONSchemaFieldsList(schemasMap?: Site["datasources"]) {
-  if (!schemasMap) return [];
-  return (
-    Object.entries(schemasMap)
-      .filter(([, ds]) => !!ds.schema)
-      // todo fix this
-      // @ts-ignore
-      .flatMap(([name, ds]) => getSchemaEntry({ schema: ds.schema as TSchema, level: 0 }))
-  );
+export function getJSONSchemaFieldsList(schema?: TArray) {
+  if (!schema) return [];
+  return (getSchemaEntry({ schema, level: 0 }) as string[]).toSorted((a, b) => a.localeCompare(b));
 }
