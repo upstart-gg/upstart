@@ -17,7 +17,7 @@ export default function TextContent(props: TextEditorProps<any>, ref: React.Ref<
     <Component
       ref={ref}
       className={props.className}
-      // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: We do actually want the user to be able to set HTML content
       dangerouslySetInnerHTML={{ __html: props.content }}
     />
   );
