@@ -9,7 +9,7 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
   type: string;
   category?: BrickCategory;
   name: string;
-  icon: typeof IconBase | ReactNode | IconType;
+  icon: IconType;
   iconClassName?: string;
   staticClasses?: string;
   description?: string;
