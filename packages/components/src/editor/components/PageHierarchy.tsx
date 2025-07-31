@@ -1,7 +1,7 @@
 import { useEditorHelpers, useSelectedBrickId, useSelectedSectionId } from "../hooks/use-editor";
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
 import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
-import { tx } from "@upstart.gg/style-system/twind";
+import { css, tx } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";
 import { startTransition, useEffect, useRef, useState } from "react";
 import { RxDragHandleHorizontal } from "react-icons/rx";
@@ -85,37 +85,52 @@ export default function PageHierarchy({
     return bricks.map((brick, brickIndex) => {
       const childBricks: Brick[] = "$children" in brick.props ? brick.props.$children : [];
       const hasChildren = childBricks.length > 0;
+      const isContainer = manifests[brick.type].isContainer;
       const Icon = manifests[brick.type].icon;
       const brickName = manifests[brick.type].name;
       return (
         <Draggable key={`hierarchy_${brick.id}`} draggableId={`hierarchy_${brick.id}`} index={brickIndex}>
           {(provided, snapshot) => (
-            <div key={brick.id} ref={provided.innerRef} {...provided.draggableProps} className="min-h-fit">
+            <div
+              key={brick.id}
+              ref={provided.innerRef}
+              {...provided.draggableProps}
+              className={tx("min-h-fit flex flex-col gap-2", isContainer && "mt-1 mr-1 ml-1 last:mb-1")}
+            >
               <div
                 id={`hierarchy_${brick.id}`}
                 data-element-type="brick"
                 data-brick-type={brick.type}
+                data-level={level}
                 data-has-children={hasChildren}
                 className={tx(
-                  "select-none cursor-pointer flex flex-col",
-                  hasChildren && "rounded",
-                  !hasChildren && selectedBrick?.id !== brick.id && "hover:bg-upstart-50",
-                  hasChildren && "outline outline-2 outline-transparent min-h-fit",
-                  hasChildren &&
-                    (selectedBrick?.id === brick.id ? "outline-upstart-400" : "hover:(outline-upstart-100)"),
-                  !hasChildren && selectedBrick?.id === brick.id && "bg-upstart-500 text-white font-bold",
+                  "select-none cursor-pointer flex flex-col ",
+                  // level > 0 || (hasChildren && "ml-1.5"),
+                  isContainer && "rounded outline outline-2 min-h-fit",
+                  isContainer
+                    ? selectedBrick?.id === brick.id
+                      ? "outline-orange-300 "
+                      : "outline-transparent hover:(outline-orange-200)"
+                    : selectedBrick?.id === brick.id
+                      ? "outline-upstart-400 "
+                      : "outline-transparent hover:(outline-upstart-100)",
                   snapshot.isDragging && "outline outline-2 outline-upstart-400 bg-upstart-100",
                 )}
-                style={{
-                  marginLeft: hasChildren ? `${(level + 1) * 6}px` : undefined,
-                  paddingLeft: !hasChildren ? `${(level + 1) * 6}px` : undefined,
-                }}
               >
                 <div
                   className={tx(
-                    "flex items-center justify-between group transition-all py-1 px-1.5",
-                    hasChildren && selectedBrick?.id === brick.id && "bg-upstart-500 text-white font-bold",
-                    selectedBrick?.id !== brick.id && "hover:bg-upstart-50",
+                    `flex items-center justify-between group/${brick.id} transition-all py-1 px-1.5`,
+                    (isChild || level === 0) &&
+                      css({
+                        paddingLeft: `${(level + 1) * 10}px`,
+                      }),
+                    isContainer
+                      ? selectedBrick?.id === brick.id
+                        ? "bg-orange-300 text-white font-bold"
+                        : "hover:bg-orange-50"
+                      : selectedBrick?.id === brick.id
+                        ? "bg-upstart-500 text-white font-bold"
+                        : "hover:bg-upstart-50",
                   )}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -137,13 +152,16 @@ export default function PageHierarchy({
                     <Icon className="w-4 h-4" /> {brickName}
                   </span>
                   <div {...provided.dragHandleProps}>
-                    <RxDragHandleHorizontal className="w-5 h-5 cursor-row-resize opacity-60 group-hover:opacity-80 transition-opacity" />
+                    <RxDragHandleHorizontal
+                      className={`w-5 h-5 cursor-row-resize opacity-0 group-hover/${brick.id}:opacity-80 transition-opacity`}
+                    />
                   </div>
                 </div>
                 {childBricks.length > 0 && (
                   <Droppable
                     droppableId={`hierarchy_${brick.id}`}
-                    type="brick-hierarchy"
+                    // DON'T SPECIFY "type" OTHERWISE DRAGGING NESTED BRICKS DON'T WORK
+                    // type="XXX"
                     direction="vertical"
                   >
                     {(provided) => (
@@ -226,6 +244,9 @@ export default function PageHierarchy({
     draggingRef.current = cap.draggableId;
 
     const element = document.getElementById(cap.draggableId);
+
+    console.log("BEFORE CAPTURE", { cap, dataset: element?.dataset });
+
     element?.style.setProperty("z-index", "9999");
 
     // Hide all descendants of the dragged element
@@ -242,7 +263,7 @@ export default function PageHierarchy({
   };
 
   return (
-    <div className={tx("grow-0 shrink-0", className)} onMouseLeave={() => setHoverElement(undefined)}>
+    <div className={tx("grow shrink-0 bg-red", className)} onMouseLeave={() => setHoverElement(undefined)}>
       <PanelBlockTitle className="border-t">
         <span>Hierarchy</span>
         <HelpIcon
@@ -258,7 +279,7 @@ Drag and drop sections and bricks to reorder them.
               <div
                 ref={provided.innerRef}
                 className={tx(
-                  "flex flex-col py-2 pt-1 px-1 text-sm text-[80%] scrollbar-thin max-h-[calc(100%-38px)] overflow-y-auto",
+                  "flex flex-col gap-1 py-2 pt-1 px-1 text-sm text-[80%] scrollbar-thin max-h-[calc(100%-38px)] overflow-y-auto",
                 )}
                 {...provided.droppableProps}
               >
@@ -285,7 +306,7 @@ Drag and drop sections and bricks to reorder them.
                       >
                         <div
                           className={tx(
-                            "py-1 px-1.5 rounded-t select-none flex justify-between items-center group",
+                            "py-1 px-1.5 rounded-t select-none flex justify-between items-center group min-h-fit",
                             section.id === selectedSectionId
                               ? "bg-upstart-500 text-white font-bold cursor-default"
                               : "hover:bg-upstart-50 cursor-pointer",
@@ -304,18 +325,18 @@ Drag and drop sections and bricks to reorder them.
                               .getElementById(section.id)
                               ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
                           }}
-                          onMouseEnter={() => {
-                            if (
-                              dragSnapshot.isDragging ||
-                              dragSnapshot.draggingOver ||
-                              snapshot.draggingFromThisWith ||
-                              snapshot.isDraggingOver ||
-                              draggingRef.current
-                            ) {
-                              return;
-                            }
-                            setHoverElement({ type: "section", id: section.id });
-                          }}
+                          // onMouseEnter={() => {
+                          //   if (
+                          //     dragSnapshot.isDragging ||
+                          //     dragSnapshot.draggingOver ||
+                          //     snapshot.draggingFromThisWith ||
+                          //     snapshot.isDraggingOver ||
+                          //     draggingRef.current
+                          //   ) {
+                          //     return;
+                          //   }
+                          //   setHoverElement({ type: "section", id: section.id });
+                          // }}
                         >
                           <span>Section {section.label ?? "Unnamed"}</span>
                           <div {...provided.dragHandleProps}>
@@ -334,7 +355,7 @@ Drag and drop sections and bricks to reorder them.
                               {section.bricks.length === 0 && (
                                 <div
                                   className={tx(
-                                    "w-full h-full px-2 flex items-center text-gray-500 font-medium",
+                                    "w-full h-full px-2 py-1.5 flex items-center text-gray-500 font-normal",
                                   )}
                                 >
                                   No bricks in this section.
