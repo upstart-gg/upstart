@@ -1,7 +1,7 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext } from "react";
 import type { TArray, TObject, TSchema } from "@sinclair/typebox";
 import { Text } from "@upstart.gg/style-system/system";
-import { tx, css } from "@upstart.gg/style-system/twind";
+import { tx } from "@upstart.gg/style-system/twind";
 
 type ChoiceContextProps = {
   onFieldSelect: (value: string) => void;
@@ -18,28 +18,27 @@ function SchemaEntry({ schema }: { schema: TSchema }) {
   const { onFieldSelect } = useContext(ChoiceContext);
   return (
     <NestingContext.Provider value={nestingLevel + 1}>
-      <ul id={`${schema.name}_level-${nestingLevel}`} className="mb-1 list-[square] pl-2">
+      <ul id={`${schema.name}_level-${nestingLevel}`} className="mb-1">
         {schema.type === "object" ? (
           <SchemaObject schema={schema as TObject} />
-        ) : schema.type === "array" ? (
-          <SchemaArray schema={schema as TArray} />
         ) : (
-          <li>
+          <li className="flex items-center gap-1 w-full ">
+            <Text size="3">&#x2022;</Text>
             <Text
               size="2"
               onClick={() => onFieldSelect(schema.name)}
-              className="hover:bg-upstart-200 bg-upstart-100 cursor-pointer px-1.5 py-1 rounded"
+              className="hover:bg-upstart-50 cursor-pointer px-1 py-0.5 rounded"
             >
-              {schema.name}
+              {schema.title}
             </Text>
-            {schema.optional && (
-              <Text color="gray" size="1" className="ml-1">
+            <Text color="gray" size="1" className="ml-1">
+              ({schema.name})
+            </Text>
+            {/* {schema.optional && (
+              <Text color="gray" size="1" className="ml-auto justify-self-end">
                 (optional)
               </Text>
-            )}{" "}
-            <Text color="gray" size="1">
-              ({schema.enum ? `"${schema.enum.join('" | "')}"` : schema.type})
-            </Text>
+            )} */}
           </li>
         )}
       </ul>
@@ -47,63 +46,21 @@ function SchemaEntry({ schema }: { schema: TSchema }) {
   );
 }
 
-function SchemaArray({ schema }: { schema: TArray }) {
-  const { items, name, required } = schema;
-  const { onFieldSelect, allowArraySelection } = useContext(ChoiceContext);
-  return (
-    <ul className="list-[square]">
-      {name && (
-        <li>
-          <Text size="2">
-            {allowArraySelection ? (
-              <Text size="2" onClick={() => onFieldSelect(name)}>
-                {name}
-              </Text>
-            ) : (
-              name
-            )}
-            {schema.optional && (
-              <Text color="gray" size="1" className="ml-1">
-                (Optional)
-              </Text>
-            )}
-          </Text>
-        </li>
-      )}
-
-      <SchemaEntry schema={{ ...items, optional: required && !required.includes(name) }} />
-    </ul>
-  );
-}
-
-function SchemaObject({ schema: { name, required, allOf, properties } }: { schema: TObject }) {
-  const renderProperties = properties;
-  // if (allOf) {
-  //   const newProperties = allOf.reduce((acc, obj) => {
-  //     if (obj.properties) {
-  //       return {...acc, ...obj.properties}
-  //     }
-  //   }, {})
-  //   console.log(allOf)
-  //   if (allOf.oneOf) {
-  //     renderProperties = allOf.oneOf.map(variant => ({ ...allOf, ...variant }));
-  //   } else {
-  //     renderProperties = {...allOf};
-  //   }
-  //   // console.log(renderProperties);
-  // }
+function SchemaObject({ schema: { name, required, properties } }: { schema: TObject }) {
   if (properties)
     return (
       <ul className="list-disc">
         <li className={tx({ hidden: !name })}>
           <span>{name}</span>
         </li>
-        {Object.entries(renderProperties).map(([name, value], i) => (
-          <SchemaEntry
-            key={`${name}-${i}`}
-            schema={{ ...value, name, optional: required && !required.includes(name) }}
-          />
-        ))}
+        {Object.entries(properties)
+          .sort(([p1], [p2]) => p1.localeCompare(p2))
+          .map(([name, value], i) => (
+            <SchemaEntry
+              key={`${name}-${i}`}
+              schema={{ ...value, name, optional: required && !required.includes(name) }}
+            />
+          ))}
       </ul>
     );
   return null;
@@ -116,7 +73,7 @@ export function JSONSchemaView({
   return (
     <ChoiceContext.Provider value={{ onFieldSelect }}>
       <NestingContext.Provider value={0}>
-        <SchemaEntry schema={schema} />
+        <SchemaEntry schema={schema.items} />
       </NestingContext.Provider>
     </ChoiceContext.Provider>
   );

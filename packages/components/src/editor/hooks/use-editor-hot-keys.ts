@@ -77,10 +77,8 @@ export function useEditorHotKeys() {
       e.preventDefault();
       if (selectedBrickId) {
         // console
-        console.log("Moving %s up", selectedBrickId);
         draftHelpers.moveBrickWithin(selectedBrickId, "previous");
       } else if (selectedSectionId) {
-        console.log("Moving section %s up", selectedSectionId);
         draftHelpers.moveSectionUp(selectedSectionId);
         const element = document.getElementById(selectedSectionId);
         if (element) {
@@ -89,7 +87,7 @@ export function useEditorHotKeys() {
       }
     },
     {
-      enableOnContentEditable: true,
+      enableOnContentEditable: false,
     },
   );
 
@@ -99,10 +97,8 @@ export function useEditorHotKeys() {
       e.preventDefault();
       if (selectedBrickId) {
         // console
-        console.log("Moving %s to right", selectedBrickId);
         draftHelpers.moveBrickWithin(selectedBrickId, "next");
       } else if (selectedSectionId) {
-        console.log("Moving section %s down", selectedSectionId);
         draftHelpers.moveSectionDown(selectedSectionId);
         const element = document.getElementById(selectedSectionId);
         if (element) {
@@ -111,7 +107,7 @@ export function useEditorHotKeys() {
       }
     },
     {
-      enableOnContentEditable: true,
+      enableOnContentEditable: false,
     },
   );
 
