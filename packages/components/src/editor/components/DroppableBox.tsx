@@ -18,13 +18,14 @@ export default function DroppableBox<T extends BrickManifest>({
   const { isDesktop } = useDeviceInfo();
   const draggingBrickType = useDraggingBrickType();
   const previewMode = usePreviewMode();
+  const direction = props.direction === "flex-col" ? "vertical" : "horizontal";
+
   return (
     <Droppable
       droppableId={brick.id}
       type="brick"
-      // isCombineEnabled
       isDropDisabled={!isDesktop}
-      direction="vertical"
+      direction={direction}
       mode="virtual"
       renderClone={() => null}
     >

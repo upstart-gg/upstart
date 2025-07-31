@@ -95,8 +95,8 @@ export default function Editor(props: EditorProps) {
       }
 
       element.classList.add(tx("shadow-2xl"));
-      element.style.setProperty("max-height", "25dvh", "important");
-      element.style.setProperty("overflow", "hidden", "important");
+      // element.style.setProperty("max-height", "25dvh", "important");
+      // element.style.setProperty("overflow", "hidden", "important");
       // element.style.setProperty("transform-origin", "center", "important");
       // Transition scale
       // element.style.setProperty("transition", "scale 0.3s ease-in-out", "important");

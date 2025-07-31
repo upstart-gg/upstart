@@ -37,6 +37,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     previewMode,
     showIntro,
   });
+
   const generationState = useGenerationState();
   useGridObserver(pageRef);
 
@@ -71,18 +72,28 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       const brickId = target.dataset.brickId as string;
       const parentBrick = draftHelpers.getParentBrick(brickId);
       const existingBrick = draftHelpers.getBrick(brickId)?.props;
-      const parentElement = target.parentElement as HTMLElement;
-      const parentWidth = parentElement.clientWidth;
+      // parentElement corresponds to the wrapper of the brick
+      const parentWrapperElement = target.parentElement as HTMLElement;
+      // Also count the padding of the actual brick
+
+      // Compute the parent innerWidth (clientWidth - padding)
+      const parentWidth =
+        parentWrapperElement.clientWidth -
+        parseFloat(getComputedStyle(parentWrapperElement).paddingLeft) -
+        parseFloat(getComputedStyle(parentWrapperElement).paddingRight);
+
       if (!parentWidth) {
         console.warn("Parent element width is not available, cannot update brick props.");
         return;
       }
 
       const width =
-        previewMode === "mobile" ? "auto" : `${((event.rect.width / parentWidth) * 100).toFixed(0)}%`;
+        previewMode === "mobile"
+          ? "auto"
+          : `${Math.min((event.rect.width / parentWidth) * 100, 100).toFixed(0)}%`;
 
       console.log("Resizing with parentBrick:", parentBrick);
-      console.log("Resizing with parentElement:", parentElement);
+      console.log("Resizing with parentWrapperElement:", parentWrapperElement);
       console.log("Resizing with parentWidth:", parentWidth);
       console.log("Resizing with width:", width);
 
