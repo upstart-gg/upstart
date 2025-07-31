@@ -141,8 +141,6 @@ export function useEditorHotKeys() {
   useHotkeys(
     "space",
     (e) => {
-      console.log("space pressed", e);
-
       const target = e.target as HTMLElement;
       if (target.classList.contains("tiptap")) {
         return;

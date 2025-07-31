@@ -128,7 +128,7 @@ export type TextEditorProps<E extends ElementType> = PolymorphicProps<E> & {
   noTextStrike?: boolean;
   textSizeMode?: "hero" | "classic" | false;
   placeholder?: string;
-  disableMenuBar?: boolean;
+  noMenuBar?: boolean;
   /**
    * Whether the editor is inlined in the page or appears in the panel
    */
@@ -154,7 +154,7 @@ const TextEditor = <T extends ElementType = "div">({
   noTextStrike,
   textSizeMode = "classic",
   placeholder,
-  disableMenuBar,
+  noMenuBar,
 }: TextEditorProps<T>) => {
   const onUpdate = useTextEditorUpdateHandler(brickId, propPath);
   const mainEditor = useEditor();
@@ -218,7 +218,7 @@ const TextEditor = <T extends ElementType = "div">({
           {
             "data-type": "mention",
             class: tx(
-              "bg-upstart-50 text-black text-[97%] inline-block outline outline-upstart-50 px-1.5 rounded-sm mx-1",
+              "bg-upstart-50 text-black text-[97%] inline-block outline outline-upstart-50 px-1.5 rounded-sm mx-0.5",
             ),
             "data-field": field,
           },
@@ -255,7 +255,7 @@ const TextEditor = <T extends ElementType = "div">({
       mainEditor.setIsEditingText(brickId);
       mainEditor.setSelectedBrickId(brickId);
       setFocused(true);
-      if (disableMenuBar) {
+      if (noMenuBar) {
         return;
       }
       setTimeout(() => {
@@ -303,7 +303,7 @@ const TextEditor = <T extends ElementType = "div">({
       editor?.off("focus", onFocus);
       editor?.off("blur", onBlur);
     };
-  }, [editor, mainEditor, brickId, disableMenuBar]);
+  }, [editor, mainEditor, brickId, noMenuBar]);
 
   return (
     <>

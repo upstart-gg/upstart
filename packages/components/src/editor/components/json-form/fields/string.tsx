@@ -37,7 +37,7 @@ export const StringField: FC<FieldProps<string>> = (props) => {
               // TODO: implement onChange
               // onChange={(e) => onChangeDebounced(e.target.value)}
               spellCheck={!!schema["ui:spellcheck"]}
-              disableMenuBar
+              noMenuBar
             />
           </div>
           <Tooltip
@@ -141,7 +141,7 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (pro
                 propPath="content"
                 inline={!schema["ui:multiline"]}
                 placeholder="https://example.com"
-                disableMenuBar
+                noMenuBar
                 // TODO: implement onChange
                 // onChange={(e) => onChangeDebounced(e.target.value)}
                 spellCheck={!!schema["ui:spellcheck"]}
