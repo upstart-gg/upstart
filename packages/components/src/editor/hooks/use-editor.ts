@@ -43,11 +43,6 @@ export type SiteSavePayload = {
 
 export interface EditorStateProps {
   /**
-   * When local, the editor does not fetch data from the server or save data to the server
-   * It is used when the user is not logged in yet or does not have an account yet
-   */
-  mode: "anonymous" | "authenticated";
-  /**
    * When debugMode is enabled, context menu are disabled so that inspecting using devtools is easier
    */
   debugMode?: boolean;
@@ -74,7 +69,6 @@ export interface EditorStateProps {
     rowHeight: number;
   };
   textEditMode?: "default" | "large";
-  lastTextEditPosition?: number;
   settingsVisible?: boolean;
   genFlowDone?: boolean;
 
@@ -120,7 +114,6 @@ export interface EditorState extends EditorStateProps {
   setTextEditMode: (mode: EditorStateProps["textEditMode"]) => void;
   setIsEditingText: (forBrickId: string | false) => void;
   setIsResizing: (resizing: boolean) => void;
-  setLastTextEditPosition: (position?: number) => void;
   setPanel: (panel?: EditorStateProps["panel"]) => void;
   togglePanel: (panel?: EditorStateProps["panel"]) => void;
   hidePanel: (panel?: EditorStateProps["panel"]) => void;
@@ -146,7 +139,6 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
     previewMode: "desktop" satisfies EditorStateProps["previewMode"],
     themesLibrary: [] as Theme[],
     pages: [] as GenericPageConfig[],
-    mode: "anonymous" satisfies EditorStateProps["mode"],
     panelPosition: "left" satisfies EditorStateProps["panelPosition"],
     logoLink: "/dashboard",
     zoom: 1,
@@ -243,11 +235,6 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
             setImagesSearchResults: (images) =>
               set((state) => {
                 state.imagesSearchResults = images;
-              }),
-
-            setLastTextEditPosition: (position) =>
-              set((state) => {
-                state.lastTextEditPosition = position;
               }),
 
             toggleTextEditMode: () =>
@@ -458,11 +445,6 @@ export function useHasPlanOrHigher(plan: number) {
   return useStore(ctx, (state) => state.planIndex >= plan);
 }
 
-export const useEditorMode = () => {
-  const ctx = useEditorStoreContext();
-  return useStore(ctx, (state) => state.mode);
-};
-
 export const useThemesLibrary = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => state.themesLibrary);
@@ -535,7 +517,6 @@ export const useEditorHelpers = () => {
     toggleTextEditMode: state.toggleTextEditMode,
     setTextEditMode: state.setTextEditMode,
     setIsEditingText: state.setIsEditingText,
-    setLastTextEditPosition: state.setLastTextEditPosition,
     setImagesSearchResults: state.setImagesSearchResults,
     setPanel: state.setPanel,
     togglePanel: state.togglePanel,

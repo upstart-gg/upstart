@@ -22,6 +22,8 @@ export type BrickProps<T extends BrickManifest> = {
    * True if the brick is a child of a container (e.g. Section, Box)
    */
   isContainerChild?: boolean;
+
+  level?: number; // Nesting level of the brick
 };
 
 export type BrickPropCategory = "settings" | "presets" | "content";

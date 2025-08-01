@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { tx } from "@upstart.gg/style-system/twind";
+import { css, tx } from "@upstart.gg/style-system/twind";
 
 type Props = {
   items: string[];
@@ -56,17 +56,17 @@ const DatasourceFieldList = forwardRef<HTMLElement, Props>((props, ref) => {
   return (
     <div
       className={tx(
-        "bg-white border border-gray-200 rounded-lg shadow-lg min-w-[200px] flex flex-col gap-0.5 overflow-auto p-2 z-auto",
+        "bg-white l border border-gray-200 rounded-lg shadow-lg min-w-[200px] flex flex-col gap-0.5 overflow-auto p-2 z-auto",
       )}
     >
       {props.items.length ? (
         props.items.map((item, index) => (
           <button
             type="button"
-            role="menuitem"
+            // role="menuitem"
             className={tx(
               index === selectedIndex && "bg-upstart-100",
-              "flex text-sm text-left w-full items-center px-1.5 py-1 rounded",
+              "flex font-light text-sm text-left w-full items-center px-2 py-1 rounded",
             )}
             key={index}
             onClick={() => selectItem(index)}
@@ -75,7 +75,7 @@ const DatasourceFieldList = forwardRef<HTMLElement, Props>((props, ref) => {
           </button>
         ))
       ) : (
-        <div className="item">No result</div>
+        <div className="item text-sm">No result</div>
       )}
     </div>
   );

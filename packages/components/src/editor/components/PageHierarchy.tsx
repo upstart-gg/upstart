@@ -340,7 +340,7 @@ Drag and drop sections and bricks to reorder them.
                         >
                           <span>Section {section.label ?? "Unnamed"}</span>
                           <div {...provided.dragHandleProps}>
-                            <RxDragHandleHorizontal className="w-5 h-5 cursor-row-resize opacity-60 group-hover:opacity-80 transition-opacity" />
+                            <RxDragHandleHorizontal className="w-5 h-5 cursor-row-resize opacity-0 group-hover:opacity-80 transition-opacity" />
                           </div>
                         </div>
                         <Droppable droppableId={`hierarchy_${section.id}`} type="brick-hierarchy">

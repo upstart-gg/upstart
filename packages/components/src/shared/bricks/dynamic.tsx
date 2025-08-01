@@ -4,12 +4,11 @@ import BrickWrapper from "../components/BrickWrapper";
 import { tx } from "@upstart.gg/style-system/twind";
 import BrickRoot from "../components/BrickRoot";
 import { useColorPreset } from "../hooks/use-color-preset";
-import get from "lodash-es/get";
 import { lazy, Suspense } from "react";
 
 const LazyDroppableBox = lazy(() => import("../../editor/components/DroppableBox"));
 
-export default function Dynamic({ brick, editable }: BrickProps<Manifest>) {
+export default function Dynamic({ brick, editable, level }: BrickProps<Manifest>) {
   const { props } = brick;
   const presetClasses = useColorPreset<Manifest>(brick);
   const { datasource } = props;
@@ -24,7 +23,7 @@ export default function Dynamic({ brick, editable }: BrickProps<Manifest>) {
     >
       {editable ? (
         <Suspense>
-          <LazyDroppableBox brick={brick} dynamic />
+          <LazyDroppableBox brick={brick} dynamic level={level} />
         </Suspense>
       ) : (
         props.$children?.map((brick) => <BrickWrapper key={brick.id} brick={brick} />)

@@ -11,7 +11,7 @@ import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
 import { enableMapSet } from "immer";
-import { debounce, isEqual } from "lodash-es";
+import { debounce, isEqual, merge } from "lodash-es";
 import { createContext, useContext, useEffect } from "react";
 import { temporal } from "zundo";
 import { createStore, useStore } from "zustand";
@@ -79,6 +79,7 @@ export interface DraftState extends DraftStateProps {
   detachBrickFromContainer: (id: string) => void;
   addBrick: (brick: Brick, sectiondId: string, index: number, parentContainerId: Brick["id"] | null) => void;
   updateBrickProps: (id: string, props: Record<string, unknown>, isMobileProps?: boolean) => void;
+  updatePropsMapping: (id: string, mapping: Record<string, string>) => void;
   toggleBrickVisibility: (id: string, resolution: Resolution) => void;
   setPreviewTheme: (theme: Theme) => void;
   setTheme: (theme: Theme) => void;
@@ -561,6 +562,23 @@ export const createDraftStore = (
               updateBrickMap(newBrick, sectionId, parentId);
             }),
 
+          updatePropsMapping: (id, mapping) =>
+            set((state) => {
+              // Update the brick in the brickMap
+              const brick = getBrickFromDraft(id, state);
+              if (brick) {
+                brick.propsMapping = merge({}, brick.propsMapping, mapping);
+                brick.props.lastTouched = Date.now();
+                // rebuild map
+                state.brickMap = buildBrickMap(state.sections);
+              } else {
+                console.error(
+                  "Cannot update props mapping for brick %s, it does not exist in the brick map",
+                  id,
+                );
+              }
+            }),
+
           updateBrickProps: (id, props, isMobileProps) =>
             set((state) => {
               // Update the brick in the brickMap
@@ -578,7 +596,7 @@ export const createDraftStore = (
                 // rebuild map
                 state.brickMap = buildBrickMap(state.sections);
               } else {
-                console.error("Cannot update brick %s, it does not exist in the brick map", id);
+                console.error("Cannot update props for brick %s, it does not exist in the brick map", id);
               }
             }),
 
@@ -859,7 +877,7 @@ export const createDraftStore = (
               return to === "previous" ? index > 0 : index < children.length - 1;
             }
             const section = getBrickSection(brickId, _get())!;
-            const index = section.bricks.findIndex((b) => b.id === brickId);
+            const index = section?.bricks.findIndex((b) => b.id === brickId) ?? -1;
             return to === "previous" ? index > 0 : index < section?.bricks.length - 1;
           },
 
@@ -1178,6 +1196,7 @@ export const useDraftHelpers = () => {
     toggleBrickVisibilityPerBreakpoint: state.toggleBrickVisibility,
     getParentBrick: state.getParentBrick,
     updateBrickProps: state.updateBrickProps,
+    updatePropsMapping: state.updatePropsMapping,
     moveBrickWithin: state.moveBrickWithin,
     reorderBrickWithin: state.reorderBrickWithin,
     getPositionWithinParent: state.getPositionWithinParent,

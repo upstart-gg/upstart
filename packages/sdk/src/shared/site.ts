@@ -489,7 +489,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                     // src: "https://placehold.co/600x400@2x/EEEEEE/333333/svg?text=Sample+Image",
                     alt: "Sample Image",
                   },
-                  width: "300px",
                   height: "200px",
                 },
               },
@@ -590,7 +589,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                       id: generateId(),
                       type: "button",
                       props: {
-                        label: "Button #1 in dynamic box",
+                        label: "Button #1 in dynamic box with a {{$slug}}",
                       },
                     },
                     {

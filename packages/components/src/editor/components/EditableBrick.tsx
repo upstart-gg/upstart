@@ -36,7 +36,6 @@ import {
   FloatingPortal,
 } from "@upstart.gg/style-system/system";
 import BaseComponent from "~/shared/components/BrickComponent";
-import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
 import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
 import { menuNavBarCls } from "~/shared/styles/menubar-styles";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
@@ -44,7 +43,6 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { Draggable, type DraggableStateSnapshot } from "@hello-pangea/dnd";
 import ResizeHandle from "./ResizeHandle";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
-import { commonProps } from "@upstart.gg/sdk/shared/bricks/props/common";
 import { getBrickResizeOptions } from "~/shared/utils/layout-utils";
 import useIsHovered from "../hooks/use-is-hovered";
 import { useDraftHelpers, useSectionByBrickId } from "../hooks/use-page-data";
@@ -53,6 +51,8 @@ type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
   isContainerChild?: boolean;
   index: number;
+  // Nesting level of the brick
+  level?: number;
 };
 
 function getDropAnimationStyle(
@@ -104,7 +104,7 @@ function useBarPlacements(brick: Brick): Placement[] {
 }
 
 const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
-  ({ brick, isContainerChild, index }, ref) => {
+  ({ brick, isContainerChild, index, level = 0 }, ref) => {
     const hasMouseMoved = useRef(false);
     const selectedBrickId = useSelectedBrickId();
     const previewMode = usePreviewMode();
@@ -261,8 +261,9 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 data-brick-id={brick.id}
                 data-brick-type={brick.type}
                 data-last-touched={brick.props.lastTouched ?? "0"}
-                data-container-child={isContainerChild}
-                data-draggable-for-brick-id={brick.id}
+                data-is-container={manifest.isContainer}
+                data-is-container-child={isContainerChild}
+                data-level={level}
                 data-brick-width={brick.props.width}
                 data-brick-height={brick.props.height}
                 data-brick-max-width={JSON.stringify(manifest.maxWidth)}

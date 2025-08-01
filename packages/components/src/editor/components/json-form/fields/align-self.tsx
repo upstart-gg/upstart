@@ -3,6 +3,7 @@ import type { AlignSelfSettings } from "@upstart.gg/sdk/shared/bricks/props/alig
 import { useParentBrick, useSectionByBrickId } from "~/editor/hooks/use-page-data";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import EnumField from "./enum";
+import { describe } from "node:test";
 
 export default function AlignSelfField(props: FieldProps<AlignSelfSettings>) {
   const { brickId, onChange, schema } = props;
@@ -17,6 +18,10 @@ export default function AlignSelfField(props: FieldProps<AlignSelfSettings>) {
   const customSchema = {
     ...schema,
     title: parentFlexOrientation === "column" ? "Horizontal position" : "Vertical position",
+    description:
+      parentFlexOrientation === "column"
+        ? "Horizontal position of the brick within its parent box or section."
+        : "Vertical position of the brick within its parent box or section.",
     "ui:display": "icon-group",
     enumNames:
       parentFlexOrientation === "column"
@@ -45,6 +50,7 @@ export default function AlignSelfField(props: FieldProps<AlignSelfSettings>) {
       {...props}
       schema={customSchema}
       title={customSchema.title}
+      description={customSchema.description}
       onChange={onChange as (value: string | null) => void}
     />
   );

@@ -9,6 +9,7 @@ export default function Image({ brick, editable }: BrickProps<Manifest>) {
   const styles = useBrickStyle(brick);
   const { image: imageStyles, ...containerStyles } = styles;
   const { src, alt } = props.image ?? {};
+  const isDynamicSrc = src?.includes("{{");
 
   return (
     <BrickRoot
@@ -17,7 +18,7 @@ export default function Image({ brick, editable }: BrickProps<Manifest>) {
       as="picture"
       className={tx("group/image flex items-center justify-center", Object.values(containerStyles))}
     >
-      {src && (
+      {!editable && typeof src === "string" && src !== "" && (
         <img
           src={src}
           alt={alt}
@@ -30,11 +31,19 @@ export default function Image({ brick, editable }: BrickProps<Manifest>) {
       {editable && !src && (
         <div
           className={tx(
-            "rounded-[inherit] transition-opacity duration-300 group-hover/image:opacity-100 flex absolute inset-0 items-center justify-center font-semibold",
-            src && "opacity-0",
+            "rounded-[inherit] transition-opacity duration-300 group-hover/image:opacity-100 flex w-full h-full p-10 items-center justify-center font-semibold",
           )}
         >
           <div className="text-ellipsis text-nowrap flex-nowrap text-center">No image set</div>
+        </div>
+      )}
+      {editable && isDynamicSrc && (
+        <div
+          className={tx(
+            "rounded-[inherit] transition-opacity duration-300 flex items-center  w-full h-full justify-center font-medium p-10",
+          )}
+        >
+          <div className="text-ellipsis text-nowrap flex-nowrap text-center">Dynamic Image</div>
         </div>
       )}
     </BrickRoot>

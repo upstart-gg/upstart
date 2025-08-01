@@ -34,3 +34,7 @@ body {
   pointer-events: none;
   white-space: preserve nowrap;
 }
+
+.tiptap :first-child {
+  margin-top: 0;
+}

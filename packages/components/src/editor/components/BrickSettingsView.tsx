@@ -27,7 +27,6 @@ export default function BrickSettingsView({
 }: BrickSettingsViewProps) {
   const { updateBrickProps } = useDraftHelpers();
   const manifest = useBrickManifest(brick.type);
-  const dynamicParent = useDynamicParent(brick.id);
   const previewMode = usePreviewMode();
   const brickInfo = useBrick(brick.id);
   const filter: SchemaFilter = useCallback(
@@ -68,7 +67,6 @@ export default function BrickSettingsView({
       // All content props should be set on the brick props, not mobileProps
       const isMobileProps = previewMode === "mobile" && manifestField?.metadata?.category !== "content";
 
-      // Note: this is a weird way to update the brick props, but it'it allows us to deal with frozen trees
       const props = structuredClone(
         isMobileProps ? (brickInfo?.mobileProps ?? {}) : (brickInfo?.props ?? {}),
       );

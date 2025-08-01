@@ -46,19 +46,7 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { useDatasource, useDatasources } from "~/editor/hooks/use-datasource";
 import { useDynamicParent } from "~/editor/hooks/use-page-data";
 import type { Fragment } from "@tiptap/pm/model";
-
-// function DatasourceFieldNode(props: NodeViewProps) {
-//   return (
-//     <NodeViewWrapper
-//       className="datasource-field content bg-upstart-200 px-1 rounded-sm inline-block mx-0.5"
-//       as={"span"}
-//     >
-//       {props.node.attrs.name}
-//     </NodeViewWrapper>
-//   );
-// }
-
-// const fieldsRegex = /(\{\{([^}]+)\}\})/;
+import { getEditorNodeFromField } from "../utils/editor-nodes";
 
 const HeroHeading = Heading.extend({
   addAttributes() {
@@ -77,45 +65,6 @@ const HeroHeading = Heading.extend({
     };
   },
 });
-
-// const DatasourceFieldExtension = Node.create({
-//   // configuration
-//   name: "datasourceField",
-//   group: "inline",
-//   inline: true,
-//   addAttributes() {
-//     return {
-//       name: {
-//         default: "unknown",
-//       },
-//     };
-//   },
-//   parseHTML() {
-//     return [
-//       {
-//         tag: "datasource-field",
-//       },
-//     ];
-//   },
-//   renderHTML({ HTMLAttributes }) {
-//     return ["datasource-field", mergeAttributes(HTMLAttributes)];
-//   },
-
-//   addNodeView() {
-//     return ReactNodeViewRenderer(DatasourceFieldNode, {
-//       as: "span",
-//     });
-//   },
-//   addInputRules() {
-//     return [
-//       nodeInputRule({
-//         find: fieldsRegex,
-//         type: this.type,
-//         getAttributes: (match) => ({ name: match[2] }),
-//       }),
-//     ];
-//   },
-// });
 
 type PolymorphicProps<E extends ElementType> = PropsWithChildren<
   ComponentPropsWithoutRef<E> & {
@@ -137,6 +86,15 @@ export type TextEditorProps<E extends ElementType> = PolymorphicProps<E> & {
    * Whether the editor is inlined in the page or appears in the panel
    */
   inline?: boolean;
+
+  /**
+   * Single line text, no line breaks possible
+   */
+  singleline?: boolean;
+
+  dynamic?: boolean;
+
+  onChange?: (e: EditorEvents["update"]) => void;
 };
 
 export type TextEditorRef = {
@@ -152,38 +110,51 @@ const OverrideEscape = Extension.create({
   },
 });
 
+const dynFieldClass = tx("dynamic-field");
+
+function formatInitialContent(content: string | undefined) {
+  return (
+    content?.replace(/{{(\S+)}}/g, (match, p1) => {
+      return `<span data-type="mention" data-id="${p1.trim()}" data-label="${p1.trim()}" class="${dynFieldClass}">${p1.trim()}</span>`;
+    }) || ""
+  );
+}
+
 const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
   (
     {
-      content,
+      content: initialContent,
       className,
       brickId,
       inline,
+      singleline,
       propPath,
       noTextAlign,
       noTextStrike,
       textSizeMode = "classic",
       placeholder,
       noMenuBar,
+      dynamic = false,
+      onChange,
     },
     ref,
   ) => {
-    const onUpdate = useTextEditorUpdateHandler(brickId, propPath);
+    const defaultUpdateHandler = useTextEditorUpdateHandler(brickId, propPath, dynamic, inline === true);
+    const onUpdate = inline ? defaultUpdateHandler : onChange;
     const mainEditor = useEditor();
     const dynParent = useDynamicParent(brickId);
     const datasource = useDatasource(dynParent?.props?.datasource?.id);
     const [menuBarContainer, setMenuBarContainer] = useState<HTMLDivElement | null>(null);
-    const [currentContent, setContent] = useState(content);
-
-    // const [editable, setEditable] = useState(/*enabled*/ false);
+    const [currentContent, setContent] = useState(formatInitialContent(initialContent));
     const [focused, setFocused] = useState(false);
-    const fields = getJSONSchemaFieldsList(datasource?.schema);
+    const datasourceFields = getJSONSchemaFieldsList(datasource?.schema);
 
     const extensions = [
       StarterKit.configure({
-        ...((inline || textSizeMode === "hero") && {
-          document: false,
-        }),
+        // ...(singleline && {
+        //   document: false,
+        // }),
+        document: false,
         dropcursor: {
           class: "drop-cursor",
           color: "#FF9900",
@@ -196,15 +167,10 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
       Placeholder.configure({
         placeholder: placeholder ?? "My text...",
       }),
-      ...(inline ? [Document.extend({ content: "paragraph" })] : []),
-      ...(textSizeMode === "hero"
-        ? [
-            HeroHeading,
-            Document.extend({
-              content: "heading*",
-            }),
-          ]
-        : []),
+      ...(!singleline
+        ? [Document.extend({ content: textSizeMode === "hero" ? "heading*" : "paragraph" })]
+        : [Document.extend({ content: "paragraph" })]),
+      ...(textSizeMode === "hero" ? [HeroHeading] : []),
       ...(!noTextAlign
         ? [
             TextAlign.configure({
@@ -216,31 +182,31 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
       // DatasourceFieldExtension,
       Mention.configure({
         HTMLAttributes: {
-          class: "mention",
+          class: "dynamic-field",
         },
         suggestion: {
           ...datasourceFieldSuggestions,
           items: ({ query }) => {
-            return fields.filter((field) => field.toLowerCase().includes(query.toLowerCase()));
+            return datasourceFields.filter((field) => field.toLowerCase().includes(query.toLowerCase()));
           },
         },
+
         renderHTML: ({ options, node }) => {
-          const field = node.attrs["data-field"] ?? node.attrs.label ?? node.attrs.id;
+          const field = node.attrs.label ?? node.attrs.id;
           return [
             "span",
             {
               "data-type": "mention",
-              class: tx(
-                "bg-upstart-50 text-black text-[92%] inline-block outline outline-upstart-50 px-1 rounded-sm mx-0.5",
-              ),
-              "data-field": field,
+              class: tx("dynamic-field"),
+              "data-label": field,
+              "data-id": field,
             },
-            `${options.suggestion.char}${field}`.replace("{{", ""),
+            `${options.suggestion.char}${field}`.replace(options.suggestion.char as string, ""),
           ];
         },
         renderText: ({ options, node }) => {
-          const field = node.attrs["data-field"] ?? node.attrs.label ?? node.attrs.id;
-          return `${options.suggestion.char}${field}`.replace("{{", "");
+          const field = node.attrs.label ?? node.attrs.id;
+          return `{{${field}}}`;
         },
       }),
       OverrideEscape,
@@ -255,7 +221,7 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
         editable: true,
         editorProps: {
           attributes: {
-            class: tx(className, inline && "singleline"),
+            class: tx(className, singleline && "singleline"),
           },
         },
       },
@@ -291,10 +257,7 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
           return;
         }
 
-        console.log("Editor blur", e);
-
         mainEditor.setIsEditingText(false);
-        mainEditor.setLastTextEditPosition(e.editor.state.selection.anchor);
 
         // Test commenting this out to see if it helps with the focus issue
         // mainEditor.setSelectedBrickId();
@@ -447,63 +410,16 @@ function DatasourceFieldPickerModal({ brickId, onFieldSelect }: DatasourceFieldP
   );
 }
 
-export function insertInEditor(editor: Editor, content: Content | Node | Fragment, position?: number) {
-  console.log("Inserting content at position %d: %s", position, content);
-
-  if (typeof position === "undefined") {
-    editor
-      .chain()
-      .insertContent(content, {
-        parseOptions: {
-          preserveWhitespace: "full",
-        },
-      })
-      .run();
-  } else {
-    try {
-      // editor
-      //   .chain()
-      //   .insertContentAt(position, content, {
-      //     parseOptions: {
-      //       preserveWhitespace: "full",
-      //     },
-      //   })
-      //   .run();
-      editor
-        .chain()
-        .insertContent(content, {
-          parseOptions: {
-            preserveWhitespace: "full",
-          },
-        })
-        .run();
-    } catch (error) {
-      if (error instanceof RangeError) {
-        console.log("RangeError:", error.message);
-        editor
-          .chain()
-          .insertContent(content, {
-            parseOptions: {
-              preserveWhitespace: "full",
-            },
-          })
-          .run();
-      }
-    }
-  }
-}
-
-export function getEditorNodeFromField(field: string) {
-  return [
-    {
-      type: "mention",
-      attrs: { "data-field": field, label: field },
-    },
-    {
-      type: "text",
-      text: ` `,
-    },
-  ];
+export function insertInEditor(editor: Editor, content: Content | Node | Fragment) {
+  console.log("Inserting content %s", content);
+  editor
+    .chain()
+    .insertContent(content, {
+      parseOptions: {
+        preserveWhitespace: "full",
+      },
+    })
+    .run();
 }
 
 export function DatasourceItemButton({
@@ -512,8 +428,6 @@ export function DatasourceItemButton({
   children,
   onFieldClick,
 }: PropsWithChildren<{ editor?: Editor | null; brickId: string; onFieldClick?: (field: string) => void }>) {
-  const mainEditor = useEditor();
-
   const onFieldSelect = (field: string) => {
     onFieldClick?.(field);
 
@@ -522,7 +436,7 @@ export function DatasourceItemButton({
     }
 
     const content = getEditorNodeFromField(field);
-    insertInEditor(editor, content, mainEditor.lastTextEditPosition);
+    insertInEditor(editor, content);
   };
 
   return (

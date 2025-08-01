@@ -8,7 +8,7 @@ import { lazy, Suspense } from "react";
 
 const LazyDroppableBox = lazy(() => import("../../editor/components/DroppableBox"));
 
-export default function Box({ brick, editable }: BrickProps<Manifest>) {
+export default function Box({ brick, editable, level = 0 }: BrickProps<Manifest>) {
   const presetClasses = useColorPreset<Manifest>(brick);
   return (
     <BrickRoot
@@ -18,7 +18,7 @@ export default function Box({ brick, editable }: BrickProps<Manifest>) {
     >
       {editable ? (
         <Suspense>
-          <LazyDroppableBox brick={brick} />
+          <LazyDroppableBox brick={brick} level={level} />
         </Suspense>
       ) : (
         brick.props.$children?.map((brick) => <BrickWrapper key={brick.id} brick={brick} />)

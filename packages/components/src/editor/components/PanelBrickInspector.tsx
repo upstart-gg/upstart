@@ -1,6 +1,6 @@
-import { useDebugMode, usePreviewMode } from "../hooks/use-editor";
+import { useDebugMode, useEditorHelpers, usePreviewMode } from "../hooks/use-editor";
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
-import { Callout, Tabs } from "@upstart.gg/style-system/system";
+import { Button, Callout, Tabs } from "@upstart.gg/style-system/system";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import { useLocalStorage } from "usehooks-ts";
 import { useEffect } from "react";
@@ -167,6 +167,10 @@ function DebugTab({ brick, section, hasTabs }: { brick: Brick; section: Section;
 
 function SettingsTab({ brick, section, hasTabs }: { brick: Brick; section: Section; hasTabs: boolean }) {
   const previewMode = usePreviewMode();
+  const manifest = useBrickManifest(brick.type);
+  const { deleteBrick } = useDraftHelpers();
+  const { deselectBrick, hidePanel } = useEditorHelpers();
+
   return (
     <form className={tx("flex flex-col h-full")} onSubmit={(e) => e.preventDefault()}>
       {previewMode === "mobile" && (
@@ -179,6 +183,22 @@ function SettingsTab({ brick, section, hasTabs }: { brick: Brick; section: Secti
       )}
       <div className="basis-[50%] shrink-0 grow flex flex-col">
         <BrickSettingsView brick={brick} />
+        <div className="flex flex-col gap-2 p-2 border-t border-gray-200">
+          <Button
+            type="button"
+            size="1"
+            color="red"
+            radius="medium"
+            variant="soft"
+            onClick={() => {
+              deleteBrick(brick.id);
+              deselectBrick(brick.id);
+              hidePanel("inspector");
+            }}
+          >
+            Delete {manifest.name}
+          </Button>
+        </div>
       </div>
       <PageHierarchy
         brick={brick}
@@ -192,7 +212,11 @@ function SettingsTab({ brick, section, hasTabs }: { brick: Brick; section: Secti
 function ContentTab({ brick, section, hasTabs }: { brick: Brick; section: Section; hasTabs: boolean }) {
   const dynamicParent = useDynamicParent(brick.id);
   const datasource = useDatasource(dynamicParent?.props.datasource?.id);
+  const manifest = useBrickManifest(brick.type);
+  const { deleteBrick } = useDraftHelpers();
+  const { deselectBrick, hidePanel } = useEditorHelpers();
   const kbdClassname = tx("shadow-sm border px-1 py-[3px] rounded border-upstart-300 text-[80%] bg-white/80");
+
   return (
     <div className={tx("flex flex-col h-full")}>
       <div className="basis-[50%] shrink-0 grow flex flex-col">
@@ -221,6 +245,22 @@ function ContentTab({ brick, section, hasTabs }: { brick: Brick; section: Sectio
           label="content"
           categoryFilter={(category) => category === "content"}
         />
+        <div className="flex flex-col gap-2 p-2">
+          <Button
+            type="button"
+            size="1"
+            color="red"
+            variant="soft"
+            radius="medium"
+            onClick={() => {
+              deleteBrick(brick.id);
+              deselectBrick(brick.id);
+              hidePanel("inspector");
+            }}
+          >
+            Delete {manifest.name}
+          </Button>
+        </div>
       </div>
       <PageHierarchy
         brick={brick}

@@ -5,6 +5,8 @@ import { IoIosHelpCircleOutline } from "react-icons/io";
 import { LuRedo, LuUndo } from "react-icons/lu";
 import { RxDesktop, RxMobile, RxZoomIn, RxZoomOut } from "react-icons/rx";
 import { VscCopy } from "react-icons/vsc";
+import { TbHomeShare } from "react-icons/tb";
+import { RxExternalLink } from "react-icons/rx";
 
 import { DropdownMenu, HoverCard, Tooltip } from "@upstart.gg/style-system/system";
 import { formatDistance } from "date-fns";
@@ -15,7 +17,6 @@ import { RxRocket } from "react-icons/rx";
 import {
   useChatVisible,
   useEditorHelpers,
-  useEditorMode,
   useLogoLink,
   usePanel,
   usePreviewMode,
@@ -42,7 +43,6 @@ export default function NavBar() {
   const previewMode = usePreviewMode();
   const logoLink = useLogoLink();
   const draft = useDraft();
-  const editorMode = useEditorMode();
   const pageVersion = usePageVersion();
   const lastSaved = useLastSaved();
   const pages = useSitemap();
@@ -124,7 +124,7 @@ export default function NavBar() {
       <button
         type="button"
         onClick={() => {
-          window.location.href = editorMode === "anonymous" ? "/" : logoLink;
+          window.location.href = logoLink;
         }}
         className={tx("flex-shrink-0")}
       >
@@ -148,14 +148,10 @@ export default function NavBar() {
                   type: "checkbox" as const,
                   checked: draft.id === page.id || draft.path === page.path,
                   onClick: () => {
-                    if (editorMode === "anonymous") {
-                      window.location.href = `/editor/sites/${draft.siteId}/edit?p=${page.id}&r=${Date.now()}`;
-                    } else {
-                      const currentURL = new URL(window.location.href);
-                      currentURL.searchParams.set("p", page.id);
-                      currentURL.searchParams.set("r", `${Date.now()}`);
-                      window.location.href = currentURL.href;
-                    }
+                    const currentURL = new URL(window.location.href);
+                    currentURL.searchParams.set("p", page.id);
+                    currentURL.searchParams.set("r", `${Date.now()}`);
+                    window.location.href = currentURL.href;
                   },
                 }))
               : []),
@@ -298,6 +294,20 @@ export default function NavBar() {
 
         <div className={separator} />
 
+        <Tooltip content="Open preview" side="bottom" align="center">
+          <button
+            type="button"
+            className={tx(btnClass, squareBtn, commonCls)}
+            onClick={() => {
+              window.open(`/sites/${draft.siteId}/pages/${draft.id}/preview`, "upstart_preview");
+            }}
+          >
+            <RxExternalLink className="h-5 w-auto" />
+          </button>
+        </Tooltip>
+
+        <div className={separator} />
+
         <div className={tx("flex flex-col gap-1.5 leading-none text-sm items-start px-1.5")}>
           <span
             className={tx(
@@ -376,33 +386,18 @@ export default function NavBar() {
           <IoIosHelpCircleOutline className="h-5 w-auto" />
         </button>
 
-        <div className={tx("flex-1", "border-x border-l-upstart-400 border-r-upstart-700", baseCls)} />
+        <div className={tx("flex-1", "border-x border-l-upstart-400 border-r-upstart-700")} />
 
-        {editorMode === "anonymous" && (
-          <button
-            type="button"
-            className={tx(btnClass, commonCls, "text-base px-5")}
-            onClick={() => {
-              window.open(`/sites/${draft.siteId}/pages/${draft.id}/preview`, "upstart_preview");
-            }}
-          >
-            Preview
-            <LuExternalLink className="h-4 w-auto ml-1" />
-          </button>
-        )}
-
-        {editorMode === "anonymous" && (
-          <div className={tx(btnClass, baseCls, "px-8")}>
-            {lastSaved ? (
-              <div className={tx("text-sm text-black/50")}>
-                Saved {formatDistance(lastSaved, new Date(), { addSuffix: true })}
-                Saved {formatDistance(lastSaved, new Date(), { addSuffix: true })}
-              </div>
-            ) : (
-              <div className={tx("text-sm")}>Not saved yet</div>
-            )}
-          </div>
-        )}
+        {/* <div className={tx(btnClass, baseCls, "px-8")}>
+          {lastSaved ? (
+            <div className={tx("text-sm text-black/50")}>
+              Saved {formatDistance(lastSaved, new Date(), { addSuffix: true })}
+              Saved {formatDistance(lastSaved, new Date(), { addSuffix: true })}
+            </div>
+          ) : (
+            <div className={tx("text-sm")}>Not saved yet</div>
+          )}
+        </div> */}
 
         <TopbarMenu
           id="publish-menu-btn"

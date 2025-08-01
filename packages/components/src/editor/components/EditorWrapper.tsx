@@ -26,7 +26,6 @@ export interface EditorWrapperRef {
 }
 
 export type EditorWrapperProps = {
-  mode?: "anonymous" | "authenticated";
   pageVersion?: string;
   pageId?: string;
   config: SiteAndPagesConfig;
@@ -57,7 +56,6 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
       config,
       pageVersion,
       pageId,
-      mode,
       onImageUpload,
       children,
       onSaveSite,
@@ -73,7 +71,6 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
 
     const editorStore = useRef(
       createEditorStore({
-        mode,
         onPublish,
         onSaveSite,
         onSavePage,

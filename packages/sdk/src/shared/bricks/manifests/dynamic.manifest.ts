@@ -1,7 +1,6 @@
 import { type Static, type TObject, Type } from "@sinclair/typebox";
 import { BsDatabaseDown } from "react-icons/bs";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { backgroundColorRef, backgroundRef } from "../props/background";
 import { borderRef, roundingRef } from "../props/border";
 import { makeContainerProps } from "../props/container";
 import { datasource } from "../props/datasource";
@@ -18,7 +17,7 @@ import { colorPresetRef } from "../props/preset";
 export const manifest = defineBrickManifest({
   type: "dynamic",
   category: "container",
-  name: "Dynamic",
+  name: "Dynamic box",
   description: "A dynamic container that fetches data from your database and constructs bricks from it.",
   isContainer: true,
   defaultWidth: {

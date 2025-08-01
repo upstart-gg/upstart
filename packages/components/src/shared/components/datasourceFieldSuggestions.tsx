@@ -7,6 +7,8 @@ import type { SuggestionOptions } from "@tiptap/suggestion";
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const config: Omit<SuggestionOptions<any, MentionNodeAttrs>, "editor"> = {
   char: "{{",
+  // Allow all previous characters
+  allowedPrefixes: null,
 
   render: () => {
     let component: ReactRenderer<typeof DatasourceFieldList>;
