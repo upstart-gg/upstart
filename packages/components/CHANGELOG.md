@@ -1,5 +1,17 @@
 # @upstart.gg/components
 
+## 0.0.123
+
+### Patch Changes
+
+- [#396](https://github.com/upstart-gg/upstart/pull/396) [`ed7fd36`](https://github.com/upstart-gg/upstart/commit/ed7fd36cea6b8b76e13a1379f9fbf1bd21309d46) Thanks [@mattallty](https://github.com/mattallty)! - Enhance dynamic field and editor components
+
+- [#394](https://github.com/upstart-gg/upstart/pull/394) [`04daa61`](https://github.com/upstart-gg/upstart/commit/04daa61aee97ca8ebc18274d743b459642eff66f) Thanks [@mattallty](https://github.com/mattallty)! - Fix PageHierarchy
+
+- Updated dependencies [[`ed7fd36`](https://github.com/upstart-gg/upstart/commit/ed7fd36cea6b8b76e13a1379f9fbf1bd21309d46), [`04daa61`](https://github.com/upstart-gg/upstart/commit/04daa61aee97ca8ebc18274d743b459642eff66f)]:
+  - @upstart.gg/style-system@0.0.123
+  - @upstart.gg/sdk@0.0.123
+
 ## 0.0.122
 
 ### Patch Changes
