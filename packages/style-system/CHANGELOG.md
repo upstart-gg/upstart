@@ -1,5 +1,11 @@
 # @upstart.gg/style-system
 
+## 0.0.123
+
+### Patch Changes
+
+- [#396](https://github.com/upstart-gg/upstart/pull/396) [`ed7fd36`](https://github.com/upstart-gg/upstart/commit/ed7fd36cea6b8b76e13a1379f9fbf1bd21309d46) Thanks [@mattallty](https://github.com/mattallty)! - Enhance dynamic field and editor components
+
 ## 0.0.122
 
 ## 0.0.121
