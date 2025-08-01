@@ -96,11 +96,11 @@ export default function EditableSection({ section, index }: EditableSectionProps
         !target.closest("[data-trigger-section-inspector]") &&
         (e.defaultPrevented || target.nodeName !== "SECTION" || draggingBrickType)
       ) {
-        console.log("Click prevented on section", target);
+        console.debug("Click prevented on section", target);
         // If the click was handled by a child element, do not propagate
         return;
       }
-      console.log("Section clicked", section.id, target, e);
+      console.debug("Section clicked", section.id, target, e);
       setSelectedSectionId(section.id);
       setSelectedBrickId();
       setIsEditingText(false);

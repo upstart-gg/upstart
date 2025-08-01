@@ -37,6 +37,10 @@ export default defineConfig({
       },
     ],
     [
+      "dynamic-field",
+      "bg-upstart-50 text-black text-[92%] inline-block outline outline-upstart-50 px-1 rounded-sm mx-0.5",
+    ],
+    [
       "btn-color-",
       ({ $$ }) => ({
         borderColor: `var(--color-${$$}-dark)`,

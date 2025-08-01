@@ -10,6 +10,7 @@ import { useBrickStyle } from "~/shared/hooks/use-brick-style";
 
 export default function DroppableBox<T extends BrickManifest>({
   brick,
+  level = 0, // Default level to 0 if not provided
 }: BrickProps<T> & { dynamic?: boolean }) {
   const props = brick.props;
   const children = props.$children as Brick[] | undefined;
@@ -34,7 +35,7 @@ export default function DroppableBox<T extends BrickManifest>({
           {...droppableProvided.droppableProps}
           ref={droppableProvided.innerRef}
           className={tx(
-            "flex-1 flex @mobile:flex-wrap",
+            "flex-1 flex @mobile:flex-wrap relative",
             droppableSnapshot.isDraggingOver && "!outline !outline-2 !outline-orange-300",
             (droppableSnapshot.isDraggingOver || draggingBrickType) && "!overflow-y-hidden",
             droppableSnapshot.isDraggingOver && "[&>*]:(!transform-none)",
@@ -46,7 +47,13 @@ export default function DroppableBox<T extends BrickManifest>({
               .filter((b) => !b.props.hidden?.[previewMode])
               .map((brick, index) => {
                 return (
-                  <EditableBrickWrapper key={`${brick.id}`} brick={brick} isContainerChild index={index} />
+                  <EditableBrickWrapper
+                    level={level + 1}
+                    key={`${brick.id}`}
+                    brick={brick}
+                    isContainerChild
+                    index={index}
+                  />
                 );
               })
           ) : (
@@ -58,6 +65,15 @@ export default function DroppableBox<T extends BrickManifest>({
               This is a box.
               <br />
               Drag bricks here to stack them inside.
+            </div>
+          )}
+          {droppableSnapshot.isDraggingOver && (
+            <div
+              className={tx(
+                "absolute inset-0 z-auto flex items-center justify-center bg-black/30 font-bold text-white rounded",
+              )}
+            >
+              <span className="inline-flex rounded-full px-4 py-2 bg-black/50">Drop in box</span>
             </div>
           )}
         </div>

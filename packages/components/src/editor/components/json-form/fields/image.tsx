@@ -12,6 +12,7 @@ import { useUploader } from "../../UploaderContext";
 import { useDynamicParent } from "~/editor/hooks/use-page-data";
 import TextEditor from "~/shared/components/TextEditor";
 import { RiBracesLine } from "react-icons/ri";
+import { useDynamicTextEditor } from "~/editor/hooks/use-editable-text";
 
 const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
   const { schema, formData, onChange, title, description, currentValue, brickId } = props;
@@ -20,7 +21,14 @@ const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
   const { onImageUpload } = useUploader();
   const dynamicParent = useDynamicParent(brickId);
 
-  // const [src, setSrc] = useState<string | null>(currentValue.src);
+  const onDynamicSrcChange = (newSrc: string) => {
+    onPropsChange({ src: newSrc });
+  };
+  const DynamicTextEditor = useDynamicTextEditor({
+    ...props,
+    currentValue: currentValue?.src,
+    onChange: onDynamicSrcChange,
+  });
 
   const onPropsChange = (newVal: Partial<ImageProps>) => {
     onChange({ ...(currentValue ?? {}), ...newVal } as ImageProps);
@@ -32,30 +40,7 @@ const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
     return (
       <div className="field field-string basis-full flex flex-col gap-1">
         <FieldTitle title={title} description={description} />
-        <div className="field field-string flex items-center gap-2">
-          <div className="rounded-md border border-gray-300 focus:border-upstart-600 focus:ring-1 focus:ring-upstart-600 px-2 py-1.5 text-sm w-full bg-white">
-            <TextEditor
-              content={currentValue?.src}
-              brickId={brickId}
-              propPath="content"
-              inline={!schema["ui:multiline"]}
-              placeholder="Image URL with possible placeholders"
-              // TODO: implement onChange
-              // onChange={(e) => onChangeDebounced(e.target.value)}
-              spellCheck={!!schema["ui:spellcheck"]}
-              noMenuBar
-            />
-          </div>
-          <Tooltip
-            content={<span className="block text-xs p-0.5">Available variables from your database</span>}
-            className="!z-[10000]"
-            delayDuration={300}
-          >
-            <IconButton variant="outline">
-              <RiBracesLine />
-            </IconButton>
-          </Tooltip>
-        </div>
+        <div className="field field-string flex items-center gap-2">{DynamicTextEditor}</div>
       </div>
     );
   }
@@ -106,15 +91,7 @@ const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
       {currentValue?.src && (
         <>
           <div className="basis-full w-0" />
-          <div
-            className="border border-upstart-200 p-1.5 bg-white mt-3 ml-auto w-full h-auto max-h-[120px] relative"
-            style={
-              {
-                // backgroundImage: `url(${currentValue.src})`,
-                // backgroundSize: "12px 12px",
-              }
-            }
-          >
+          <div className="border border-upstart-200 p-1.5 bg-white mt-3 ml-auto w-full h-auto max-h-[120px] relative">
             <img src={currentValue.src} alt="Preview" className="w-full h-auto max-h-[100px] object-cover" />
             <div className="absolute flex items-center justify-center top-1 right-1 text-gray-500 p-0.5 bg-white cursor-pointer hover:(bg-red-800 text-white) rounded border border-gray-300 shadow-sm">
               <IoMdClose className="w-4 h-4 " onClick={() => onPropsChange({ src: "" })} />

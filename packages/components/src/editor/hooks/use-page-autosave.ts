@@ -1,5 +1,5 @@
 import { useDebounceCallback } from "usehooks-ts";
-import { useEditorHelpers, useEditorMode, type PageSavePayload, type SiteSavePayload } from "./use-editor";
+import { useEditorHelpers, type PageSavePayload, type SiteSavePayload } from "./use-editor";
 import {
   useDraft,
   usePageInfo,
@@ -14,7 +14,7 @@ const AUTO_SAVE_MIN_INTERVAL = 1000; // Auto save every N seconds
 export function usePageAutoSave() {
   const draft = useDraft();
   const pageConfig = usePageInfo();
-  const { onSavePage, onSaveSite, onDraftChange } = useEditorHelpers();
+  const { onSavePage, onSaveSite } = useEditorHelpers();
 
   const savePage = useDebounceCallback(async (data: PageSavePayload["data"]) => {
     await onSavePage?.({

@@ -14,59 +14,25 @@ import { tx } from "@upstart.gg/style-system/twind";
 import type { UrlOrPageIdSettings } from "@upstart.gg/sdk/shared/bricks/props/string";
 import { type ChangeEvent, type FC, useRef, useState } from "react";
 import { useDraftHelpers, useDynamicParent, useSitemap } from "~/editor/hooks/use-page-data";
-import TextEditor, {
-  type TextEditorRef,
-  DatasourceItemButton,
-  getEditorNodeFromField,
-  insertInEditor,
-} from "~/shared/components/TextEditor";
+import TextEditor from "~/shared/components/TextEditor";
 import { RiBracesLine } from "react-icons/ri";
-import { useEditor } from "~/editor/hooks/use-editor";
+import { useDynamicTextEditor } from "~/editor/hooks/use-editable-text";
 
 export const StringField: FC<FieldProps<string>> = (props) => {
   const { currentValue, onChange, title, description, placeholder, schema, brickId } = props;
   const dynamicParent = useDynamicParent(brickId);
   const onChangeDebounced = useDebounceCallback(onChange, 300);
-  const textEditorRef = useRef<TextEditorRef>(null);
-  const { lastTextEditPosition } = useEditor();
+  const DynamicTextEditor = useDynamicTextEditor(props);
 
   if (dynamicParent) {
     return (
       <div className="field field-string basis-full flex flex-col gap-1">
         <FieldTitle title={title} description={description} />
-        <div className="field field-string flex items-center gap-2">
-          <div className="rounded-md border border-gray-300 focus:border-upstart-600 focus:ring-1 focus:ring-upstart-600 px-2 py-1.5 text-sm w-full bg-white">
-            <TextEditor
-              content={currentValue}
-              brickId={brickId}
-              propPath="content"
-              inline={!schema["ui:multiline"]}
-              ref={textEditorRef}
-              placeholder=""
-              // TODO: implement onChange
-              // onChange={(e) => onChangeDebounced(e.target.value)}
-              spellCheck={!!schema["ui:spellcheck"]}
-              noMenuBar
-            />
-          </div>
-          <DatasourceItemButton
-            brickId={brickId}
-            onFieldClick={(field) => {
-              console.log("DatasourceItemButton clicked for field:", field);
-              if (textEditorRef.current?.editor) {
-                // console.log("Inserting field into editor at position:", lastTextEditPosition);
-                insertInEditor(textEditorRef.current.editor, getEditorNodeFromField(field));
-              }
-            }}
-          >
-            <IconButton variant="outline">
-              <RiBracesLine />
-            </IconButton>
-          </DatasourceItemButton>
-        </div>
+        <div className="field field-string flex items-center gap-2">{DynamicTextEditor}</div>
       </div>
     );
   }
+
   return (
     <div className="field field-string basis-full">
       <FieldTitle title={title} description={description} />
@@ -76,7 +42,6 @@ export const StringField: FC<FieldProps<string>> = (props) => {
           onChange={(e) => onChangeDebounced(e.target.value)}
           className={tx("!mt-1.5 scrollbar-thin", schema["ui:textarea-class"] ?? "h-24")}
           placeholder={placeholder}
-          resize="vertical"
           size={"2"}
           spellCheck={!!schema["ui:spellcheck"]}
         />
@@ -117,7 +82,7 @@ export const PathField: FC<FieldProps<string>> = (props) => {
   );
 };
 
-export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (props) => {
+export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings>> = (props) => {
   const { currentValue, onChange, title, description, placeholder, schema, brickId } = props;
   const sitemap = useSitemap();
   const [type, setType] = useState<"url" | "pageId">(
@@ -125,6 +90,7 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (pro
   );
   const dynamicParent = useDynamicParent(brickId);
   const externalLabel = dynamicParent ? "External / Dynamic" : "External link";
+  const DynamicTextEditor = useDynamicTextEditor(props);
 
   return (
     <div className="flex-1 max-w-full">
@@ -147,29 +113,8 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (pro
       </div>
       {type === "url" ? (
         dynamicParent ? (
-          <div className="field field-string basis-full flex items-start gap-2 mt-2">
-            <div className="rounded-md border border-gray-300 focus:border-upstart-600 focus:ring-1 focus:ring-upstart-600 px-2 py-1.5 text-sm w-full bg-white">
-              <TextEditor
-                content={currentValue?.startsWith("http") ? currentValue : ""}
-                brickId={brickId}
-                propPath="content"
-                inline={!schema["ui:multiline"]}
-                placeholder="https://example.com"
-                noMenuBar
-                // TODO: implement onChange
-                // onChange={(e) => onChangeDebounced(e.target.value)}
-                spellCheck={!!schema["ui:spellcheck"]}
-              />
-            </div>
-            <Tooltip
-              content={<span className="block text-xs p-0.5">Available variables from your database</span>}
-              className="!z-[10000]"
-              delayDuration={300}
-            >
-              <IconButton variant="outline">
-                <RiBracesLine />
-              </IconButton>
-            </Tooltip>
+          <div className="field field-string basis-full flex items-center gap-2 mt-2">
+            {DynamicTextEditor}
           </div>
         ) : (
           <TextField.Root

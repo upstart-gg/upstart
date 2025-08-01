@@ -271,7 +271,9 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
           "Loading database..."
         ) : (
           <span>
-            Select a database
+            This is a form brick.
+            <br />
+            To use it, please select a database
             <br /> you want to connect this form with.
           </span>
         )}
