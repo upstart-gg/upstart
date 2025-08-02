@@ -208,7 +208,6 @@ export function useResizable(cssQuery: string, options: UseResizableOptions): vo
 
           end(event) {
             event.stopPropagation();
-            console.log("END RESIZE", event);
 
             const target = event.target as HTMLElement;
             const rect = target.getBoundingClientRect();
@@ -285,7 +284,6 @@ export function useResizable(cssQuery: string, options: UseResizableOptions): vo
       // IMPORTANT: This prevents the default click event from propagating and
       // causing selection of other elements like the upper section or container.
       interactable.on("resizeend", function () {
-        console.log("resizeend ended");
         window.addEventListener("click", (ev: MouseEvent) => ev.stopImmediatePropagation(), {
           capture: true,
           once: true,

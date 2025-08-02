@@ -16,7 +16,7 @@ export default function Hero({ brick, editable, selected }: BrickProps<Manifest>
     <BrickRoot
       editable={editable}
       manifest={manifest}
-      className={tx("flex flex-col gap-[1.5rem]", ...classes, presetClasses.main)}
+      className={tx("flex-col gap-[1.5rem] flex-grow", classes, presetClasses.main)}
     >
       <TextContent
         as="h1"

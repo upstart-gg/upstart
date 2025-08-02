@@ -517,22 +517,30 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                     {
                       id: generateId(),
                       type: "button",
-                      props: {},
+                      props: {
+                        label: "Button #1",
+                      },
                     },
                     {
                       id: generateId(),
                       type: "button",
-                      props: {},
+                      props: {
+                        label: "Button #2",
+                      },
                     },
                     {
                       id: generateId(),
                       type: "button",
-                      props: {},
+                      props: {
+                        label: "Button #3",
+                      },
                     },
                     {
                       id: generateId(),
                       type: "button",
-                      props: {},
+                      props: {
+                        label: "Button #4",
+                      },
                     },
                   ],
                 },
@@ -547,22 +555,30 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                     {
                       id: generateId(),
                       type: "button",
-                      props: {},
+                      props: {
+                        label: "Button #1",
+                      },
                     },
                     {
                       id: generateId(),
                       type: "button",
-                      props: {},
+                      props: {
+                        label: "Button #2",
+                      },
                     },
                     {
                       id: generateId(),
                       type: "button",
-                      props: {},
+                      props: {
+                        label: "Button #3",
+                      },
                     },
                     {
                       id: generateId(),
                       type: "button",
-                      props: {},
+                      props: {
+                        label: "Button #4",
+                      },
                     },
                   ],
                 },
@@ -839,7 +855,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 type: "button",
                 props: {
                   alignSelf: "self-auto",
-                  label: "My button",
+                  label: "hey ho!",
                   justifyContent: "justify-center",
                   type: "button",
                   color: "btn-color-primary",

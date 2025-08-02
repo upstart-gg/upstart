@@ -46,6 +46,7 @@ import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests
 import { getBrickResizeOptions } from "~/shared/utils/layout-utils";
 import useIsHovered from "../hooks/use-is-hovered";
 import { useDraftHelpers, useSectionByBrickId } from "../hooks/use-page-data";
+import { IoIosArrowBack, IoIosArrowUp, IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -186,7 +187,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           !brickTarget.matches("[data-brick]") ||
           (e.defaultPrevented && !originalTarget.closest('[data-prevented-by-editor="true"]'))
         ) {
-          console.log(
+          console.debug(
             "EditableBrickWrapper: Click ignored due to mouse movement or default prevented",
             originalTarget,
           );
@@ -277,7 +278,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 )}
                 onClick={onBrickWrapperClick}
               >
-                <BaseComponent brick={brick} selectedBrickId={selectedBrickId} editable />
+                <BaseComponent brick={brick} editable />
                 <FloatingPortal>
                   <BrickMenuBarsContainer
                     ref={barsRefs.setFloating}
@@ -288,7 +289,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                     {...getFloatingProps()}
                   />
                 </FloatingPortal>
-                {/* Children contains resizable handles and other elements */}
+                {/* Resize Handles */}
                 {manifests[brick.type]?.resizable &&
                   !draggingBrickType &&
                   !snapshot.isDragging &&
@@ -317,6 +318,9 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                       )}
                     </>
                   )}
+
+                {/* Arrows */}
+                {brick.id === selectedBrickId && <BrickArrows brick={brick} />}
               </div>
             </BrickContextMenu>
           );
@@ -325,6 +329,97 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     );
   },
 );
+
+function BrickArrows({ brick }: { brick: Brick }) {
+  const draftHelpers = useDraftHelpers();
+  const canMovePrev = draftHelpers.canMoveTo(brick.id, "previous");
+  const canMoveNext = draftHelpers.canMoveTo(brick.id, "next");
+  const parentContainer = draftHelpers.getParentBrick(brick.id);
+  const isContainerChild = !!parentContainer;
+  const parentElement = parentContainer ? document.getElementById(parentContainer.id) : null;
+  const flexOrientation = parentElement ? getComputedStyle(parentElement).flexDirection || "row" : "row";
+  const canMoveLeft =
+    (isContainerChild && canMovePrev && flexOrientation === "row") || (!isContainerChild && canMovePrev);
+  const canMoveRight =
+    (isContainerChild && canMoveNext && flexOrientation === "row") || (!isContainerChild && canMoveNext);
+  const canMoveUp = isContainerChild && canMovePrev && flexOrientation === "column";
+  const canMoveDown = isContainerChild && canMoveNext && flexOrientation === "column";
+
+  // {isContainerChild && flexOrientation === "column" ? "Move up" : "Move left"}
+
+  return (
+    <>
+      {canMoveLeft && (
+        <button
+          type="button"
+          className={tx(
+            "flex items-center justify-center h-5 w-5 isolate",
+            "absolute z-[9999] top-1/2 -left-7 transform -translate-y-1/2",
+            "rounded-full text-upstart-500 bg-white shadow-xl",
+            "border border-upstart-500 hover:(text-white bg-upstart-500 border-upstart-700)",
+          )}
+          onClick={(e) => {
+            e.stopPropagation();
+            draftHelpers.moveBrick(brick.id, "previous");
+          }}
+        >
+          <IoIosArrowBack className="w-4 h-4 -ml-0.5" />
+        </button>
+      )}
+      {canMoveUp && (
+        <button
+          type="button"
+          className={tx(
+            "flex items-center justify-center h-5 w-5 isolate",
+            "absolute z-[9999] -top-7 left-1/2 transform -translate-x-1/2",
+            "rounded-full text-upstart-500 bg-white shadow-xl",
+            "border border-upstart-500 hover:(text-white bg-upstart-500 border-upstart-700)",
+          )}
+          onClick={(e) => {
+            e.stopPropagation();
+            draftHelpers.moveBrick(brick.id, "previous");
+          }}
+        >
+          <IoIosArrowUp className="w-4 h-4" />
+        </button>
+      )}
+      {canMoveRight && (
+        <button
+          type="button"
+          className={tx(
+            "flex items-center justify-center h-5 w-5 isolate",
+            "absolute z-[9999] top-1/2 -right-7 transform -translate-y-1/2",
+            "rounded-full text-upstart-500 bg-white shadow-xl",
+            "border border-upstart-500 hover:(text-white bg-upstart-500 border-upstart-700)",
+          )}
+          onClick={(e) => {
+            e.stopPropagation();
+            draftHelpers.moveBrick(brick.id, "next");
+          }}
+        >
+          <IoIosArrowForward className="w-4 h-4" />
+        </button>
+      )}
+      {canMoveDown && (
+        <button
+          type="button"
+          className={tx(
+            "flex items-center justify-center h-5 w-5 isolate",
+            "absolute z-[9999] -bottom-7 left-1/2 transform -translate-x-1/2",
+            "rounded-full text-upstart-500 bg-white shadow-xl",
+            "border border-upstart-500 hover:(text-white bg-upstart-500 border-upstart-700)",
+          )}
+          onClick={(e) => {
+            e.stopPropagation();
+            draftHelpers.moveBrick(brick.id, "next");
+          }}
+        >
+          <IoIosArrowDown className="w-4 h-4" />
+        </button>
+      )}
+    </>
+  );
+}
 
 type BrickMenuBarProps = ComponentProps<"div"> &
   PropsWithChildren<{
@@ -396,10 +491,9 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
     const draftHelpers = useDraftHelpers();
     const editorHelpers = useEditorHelpers();
     const debugMode = useDebugMode();
-    const previewMode = usePreviewMode();
     const manifest = useBrickManifest(brick.type);
-    const canMovePrev = draftHelpers.canMoveToWithinParent(brick.id, "previous");
-    const canMoveNext = draftHelpers.canMoveToWithinParent(brick.id, "next");
+    const canMovePrev = draftHelpers.canMoveTo(brick.id, "previous");
+    const canMoveNext = draftHelpers.canMoveTo(brick.id, "next");
     const parentContainer = draftHelpers.getParentBrick(brick.id);
     const parentElement = parentContainer ? document.getElementById(parentContainer.id) : null;
     const flexOrientation = parentElement ? getComputedStyle(parentElement).flexDirection || "row" : "row";
@@ -458,7 +552,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                 shortcut={isContainerChild ? "⌘↑" : "⌘←"}
                 onClick={(e) => {
                   e.stopPropagation();
-                  draftHelpers.moveBrickWithin(brick.id, "previous");
+                  draftHelpers.moveBrick(brick.id, "previous");
                 }}
               >
                 {isContainerChild && flexOrientation === "column" ? "Move up" : "Move left"}
@@ -469,7 +563,7 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                 shortcut={isContainerChild ? "⌘↓" : "⌘→"}
                 onClick={(e) => {
                   e.stopPropagation();
-                  draftHelpers.moveBrickWithin(brick.id, "next");
+                  draftHelpers.moveBrick(brick.id, "next");
                 }}
               >
                 {isContainerChild && flexOrientation === "column" ? "Move down" : "Move right"}

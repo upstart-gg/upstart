@@ -15,6 +15,7 @@ import { createStore, useStore } from "zustand";
 import { persist, subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { type DraftState, usePageContext } from "./use-page-data";
+import type { Editor as TextEditor } from "@tiptap/react";
 export type { Immer } from "immer";
 
 enableMapSet();
@@ -68,7 +69,6 @@ export interface EditorStateProps {
     colWidth: number;
     rowHeight: number;
   };
-  textEditMode?: "default" | "large";
   settingsVisible?: boolean;
   genFlowDone?: boolean;
 
@@ -107,11 +107,9 @@ export interface EditorState extends EditorStateProps {
   setPreviewMode: (mode: Resolution) => void;
   setSettingsVisible: (visible: boolean) => void;
   toggleSettings: () => void;
-  toggleTextEditMode: () => void;
   setContextMenuVisible: (open: boolean) => void;
   toggleEditorEnabled: () => void;
   setGridConfig: (config: EditorStateProps["gridConfig"]) => void;
-  setTextEditMode: (mode: EditorStateProps["textEditMode"]) => void;
   setIsEditingText: (forBrickId: string | false) => void;
   setIsResizing: (resizing: boolean) => void;
   setPanel: (panel?: EditorStateProps["panel"]) => void;
@@ -200,6 +198,7 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
               set((state) => {
                 state.resizing = resizing;
               }),
+
             setMouseOverPanel: (over) =>
               set((state) => {
                 state.isMouseOverPanel = over;
@@ -235,17 +234,6 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
             setImagesSearchResults: (images) =>
               set((state) => {
                 state.imagesSearchResults = images;
-              }),
-
-            toggleTextEditMode: () =>
-              set((state) => {
-                state.textEditMode =
-                  !state.textEditMode || state.textEditMode === "default" ? "large" : "default";
-              }),
-
-            setTextEditMode: (mode) =>
-              set((state) => {
-                state.textEditMode = mode;
               }),
 
             setPreviewMode: (mode) =>
@@ -472,11 +460,6 @@ export const useChatVisible = () => {
   return useStore(ctx, (state) => !!state.chatVisible);
 };
 
-export const useTextEditMode = () => {
-  const ctx = useEditorStoreContext();
-  return useStore(ctx, (state) => state.textEditMode);
-};
-
 export const useIsResizing = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => state.resizing);
@@ -514,8 +497,6 @@ export const useEditorHelpers = () => {
     setSettingsVisible: state.setSettingsVisible,
     setGridConfig: state.setGridConfig,
     toggleSettings: state.toggleSettings,
-    toggleTextEditMode: state.toggleTextEditMode,
-    setTextEditMode: state.setTextEditMode,
     setIsEditingText: state.setIsEditingText,
     setImagesSearchResults: state.setImagesSearchResults,
     setPanel: state.setPanel,

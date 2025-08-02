@@ -23,18 +23,20 @@ It is typically used on home pages to grab the user's attention.
   icon: BsAlphabetUppercase,
 
   defaultWidth: { desktop: "60dvw", mobile: "auto" },
-  // minWidth: { desktop: 800 },
+
+  // Force the wrapper direction to be the same as the text direction
+  staticClasses: "flex-col",
 
   props: defineProps({
     content: textContentRef({
       title: "Hero title",
       default:
-        "<h1 class='hero-size-1' style='text-align:left'><b>Leading Businesses<br />Choose Leading Software</b></h1>",
+        "<h1 class='hero-size-1' style='text-align:center'><b>Leading Businesses<br />Choose Leading Software</b></h1>",
     }),
     tagline: Type.Optional(
       textContentRef({
         title: "Hero tagline",
-        default: "<p style='text-align:left'>Use our platform to build your business with confidence.</p>",
+        default: "<p style='text-align:center'>Use our platform to build your business with confidence.</p>",
       }),
     ),
     color: Type.Optional(
@@ -194,7 +196,7 @@ It is typically used on home pages to grab the user's attention.
 
           none: { label: "None", value: {} },
         },
-        default: "base100",
+        default: "none",
       }),
     ),
     gradientDirection: Type.Optional(
@@ -250,11 +252,11 @@ It is typically used on home pages to grab the user's attention.
     ),
     border: Type.Optional(borderRef()),
     shadow: Type.Optional(shadowRef()),
-    alignItems: Type.Optional(
-      alignItemsRef({
-        default: "items-center",
-      }),
-    ),
+    // alignItems: Type.Optional(
+    //   alignItemsRef({
+    //     default: "items-center",
+    //   }),
+    // ),
   }),
 });
 

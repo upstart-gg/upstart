@@ -18,7 +18,7 @@ export default function Image({ brick, editable }: BrickProps<Manifest>) {
       as="picture"
       className={tx("group/image flex items-center justify-center", Object.values(containerStyles))}
     >
-      {!editable && typeof src === "string" && src !== "" && (
+      {!isDynamicSrc && typeof src === "string" && src !== "" && (
         <img
           src={src}
           alt={alt}

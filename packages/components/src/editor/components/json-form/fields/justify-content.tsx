@@ -12,7 +12,7 @@ export default function JustifyContentField(props: FieldProps<JustifyContentSett
 
   const customSchema = {
     ...schema,
-    title: flexOrientation === "row" ? "Horizontal Align." : "Vertical Align.",
+    title: flexOrientation === "row" ? "Horizontal Align." : `Vertical Align.`,
     description:
       flexOrientation === "row"
         ? "Aligns the bricks horizontally within the container."

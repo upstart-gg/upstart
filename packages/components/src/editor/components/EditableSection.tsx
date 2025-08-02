@@ -59,32 +59,31 @@ export default function EditableSection({ section, index }: EditableSectionProps
   const isSpecialSection = typeof section.props.purpose !== "undefined";
 
   useDeepCompareEffect(() => {
-    if (section.props.minHeight === "full") {
-      return;
-    }
     // This effect runs when the section object changes, which includes props updates
-    // Check if the section is overflowing vertically
+    // Check if the section is overflowing
     const sectionEl = document.getElementById(section.id);
     invariant(sectionEl, `Section element with id ${section.id} not found`);
     const isOverflowing = () =>
-      sectionEl.scrollHeight > sectionEl.clientHeight + parseFloat(section.props.gap ?? "0") * 2; // 8px for padding. Todo: fix this magic number
+      sectionEl.scrollWidth > sectionEl.clientWidth + parseFloat(section.props.gap ?? "0") * 2; // 8px for padding. Todo: fix this magic number
     if (isOverflowing()) {
       console.warn(
-        `Section ${section.id} is overflowing vertically. Consider adjusting its height or content. sectionEl.scrollHeight = %s, sectionEl.clientHeight = %s`,
-        sectionEl.scrollHeight,
-        sectionEl.clientHeight,
+        `Section ${section.id} is overflowing. Consider adjusting its width or content. sectionEl.scrollWidth = %s, sectionEl.clientWidth = %s`,
+        sectionEl.scrollWidth,
+        sectionEl.clientWidth,
       );
-      // let currentHeight = sectionEl.scrollHeight;
-      // let tries = 0;
+
       // do {
-      //   currentHeight += 20;
-      //   console.log("Adjusting section height for overflow (try %d):", tries, section.id, currentHeight);
-      //   draftHelpers.updateSectionProps(section.id, {
-      //     minHeight: `${currentHeight}px`,
+      //   const bricks = section.bricks;
+      //   // Reduce the width of each brick by 1% until it fits
+      //   bricks.forEach((brick) => {
+      //     const brickEl = document.getElementById(brick.id) as HTMLDivElement;
+      //     if (brickEl) {
+      //       const currentWidth = parseFloat(brickEl.style.width || "100%");
+      //       const newWidth = Math.max(currentWidth - 1, 10); // Ensure it doesn't go below 10%
+      //       brickEl.style.width = `${newWidth}%`;
+      //     }
       //   });
-      //   sectionEl.style.minHeight = `${currentHeight}px`;
-      //   tries += 1;
-      // } while (isOverflowing() && tries < 20);
+      // } while (isOverflowing());
     }
   }, [sectionObj]);
 

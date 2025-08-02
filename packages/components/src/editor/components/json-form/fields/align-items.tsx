@@ -1,18 +1,22 @@
 import type { FieldProps } from "./types";
 import type { AlignItemsSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
-import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import EnumField from "./enum";
+import { useParentBrick } from "~/editor/hooks/use-page-data";
 
 export default function AlignItemsField(props: FieldProps<AlignItemsSettings>) {
   const { brickId, onChange, schema } = props;
   const htmlElement = document.getElementById(brickId);
-  invariant(htmlElement, "HTML element not found for AlignItemsField");
+  const parentbrick = useParentBrick(brickId);
+
+  if (!htmlElement) {
+    return null;
+  }
 
   const flexOrientation = getComputedStyle(htmlElement).flexDirection;
 
   const customSchema = {
     ...schema,
-    title: flexOrientation === "column" ? "Horizontal Alignment" : "Vertical Alignment",
+    title: flexOrientation === "column" ? "Horizontal Alignment" : `Vertical Alignment`,
     "ui:display": "icon-group",
     description:
       flexOrientation === "column"

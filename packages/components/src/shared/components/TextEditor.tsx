@@ -22,6 +22,7 @@ import {
   type MouseEventHandler,
   type ElementType,
   type ComponentPropsWithoutRef,
+  startTransition,
 } from "react";
 import Document from "@tiptap/extension-document";
 import {
@@ -34,7 +35,7 @@ import {
 import { MdOutlineFormatItalic } from "react-icons/md";
 import { MdStrikethroughS } from "react-icons/md";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
-import { useEditor } from "~/editor/hooks/use-editor";
+import { useEditor, useSelectedBrickId } from "~/editor/hooks/use-editor";
 import { JSONSchemaView } from "~/editor/components/json-form/SchemaView";
 import Mention from "@tiptap/extension-mention";
 import datasourceFieldSuggestions from "./datasourceFieldSuggestions";
@@ -46,7 +47,7 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { useDatasource, useDatasources } from "~/editor/hooks/use-datasource";
 import { useDynamicParent } from "~/editor/hooks/use-page-data";
 import type { Fragment } from "@tiptap/pm/model";
-import { getEditorNodeFromField } from "../utils/editor-nodes";
+import { getEditorNodeFromField, insertInEditor } from "../utils/editor-utils";
 
 const HeroHeading = Heading.extend({
   addAttributes() {
@@ -142,6 +143,7 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
     const defaultUpdateHandler = useTextEditorUpdateHandler(brickId, propPath, dynamic, inline === true);
     const onUpdate = inline ? defaultUpdateHandler : onChange;
     const mainEditor = useEditor();
+    const selectedBrickId = useSelectedBrickId();
     const dynParent = useDynamicParent(brickId);
     const datasource = useDatasource(dynParent?.props?.datasource?.id);
     const [menuBarContainer, setMenuBarContainer] = useState<HTMLDivElement | null>(null);
@@ -212,11 +214,48 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
       OverrideEscape,
     ] as Extension[];
 
+    const onFocus = (e: EditorEvents["focus"]) => {
+      // e.event.stopPropagation();
+      mainEditor.setIsEditingText(brickId);
+      mainEditor.setSelectedBrickId(brickId);
+      setFocused(true);
+      if (noMenuBar) {
+        return;
+      }
+      setTimeout(() => {
+        const container = document.querySelector<HTMLDivElement>(`#text-editor-menu-${brickId}`);
+        if (container) {
+          setMenuBarContainer(container);
+        }
+      }, 0);
+    };
+
+    const onBlur = (e: EditorEvents["blur"]) => {
+      // For whatever reason, the editor content is not updated when the blur event is triggered the first time
+      // So we need to manually update the content here
+      setContent(e.editor.getHTML());
+
+      // If there is a related target, it means the blur event was triggered by a click on the editor buttons
+      if (e.event.relatedTarget && !(e.event.relatedTarget as HTMLElement).classList.contains("tiptap")) {
+        // setFocused(false);
+        console.debug("Editor blur triggered by editor buttons, ignoring", e.event.relatedTarget);
+        return;
+      }
+
+      mainEditor.setIsEditingText(false);
+
+      startTransition(() => {
+        setFocused(false);
+      });
+    };
+
     const editor = useTextEditor(
       {
         extensions,
         content: currentContent,
         onUpdate,
+        onBlur,
+        onFocus,
         immediatelyRender: true,
         editable: true,
         editorProps: {
@@ -225,61 +264,14 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
           },
         },
       },
-      [brickId, mainEditor.textEditMode],
+      [brickId],
     );
 
     useEffect(() => {
-      const onFocus = (e: EditorEvents["focus"]) => {
-        // e.event.stopPropagation();
-        mainEditor.setIsEditingText(brickId);
-        mainEditor.setSelectedBrickId(brickId);
-        setFocused(true);
-        if (noMenuBar) {
-          return;
-        }
-        setTimeout(() => {
-          const container = document.querySelector<HTMLDivElement>(`#text-editor-menu-${brickId}`);
-          if (container) {
-            setMenuBarContainer(container);
-          }
-        }, 0);
-      };
-
-      const onBlur = (e: EditorEvents["blur"]) => {
-        // For whatever reason, the editor content is not updated when the blur event is triggered the first time
-        // So we need to manually update the content here
-        setContent(e.editor.getHTML());
-
-        // If there is a related target, it means the blur event was triggered by a click on the editor buttons
-        if (e.event.relatedTarget && !(e.event.relatedTarget as HTMLElement).classList.contains("tiptap")) {
-          // setFocused(false);
-          console.debug("Editor blur triggered by editor buttons, ignoring", e.event.relatedTarget);
-          return;
-        }
-
-        mainEditor.setIsEditingText(false);
-
-        // Test commenting this out to see if it helps with the focus issue
-        // mainEditor.setSelectedBrickId();
-        // mainEditor.togglePanel("inspector");
-
-        // reset the selection to the end of the document
-        e.editor.commands.setTextSelection({
-          from: e.editor.state.doc.content.size,
-          to: e.editor.state.doc.content.size,
-        });
-
-        setFocused(false);
-      };
-
-      editor?.on("focus", onFocus);
-      editor?.on("blur", onBlur);
-
-      return () => {
-        editor?.off("focus", onFocus);
-        editor?.off("blur", onBlur);
-      };
-    }, [editor, mainEditor, brickId, noMenuBar]);
+      if (brickId !== selectedBrickId) {
+        editor.commands.blur();
+      }
+    }, [selectedBrickId, brickId, editor]);
 
     // Expose the editor instance through the ref
     useImperativeHandle(
@@ -293,7 +285,7 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
     return (
       <>
         <EditorContent autoCorrect="false" spellCheck="false" editor={editor} className={tx("contents")} />
-        {focused && menuBarContainer && (
+        {(focused || editor.isFocused) && menuBarContainer && (
           <Portal container={menuBarContainer} asChild>
             <TextEditorMenuBar
               brickId={brickId}
@@ -410,18 +402,6 @@ function DatasourceFieldPickerModal({ brickId, onFieldSelect }: DatasourceFieldP
   );
 }
 
-export function insertInEditor(editor: Editor, content: Content | Node | Fragment) {
-  console.log("Inserting content %s", content);
-  editor
-    .chain()
-    .insertContent(content, {
-      parseOptions: {
-        preserveWhitespace: "full",
-      },
-    })
-    .run();
-}
-
 export function DatasourceItemButton({
   editor,
   brickId,
@@ -474,7 +454,6 @@ function TextStyleButtonGroup({ editor, noTextStrike, textSizeMode }: TextStyleB
       <ToggleGroup.Item
         className={tx(menuBarBtnCls, menuBarBtnCommonCls, "!rounded-l-none", isBold && menuBarBtnActiveCls)}
         value="bold"
-        // @ts-ignore
         onClick={() => editor.chain().focus().toggleBold().run()}
       >
         <MdFormatBold className="w-5 h-5" />
@@ -482,7 +461,6 @@ function TextStyleButtonGroup({ editor, noTextStrike, textSizeMode }: TextStyleB
       <ToggleGroup.Item
         className={tx(menuBarBtnCls, menuBarBtnCommonCls, isItalic && menuBarBtnActiveCls)}
         value="italic"
-        // @ts-ignore
         onClick={() => editor.chain().focus().toggleItalic().run()}
       >
         <MdOutlineFormatItalic className="w-5 h-5" />
@@ -491,7 +469,6 @@ function TextStyleButtonGroup({ editor, noTextStrike, textSizeMode }: TextStyleB
         <ToggleGroup.Item
           className={tx(menuBarBtnCls, menuBarBtnCommonCls, "!rounded-none", isStrike && menuBarBtnActiveCls)}
           value="strike"
-          // @ts-ignore
           onClick={() => editor.chain().focus().toggleStrike().run()}
         >
           <MdStrikethroughS className="w-5 h-5" />

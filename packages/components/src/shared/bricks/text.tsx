@@ -16,7 +16,11 @@ export default function Text({ brick, editable }: BrickProps<Manifest>) {
   const presetClasses = useColorPreset<Manifest>(brick);
 
   return (
-    <BrickRoot editable={editable} manifest={manifest} className={tx("flex", classes, presetClasses.main)}>
+    <BrickRoot
+      editable={editable}
+      manifest={manifest}
+      className={tx("flex grow h-full", classes, presetClasses.main)}
+    >
       <TextContent
         propPath="content"
         className={tx("text-pretty grow")}

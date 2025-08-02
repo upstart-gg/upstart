@@ -8,7 +8,6 @@ import FontPicker from "./json-form/fields/font";
 import { tx } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";
 import ThemePreview from "./ThemePreview";
-import { generateRelatedNeutral } from "./ColorPicker";
 
 export default function ThemePanel() {
   const draft = useDraft();
