@@ -1,9 +1,17 @@
 import { sectionProps, type Section } from "@upstart.gg/sdk/shared/bricks";
-import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
-import { getBackgroundStyles, getGapStyles, simpleClassHandler } from "../styles/helpers";
+import {
+  brickStylesHelpersMap,
+  brickWrapperStylesHelpersMap,
+  extractStylePath,
+  getGapStyles,
+  simpleClassHandler,
+} from "../styles/helpers";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
 import { tx, css } from "@upstart.gg/style-system/twind";
-import type { ColorPresets } from "@upstart.gg/sdk/shared/bricks/props/preset";
+import { getStyleProperties } from "../styles/style-props";
+import { get, merge } from "lodash-es";
+import { type FieldFilter, getSchemaDefaults } from "@upstart.gg/sdk/shared/utils/schema";
+import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 
 type UseSectionStyleProps = {
   section: Section;
@@ -13,52 +21,40 @@ type UseSectionStyleProps = {
 };
 
 export function useSectionStyle({ section, selected, editable, previewMode }: UseSectionStyleProps) {
+  const stylesProps = getStyleProperties(sectionProps);
+  const classes = useClassesFromStyleProps(stylesProps, section);
   const GAP = section.props.gap ?? "12px"; // Default gap if not set
 
-  const availablePresets = sectionProps.properties.backgroundColor["ui:presets"] as ColorPresets;
-  const presetClasses = section.props.backgroundColor
-    ? availablePresets[section.props.backgroundColor].value.main
-    : undefined;
-  const gradientClass = section.props.gradientDirection;
-
-  // console.log("useSectionStyle props", { props: section.props });
   return tx(
-    "flex @mobile:flex-col @desktop:flex-row w-full @container/section group/section overflow-visible relative mx-auto max-sm:max-w-dvw",
+    "flex flex-nowrap @mobile:flex-col @desktop:flex-row w-full @container/section group/section overflow-visible relative mx-auto max-sm:max-w-dvw",
     [
-      // section.props.preset as string,
-      presetClasses,
-      gradientClass,
+      Object.values(classes),
       section.props.maxWidth as string,
       typeof section.props.minHeight === "string" &&
         section.props.minHeight !== "full" &&
         `min-h-[${section.props.minHeight}]`,
       // full height
-      section.props.minHeight === "full" && editable && "min-h-[calc(100dvh-60px)]", // when in editor mode
-      section.props.minHeight === "full" && !editable && "min-h-dvh", // when in real mode
-
-      section.props.alignItems,
-      section.props.justifyContent,
+      section.props.minHeight === "full" &&
+        (editable
+          ? "min-h-[calc(100dvh-60px)]" // when in editor mode
+          : "min-h-dvh"),
 
       // Padding and gap
       // css({ gap: `${GAP}`, paddingInline: `${GAP}`, paddingBlock: `${GAP}` }),
-      getGapStyles(GAP, section.mobileProps?.gap),
+      // getGapStyles(GAP, section.mobileProps?.gap),
       simpleClassHandler(
         `p-[${GAP}]`,
         section.mobileProps?.gap ? `p-[${section.mobileProps.gap}]` : undefined,
       ),
 
       css({
-        "&:has([data-is-navbar])": {
+        "&:has([data-no-section-padding])": {
           // This is a hack to ensure that the navbar is not affected by the section's padding
           paddingInline: "0px !important",
           paddingBlock: "0px !important",
-          flexDirection: "row",
         },
       }),
 
-      "flex-nowrap",
-
-      // Background
       // Section editor styles
       getSectionEditorStyles({ editable, previewMode, section, selected }),
       // Manage the section order using css "order" (flex) property
@@ -92,4 +88,56 @@ function getSectionEditorStyles({ section, editable, selected, previewMode }: Us
         }
       }`,
   ];
+}
+
+const defaultProps = getSchemaDefaults(sectionProps);
+
+function useClassesFromStyleProps(stylesProps: Record<string, string>, section: Section) {
+  const { props, mobileProps } = section;
+  const mergedProps = merge({}, defaultProps, props);
+
+  const filtered = Object.entries(stylesProps).reduce((acc, [key, value]) => {
+    const manifestField = get(sectionProps.properties, key);
+    if (manifestField) {
+      // resolve eventual ref
+      const resolvedField = resolveSchema(manifestField);
+      if (resolvedField.metadata?.filter) {
+        const filter = resolvedField.metadata.filter as FieldFilter;
+        if (!filter(resolvedField, mergedProps)) {
+          acc.push(key);
+        }
+      }
+    }
+
+    return acc;
+  }, [] as string[]);
+
+  const classes = Object.entries(stylesProps).reduce(
+    (acc, [path, styleId]) => {
+      const helper =
+        brickStylesHelpersMap[styleId as keyof typeof brickStylesHelpersMap] ??
+        brickWrapperStylesHelpersMap[styleId as keyof typeof brickWrapperStylesHelpersMap];
+      if (!helper) {
+        console.warn("No helper found for styleId", styleId);
+        return acc;
+      }
+      if (filtered.includes(path)) {
+        console.warn("Filtered out section path", path);
+        return acc;
+      }
+      const part = extractStylePath(path);
+      acc[part] = acc[part] ?? [];
+
+      const resolvedProps = get(mergedProps, path);
+      const resolvedMobileProps = get(mobileProps, path);
+      const schema = get(sectionProps.properties, path);
+      acc[part].push(
+        // @ts-expect-error
+        tx(helper?.(resolvedProps, resolvedMobileProps, schema)),
+      );
+      return acc;
+    },
+    {} as Record<string, string[]>,
+  );
+  return classes;
 }

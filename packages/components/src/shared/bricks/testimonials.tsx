@@ -2,14 +2,12 @@ import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/testim
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import { useColorPreset } from "../hooks/use-color-preset";
 import { InlineIcon } from "@iconify/react";
 import BrickRoot from "../components/BrickRoot";
 
 export default function Testimonials({ brick, editable }: BrickProps<Manifest>) {
   const { props } = brick;
-  const { gradientDirection, ...styles } = useBrickStyle<Manifest>(brick);
-  const presetClasses = useColorPreset<Manifest>(brick);
+  const { color, ...styles } = useBrickStyle<Manifest>(brick);
   const containerClasses = Object.values(styles);
   const testimonials = props.testimonials && Array.isArray(props.testimonials) ? props.testimonials : [];
 
@@ -24,8 +22,7 @@ export default function Testimonials({ brick, editable }: BrickProps<Manifest>) 
           key={index}
           className={tx(
             "testimonial-item flex flex-1 flex-col gap-4 p-6 rounded-lg border shadow-sm @desktop:(min-w-[250px])",
-            presetClasses.card,
-            gradientDirection,
+            color,
           )}
         >
           <div className="testimonial-text flex-1">

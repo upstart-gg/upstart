@@ -2,6 +2,7 @@ import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { lazy, Suspense, type ComponentProps, type ComponentType, type LazyExoticComponent } from "react";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
+import { useSelectedBrickId } from "~/editor/hooks/use-editor";
 
 // Load all bricks in the bricks directory
 const bricks = import.meta.glob<false, string, { default: ComponentType<unknown> }>(["../bricks/*.tsx"]);
@@ -21,12 +22,11 @@ const bricksMap = Object.entries(bricks).reduce(
 const BaseComponent = ({
   brick,
   editable,
-  selectedBrickId,
 }: {
   brick: Brick;
   editable?: boolean;
-  selectedBrickId?: string;
 } & ComponentProps<"div">) => {
+  const selectedBrickId = useSelectedBrickId();
   const BrickModule = bricksMap[brick.type];
   if (!BrickModule) {
     console.warn("Brick not found", brick.type);

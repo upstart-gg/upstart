@@ -2,8 +2,6 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
 import type { BrickProps } from "../props/types";
 import { CgSpaceBetween } from "react-icons/cg";
-import { boolean } from "../props/boolean";
-import { Type } from "@sinclair/typebox";
 
 export const manifest = defineBrickManifest({
   type: "spacer",
@@ -13,23 +11,16 @@ export const manifest = defineBrickManifest({
   staticClasses: "self-stretch",
   minWidth: {
     desktop: 50,
-    mobile: 20,
   },
   defaultWidth: {
-    mobile: "100%",
+    mobile: "auto",
     desktop: "50px",
   },
   minHeight: {
     mobile: 30,
   },
   icon: CgSpaceBetween,
-  props: defineProps({
-    autogrow: Type.Optional(
-      boolean("Auto-grow", false, {
-        description: "If enabled, the spacer will automatically grow to fill available space.",
-      }),
-    ),
-  }),
+  props: defineProps({}),
 });
 
 export type Manifest = typeof manifest;

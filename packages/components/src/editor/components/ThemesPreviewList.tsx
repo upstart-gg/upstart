@@ -24,7 +24,7 @@ export default function ThemesPreviewList({ themes }: { themes: Theme[] }) {
 
   useEffect(() => {
     containerRef.current?.style.setProperty("background-color", theme.colors.base200);
-    containerRef.current?.style.setProperty("color", theme.colors.baseContent);
+    // containerRef.current?.style.setProperty("color", theme.colors.baseContent);
     conicRef.current?.style.setProperty(
       "background-image",
       `conic-gradient(from 0deg, ${theme.colors.primary}, ${theme.colors.secondary}, ${theme.colors.accent}, ${theme.colors.primary})`,

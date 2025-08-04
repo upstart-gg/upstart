@@ -14,7 +14,10 @@ export default function ThemePreview({
       type="button"
       className={tx(
         "relative border aspect-square border-upstart-500 flex flex-col flex-grow gap-1 items-stretch justify-stretch group transition-all",
-        css({ backgroundColor: theme.colors.base100, color: theme.colors.baseContent }),
+        css({
+          backgroundColor: theme.colors.base100,
+          // color: theme.colors.baseContent
+        }),
         noPreview ? "cursor-default" : "cursor-pointer hover:(ring-2 ring-upstart-500)",
         className,
       )}

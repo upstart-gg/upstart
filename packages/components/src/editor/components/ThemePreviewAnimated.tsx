@@ -50,9 +50,11 @@ const ThemePreview: FC<ThemePreviewProps> = ({ theme }) => {
         whileHover={{ scale: 1.2 }}
         transition={{ type: "spring" }}
         className={tx("absolute -left-1/2 -top-1/2 h-[200%] w-[200%] flex")}
-        style={{
-          borderColor: colors.baseContent,
-        }}
+        style={
+          {
+            // borderColor: colors.baseContent,
+          }
+        }
       >
         <div className="flex-1 h-full w-full" style={{ backgroundColor: colors.secondary }}>
           &nbsp;
@@ -66,9 +68,11 @@ const ThemePreview: FC<ThemePreviewProps> = ({ theme }) => {
       </motion.div>
       <div
         className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 text-xl font-extrabold text-center capitalize"
-        style={{
-          color: colors.primaryContent,
-        }}
+        style={
+          {
+            // color: colors.primaryContent,
+          }
+        }
       >
         {theme.name}
       </div>

@@ -22,7 +22,7 @@ export default function ResizeHandle({
       type="button"
       className={tx(
         "resizable-handle absolute focus:outline-none",
-        "overflow-visible z-[9998]",
+        "overflow-visible z-[9999]",
         `resizable-handle-${direction}`,
         {
           "-bottom-[2px] left-0 right-0 h-[6px] cursor-row-resize": direction === "s",

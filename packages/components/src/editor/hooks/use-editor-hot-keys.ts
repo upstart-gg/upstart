@@ -72,13 +72,23 @@ export function useEditorHotKeys() {
    * Move brick to the left or up within a container
    */
   useHotkeys(
-    ["mod+up", "mod+left"],
+    ["up", "left"],
     (e) => {
-      e.preventDefault();
       if (selectedBrickId) {
-        // console
-        draftHelpers.moveBrickWithin(selectedBrickId, "previous");
-      } else if (selectedSectionId) {
+        e.preventDefault();
+        const parentBrick = draftHelpers.getParentBrick(selectedBrickId);
+        if (parentBrick) {
+          const direction = parentBrick.props.direction === "flex-row" ? "ArrowLeft" : "ArrowUp";
+          if (direction === e.key) {
+            // Move brick within its parent
+            draftHelpers.moveBrick(selectedBrickId, "previous");
+          }
+        } else if (e.key === "ArrowLeft") {
+          // Move brick within its section
+          draftHelpers.moveBrick(selectedBrickId, "previous");
+        }
+      } else if (selectedSectionId && e.key === "ArrowUp") {
+        e.preventDefault();
         draftHelpers.moveSectionUp(selectedSectionId);
         const element = document.getElementById(selectedSectionId);
         if (element) {
@@ -92,13 +102,23 @@ export function useEditorHotKeys() {
   );
 
   useHotkeys(
-    ["mod+down", "mod+right"],
+    ["down", "right"],
     (e) => {
-      e.preventDefault();
       if (selectedBrickId) {
-        // console
-        draftHelpers.moveBrickWithin(selectedBrickId, "next");
-      } else if (selectedSectionId) {
+        e.preventDefault();
+        const parentBrick = draftHelpers.getParentBrick(selectedBrickId);
+        if (parentBrick) {
+          const direction = parentBrick.props.direction === "flex-row" ? "ArrowRight" : "ArrowDown";
+          if (direction === e.key) {
+            draftHelpers.moveBrick(selectedBrickId, "next");
+          }
+          // Move brick within its parent
+        } else if (e.key === "ArrowRight") {
+          // Move brick within its section
+          draftHelpers.moveBrick(selectedBrickId, "next");
+        }
+      } else if (selectedSectionId && e.key === "ArrowDown") {
+        e.preventDefault();
         draftHelpers.moveSectionDown(selectedSectionId);
         const element = document.getElementById(selectedSectionId);
         if (element) {

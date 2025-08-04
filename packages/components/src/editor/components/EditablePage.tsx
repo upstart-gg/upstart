@@ -1,7 +1,14 @@
 import { tx } from "@upstart.gg/style-system/twind";
 import { useEffect, useRef } from "react";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
-import { useEditorHelpers, useGridConfig, usePreviewMode, useZoom } from "../hooks/use-editor";
+import {
+  useEditorHelpers,
+  useGridConfig,
+  usePreviewMode,
+  useSelectedBrickId,
+  useSelectedSectionId,
+  useZoom,
+} from "../hooks/use-editor";
 import { useFontWatcher } from "../hooks/use-font-watcher";
 import { useGridObserver } from "../hooks/use-grid-observer";
 import { useResizable } from "../hooks/use-resizable";
@@ -22,13 +29,14 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const previewMode = usePreviewMode();
   const editorHelpers = useEditorHelpers();
   const draftHelpers = useDraftHelpers();
-  const draft = useDraft();
   const { zoom } = useZoom();
   const pageRef = useRef<HTMLDivElement>(null);
   const gridConfig = useGridConfig();
   const attributes = useAttributes();
   const sections = useSections();
   const typography = useFontWatcher();
+  const selectedBrickId = useSelectedBrickId();
+  const selectedSectionId = useSelectedSectionId();
 
   const pageClassName = usePageStyle({
     attributes,
@@ -40,9 +48,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
 
   const generationState = useGenerationState();
   useGridObserver(pageRef);
-
-  // on page load, set last loaded property so that the store is saved to local storage
-  useEffect(draft.setLastLoaded, []);
 
   useResizable("[data-brick]", {
     gridSnap: {
@@ -71,10 +76,8 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       const target = event.target as HTMLElement;
       const brickId = target.dataset.brickId as string;
       const parentBrick = draftHelpers.getParentBrick(brickId);
-      const existingBrick = draftHelpers.getBrick(brickId)?.props;
       // parentElement corresponds to the wrapper of the brick
       const parentWrapperElement = target.parentElement as HTMLElement;
-      // Also count the padding of the actual brick
 
       // Compute the parent innerWidth (clientWidth - padding)
       const parentWidth =
@@ -87,21 +90,23 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         return;
       }
 
-      const width =
-        previewMode === "mobile"
-          ? "auto"
-          : `${Math.min((event.rect.width / parentWidth) * 100, 100).toFixed(0)}%`;
-
-      console.log("Resizing with parentBrick:", parentBrick);
-      console.log("Resizing with parentWrapperElement:", parentWrapperElement);
-      console.log("Resizing with parentWidth:", parentWidth);
-      console.log("Resizing with width:", width);
+      const rectWidth = Math.abs(event.rect.width);
+      const futureWidth = Math.min(Math.round((rectWidth / parentWidth) * 100), 100);
+      const widthPercentage = previewMode === "mobile" ? "auto" : `${futureWidth.toFixed(0)}%`;
 
       // Horizontal resizing
       if (event.edges.left || event.edges.right) {
+        if (futureWidth === 100 && parentBrick) {
+          console.log("Resizing to 100% width, updating parent brick props");
+          // Also update the parent brick props with fixed values
+          draftHelpers.updateBrickProps(parentBrick.id, {
+            width: `${rectWidth}px`,
+            grow: false,
+          });
+        }
         draftHelpers.updateBrickProps(brickId, {
-          width,
-          grow: event.edges.left || event.edges.right ? false : existingBrick?.grow,
+          width: widthPercentage,
+          grow: false,
         });
       }
 
@@ -129,6 +134,22 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       });
     },
   });
+
+  // When preview mode changes, scroll to the selected element if any
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    if (selectedBrickId) {
+      const element = document.getElementById(selectedBrickId);
+      if (element) {
+        element.scrollIntoView({ behavior: "instant", block: "center" });
+      }
+    } else if (selectedSectionId) {
+      const element = document.getElementById(selectedSectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: "instant", block: "center" });
+      }
+    }
+  }, [previewMode]);
 
   // listen for global click events on the document
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -158,7 +179,6 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         editorHelpers.hidePanel("inspector");
         editorHelpers.hidePanel("settings");
         editorHelpers.hidePanel("theme");
-        editorHelpers.setTextEditMode("default");
       }
     };
     if (generationState.isReady) {

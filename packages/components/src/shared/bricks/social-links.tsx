@@ -3,13 +3,11 @@ import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { InlineIcon } from "@iconify/react";
-import { useColorPreset } from "../hooks/use-color-preset";
 import BrickRoot from "../components/BrickRoot";
 
 export default function SocialLinks({ brick, editable }: BrickProps<Manifest>) {
   const styles = useBrickStyle<Manifest>(brick);
   const { props } = brick;
-  const presetClasses = useColorPreset<Manifest>(brick);
   // Ensure links is an array - allow empty arrays
   const links = Array.isArray(props.links) ? props.links : [];
 
@@ -17,7 +15,7 @@ export default function SocialLinks({ brick, editable }: BrickProps<Manifest>) {
     <BrickRoot
       editable={editable}
       manifest={manifest}
-      className={tx("flex justify-start items-start gap-2", Object.values(styles), presetClasses.main)}
+      className={tx("flex justify-start items-start gap-2", Object.values(styles))}
     >
       {editable && links.length === 0 && (
         <div className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-md">

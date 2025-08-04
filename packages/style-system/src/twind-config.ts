@@ -41,21 +41,12 @@ export default defineConfig({
       "bg-upstart-50 text-black text-[92%] inline-block outline outline-upstart-50 px-1 rounded-sm mx-0.5",
     ],
     [
-      "btn-color-",
+      "btn-",
       ({ $$ }) => ({
-        borderColor: `var(--color-${$$}-dark)`,
         backgroundColor: `var(--color-${$$})`,
         color: `var(--color-${$$}-content)`,
-        "&:hover": {
-          backgroundColor: `var(--color-${$$}-600)`,
-          borderColor: `var(--color-${$$}-600)`,
-        },
       }),
     ],
-    ["btn", "py-2 px-4 text-base"],
-    ["btn-size-small", "py-1.5 px-2 text-sm"],
-    ["btn-size-medium", "py-2 px-4 text-base"],
-    ["btn-size-large", "py-3 px-5 text-lg"],
     [
       "rounded-auto",
       {
@@ -139,6 +130,10 @@ export default defineConfig({
         backgroundColor: `var(--up-bg-color)`,
         "--up-bg-color": `var(--color-accent-${$$})`,
       }),
+    ],
+    [
+      "bg-primary-gradient-",
+      ({ $$ }) => `@(from-primary-${$$} to-primary-${parseInt($$) + 100})`, // e.g. from-primary-100 to-primary-200,
     ],
     [
       "bg-primary-",

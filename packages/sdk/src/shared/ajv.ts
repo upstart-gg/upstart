@@ -11,7 +11,7 @@ import { shadow, textShadow } from "./bricks/props/effects";
 import { fontSize, textContent } from "./bricks/props/text";
 import { icon, urlOrPageId } from "./bricks/props/string";
 import { padding } from "./bricks/props/padding";
-import { colorPreset } from "./bricks/props/preset";
+import { colorPreset } from "./bricks/props/color-preset";
 import { image } from "./bricks/props/image";
 import { direction } from "./bricks/props/direction";
 

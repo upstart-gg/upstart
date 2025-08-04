@@ -8,6 +8,7 @@ import { datetime } from "./bricks/props/date";
 import { enumProp } from "./bricks/props/enum";
 import { imageRef } from "./bricks/props/image";
 import { colorRef } from "./bricks/props/color";
+import { colorPresetRef } from "./bricks/props/color-preset";
 
 export function defineAttributes(attrs: TProperties) {
   // Attributes starting with "$" are reserved for internal use
@@ -32,124 +33,9 @@ export type { JSONSchemaType };
 
 // Default attributes
 const defaultAttributes = {
-  // $navbar:Type.Optional
-  //   group({
-  //     title: "Navbar",
-  //     children: navbarManifest.props,
-  //     // children: {
-  //     //   enabled: boolean("Enabled", true, {
-  //     //     description: "Enable or disable the navbar on this page",
-  //     //   }),
-  //     //   pageTagsFilter:Type.Optional
-  //     //     prop({
-  //     //       title: "Page tags filter",
-  //     //       description:
-  //     //         "Filter pages in the navbar by tags. Only pages with all of these tags will be shown.",
-  //     //       schema: Type.Array(Type.String(), {
-  //     //         title: "Tags",
-  //     //         default: ["navbar"],
-  //     //       }),
-  //     //     }),
-  //     //   ),
-  //     //   staticNavItems:Type.Optional
-  //     //     prop({
-  //     //       title: "Nav items",
-  //     //       description: "Additional static navigation items to show in the navbar",
-  //     //       schema: Type.Array(
-  //     //         Type.Object({
-  //     //           urlOrPageId: urlOrPageIdRef(),
-  //     //           label:Type.Optionalstring("Label")),
-  //     //         }),
-  //     //         { title: "Navigation items", default: [] },
-  //     //       ),
-  //     //     }),
-  //     //   ),
-  //     // },
-  //   }),
-  // ),
-  // $sidebar:Type.Optional
-  //   group({
-  //     title: "Sidebar",
-  //     children: {
-  //       enabled: boolean("Enabled", true, {
-  //         description: "Enable or disable the sidebar on this page",
-  //       }),
-  //       sidebarPosition: StringEnum(["left", "right"], {
-  //         title: "Position",
-  //         default: "left",
-  //         enumNames: ["Left", "Right"],
-  //         "ui:group": "layout",
-  //         "ui:group:title": "Page Layout",
-  //       }),
-  //       staticNavItems:Type.Optional
-  //         prop({
-  //           title: "Nav items",
-  //           schema: Type.Array(
-  //             Type.Object({
-  //               urlOrPageId: urlOrPageIdRef(),
-  //               label:Type.Optionalstring("Label")),
-  //             }),
-  //             { title: "Navigation items", default: [] },
-  //           ),
-  //         }),
-  //       ),
-  //     },
-  //   }),
-  // ),
-
-  // $bodyBackground:Type.Optional
-  //   backgroundRef({
-  //     default: {
-  //       color: "#ffffff",
-  //     },
-  //     title: "Body Background",
-  //     description:
-  //       "Applies to the body element of the page (while Page Background applies to the page container)",
-  //     "ui:field": "background",
-  //     "ui:no-alt-text": true,
-  //     // disable for now
-  //     // "ui:show-img-search": true,
-  //     "ui:group": "layout",
-  //     "ui:group:title": "Page Layout",
-  //     "ui:group:order": 3,
-  //   }),
-  // ),
-
-  $backgroundColor: backgroundColorRef({
-    title: "Background color",
+  $color: colorPresetRef({
+    title: "Color",
     default: "bg-base-100",
-  }),
-  $textColor: colorRef({
-    title: "Text color",
-    default: "text-base-content",
-  }),
-  $pageLanguage: enumProp("Language", "en", {
-    options: [
-      { value: "ar", title: "Arabic" },
-      { value: "zh", title: "Chinese" },
-      { value: "cs", title: "Czech" },
-      { value: "nl", title: "Dutch" },
-      { value: "en", title: "English" },
-      { value: "fr", title: "French" },
-      { value: "de", title: "German" },
-      { value: "he", title: "Hebrew" },
-      { value: "hi", title: "Hindi" },
-      { value: "it", title: "Italian" },
-      { value: "ja", title: "Japanese" },
-      { value: "ko", title: "Korean" },
-      { value: "fa", title: "Persian" },
-      { value: "pl", title: "Polish" },
-      { value: "pt", title: "Portuguese" },
-      { value: "ru", title: "Russian" },
-      { value: "es", title: "Spanish" },
-      { value: "tr", title: "Turkish" },
-      { value: "vi", title: "Vietnamese" },
-    ],
-    "ai:guidelines":
-      "Choose a value based on the site description. If the site is in multiple languages, use 'en'.",
-
-    "ui:group": "meta",
-    "ui:group:title": "Meta tags",
   }),
 
   $robotsIndexing: Type.Optional(
@@ -256,20 +142,14 @@ const defaultAttributes = {
 export const defaultAttributesSchema = Type.Object(defaultAttributes, {
   additionalProperties: true,
 });
-export const siteAttributesSchemaForLLM = Type.Pick(defaultAttributesSchema, [
-  // "$bodyBackground",
-  "$backgroundColor",
-  "$textColor",
-]);
+export const siteAttributesSchemaForLLM = Type.Pick(defaultAttributesSchema, ["$color"]);
 export const pageAttributesSchemaForLLM = Type.Pick(defaultAttributesSchema, [
   "$pageTitle",
   "$pageDescription",
   "$pageKeywords",
   "$pageLanguage",
   "$pagePath",
-  // "$bodyBackground",
-  "$backgroundColor",
-  "$textColor",
+  "$color",
 ]);
 
 export type AttributesSchema = typeof defaultAttributesSchema & Record<string, unknown>;

@@ -3,14 +3,12 @@ import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useCallback, useEffect, useState } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import { useColorPreset } from "../hooks/use-color-preset";
 import { MdClose, MdChevronLeft, MdChevronRight } from "react-icons/md";
 import BrickRoot from "../components/BrickRoot";
 
 export default function ImagesGallery({ brick, editable }: BrickProps<Manifest>) {
   const { props } = brick;
   const styles = useBrickStyle<Manifest>(brick);
-  const presetClasses = useColorPreset<Manifest>(brick);
 
   const images = (props.images || []).filter(
     (image) => typeof image.src.src === "string" && image.src.src !== "",
@@ -85,11 +83,7 @@ export default function ImagesGallery({ brick, editable }: BrickProps<Manifest>)
       <BrickRoot
         editable={editable}
         manifest={manifest}
-        className={tx(
-          "flex flex-col grow items-center justify-center text-center",
-          Object.values(styles),
-          presetClasses.main,
-        )}
+        className={tx("flex flex-col grow items-center justify-center text-center", Object.values(styles))}
       >
         <div className="p-8">
           {editable ? "Add images to this gallery in the panel" : "No images to display"}
@@ -105,7 +99,6 @@ export default function ImagesGallery({ brick, editable }: BrickProps<Manifest>)
       className={tx(
         `grid auto-rows-fr @mobile:grid-cols-2 @desktop:${getGridClasses()}`,
         Object.values(styles),
-        presetClasses.main,
       )}
     >
       {images.map((image, index) => {

@@ -202,9 +202,10 @@ export default function PageHierarchy({
         const [reorderedSection] = newSectionOrder.splice(source.index, 1);
         newSectionOrder.splice(destination.index, 0, reorderedSection);
         draftHelpers.reorderSections(newSectionOrder.map((section) => section.id));
-      } else if (type === "brick-hierarchy") {
+      } else if (type === "brick-hierarchy" || type === "DEFAULT") {
         // reorder bricks within a section
         if (sourceDroppable === destDroppable) {
+          console.log("Reordering brick within the same section/parent", result);
           draftHelpers.reorderBrickWithin(draggableId, destIndex);
         } else {
           // Check if destDroppable is a section or a brick
@@ -217,6 +218,9 @@ export default function PageHierarchy({
             draftHelpers.moveBrickToContainerBrick(draggableId, destDroppable, destIndex);
           }
         }
+      } else {
+        console.warn("Unhandled drag type:", type);
+        console.warn("Result:", result);
       }
     }
 

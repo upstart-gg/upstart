@@ -56,7 +56,6 @@ export interface DraftStateProps {
   version?: string;
   lastSaved?: Date;
   dirty?: boolean;
-  lastLoaded?: Date;
   brickMap: Map<string, { brick: Brick; sectionId: string; parentId: string | null }>;
   // All pages in the site, used when in setup mode
   pages: GenericPageConfig[];
@@ -72,7 +71,7 @@ export interface DraftState extends DraftStateProps {
   >;
   duplicateBrick: (id: string) => void;
   duplicateSection: (id: string) => void;
-  moveBrickWithin: (id: string, to: "previous" | "next") => void;
+  moveBrick: (id: string, to: "previous" | "next") => void;
   reorderBrickWithin: (brickId: string, toIndex: number) => void;
   moveBrickToContainerBrick: (id: string, parentId: string, index: number) => void;
   moveBrickToSection: (id: string, sectionId: string | null, index?: number) => void;
@@ -90,7 +89,6 @@ export interface DraftState extends DraftStateProps {
   updateAttributes: (attr: Partial<Attributes>) => void;
   setLastSaved: (date: Date) => void;
   setDirty: (dirty: boolean) => void;
-  setLastLoaded: () => void;
   setVersion(version: string): void;
   adjustMobileLayout(): void;
 
@@ -101,7 +99,7 @@ export interface DraftState extends DraftStateProps {
   setSitemap(sitemap: Site["sitemap"]): void;
 
   getPositionWithinParent: (brickId: Brick["id"]) => number | undefined;
-  canMoveToWithinParent: (brickId: Brick["id"], to: "previous" | "next") => boolean;
+  canMoveTo: (brickId: Brick["id"], to: "previous" | "next") => boolean;
 
   isFirstSection: (sectionId: string) => boolean;
   isLastSection: (sectionId: string) => boolean;
@@ -439,11 +437,6 @@ export const createDraftStore = (
               state.brickMap = buildBrickMap(state.sections);
             }),
 
-          setLastLoaded: () =>
-            set((state) => {
-              state.lastLoaded = new Date();
-            }),
-
           deleteBrick: (id) =>
             set((state) => {
               // 1. retrieve all possible brick children ids
@@ -621,7 +614,7 @@ export const createDraftStore = (
            * Move a brick inside its container or its section
            * If the brick does not belong to a container, it will be moved within its section
            */
-          moveBrickWithin: (id, to) =>
+          moveBrick: (id, to) =>
             set((state) => {
               let children: Brick[] = [];
               let currentIndex = -1;
@@ -669,6 +662,7 @@ export const createDraftStore = (
               }
 
               const { sectionId, parentId } = brickMapping;
+              console.debug("Reordering brick %s in section %s, parent %s", brickId, sectionId, parentId);
 
               if (parentId) {
                 // Brick is inside a container, reorder within parent's children
@@ -682,6 +676,12 @@ export const createDraftStore = (
                   }
                   const [movedBrick] = children.splice(originalIndex, 1);
                   children.splice(toIndex, 0, movedBrick);
+                } else {
+                  console.error(
+                    "Cannot reorder brick %s, parent brick %s has no children",
+                    brickId,
+                    parentId,
+                  );
                 }
               } else {
                 // Brick is at the top level of a section
@@ -869,7 +869,7 @@ export const createDraftStore = (
             }
           },
 
-          canMoveToWithinParent: (brickId, to) => {
+          canMoveTo: (brickId, to) => {
             const parent = _get().getParentBrick(brickId);
             if (parent && "$children" in parent.props) {
               const children = parent.props.$children as Brick[];
@@ -1197,10 +1197,10 @@ export const useDraftHelpers = () => {
     getParentBrick: state.getParentBrick,
     updateBrickProps: state.updateBrickProps,
     updatePropsMapping: state.updatePropsMapping,
-    moveBrickWithin: state.moveBrickWithin,
+    moveBrick: state.moveBrick,
     reorderBrickWithin: state.reorderBrickWithin,
     getPositionWithinParent: state.getPositionWithinParent,
-    canMoveToWithinParent: state.canMoveToWithinParent,
+    canMoveTo: state.canMoveTo,
     moveBrickToContainerBrick: state.moveBrickToContainerBrick,
     moveBrickToSection: state.moveBrickToSection,
     deleteSection: state.deleteSection,

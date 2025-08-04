@@ -183,7 +183,7 @@ export function ColorElementPreviewPill({
             data-color={color}
             data-element-color-type={elementColorType}
             className={tx(
-              "rounded-full w-6 h-6 ring ring-transparent hover:ring-upstart-400 border border-gray-200",
+              "rounded-full w-6 h-6 ring ring-transparent hover:ring-upstart-400 border border-upstart-300",
               getColorPillBackgroundClass(color ?? "bg-transparent"),
               !color?.includes("gradient") &&
                 css({

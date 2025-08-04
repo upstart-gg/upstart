@@ -1,18 +1,14 @@
 import type { EditorEvents } from "@tiptap/react";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { useDraftHelpers } from "~/editor/hooks/use-page-data";
-import TextEditor, {
-  DatasourceItemButton,
-  insertInEditor,
-  type TextEditorRef,
-} from "~/shared/components/TextEditor";
+import TextEditor, { DatasourceItemButton, type TextEditorRef } from "~/shared/components/TextEditor";
 import type { FieldProps } from "../components/json-form/fields/types";
 import { useRef } from "react";
 import { css, tx } from "@upstart.gg/style-system/twind";
 import { useDebounceCallback } from "usehooks-ts";
 import { IconButton } from "@upstart.gg/style-system/system";
 import { RiBracesLine } from "react-icons/ri";
-import { getEditorNodeFromField } from "~/shared/utils/editor-nodes";
+import { getEditorNodeFromField, insertInEditor } from "~/shared/utils/editor-utils";
 
 export function useTextEditorUpdateHandler(
   brickId: Brick["id"],

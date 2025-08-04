@@ -31,19 +31,7 @@ export function usePageStyle({ attributes, editable, typography, showIntro }: Us
   return tx(
     "flex flex-col group/page mx-auto relative max-w-full w-full p-0 antialiased",
     editable && "overflow-hidden min-h-[100cqh]",
-    isStandardColor(attributes.$backgroundColor)
-      ? css({ backgroundColor: attributes.$backgroundColor as string })
-      : (attributes.$backgroundColor as string),
-    isStandardColor(attributes.$textColor)
-      ? css({ color: attributes.$textColor as string })
-      : (attributes.$textColor as string),
-    // typeof attributes.$backgroundColor?.image === "string" &&
-    //   css({
-    //     backgroundImage: `url(${attributes.$backgroundColor.image})`,
-    //     backgroundRepeat: attributes.$backgroundColor.repeat ?? "no-repeat",
-    //     backgroundSize: attributes.$backgroundColor.size ?? "cover",
-    //     backgroundPosition: "center top",
-    //   }),
+    attributes.$color as string,
 
     getTypographyStyles(typography),
 

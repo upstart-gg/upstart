@@ -243,7 +243,8 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               properties: {
                 $id: {
                   type: "string",
-                  title: "ID",
+                  title: "Id",
+                  format: "nanoid",
                 },
                 $publicationDate: {
                   type: "string",
@@ -257,6 +258,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 },
                 $slug: {
                   type: "string",
+                  format: "slug",
                   title: "Slug",
                 },
                 firstName: {
@@ -452,7 +454,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             label: "Top",
             order: ++order,
             props: {
-              purpose: "navbar",
+              variant: "navbar",
             },
             bricks: [
               {
@@ -517,22 +519,30 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                     {
                       id: generateId(),
                       type: "button",
-                      props: {},
+                      props: {
+                        label: "Button #1",
+                      },
                     },
                     {
                       id: generateId(),
                       type: "button",
-                      props: {},
+                      props: {
+                        label: "Button #2",
+                      },
                     },
                     {
                       id: generateId(),
                       type: "button",
-                      props: {},
+                      props: {
+                        label: "Button #3",
+                      },
                     },
                     {
                       id: generateId(),
                       type: "button",
-                      props: {},
+                      props: {
+                        label: "Button #4",
+                      },
                     },
                   ],
                 },
@@ -547,22 +557,30 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                     {
                       id: generateId(),
                       type: "button",
-                      props: {},
+                      props: {
+                        label: "Button #1",
+                      },
                     },
                     {
                       id: generateId(),
                       type: "button",
-                      props: {},
+                      props: {
+                        label: "Button #2",
+                      },
                     },
                     {
                       id: generateId(),
                       type: "button",
-                      props: {},
+                      props: {
+                        label: "Button #3",
+                      },
                     },
                     {
                       id: generateId(),
                       type: "button",
-                      props: {},
+                      props: {
+                        label: "Button #4",
+                      },
                     },
                   ],
                 },
@@ -839,7 +857,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 type: "button",
                 props: {
                   alignSelf: "self-auto",
-                  label: "My button",
+                  label: "hey ho!",
                   justifyContent: "justify-center",
                   type: "button",
                   color: "btn-color-primary",
@@ -932,9 +950,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 props: {
                   width: "20px",
                 },
-                mobileProps: {
-                  width: "100%",
-                },
               },
               {
                 id: `b_${generateId()}`,
@@ -1011,7 +1026,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             label: "Top",
             order: ++order,
             props: {
-              purpose: "navbar",
+              variant: "navbar",
             },
             bricks: [
               {

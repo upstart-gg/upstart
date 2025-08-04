@@ -8,7 +8,7 @@ import FontPicker from "./json-form/fields/font";
 import { tx } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";
 import ThemePreview from "./ThemePreview";
-import { generateRelatedNeutral } from "./ColorPicker";
+import { generateRelatedNeutral } from "../utils/colors";
 
 export default function ThemePanel() {
   const draft = useDraft();
@@ -70,8 +70,10 @@ export default function ThemePanel() {
                         colors[`${colorType}Content`] = textColor;
                         if (colorType === "primary") {
                           // Update neutral color based on primary
-                          // @ts-ignore oklch is a valid color format
-                          colors.neutral = generateRelatedNeutral(color.css("oklch"));
+                          colors.neutral = generateRelatedNeutral(
+                            // @ts-ignore oklch is a valid color format
+                            color.css("oklch"),
+                          );
                         }
                         // If color is base100, we need to compute the baseContent as well as base200 and base300
                       } else if (colorType === "base100") {

@@ -10,7 +10,7 @@ import { Draggable, type DraggableChildrenFn, Droppable } from "@hello-pangea/dn
 import { getDraggableStyle } from "../utils/dnd";
 import { IconRender } from "./IconRender";
 
-export const renderClone: DraggableChildrenFn = (provided, snapshot, rubric) => {
+const renderClone: DraggableChildrenFn = (provided, snapshot, rubric) => {
   const brick = manifests[rubric.draggableId] as BrickManifest;
   return (
     <button
@@ -47,7 +47,6 @@ const brickCategories: Record<BrickCategory, string> = {
 
 export default function PanelLibrary() {
   const { setMouseOverPanel } = useEditorHelpers();
-  const { shouldDisplay: shouldDisplayLibraryCallout } = useCalloutViewCounter("blocks-library");
   const [currentManifest, setCurrentManifest] = useState<BrickManifest | null>(null);
 
   return (
