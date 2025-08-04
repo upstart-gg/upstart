@@ -72,7 +72,7 @@ export default function Carousel({ brick, editable }: BrickProps<Manifest>) {
                 className={tx(
                   "absolute left-2 top-1/2 -translate-y-1/2",
                   // "bg-primary-light hover:bg-primary text-primary-content-light",
-                  presetClasses.arrows,
+                  // presetClasses.arrows,
                   "rounded-full p-2 transition-all duration-200",
                   "opacity-0 group-hover:opacity-100",
                 )}
@@ -90,7 +90,7 @@ export default function Carousel({ brick, editable }: BrickProps<Manifest>) {
                 className={tx(
                   "absolute right-2 top-1/2 -translate-y-1/2",
                   // "bg-primary-light hover:bg-primary text-primary-content-light",
-                  presetClasses.arrows,
+                  // presetClasses.arrows,
                   "rounded-full p-2 transition-all duration-200",
                   "opacity-0 group-hover:opacity-100",
                 )}
