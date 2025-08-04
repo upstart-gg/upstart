@@ -48,7 +48,7 @@ const ColorPresetField: FC<FieldProps<string>> = (props) => {
               />
             </div>
           </Popover.Trigger>
-          <Popover.Content side="bottom" align="center" maxWidth="342px">
+          <Popover.Content side="bottom" align="center" maxWidth="372px">
             <Tabs.Root defaultValue={tab} onValueChange={(value) => setTab(value as typeof tab)}>
               <Inset clip="padding-box" side="top" pb="current">
                 <Tabs.List size="1">
@@ -74,11 +74,10 @@ const ColorPresetField: FC<FieldProps<string>> = (props) => {
                         type="button"
                         className={tx(
                           className,
-                          "h-6 w-6 rounded-full outline outline-offset-1  shadow-upstart-300 relative inline-flex items-center justify-center",
-                          `hover:opacity-90`,
+                          "h-7 w-7 rounded-full outline outline-2 relative inline-flex items-center justify-center shadow-sm shadow-upstart-300",
                           currentValue === className
-                            ? "outline-2 outline-upstart-500"
-                            : "outline-1 outline-gray-300",
+                            ? "outline-upstart-600"
+                            : "outline-transparent hover:scale-105",
                         )}
                       >
                         {key === "none" && <RxCross2 className="h-4 w-4 text-red-700 opacity-50" />}
@@ -119,11 +118,10 @@ const ColorPresetField: FC<FieldProps<string>> = (props) => {
                           type="button"
                           className={tx(
                             classNameWidthDir,
-                            "h-6 w-6 rounded-full outline outline-offset-1  shadow-upstart-300 relative inline-flex items-center justify-center",
-                            `hover:opacity-90`,
-                            currentValue?.includes(className)
-                              ? "outline-2 outline-upstart-500"
-                              : "outline-1 outline-gray-300",
+                            "h-7 w-7 rounded-full outline outline-2 relative inline-flex items-center justify-center shadow-sm shadow-upstart-300",
+                            currentValue === className
+                              ? "outline-upstart-600"
+                              : "outline-transparent hover:scale-105",
                           )}
                         >
                           {key === "none" && <RxCross2 className="h-4 w-4 text-red-700 opacity-50" />}

@@ -1,6 +1,5 @@
 import type { FieldProps } from "./types";
 import type { JustifyContentSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
-import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import EnumField from "./enum";
 
 export default function JustifyContentField(props: FieldProps<JustifyContentSettings>) {
@@ -13,8 +12,8 @@ export default function JustifyContentField(props: FieldProps<JustifyContentSett
     title: flexOrientation === "row" ? "Horizontal Align." : `Vertical Align.`,
     description:
       flexOrientation === "row"
-        ? "Aligns the bricks horizontally within the container."
-        : "Aligns the bricks vertically within the container.",
+        ? "Aligns the bricks horizontally within the container. (justify-content)"
+        : "Aligns the bricks vertically within the container. (justify-content)",
     "ui:display": "icon-group",
     enumNames:
       flexOrientation === "row"

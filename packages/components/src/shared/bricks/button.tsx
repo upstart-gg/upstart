@@ -34,8 +34,7 @@ export default function Button({ brick, editable }: BrickProps<Manifest>) {
       className={tx(
         classes,
         props.color,
-        props.size,
-        "font-medium min-h-fit max-h-fit flex items-center text-center justify-center flex-wrap text-ellipsis",
+        "font-medium min-h-fit max-h-fit flex items-center text-center justify-center flex-wrap text-ellipsis py-[0.55em] px-[1em]",
         editable && "pointer-events-none",
       )}
       data-prevented-by-editor={editable ? "true" : "false"}

@@ -20,8 +20,8 @@ export default function AlignItemsField(props: FieldProps<AlignItemsSettings>) {
     "ui:display": "icon-group",
     description:
       flexOrientation === "column"
-        ? "Aligns the child bricks horizontally."
-        : "Aligns the child bricks vertically.",
+        ? "Aligns the child bricks horizontally. (align-items)"
+        : "Aligns the child bricks vertically. (align-items)",
     enumNames:
       flexOrientation === "column"
         ? ["Left", "Center", "Right", "Stretch"]

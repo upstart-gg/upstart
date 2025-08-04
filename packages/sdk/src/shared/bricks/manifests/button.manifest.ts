@@ -7,6 +7,7 @@ import { string, urlOrPageIdRef } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { borderRef, roundingRef } from "../props/border";
 import { LAYOUT_ROW_HEIGHT } from "~/shared/layout-constants";
+import { fontSize, fontSizeRef } from "../props/text";
 
 export const manifest = defineBrickManifest({
   type: "button",
@@ -38,13 +39,15 @@ export const manifest = defineBrickManifest({
         },
       ),
       label: string("Label", { default: "My button", metadata: { category: "content" } }),
-      size: StringEnum(["btn-size-small", "btn-size-medium", "btn-size-large"], {
-        title: "Size",
-        description: "Button size.",
-        enumNames: ["Small", "Medium", "Large"],
-        default: "btn-size-medium",
-        "ui:responsive": "desktop",
-      }),
+      fontSize: Type.Optional(
+        fontSize({
+          title: "Font Size",
+          description: "The font size of the button text.",
+          default: "text-base",
+          "ui:responsive": "desktop",
+          "ui:no-extra-large-sizes": true,
+        }),
+      ),
       rounding: Type.Optional(
         roundingRef({
           default: "rounded-md",
@@ -71,7 +74,6 @@ export const examples: {
       color: "btn-color-primary",
       label: "Click me",
       linkToUrlOrPageId: "https://example.com",
-      size: "btn-size-medium",
     },
   },
   {
@@ -81,7 +83,6 @@ export const examples: {
       color: "btn-color-secondary",
       label: "Go to page",
       linkToUrlOrPageId: "page-id-123",
-      size: "btn-size-small",
     },
   },
 ];
