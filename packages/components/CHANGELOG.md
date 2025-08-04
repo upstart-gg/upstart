@@ -1,5 +1,17 @@
 # @upstart.gg/components
 
+## 0.0.124
+
+### Patch Changes
+
+- [#397](https://github.com/upstart-gg/upstart/pull/397) [`f3142b7`](https://github.com/upstart-gg/upstart/commit/f3142b75d66599b3cafbf93749d72860f4c84bce) Thanks [@mattallty](https://github.com/mattallty)! - Enhance dynamic field and editor components
+
+- [#397](https://github.com/upstart-gg/upstart/pull/397) [`f3142b7`](https://github.com/upstart-gg/upstart/commit/f3142b75d66599b3cafbf93749d72860f4c84bce) Thanks [@mattallty](https://github.com/mattallty)! - Various fixes
+
+- Updated dependencies [[`f3142b7`](https://github.com/upstart-gg/upstart/commit/f3142b75d66599b3cafbf93749d72860f4c84bce), [`f3142b7`](https://github.com/upstart-gg/upstart/commit/f3142b75d66599b3cafbf93749d72860f4c84bce)]:
+  - @upstart.gg/style-system@0.0.124
+  - @upstart.gg/sdk@0.0.124
+
 ## 0.0.123
 
 ### Patch Changes
