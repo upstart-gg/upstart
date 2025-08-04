@@ -1,7 +1,14 @@
 import { tx } from "@upstart.gg/style-system/twind";
 import { useEffect, useRef } from "react";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
-import { useEditorHelpers, useGridConfig, usePreviewMode, useZoom } from "../hooks/use-editor";
+import {
+  useEditorHelpers,
+  useGridConfig,
+  usePreviewMode,
+  useSelectedBrickId,
+  useSelectedSectionId,
+  useZoom,
+} from "../hooks/use-editor";
 import { useFontWatcher } from "../hooks/use-font-watcher";
 import { useGridObserver } from "../hooks/use-grid-observer";
 import { useResizable } from "../hooks/use-resizable";
@@ -22,13 +29,14 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const previewMode = usePreviewMode();
   const editorHelpers = useEditorHelpers();
   const draftHelpers = useDraftHelpers();
-  const draft = useDraft();
   const { zoom } = useZoom();
   const pageRef = useRef<HTMLDivElement>(null);
   const gridConfig = useGridConfig();
   const attributes = useAttributes();
   const sections = useSections();
   const typography = useFontWatcher();
+  const selectedBrickId = useSelectedBrickId();
+  const selectedSectionId = useSelectedSectionId();
 
   const pageClassName = usePageStyle({
     attributes,
@@ -84,15 +92,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
 
       const rectWidth = Math.abs(event.rect.width);
       const futureWidth = Math.min(Math.round((rectWidth / parentWidth) * 100), 100);
-
       const widthPercentage = previewMode === "mobile" ? "auto" : `${futureWidth.toFixed(0)}%`;
-
-      console.debug("Resizing with parentBrick:", parentBrick);
-      console.debug("Resizing with parentWrapperElement:", parentWrapperElement);
-      console.debug("Resizing with parentWidth:", parentWidth);
-      console.debug("Resizing with rectWidth:", rectWidth);
-      console.debug("Resizing with futureWidth:", futureWidth);
-      console.debug("Resizing with widthPercentage:", widthPercentage);
 
       // Horizontal resizing
       if (event.edges.left || event.edges.right) {
@@ -134,6 +134,22 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       });
     },
   });
+
+  // When preview mode changes, scroll to the selected element if any
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    if (selectedBrickId) {
+      const element = document.getElementById(selectedBrickId);
+      if (element) {
+        element.scrollIntoView({ behavior: "instant", block: "center" });
+      }
+    } else if (selectedSectionId) {
+      const element = document.getElementById(selectedSectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: "instant", block: "center" });
+      }
+    }
+  }, [previewMode]);
 
   // listen for global click events on the document
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>

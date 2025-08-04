@@ -17,14 +17,17 @@ const ColorPresetField: FC<FieldProps<string>> = (props) => {
   const { schema, currentValue, onChange, title, description } = props;
   const [gradientDir, setGradientDir] = useState<string>(getInitialGradientDir());
   const presets = schema["ui:presets"] as Record<string, { className: string; label: string }>;
+  const hasGradientPresets =
+    Object.entries(presets).filter(([key]) => key.includes("gradient") === true).length > 0;
   const [tab, setTab] = useState<"solid" | "gradient">(
     currentValue?.includes("gradient") ? "gradient" : "solid",
   );
+  const solidCols = schema["ui:solid-columns"] ?? 10;
+  const gradientCols = schema["ui:gradient-columns"] ?? 8;
 
   const onGradientChange = useCallback(
     (value: string) => {
       setGradientDir(value);
-      console.log("Gradient direction changed to:", value);
       if (currentValue?.includes("gradient")) {
         onChange(currentValue.replace(/bg-gradient-to-\w+/, `bg-gradient-to-${value}`));
       }
@@ -51,17 +54,19 @@ const ColorPresetField: FC<FieldProps<string>> = (props) => {
           <Popover.Content side="bottom" align="center" maxWidth="372px">
             <Tabs.Root defaultValue={tab} onValueChange={(value) => setTab(value as typeof tab)}>
               <Inset clip="padding-box" side="top" pb="current">
-                <Tabs.List size="1">
-                  <Tabs.Trigger value="solid" className="!flex-1">
-                    Solid
-                  </Tabs.Trigger>
-                  <Tabs.Trigger value="gradient" className="!flex-1">
-                    Gradient
-                  </Tabs.Trigger>
-                </Tabs.List>
+                {hasGradientPresets && (
+                  <Tabs.List size="1">
+                    <Tabs.Trigger value="solid" className="!flex-1">
+                      Solid
+                    </Tabs.Trigger>
+                    <Tabs.Trigger value="gradient" className="!flex-1">
+                      Gradient
+                    </Tabs.Trigger>
+                  </Tabs.List>
+                )}
               </Inset>
               <Tabs.Content value="solid">
-                <div className="grid grid-cols-10 items-center gap-x-2 gap-y-2">
+                <div className={`grid grid-cols-${solidCols} items-center gap-x-2 gap-y-2`}>
                   {Object.entries(presets)
                     .filter(([key]) => key.includes("gradient") === false)
                     .map(([key, { className, label }], index) => (
@@ -102,7 +107,7 @@ const ColorPresetField: FC<FieldProps<string>> = (props) => {
                     </Select.Group>
                   </Select.Content>
                 </Select.Root>
-                <div className="grid grid-cols-8 items-center gap-x-2 gap-y-2">
+                <div className={`grid grid-cols-${gradientCols} items-center gap-x-2 gap-y-2`}>
                   {Object.entries(presets)
                     .filter(([key]) => key.includes("gradient") === true)
                     .map(([key, { className, label }], index) => {

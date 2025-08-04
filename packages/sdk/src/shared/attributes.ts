@@ -37,34 +37,6 @@ const defaultAttributes = {
     title: "Color",
     default: "bg-base-100",
   }),
-  $pageLanguage: enumProp("Language", "en", {
-    options: [
-      { value: "ar", title: "Arabic" },
-      { value: "zh", title: "Chinese" },
-      { value: "cs", title: "Czech" },
-      { value: "nl", title: "Dutch" },
-      { value: "en", title: "English" },
-      { value: "fr", title: "French" },
-      { value: "de", title: "German" },
-      { value: "he", title: "Hebrew" },
-      { value: "hi", title: "Hindi" },
-      { value: "it", title: "Italian" },
-      { value: "ja", title: "Japanese" },
-      { value: "ko", title: "Korean" },
-      { value: "fa", title: "Persian" },
-      { value: "pl", title: "Polish" },
-      { value: "pt", title: "Portuguese" },
-      { value: "ru", title: "Russian" },
-      { value: "es", title: "Spanish" },
-      { value: "tr", title: "Turkish" },
-      { value: "vi", title: "Vietnamese" },
-    ],
-    "ai:guidelines":
-      "Choose a value based on the site description. If the site is in multiple languages, use 'en'.",
-
-    "ui:group": "meta",
-    "ui:group:title": "Meta tags",
-  }),
 
   $robotsIndexing: Type.Optional(
     boolean("Allow search engines to index this site", true, {

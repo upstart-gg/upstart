@@ -243,7 +243,8 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               properties: {
                 $id: {
                   type: "string",
-                  title: "ID",
+                  title: "Id",
+                  format: "nanoid",
                 },
                 $publicationDate: {
                   type: "string",
@@ -257,6 +258,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 },
                 $slug: {
                   type: "string",
+                  format: "slug",
                   title: "Slug",
                 },
                 firstName: {

@@ -331,7 +331,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                   )}
 
                 {/* Arrows */}
-                {brick.id === selectedBrickId && <BrickArrows brick={brick} />}
+                {previewMode === "desktop" && brick.id === selectedBrickId && <BrickArrows brick={brick} />}
               </div>
             </BrickContextMenu>
           );

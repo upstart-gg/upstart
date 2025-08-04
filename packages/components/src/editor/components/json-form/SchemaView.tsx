@@ -2,6 +2,11 @@ import { createContext, useContext } from "react";
 import type { TArray, TObject, TSchema } from "@sinclair/typebox";
 import { Text } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
+import { VscSymbolBoolean, VscSymbolNumeric, VscSymbolString, VscSymbolArray } from "react-icons/vsc";
+import { CiCalendarDate } from "react-icons/ci";
+import { HiMiniAtSymbol, HiMiniHashtag } from "react-icons/hi2";
+import { GoRelFilePath } from "react-icons/go";
+import { GoNumber } from "react-icons/go";
 
 type ChoiceContextProps = {
   onFieldSelect: (value: string) => void;
@@ -13,6 +18,18 @@ const ChoiceContext = createContext<ChoiceContextProps>({
   onFieldSelect: () => {},
 });
 
+const typesIconsMap: Record<string, React.ReactNode> = {
+  string: <VscSymbolString className="text-upstart-600" />,
+  number: <GoNumber className="text-upstart-600" />,
+  boolean: <VscSymbolBoolean className="text-upstart-600" />,
+  array: <VscSymbolArray className="text-upstart-600" />,
+  "date-time": <CiCalendarDate className="text-upstart-600" />,
+  date: <CiCalendarDate className="text-upstart-600" />,
+  email: <HiMiniAtSymbol className="text-upstart-600" />,
+  slug: <GoRelFilePath className="text-upstart-600" />,
+  nanoid: <HiMiniHashtag className="text-upstart-600" />,
+};
+
 function SchemaEntry({ schema }: { schema: TSchema }) {
   const nestingLevel = useContext(NestingContext);
   const { onFieldSelect } = useContext(ChoiceContext);
@@ -22,8 +39,12 @@ function SchemaEntry({ schema }: { schema: TSchema }) {
         {schema.type === "object" ? (
           <SchemaObject schema={schema as TObject} />
         ) : (
-          <li className="flex items-center gap-1 w-full ">
-            <Text size="3">&#x2022;</Text>
+          <li className="flex items-center gap-0.5 w-full ">
+            <Text size="3">
+              {typesIconsMap[schema.format] || typesIconsMap[schema.type] || (
+                <span className="text-gray-500">?</span>
+              )}
+            </Text>
             <Text
               size="2"
               onClick={() => onFieldSelect(schema.name)}
@@ -31,7 +52,7 @@ function SchemaEntry({ schema }: { schema: TSchema }) {
             >
               {schema.title}
             </Text>
-            <Text color="gray" size="1" className="ml-1">
+            <Text color="gray" size="1" className="ml-0.5">
               ({schema.name})
             </Text>
             {/* {schema.optional && (

@@ -8,6 +8,7 @@ import type { BrickProps } from "../props/types";
 import { borderRef, roundingRef } from "../props/border";
 import { LAYOUT_ROW_HEIGHT } from "~/shared/layout-constants";
 import { fontSize, fontSizeRef } from "../props/text";
+import { colorPresetRef } from "../props/color-preset";
 
 export const manifest = defineBrickManifest({
   type: "button",
@@ -28,15 +29,66 @@ export const manifest = defineBrickManifest({
   },
   props: defineProps(
     {
-      color: StringEnum(
-        ["btn-color-neutral", "btn-color-primary", "btn-color-secondary", "btn-color-accent"],
-        {
+      color: Type.Optional(
+        colorPresetRef({
+          "ui:solid-columns": 3,
+          "ui:presets": {
+            "btn-neutral-light": {
+              label: "Neutral light",
+              className: "bg-neutral-light text-neutral-light-content",
+            },
+            "btn-neutral": {
+              label: "Neutral",
+              className: "bg-neutral text-neutral-content",
+            },
+            "btn-neutral-dark": {
+              label: "Neutral dark",
+              className: "bg-neutral-dark text-neutral-dark-content",
+            },
+            "btn-primary-light": {
+              label: "Primary light",
+              className: "bg-primary-light text-primary-light-content",
+            },
+            "btn-primary": {
+              label: "Primary",
+              className: "bg-primary text-primary-content",
+            },
+            "btn-primary-dark": {
+              label: "Primary dark",
+              className: "bg-primary-dark text-primary-dark-content",
+            },
+            "btn-secondary-light": {
+              label: "Secondary light",
+              className: "bg-secondary-light text-secondary-light-content",
+            },
+            "btn-secondary": {
+              label: "Secondary",
+              className: "bg-secondary text-secondary-content",
+            },
+            "btn-secondary-dark": {
+              label: "Secondary dark",
+              className: "bg-secondary-dark text-secondary-dark-content",
+            },
+            "btn-accent-light": {
+              label: "Accent light",
+              className: "bg-accent-light text-accent-light-content",
+            },
+            "btn-accent": {
+              label: "Accent",
+              className: "bg-accent text-accent-content",
+            },
+            "btn-accent-dark": {
+              label: "Accent dark",
+              className: "bg-accent-dark text-accent-dark-content",
+            },
+            none: {
+              label: "None",
+              className: "",
+            },
+          },
+          default: "btn-primary",
           title: "Color",
-          enumNames: ["Neutral", "Primary", "Secondary", "Accent"],
-          description: "Button variants.",
-          default: "btn-color-primary",
-          "ui:responsive": "desktop",
-        },
+        }),
       ),
       label: string("Label", { default: "My button", metadata: { category: "content" } }),
       fontSize: Type.Optional(
@@ -56,7 +108,7 @@ export const manifest = defineBrickManifest({
       border: Type.Optional(borderRef({ default: { width: "border-0" }, "ui:responsive": "desktop" })),
       linkToUrlOrPageId: Type.Optional(urlOrPageIdRef({ title: "Link", metadata: { category: "content" } })),
     },
-    { noGrow: true },
+    // { noGrow: true },
   ),
 });
 
@@ -71,7 +123,6 @@ export const examples: {
     description: "Primary button, full width, linking to a URL",
     type: "button",
     props: {
-      color: "btn-color-primary",
       label: "Click me",
       linkToUrlOrPageId: "https://example.com",
     },
@@ -80,7 +131,6 @@ export const examples: {
     description: "Secondary button, block width, linking to a page",
     type: "button",
     props: {
-      color: "btn-color-secondary",
       label: "Go to page",
       linkToUrlOrPageId: "page-id-123",
     },

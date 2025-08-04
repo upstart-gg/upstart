@@ -25,10 +25,9 @@ export const manifest = defineBrickManifest({
     color: Type.Optional(
       colorPresetRef({
         title: "Color preset",
-        default: "bg-neutral-500 text-neutral-content-500",
+        default: "bg-neutral text-neutral-content",
       }),
     ),
-
     // backgroundColor:Type.Optional(backgroundColorRef()),
     padding: Type.Optional(paddingRef({ default: "p-10" })),
     logo: Type.Optional(imageRef({ title: "Logo", "ui:no-object-options": true, "ui:no-alt-text": true })),

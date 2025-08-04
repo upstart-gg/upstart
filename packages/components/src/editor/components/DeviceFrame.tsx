@@ -42,9 +42,9 @@ export default function DeviceFrame({ children, ...props }: ComponentProps<"div"
           minWidth: previewMode === "desktop" ? "1224px" : "auto",
           width: previewMode === "desktop" ? "100%" : "100%",
           // marginBlock: "auto",
-          marginBottom: previewMode === "desktop" ? "0.5rem" : "auto",
+          marginBottom: previewMode === "desktop" ? ".4rem" : "auto",
           marginTop: previewMode === "desktop" ? "0" : "auto",
-          marginInline: previewMode === "desktop" ? ".5rem" : "auto",
+          marginInline: previewMode === "desktop" ? ".4rem" : "auto",
           boxShadow:
             previewMode === "desktop"
               ? "1px solid rgba(0, 0, 0, 0.15)"

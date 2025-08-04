@@ -15,7 +15,7 @@ export const manifest = defineBrickManifest({
   description: "Youtube video",
   icon: RxVideo,
   defaultWidth: {
-    mobile: "300px",
+    mobile: "auto",
     desktop: `${(360 * 16) / 9}px`, // 16:9 aspect ratio
   },
   defaultHeight: {

@@ -395,8 +395,16 @@ function DatasourceFieldPickerModal({ brickId, onFieldSelect }: DatasourceFieldP
     );
   }
   return (
-    <div className="bg-white min-w-52 min-h-80 flex flex-col gap-4">
-      <h3 className="text-base font-medium">Insert database field</h3>
+    <div className="bg-white min-w-52 min-h-80 flex flex-col gap-3">
+      <h3 className="text-base font-medium">
+        Insert field from <span className="font-semibold text-upstart-600">{datasource.label}</span>
+      </h3>
+      <Callout.Root className="-mx-4 !py-2 !px-3 !rounded-none">
+        <Callout.Text size="1" className={tx("text-pretty")}>
+          Click on a field to insert it into the text box. Fields are inserted as dynamic mentions, which will
+          be replaced with their actual values when the document is rendered.
+        </Callout.Text>
+      </Callout.Root>
       <JSONSchemaView schema={datasource.schema} onFieldSelect={onFieldSelect} />
     </div>
   );

@@ -1,6 +1,6 @@
 import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/button.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { tx } from "@upstart.gg/style-system/twind";
+import { css, tx } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import BrickRoot from "../components/BrickRoot";
 
@@ -33,9 +33,13 @@ export default function Button({ brick, editable }: BrickProps<Manifest>) {
       type="button"
       className={tx(
         classes,
-        props.color,
         "font-medium min-h-fit max-h-fit flex items-center text-center justify-center flex-wrap text-ellipsis py-[0.55em] px-[1em]",
-        editable && "pointer-events-none",
+        css({
+          "&:hover": {
+            filter: "brightness(1.15)",
+          },
+        }),
+        // editable && "pointer-events-none",
       )}
       data-prevented-by-editor={editable ? "true" : "false"}
       onClick={handleClick}
