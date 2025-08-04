@@ -3,6 +3,7 @@ import type { AlignSelfSettings } from "@upstart.gg/sdk/shared/bricks/props/alig
 import { useParentBrick, useSectionByBrickId } from "~/editor/hooks/use-page-data";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import EnumField from "./enum";
+import { describe } from "node:test";
 
 export default function AlignSelfField(props: FieldProps<AlignSelfSettings>) {
   const { brickId, onChange, schema } = props;
