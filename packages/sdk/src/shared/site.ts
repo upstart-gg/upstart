@@ -452,7 +452,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             label: "Top",
             order: ++order,
             props: {
-              purpose: "navbar",
+              variant: "navbar",
             },
             bricks: [
               {
@@ -948,9 +948,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 props: {
                   width: "20px",
                 },
-                mobileProps: {
-                  width: "100%",
-                },
               },
               {
                 id: `b_${generateId()}`,
@@ -1027,7 +1024,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             label: "Top",
             order: ++order,
             props: {
-              purpose: "navbar",
+              variant: "navbar",
             },
             bricks: [
               {

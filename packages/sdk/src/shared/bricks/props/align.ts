@@ -4,17 +4,9 @@ import { typedRef } from "~/shared/utils/typed-ref";
 
 export function justifyContent(options: StringOptions = {}) {
   return StringEnum(
-    [
-      "justify-start",
-      "justify-center",
-      "justify-end",
-      "justify-between",
-      "justify-around",
-      "justify-evenly",
-      "justify-stretch",
-    ],
+    ["justify-start", "justify-center", "justify-end", "justify-between", "justify-around", "justify-evenly"],
     {
-      enumNames: ["Start", "Center", "End", "Between", "Around", "Evenly", "Stretch"],
+      enumNames: ["Start", "Center", "End", "Between", "Around", "Evenly"],
       $id: "styles:justifyContent",
       title: "Justify bricks",
       "ui:field": "justify-content",

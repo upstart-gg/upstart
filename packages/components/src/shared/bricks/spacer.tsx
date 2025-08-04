@@ -12,7 +12,7 @@ export default function Spacer({ brick, editable, selected }: BrickProps<Manifes
       manifest={manifest}
       data-mobile-hidden
       className={tx(
-        "@mobile:hidden h-full",
+        "@mobile:hidden @desktop:flex h-full",
         editable &&
           "outline-dotted -outline-offset-1 outline-transparent hover:(striped-bg outline-black/10) group-hover/section:(striped-bg outline-black/10) transition-colors duration-150",
         selected && "striped-bg ",

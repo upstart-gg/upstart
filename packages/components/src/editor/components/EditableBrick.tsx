@@ -111,7 +111,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const previewMode = usePreviewMode();
     const { panelPosition } = usePanel();
     const editorHelpers = useEditorHelpers();
-    const { getParentBrick } = useDraftHelpers();
+    const { getParentBrick, updateBrickProps } = useDraftHelpers();
     const section = useSectionByBrickId(brick.id);
     const manifest = useBrickManifest(brick.type);
     const parentBrick = getParentBrick(brick.id);
@@ -232,6 +232,16 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       [panelPosition],
     );
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    const onDoubleClick = useCallback(
+      (e: MouseEvent<HTMLElement>) => {
+        console.log("EditableBrickWrapper: Double click on brick");
+        e.stopPropagation();
+        updateBrickProps(brick.id, { lastTouched: Date.now(), grow: !brick.props.grow });
+      },
+      [brick.props],
+    );
+
     const { ref: hoverRef, isHovered } = useIsHovered({ tolerance: 6, deepCheck: true });
     const wrapperClass = useBrickWrapperStyle({
       brick,
@@ -277,6 +287,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                     : "hover:cursor-auto",
                 )}
                 onClick={onBrickWrapperClick}
+                onDoubleClick={onDoubleClick}
               >
                 <BaseComponent brick={brick} editable />
                 <FloatingPortal>
@@ -332,6 +343,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
 
 function BrickArrows({ brick }: { brick: Brick }) {
   const draftHelpers = useDraftHelpers();
+  const manifest = useBrickManifest(brick.type);
   const canMovePrev = draftHelpers.canMoveTo(brick.id, "previous");
   const canMoveNext = draftHelpers.canMoveTo(brick.id, "next");
   const parentContainer = draftHelpers.getParentBrick(brick.id);
@@ -347,74 +359,59 @@ function BrickArrows({ brick }: { brick: Brick }) {
 
   // {isContainerChild && flexOrientation === "column" ? "Move up" : "Move left"}
 
+  const offset = manifest.isContainer ? 9 : 7; // 8px for container, 6px for non-container
+
+  const baseClass =
+    "absolute z-[9999] flex items-center justify-center h-5 w-5 rounded-full border border-white text-white bg-upstart-500 shadow-lg hover:(bg-upstart-700)";
+
   return (
     <>
       {canMoveLeft && (
         <button
           type="button"
-          className={tx(
-            "flex items-center justify-center h-5 w-5 isolate",
-            "absolute z-[9999] top-1/2 -left-7 transform -translate-y-1/2",
-            "rounded-full text-upstart-500 bg-white shadow-xl",
-            "border border-upstart-500 hover:(text-white bg-upstart-500 border-upstart-700)",
-          )}
+          className={tx(baseClass, `top-1/2 -left-${offset} transform -translate-y-1/2`)}
           onClick={(e) => {
             e.stopPropagation();
             draftHelpers.moveBrick(brick.id, "previous");
           }}
         >
-          <IoIosArrowBack className="w-4 h-4 -ml-0.5" />
+          <IoIosArrowBack className="w-3 h-3" />
         </button>
       )}
       {canMoveUp && (
         <button
           type="button"
-          className={tx(
-            "flex items-center justify-center h-5 w-5 isolate",
-            "absolute z-[9999] -top-7 left-1/2 transform -translate-x-1/2",
-            "rounded-full text-upstart-500 bg-white shadow-xl",
-            "border border-upstart-500 hover:(text-white bg-upstart-500 border-upstart-700)",
-          )}
+          className={tx(baseClass, `-top-${offset} left-1/2 transform -translate-x-1/2`)}
           onClick={(e) => {
             e.stopPropagation();
             draftHelpers.moveBrick(brick.id, "previous");
           }}
         >
-          <IoIosArrowUp className="w-4 h-4" />
+          <IoIosArrowUp className="w-3 h-3" />
         </button>
       )}
       {canMoveRight && (
         <button
           type="button"
-          className={tx(
-            "flex items-center justify-center h-5 w-5 isolate",
-            "absolute z-[9999] top-1/2 -right-7 transform -translate-y-1/2",
-            "rounded-full text-upstart-500 bg-white shadow-xl",
-            "border border-upstart-500 hover:(text-white bg-upstart-500 border-upstart-700)",
-          )}
+          className={tx(baseClass, `top-1/2 -right-${offset} transform -translate-y-1/2`)}
           onClick={(e) => {
             e.stopPropagation();
             draftHelpers.moveBrick(brick.id, "next");
           }}
         >
-          <IoIosArrowForward className="w-4 h-4" />
+          <IoIosArrowForward className="w-3 h-3" />
         </button>
       )}
       {canMoveDown && (
         <button
           type="button"
-          className={tx(
-            "flex items-center justify-center h-5 w-5 isolate",
-            "absolute z-[9999] -bottom-7 left-1/2 transform -translate-x-1/2",
-            "rounded-full text-upstart-500 bg-white shadow-xl",
-            "border border-upstart-500 hover:(text-white bg-upstart-500 border-upstart-700)",
-          )}
+          className={tx(baseClass, `-bottom-${offset} left-1/2 transform -translate-x-1/2`)}
           onClick={(e) => {
             e.stopPropagation();
             draftHelpers.moveBrick(brick.id, "next");
           }}
         >
-          <IoIosArrowDown className="w-4 h-4" />
+          <IoIosArrowDown className="w-3 h-3" />
         </button>
       )}
     </>

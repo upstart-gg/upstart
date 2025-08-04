@@ -1,0 +1,120 @@
+import { describe, it, expect } from "vitest";
+import { generateColorsVars } from "../color-system";
+import type { Theme } from "~/shared/theme";
+
+const lightTheme: Theme = {
+  id: "light",
+  name: "Light Theme",
+  tags: ["light"],
+  typography: {
+    base: 16,
+    heading: { type: "stack", family: "system-ui" },
+    body: { type: "stack", family: "system-ui" },
+    alternatives: [],
+  },
+  description: "A light theme with oklch colors for better contrast and accessibility.",
+  browserColorScheme: "light",
+  // oklch colors for better contrast and accessibility
+  colors: {
+    primary: "oklch(0.5 0.1 240 / 1)",
+    secondary: "oklch(0.4 0.1 120 / 1)",
+    accent: "oklch(0.3 0.1 60 / 1)",
+    neutral: "oklch(0.6 0.1 0 / 1)",
+    base100: "oklch(0.95 0.1 0 / 1)",
+    base200: "oklch(0.85 0.1 0 / 1)",
+    base300: "oklch(0.75 0.1 0 / 1)",
+  },
+};
+
+const darkTheme: Theme = {
+  id: "dark",
+  name: "Dark Theme",
+  tags: ["dark"],
+  typography: {
+    base: 16,
+    heading: { type: "stack", family: "system-ui" },
+    body: { type: "stack", family: "system-ui" },
+    alternatives: [],
+  },
+  description: "A dark theme with oklch colors for better contrast and accessibility.",
+  browserColorScheme: "dark",
+  // oklch colors for better contrast and accessibility
+  colors: {
+    primary: "oklch(0.2 0.1 240 / 1)",
+    secondary: "oklch(0.3 0.1 120 / 1)",
+    accent: "oklch(0.4 0.1 60 / 1)",
+    neutral: "oklch(0.5 0.1 0 / 1)",
+    base100: "oklch(0.15 0.1 0 / 1)",
+    base200: "oklch(0.25 0.1 0 / 1)",
+    base300: "oklch(0.35 0.1 0 / 1)",
+  },
+};
+
+describe("Color system test suite", () => {
+  describe("generateColorsVars", () => {
+    it("Should generate the correct colors for a light theme", () => {
+      const colors = generateColorsVars(lightTheme);
+      expect(colors["color-primary"]).toBe("oklch(0.5 0.1 240 / 1)");
+      expect(colors["color-primary-content"]).toBe("#ffffff"); // White text on primary
+      // Aliases
+      expect(colors["color-primary-subtle"]).toBe(colors["color-primary-100"]);
+      expect(colors["color-primary-light"]).toBe(colors["color-primary-300"]);
+      expect(colors["color-primary-dark"]).toBe(colors["color-primary-700"]);
+
+      // Various colors
+      expect(colors["color-secondary"]).toBe("oklch(0.4 0.1 120 / 1)");
+      expect(colors["color-secondary-content"]).toBe("#ffffff"); // White text on secondary
+      expect(colors["color-accent"]).toBe("oklch(0.3 0.1 60 / 1)");
+      expect(colors["color-accent-content"]).toBe("#ffffff"); // White text on accent
+      expect(colors["color-neutral"]).toBe("oklch(0.6 0.1 0 / 1)");
+      expect(colors["color-neutral-content"]).toBe("#000000"); // Black text on neutral
+      expect(colors["color-base-100"]).toBe("oklch(0.95 0.1 0 / 1)");
+      expect(colors["color-base-200"]).toBe("oklch(0.85 0.1 0 / 1)");
+      expect(colors["color-base-300"]).toBe("oklch(0.75 0.1 0 / 1)");
+
+      // All shades should be present
+      expect(Object.keys(colors)).toContain("color-primary-50");
+      expect(Object.keys(colors)).toContain("color-primary-100");
+      expect(Object.keys(colors)).toContain("color-primary-200");
+      expect(Object.keys(colors)).toContain("color-primary-300");
+      expect(Object.keys(colors)).toContain("color-primary-400");
+      expect(Object.keys(colors)).toContain("color-primary-500");
+      expect(Object.keys(colors)).toContain("color-primary-600");
+      expect(Object.keys(colors)).toContain("color-primary-700");
+      expect(Object.keys(colors)).toContain("color-primary-800");
+      expect(Object.keys(colors)).toContain("color-primary-900");
+    });
+    it("Should generate the correct colors for a dark theme", () => {
+      const colors = generateColorsVars(darkTheme);
+      expect(colors["color-primary"]).toBe("oklch(0.2 0.1 240 / 1)");
+      expect(colors["color-primary-content"]).toBe("#ffffff"); // White text on primary
+      // Aliases
+      expect(colors["color-primary-subtle"]).toBe(colors["color-primary-100"]);
+      expect(colors["color-primary-light"]).toBe(colors["color-primary-300"]);
+      expect(colors["color-primary-dark"]).toBe(colors["color-primary-700"]);
+
+      // Various colors
+      expect(colors["color-secondary"]).toBe("oklch(0.3 0.1 120 / 1)");
+      expect(colors["color-secondary-content"]).toBe("#ffffff"); // White text on secondary
+      expect(colors["color-accent"]).toBe("oklch(0.4 0.1 60 / 1)");
+      expect(colors["color-accent-content"]).toBe("#ffffff"); // White text on accent
+      expect(colors["color-neutral"]).toBe("oklch(0.5 0.1 0 / 1)");
+      expect(colors["color-neutral-content"]).toBe("#ffffff"); // White text on neutral
+      expect(colors["color-base-100"]).toBe("oklch(0.15 0.1 0 / 1)");
+      expect(colors["color-base-200"]).toBe("oklch(0.25 0.1 0 / 1)");
+      expect(colors["color-base-300"]).toBe("oklch(0.35 0.1 0 / 1)");
+
+      // All shades should be present
+      expect(Object.keys(colors)).toContain("color-primary-50");
+      expect(Object.keys(colors)).toContain("color-primary-100");
+      expect(Object.keys(colors)).toContain("color-primary-200");
+      expect(Object.keys(colors)).toContain("color-primary-300");
+      expect(Object.keys(colors)).toContain("color-primary-400");
+      expect(Object.keys(colors)).toContain("color-primary-500");
+      expect(Object.keys(colors)).toContain("color-primary-600");
+      expect(Object.keys(colors)).toContain("color-primary-700");
+      expect(Object.keys(colors)).toContain("color-primary-800");
+      expect(Object.keys(colors)).toContain("color-primary-900");
+    });
+  });
+});

@@ -53,10 +53,9 @@ export default function EditableSection({ section, index }: EditableSectionProps
     previewMode,
   });
   const sectionObj = useSection(section.id);
+  const isSpecialSection = typeof section.props.variant !== "undefined";
 
   useResizableSection(section);
-
-  const isSpecialSection = typeof section.props.purpose !== "undefined";
 
   useDeepCompareEffect(() => {
     // This effect runs when the section object changes, which includes props updates
@@ -164,8 +163,8 @@ export default function EditableSection({ section, index }: EditableSectionProps
                 <div
                   data-trigger-section-inspector
                   className={tx(
-                    "w-full min-w-full self-stretch py-6 h-auto flex-grow text-center rounded",
-                    "  flex justify-center items-center text-lg font-normal",
+                    "w-full min-w-full self-stretch py-2 h-auto flex-1 text-center rounded",
+                    "flex justify-center items-center font-normal",
                     droppableSnapshot.isDraggingOver && "bg-upstart-50",
                     "opacity-0 hover:opacity-80 transition-opacity duration-300",
                   )}
@@ -278,6 +277,8 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
   const minOrder = sections.reduce((min, sec) => Math.min(min, sec.order), Infinity);
   const isLastSection = section.order === maxOrder;
   const isFirstSection = section.order === minOrder;
+  const isSpecialSection = typeof section.props.variant !== "undefined";
+  const resizable = section.props.variant !== "navbar" && section.props.variant !== "footer";
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const onSettingsBtnClick = useCallback(
@@ -330,14 +331,16 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
       >
         <HiOutlineCog6Tooth className="w-5 h-5" />
       </button>
-      <button
-        type="button"
-        id={`${section.id}-resize-handle`}
-        className={tx("!cursor-ns-resize", btnCls, "section-resizable-handle")}
-      >
-        <TbArrowAutofitHeight className="w-5 h-5" />
-      </button>
-      {section.props.minHeight !== "full" && (
+      {resizable && (
+        <button
+          type="button"
+          id={`${section.id}-resize-handle`}
+          className={tx("!cursor-ns-resize", btnCls, "section-resizable-handle")}
+        >
+          <TbArrowAutofitHeight className="w-5 h-5" />
+        </button>
+      )}
+      {resizable && section.props.minHeight !== "full" && (
         <Tooltip content="Fill entire screen height" delayDuration={400}>
           <button
             type="button"
@@ -362,6 +365,7 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
           </button>
         </Tooltip>
       )}
+
       <Tooltip content="Create new section below" delayDuration={400}>
         <button
           type="button"
@@ -420,26 +424,18 @@ function SectionOptionsButtons({ section }: { section: SectionType }) {
                 <span>Create new section below</span>
               </div>
             </DropdownMenu.Item>
-            <DropdownMenu.Item
-              onClick={(e) => {
-                e.stopPropagation();
-                draftHelpers.duplicateSection(section.id);
-              }}
-            >
-              <div className="flex items-center justify-start gap-2">
-                <span>Duplicate</span>
-              </div>
-            </DropdownMenu.Item>
-            {/* <DropdownMenu.Item
-              onClick={() => {
-                setSelectedSectionId(section.id);
-                setPanel("inspector");
-              }}
-            >
-              <div className="flex items-center justify-start gap-2">
-                <span>Settings</span>
-              </div>
-            </DropdownMenu.Item> */}
+            {isSpecialSection === false && (
+              <DropdownMenu.Item
+                onClick={(e) => {
+                  e.stopPropagation();
+                  draftHelpers.duplicateSection(section.id);
+                }}
+              >
+                <div className="flex items-center justify-start gap-2">
+                  <span>Duplicate</span>
+                </div>
+              </DropdownMenu.Item>
+            )}
           </DropdownMenu.Group>
           <DropdownMenu.Separator />
           <DropdownMenu.Item

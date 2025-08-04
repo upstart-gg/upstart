@@ -74,33 +74,17 @@ export const themeSchema = Type.Object(
           title: "Primary",
           description: "The brand's primary color.",
         }),
-        primaryContent: Type.String({
-          title: "Primary content",
-          description: "Text color on primary background",
-        }),
         secondary: Type.String({
           title: "Secondary",
           description: "The brand's second most used color",
-        }),
-        secondaryContent: Type.String({
-          title: "Secondary content",
-          description: "Text color on secondary background",
         }),
         accent: Type.String({
           title: "Accent",
           description: "The brand's least used color",
         }),
-        accentContent: Type.String({
-          title: "Accent content",
-          description: "Text color on accent background",
-        }),
         neutral: Type.String({
           title: "Neutral",
           description: "The base neutral color",
-        }),
-        neutralContent: Type.String({
-          title: "Neutral content",
-          description: "Text color on neutral background",
         }),
         base100: Type.String({
           title: "Base",
@@ -116,10 +100,6 @@ export const themeSchema = Type.Object(
           title: "Base 3",
           description:
             "3rd base color, should be darker than base 2 for light color-schemes, and lighter than base 2 for dark color-schemes.",
-        }),
-        baseContent: Type.String({
-          title: "Base content",
-          description: "Text color to use on base colors",
         }),
       },
       {
@@ -177,15 +157,10 @@ export const defaultTheme: Theme = {
     base100: "#FFF", // Warm white background
     base200: "oklch(0.99 0.008 92)", // Soft cream
     base300: "oklch(0.97 0.01 85)", // Light warm gray
-    baseContent: "oklch(0.18 0.025 80)", // Rich dark brown-gray
     primary: "oklch(0.68 0.28 340)",
-    primaryContent: "oklch(0.99 0.005 340)", // White text on primary
     secondary: "oklch(0.65 0.22 185)",
-    secondaryContent: "oklch(0.98 0.005 185)", // White text on secondary
     accent: "oklch(0.82 0.18 85)",
-    accentContent: "oklch(0.18 0.02 85)", // Dark text on accent
     neutral: "oklch(0.38 0.08 280)",
-    neutralContent: "oklch(0.96 0.005 280)", // Light text on neutral
   },
   typography: {
     base: 16,

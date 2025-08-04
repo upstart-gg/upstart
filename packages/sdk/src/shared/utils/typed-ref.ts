@@ -10,7 +10,7 @@ import type { shadow, textShadow } from "../bricks/props/effects";
 import type { fontSize, textContent } from "../bricks/props/text";
 import type { icon, urlOrPageId } from "../bricks/props/string";
 import type { padding } from "../bricks/props/padding";
-import type { colorPreset } from "../bricks/props/preset";
+import type { colorPreset } from "../bricks/props/color-preset";
 import type { image } from "../bricks/props/image";
 import type { direction } from "../bricks/props/direction";
 
@@ -45,6 +45,6 @@ export function typedRef<K extends keyof SchemaTypeMap>(
   id: K,
   options: SchemaOptions = {},
 ): SchemaTypeMap[K] {
-  // biome-ignore lint/suspicious/noExplicitAny: Force inference of Ref to the correct type
-  return Type.Ref(id, { ...options }) as any;
+  // Force the type to be a TypeBox type
+  return Type.Ref(id, { ...options }) as unknown as SchemaTypeMap[K];
 }

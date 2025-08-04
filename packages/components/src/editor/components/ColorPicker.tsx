@@ -4,7 +4,7 @@ import {
   type ColorType,
   type ElementColorType,
   type ElementColor,
-  baseColorsLabels,
+  baseColors,
 } from "@upstart.gg/sdk/themes/color-system";
 import { Text, Select, Tabs, Inset, Callout, Button } from "@upstart.gg/style-system/system";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
@@ -28,189 +28,189 @@ const gradientMixs = [
 interface BaseColorPickerProps {
   colorType: ColorType;
   initialValue?: number | string;
-  onChange?: (color: string, oklabValues: number[]) => void;
+  onChange?: (color: string) => void;
   steps?: number;
 }
 
 const baseColorPalette = {
   // Gray - Pure neutrals from Tailwind
   gray: {
-    "50": "hsl(0, 0%, 99%)", // Even lighter
+    "50": "hsl(0, 0%, 98%)", // Even lighter
     "100": "hsl(0, 0%, 95%)", // Even lighter
     "200": "hsl(0, 0%, 90%)", // Even lighter
     "800": "hsl(0, 0%, 25%)", // Darker
     "900": "hsl(0, 0%, 15%)", // Darker
-    "950": "hsl(0, 0%, 5%)", // Much darker
-  },
-
-  // Red - Tailwind red color scale
-  red: {
-    "50": "hsl(0, 86%, 99%)", // Even lighter
-    "100": "hsl(0, 93%, 95%)", // Even lighter
-    "200": "hsl(0, 96%, 90%)", // Even lighter
-    "800": "hsl(0, 84%, 25%)", // Darker
-    "900": "hsl(0, 63%, 15%)", // Darker
-    "950": "hsl(0, 75%, 5%)", // Much darker
-  },
-
-  // Orange - Tailwind orange color scale
-  orange: {
-    "50": "hsl(33, 100%, 99%)", // Even lighter
-    "100": "hsl(34, 100%, 95%)", // Even lighter
-    "200": "hsl(32, 98%, 90%)", // Even lighter
-    "800": "hsl(15, 79%, 25%)", // Darker
-    "900": "hsl(9, 87%, 15%)", // Darker
-    "950": "hsl(15, 86%, 5%)", // Much darker
+    "950": "hsl(0, 0%, 8%)", // Much darker
   },
 
   // Amber - Tailwind amber color scale
   amber: {
-    "50": "hsl(48, 100%, 99%)", // Even lighter
+    "50": "hsl(48, 100%, 98%)", // Even lighter
     "100": "hsl(48, 96%, 95%)", // Even lighter
     "200": "hsl(48, 97%, 90%)", // Even lighter
     "800": "hsl(32, 95%, 25%)", // Darker
     "900": "hsl(28, 93%, 15%)", // Darker
-    "950": "hsl(24, 94%, 5%)", // Much darker
+    "950": "hsl(24, 94%, 8%)", // Much darker
   },
 
   // Yellow - Tailwind yellow color scale
   yellow: {
-    "50": "hsl(55, 92%, 99%)", // Even lighter
+    "50": "hsl(55, 92%, 98%)", // Even lighter
     "100": "hsl(55, 97%, 95%)", // Even lighter
     "200": "hsl(53, 98%, 90%)", // Even lighter
     "800": "hsl(32, 81%, 25%)", // Darker
     "900": "hsl(28, 73%, 15%)", // Darker
-    "950": "hsl(26, 77%, 5%)", // Much darker
+    "950": "hsl(26, 77%, 8%)", // Much darker
   },
 
   // Lime - Tailwind lime color scale
   lime: {
-    "50": "hsl(78, 92%, 99%)", // Even lighter
+    "50": "hsl(78, 92%, 98%)", // Even lighter
     "100": "hsl(80, 89%, 95%)", // Even lighter
     "200": "hsl(81, 88%, 90%)", // Even lighter
     "800": "hsl(84, 81%, 25%)", // Darker
     "900": "hsl(88, 61%, 15%)", // Darker
-    "950": "hsl(89, 80%, 5%)", // Much darker
+    "950": "hsl(89, 80%, 8%)", // Much darker
   },
 
   // Green - Tailwind green color scale
   green: {
-    "50": "hsl(138, 76%, 99%)", // Even lighter
+    "50": "hsl(138, 76%, 98%)", // Even lighter
     "100": "hsl(141, 84%, 95%)", // Even lighter
     "200": "hsl(141, 79%, 90%)", // Even lighter
     "800": "hsl(158, 64%, 25%)", // Darker
     "900": "hsl(158, 68%, 15%)", // Darker
-    "950": "hsl(164, 86%, 5%)", // Much darker
+    "950": "hsl(164, 86%, 8%)", // Much darker
   },
 
   // Emerald - Tailwind emerald color scale
   emerald: {
-    "50": "hsl(152, 81%, 99%)", // Even lighter
+    "50": "hsl(152, 81%, 98%)", // Even lighter
     "100": "hsl(149, 80%, 95%)", // Even lighter
     "200": "hsl(152, 76%, 90%)", // Even lighter
     "800": "hsl(158, 84%, 25%)", // Darker
     "900": "hsl(158, 84%, 15%)", // Darker
-    "950": "hsl(164, 96%, 5%)", // Much darker
+    "950": "hsl(164, 96%, 8%)", // Much darker
   },
 
   // Teal - Tailwind teal color scale
   teal: {
-    "50": "hsl(166, 76%, 99%)", // Even lighter
+    "50": "hsl(166, 76%, 98%)", // Even lighter
     "100": "hsl(167, 85%, 95%)", // Even lighter
     "200": "hsl(168, 84%, 90%)", // Even lighter
     "800": "hsl(183, 81%, 25%)", // Darker
     "900": "hsl(184, 91%, 15%)", // Darker
-    "950": "hsl(186, 100%, 5%)", // Much darker
+    "950": "hsl(186, 100%, 8%)", // Much darker
   },
 
   // Cyan - Tailwind cyan color scale
   cyan: {
-    "50": "hsl(183, 100%, 99%)", // Even lighter
+    "50": "hsl(183, 100%, 98%)", // Even lighter
     "100": "hsl(185, 96%, 95%)", // Even lighter
     "200": "hsl(186, 94%, 90%)", // Even lighter
     "800": "hsl(200, 84%, 25%)", // Darker
     "900": "hsl(202, 83%, 15%)", // Darker
-    "950": "hsl(205, 100%, 5%)", // Much darker
+    "950": "hsl(205, 100%, 8%)", // Much darker
   },
 
   // Sky - Tailwind sky color scale
   sky: {
-    "50": "hsl(204, 100%, 99%)", // Even lighter
+    "50": "hsl(204, 100%, 98%)", // Even lighter
     "100": "hsl(204, 94%, 95%)", // Even lighter
     "200": "hsl(201, 94%, 90%)", // Even lighter
     "800": "hsl(213, 92%, 25%)", // Darker
     "900": "hsl(218, 79%, 15%)", // Darker
-    "950": "hsl(223, 88%, 5%)", // Much darker
+    "950": "hsl(223, 88%, 8%)", // Much darker
   },
 
   // Blue - Tailwind blue color scale
   blue: {
-    "50": "hsl(214, 100%, 99%)", // Even lighter
+    "50": "hsl(214, 100%, 98%)", // Even lighter
     "100": "hsl(214, 95%, 95%)", // Even lighter
     "200": "hsl(213, 97%, 90%)", // Even lighter
     "800": "hsl(213, 94%, 25%)", // Darker
     "900": "hsl(215, 92%, 15%)", // Darker
-    "950": "hsl(221, 100%, 5%)", // Much darker
+    "950": "hsl(221, 100%, 8%)", // Much darker
   },
 
   // Indigo - Tailwind indigo color scale
   indigo: {
-    "50": "hsl(228, 100%, 99%)", // Even lighter
+    "50": "hsl(228, 100%, 98%)", // Even lighter
     "100": "hsl(228, 100%, 95%)", // Even lighter
     "200": "hsl(228, 100%, 90%)", // Even lighter
     "800": "hsl(228, 100%, 25%)", // Darker
     "900": "hsl(228, 100%, 15%)", // Darker
-    "950": "hsl(228, 100%, 5%)", // Much darker
+    "950": "hsl(228, 100%, 8%)", // Much darker
   },
 
   // Violet - Tailwind violet color scale
   violet: {
-    "50": "hsl(250, 100%, 99%)", // Even lighter
+    "50": "hsl(250, 100%, 98%)", // Even lighter
     "100": "hsl(251, 91%, 95%)", // Even lighter
     "200": "hsl(251, 95%, 90%)", // Even lighter
     "800": "hsl(258, 90%, 25%)", // Darker
     "900": "hsl(259, 94%, 15%)", // Darker
-    "950": "hsl(261, 100%, 5%)", // Much darker
+    "950": "hsl(261, 100%, 8%)", // Much darker
   },
 
   // Purple - Tailwind purple color scale
   purple: {
-    "50": "hsl(270, 100%, 99%)", // Even lighter
+    "50": "hsl(270, 100%, 98%)", // Even lighter
     "100": "hsl(269, 100%, 95%)", // Even lighter
     "200": "hsl(269, 100%, 90%)", // Even lighter
     "800": "hsl(273, 85%, 25%)", // Darker
     "900": "hsl(275, 100%, 15%)", // Darker
-    "950": "hsl(279, 100%, 5%)", // Much darker
+    "950": "hsl(279, 100%, 8%)", // Much darker
   },
 
   // Fuchsia - Tailwind fuchsia color scale
   fuchsia: {
-    "50": "hsl(289, 100%, 99%)", // Even lighter
+    "50": "hsl(289, 100%, 98%)", // Even lighter
     "100": "hsl(287, 100%, 95%)", // Even lighter
     "200": "hsl(288, 96%, 90%)", // Even lighter
     "800": "hsl(295, 100%, 25%)", // Darker
     "900": "hsl(297, 100%, 15%)", // Darker
-    "950": "hsl(303, 100%, 5%)", // Much darker
+    "950": "hsl(303, 100%, 8%)", // Much darker
   },
 
   // Pink - Tailwind pink color scale
   pink: {
-    "50": "hsl(327, 73%, 99%)", // Even lighter
+    "50": "hsl(327, 73%, 98%)", // Even lighter
     "100": "hsl(326, 78%, 95%)", // Even lighter
     "200": "hsl(326, 85%, 90%)", // Even lighter
     "800": "hsl(335, 78%, 25%)", // Darker
     "900": "hsl(336, 84%, 15%)", // Darker
-    "950": "hsl(340, 87%, 5%)", // Much darker
+    "950": "hsl(340, 87%, 8%)", // Much darker
   },
 
   // Rose - Tailwind rose color scale
   rose: {
-    "50": "hsl(356, 100%, 99%)", // Even lighter
+    "50": "hsl(356, 100%, 98%)", // Even lighter
     "100": "hsl(356, 100%, 95%)", // Even lighter
     "200": "hsl(356, 100%, 90%)", // Even lighter
     "800": "hsl(356, 100%, 25%)", // Darker
     "900": "hsl(356, 100%, 15%)", // Darker
-    "950": "hsl(356, 100%, 5%)", // Much darker
+    "950": "hsl(356, 100%, 8%)", // Much darker
+  },
+
+  // Orange - Tailwind orange color scale
+  orange: {
+    "50": "hsl(33, 100%, 98%)", // Even lighter
+    "100": "hsl(34, 100%, 95%)", // Even lighter
+    "200": "hsl(32, 98%, 90%)", // Even lighter
+    "800": "hsl(15, 79%, 25%)", // Darker
+    "900": "hsl(9, 87%, 15%)", // Darker
+    "950": "hsl(15, 86%, 8%)", // Much darker
+  },
+
+  // Red - Tailwind red color scale
+  red: {
+    "50": "hsl(0, 86%, 98%)", // Even lighter
+    "100": "hsl(0, 93%, 95%)", // Even lighter
+    "200": "hsl(0, 96%, 90%)", // Even lighter
+    "800": "hsl(0, 84%, 25%)", // Darker
+    "900": "hsl(0, 63%, 15%)", // Darker
+    "950": "hsl(0, 75%, 8%)", // Much darker
   },
 };
 
@@ -223,9 +223,9 @@ const BaseColorPicker: FC<BaseColorPickerProps> = ({
   const theme = useTheme();
 
   // Handle color selection
-  const handleColorSelect = (color: string, oklabValues: number[]) => {
+  const handleColorSelect = (color: string) => {
     setSelectedColor(color);
-    onChange(color, oklabValues);
+    onChange(color);
   };
 
   const isBaseColor = colorType === "base100";
@@ -238,10 +238,48 @@ const BaseColorPicker: FC<BaseColorPickerProps> = ({
   const cols = isBaseColor ? 3 : 7; // Adjust columns for base colors
 
   if (isBaseColor) {
+    const darkShades = Object.entries(palette)
+      .flatMap(([colorName, shades]) =>
+        Object.entries(shades as Record<string, string>)
+          .filter((shade) => {
+            const shadeInt = parseInt(shade[0], 10);
+            return shadeInt >= 900; // Only keep dark shades
+          })
+          .map(([shadeName, color]) => {
+            // @ts-ignore oklch is a valid color format
+            return [colorName, shadeName, chroma(color).css("oklch")];
+          }),
+      )
+      .toSorted((a, b) => {
+        // sort by shade
+        const shadeA = parseInt(a[1], 10);
+        const shadeB = parseInt(b[1], 10);
+        return shadeA - shadeB;
+      });
+
+    const lightShades = Object.entries(palette)
+      .flatMap(([colorName, shades]) =>
+        Object.entries(shades as Record<string, string>)
+          .filter((shade) => {
+            const shadeInt = parseInt(shade[0], 10);
+            return shadeInt <= 100; // Only keep light shades
+          })
+          .map(([shadeName, color]) => {
+            // @ts-ignore oklch is a valid color format
+            return [colorName, shadeName, chroma(color).css("oklch")];
+          }),
+      )
+      .toSorted((a, b) => {
+        // sort by shade
+        const shadeA = parseInt(a[1], 10);
+        const shadeB = parseInt(b[1], 10);
+        return shadeA - shadeB;
+      });
+
     return (
       <div>
         <Text as="p" size="2" className="!capitalize !font-medium select-none">
-          {baseColorsLabels[colorType]}
+          {baseColors[colorType]}
         </Text>
         <Callout.Root className="mt-3 -mx-4 !py-2 !px-3 !rounded-none">
           <Callout.Text size="1" className={tx("text-pretty")}>
@@ -262,40 +300,30 @@ const BaseColorPicker: FC<BaseColorPickerProps> = ({
           </Inset>
           <Tabs.Content value="light">
             <div className={`flex flex-wrap gap-3`}>
-              {Object.entries(palette).map(([colorName, shades], i) =>
-                Object.entries(shades as Record<string, string>)
-                  .filter((shade) => {
-                    const shadeInt = parseInt(shade[0], 10);
-                    return shadeInt <= 100;
-                  })
-                  .map(([shadeName, color]) => {
-                    // Convert color to oklch format
-                    // @ts-ignore oklch is a valid color format
-                    return [shadeName, chroma(color).css("oklch")];
-                  })
-                  .map(([shadeName, color]) => (
-                    <button
-                      type="button"
-                      id={`${colorName}-${shadeName}`}
-                      key={`${colorName}-${shadeName}`}
-                      className={tx(
-                        "outline outline-gray-200 outline-offset-1  transition-transform hover:scale-110 focus:outline-upstart-300",
-                        "w-6 h-6 rounded-full",
-                        selectedColor === color && "outline-upstart-300",
-                      )}
-                      style={{
-                        background: color,
-                      }}
-                      onClick={() => handleColorSelect(color, chroma(color).oklab())}
-                      aria-label={`Select color ${color}`}
-                    />
-                  )),
-              )}
+              {lightShades.map(([colorName, shadeName, color]) => (
+                <button
+                  type="button"
+                  title={`${colorName} ${shadeName}`}
+                  id={`${colorName}-${shadeName}`}
+                  key={`${colorName}-${shadeName}`}
+                  className={tx(
+                    "outline outline-gray-200 outline-offset-1  transition-transform hover:scale-110 focus:outline-upstart-300",
+                    "w-6 h-6 rounded-full",
+                    selectedColor === color && "outline-upstart-300",
+                  )}
+                  style={{
+                    background: color,
+                    filter: "saturate(180%)",
+                  }}
+                  onClick={() => handleColorSelect(color)}
+                  aria-label={`Select color ${color}`}
+                />
+              ))}
               <Button
                 size="1"
                 variant="outline"
                 className="!mt-1 self-stretch !basis-full block"
-                onClick={() => handleColorSelect("#ffffff", chroma("#ffffff").oklab())}
+                onClick={() => handleColorSelect("#ffffff")}
               >
                 Full white
               </Button>
@@ -303,40 +331,28 @@ const BaseColorPicker: FC<BaseColorPickerProps> = ({
           </Tabs.Content>
           <Tabs.Content value="dark">
             <div className={`flex flex-wrap gap-3`}>
-              {Object.entries(palette).map(([colorName, shades], i) =>
-                Object.entries(shades as Record<string, string>)
-                  .filter((shade) => {
-                    const shadeInt = parseInt(shade[0], 10);
-                    return shadeInt >= 900;
-                  })
-                  .map(([shadeName, color]) => {
-                    // Convert color to oklch format
-                    // @ts-ignore oklch is a valid color format
-                    return [shadeName, chroma(color).css("oklch")];
-                  })
-                  .map(([shadeName, color]) => (
-                    <button
-                      type="button"
-                      id={`${colorName}-${shadeName}`}
-                      key={`${colorName}-${shadeName}`}
-                      className={tx(
-                        "outline outline-gray-200 outline-offset-1 transition-transform hover:scale-110 focus:outline-upstart-300",
-                        "w-6 h-6 rounded-full",
-                        selectedColor === color && "outline-upstart-300",
-                      )}
-                      style={{
-                        background: color,
-                      }}
-                      onClick={() => handleColorSelect(color, chroma(color).oklab())}
-                      aria-label={`Select color ${color}`}
-                    />
-                  )),
-              )}
+              {darkShades.map(([colorName, shadeName, color]) => (
+                <button
+                  type="button"
+                  key={`${colorName}-${shadeName}`}
+                  className={tx(
+                    "outline outline-gray-200 outline-offset-1 transition-transform hover:scale-110 focus:outline-upstart-300",
+                    "w-6 h-6 rounded-full",
+                    selectedColor === color && "outline-upstart-300",
+                  )}
+                  title={`Dark ${colorName} ${shadeName}`}
+                  style={{
+                    background: color,
+                    filter: "saturate(180%)",
+                  }}
+                  onClick={() => handleColorSelect(color)}
+                />
+              ))}
               <Button
                 size="1"
                 variant="outline"
                 className="!mt-1 self-stretch !basis-full block"
-                onClick={() => handleColorSelect("#000000", chroma("#000000").oklab())}
+                onClick={() => handleColorSelect("#000000")}
               >
                 Full black
               </Button>
@@ -361,7 +377,7 @@ const BaseColorPicker: FC<BaseColorPickerProps> = ({
             e.preventDefault();
             const color = new FormData(e.currentTarget).get("customColor") as string;
             invariant(color, "Color is required");
-            handleColorSelect(color, chroma(color).oklab());
+            handleColorSelect(color);
           }}
         >
           {/* <div className={tx("flex text-sm gap-x-1")}>
@@ -412,7 +428,7 @@ const BaseColorPicker: FC<BaseColorPickerProps> = ({
   return (
     <div>
       <Text as="p" size="2" color="gray" className="!capitalize !font-medium">
-        {baseColorsLabels[colorType]}
+        {baseColors[colorType]}
       </Text>
       {/* Color circles */}
       {colorType.endsWith("Content") && (
@@ -459,7 +475,7 @@ const BaseColorPicker: FC<BaseColorPickerProps> = ({
                 style={{
                   background: color,
                 }}
-                onClick={() => handleColorSelect(color, chroma(color).oklab())}
+                onClick={() => handleColorSelect(color)}
                 aria-label={`Select color ${color}`}
               />
             )),
@@ -481,7 +497,7 @@ const BaseColorPicker: FC<BaseColorPickerProps> = ({
           e.preventDefault();
           const color = new FormData(e.currentTarget).get("customColor") as string;
           invariant(color, "Color is required");
-          handleColorSelect(color, chroma(color).oklab());
+          handleColorSelect(color);
         }}
       >
         {/* <div className={tx("flex text-sm gap-x-1")}>
@@ -713,7 +729,7 @@ function getAvailableColorsAndShadesForElement(elementType: ElementColorType) {
       colors: ["primary", "secondary", "accent", "neutral"],
       shades: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
       colorButtons: [
-        { label: "Auto", value: "border-auto" },
+        // { label: "Auto", value: "border-auto" },
         { label: "White", value: "#FFFFFF" },
         { label: "Black", value: "#000000" },
         { label: "Transparent", value: "transparent" },

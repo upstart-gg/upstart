@@ -367,7 +367,6 @@ function setElementSize(element: HTMLElement, width: number, height: number, eve
   requestAnimationFrame(() => {
     element.style.width = `${width}px`;
     element.style.height = `${height}px`;
-    element.style.minWidth = `${width}px`;
 
     // disable flex-grow temporarily to allow resize
     element.style.setProperty("flex-grow", "0");

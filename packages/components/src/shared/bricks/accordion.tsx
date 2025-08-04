@@ -5,7 +5,6 @@ import { useState } from "react";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import TextContent from "../components/TextContent";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import { useColorPreset } from "../hooks/use-color-preset";
 import BrickRoot from "../components/BrickRoot";
 
 export default function Accordion({ brick, editable }: BrickProps<Manifest>) {
@@ -13,7 +12,6 @@ export default function Accordion({ brick, editable }: BrickProps<Manifest>) {
   const { props } = brick;
   const items = Array.isArray(props.items) ? props.items : [];
   const { gradientDirection, rounding, ...otherStyles } = styles;
-  const presetClasses = useColorPreset<Manifest>(brick);
   // For single mode, we manage the opened item here
   const [itemOpened, setItemOpened] = useState<number | null>(
     items.findIndex((item) => !!item.defaultOpen) || null,
@@ -35,10 +33,7 @@ export default function Accordion({ brick, editable }: BrickProps<Manifest>) {
       {items.map((item, index) => {
         const isOpen = !props.restrictOneOpen ? openedItems[index] || item.defaultOpen : itemOpened === index;
         return (
-          <div
-            key={index}
-            className={tx("flex flex-col border", rounding, presetClasses.border, "overflow-hidden")}
-          >
+          <div key={index} className={tx("flex flex-col border", rounding, "overflow-hidden")}>
             <button
               type="button"
               aria-expanded={isOpen}
@@ -56,10 +51,8 @@ export default function Accordion({ brick, editable }: BrickProps<Manifest>) {
               className={tx(
                 "flex flex-grow shrink-0 items-center p-3 gap-1 justify-between w-full",
                 "font-semibold cursor-pointer select-none text-left text-[110%] ",
-                presetClasses.title,
                 gradientDirection,
                 isOpen && "rounded-b-none border-b",
-                presetClasses.border,
               )}
             >
               <div className={tx("flex flex-grow shrink-0 flex-row items-center gap-1")}>

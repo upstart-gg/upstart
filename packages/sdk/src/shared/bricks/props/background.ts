@@ -104,6 +104,7 @@ export function backgroundColor(options: SchemaOptions = {}) {
     "ui:color-type": "background",
     // "ui:advanced": true,
     "ui:styleId": "styles:backgroundColor",
+    "ui:responsive": "desktop",
     ...options,
   });
 }

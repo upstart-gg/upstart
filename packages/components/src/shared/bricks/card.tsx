@@ -3,13 +3,11 @@ import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import TextContent from "../components/TextContent";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import { useColorPreset } from "../hooks/use-color-preset";
 import BrickRoot from "../components/BrickRoot";
 
 export default function Card({ brick, editable }: BrickProps<Manifest>) {
   const props = brick.props;
   const styles = useBrickStyle<Manifest>(brick);
-  const presetClasses = useColorPreset<Manifest>(brick);
   const classes = Object.values(styles);
   const isOverlay = props.cardImage && props.imagePosition === "overlay";
   return (
@@ -19,7 +17,6 @@ export default function Card({ brick, editable }: BrickProps<Manifest>) {
       className={tx(
         "flex relative overflow-hidden",
         props.imagePosition === "side" ? "flex-row" : "flex-col",
-        presetClasses.container,
         classes,
         isOverlay &&
           css({

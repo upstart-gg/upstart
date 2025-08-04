@@ -96,7 +96,7 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
     "brick-wrapper group/brick flex",
 
     isContainer
-      ? "@desktop:min-w-min min-h-fit shrink-0 h-auto flex-wrap"
+      ? "@desktop:min-w-min min-h-fit h-auto flex-wrap"
       : // ? "@desktop:min-w-min min-h-fit shrink-0 h-auto @mobile:flex-wrap @desktop:flex-nowrap"
         "min-w-min min-h-min",
 
@@ -131,7 +131,7 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
     isContainerChild && "container-child",
 
     // When a brick is hidden on mobile, hide the wrapper as well
-    "@mobile:[&:has([data-mobile-hidden])]:hidden",
+    "@mobile:[&:has([data-mobile-hidden])]:hidden @desktop:[&:has([data-mobile-hidden])]:flex",
 
     getBrickWrapperEditorStyles(editable === true, manifest.isContainer, isContainerChild, selected),
 
@@ -174,7 +174,6 @@ function getBrickWrapperEditorStyles(
       "&.resizing": {
         outlineColor: "var(--violet-8)",
         minHeight: "min-content",
-        overflow: "hidden",
       },
       "& [data-brick-group]:hover": {
         outline: "1px dashed var(--violet-8)",

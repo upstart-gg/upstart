@@ -7,7 +7,7 @@ import { css } from "@upstart.gg/style-system/twind";
 export type ColorType = keyof Theme["colors"];
 export type ElementColorType = "page-background" | "background" | "text" | "border" | "shadow";
 
-export const baseColorsLabels: Record<ColorType, string> = {
+export const baseColors: Record<ColorType, string> = {
   primary: "Primary color",
   secondary: "Secondary color",
   accent: "Accent color",
@@ -15,11 +15,6 @@ export const baseColorsLabels: Record<ColorType, string> = {
   base100: "Base color",
   base200: "Base (level 2)",
   base300: "Base (level 3)",
-  baseContent: "Base content color",
-  primaryContent: "Primary content color",
-  secondaryContent: "Secondary content color",
-  accentContent: "Accent content color",
-  neutralContent: "Neutral content color",
 };
 
 export const shadeNumbers = [900, 800, 700, 600, 500, 400, 300, 200, 100, 50] as const;
@@ -27,7 +22,7 @@ type ShadeNumber = (typeof shadeNumbers)[number];
 
 const semanticAliases: Partial<Record<ShadeNumber, string>> = {
   100: "subtle",
-  400: "light",
+  300: "light",
   700: "dark",
 };
 
@@ -59,7 +54,10 @@ export function propToStyle(prop: string | number | undefined, cssAttr: string) 
   return isStandardColor(prop) || typeof prop === "number" ? css({ [cssAttr as string]: prop }) : prop;
 }
 
-export function getContrastingTextColor(backgroundColor: string, contrastThreshold = 4.5): string {
+export function getContrastingTextColor(
+  backgroundColor: string | chroma.Color,
+  contrastThreshold = 3.5,
+): string {
   // Convert the background color to a chroma color object
   const bgColor = chroma(backgroundColor);
 
@@ -98,10 +96,13 @@ export function propToClass(value: string | number | undefined, classPrefix: str
 
 export function generateColorsVars(theme: Theme) {
   const shades: Record<string, string> = {};
+  const colorNames = Object.keys(baseColors) as ColorType[];
 
-  Object.entries(theme.colors).forEach(([colorName, color]) => {
+  colorNames.forEach((_colorName) => {
+    const color = theme.colors[_colorName];
+    const colorName = kebabCase(_colorName);
     // Add the original color as the default (without number suffix)
-    shades[`color-${kebabCase(colorName)}`] = color;
+    shades[`color-${colorName}`] = color;
 
     // Handle base colors separately (they already have shades)
     if (colorName.startsWith("base")) {
@@ -113,12 +114,25 @@ export function generateColorsVars(theme: Theme) {
 
     const colorScale = chroma.scale([lightest, color, darkest]).domain([50, 500, 900]).mode("lch"); // Use LCH color space for better perceptual scaling
 
+    // Generate base color content
+    const contentColor = getContrastingTextColor(color);
+    shades[`color-${colorName}-content`] = contentColor;
+
     shadeNumbers.forEach((shade) => {
-      const varName = `color-${kebabCase(colorName)}-${shade}`;
-      const shadedColor = colorScale(shade).oklch();
-      shades[varName] = `oklch(${shadedColor.join(" ")})`;
+      const varName = `color-${colorName}-${shade}`;
+
+      // Gen color for the specific shade
+      const shadedColor = colorScale(shade);
+      // @ts-ignore oklch is a valid color format
+      shades[varName] = shadedColor.css("oklch");
+
+      // Gen content color for this same shade
+      const contentColor = getContrastingTextColor(shadedColor);
+      shades[`color-${colorName}-${shade}-content`] = contentColor;
+
       if (semanticAliases[shade]) {
-        shades[`color-${kebabCase(colorName)}-${semanticAliases[shade]}`] = shades[varName];
+        shades[`color-${colorName}-${semanticAliases[shade]}`] = shades[varName];
+        shades[`color-${colorName}-${semanticAliases[shade]}-content`] = contentColor;
       }
     });
   });

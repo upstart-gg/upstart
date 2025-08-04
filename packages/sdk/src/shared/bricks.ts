@@ -3,11 +3,11 @@ import { customAlphabet } from "nanoid";
 import { defaultProps } from "./bricks/manifests/all-manifests";
 import { cssLengthRef } from "./bricks/props/css-length";
 import { enumProp } from "./bricks/props/enum";
-import { colorPresetRef } from "./bricks/props/preset";
+import { colorPresetRef } from "./bricks/props/color-preset";
 import { mergeIgnoringArrays } from "./utils/merge";
 import { getSchemaDefaults } from "./utils/schema";
 import { StringEnum } from "./utils/string-enum";
-import { alignItemsRef } from "./bricks/props/align";
+import { alignItemsRef, justifyContentRef } from "./bricks/props/align";
 
 /**
  * Generates a unique identifier for bricks.
@@ -119,172 +119,24 @@ export type Brick = Static<typeof brickSchema>;
 
 export const sectionProps = Type.Object(
   {
-    backgroundColor: Type.Optional(
+    color: Type.Optional(
       colorPresetRef({
         title: "Color",
-        "ui:presets": {
-          "primary-light": {
-            previewBgClass: "bg-primary-light text-primary-content-light",
-            value: { main: "bg-primary-light text-primary-content-light" },
-            label: "Primary lighter",
-          },
-          "primary-light-gradient": {
-            previewBgClass: "bg-gradient-to-br from-primary-300 to-primary-500 text-primary-content-light",
-            value: { main: "from-primary-300 to-primary-500 text-primary-content-light" },
-            label: "Primary light gradient",
-          },
-          primary: {
-            previewBgClass: "bg-primary text-primary-content",
-            label: "Primary",
-            value: { main: "bg-primary text-primary-content" },
-          },
-          "primary-gradient": {
-            previewBgClass: "bg-gradient-to-br from-primary-500 to-primary-700 text-primary-content",
-            value: { main: "from-primary-500 to-primary-700 text-primary-content" },
-            label: "Primary gradient",
-          },
-          "primary-dark": {
-            previewBgClass: "bg-primary-dark text-primary-content",
-            label: "Primary dark",
-            value: { main: "bg-primary-dark text-primary-content" },
-          },
-          "primary-dark-gradient": {
-            previewBgClass: "bg-gradient-to-br from-primary-700 to-primary-900 text-primary-content",
-            value: { main: "from-primary-700 to-primary-900 text-primary-content" },
-            label: "Primary dark gradient",
-          },
-          "secondary-light": {
-            previewBgClass: "bg-secondary-light text-secondary-content-light",
-            label: "Secondary light",
-            value: { main: "bg-secondary-light text-secondary-content-light" },
-          },
-          "secondary-light-gradient": {
-            previewBgClass:
-              "bg-gradient-to-br from-secondary-300 to-secondary-500 text-secondary-content-light",
-            value: {
-              main: "from-secondary-300 to-secondary-500 text-secondary-content-light",
-            },
-            label: "Secondary light gradient",
-          },
-          secondary: {
-            previewBgClass: "bg-secondary text-secondary-content",
-            label: "Secondary",
-            value: { main: "bg-secondary text-secondary-content" },
-          },
-          "secondary-gradient": {
-            previewBgClass: "bg-gradient-to-br from-secondary-500 to-secondary-700 text-secondary-content",
-            value: { main: "from-secondary-500 to-secondary-700 text-secondary-content" },
-            label: "Secondary gradient",
-          },
-          "secondary-dark": {
-            previewBgClass: "bg-secondary-dark text-secondary-content",
-            label: "Secondary dark",
-            value: { main: "bg-secondary-dark text-secondary-content" },
-          },
-          "secondary-dark-gradient": {
-            previewBgClass: "bg-gradient-to-br from-secondary-700 to-secondary-900 text-secondary-content",
-            value: { main: "from-secondary-700 to-secondary-900 text-secondary-content" },
-            label: "Secondary dark gradient",
-          },
-          "neutral-light": {
-            previewBgClass: "bg-neutral-light text-neutral-content-light",
-            value: { main: "bg-neutral-light text-neutral-content-light" },
-            label: "Neutral light",
-          },
-          "neutral-light-gradient": {
-            previewBgClass: "bg-gradient-to-br from-neutral-300 to-neutral-500 text-neutral-content-light",
-            value: { main: "from-neutral-300 to-neutral-500 text-neutral-content-light" },
-            label: "Neutral light gradient",
-          },
-          neutral: {
-            previewBgClass: "bg-neutral text-neutral-content",
-            label: "Neutral",
-            value: { main: "bg-neutral text-neutral-content" },
-          },
-          "neutral-gradient": {
-            previewBgClass: "bg-gradient-to-br from-neutral-500 to-neutral-700 text-neutral-content",
-            value: { main: "from-neutral-500 to-neutral-700 text-neutral-content" },
-            label: "Neutral gradient",
-          },
-          "neutral-dark": {
-            previewBgClass: "bg-neutral-dark text-neutral-content",
-            label: "Neutral dark",
-            value: { main: "bg-neutral-dark text-neutral-content" },
-          },
-          "neutral-dark-gradient": {
-            previewBgClass: "bg-gradient-to-br from-neutral-700 to-neutral-900 text-neutral-content",
-            value: { main: "from-neutral-700 to-neutral-900 text-neutral-content" },
-            label: "Neutral dark gradient",
-          },
-          base100: {
-            previewBgClass: "bg-base-100 text-base-content",
-            label: "Base 1",
-            value: { main: "bg-base-100 text-base-content" },
-          },
-
-          base200: {
-            previewBgClass: "bg-base-200 text-base-content",
-            label: "Base 2",
-            value: { main: "bg-base-200 text-base-content" },
-          },
-
-          none: { label: "None", value: {} },
-        },
-        default: "none",
       }),
     ),
-    gradientDirection: Type.Optional(
-      StringEnum(
-        [
-          "bg-gradient-to-t",
-          "bg-gradient-to-r",
-          "bg-gradient-to-b",
-          "bg-gradient-to-l",
-          "bg-gradient-to-tl",
-          "bg-gradient-to-tr",
-          "bg-gradient-to-br",
-          "bg-gradient-to-bl",
-        ],
-        {
-          title: "Gradient direction",
-          description: "The direction of the gradient. Only applies when color preset is a gradient.",
-          enumNames: [
-            "Top",
-            "Right",
-            "Bottom",
-            "Left",
-            "Top left",
-            "Top right",
-            "Bottom right",
-            "Bottom left",
-          ],
-          default: "bg-gradient-to-br",
-          "ui:responsive": "desktop",
-          "ui:styleId": "styles:gradientDirection",
-          metadata: {
-            filter: (manifestProps: TObject, formData: Section["props"]) => {
-              return formData.backgroundColor?.includes("gradient") === true;
-            },
-          },
-        },
-      ),
-    ),
-    // background: Type.Optional(backgroundRef()),
-    // preset: Type.Optional(presetRef()),
     minHeight: Type.Optional(
       cssLengthRef({
         title: "Min height",
         default: "fit-content",
         description: "The min height of the section",
-        "ui:styleId": "minHeight",
         "ui:field": "hidden",
       }),
     ),
-    purpose: Type.Optional(
-      StringEnum(["navbar", "sidebar"], {
-        title: "Specific purpose",
-        description: "The purpose of the section. Used for custom styling and layout.",
-        enumNames: ["Navbar", "Sidebar"],
+    variant: Type.Optional(
+      StringEnum(["navbar", "footer", "sidebar"], {
+        title: "Custom section variant",
+        description: "Used for custom styling and layout.",
+        enumNames: ["Navbar", "Footer", "Sidebar"],
         "ui:field": "hidden",
       }),
     ),
@@ -318,33 +170,9 @@ export const sectionProps = Type.Object(
       }),
     ),
     justifyContent: Type.Optional(
-      StringEnum(
-        [
-          "justify-start",
-          "justify-center",
-          "justify-end",
-          "justify-between",
-          "justify-around",
-          "justify-evenly",
-        ],
-        {
-          enumNames: ["Left", "Center", "Right", "Space between", "Space around", "Evenly distributed"],
-          title: "Horizontal align.",
-          description: "The horizontal alignment of bricks within the section.",
-          "ui:placeholder": "Not specified",
-          default: "justify-center",
-          "ui:display": "icon-group",
-          "ui:responsive": "desktop",
-          "ui:icons": [
-            "fluent:align-start-horizontal-20-regular",
-            "fluent:align-center-vertical-20-regular",
-            "fluent:align-end-horizontal-20-regular",
-            "fluent:align-space-between-vertical-20-regular",
-            "fluent:align-space-around-vertical-20-regular",
-            "fluent:align-space-evenly-horizontal-20-regular",
-          ],
-        },
-      ),
+      justifyContentRef({
+        default: "justify-center",
+      }),
     ),
     alignItems: Type.Optional(
       alignItemsRef({
@@ -357,7 +185,7 @@ export const sectionProps = Type.Object(
         title: "Gap",
         description: "The gap between the bricks in the section.",
         default: "20px",
-        "ui:styleId": "gap",
+        "ui:styleId": "styles:gap",
       }),
     ),
     lastTouched: Type.Optional(

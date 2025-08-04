@@ -3,12 +3,10 @@ import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { MouseEventHandler } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import { useColorPreset } from "../hooks/use-color-preset";
 import BrickRoot from "../components/BrickRoot";
 
 export default function Footer({ brick, editable }: BrickProps<Manifest>) {
   const props = brick.props;
-  const presetClasses = useColorPreset<Manifest>(brick);
   const styles = useBrickStyle<Manifest>(brick);
   const classes = Object.values(styles);
   const onClick: MouseEventHandler | undefined = editable
@@ -20,12 +18,12 @@ export default function Footer({ brick, editable }: BrickProps<Manifest>) {
     <BrickRoot
       editable={editable}
       manifest={manifest}
+      data-no-section-padding
       as="footer"
       className={tx(
         // Force 2 cols on mobile
         `grid gap-6 @desktop:grid-flow-col @mobile:grid-cols-2 @desktop:auto-cols-fr `,
         classes,
-        presetClasses.container,
       )}
     >
       {props.logo && (

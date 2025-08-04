@@ -1,16 +1,14 @@
 import { manifest, type Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/carousel.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
-import { forwardRef, useState } from "react";
+import { useState } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import { useColorPreset } from "../hooks/use-color-preset";
 import BrickRoot from "../components/BrickRoot";
 
 export default function Carousel({ brick, editable }: BrickProps<Manifest>) {
   const { props } = brick;
   const styles = useBrickStyle<Manifest>(brick);
-  const presetClasses = useColorPreset<Manifest>(brick);
   const images = (props.images || []).filter(
     (image) => typeof image.src.src === "string" && image.src.src !== "",
   );
@@ -30,11 +28,7 @@ export default function Carousel({ brick, editable }: BrickProps<Manifest>) {
       <BrickRoot
         editable={editable}
         manifest={manifest}
-        className={tx(
-          "flex flex-col items-center justify-center text-center",
-          presetClasses.main,
-          Object.values(styles),
-        )}
+        className={tx("flex flex-col items-center justify-center text-center", Object.values(styles))}
       >
         <div className="p-8">
           {editable ? "Add images to this carousel in the panel" : "No images to display"}
@@ -44,11 +38,7 @@ export default function Carousel({ brick, editable }: BrickProps<Manifest>) {
   }
 
   return (
-    <BrickRoot
-      editable={editable}
-      manifest={manifest}
-      className={tx("flex flex-col", Object.values(styles), presetClasses.main)}
-    >
+    <BrickRoot editable={editable} manifest={manifest} className={tx("flex flex-col", Object.values(styles))}>
       <div className={tx("relative overflow-hidden group flex-1")}>
         <div
           className="flex transition-transform duration-300 ease-in-out absolute inset-0"

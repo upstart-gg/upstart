@@ -118,6 +118,8 @@ export const brickStylesHelpersMap = {
   "styles:backgroundColor": getBackgroundColorStyles,
   "styles:background": getBackgroundStyles,
 
+  "presets:color": simpleClassHandler,
+
   "styles:rounding": simpleClassHandler,
   "styles:direction": simpleClassHandler,
   // test putting here

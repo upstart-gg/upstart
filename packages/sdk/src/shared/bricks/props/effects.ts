@@ -16,6 +16,8 @@ export function shadow({ title = "Shadow", defaultValue = "shadow-none" }: Shado
     "ui:placeholder": "Not specified",
     "ui:field": "enum",
     "ui:display": "button-group",
+    "ui:responsive": "desktop",
+    "ui:styleId": "styles:shadow",
     // "ui:advanced": true,
   });
 }
@@ -23,10 +25,7 @@ export function shadow({ title = "Shadow", defaultValue = "shadow-none" }: Shado
 export type ShadowSettings = Static<ReturnType<typeof shadow>>;
 
 export function shadowRef(options: SchemaOptions & ShadowOptions = {}) {
-  return typedRef("styles:shadow", {
-    ...options,
-    "ui:styleId": "styles:shadow",
-  });
+  return typedRef("styles:shadow", options);
 }
 
 type TextShadowOptions = {

@@ -141,6 +141,10 @@ export default defineConfig({
       }),
     ],
     [
+      "bg-primary-gradient-",
+      ({ $$ }) => `@(from-primary-${$$} to-primary-${parseInt($$) + 100})`, // e.g. from-primary-100 to-primary-200,
+    ],
+    [
       "bg-primary-",
       ({ $$ }) => ({
         backgroundColor: `var(--up-bg-color)`,

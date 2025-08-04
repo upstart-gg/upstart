@@ -6,9 +6,7 @@ import EnumField from "./enum";
 export default function JustifyContentField(props: FieldProps<JustifyContentSettings>) {
   const { brickId, onChange, schema } = props;
   const htmlElement = document.getElementById(brickId);
-  invariant(htmlElement, "HTML element not found for JustifyContentField");
-
-  const flexOrientation = getComputedStyle(htmlElement).flexDirection;
+  const flexOrientation = htmlElement ? getComputedStyle(htmlElement).flexDirection : "row";
 
   const customSchema = {
     ...schema,
@@ -20,8 +18,8 @@ export default function JustifyContentField(props: FieldProps<JustifyContentSett
     "ui:display": "icon-group",
     enumNames:
       flexOrientation === "row"
-        ? ["Left", "Center", "Right", "Between", "Around", "Evenly", "Stretch"]
-        : ["Top", "Center", "Bottom", "Between", "Around", "Evenly", "Stretch"],
+        ? ["Left", "Center", "Right", "Between", "Around", "Evenly"]
+        : ["Top", "Center", "Bottom", "Between", "Around", "Evenly"],
     "ui:icons":
       flexOrientation === "row"
         ? [
@@ -31,7 +29,6 @@ export default function JustifyContentField(props: FieldProps<JustifyContentSett
             "fluent:align-space-between-vertical-20-regular",
             "fluent:align-space-around-vertical-20-regular",
             "fluent:align-space-evenly-horizontal-20-regular",
-            "fluent:auto-fit-width-20-regular",
           ]
         : [
             "fluent:align-start-vertical-20-regular",
@@ -40,7 +37,6 @@ export default function JustifyContentField(props: FieldProps<JustifyContentSett
             "fluent:align-space-between-horizontal-20-regular",
             "fluent:align-space-around-horizontal-20-regular",
             "fluent:align-space-evenly-vertical-20-regular",
-            "fluent:auto-fit-height-20-regular",
           ],
   };
   return (

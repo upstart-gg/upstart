@@ -4,12 +4,10 @@ import { useBrickStyle } from "../hooks/use-brick-style";
 import TextContent from "../components/TextContent";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { tx } from "@upstart.gg/style-system/twind";
-import { useColorPreset } from "../hooks/use-color-preset";
 import BrickRoot from "../components/BrickRoot";
 
 export default function Navbar({ brick, editable }: BrickProps<Manifest>) {
-  const styles = useBrickStyle<Manifest>(brick);
-  const presetClasses = useColorPreset<Manifest>(brick);
+  const classes = useBrickStyle<Manifest>(brick);
   const props = brick.props;
 
   return (
@@ -18,8 +16,8 @@ export default function Navbar({ brick, editable }: BrickProps<Manifest>) {
       manifest={manifest}
       as="header"
       data-brick-group="container"
-      data-is-navbar
-      className={tx("flex px-4 brick basis-full h-[60px]", styles.gradientDirection, presetClasses.main)}
+      data-no-section-padding
+      className={tx("flex px-4 brick basis-full h-[60px]", Object.values(classes))}
     >
       <div
         className={tx(
@@ -27,11 +25,7 @@ export default function Navbar({ brick, editable }: BrickProps<Manifest>) {
           props.linksPosition !== "center" && "@lg:gap-4",
         )}
       >
-        <div
-          className={tx("flex items-center gap-3", styles.brand)}
-          data-brick-group="brand"
-          data-brick-menu-offset="70"
-        >
+        <div className={tx("flex items-center gap-3")} data-brick-group="brand" data-brick-menu-offset="70">
           {props.logo?.src && (
             <img
               src={props.logo.src}
@@ -58,7 +52,6 @@ export default function Navbar({ brick, editable }: BrickProps<Manifest>) {
           data-brick-group="navigation"
           className={tx(
             "hidden @desktop:flex items-center gap-2",
-            styles.navigation,
             props.linksPosition === "right" && "ml-auto",
             props.linksPosition === "center" && "mx-auto",
           )}

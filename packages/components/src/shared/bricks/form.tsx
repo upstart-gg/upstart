@@ -21,7 +21,6 @@ import {
   UrlField,
   type BaseFieldProps,
 } from "./form/Fields";
-import { useColorPreset } from "../hooks/use-color-preset";
 import BrickRoot from "../components/BrickRoot";
 
 // Helper function to detect datarecord field types
@@ -193,7 +192,6 @@ function processDatarecordSchemaToFields(
 
 const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref) => {
   const { brick } = props;
-  const presetClasses = useColorPreset<Manifest>(brick);
   const styles = useBrickStyle<Manifest>(brick);
   const [submitState, setSubmitState] = useState<"idle" | "submitting" | "error" | "success">("idle");
   const { button, buttonPosition, direction, ...rest } = styles;
@@ -261,11 +259,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
       <BrickRoot
         editable={editable}
         manifest={manifest}
-        className={tx(
-          "text-center p-4 flex items-center justify-center",
-          Object.values(rest),
-          presetClasses.main,
-        )}
+        className={tx("text-center p-4 flex items-center justify-center", Object.values(rest))}
       >
         {datarecordId ? (
           "Loading database..."
@@ -291,7 +285,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
       manifest={manifest}
       as="form"
       onSubmit={handleSubmit}
-      className={tx("flex flex-col gap-4", Object.values(rest), presetClasses.main)}
+      className={tx("flex flex-col gap-4", Object.values(rest))}
     >
       {title && <h2 className="text-[110%] font-semibold">{title}</h2>}
       {intro && <p>{intro}</p>}
