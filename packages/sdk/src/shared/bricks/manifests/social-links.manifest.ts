@@ -6,7 +6,7 @@ import { iconRef, string } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { fontSizeRef } from "../props/text";
 import { paddingRef } from "../props/padding";
-import { directionRef } from "../props/direction";
+import { directionRef } from "dsField";
 import { gradientDirectionRef } from "../props/color";
 import { colorPresetRef } from "../props/color-preset";
 import { borderRef, roundingRef } from "../props/border";

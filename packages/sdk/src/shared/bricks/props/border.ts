@@ -27,7 +27,7 @@ export function border(opts: ObjectOptions = {}) {
       "ui:styleId": "styles:border",
       description: "Set the border width and color.",
       "ui:field": "border",
-      "ui:responsive": "desktop",
+      "ui:responsive": true,
       ...opts,
     },
   );

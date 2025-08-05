@@ -21,12 +21,14 @@ export type { Immer } from "immer";
 
 enableMapSet();
 
+type BrickId = string;
+
 export interface DraftStateProps {
   id: string;
   path: string;
   label: string;
   sections: Section[];
-  data: Record<string, unknown[]>;
+  data: Record<BrickId, Record<string, unknown>[]>;
   datasources: DatasourcesList;
   datarecords: DatarecordsList;
   /**
@@ -1172,6 +1174,11 @@ export const useAttributes = () => {
 export const useAttributesSchema = () => {
   const ctx = usePageContext();
   return useStore(ctx, (state) => state.attributes ?? state.siteAttributes);
+};
+
+export const useData = (brickId: string, samples: Record<string, unknown>[] | undefined) => {
+  const ctx = usePageContext();
+  return useStore(ctx, (state) => state.data[brickId] ?? samples ?? []);
 };
 
 export const useDraftHelpers = () => {

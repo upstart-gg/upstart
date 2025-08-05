@@ -261,6 +261,12 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   format: "slug",
                   title: "Slug",
                 },
+                avatarUrl: {
+                  title: "Avatar URL",
+                  type: "string",
+                  format: "uri",
+                  default: "https://placehold.co/100x100",
+                },
                 firstName: {
                   type: "string",
                   title: "First Name",
@@ -307,9 +313,74 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             },
             examples: [
               {
+                $id: "example-1",
+                $publicationDate: "2023-01-01T00:00:00Z",
+                $lastModificationDate: "2023-01-01T00:00:00Z",
+                $slug: "john-doe",
                 firstName: "John",
                 lastName: "Doe",
                 email: "john.doe@example.com",
+                avatarUrl: "https://placehold.co/100x100",
+                height: 180,
+                admin: false,
+                startedOn: "2020-01-01",
+                tags: ["developer", "javascript"],
+              },
+              {
+                $id: "example-2",
+                $publicationDate: "2023-01-02T00:00:00Z",
+                $lastModificationDate: "2023-01-02T00:00:00Z",
+                $slug: "jane-smith",
+                firstName: "Jane",
+                lastName: "Smith",
+                email: "jane.smith@example.com",
+                avatarUrl: "https://placehold.co/100x100",
+                height: 165,
+                admin: false,
+                startedOn: "2020-01-01",
+                tags: ["designer", "figma"],
+              },
+              {
+                $id: "example-3",
+                $publicationDate: "2023-01-03T00:00:00Z",
+                $lastModificationDate: "2023-01-03T00:00:00Z",
+                $slug: "alice-johnson",
+                firstName: "Alice",
+                lastName: "Johnson",
+                email: "alice.johnson@example.com",
+                avatarUrl: "https://placehold.co/100x100",
+                height: 170,
+                admin: false,
+                startedOn: "2020-01-01",
+                tags: ["developer", "react"],
+              },
+              {
+                $id: "example-4",
+                $publicationDate: "2023-01-04T00:00:00Z",
+                $lastModificationDate: "2023-01-04T00:00:00Z",
+                $slug: "bob-brown",
+                firstName: "Bob",
+                lastName: "Brown",
+                email: "bob.brown@example.com",
+                avatarUrl: "https://placehold.co/100x100",
+                height: 175,
+                admin: false,
+                startedOn: "2020-01-01",
+                tags: ["developer", "vue"],
+              },
+              {
+                $id: "example-5",
+                $publicationDate: "2023-01-05T00:00:00Z",
+                $lastModificationDate: "2023-01-05T00:00:00Z",
+                $slug: "charlie-white",
+                firstName: "Charlie",
+                lastName: "White",
+                email: "charlie.white@example.com",
+                avatarUrl: "https://placehold.co/100x100",
+                height: 160,
+                admin: false,
+                startedOn: "2020-01-01",
+                tags: ["designer", "figma"],
               },
             ],
           },
@@ -461,7 +532,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 id: generateId(),
                 type: "navbar",
                 props: {
-                  backgroundColor: "neutral-dark-gradient",
                   brand: "My Site",
                   navigation: {
                     staticItems: [{ urlOrPageId: "/about" }, { urlOrPageId: "/contact" }],
@@ -547,44 +617,44 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   ],
                 },
               },
-              {
-                // vertical box
-                id: generateId(),
-                type: "box",
-                props: {
-                  direction: "flex-col",
-                  $children: [
-                    {
-                      id: generateId(),
-                      type: "button",
-                      props: {
-                        label: "Button #1",
-                      },
-                    },
-                    {
-                      id: generateId(),
-                      type: "button",
-                      props: {
-                        label: "Button #2",
-                      },
-                    },
-                    {
-                      id: generateId(),
-                      type: "button",
-                      props: {
-                        label: "Button #3",
-                      },
-                    },
-                    {
-                      id: generateId(),
-                      type: "button",
-                      props: {
-                        label: "Button #4",
-                      },
-                    },
-                  ],
-                },
-              },
+              // {
+              //   // vertical box
+              //   id: generateId(),
+              //   type: "box",
+              //   props: {
+              //     direction: "flex-col",
+              //     $children: [
+              //       {
+              //         id: generateId(),
+              //         type: "button",
+              //         props: {
+              //           label: "Button #1",
+              //         },
+              //       },
+              //       {
+              //         id: generateId(),
+              //         type: "button",
+              //         props: {
+              //           label: "Button #2",
+              //         },
+              //       },
+              //       {
+              //         id: generateId(),
+              //         type: "button",
+              //         props: {
+              //           label: "Button #3",
+              //         },
+              //       },
+              //       {
+              //         id: generateId(),
+              //         type: "button",
+              //         props: {
+              //           label: "Button #4",
+              //         },
+              //       },
+              //     ],
+              //   },
+              // },
               {
                 // dynamic box
                 id: generateId(),
@@ -703,7 +773,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   padding: "p-4",
                   fontSize: "inherit",
                   button: {
-                    color: "btn-color-primary",
                     size: "block",
                     rounding: "rounded-md",
                     border: {
@@ -860,7 +929,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   label: "hey ho!",
                   justifyContent: "justify-center",
                   type: "button",
-                  color: "btn-color-primary",
                   height: "42px",
                 },
                 id: generateId(),
@@ -894,7 +962,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                     label: "Register",
                     size: "block",
                     borderRadius: "rounded-lg",
-                    color: "btn-color-primary",
                   },
                 },
               },
@@ -1033,7 +1100,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 id: generateId(),
                 type: "navbar",
                 props: {
-                  backgroundColor: "neutral-dark-gradient",
                   brand: "My Site",
                   navigation: {
                     staticItems: [{ urlOrPageId: "/about" }, { urlOrPageId: "/contact" }],
@@ -1063,7 +1129,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                     label: "Register",
                     position: "center",
                     borderRadius: "rounded-lg",
-                    color: "btn-color-primary",
                   },
                   align: "horizontal",
                 },
@@ -1089,9 +1154,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   intro: "This is a complex form with various field types.",
                   button: {
                     label: "Register 2",
-                    position: "left",
                     borderRadius: "rounded-lg",
-                    color: "btn-color-primary",
                   },
                 },
               },

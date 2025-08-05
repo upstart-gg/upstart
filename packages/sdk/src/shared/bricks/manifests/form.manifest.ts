@@ -12,7 +12,7 @@ import type { BrickProps } from "../props/types";
 import { fontSizeRef } from "../props/text";
 import { colorPresetRef } from "../props/color-preset";
 import { gradientDirectionRef } from "../props/color";
-import { directionRef } from "../props/direction";
+import { directionRef } from "dsField";
 
 export const manifest = defineBrickManifest({
   type: "form",
@@ -35,7 +35,7 @@ There is no need to define the form fields manually and the form does not accept
     color: Type.Optional(
       colorPresetRef({
         title: "Color",
-        default: "bg-base-100 text-base-content-100",
+        default: "bg-base-100 text-base-100-content",
       }),
     ),
     direction: Type.Optional(
@@ -69,25 +69,29 @@ There is no need to define the form fields manually and the form does not accept
     button: group({
       title: "Button",
       children: {
-        color: Type.Union(
-          [
-            Type.Literal("btn-color-neutral", { title: "Neutral" }),
-            Type.Literal("btn-color-primary", { title: "Primary" }),
-            Type.Literal("btn-color-secondary", { title: "Secondary" }),
-            Type.Literal("btn-color-accent", { title: "Accent" }),
-          ],
-          {
-            title: "Color",
-            default: "btn-color-primary",
-          },
+        color: Type.Optional(
+          Type.Union(
+            [
+              Type.Literal("btn-neutral", { title: "Neutral" }),
+              Type.Literal("btn-primary", { title: "Primary" }),
+              Type.Literal("btn-secondary", { title: "Secondary" }),
+              Type.Literal("btn-accent", { title: "Accent" }),
+            ],
+            {
+              title: "Color",
+              default: "btn-primary",
+            },
+          ),
         ),
-        size: StringEnum(["block", "wide"], {
-          title: "Size",
-          description: "Button sizes.",
-          enumNames: ["Block", "Wide"],
-          default: "block",
-          "ui:responsive": "desktop",
-        }),
+        size: Type.Optional(
+          StringEnum(["block", "wide"], {
+            title: "Size",
+            description: "Button sizes.",
+            enumNames: ["Block", "Wide"],
+            default: "block",
+            "ui:responsive": "desktop",
+          }),
+        ),
         rounding: Type.Optional(roundingRef({ default: "rounded-md" })),
       },
     }),
@@ -157,7 +161,6 @@ export const examples: {
       buttonPosition: "justify-end",
       buttonLabel: "Send Message",
       button: {
-        color: "btn-color-primary",
         size: "block",
       },
     },
@@ -173,7 +176,6 @@ export const examples: {
       buttonPosition: "justify-end",
       buttonLabel: "Register",
       button: {
-        color: "btn-color-secondary",
         size: "wide",
       },
     },
@@ -189,7 +191,6 @@ export const examples: {
       buttonPosition: "justify-center",
       buttonLabel: "Subscribe",
       button: {
-        color: "btn-color-accent",
         size: "block",
       },
     },
@@ -204,7 +205,6 @@ export const examples: {
       datarecordId: "event-registration",
       buttonLabel: "Register Now",
       button: {
-        color: "btn-color-primary",
         size: "block",
       },
     },
@@ -219,7 +219,6 @@ export const examples: {
       datarecordId: "job-application",
       buttonLabel: "Submit Application",
       button: {
-        color: "btn-color-secondary",
         size: "block",
       },
     },

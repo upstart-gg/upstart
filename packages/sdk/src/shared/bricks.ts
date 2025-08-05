@@ -8,6 +8,7 @@ import { mergeIgnoringArrays } from "./utils/merge";
 import { getSchemaDefaults } from "./utils/schema";
 import { StringEnum } from "./utils/string-enum";
 import { alignItemsRef, justifyContentRef } from "./bricks/props/align";
+import { paddingRef } from "./bricks/props/padding";
 
 /**
  * Generates a unique identifier for bricks.
@@ -180,6 +181,14 @@ export const sectionProps = Type.Object(
         description: "The vertical alignment of bricks within the section.",
       }),
     ),
+    padding: Type.Optional(
+      paddingRef({
+        default: "p-4",
+        description: "The padding of the section.",
+        "ui:responsive": true,
+        "default:mobile": "p-3",
+      }),
+    ),
     gap: Type.Optional(
       cssLengthRef({
         title: "Gap",
@@ -225,7 +234,9 @@ export const sectionSchema = Type.Object(
   },
 );
 
-export const sectionDefaultprops = getSchemaDefaults(sectionSchema.properties.props);
+const sectionDefaultprops = getSchemaDefaults(sectionSchema.properties.props, "desktop");
+const sectionMobileDefaultprops = getSchemaDefaults(sectionSchema.properties.mobileProps, "mobile");
+
 export type Section = Static<typeof sectionSchema>;
 
 export function processSections(sections: Section[]) {
@@ -233,6 +244,7 @@ export function processSections(sections: Section[]) {
     return {
       ...section,
       props: mergeIgnoringArrays({}, sectionDefaultprops, section.props),
+      mobileProps: mergeIgnoringArrays({}, sectionMobileDefaultprops, section.mobileProps || {}),
       bricks: section.bricks.map(processBrick).filter(Boolean) as Brick[],
     } as const;
   });

@@ -157,7 +157,7 @@ export const defaultTheme: Theme = {
     base100: "#FFF", // Warm white background
     base200: "oklch(0.99 0.008 92)", // Soft cream
     base300: "oklch(0.97 0.01 85)", // Light warm gray
-    primary: "oklch(0.68 0.28 340)",
+    primary: "oklch(65.6% 0.241 354.308)",
     secondary: "oklch(0.65 0.22 185)",
     accent: "oklch(0.82 0.18 85)",
     neutral: "oklch(0.38 0.08 280)",

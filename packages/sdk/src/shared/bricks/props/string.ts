@@ -36,6 +36,9 @@ export function urlOrPageId(title = "URL or Page ID", defaultValue?: string) {
       $id: "content:urlOrPageId",
       default: defaultValue,
       title,
+      metadata: {
+        category: "content",
+      },
       "ui:field": "url-page-id",
       "ai:instructions":
         "This field can be a URL or a page ID. Use the page ID when linking to a internal page, and a URL for external links.",
@@ -57,6 +60,9 @@ export function icon(title?: string, options: IconOptions = {}) {
     "ai:instructions": "Use a iconify reference like 'mdi:heart' or 'fa-solid:coffee'.",
     "ui:field": "iconify",
     $id: "assets:icon",
+    metadata: {
+      category: "content",
+    },
     ...options,
   });
 }

@@ -8,7 +8,7 @@ export default function TextContent(props: TextEditorProps<any>, ref: React.Ref<
   if (props.editable) {
     return (
       <Suspense>
-        <TextEditor {...props} content={props.content} />
+        <TextEditor {...props} content={props.content} inline />
       </Suspense>
     );
   }
