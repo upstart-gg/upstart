@@ -21,7 +21,7 @@ export function datasource(title = "Database") {
           description:
             "Limit the number of records to fetch from the datasource. Setting to 1 will fetch and render only one item.",
           minimum: 1,
-          default: 10,
+          default: 3,
         }),
       ),
       sortDirection: Type.Optional(

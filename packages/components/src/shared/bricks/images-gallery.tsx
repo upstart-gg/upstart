@@ -159,7 +159,6 @@ export default function ImagesGallery({ brick, editable }: BrickProps<Manifest>)
                 onClick={goToPrevious}
                 className={tx(
                   "absolute aspect-square h-14 left-2 top-1/2 -translate-y-1/2 bg-black/60 text-white/80",
-                  // "bg-primary-light hover:bg-primary text-primary-content-light",
                   "rounded-full p-2 duration-200  opacity-0 group-hover:opacity-100 transition-opacity flex justify-center items-center",
                 )}
                 aria-label="Previous image"
@@ -175,7 +174,6 @@ export default function ImagesGallery({ brick, editable }: BrickProps<Manifest>)
                 onClick={goToNext}
                 className={tx(
                   "absolute aspect-square h-14 right-2 top-1/2 -translate-y-1/2 bg-black/60 text-white/80",
-                  // "bg-primary-light hover:bg-primary text-primary-content-light",
                   "rounded-full p-2 duration-200  opacity-0 group-hover:opacity-100 transition-opacity flex justify-center items-center",
                 )}
                 aria-label="Next image"

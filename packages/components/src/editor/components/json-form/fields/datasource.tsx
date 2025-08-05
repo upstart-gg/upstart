@@ -416,10 +416,13 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
       )} */}
       {indexedFields.length > 0 && (
         <div className="flex flex-1 justify-between items-center pt-2 px-2.5">
-          <label className={fieldLabel}>Number of items</label>
+          <FieldTitle
+            title="Number of items"
+            description="If greater than 1, all children bricks will be repeated"
+          />
           <TextField.Root
             type="number"
-            value={currentValue?.limit?.toString() || "10"}
+            value={currentValue?.limit?.toString() ?? "10"}
             onChange={(e) => handleChange("limit", parseInt(e.target.value) || 10)}
             min="1"
             max="30"

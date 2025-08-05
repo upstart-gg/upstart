@@ -75,7 +75,7 @@ Multiple panels can be open simultaneously or limited to one at a time.
     color: Type.Optional(
       colorPresetRef({
         title: "Color",
-        default: "bg-primary-500 text-primary-content-500",
+        default: "bg-primary-500 text-primary-500-content",
       }),
     ),
     gradientDirection: Type.Optional(

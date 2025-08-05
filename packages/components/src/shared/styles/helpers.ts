@@ -9,7 +9,6 @@ import type { FixedPositionedSettings } from "@upstart.gg/sdk/shared/bricks/prop
 import { propToClass, propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
 import { css } from "@upstart.gg/style-system/twind";
 import type { TSchema } from "@sinclair/typebox";
-import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 
 export function getBackgroundStyles(props?: BackgroundSettings) {
   if (!props) {
@@ -65,6 +64,25 @@ export function simpleClassHandler(value: string, mobileValue?: string, schema?:
   }
 }
 
+export function simpleClassHandleObject(
+  value: Record<string, unknown>,
+  mobileValue?: Record<string, unknown>,
+  schema?: TSchema,
+) {
+  if (schema?.["ui:desktop-only"]) {
+    return `@desktop:(${Object.values(value).join(" ")})`;
+  }
+  if (value && !mobileValue) {
+    return Object.values(value);
+  }
+  if (value && mobileValue) {
+    return `@desktop:(${Object.values(value).join(" ")}) @mobile:(${Object.values(mobileValue).join(" ")})`;
+  }
+  if (mobileValue) {
+    return `@mobile:(${Object.values(mobileValue).join(" ")})`;
+  }
+}
+
 function getFixedPositionedStyles(value: FixedPositionedSettings) {
   if (!value) {
     return null;
@@ -74,13 +92,6 @@ function getFixedPositionedStyles(value: FixedPositionedSettings) {
 
 export function getBasicGapStyles(props?: GapBasicSettings, mobileProps?: GapBasicSettings) {
   return props;
-}
-
-export function getBorderStyles(props?: BorderSettings, mobileProps?: BorderSettings, schema?: TSchema) {
-  if (!props) {
-    return null;
-  }
-  return [props.width, props.color];
 }
 
 // function getContainerLayoutStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {
@@ -125,7 +136,7 @@ export const brickStylesHelpersMap = {
   // test putting here
   "styles:alignItems": simpleClassHandler,
   "styles:justifyContent": simpleClassHandler,
-  "styles:border": getBorderStyles,
+  "styles:border": simpleClassHandleObject,
 };
 
 export const brickWrapperStylesHelpersMap = {

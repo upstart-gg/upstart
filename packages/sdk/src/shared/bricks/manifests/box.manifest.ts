@@ -8,7 +8,7 @@ import { shadowRef } from "../props/effects";
 import { paddingRef } from "../props/padding";
 import type { BrickProps } from "../props/types";
 import { cssLengthRef } from "../props/css-length";
-import { directionRef } from "../props/direction";
+import { directionRef } from "dsField";
 import { RxBox } from "react-icons/rx";
 import { alignItemsRef, justifyContentRef } from "../props/align";
 import { StringEnum } from "~/shared/utils/string-enum";
@@ -47,7 +47,7 @@ export const manifest = defineBrickManifest({
     ),
     alignItems: Type.Optional(
       alignItemsRef({
-        default: "items-center",
+        default: "items-stretch",
       }),
     ),
     gap: Type.Optional(

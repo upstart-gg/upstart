@@ -332,7 +332,7 @@ For example, \`bg-gradient-to-t from-primary-100 to-primary-200\` for a gradient
 When no value is selected, no background or text color will be applied.`,
     "ui:styleId": "presets:color",
     "ui:field": "color-preset",
-    "ui:responsive": "desktop",
+    "ui:responsive": true,
     "ui:presets": defaultPresets,
     ...options,
   });

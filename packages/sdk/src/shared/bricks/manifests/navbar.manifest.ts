@@ -29,7 +29,7 @@ export const manifest = defineBrickManifest({
       color: Type.Optional(
         colorPresetRef({
           title: "Color",
-          default: "bg-primary-500 text-primary-content-500",
+          default: "bg-primary-500 text-primary-500-content",
         }),
       ),
       brand: Type.Optional(

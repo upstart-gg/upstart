@@ -39,14 +39,6 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
           ? "min-h-[calc(100dvh-60px)]" // when in editor mode
           : "min-h-dvh"),
 
-      // Padding and gap
-      // css({ gap: `${GAP}`, paddingInline: `${GAP}`, paddingBlock: `${GAP}` }),
-      // getGapStyles(GAP, section.mobileProps?.gap),
-      simpleClassHandler(
-        `p-[${GAP}]`,
-        section.mobileProps?.gap ? `p-[${section.mobileProps.gap}]` : undefined,
-      ),
-
       css({
         "&:has([data-no-section-padding])": {
           // This is a hack to ensure that the navbar is not affected by the section's padding
@@ -90,12 +82,11 @@ function getSectionEditorStyles({ section, editable, selected, previewMode }: Us
   ];
 }
 
-const defaultProps = getSchemaDefaults(sectionProps);
+const sectionDefaultProps = getSchemaDefaults(sectionProps);
 
 function useClassesFromStyleProps(stylesProps: Record<string, string>, section: Section) {
   const { props, mobileProps } = section;
-  const mergedProps = merge({}, defaultProps, props);
-
+  const mergedProps = merge({}, sectionDefaultProps, props);
   const filtered = Object.entries(stylesProps).reduce((acc, [key, value]) => {
     const manifestField = get(sectionProps.properties, key);
     if (manifestField) {

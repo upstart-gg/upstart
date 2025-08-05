@@ -13,7 +13,7 @@ import { icon, urlOrPageId } from "./bricks/props/string";
 import { padding } from "./bricks/props/padding";
 import { colorPreset } from "./bricks/props/color-preset";
 import { image } from "./bricks/props/image";
-import { direction } from "./bricks/props/direction";
+import { direction } from "dsField";
 
 export type { AnySchemaObject, JSONSchemaType, JSONType, SchemaObject } from "ajv";
 

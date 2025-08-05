@@ -12,7 +12,7 @@ import type { icon, urlOrPageId } from "../bricks/props/string";
 import type { padding } from "../bricks/props/padding";
 import type { colorPreset } from "../bricks/props/color-preset";
 import type { image } from "../bricks/props/image";
-import type { direction } from "../bricks/props/direction";
+import type { direction } from "dsField";
 
 export interface SchemaTypeMap {
   "styles:background": ReturnType<typeof background>;
