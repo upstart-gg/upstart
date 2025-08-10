@@ -151,7 +151,6 @@ export const createDraftStore = (
     queries: [],
     tags: [],
     sitePrompt: "",
-    // themes: [defaultTheme, { ...defaultTheme, id: "t2" }, { ...defaultTheme, id: "t3" }],
   };
   return createStore<DraftState>()(
     subscribeWithSelector(

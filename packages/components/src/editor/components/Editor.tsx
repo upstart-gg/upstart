@@ -24,7 +24,7 @@ import {
   type OnBeforeCaptureResponder,
 } from "@hello-pangea/dnd";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
-import { type Brick, createEmptyBrick, generateId } from "@upstart.gg/sdk/shared/bricks";
+import { createEmptyBrick, generateId } from "@upstart.gg/sdk/shared/bricks";
 import { Toaster } from "@upstart.gg/style-system/system";
 import { useIsLocalDev } from "../hooks/use-is-local-dev";
 import {
