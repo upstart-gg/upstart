@@ -55,12 +55,14 @@ export const pageAttributesSchema = Type.Object({
     description: "A short description of the page. Used by search engines",
     "ui:multiline": true,
     "ui:textarea-class": "h-24",
+    default: "",
   }),
   keywords: string("Keywords", {
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
     description: "Keywords related to the page. Used by search engines",
     "ui:multiline": true,
+    default: "",
   }),
   ogImage: Type.Optional(
     imageRef({

@@ -1,6 +1,6 @@
 import { css, tx } from "@upstart.gg/style-system/twind";
 import { type KeyboardEventHandler, useState } from "react";
-import type { MultiValue, Props, SingleValue } from "react-select";
+import type { Props } from "react-select";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 

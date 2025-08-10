@@ -4,7 +4,7 @@ import type { HttpJsonOptions } from "../options";
 import type { DatasourceFetcherParams } from "~/shared/datasources/fetcher";
 
 // Mock the fetch function
-global.fetch = vi.fn();
+globalThis.fetch = vi.fn();
 
 describe("fetchHttpJSON", () => {
   beforeEach(() => {
@@ -32,7 +32,7 @@ describe("fetchHttpJSON", () => {
   it("should replace placeholders in URL and headers", async () => {
     const mockResponse = { data: "test" };
 
-    (global.fetch as any).mockResolvedValueOnce({
+    (globalThis.fetch as any).mockResolvedValueOnce({
       ok: true,
       json: () => Promise.resolve(mockResponse),
     });
@@ -42,7 +42,7 @@ describe("fetchHttpJSON", () => {
         url: "https://api.example.com/{{dataType}}",
         headers: { "X-API-Key": "{{apiKey}}" },
       },
-      attr: { dataType: "users", apiKey: "secret-key" },
+      pageAttributes: { dataType: "users", apiKey: "secret-key" },
       env: {},
       oauth: null,
     } as unknown as DatasourceFetcherParams<null, HttpJsonOptions>);

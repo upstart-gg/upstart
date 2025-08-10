@@ -14,7 +14,6 @@ describe("Attributes test suite", () => {
         color: "bg-base-100",
         robotsIndexing: true,
         path: "/",
-        queries: [],
         title: "Untitled",
         description: "",
         keywords: "",
