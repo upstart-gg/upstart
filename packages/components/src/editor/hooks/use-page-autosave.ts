@@ -4,7 +4,8 @@ import {
   useDraft,
   usePageInfo,
   useSectionsSubscribe,
-  useAttributesSubscribe,
+  usePageAttributesSubscribe,
+  useSiteAttributesSubscribe,
   usePagePathSubscribe,
   useThemeSubscribe,
 } from "./use-page-data";
@@ -39,10 +40,15 @@ export function usePageAutoSave() {
     draft.setDirty(true);
     savePage({ sections });
   });
-  useAttributesSubscribe((attributes) => {
+  usePageAttributesSubscribe((attributes) => {
     console.debug("Attributes have changed:", attributes);
     draft.setDirty(true);
-    savePage({ attr: attributes });
+    savePage({ attributes: attributes });
+  });
+  useSiteAttributesSubscribe((attributes) => {
+    console.debug("Site attributes have changed:", attributes);
+    draft.setDirty(true);
+    saveSite({ attributes: attributes });
   });
   usePagePathSubscribe((path) => {
     console.debug("pagePath has changed, updating page version");

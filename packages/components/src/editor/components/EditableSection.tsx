@@ -98,7 +98,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
         // If the click was handled by a child element, do not propagate
         return;
       }
-      console.debug("Section clicked", section.id, target, e);
+      // console.debug("Section clicked", section.id, target, e);
       setSelectedSectionId(section.id);
       setSelectedBrickId();
       setIsEditingText(false);

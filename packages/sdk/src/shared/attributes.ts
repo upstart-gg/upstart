@@ -1,69 +1,54 @@
-import { Type, type TProperties, type Static, type TObject } from "@sinclair/typebox";
+import { Type, type Static } from "@sinclair/typebox";
 import type { JSONSchemaType } from "ajv";
-import { backgroundColorRef } from "./bricks/props/background";
 import { getSchemaDefaults } from "../shared/utils/schema";
 import { string } from "./bricks/props/string";
 import { boolean } from "./bricks/props/boolean";
 import { datetime } from "./bricks/props/date";
-import { enumProp } from "./bricks/props/enum";
 import { imageRef } from "./bricks/props/image";
-import { colorRef } from "./bricks/props/color";
 import { colorPresetRef } from "./bricks/props/color-preset";
-
-export function defineAttributes(attrs: TProperties) {
-  // Attributes starting with "$" are reserved for internal use
-  for (const key in attrs) {
-    if (key.startsWith("$")) {
-      throw new Error(
-        `Attribute names starting with '$' (like "${key}") are reserved for internal use. Please rename it.`,
-      );
-    }
-  }
-  return Type.Object(attrs);
-}
-
-/**
- * Retuns the custom attributes schema merged with the default attributes schema
- */
-export function processAttributesSchema(customAttributes: TObject) {
-  return Type.Composite([customAttributes, defaultAttributesSchema]) as AttributesSchema;
-}
+import { queryUseRef } from "./bricks/props/dynamic";
 
 export type { JSONSchemaType };
 
 // Default attributes
-const defaultAttributes = {
-  $color: colorPresetRef({
+export const pageAttributesSchema = Type.Object({
+  color: colorPresetRef({
     title: "Color",
     default: "bg-base-100",
   }),
-
-  $robotsIndexing: Type.Optional(
+  robotsIndexing: Type.Optional(
     boolean("Allow search engines to index this site", true, {
       description: "Disabling this will prevent search engines from indexing this site",
       "ui:group": "seo",
       "ui:group:title": "SEO",
-      "ui:scope": "site",
       "ai:hidden": true,
     }),
   ),
-
-  $pagePath: string("Page path", {
+  path: string("URL path", {
     default: "/",
-    description: "The URL path of the page",
+    description: "The URL path of the page. Use placeholders like :id or :slug for dynamic paths.",
     "ui:group": "location",
     "ui:group:title": "Location",
     "ui:field": "path",
   }),
-
-  $pageTitle: string("Title", {
+  queries: Type.Optional(
+    Type.Array(queryUseRef(), {
+      title: "Queries",
+      description:
+        "List of queries to use in this page. All listed queries will be executed when the page loads.",
+      "ui:scope": "page",
+      "ui:field": "query",
+      "ai:instructions": "Reference Query IDs to use at the page level.",
+      maxItems: 5,
+    }),
+  ),
+  title: string("Title", {
     default: "Untitled",
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
     description: "The title of the page. Appears in the browser tab and search results",
   }),
-
-  $pageDescription: string("Description", {
+  description: string("Description", {
     "ui:widget": "textarea",
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
@@ -71,15 +56,32 @@ const defaultAttributes = {
     "ui:multiline": true,
     "ui:textarea-class": "h-24",
   }),
-
-  $pageKeywords: string("Keywords", {
+  keywords: string("Keywords", {
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
     description: "Keywords related to the page. Used by search engines",
     "ui:multiline": true,
   }),
+  ogImage: Type.Optional(
+    imageRef({
+      title: "Social share image",
+      description: "Image shown when this page is shared on social media",
+      "ai:hidden": true,
+      "ui:no-object-options": true,
+      "ui:no-alt-text": true,
+      "ui:show-img-search": false,
+    }),
+  ),
+  lastUpdated: Type.Optional(
+    datetime("Last updated", {
+      "ui:hidden": true,
+      "ai:guidelines": "Don't generate this property.",
+    }),
+  ),
+});
 
-  $siteOgImage: Type.Optional(
+export const siteAttributesSchema = Type.Object({
+  ogImage: Type.Optional(
     imageRef({
       title: "Social share image",
       description: "Image shown when this site is shared on social media",
@@ -90,25 +92,7 @@ const defaultAttributes = {
       "ui:show-img-search": false,
     }),
   ),
-
-  $pageOgImage: Type.Optional(
-    imageRef({
-      title: "Social share image",
-      description: "Image shown when this page is shared on social media",
-      "ai:hidden": true,
-      "ui:no-object-options": true,
-      "ui:no-alt-text": true,
-      "ui:show-img-search": false,
-    }),
-  ),
-  $pageLastUpdated: Type.Optional(
-    datetime("Last updated", {
-      "ui:hidden": true,
-      "ai:guidelines": "Don't generate this property.",
-    }),
-  ),
-
-  $siteHeadTags: Type.Optional(
+  headTags: Type.Optional(
     Type.String({
       title: "Head tags",
       description:
@@ -123,7 +107,7 @@ const defaultAttributes = {
       "ui:group:title": "External scripts",
     }),
   ),
-  $siteBodyTags: Type.Optional(
+  bodyTags: Type.Optional(
     Type.String({
       title: "Body tags",
       description:
@@ -137,35 +121,17 @@ const defaultAttributes = {
       "ui:group:title": "External scripts",
     }),
   ),
-};
-
-export const defaultAttributesSchema = Type.Object(defaultAttributes, {
-  additionalProperties: true,
 });
-export const siteAttributesSchemaForLLM = Type.Pick(defaultAttributesSchema, ["$color"]);
-export const pageAttributesSchemaForLLM = Type.Pick(defaultAttributesSchema, [
-  "$pageTitle",
-  "$pageDescription",
-  "$pageKeywords",
-  "$pageLanguage",
-  "$pagePath",
-  "$color",
-]);
 
-export type AttributesSchema = typeof defaultAttributesSchema & Record<string, unknown>;
+export type PageAttributes = Static<typeof pageAttributesSchema>;
+export type SiteAttributes = Static<typeof siteAttributesSchema>;
 
-export type Attributes<T extends Record<string, unknown> = Record<string, unknown>> = Static<
-  typeof defaultAttributesSchema
-> &
-  T;
+export function resolvePageAttributes(data: Record<string, unknown> = {}) {
+  const defaultAttrValues = getSchemaDefaults(pageAttributesSchema);
+  return { ...defaultAttrValues, ...data } as PageAttributes;
+}
 
-export function resolveAttributes(
-  customAttrsSchema: TObject = Type.Object({}),
-  data: Record<string, unknown> = {},
-) {
-  // To get default values from the custom attributes schema,
-  const defaultAttrValues = getSchemaDefaults(defaultAttributesSchema) as Attributes<
-    Static<typeof defaultAttributesSchema>
-  >;
-  return { ...defaultAttrValues, ...data } as Attributes<Static<typeof customAttrsSchema>>;
+export function resolveSiteAttributes(data: Record<string, unknown> = {}) {
+  const defaultAttrValues = getSchemaDefaults(siteAttributesSchema);
+  return { ...defaultAttrValues, ...data } as SiteAttributes;
 }

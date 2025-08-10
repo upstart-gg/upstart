@@ -7,12 +7,13 @@ import type { color, gradientDirection } from "../bricks/props/color";
 import type { hidden } from "../bricks/props/common";
 import type { cssLength } from "../bricks/props/css-length";
 import type { shadow, textShadow } from "../bricks/props/effects";
-import type { fontSize, textContent } from "../bricks/props/text";
+import type { fontSize, fontSizeXL, textContent } from "../bricks/props/text";
 import type { icon, urlOrPageId } from "../bricks/props/string";
 import type { padding } from "../bricks/props/padding";
 import type { colorPreset } from "../bricks/props/color-preset";
 import type { image } from "../bricks/props/image";
-import type { direction } from "dsField";
+import type { direction } from "../bricks/props/direction";
+import type { dynamic, queryUse } from "../bricks/props/dynamic";
 
 export interface SchemaTypeMap {
   "styles:background": ReturnType<typeof background>;
@@ -21,6 +22,7 @@ export interface SchemaTypeMap {
   "styles:alignItems": ReturnType<typeof alignItems>;
   "styles:alignSelf": ReturnType<typeof alignSelf>;
   "styles:fontSize": ReturnType<typeof fontSize>;
+  "styles:fontSizeXL": ReturnType<typeof fontSizeXL>;
   "styles:hidden": ReturnType<typeof hidden>;
   "styles:border": ReturnType<typeof border>;
   "styles:padding": ReturnType<typeof padding>;
@@ -36,6 +38,8 @@ export interface SchemaTypeMap {
   "assets:image": ReturnType<typeof image>;
   "content:text": ReturnType<typeof textContent>;
   "content:urlOrPageId": ReturnType<typeof urlOrPageId>;
+  "content:dynamic": ReturnType<typeof dynamic>;
+  "content:queryUse": ReturnType<typeof queryUse>;
   "assets:icon": ReturnType<typeof icon>;
   // Add other schema mappings here
 }

@@ -1,11 +1,11 @@
 import { isStandardColor } from "@upstart.gg/sdk/shared/themes/color-system";
-import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
+import type { PageAttributes } from "@upstart.gg/sdk/shared/attributes";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import { tx, css } from "@upstart.gg/style-system/twind";
 
 type UsePageStyleProps = {
-  attributes: Attributes;
+  attributes: PageAttributes;
   editable?: boolean;
   previewMode?: Resolution;
   typography: Theme["typography"];
@@ -31,7 +31,7 @@ export function usePageStyle({ attributes, editable, typography, showIntro }: Us
   return tx(
     "flex flex-col group/page mx-auto relative max-w-full w-full p-0 antialiased",
     editable && "overflow-hidden min-h-[100cqh]",
-    attributes.$color as string,
+    attributes.color as string,
 
     getTypographyStyles(typography),
 

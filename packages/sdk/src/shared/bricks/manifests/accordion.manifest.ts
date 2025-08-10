@@ -1,4 +1,4 @@
-import { type Static, Type, type TObject } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { TfiLayoutAccordionSeparated } from "react-icons/tfi";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";

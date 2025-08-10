@@ -1,17 +1,15 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
-import { backgroundColorRef } from "../props/background";
 import { makeContainerProps } from "../props/container";
-import { type Static, type TObject, Type } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { borderRef, roundingRef } from "../props/border";
 import { shadowRef } from "../props/effects";
 import { paddingRef } from "../props/padding";
 import type { BrickProps } from "../props/types";
 import { cssLengthRef } from "../props/css-length";
-import { directionRef } from "dsField";
+import { directionRef } from "../props/direction";
 import { RxBox } from "react-icons/rx";
 import { alignItemsRef, justifyContentRef } from "../props/align";
-import { StringEnum } from "~/shared/utils/string-enum";
 import { colorPresetRef } from "../props/color-preset";
 
 // Generic container can hold any type of array data source

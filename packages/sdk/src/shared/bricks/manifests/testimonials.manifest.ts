@@ -1,8 +1,6 @@
 import { type Static, type TObject, Type } from "@sinclair/typebox";
 import { HiOutlineChatBubbleBottomCenter } from "react-icons/hi2";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { backgroundRef } from "../props/background";
-import { shadowRef } from "../props/effects";
 import { defineProps } from "../props/helpers";
 import { imageRef } from "../props/image";
 import { paddingRef } from "../props/padding";
@@ -19,6 +17,9 @@ export const manifest = defineBrickManifest({
   description: "Display testimonials from users",
   defaultWidth: { desktop: "100%" },
   icon: HiOutlineChatBubbleBottomCenter,
+  aiInstructions: `This brick displays user testimonials with optional avatars and social icons.
+It is typically used to showcase customer feedback or endorsements.
+Optionally either use an avatar or a social icon but not both at the same time.`,
   props: defineProps(
     {
       color: Type.Optional(

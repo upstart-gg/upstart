@@ -2,6 +2,7 @@ import { type TString, Type } from "@sinclair/typebox";
 import { typedRef } from "~/shared/utils/typed-ref";
 import { cssLengthRef } from "./css-length";
 import { alignSelfRef } from "./align";
+import { dynamicRef, queryUseRef } from "./dynamic";
 
 export function hidden() {
   return Type.Object(
@@ -28,7 +29,6 @@ export const commonProps = {
   hidden: Type.Optional(typedRef("styles:hidden")),
   editable: Type.Optional(
     Type.Boolean({
-      description: "Do not use. It is used internally by the editor.",
       "ui:field": "hidden",
       "ai:hidden": true,
     }),
@@ -60,4 +60,5 @@ export const commonProps = {
     }),
   ),
   alignSelf: Type.Optional(alignSelfRef()),
+  // query: Type.Optional(queryUseRef()),
 };

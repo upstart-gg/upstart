@@ -10,8 +10,6 @@ import { IoMdClose } from "react-icons/io";
 import { FieldTitle } from "../field-factory";
 import { useUploader } from "../../UploaderContext";
 import { useDynamicParent } from "~/editor/hooks/use-page-data";
-import TextEditor from "~/shared/components/TextEditor";
-import { RiBracesLine } from "react-icons/ri";
 import { useDynamicTextEditor } from "~/editor/hooks/use-editable-text";
 
 const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {

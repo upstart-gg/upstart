@@ -13,7 +13,12 @@ import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { UrlOrPageIdSettings } from "@upstart.gg/sdk/shared/bricks/props/string";
 import { type ChangeEvent, type FC, useRef, useState } from "react";
-import { useDraftHelpers, useDynamicParent, useSitemap } from "~/editor/hooks/use-page-data";
+import {
+  useDraftHelpers,
+  useDynamicParent,
+  usePagePathParams,
+  useSitemap,
+} from "~/editor/hooks/use-page-data";
 import TextEditor from "~/shared/components/TextEditor";
 import { RiBracesLine } from "react-icons/ri";
 import { useDynamicTextEditor } from "~/editor/hooks/use-editable-text";
@@ -65,6 +70,10 @@ export const PathField: FC<FieldProps<string>> = (props) => {
   // remove leading slash
   const path = (currentValue || "").toString().replace(/^\//, "");
 
+  const params = usePagePathParams();
+
+  console.log("PathField params", params);
+
   return (
     <div className="field field-path basis-full">
       <FieldTitle title={title} description={description} />
@@ -78,6 +87,18 @@ export const PathField: FC<FieldProps<string>> = (props) => {
           <TbSlash className="bg-transparent h-5 w-5 rounded-md stroke-1 !-ml-1 !-mr-2 -rotate-[20deg]" />
         </TextField.Slot>
       </TextField.Root>
+      {params.length > 0 && (
+        <div className="mt-1.5 text-xs text-gray-500">
+          <span>You'll be able to use the variable{params.length > 1 ? "s" : ""} </span>{" "}
+          {params.map((param, index) => (
+            <span key={param} className="font-medium">
+              {param}
+              {index === params.length - 2 ? " and " : index < params.length - 1 ? ", " : ""}{" "}
+            </span>
+          ))}
+          in queries.
+        </div>
+      )}
     </div>
   );
 };

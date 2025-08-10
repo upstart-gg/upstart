@@ -11,8 +11,7 @@ import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { fontSizeRef } from "../props/text";
 import { colorPresetRef } from "../props/color-preset";
-import { gradientDirectionRef } from "../props/color";
-import { directionRef } from "dsField";
+import { directionRef } from "../props/direction";
 
 export const manifest = defineBrickManifest({
   type: "form",

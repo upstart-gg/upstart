@@ -47,7 +47,6 @@
     "@ai-sdk/react": "1.2.12",
     "@date-fns/utc": "1.2.0",
     "@hello-pangea/dnd": "18.0.1",
-    "@iconify/collections": "1.0.569",
     "@iconify/react": "6.0.0",
     "@radix-ui/themes": "3.2.1",
     "@sinclair/typebox": "0.34.33",

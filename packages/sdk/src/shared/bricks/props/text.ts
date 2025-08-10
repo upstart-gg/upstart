@@ -1,4 +1,5 @@
 import { type StringOptions, Type, type Static } from "@sinclair/typebox";
+import { StringEnum } from "~/shared/utils/string-enum";
 import { typedRef } from "~/shared/utils/typed-ref";
 
 type Options = StringOptions & {
@@ -6,26 +7,55 @@ type Options = StringOptions & {
 };
 
 export function fontSize(options: Options = {}) {
-  return Type.Union(
+  return StringEnum(["inherit", "text-xs", "text-sm", "text-base", "text-lg", "text-xl"], {
+    enumNames: ["Same as parent", "Extra small", "Small", "Medium", "Large", "Extra large"],
+    default: "inherit",
+    title: "Font size",
+    $id: "styles:fontSize",
+    "ui:styleId": "styles:fontSize",
+    "ui:field": "enum",
+    "ui:display": "select",
+    ...options,
+  });
+}
+
+export type FontSizeSettings = Static<ReturnType<typeof fontSize>>;
+
+export function fontSizeRef(options: Options = {}) {
+  return typedRef("styles:fontSize", options);
+}
+
+export function fontSizeXL(options: Options = {}) {
+  return StringEnum(
     [
-      Type.Literal("inherit", { title: "Same as parent" }),
-      Type.Literal("text-xs", { title: "Extra small" }),
-      Type.Literal("text-sm", { title: "Small" }),
-      Type.Literal("text-base", { title: "Medium" }),
-      Type.Literal("text-lg", { title: "Large" }),
-      Type.Literal("text-xl", { title: "Extra large" }),
-      ...(!options["ui:no-extra-large-sizes"]
-        ? [
-            Type.Literal("text-2xl", { title: "Extra large (2x)", "ui:extra-large": true }),
-            Type.Literal("text-3xl", { title: "Extra large (3x)", "ui:extra-large": true }),
-            Type.Literal("text-4xl", { title: "Extra large (4x)", "ui:extra-large": true }),
-            Type.Literal("text-5xl", { title: "Extra large (5x)", "ui:extra-large": true }),
-            Type.Literal("text-6xl", { title: "Extra large (6x)", "ui:extra-large": true }),
-            Type.Literal("text-7xl", { title: "Extra large (7x)", "ui:extra-large": true }),
-          ]
-        : []),
+      "inherit",
+      "text-xs",
+      "text-sm",
+      "text-base",
+      "text-lg",
+      "text-xl",
+      "text-2xl",
+      "text-3xl",
+      "text-4xl",
+      "text-5xl",
+      "text-6xl",
+      "text-7xl",
     ],
     {
+      enumNames: [
+        "Same as parent",
+        "Extra small",
+        "Small",
+        "Medium",
+        "Large",
+        "Extra large",
+        "Extra large (2x)",
+        "Extra large (3x)",
+        "Extra large (4x)",
+        "Extra large (5x)",
+        "Extra large (6x)",
+        "Extra large (7x)",
+      ],
       default: "inherit",
       title: "Font size",
       $id: "styles:fontSize",
@@ -36,11 +66,8 @@ export function fontSize(options: Options = {}) {
     },
   );
 }
-
-export type FontSizeSettings = Static<ReturnType<typeof fontSize>>;
-
-export function fontSizeRef(options: Options = {}) {
-  return typedRef("styles:fontSize", options);
+export function fontSizeXLRef(options: Options = {}) {
+  return typedRef("styles:fontSizeXL", options);
 }
 
 type TextContentOptions = {
@@ -55,6 +82,7 @@ export function textContent({
   showInSettings,
   disableSizing = false,
   disableAlignment = false,
+  ...rest
 }: TextContentOptions & StringOptions = {}) {
   return Type.String({
     title,
@@ -64,7 +92,11 @@ export function textContent({
     default: defaults ?? "My text",
     "ui:disable-sizing": disableSizing,
     "ui:disable-alignment": disableAlignment,
-    "ui:field": showInSettings ? "string" : "hidden",
+    metadata: {
+      category: "content",
+    },
+    ...rest,
+    // "ui:field": showInSettings ? "string" : "hidden",
   });
 }
 

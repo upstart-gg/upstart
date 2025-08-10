@@ -48,7 +48,6 @@ export function ArrayField({
   schema,
 }: ArrayFieldProps) {
   const dynamicParent = useDynamicParent(brickId);
-  const [isDragging, setIsDragging] = useState(false);
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -160,8 +159,6 @@ export function ArrayField({
 
   // Handle drag and drop reordering
   const handleDragEnd = (result: DropResult) => {
-    setIsDragging(false);
-
     if (!orderable || !result.destination) return;
 
     const { source, destination } = result;
@@ -387,6 +384,12 @@ export function ArrayField({
                 formData: {},
                 formSchema,
                 onChange: (itemData, itemFieldId) => {
+                  console.log("Dynamic parent item data change", {
+                    itemData,
+                    itemFieldId,
+                    fieldName,
+                    brickId,
+                  });
                   // const newArray = [...currentValue];
                   // const currentItem = (newArray[index] as Record<string, unknown>) || {};
                   // newArray[index] = { ...currentItem, ...itemData };
@@ -401,7 +404,7 @@ export function ArrayField({
           </div>
         </div>
       ) : orderable ? (
-        <DragDropContext onDragEnd={handleDragEnd} onDragStart={() => setIsDragging(true)}>
+        <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId={`array-${id}`} direction="vertical">
             {(provided, snapshot) => (
               <div {...provided.droppableProps} ref={provided.innerRef} className={`space-y-1 rounded`}>

@@ -2,7 +2,7 @@ import type { DatasourceSettings } from "@upstart.gg/sdk/shared/bricks/props/dat
 import type { TObject, TSchema } from "@sinclair/typebox";
 import { Button, IconButton, SegmentedControl, Select, TextField } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
-import type { FC } from "react";
+import { Fragment, type FC } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { useDatasource, useDatasources } from "~/editor/hooks/use-datasource";
 import { fieldLabel } from "../form-class";
@@ -33,26 +33,13 @@ function getDatasourceIndexedFieldsWithTitles(datasource: Datasource) {
   }));
 }
 
-const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
+const DatasourceField: FC<FieldProps<DatasourceSettings | undefined>> = (props) => {
   const { currentValue, onChange, formData, formSchema } = props;
   const datasources = useDatasources();
   const datasource = useDatasource(currentValue?.id);
 
   const handleChange = (field: string, value: unknown) => {
-    const newValue = { ...currentValue, [field]: value } satisfies DatasourceSettings;
-
-    // const validatedFilters =
-    //   newValue.filters?.filter((filter) => {
-    //     const type = getFieldType(filter.field);
-    //     // Vérifier que le champ est défini
-    //     return (
-    //       filter.field !== "" &&
-    //       ((type === "string" && typeof filter.value === "string") ||
-    //         (type === "number" && typeof filter.value === "number") ||
-    //         (type === "boolean" && typeof filter.value === "boolean"))
-    //     );
-    //   }) ?? [];
-
+    const newValue = { ...(currentValue ?? {}), [field]: value } as DatasourceSettings;
     console.log("DatasourceField handleChange", newValue);
     onChange(newValue);
   };
@@ -60,7 +47,7 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
   // Get Indexed Fields for filter and sort
   const indexedFields = datasource ? getDatasourceIndexedFieldsWithTitles(datasource) : [];
   const sortableFields = indexedFields.filter((field) => ["$id", "$slug"].includes(field.value) === false);
-  const filters = currentValue.filters ?? [];
+  const filters = currentValue?.filters ?? [];
 
   // Function to get operators based on field type
   const getOperatorOptionsForField = (fieldName: string) => {
@@ -208,13 +195,11 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
             className="!max-w-2/3 !ml-auto !mr-[1px]"
           />
           <Select.Content position="popper">
-            <Select.Group>
-              {datasources.map((ds) => (
-                <Select.Item key={ds.id} value={ds.id}>
-                  {ds.label}
-                </Select.Item>
-              ))}
-            </Select.Group>
+            {datasources.map((ds) => (
+              <Select.Item key={ds.id} value={ds.id}>
+                {ds.label}
+              </Select.Item>
+            ))}
           </Select.Content>
         </Select.Root>
       </div>
@@ -232,116 +217,130 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
           {filters.length > 0 && (
             <div className="basis-full flex flex-col gap-3 mt-1">
               {filters.map((filter, index) => (
-                <div key={index} className="grid grid-cols-5 gap-x-2 gap-y-0.5 auto-rows-[30px]">
-                  {/* Field Selector */}
-                  <div className="col-span-5 flex items-center gap-3 pr-1">
-                    <IconButton
-                      type="button"
-                      variant="ghost"
-                      className="hover:(bg-red-100 text-red-800)"
-                      onClick={() => removeFilter(index)}
-                    >
-                      <RxCross2 size={14} />
-                    </IconButton>
-                    <Select.Root
-                      defaultValue={filter.field}
-                      onValueChange={(value: string) => updateFilter(index, "field", value)}
-                    >
-                      <Select.Trigger
-                        radius="medium"
-                        className="!flex-1 !font-medium"
+                <Fragment key={index}>
+                  <div className="grid grid-cols-5 gap-x-2 gap-y-0.5 auto-rows-[30px]">
+                    {/* Field Selector */}
+                    <div className="col-span-5 flex items-center gap-3 pr-1">
+                      <IconButton
+                        size="1"
+                        type="button"
                         variant="ghost"
-                        placeholder="Select field"
-                      />
-                      <Select.Content position="popper">
-                        <Select.Group>
-                          {indexedFields.map((field) => (
-                            <Select.Item key={field.value} value={field.value}>
-                              {field.title}
-                            </Select.Item>
-                          ))}
-                        </Select.Group>
-                      </Select.Content>
-                    </Select.Root>
-                  </div>
-
-                  {/* Operator Selector */}
-                  <div className={tx("flex gap-2 items-center col-span-2", !filter.field && "hidden")}>
-                    <BsArrowReturnRight className="w-3 h-3 ml-1 mr-1.5" />
-                    <Select.Root
-                      key={`operator-${index}-${filter.field}`} // Force re-render when field changes
-                      defaultValue={filter.op}
-                      size="2"
-                      onValueChange={(value: string) => updateFilter(index, "op", value)}
-                      disabled={!filter.field}
-                    >
-                      <Select.Trigger
-                        radius="medium"
-                        variant="ghost"
-                        placeholder="Select operator"
-                        className="!flex-1 !mr-1"
-                      />
-                      <Select.Content position="popper">
-                        <Select.Group>
-                          {getOperatorOptionsForField(filter.field).map((option) => (
-                            <Select.Item key={option.value} value={option.value}>
-                              {option.label}
-                            </Select.Item>
-                          ))}
-                        </Select.Group>
-                      </Select.Content>
-                    </Select.Root>
-                  </div>
-
-                  {/* Value Input - for relative dates, use two columns, otherwise span both */}
-                  {getFieldType(filter.field) === "date" || getFieldType(filter.field) === "datetime" ? (
-                    (filter.op === "before" || filter.op === "after" || filter.op === "eq") && (
-                      // Absolute date: span both columns
-                      <div className={tx("col-span-3 flex justify-end", !filter.field && "hidden")}>
-                        <TextField.Root
-                          size="2"
-                          type={getFieldType(filter.field) === "datetime" ? "datetime-local" : "date"}
-                          defaultValue={String(filter.value)}
-                          onChange={(e) => updateFilter(index, "value", e.target.value)}
-                          disabled={!filter.field}
+                        className="hover:(bg-red-100 text-red-800) !shrink-0"
+                        onClick={() => removeFilter(index)}
+                      >
+                        <RxCross2 size={14} />
+                      </IconButton>
+                      <Select.Root
+                        defaultValue={filter.field}
+                        onValueChange={(value: string) => updateFilter(index, "field", value)}
+                      >
+                        <Select.Trigger
+                          radius="medium"
+                          className="!flex-1 !font-medium"
+                          variant="ghost"
+                          placeholder="Select field"
                         />
+                        <Select.Content position="popper">
+                          <Select.Group>
+                            {indexedFields.map((field) => (
+                              <Select.Item key={field.value} value={field.value}>
+                                {field.title}
+                              </Select.Item>
+                            ))}
+                          </Select.Group>
+                        </Select.Content>
+                      </Select.Root>
+                    </div>
+
+                    {/* Operator Selector */}
+                    <div className={tx("flex gap-2 items-center col-span-2", !filter.field && "hidden")}>
+                      {/* <BsArrowReturnRight className="w-3 h-3 ml-1 mr-1.5 !shrink-0" /> */}
+                      <Select.Root
+                        key={`operator-${index}-${filter.field}`} // Force re-render when field changes
+                        defaultValue={filter.op}
+                        size="2"
+                        onValueChange={(value: string) => updateFilter(index, "op", value)}
+                        disabled={!filter.field}
+                      >
+                        <Select.Trigger
+                          radius="medium"
+                          variant="ghost"
+                          placeholder="Select operator"
+                          className="!flex-1 !mr-1"
+                        />
+                        <Select.Content position="popper">
+                          <Select.Group>
+                            {getOperatorOptionsForField(filter.field).map((option) => (
+                              <Select.Item key={option.value} value={option.value}>
+                                {option.label}
+                              </Select.Item>
+                            ))}
+                          </Select.Group>
+                        </Select.Content>
+                      </Select.Root>
+                    </div>
+
+                    {/* Value Input - for relative dates, use two columns, otherwise span both */}
+                    {getFieldType(filter.field) === "date" || getFieldType(filter.field) === "datetime" ? (
+                      (filter.op === "before" || filter.op === "after" || filter.op === "eq") && (
+                        // Absolute date: span both columns
+                        <div className={tx("col-span-3 flex justify-end", !filter.field && "hidden")}>
+                          <TextField.Root
+                            size="2"
+                            type={getFieldType(filter.field) === "datetime" ? "datetime-local" : "date"}
+                            defaultValue={String(filter.value)}
+                            onChange={(e) => updateFilter(index, "value", e.target.value)}
+                            disabled={!filter.field}
+                            className="!w-full"
+                          />
+                        </div>
+                      )
+                    ) : (
+                      // Non-date fields: span both columns
+                      <div className={tx("col-span-3 flex justify-end ", !filter.field && "hidden")}>
+                        {getFieldType(filter.field) === "number" ||
+                        getFieldType(filter.field) === "integer" ? (
+                          <TextField.Root
+                            type="number"
+                            size="2"
+                            defaultValue={String(filter.value)}
+                            onChange={(e) => updateFilter(index, "value", Number(e.target.value))}
+                            placeholder="Value"
+                            min="1"
+                            disabled={!filter.field}
+                            className="!w-full"
+                          />
+                        ) : getFieldType(filter.field) === "boolean" ? (
+                          <SegmentedControl.Root
+                            size="1"
+                            defaultValue={String(filter.value)}
+                            onValueChange={(value) => updateFilter(index, "value", Boolean(value))}
+                            className={tx("!mt-0.5 [&_.rt-SegmentedControlItemLabel]:(px-3)")}
+                          >
+                            <SegmentedControl.Item value="true">True</SegmentedControl.Item>
+                            <SegmentedControl.Item value="false">False</SegmentedControl.Item>
+                          </SegmentedControl.Root>
+                        ) : (
+                          <TextField.Root
+                            disabled={!filter.field}
+                            defaultValue={String(filter.value)}
+                            onChange={debounce((e) => updateFilter(index, "value", e.target.value), 400)}
+                            placeholder="Value"
+                            size="2"
+                            className="!w-full"
+                          />
+                        )}
                       </div>
-                    )
-                  ) : (
-                    // Non-date fields: span both columns
-                    <div className={tx("col-span-3 flex justify-end ", !filter.field && "hidden")}>
-                      {getFieldType(filter.field) === "number" || getFieldType(filter.field) === "integer" ? (
-                        <TextField.Root
-                          type="number"
-                          size="2"
-                          defaultValue={String(filter.value)}
-                          onChange={(e) => updateFilter(index, "value", Number(e.target.value))}
-                          placeholder="Value"
-                          min="1"
-                          disabled={!filter.field}
-                        />
-                      ) : getFieldType(filter.field) === "boolean" ? (
-                        <SegmentedControl.Root
-                          size="1"
-                          defaultValue={String(filter.value)}
-                          onValueChange={(value) => updateFilter(index, "value", Boolean(value))}
-                          className={tx("!mt-0.5 [&_.rt-SegmentedControlItemLabel]:(px-3)")}
-                        >
-                          <SegmentedControl.Item value="true">True</SegmentedControl.Item>
-                          <SegmentedControl.Item value="false">False</SegmentedControl.Item>
-                        </SegmentedControl.Root>
-                      ) : (
-                        <TextField.Root
-                          disabled={!filter.field}
-                          defaultValue={String(filter.value)}
-                          onChange={debounce((e) => updateFilter(index, "value", e.target.value), 400)}
-                          placeholder="Value"
-                          size="2"
-                        />
-                      )}
+                    )}
+                  </div>
+                  {index < filters.length - 1 && (
+                    <div className="border-t border-gray-200 my-2 relative">
+                      <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-white px-2 py-1 inline-block text-xs text-gray-500">
+                        And
+                      </span>
                     </div>
                   )}
-                </div>
+                </Fragment>
               ))}
             </div>
           )}
@@ -349,72 +348,63 @@ const DatasourceField: FC<FieldProps<DatasourceSettings>> = (props) => {
       )}
 
       {/* Sort Fields  */}
-      <div className="flex flex-1 gap-8 justify-between items-center pt-2.5 pb-1 px-2.5">
-        <div className="flex flex-col gap-1 flex-1 ">
-          <label className={tx(fieldLabel)}>Order by</label>
-          <Select.Root
-            defaultValue={currentValue?.sortField}
-            size="2"
-            onValueChange={(value: string) => handleChange("sortField", value)}
-          >
-            <Select.Trigger radius="medium" variant="ghost" placeholder="Select a field" />
-            <Select.Content position="popper">
-              <Select.Group>
-                {sortableFields.map((field) => (
-                  <Select.Item key={field.value} value={field.value}>
-                    {field.title}
-                  </Select.Item>
-                ))}
-              </Select.Group>
-              <Select.Separator />
-              <Select.Group>
-                <Select.Item value="random()">Random</Select.Item>
-              </Select.Group>
-            </Select.Content>
-          </Select.Root>
-        </div>
-
-        <div
-          className={tx("flex flex-col gap-1 flex-1", currentValue?.sortField === "random()" && "opacity-40")}
-        >
-          <label className={fieldLabel}>Direction </label>
-          <Select.Root
-            disabled={currentValue?.sortField === "random()"}
-            defaultValue={currentValue?.sortDirection || "asc"}
-            size="2"
-            onValueChange={(value: string) => handleChange("sortDirection", value)}
-          >
-            <Select.Trigger
-              radius="medium"
-              variant="ghost"
-              placeholder="Select direction"
-              className="!mr-[1px]"
-            />
-            <Select.Content position="popper">
-              <Select.Group>
-                <Select.Item value="asc">Ascending</Select.Item>
-                <Select.Item value="desc">Descending</Select.Item>
-              </Select.Group>
-            </Select.Content>
-          </Select.Root>
-        </div>
-      </div>
-      {/* {datasourceId && fieldValues.length > 0 && currentValue?.sortDirection !== "rand" && (
-        <>
-          <div className="basis-full w-0" />
-          <div className="flex gap-12 flex-1 mt-3 pr-1.5 justify-between">
-            <label className={fieldLabel}>Offset</label>
-            <input
-              type="number"
-              value={currentValue?.offset?.toString() || "0"}
-              onChange={(e) => handleChange("offset", parseInt(e.target.value) || 0)}
-              min="0"
-              className="max-w-[50px] px-2 py-1 border border-gray-300 rounded text-sm"
-            />
+      {currentValue?.id && (
+        <div className="flex flex-1 gap-8 justify-between items-center pt-2.5 pb-1 px-2.5">
+          <div className="flex flex-col gap-1 flex-1 ">
+            <FieldTitle title="Order by" description="Select a field to sort the results" />
+            <Select.Root
+              defaultValue={currentValue?.sortField}
+              size="2"
+              onValueChange={(value: string) => handleChange("sortField", value)}
+            >
+              <Select.Trigger radius="medium" variant="ghost" placeholder="Select a field" />
+              <Select.Content position="popper">
+                <Select.Group>
+                  {sortableFields.map((field) => (
+                    <Select.Item key={field.value} value={field.value}>
+                      {field.title}
+                    </Select.Item>
+                  ))}
+                </Select.Group>
+                <Select.Separator />
+                <Select.Group>
+                  <Select.Item value="random()">Random</Select.Item>
+                </Select.Group>
+              </Select.Content>
+            </Select.Root>
           </div>
-        </>
-      )} */}
-      {indexedFields.length > 0 && (
+
+          <div
+            className={tx(
+              "flex flex-col gap-1 flex-1",
+              currentValue?.sortField === "random()" && "opacity-40",
+            )}
+          >
+            <FieldTitle title="Direction" description="Select the direction to sort the results" />
+            <Select.Root
+              disabled={currentValue?.sortField === "random()"}
+              defaultValue={currentValue?.sortDirection || "asc"}
+              size="2"
+              onValueChange={(value: string) => handleChange("sortDirection", value)}
+            >
+              <Select.Trigger
+                radius="medium"
+                variant="ghost"
+                placeholder="Select direction"
+                className="!mr-[1px]"
+              />
+              <Select.Content position="popper">
+                <Select.Group>
+                  <Select.Item value="asc">Ascending</Select.Item>
+                  <Select.Item value="desc">Descending</Select.Item>
+                </Select.Group>
+              </Select.Content>
+            </Select.Root>
+          </div>
+        </div>
+      )}
+
+      {currentValue?.id && indexedFields.length > 0 && (
         <div className="flex flex-1 justify-between items-center pt-2 px-2.5">
           <FieldTitle
             title="Number of items"

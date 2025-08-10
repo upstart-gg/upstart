@@ -16,9 +16,9 @@ import Section from "./EditableSection";
 import {
   useDraftHelpers,
   useDraft,
-  useAttributes,
   useSections,
   useGenerationState,
+  usePageAttributes,
 } from "../hooks/use-page-data";
 
 type EditablePageProps = {
@@ -32,7 +32,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const { zoom } = useZoom();
   const pageRef = useRef<HTMLDivElement>(null);
   const gridConfig = useGridConfig();
-  const attributes = useAttributes();
+  const attributes = usePageAttributes();
   const sections = useSections();
   const typography = useFontWatcher();
   const selectedBrickId = useSelectedBrickId();
@@ -177,7 +177,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         // also deselect the library panel
         editorHelpers.hidePanel("library");
         editorHelpers.hidePanel("inspector");
-        editorHelpers.hidePanel("settings");
+        // editorHelpers.hidePanel("settings");
         editorHelpers.hidePanel("theme");
       }
     };

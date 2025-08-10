@@ -170,7 +170,7 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
         placeholder: placeholder ?? "My text...",
       }),
       ...(!singleline
-        ? [Document.extend({ content: textSizeMode === "hero" ? "heading*" : "paragraph" })]
+        ? [Document.extend({ content: textSizeMode === "hero" ? "heading*" : undefined })]
         : [Document.extend({ content: "paragraph" })]),
       ...(textSizeMode === "hero" ? [HeroHeading] : []),
       ...(!noTextAlign
@@ -215,6 +215,7 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
     ] as Extension[];
 
     const onFocus = (e: EditorEvents["focus"]) => {
+      console.log("Editor focused", e);
       // e.event.stopPropagation();
       mainEditor.setIsEditingText(brickId);
       mainEditor.setSelectedBrickId(brickId);
@@ -231,6 +232,7 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
     };
 
     const onBlur = (e: EditorEvents["blur"]) => {
+      console.log("Editor blured", e);
       // For whatever reason, the editor content is not updated when the blur event is triggered the first time
       // So we need to manually update the content here
       setContent(e.editor.getHTML());

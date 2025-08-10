@@ -5,26 +5,23 @@ import { IoIosHelpCircleOutline } from "react-icons/io";
 import { LuRedo, LuUndo } from "react-icons/lu";
 import { RxDesktop, RxMobile, RxZoomIn, RxZoomOut } from "react-icons/rx";
 import { VscCopy } from "react-icons/vsc";
-import { TbHomeShare } from "react-icons/tb";
 import { RxExternalLink } from "react-icons/rx";
-
+import { BsDatabaseDown } from "react-icons/bs";
 import { DropdownMenu, HoverCard, Tooltip } from "@upstart.gg/style-system/system";
-import { formatDistance } from "date-fns";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
-import { LuExternalLink } from "react-icons/lu";
 import { RiArrowDownSLine } from "react-icons/ri";
 import { RxRocket } from "react-icons/rx";
 import {
   useChatVisible,
   useEditorHelpers,
   useLogoLink,
+  useModal,
   usePanel,
   usePreviewMode,
   useZoom,
 } from "~/editor/hooks/use-editor";
 import dark from "../../../../../creatives/upstart-dark.svg";
 import logo from "../../../../../creatives/upstart.svg";
-
 import { LuPlus } from "react-icons/lu";
 import { PiPalette } from "react-icons/pi";
 import { VscSettings } from "react-icons/vsc";
@@ -32,7 +29,6 @@ import { useUserConfig } from "../hooks/use-user-config";
 import {
   useDraft,
   usePageVersion,
-  useLastSaved,
   useSitemap,
   useDraftUndoManager,
   useGenerationState,
@@ -44,9 +40,9 @@ export default function NavBar() {
   const logoLink = useLogoLink();
   const draft = useDraft();
   const pageVersion = usePageVersion();
-  const lastSaved = useLastSaved();
   const pages = useSitemap();
   const { panel } = usePanel();
+  const modal = useModal();
   const { canZoomIn, canZoomOut, zoomIn, zoomOut, zoom, resetZoom } = useZoom();
   const userConfig = useUserConfig();
   const chatVisible = useChatVisible();
@@ -202,6 +198,21 @@ export default function NavBar() {
             )}
           >
             <LuPlus className={tx("h-5 w-auto")} />
+          </button>
+        </Tooltip>
+
+        <Tooltip content="Site queries" side="bottom" align="center">
+          <button
+            onClick={() => {
+              editorHelpers.setSelectedBrickId();
+              editorHelpers.setSelectedSectionId();
+              editorHelpers.hidePanel();
+              editorHelpers.toggleModal("queries");
+            }}
+            type="button"
+            className={tx(btnClass, squareBtn, commonCls, modal === "queries" && activeCls)}
+          >
+            <BsDatabaseDown className={tx("h-5 w-auto")} />
           </button>
         </Tooltip>
 

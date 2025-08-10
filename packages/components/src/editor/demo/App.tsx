@@ -1,4 +1,4 @@
-import { useEffect, useRef, type PropsWithChildren } from "react";
+import { useRef, type PropsWithChildren } from "react";
 import Editor from "~/editor/components/Editor";
 import {
   EditorWrapper,

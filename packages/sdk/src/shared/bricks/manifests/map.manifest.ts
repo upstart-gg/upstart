@@ -1,10 +1,9 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, group } from "../props/helpers";
+import { defineProps } from "../props/helpers";
 import { LiaMapMarkedAltSolid } from "react-icons/lia";
-import { borderRef, roundingRef } from "../props/border";
+import { roundingRef } from "../props/border";
 import { shadowRef } from "../props/effects";
 import type { BrickProps } from "../props/types";
-import { geolocation } from "../props/geolocation";
 import { Type } from "@sinclair/typebox";
 import { number } from "../props/number";
 import { string } from "../props/string";

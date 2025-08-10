@@ -1,4 +1,4 @@
-import { type Static, type TObject, Type } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { TbCarouselHorizontal } from "react-icons/tb";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";

@@ -36,3 +36,19 @@ export function mapDatasourceSchema(schema: TArray): Datasource["schema"] {
     },
   };
 }
+
+/**
+ * Extract the indexed fields of a datasource with their titles
+ */
+export function getDatasourceIndexedFieldsWithTitles(datasource: Datasource) {
+  if ("indexes" in datasource === false) {
+    console.error("no datasource or indexes found", datasource);
+    return [];
+  }
+  const properties = datasource.schema?.items?.properties || {};
+  const uniqueFields = Array.from(new Set(datasource.indexes?.map((idx) => idx.fields[0]) ?? []));
+  return uniqueFields.map((field) => ({
+    value: field,
+    title: properties[field]?.title || field,
+  }));
+}

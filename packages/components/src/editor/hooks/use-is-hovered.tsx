@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, startTransition } from "react";
 
 interface UseIsHoveredOptions {
   tolerance?: number;
@@ -33,7 +33,9 @@ function useIsHovered<T extends HTMLElement = HTMLDivElement>(
         clientY <= rect.bottom + tolerance;
 
       if (!withinBounds) {
-        setIsHovered(false);
+        startTransition(() => {
+          setIsHovered(false);
+        });
         return;
       }
 
@@ -41,23 +43,30 @@ function useIsHovered<T extends HTMLElement = HTMLDivElement>(
       if (deepCheck) {
         const elementAtPoint = document.elementFromPoint(clientX, clientY);
         const isActuallyHovered = elementAtPoint === element || element.contains(elementAtPoint);
-        setIsHovered(isActuallyHovered);
+        startTransition(() => {
+          setIsHovered(isActuallyHovered);
+        });
       } else {
-        setIsHovered(true);
+        startTransition(() => {
+          setIsHovered(true);
+        });
       }
     };
 
     const handleMouseLeave = () => {
-      setIsHovered(false);
+      startTransition(() => {
+        setIsHovered(false);
+      });
     };
 
+    const ctrl = new AbortController();
+
     // Add listeners to document to track mouse movement globally
-    document.addEventListener("mousemove", handleMouseMove);
-    element.addEventListener("mouseleave", handleMouseLeave);
+    document.addEventListener("mousemove", handleMouseMove, { signal: ctrl.signal });
+    element.addEventListener("mouseleave", handleMouseLeave, { signal: ctrl.signal });
 
     return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-      element.removeEventListener("mouseleave", handleMouseLeave);
+      ctrl.abort();
     };
   }, [tolerance, deepCheck]);
 

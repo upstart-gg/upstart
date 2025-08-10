@@ -1,7 +1,7 @@
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
 import get from "lodash-es/get";
 import type { ReactNode } from "react";
-
+import { IoIosHelpCircleOutline } from "react-icons/io";
 // Import field components
 import { ArrayField } from "./fields/array";
 import BackgroundField from "./fields/background";
@@ -11,6 +11,8 @@ import AlignItemsField from "./fields/align-items";
 import JustifyContentField from "./fields/justify-content";
 import ColorField from "./fields/color";
 import DatasourceField from "./fields/datasource";
+import DynamicField from "./fields/dynamic";
+import QueryField from "./fields/query";
 import EnumField from "./fields/enum";
 import IconifyField from "./fields/iconify";
 import ImageField from "./fields/image";
@@ -39,6 +41,7 @@ import { CssLengthField } from "./fields/css-length";
 import { DatarecordField } from "./fields/datarecord";
 import { fieldLabel } from "./form-class";
 import { tx } from "@upstart.gg/style-system/twind";
+import type { DynamicSettings, QueryUseSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
 
 export interface FieldFactoryOptions {
   brickId: string;
@@ -116,6 +119,7 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
         />
       );
     }
+
     case "color-preset": {
       const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;
       return (
@@ -159,6 +163,30 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
           key={`field-${id}`}
           currentValue={currentValue}
           onChange={(value: DatasourceSettings | undefined | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
+    case "dynamic": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as DynamicSettings;
+      return (
+        <DynamicField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: DynamicSettings | undefined | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
+    case "query": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as QueryUseSettings[];
+      return (
+        <QueryField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: QueryUseSettings[] | undefined | null) => onChange({ [id]: value }, id)}
           {...commonProps}
         />
       );
@@ -558,26 +586,55 @@ export function FieldTitle({
   title,
   description,
   className,
-}: { title?: string; description?: string; className?: string }) {
+  containerClassName,
+  withIcon = false,
+}: {
+  title?: string;
+  description?: string;
+  className?: string;
+  containerClassName?: string;
+  withIcon?: boolean;
+}) {
   if (!title) return null;
   return (
-    <div className="flex items-center text-nowrap text-sm basis-[45%]">
+    <div className={tx("flex items-center text-nowrap basis-[45%]", containerClassName)}>
       {description ? (
-        <Tooltip
-          content={<span className="block text-xs p-1">{description}</span>}
-          className="!z-[10000]"
-          align="start"
-        >
+        withIcon ? (
           <label
             className={tx(
               className,
               fieldLabel,
-              "underline-offset-4 no-underline hover:underline decoration-upstart-300 decoration-dotted cursor-default",
+              " underline-offset-4 no-underline decoration-upstart-300 decoration-dotted cursor-default",
             )}
           >
-            {title}
+            <Tooltip
+              content={<span className="block text-sm p-1">{description}</span>}
+              className="!z-[10000]"
+              align="start"
+            >
+              <span className="cursor-help flex items-center">
+                {title}
+                <IoIosHelpCircleOutline className="ml-1 text-[110%] opacity-50" />
+              </span>
+            </Tooltip>
           </label>
-        </Tooltip>
+        ) : (
+          <Tooltip
+            content={<span className="block text-sm p-1">{description}</span>}
+            className="!z-[10000]"
+            align="start"
+          >
+            <label
+              className={tx(
+                className,
+                fieldLabel,
+                "underline-offset-4 no-underline hover:underline decoration-upstart-300 decoration-dotted cursor-default",
+              )}
+            >
+              {title}
+            </label>
+          </Tooltip>
+        )
       ) : (
         <label className={tx(className, fieldLabel)}>{title}</label>
       )}

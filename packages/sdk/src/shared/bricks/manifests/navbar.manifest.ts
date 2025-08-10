@@ -9,7 +9,6 @@ import { boolean } from "../props/boolean";
 import { VscLayoutPanelOff } from "react-icons/vsc";
 import type { BrickProps } from "../props/types";
 import { colorPresetRef } from "../props/color-preset";
-import { StringEnum } from "~/shared/utils/string-enum";
 
 export const manifest = defineBrickManifest({
   type: "navbar",

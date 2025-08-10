@@ -79,8 +79,8 @@ export interface EditorStateProps {
   resizing?: boolean;
 
   isEditingTextForBrickId?: string;
-  panel?: "library" | "inspector" | "theme" | "settings" | "data";
-  modal?: "image-search" | "datasources";
+  panel?: "library" | "inspector" | "theme" | "settings";
+  modal?: "image-search" | "datasources" | "queries";
   panelPosition: "left" | "right";
   chatVisible: boolean;
   logoLink: string;
@@ -123,6 +123,7 @@ export interface EditorState extends EditorStateProps {
   togglePanelPosition: () => void;
   toggleDebugMode: () => void;
   showModal: (modal: EditorStateProps["modal"]) => void;
+  toggleModal: (modal: EditorStateProps["modal"]) => void;
   hideModal: () => void;
   toggleChat: () => void;
   zoomIn: () => void;
@@ -264,6 +265,11 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
             togglePanel: (panel) =>
               set((state) => {
                 state.panel = panel && state.panel === panel ? undefined : panel;
+              }),
+
+            toggleModal: (modal) =>
+              set((state) => {
+                state.modal = modal && state.modal === modal ? undefined : modal;
               }),
 
             hidePanel: (panel) =>
@@ -423,6 +429,11 @@ export const usePanel = () => {
   }));
 };
 
+export const useModal = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.modal);
+};
+
 export const useIsPremiumPlan = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => state.planIndex > 0);
@@ -501,6 +512,7 @@ export const useEditorHelpers = () => {
     setImagesSearchResults: state.setImagesSearchResults,
     setPanel: state.setPanel,
     togglePanel: state.togglePanel,
+    toggleModal: state.toggleModal,
     hidePanel: state.hidePanel,
     setSelectedGroup: state.setSelectedGroup,
     setSelectedBrickId: state.setSelectedBrickId,

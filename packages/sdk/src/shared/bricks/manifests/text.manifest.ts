@@ -27,71 +27,32 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
     mobile: "auto",
   },
   icon: RxTextAlignLeft,
-  props: defineProps(
-    {
-      color: Type.Optional(
-        colorPresetRef({
-          title: "Color",
-        }),
-      ),
-      gradientDirection: Type.Optional(
-        StringEnum(
-          [
-            "bg-gradient-to-t",
-            "bg-gradient-to-r",
-            "bg-gradient-to-b",
-            "bg-gradient-to-l",
-            "bg-gradient-to-tl",
-            "bg-gradient-to-tr",
-            "bg-gradient-to-br",
-            "bg-gradient-to-bl",
-          ],
-          {
-            title: "Gradient direction",
-            description: "The direction of the gradient. Only applies when color preset is a gradient.",
-            enumNames: [
-              "Top",
-              "Right",
-              "Bottom",
-              "Left",
-              "Top left",
-              "Top right",
-              "Bottom right",
-              "Bottom left",
-            ],
-            default: "bg-gradient-to-br",
-            "ui:responsive": "desktop",
-            "ui:styleId": "styles:gradientDirection",
-            metadata: {
-              filter: (manifestProps: TObject, formData: Static<Manifest["props"]>) => {
-                return formData.color?.includes("gradient") === true;
-              },
-            },
-          },
-        ),
-      ),
-      content: textContentRef(),
-      verticalAlign: Type.Optional(
-        alignItemsRef({
-          default: "items-center",
-          title: "Align",
-        }),
-      ),
-      padding: Type.Optional(paddingRef({ default: "p-4" })),
-      rounding: Type.Optional(
-        roundingRef({
-          default: "rounded-md",
-        }),
-      ),
-      border: Type.Optional(borderRef()),
-      shadow: Type.Optional(shadowRef()),
-    },
-    {
-      default: {
-        padding: "p-8",
+  props: defineProps({
+    color: Type.Optional(
+      colorPresetRef({
+        title: "Color",
+      }),
+    ),
+    content: textContentRef({
+      metadata: {
+        category: "content",
       },
-    },
-  ),
+    }),
+    verticalAlign: Type.Optional(
+      alignItemsRef({
+        default: "items-center",
+        title: "Align",
+      }),
+    ),
+    padding: Type.Optional(paddingRef({ default: "p-4" })),
+    rounding: Type.Optional(
+      roundingRef({
+        default: "rounded-md",
+      }),
+    ),
+    border: Type.Optional(borderRef()),
+    shadow: Type.Optional(shadowRef()),
+  }),
 });
 
 export type Manifest = typeof manifest;

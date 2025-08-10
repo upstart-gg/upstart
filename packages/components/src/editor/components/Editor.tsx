@@ -34,6 +34,7 @@ import {
   useGenerationState,
   useDraftHelpers,
 } from "../hooks/use-page-data";
+import Modal from "./Modal";
 
 const Tour = lazy(() => import("./Tour"));
 const NavBar = lazy(() => import("./NavBar"));
@@ -248,7 +249,7 @@ export default function Editor(props: EditorProps) {
           <Page
             page={{
               ...draft,
-              tags: [],
+              attributes: draft.pageAttributes,
             }}
           />
         </Suspense>
@@ -300,6 +301,7 @@ export default function Editor(props: EditorProps) {
           </Suspense>
         )}
         <Suspense>
+          <Modal />
           <Panel />
         </Suspense>
         <main

@@ -8,6 +8,7 @@ import EditableBrickWrapper from "~/editor/components/EditableBrick";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { useDatasource, useDatasourceSamples } from "~/editor/hooks/use-datasource";
 import { useData } from "~/editor/hooks/use-page-data";
+import get from "lodash-es/get";
 
 const LazyDroppableBox = lazy(() => import("../../editor/components/DroppableBox"));
 
@@ -16,7 +17,6 @@ export default function Dynamic({ brick, editable, level }: BrickProps<Manifest>
 
   // Datasource handling
   const { datasource: dsField } = props;
-  const datasource = useDatasource(dsField?.id);
   const samples = useDatasourceSamples(dsField?.id);
   const dataset = useData(brick.id, samples);
 
@@ -24,6 +24,20 @@ export default function Dynamic({ brick, editable, level }: BrickProps<Manifest>
   const styles = useBrickStyle<Manifest>(brick);
   const { repeatDirection, repeatGap, ...innerStyles } = styles;
   const repeatProps = { repeatDirection, repeatGap };
+
+  function mapProps(props: Record<string, unknown>, data: Record<string, unknown>, index: number) {
+    const modifiedProps: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(props)) {
+      if (typeof value !== "string") {
+        modifiedProps[key] = value;
+      } else {
+        modifiedProps[key] = value.replace(/{{\s*([a-zA-Z0-9_$]+)\s*}}/g, (_, field) => {
+          return get(data, field, "") as string;
+        });
+      }
+    }
+    return modifiedProps;
+  }
 
   // console.log({ samples, realdata });
 
@@ -38,19 +52,29 @@ export default function Dynamic({ brick, editable, level }: BrickProps<Manifest>
           index === 0 ? (
             <LazyDroppableBox
               key={index}
-              brick={brick}
+              // brick={brick}
+              brick={{
+                ...brick,
+                props: {
+                  ...mapProps(brick.props, data, index),
+                  $children: brick.props.$children.map((child) => ({
+                    ...child,
+                    props: mapProps(child.props, data, index),
+                  })),
+                },
+              }}
               className={Object.values(innerStyles)}
               dynamic
               datasource={dsField}
               level={level}
             />
           ) : props.$children?.length && props.showDynamicPreview ? (
-            <div key={index} className={tx("relative flex flex-1", Object.values(innerStyles))}>
+            <div key={index} className={tx("relative flex", Object.values(innerStyles))}>
               {props.$children?.map((brick) => (
                 <EditableBrickWrapper
                   level={(level ?? 0) + 1}
                   key={`${brick.id}-${brick.props.lastTouched}`}
-                  brick={brick}
+                  brick={{ ...brick, props: mapProps(brick.props, data, index) }}
                   isContainerChild
                   dynamicPreview
                   index={index}

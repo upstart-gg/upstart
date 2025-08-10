@@ -9,7 +9,7 @@ import { defineProps } from "../props/helpers";
 import { paddingRef } from "../props/padding";
 import type { BrickProps } from "../props/types";
 import { cssLengthRef } from "../props/css-length";
-import { directionRef } from "dsField";
+import { directionRef } from "../props/direction";
 import { alignItemsRef, justifyContentRef } from "../props/align";
 import { StringEnum } from "~/shared/utils/string-enum";
 import { colorPresetRef } from "../props/color-preset";

@@ -13,7 +13,8 @@ import { icon, urlOrPageId } from "./bricks/props/string";
 import { padding } from "./bricks/props/padding";
 import { colorPreset } from "./bricks/props/color-preset";
 import { image } from "./bricks/props/image";
-import { direction } from "dsField";
+import { direction } from "./bricks/props/direction";
+import { dynamic, queryUse } from "./bricks/props/dynamic";
 
 export type { AnySchemaObject, JSONSchemaType, JSONType, SchemaObject } from "ajv";
 
@@ -47,6 +48,8 @@ ajv.addSchema(image(), "assets:image");
 ajv.addSchema(icon(), "assets:icon");
 ajv.addSchema(textContent(), "content:textContent");
 ajv.addSchema(urlOrPageId(), "content:urlOrPageId");
+ajv.addSchema(dynamic(), "content:loop");
+ajv.addSchema(queryUse(), "content:queryUse");
 ajv.addSchema(colorPreset(), "presets:color");
 
 export const jsonStringsSupportedFormats = [
@@ -72,6 +75,11 @@ addFormats(ajv, [...jsonStringsSupportedFormats]);
 ajv.addFormat("date-object", {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   validate: (data: any) => data instanceof Date && !Number.isNaN(data.getTime()),
+  async: false,
+});
+
+ajv.addFormat("nanoid", {
+  validate: (data: string) => typeof data === "string",
   async: false,
 });
 

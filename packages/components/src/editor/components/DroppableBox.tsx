@@ -44,7 +44,7 @@ export default function DroppableBox<T extends BrickManifest>({
           {...droppableProvided.droppableProps}
           ref={droppableProvided.innerRef}
           className={tx(
-            "flex-1 flex @mobile:flex-wrap relative",
+            "flex @mobile:flex-wrap relative",
             droppableSnapshot.isDraggingOver && "!outline !outline-2 !outline-orange-300",
             (droppableSnapshot.isDraggingOver || draggingBrickType) && "!overflow-y-hidden",
             droppableSnapshot.isDraggingOver && "[&>*]:(!transform-none)",
@@ -68,7 +68,7 @@ export default function DroppableBox<T extends BrickManifest>({
           ) : (
             <div
               className={tx(
-                "w-full h-full text-center p-4 rounded flex justify-center items-center text-base font-medium",
+                "w-full h-full text-center p-4 rounded flex justify-center items-center text-base font-normal",
               )}
             >
               {dynamic

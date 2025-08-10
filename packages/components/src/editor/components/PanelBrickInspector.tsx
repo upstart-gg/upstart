@@ -11,8 +11,14 @@ import PageHierarchy from "./PageHierarchy";
 import { IconRender } from "./IconRender";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { filterSchemaProperties } from "@upstart.gg/sdk/shared/utils/schema";
-import { useSectionByBrickId, useDraftHelpers, useDynamicParent } from "../hooks/use-page-data";
+import {
+  useSectionByBrickId,
+  useDraftHelpers,
+  useDynamicParent,
+  useDynamicConfig,
+} from "../hooks/use-page-data";
 import { useDatasource } from "../hooks/use-datasource";
+import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 
 type TabType = "preset" | "settings" | "content";
 
@@ -22,7 +28,8 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
   const section = useSectionByBrickId(brick.id);
   const debugMode = useDebugMode();
   const manifest = useBrickManifest(brick.type);
-  const contentProperties = filterSchemaProperties(manifest.props, (prop) => {
+  const contentProperties = filterSchemaProperties(manifest.props, (_prop) => {
+    const prop = resolveSchema(_prop);
     return (
       prop.metadata?.category === "content" &&
       prop["ui:field"] !== "hidden" &&
@@ -35,8 +42,15 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
     );
   });
   const hasContentProperties = Object.keys(contentProperties).length > 0;
-  const showTabsList =
-    (!!manifest.props.properties.preset && previewMode === "desktop") || hasContentProperties || debugMode;
+
+  if (brick.type === "box" || brick.type === "dynamic") {
+    console.log("Box brick detected, skipping inspector panel rendering.", {
+      props: manifest.props,
+      hasContentProperties,
+    });
+  }
+
+  const showTabsList = hasContentProperties || debugMode;
 
   const selectedTab = tabsMapping[brick.type] ?? (hasContentProperties ? "content" : "settings");
 
@@ -196,7 +210,7 @@ function SettingsTab({ brick, section, hasTabs }: { brick: Brick; section: Secti
               hidePanel("inspector");
             }}
           >
-            Delete {manifest.name}
+            Delete brick
           </Button>
         </div>
       </div>
@@ -211,11 +225,14 @@ function SettingsTab({ brick, section, hasTabs }: { brick: Brick; section: Secti
 
 function ContentTab({ brick, section, hasTabs }: { brick: Brick; section: Section; hasTabs: boolean }) {
   const dynamicParent = useDynamicParent(brick.id);
+  const dynamicConfig = useDynamicConfig(brick.id);
   const datasource = useDatasource(dynamicParent?.props.datasource?.id);
   const manifest = useBrickManifest(brick.type);
   const { deleteBrick } = useDraftHelpers();
   const { deselectBrick, hidePanel } = useEditorHelpers();
   const kbdClassname = tx("shadow-sm border px-1 py-[3px] rounded border-upstart-300 text-[80%] bg-white/80");
+
+  console.log({ dynamicConfig });
 
   return (
     <div className={tx("flex flex-col h-full")}>
@@ -258,7 +275,7 @@ function ContentTab({ brick, section, hasTabs }: { brick: Brick; section: Sectio
               hidePanel("inspector");
             }}
           >
-            Delete {manifest.name}
+            Delete brick
           </Button>
         </div>
       </div>

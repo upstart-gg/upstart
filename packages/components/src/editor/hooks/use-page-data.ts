@@ -1,8 +1,7 @@
-import type { Attributes } from "@upstart.gg/sdk/shared/attributes";
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
 import { generateId, processSections } from "@upstart.gg/sdk/shared/bricks";
 import type { GenerationState } from "@upstart.gg/sdk/shared/context";
-import type { DatasourcesList, Datasource } from "@upstart.gg/sdk/shared/datasources/types";
+import type { DatasourcesList, Datasource, Query } from "@upstart.gg/sdk/shared/datasources/types";
 import type { DatarecordsList, Datarecord } from "@upstart.gg/sdk/shared/datarecords/types";
 import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
@@ -17,6 +16,8 @@ import { temporal } from "zundo";
 import { createStore, useStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
+import type { DynamicSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
+import type { PageAttributes } from "@upstart.gg/sdk/shared/attributes";
 export type { Immer } from "immer";
 
 enableMapSet();
@@ -27,26 +28,24 @@ export interface DraftStateProps {
   id: string;
   path: string;
   label: string;
+  tags: string[];
   sections: Section[];
   data: Record<BrickId, Record<string, unknown>[]>;
   datasources: DatasourcesList;
   datarecords: DatarecordsList;
+
+  queries: Query[];
+
   /**
    * Site attributes key/value pairs
    */
-  siteAttr: Site["attr"];
-  /**
-   * Site attributes schema
-   */
   siteAttributes: Site["attributes"];
+
   /**
    * Page attributes key/value pairs
    */
-  attr: GenericPageContext["attr"];
-  /**
-   * Page attributes schema
-   */
-  attributes: GenericPageConfig["attributes"];
+  pageAttributes: GenericPageContext["attributes"];
+
   theme: Theme;
   previewTheme?: Theme;
   themes: Theme[];
@@ -69,7 +68,7 @@ export interface DraftState extends DraftStateProps {
   deleteBrick: (id: string) => void;
   getPageDataForDuplication: () => Pick<
     DraftStateProps,
-    "id" | "label" | "path" | "sections" | "attr" | "attributes" | "datasources" | "datarecords"
+    "id" | "label" | "path" | "sections" | "pageAttributes" | "siteAttributes" | "datasources" | "datarecords"
   >;
   duplicateBrick: (id: string) => void;
   duplicateSection: (id: string) => void;
@@ -78,6 +77,7 @@ export interface DraftState extends DraftStateProps {
   moveBrickToContainerBrick: (id: string, parentId: string, index: number) => void;
   moveBrickToSection: (id: string, sectionId: string | null, index?: number) => void;
   detachBrickFromContainer: (id: string) => void;
+  upsertQuery: (query: Query) => void;
   addBrick: (brick: Brick, sectiondId: string, index: number, parentContainerId: Brick["id"] | null) => void;
   updateBrickProps: (id: string, props: Record<string, unknown>, isMobileProps?: boolean) => void;
   updatePropsMapping: (id: string, mapping: Record<string, string>) => void;
@@ -88,7 +88,8 @@ export interface DraftState extends DraftStateProps {
   setThemes: (themes: Theme[]) => void;
   validatePreviewTheme: (accept: boolean) => void;
   cancelPreviewTheme: () => void;
-  updateAttributes: (attr: Partial<Attributes>) => void;
+  updatePageAttributes: (attr: Partial<PageAttributes>) => void;
+  updateSiteAttributes: (attr: Partial<Site["attributes"]>) => void;
   setLastSaved: (date: Date) => void;
   setDirty: (dirty: boolean) => void;
   setVersion(version: string): void;
@@ -127,12 +128,10 @@ export const createDraftStore = (
     version: DraftStateProps["version"];
     path: DraftStateProps["path"];
     label: DraftStateProps["label"];
-    attr: DraftStateProps["attr"];
-    attributes: DraftStateProps["attributes"];
+    pageAttributes: DraftStateProps["pageAttributes"];
+    siteAttributes: DraftStateProps["siteAttributes"];
     datasources?: DraftStateProps["datasources"];
     datarecords?: DraftStateProps["datarecords"];
-    siteAttr: DraftStateProps["siteAttr"];
-    siteAttributes: DraftStateProps["siteAttributes"];
     siteLabel: DraftStateProps["siteLabel"];
     siteId: DraftStateProps["siteId"];
     hostname: DraftStateProps["hostname"];
@@ -149,6 +148,8 @@ export const createDraftStore = (
     pages: [],
     datasources: [],
     datarecords: [],
+    queries: [],
+    tags: [],
     sitePrompt: "",
     // themes: [defaultTheme, { ...defaultTheme, id: "t2" }, { ...defaultTheme, id: "t3" }],
   };
@@ -158,6 +159,16 @@ export const createDraftStore = (
         immer((set, _get) => ({
           ...DEFAULT_PROPS,
           ...initProps,
+
+          upsertQuery: (query: Query) =>
+            set((state) => {
+              const existingIndex = state.queries.findIndex((q) => q.id === query.id);
+              if (existingIndex !== -1) {
+                state.queries[existingIndex] = query;
+              } else {
+                state.queries.push(query);
+              }
+            }),
 
           detachBrickFromContainer: (id) =>
             set((state) => {
@@ -227,8 +238,8 @@ export const createDraftStore = (
                 state.path = page.path;
                 state.label = page.label;
                 state.sections = page.sections;
-                if (page.attr) {
-                  state.attr = page.attr;
+                if (page.attributes) {
+                  state.pageAttributes = page.attributes;
                 }
               }
             }),
@@ -268,14 +279,13 @@ export const createDraftStore = (
           getPageDataForDuplication: () => {
             const state = _get();
             const pageCount = state.sitemap.length + 1;
-            console.log("state.sitemap", state.sitemap);
             const newPage = {
               id: `page-${generateId()}`,
               label: `${state.label} (page ${pageCount})`,
               path: `${state.path}-${pageCount}`,
               sections: state.sections,
-              attr: state.attr,
-              attributes: state.attributes,
+              pageAttributes: state.pageAttributes,
+              siteAttributes: state.siteAttributes,
               datasources: state.datasources,
               datarecords: state.datarecords,
             };
@@ -988,9 +998,14 @@ export const createDraftStore = (
               }
             }),
 
-          updateAttributes: (attr) =>
+          updatePageAttributes: (attr) =>
             set((state) => {
-              state.attr = { ..._get().attr, ...attr };
+              state.pageAttributes = { ..._get().pageAttributes, ...attr };
+            }),
+
+          updateSiteAttributes: (attr) =>
+            set((state) => {
+              state.siteAttributes = { ..._get().siteAttributes, ...attr };
             }),
 
           setVersion: (version) =>
@@ -1118,6 +1133,36 @@ export function useDynamicParent(brickId: string) {
   return null;
 }
 
+/**
+ * Returns the dynamic config is set on the brick itself or any of its parents.
+ * This is used to determine if the brick should use dynamic configuration.
+ */
+export function useDynamicConfig(brickId: string) {
+  const ctx = usePageContext();
+  const props = useBrick(brickId)?.props;
+  const getParentBrick = useStore(ctx, (state) => state.getParentBrick);
+  let tmp = getParentBrick(brickId);
+  const dynamicSettings: DynamicSettings[] = props?.dynamic ? [props.dynamic as DynamicSettings] : [];
+  while (tmp) {
+    if (tmp.props.dynamic) {
+      dynamicSettings.push(tmp.props.dynamic as DynamicSettings);
+    }
+    brickId = tmp.id;
+    tmp = getParentBrick(brickId);
+  }
+  return dynamicSettings.length > 0 ? dynamicSettings : null;
+}
+
+export function useQueries() {
+  const ctx = usePageContext();
+  return useStore(ctx, (state) => state.queries);
+}
+
+export function useQuery(queryId?: string) {
+  const ctx = usePageContext();
+  return useStore(ctx, (state) => state.queries.find((q) => q.id === queryId) ?? null);
+}
+
 export function useParentBrick(brickId: string) {
   const ctx = usePageContext();
   const getParentBrick = useStore(ctx, (state) => state.getParentBrick);
@@ -1166,14 +1211,14 @@ export const useSectionByBrickId = (brickId: string) => {
   return useStore(ctx, (state) => getBrickSection(brickId, state));
 };
 
-export const useAttributes = () => {
+export const usePageAttributes = () => {
   const ctx = usePageContext();
-  return useStore(ctx, (state) => state.attr);
+  return useStore(ctx, (state) => state.pageAttributes);
 };
 
-export const useAttributesSchema = () => {
+export const useSiteAttributes = () => {
   const ctx = usePageContext();
-  return useStore(ctx, (state) => state.attributes ?? state.siteAttributes);
+  return useStore(ctx, (state) => state.siteAttributes);
 };
 
 export const useData = (brickId: string, samples: Record<string, unknown>[] | undefined) => {
@@ -1186,6 +1231,7 @@ export const useDraftHelpers = () => {
   return useStore(ctx, (state) => ({
     deleteBrick: state.deleteBrick,
     detachBrickFromContainer: state.detachBrickFromContainer,
+    upsertQuery: state.upsertQuery,
     setSections: state.setSections,
     setThemes: state.setThemes,
     setTheme: state.setTheme,
@@ -1241,7 +1287,7 @@ export const useSite = () => {
     id: state.siteId,
     label: state.label,
     sitemap: state.sitemap,
-    attr: state.attr,
+    queries: state.queries,
     theme: state.theme,
     themes: state.themes,
     attributes: state.siteAttributes,
@@ -1268,11 +1314,21 @@ export const useSectionsSubscribe = (callback: (sections: DraftState["sections"]
   }, []);
 };
 
-export const useAttributesSubscribe = (callback: (attr: DraftState["attr"]) => void) => {
+export const usePageAttributesSubscribe = (callback: (attr: DraftState["pageAttributes"]) => void) => {
   const ctx = usePageContext();
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    return ctx.subscribe((state) => state.attr, callback, {
+    return ctx.subscribe((state) => state.pageAttributes, callback, {
+      equalityFn: isEqual,
+    });
+  }, []);
+};
+
+export const useSiteAttributesSubscribe = (callback: (attr: DraftState["siteAttributes"]) => void) => {
+  const ctx = usePageContext();
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    return ctx.subscribe((state) => state.siteAttributes, callback, {
       equalityFn: isEqual,
     });
   }, []);
@@ -1284,6 +1340,17 @@ export const useThemeSubscribe = (callback: (theme: DraftState["theme"]) => void
   useEffect(() => {
     return ctx.subscribe((state) => state.theme, callback);
   }, []);
+};
+
+export const usePagePathParams = () => {
+  const ctx = usePageContext();
+  return useStore(ctx, (state) => {
+    const path = state.pageAttributes.path;
+    // Extract placeholders like ":slug" from the path
+    const regex = /:([a-zA-Z0-9_]+)/g;
+    const matches = Array.from(path.matchAll(regex));
+    return matches.map((match) => match[0]);
+  });
 };
 
 export const usePagePathSubscribe = (callback: (path: DraftState["path"]) => void) => {
