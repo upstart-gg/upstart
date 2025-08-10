@@ -107,7 +107,7 @@ export default function TagsInput({
       onKeyDown={handleKeyDown}
       classNames={getClassNames(className)}
       menuIsOpen={false}
-      //   isSearchable={isSearchable}
+      isSearchable={isSearchable}
       placeholder={placeholder}
     />
   );
