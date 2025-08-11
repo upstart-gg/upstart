@@ -11,7 +11,7 @@ import AlignItemsField from "./fields/align-items";
 import JustifyContentField from "./fields/justify-content";
 import ColorField from "./fields/color";
 import DatasourceField from "./fields/datasource";
-import DynamicField from "./fields/dynamic";
+import DynamicField from "./fields/loop";
 import QueryField from "./fields/query";
 import EnumField from "./fields/enum";
 import IconifyField from "./fields/iconify";
@@ -41,7 +41,7 @@ import { CssLengthField } from "./fields/css-length";
 import { DatarecordField } from "./fields/datarecord";
 import { fieldLabel } from "./form-class";
 import { tx } from "@upstart.gg/style-system/twind";
-import type { DynamicSettings, QueryUseSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
+import type { LoopSettings, QueryUseSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
 
 export interface FieldFactoryOptions {
   brickId: string;
@@ -168,13 +168,13 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       );
     }
 
-    case "dynamic": {
-      const currentValue = (get(formData, id) ?? commonProps.schema.default) as DynamicSettings;
+    case "loop": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as LoopSettings;
       return (
         <DynamicField
           key={`field-${id}`}
           currentValue={currentValue}
-          onChange={(value: DynamicSettings | undefined | null) => onChange({ [id]: value }, id)}
+          onChange={(value: LoopSettings | undefined | null) => onChange({ [id]: value }, id)}
           {...commonProps}
         />
       );

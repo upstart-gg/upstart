@@ -13,7 +13,7 @@ import type { padding } from "../bricks/props/padding";
 import type { colorPreset } from "../bricks/props/color-preset";
 import type { image } from "../bricks/props/image";
 import type { direction } from "../bricks/props/direction";
-import type { dynamic, queryUse } from "../bricks/props/dynamic";
+import type { loop, queryUse } from "../bricks/props/dynamic";
 
 export interface SchemaTypeMap {
   "styles:background": ReturnType<typeof background>;
@@ -38,7 +38,7 @@ export interface SchemaTypeMap {
   "assets:image": ReturnType<typeof image>;
   "content:text": ReturnType<typeof textContent>;
   "content:urlOrPageId": ReturnType<typeof urlOrPageId>;
-  "content:dynamic": ReturnType<typeof dynamic>;
+  "content:loop": ReturnType<typeof loop>;
   "content:queryUse": ReturnType<typeof queryUse>;
   "assets:icon": ReturnType<typeof icon>;
   // Add other schema mappings here

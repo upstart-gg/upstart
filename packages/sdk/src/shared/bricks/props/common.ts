@@ -2,7 +2,7 @@ import { type TString, Type } from "@sinclair/typebox";
 import { typedRef } from "~/shared/utils/typed-ref";
 import { cssLengthRef } from "./css-length";
 import { alignSelfRef } from "./align";
-import { dynamicRef, queryUseRef } from "./dynamic";
+import { loopRef } from "./dynamic";
 
 export function hidden() {
   return Type.Object(
@@ -60,5 +60,5 @@ export const commonProps = {
     }),
   ),
   alignSelf: Type.Optional(alignSelfRef()),
-  // query: Type.Optional(queryUseRef()),
+  loop: Type.Optional(loopRef()),
 };

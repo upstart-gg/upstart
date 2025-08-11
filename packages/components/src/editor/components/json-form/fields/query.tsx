@@ -1,7 +1,7 @@
 import {
   queryUse,
   queryUseSchema,
-  type DynamicSettings,
+  type LoopSettings,
   type QueryUseSettings,
 } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
 import {
@@ -113,10 +113,7 @@ const QueryField: FC<FieldProps<QueryUseSettings[] | undefined>> = (props) => {
   return (
     <>
       <QueryModal
-        onChange={(queries) => {
-          console.log("Queries changed:", queries);
-          onChange(queries);
-        }}
+        onChange={onChange}
         queries={currentValue}
         open={showModal}
         onClose={() => setShowModal(false)}

@@ -16,7 +16,7 @@ import { temporal } from "zundo";
 import { createStore, useStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import type { DynamicSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
+import type { LoopSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
 import type { PageAttributes } from "@upstart.gg/sdk/shared/attributes";
 export type { Immer } from "immer";
 
@@ -1141,10 +1141,10 @@ export function useDynamicConfig(brickId: string) {
   const props = useBrick(brickId)?.props;
   const getParentBrick = useStore(ctx, (state) => state.getParentBrick);
   let tmp = getParentBrick(brickId);
-  const dynamicSettings: DynamicSettings[] = props?.dynamic ? [props.dynamic as DynamicSettings] : [];
+  const dynamicSettings: LoopSettings[] = props?.dynamic ? [props.dynamic as LoopSettings] : [];
   while (tmp) {
     if (tmp.props.dynamic) {
-      dynamicSettings.push(tmp.props.dynamic as DynamicSettings);
+      dynamicSettings.push(tmp.props.dynamic as LoopSettings);
     }
     brickId = tmp.id;
     tmp = getParentBrick(brickId);
@@ -1223,6 +1223,18 @@ export const useSiteAttributes = () => {
 export const useData = (brickId: string, samples: Record<string, unknown>[] | undefined) => {
   const ctx = usePageContext();
   return useStore(ctx, (state) => state.data[brickId] ?? samples ?? []);
+};
+
+export const usePageQueries = () => {
+  const ctx = usePageContext();
+  return useStore(
+    ctx,
+    (state) =>
+      state.pageAttributes.queries?.map((pageQuery) => ({
+        ...pageQuery,
+        queryInfo: state.queries.find((q) => q.id === pageQuery.queryId),
+      })) ?? [],
+  );
 };
 
 export const useDraftHelpers = () => {

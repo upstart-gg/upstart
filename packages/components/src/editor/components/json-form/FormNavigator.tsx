@@ -28,7 +28,7 @@ type FormNavigatorContextType = {
 const FormNavigatorContext = createContext<FormNavigatorContextType | null>(null);
 
 // Custom hook to use navigation
-export const useFormNavigation = () => {
+const useFormNavigation = () => {
   const context = useContext(FormNavigatorContext);
   if (!context) {
     throw new Error("useNavigation must be used within a FormNavigatorContext");
@@ -37,7 +37,7 @@ export const useFormNavigation = () => {
 };
 
 // Create List component
-export const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
+const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
   const { navigateTo } = useFormNavigation();
   return (
     <ul className="list-none p-0 m-0">

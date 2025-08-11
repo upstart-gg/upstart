@@ -16,6 +16,7 @@ import {
   useDraftHelpers,
   useDynamicParent,
   useDynamicConfig,
+  usePageQueries,
 } from "../hooks/use-page-data";
 import { useDatasource } from "../hooks/use-datasource";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
@@ -28,11 +29,14 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
   const section = useSectionByBrickId(brick.id);
   const debugMode = useDebugMode();
   const manifest = useBrickManifest(brick.type);
+  const pageQueries = usePageQueries();
   const contentProperties = filterSchemaProperties(manifest.props, (_prop) => {
     const prop = resolveSchema(_prop);
     return (
       prop.metadata?.category === "content" &&
       prop["ui:field"] !== "hidden" &&
+      (typeof prop["ui:hidden-if"] === "undefined" ||
+        (prop["ui:hidden-if"] === "no-page-queries" && pageQueries.length > 0)) &&
       (typeof prop.metadata?.["ui:responsive"] === "undefined" ||
         prop.metadata?.["ui:responsive"] === true ||
         prop.metadata?.["ui:responsive"] === previewMode) &&

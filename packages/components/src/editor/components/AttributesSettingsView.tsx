@@ -15,6 +15,7 @@ import { useDraft } from "../hooks/use-page-data";
 type AttributesSettingsViewProps = {
   attributes: PageAttributes | SiteAttributes;
   attributesSchema: typeof pageAttributesSchema | typeof siteAttributesSchema;
+  type: "page" | "site";
   title: string;
   group?: string;
 };
@@ -24,6 +25,7 @@ export default function AttributesSettingsView({
   attributesSchema,
   title,
   group,
+  type,
 }: AttributesSettingsViewProps) {
   const previewMode = usePreviewMode();
   const draft = useDraft();
@@ -57,8 +59,11 @@ export default function AttributesSettingsView({
       // `propertyChangedPath` can take the form of `a.b.c` which means we need to update `props.a.b.c`
       // For this we use lodash.set
       set(attrObj, propertyChanged, data[propertyChanged]);
-      console.log("changed attr, setting path %s to %s", propertyChanged, data[propertyChanged]);
-      draft.updatePageAttributes(attrObj);
+      if (type === "page") {
+        draft.updatePageAttributes(attrObj);
+      } else {
+        draft.updateSiteAttributes(attrObj);
+      }
     },
     [attributes],
   );

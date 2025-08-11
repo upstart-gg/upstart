@@ -47,7 +47,7 @@ export const StringField: FC<FieldProps<string>> = (props) => {
           onChange={(e) => onChangeDebounced(e.target.value)}
           className={tx("!mt-1.5 scrollbar-thin", schema["ui:textarea-class"] ?? "h-24")}
           placeholder={placeholder}
-          size={"2"}
+          size={schema["ui:textarea-font-size"] ?? "2"}
           spellCheck={!!schema["ui:spellcheck"]}
         />
       ) : (
@@ -69,10 +69,7 @@ export const PathField: FC<FieldProps<string>> = (props) => {
   const onChangeDebounced = useDebounceCallback(onChange, 300);
   // remove leading slash
   const path = (currentValue || "").toString().replace(/^\//, "");
-
   const params = usePagePathParams();
-
-  console.log("PathField params", params);
 
   return (
     <div className="field field-path basis-full">

@@ -54,6 +54,7 @@ export default function SettingsForm() {
         </Tabs.List>
         <ScrollablePanelTab tab="page-settings">
           <AttributesSettingsView
+            type="page"
             attributes={pageAttributes}
             attributesSchema={filteredAttrSchema}
             title="Page settings"
@@ -61,6 +62,7 @@ export default function SettingsForm() {
         </ScrollablePanelTab>
         <ScrollablePanelTab tab="site-settings">
           <AttributesSettingsView
+            type="site"
             attributes={siteAttributes}
             attributesSchema={filteredAttrSchema}
             title="Site settings"
