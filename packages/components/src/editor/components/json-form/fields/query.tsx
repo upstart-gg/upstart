@@ -13,7 +13,7 @@ import {
   TextField,
   Tooltip,
 } from "@upstart.gg/style-system/system";
-import { Fragment, useCallback, useEffect, useState, type FC } from "react";
+import { Fragment, startTransition, useCallback, useEffect, useState, type FC } from "react";
 import { BsAt, BsCrosshair, BsDatabase, BsDatabaseAdd, BsDatabaseDown } from "react-icons/bs";
 import { useDatarecords } from "~/editor/hooks/use-datarecord";
 import { useEditorHelpers } from "~/editor/hooks/use-editor";
@@ -170,14 +170,11 @@ function QueryModal({
   const availableQueries = useQueries();
   const [showCreationForm, setShowCreationForm] = useState(initialQueries.length === 0);
   const [editingQuery, setEditingQuery] = useState<QueryUseSettings | null>(null);
-  const [queries, setQueries] = useState<QueryUseSettings[]>([
-    // ...initialQueries,
-  ]);
+  const [queries, setQueries] = useState<QueryUseSettings[]>(initialQueries);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    onChange(queries);
-  }, [queries]);
+  // useEffect(() => {
+  //   onChange(queries);
+  // }, [queries]);
 
   return (
     <Dialog.Root
@@ -225,6 +222,9 @@ function QueryModal({
             onChange={(query) => {
               setQueries((prev) => prev.filter((q) => q.alias !== query.alias).concat(query));
               setShowCreationForm(false);
+              startTransition(() => {
+                onChange(queries);
+              });
             }}
             onClose={() => setShowCreationForm(false)}
           />

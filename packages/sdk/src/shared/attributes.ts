@@ -130,12 +130,12 @@ export const siteAttributesSchema = Type.Object({
 export type PageAttributes = Static<typeof pageAttributesSchema>;
 export type SiteAttributes = Static<typeof siteAttributesSchema>;
 
-export function resolvePageAttributes(data: Record<string, unknown> = {}) {
+export function resolvePageAttributes(data: Partial<PageAttributes> = {}) {
   const defaultAttrValues = getSchemaDefaults(pageAttributesSchema);
   return { ...defaultAttrValues, ...data } as PageAttributes;
 }
 
-export function resolveSiteAttributes(data: Record<string, unknown> = {}) {
+export function resolveSiteAttributes(data: Partial<SiteAttributes> = {}) {
   const defaultAttrValues = getSchemaDefaults(siteAttributesSchema);
   return { ...defaultAttrValues, ...data } as SiteAttributes;
 }

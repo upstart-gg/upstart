@@ -51,22 +51,20 @@ export default function AttributesSettingsView({
     return merge({}, defProps, attributes ?? {});
   }, [attributes, attributesSchema]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: draft.updateAttributes is a stable function
-  const onChange = useCallback(
-    (data: Record<string, unknown>, propertyChanged: string) => {
-      // Note: this is a weird way to update the brick props, but it'it allows us to deal with frozen trees
-      const attrObj = structuredClone(attributes);
-      // `propertyChangedPath` can take the form of `a.b.c` which means we need to update `props.a.b.c`
-      // For this we use lodash.set
-      set(attrObj, propertyChanged, data[propertyChanged]);
-      if (type === "page") {
-        draft.updatePageAttributes(attrObj);
-      } else {
-        draft.updateSiteAttributes(attrObj);
-      }
-    },
-    [attributes],
-  );
+  // biome-ignore lint/correctness/useExhaustiveDependencies: draft.updatePageAttributes and draft.updateSiteAttributes are stable functions
+  const onChange = useCallback((data: Record<string, unknown>, propertyChanged: string) => {
+    console.trace("AttributesSettingsView onChange");
+    // Note: this is a weird way to update the brick props, but it'it allows us to deal with frozen trees
+    const attrObj = structuredClone(attributes);
+    // `propertyChangedPath` can take the form of `a.b.c` which means we need to update `props.a.b.c`
+    // For this we use lodash.set
+    set(attrObj, propertyChanged, data[propertyChanged]);
+    if (type === "page") {
+      draft.updatePageAttributes(attrObj);
+    } else {
+      draft.updateSiteAttributes(attrObj);
+    }
+  }, []);
 
   return (
     <FormNavigator

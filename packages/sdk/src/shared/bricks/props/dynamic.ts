@@ -1,7 +1,6 @@
 import { typedRef } from "~/shared/utils/typed-ref";
 import { type ObjectOptions, Type, type Static } from "@sinclair/typebox";
 import { queryFilter } from "~/shared/datasources/types";
-import { BrickManifest } from "~/shared/brick-manifest";
 
 export function queryUse() {
   return Type.Object(
@@ -16,6 +15,8 @@ export function queryUse() {
         pattern: "^[a-zA-Z0-9_]+$",
         description:
           "Alias for the query results, used in dynamic content. Use a simple keyword without spaces or special characters. Aliases are unique across the page.",
+        "ai:instructions":
+          "Use a simple keyword without spaces or special characters. Aliases are unique across the page. You can use the same query several times with different aliases in order to, for example, apply different parameters to the same query.",
       }),
       params: Type.Optional(
         Type.Array(queryFilter, {
@@ -25,14 +26,14 @@ export function queryUse() {
           default: [],
         }),
       ),
-      limit: Type.Optional(
-        Type.Number({
-          description:
-            "Number of items from the query to loop through. If not set, it will loop through all items. If set to 1, it will not loop and will render only the first item.",
-          minimum: 1,
-          maximum: 100,
-        }),
-      ),
+      // limit: Type.Optional(
+      //   Type.Number({
+      //     description:
+      //       "Number of items from the query to loop through. If not set, it will loop through all items. If set to 1, it will not loop and will render only the first item.",
+      //     minimum: 1,
+      //     maximum: 100,
+      //   }),
+      // ),
     },
     {
       title: "Query",
@@ -58,10 +59,10 @@ export function queryUseRef(options: ObjectOptions = {}) {
 export function loop(options: ObjectOptions = {}) {
   return Type.Object(
     {
-      loopOver: Type.String({
+      over: Type.String({
         title: "Over",
-        description: "The query to loop over. If not set, it will not loop and will render only once.",
-        "ai:instructions": "Specify the Query ID to loop over the results.",
+        description: "The query alias to loop over. If not set, the brick will be rendered only once.",
+        "ai:instructions": "Specify the Query Alias to loop over the results.",
       }),
       overrideLimit: Type.Optional(
         Type.Number({

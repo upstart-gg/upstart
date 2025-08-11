@@ -70,7 +70,7 @@ function getCommonFieldProps(options: FieldFactoryOptions, fieldSchema: TSchema)
 }
 
 // Main function to create a field component based on type
-export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
+function createFieldComponent(options: FieldFactoryOptions): ReactNode {
   const { brickId, fieldName, fieldSchema, formSchema, formData, id, onChange } = options;
   const schema = resolveSchema(fieldSchema);
   const commonProps = getCommonFieldProps(

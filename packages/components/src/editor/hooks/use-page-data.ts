@@ -17,7 +17,7 @@ import { createStore, useStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import type { LoopSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
-import type { PageAttributes } from "@upstart.gg/sdk/shared/attributes";
+import type { PageAttributes, SiteAttributes } from "@upstart.gg/sdk/shared/attributes";
 export type { Immer } from "immer";
 
 enableMapSet();
@@ -89,7 +89,7 @@ export interface DraftState extends DraftStateProps {
   validatePreviewTheme: (accept: boolean) => void;
   cancelPreviewTheme: () => void;
   updatePageAttributes: (attr: Partial<PageAttributes>) => void;
-  updateSiteAttributes: (attr: Partial<Site["attributes"]>) => void;
+  updateSiteAttributes: (attr: Partial<SiteAttributes>) => void;
   setLastSaved: (date: Date) => void;
   setDirty: (dirty: boolean) => void;
   setVersion(version: string): void;

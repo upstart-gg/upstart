@@ -9,9 +9,10 @@ const NOLOOP = "$NOLOOP$";
 
 const DynamicField: FC<FieldProps<LoopSettings | undefined>> = (props) => {
   const { currentValue, onChange, schema } = props;
-  const { loopOver = NOLOOP } = currentValue ?? {};
+  const { over = NOLOOP } = currentValue ?? {};
+  const [overrideLimit, setOverrideLimit] = useState<boolean>(!!currentValue?.overrideLimit);
   const pageQueries = usePageQueries();
-  const query = pageQueries.find((q) => q.alias === loopOver);
+  const query = pageQueries.find((q) => q.alias === over);
 
   const onQueryChange = (newVal: string) => {
     if (newVal === NOLOOP) {
@@ -19,7 +20,7 @@ const DynamicField: FC<FieldProps<LoopSettings | undefined>> = (props) => {
     } else {
       onChange({
         ...(currentValue ?? {}),
-        loopOver: newVal,
+        over: newVal,
       });
     }
   };
@@ -35,7 +36,7 @@ const DynamicField: FC<FieldProps<LoopSettings | undefined>> = (props) => {
           title={"Loop over"}
           description="Loop over data from a query, repeating the brick for each item."
         />
-        <Select.Root defaultValue={loopOver} size="2" onValueChange={onQueryChange}>
+        <Select.Root defaultValue={over} size="2" onValueChange={onQueryChange}>
           <Select.Trigger radius="medium" variant="ghost" className="!mr-px" />
           <Select.Content position="popper">
             <Select.Item value={NOLOOP}>Do not loop</Select.Item>
@@ -47,19 +48,34 @@ const DynamicField: FC<FieldProps<LoopSettings | undefined>> = (props) => {
           </Select.Content>
         </Select.Root>
       </div>
-      {typeof currentValue?.loopOver === "string" && (
+      {typeof currentValue?.over === "string" && (
         <div className="flex items-center justify-between">
           <FieldTitle
             title={"Override limit"}
             description="Override the number of items to loop over. It can only be inferior to the number of items (limit) set by the query."
           />
-          <div className="flex items-center">
+          <div className="flex items-center gap-1.5">
+            <Switch
+              size="2"
+              defaultChecked={overrideLimit}
+              onCheckedChange={(checked) => {
+                setOverrideLimit(checked);
+                if (!checked) {
+                  onChange({
+                    ...(currentValue ?? {}),
+                    overrideLimit: undefined,
+                  } as LoopSettings);
+                }
+              }}
+              className="mr-2"
+            />
             <TextField.Root
+              disabled={!overrideLimit}
               size="2"
               type="number"
               min="1"
               max={query?.queryInfo?.limit ?? 50}
-              value={currentValue?.overrideLimit ?? ""}
+              defaultValue={currentValue?.overrideLimit ?? query?.queryInfo?.limit ?? 10}
               onChange={(e) => {
                 const value = e.target.value ? parseInt(e.target.value, 10) : undefined;
                 onChange({
@@ -67,8 +83,7 @@ const DynamicField: FC<FieldProps<LoopSettings | undefined>> = (props) => {
                   overrideLimit: value,
                 } as LoopSettings);
               }}
-              placeholder="No override"
-              className="w-24"
+              className="w-[34px]"
             />
           </div>
         </div>

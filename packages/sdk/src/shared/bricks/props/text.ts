@@ -92,11 +92,11 @@ export function textContent({
     default: defaults ?? "My text",
     "ui:disable-sizing": disableSizing,
     "ui:disable-alignment": disableAlignment,
-    metadata: {
-      category: "content",
-    },
+    // metadata: {
+    //   category: "content",
+    // },
     ...rest,
-    // "ui:field": showInSettings ? "string" : "hidden",
+    "ui:field": showInSettings ? "string" : "hidden",
   });
 }
 

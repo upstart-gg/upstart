@@ -5,11 +5,10 @@ import { paddingRef } from "../props/padding";
 import { borderRef, roundingRef } from "../props/border";
 import { RxTextAlignLeft } from "react-icons/rx";
 import type { BrickProps } from "../props/types";
-import { type Static, type TObject, Type } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { alignItemsRef } from "../props/align";
 import { shadowRef } from "../props/effects";
 import { colorPresetRef } from "../props/color-preset";
-import { StringEnum } from "~/shared/utils/string-enum";
 
 export const manifest = defineBrickManifest({
   type: "text",
@@ -34,9 +33,9 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
       }),
     ),
     content: textContentRef({
-      metadata: {
-        category: "content",
-      },
+      // metadata: {
+      //   category: "content",
+      // },
     }),
     verticalAlign: Type.Optional(
       alignItemsRef({

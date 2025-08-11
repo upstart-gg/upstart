@@ -241,7 +241,7 @@ function ContentTab({ brick, section, hasTabs }: { brick: Brick; section: Sectio
   return (
     <div className={tx("flex flex-col h-full")}>
       <div className="basis-[50%] shrink-0 grow flex flex-col">
-        {dynamicParent !== null && (
+        {/* {dynamicParent !== null && (
           <Callout.Root size="1">
             <Callout.Text size="1" className="gap-2 flex-col flex">
               {datasource ? (
@@ -260,7 +260,7 @@ function ContentTab({ brick, section, hasTabs }: { brick: Brick; section: Sectio
               </span>
             </Callout.Text>
           </Callout.Root>
-        )}
+        )} */}
         <BrickSettingsView
           brick={brick}
           label="content"

@@ -36,6 +36,8 @@ export default function SettingsForm() {
     return filteredSchema as typeof attrSchema;
   }, [attrSchema, currentTab]);
 
+  console.log({ pageAttributes });
+
   return (
     <div className="flex flex-col h-full">
       <PanelBlockTitle>Settings</PanelBlockTitle>

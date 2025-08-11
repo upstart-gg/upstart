@@ -4,7 +4,7 @@ import { datarecordsList } from "./datarecords/types";
 import { datasourcesList, querySchema } from "./datasources/types";
 import { pageSchema } from "./page";
 import { sitePrompt } from "./prompt";
-import { pageInfoSchema, sitemapSchema } from "./sitemap";
+import { sitemapSchema } from "./sitemap";
 import { defaultTheme, themeSchema } from "./theme";
 import { resolvePageAttributes, resolveSiteAttributes, siteAttributesSchema } from "./attributes";
 
@@ -27,12 +27,12 @@ export const siteSchema = Type.Object({
  */
 export type Site = Static<typeof siteSchema>;
 
-const partialSiteAndPagesSchema = Type.Object({
+const siteAndPagesSchema = Type.Object({
   site: siteSchema,
   pages: Type.Array(pageSchema),
 });
 
-export type SiteAndPagesConfig = Static<typeof partialSiteAndPagesSchema>;
+export type SiteAndPagesConfig = Static<typeof siteAndPagesSchema>;
 
 export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
   let order = 0;
@@ -572,13 +572,11 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 id: generateId(),
                 type: "box",
                 props: {
-                  direction: "flex-row",
-                  dynamic: {
-                    query: {
-                      id: "employees-query",
-                      alias: "employees",
-                    },
+                  loop: {
+                    over: "employee",
                   },
+                  direction: "flex-row",
+
                   $children: [
                     {
                       id: generateId(),
@@ -1076,6 +1074,19 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
         tags: [],
         attributes: resolvePageAttributes({
           path: "/blog/:slug",
+          queries: [
+            {
+              queryId: "get-employee",
+              alias: "employee",
+              params: [
+                {
+                  field: "$id",
+                  op: "eq",
+                  value: ":slug",
+                },
+              ],
+            },
+          ],
         }),
       },
       {
