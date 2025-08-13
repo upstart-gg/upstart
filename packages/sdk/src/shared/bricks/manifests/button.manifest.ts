@@ -9,6 +9,7 @@ import { borderRef, roundingRef } from "../props/border";
 import { LAYOUT_ROW_HEIGHT } from "~/shared/layout-constants";
 import { fontSize, fontSizeRef } from "../props/text";
 import { colorPresetRef } from "../props/color-preset";
+import { loopRef } from "../props/dynamic";
 
 export const manifest = defineBrickManifest({
   type: "button",
@@ -106,6 +107,7 @@ export const manifest = defineBrickManifest({
     ),
     border: Type.Optional(borderRef({ default: { width: "border-0" }, "ui:responsive": "desktop" })),
     linkToUrlOrPageId: Type.Optional(urlOrPageIdRef({ title: "Link", metadata: { category: "content" } })),
+    loop: Type.Optional(loopRef()),
   }),
 });
 

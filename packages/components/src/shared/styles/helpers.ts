@@ -5,6 +5,7 @@ import type {
 import type { ColorSettings } from "@upstart.gg/sdk/shared/bricks/props/color";
 import type { OpacitySettings } from "@upstart.gg/sdk/shared/bricks/props/effects";
 import type { GapBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/gap";
+import { colorPresets } from "@upstart.gg/sdk/shared/bricks/props/color-preset";
 import type { FixedPositionedSettings } from "@upstart.gg/sdk/shared/bricks/props/position";
 import { propToClass, propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
 import { css } from "@upstart.gg/style-system/twind";
@@ -113,6 +114,22 @@ function getGrowStyles(props?: boolean, mobileProps?: boolean, schema?: TSchema)
   }
 }
 
+function getColorPresetStyles(value: string, mobileValue?: string, schema?: TSchema) {
+  if (schema?.["ui:desktop-only"]) {
+    return `@desktop:(${colorPresets[value]?.className})`;
+  }
+
+  if (!mobileValue) {
+    return colorPresets[value]?.className;
+  }
+  if (value && mobileValue) {
+    return `@desktop:(${colorPresets[value]?.className}) @mobile:(${colorPresets[mobileValue]?.className})`;
+  }
+  if (mobileValue) {
+    return `@mobile:(${colorPresets[mobileValue]?.className})`;
+  }
+}
+
 export const brickStylesHelpersMap = {
   "styles:color": getColorStyles,
   "styles:basicGap": getBasicGapStyles,
@@ -129,7 +146,7 @@ export const brickStylesHelpersMap = {
   "styles:backgroundColor": getBackgroundColorStyles,
   "styles:background": getBackgroundStyles,
 
-  "presets:color": simpleClassHandler,
+  "presets:color": getColorPresetStyles,
 
   "styles:rounding": simpleClassHandler,
   "styles:direction": simpleClassHandler,

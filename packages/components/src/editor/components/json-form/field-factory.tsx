@@ -42,6 +42,7 @@ import { DatarecordField } from "./fields/datarecord";
 import { fieldLabel } from "./form-class";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { LoopSettings, QueryUseSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
+import { usePageAttributes } from "~/editor/hooks/use-page-data";
 
 export interface FieldFactoryOptions {
   brickId: string;
@@ -515,7 +516,7 @@ function createFieldComponent(options: FieldFactoryOptions): ReactNode {
   }
 }
 
-type ProcessObjectSchemaToFieldsProps = {
+type ObjectFieldsProps = {
   schema: TObject<TProperties>;
   formData: Record<string, unknown>;
   formSchema: TObject<TProperties>;
@@ -528,13 +529,8 @@ type ProcessObjectSchemaToFieldsProps = {
 };
 
 // Process schema to create grouped fields
-export function processObjectSchemaToFields({
-  schema,
-  formData,
-  formSchema,
-  onChange,
-  options,
-}: ProcessObjectSchemaToFieldsProps): ReactNode[] {
+export default function ObjectFields({ schema, formData, formSchema, onChange, options }: ObjectFieldsProps) {
+  const pageAttributes = usePageAttributes();
   const { brickId, filter, parents = [] } = options;
   const fields: ReactNode[] = [];
 
@@ -543,7 +539,7 @@ export function processObjectSchemaToFields({
 
     // Apply global filter if provided
     if (filter && field.type !== "object" && !filter(field)) {
-      console.warn("processObjectSchemaToFields: Ignoring field", field);
+      console.warn("ObjectFields: Ignoring field", field);
       return;
     }
 
@@ -551,7 +547,7 @@ export function processObjectSchemaToFields({
     if (field.metadata?.filter) {
       // field filter should be called with the current formData and the schema
       const filter = field.metadata.filter as FieldFilter;
-      if (!filter(formSchema, formData)) {
+      if (!filter(formSchema, formData, pageAttributes)) {
         return;
       }
     }

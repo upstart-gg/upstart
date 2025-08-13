@@ -11,6 +11,7 @@ import { directionRef } from "../props/direction";
 import { RxBox } from "react-icons/rx";
 import { alignItemsRef, justifyContentRef } from "../props/align";
 import { colorPresetRef } from "../props/color-preset";
+import { loopRef } from "../props/dynamic";
 
 // Generic container can hold any type of array data source
 export const manifest = defineBrickManifest({
@@ -71,6 +72,7 @@ export const manifest = defineBrickManifest({
     ),
     border: Type.Optional(borderRef()),
     shadow: Type.Optional(shadowRef()),
+    loop: Type.Optional(loopRef()),
     ...makeContainerProps(),
   }),
 });

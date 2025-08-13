@@ -9,6 +9,8 @@ import { getSchemaDefaults } from "./utils/schema";
 import { StringEnum } from "./utils/string-enum";
 import { alignItemsRef, justifyContentRef } from "./bricks/props/align";
 import { paddingRef } from "./bricks/props/padding";
+import type { CommonBrickProps } from "./bricks/props/common";
+import { directionRef } from "./bricks/props/direction";
 
 /**
  * Generates a unique identifier for bricks.
@@ -116,13 +118,24 @@ export const brickSchema = Type.Object(
   { $id: "brick", additionalProperties: true },
 );
 
-export type Brick = Static<typeof brickSchema>;
+export type Brick = Omit<Static<typeof brickSchema>, "props" | "mobileProps"> & {
+  props: CommonBrickProps & Record<string, unknown>;
+  mobileProps?: CommonBrickProps & Record<string, unknown>;
+};
 
 export const sectionProps = Type.Object(
   {
     color: Type.Optional(
       colorPresetRef({
         title: "Color",
+      }),
+    ),
+    direction: Type.Optional(
+      directionRef({
+        default: "flex-row",
+        title: "Direction",
+        description: "The direction of the section. Only apply to desktop. On mobile, it is always vertical.",
+        "ui:responsive": "desktop",
       }),
     ),
     minHeight: Type.Optional(
@@ -201,6 +214,7 @@ export const sectionProps = Type.Object(
       Type.Number({
         description: "Do not use this field. It is used internally by the editor.",
         "ui:field": "hidden",
+        "ai:hidden": true,
       }),
     ),
   },
@@ -261,7 +275,7 @@ export function processBrick<T extends Brick>(brick: T): T | false {
   }
   const result = {
     ...brick,
-    props: mergeIgnoringArrays({}, defProps.props, {
+    props: mergeIgnoringArrays({} as Brick["props"], defProps.props, {
       ...brick.props,
       ...(brick.props.$children
         ? { $children: (brick.props.$children as T[]).map(processBrick).filter(Boolean) }

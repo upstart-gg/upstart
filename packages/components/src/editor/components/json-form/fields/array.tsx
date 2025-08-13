@@ -14,9 +14,9 @@ import { useState, useRef, useEffect } from "react";
 import { MdDragIndicator } from "react-icons/md";
 import { RxCross2 } from "react-icons/rx";
 import { TbPlus } from "react-icons/tb";
-import { FieldTitle, processObjectSchemaToFields } from "../field-factory";
+import ObjectFields, { FieldTitle } from "../field-factory";
 import type { FieldProps } from "./types";
-import { useDynamicParent } from "~/editor/hooks/use-page-data";
+import { usePageQueries } from "~/editor/hooks/use-page-data";
 
 // If the HTML contains any tags, this function will strip them out and return plain text.
 // This is useful for displaying text content without HTML formatting (ie for items title).
@@ -47,7 +47,7 @@ export function ArrayField({
   parents = [],
   schema,
 }: ArrayFieldProps) {
-  const dynamicParent = useDynamicParent(brickId);
+  const pageQueries = usePageQueries();
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -284,21 +284,21 @@ export function ArrayField({
             <div className="p-2 bg-gray-50 rounded-b-[inherit]">
               <div className="space-y-3">
                 {/* Edit fields */}
-                {processObjectSchemaToFields({
-                  schema: resolvedItemSchema as TObject<TProperties>,
-                  formData: typedItem || {},
-                  formSchema,
-                  onChange: (itemData, itemFieldId) => {
+                <ObjectFields
+                  schema={resolvedItemSchema as TObject<TProperties>}
+                  formData={typedItem || {}}
+                  formSchema={formSchema}
+                  onChange={(itemData, itemFieldId) => {
                     const newArray = [...currentValue];
                     const currentItem = (newArray[index] as Record<string, unknown>) || {};
                     newArray[index] = { ...currentItem, ...itemData };
                     onChange(newArray);
-                  },
-                  options: {
+                  }}
+                  options={{
                     brickId,
                     parents: [...parents, `${fieldName}[${index}]`],
-                  },
-                })}
+                  }}
+                />
               </div>
             </div>
           )}
@@ -364,9 +364,9 @@ export function ArrayField({
         <FieldTitle
           title={title}
           description={description}
-          className={tx(!!dynamicParent && "font-medium")}
+          className={tx(pageQueries.length > 0 && "font-medium")}
         />
-        {addable && !dynamicParent && (
+        {addable && pageQueries.length === 0 && (
           <Button type="button" onClick={handleAddItem} variant="soft" size="1" radius="full">
             <TbPlus className="w-3 h-3" /> Add item
           </Button>
@@ -374,32 +374,28 @@ export function ArrayField({
       </div>
 
       {/* Array items */}
-      {dynamicParent ? (
+      {pageQueries.length > 0 ? (
         <div className="space-y-1 -mx-1">
           <div className="px-1">
             <div className="space-y-3">
               {/* Edit fields */}
-              {processObjectSchemaToFields({
-                schema: resolvedItemSchema as TObject<TProperties>,
-                formData: {},
-                formSchema,
-                onChange: (itemData, itemFieldId) => {
+              <ObjectFields
+                schema={resolvedItemSchema as TObject<TProperties>}
+                formData={{}}
+                formSchema={formSchema}
+                onChange={(itemData, itemFieldId) => {
                   console.log("Dynamic parent item data change", {
                     itemData,
                     itemFieldId,
                     fieldName,
                     brickId,
                   });
-                  // const newArray = [...currentValue];
-                  // const currentItem = (newArray[index] as Record<string, unknown>) || {};
-                  // newArray[index] = { ...currentItem, ...itemData };
-                  // onChange(newArray);
-                },
-                options: {
+                }}
+                options={{
                   brickId,
                   parents: [...parents, `${fieldName}[0]`],
-                },
-              })}
+                }}
+              />
             </div>
           </div>
         </div>
@@ -431,7 +427,7 @@ export function ArrayField({
         </div>
       )}
 
-      {!dynamicParent && currentValue.length === 0 && (
+      {pageQueries.length === 0 && currentValue.length === 0 && (
         <div className="text-center py-6 text-gray-400 text-sm border-2 border-dashed border-gray-200 rounded">
           No items added yet.
         </div>

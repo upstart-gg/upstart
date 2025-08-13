@@ -6,6 +6,7 @@ import type { BrickProps } from "../props/types";
 import { Type } from "@sinclair/typebox";
 import { cssLengthRef } from "../props/css-length";
 import { colorRef } from "../props/color";
+import { loopRef } from "../props/dynamic";
 
 export const manifest = defineBrickManifest({
   type: "icon",
@@ -37,6 +38,7 @@ export const manifest = defineBrickManifest({
         }),
       ),
       link: Type.Optional(urlOrPageIdRef({ title: "Link" })),
+      loop: Type.Optional(loopRef()),
     },
     { noGrow: true },
   ),

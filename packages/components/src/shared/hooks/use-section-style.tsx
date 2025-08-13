@@ -1,17 +1,12 @@
 import { sectionProps, type Section } from "@upstart.gg/sdk/shared/bricks";
-import {
-  brickStylesHelpersMap,
-  brickWrapperStylesHelpersMap,
-  extractStylePath,
-  getGapStyles,
-  simpleClassHandler,
-} from "../styles/helpers";
+import { brickStylesHelpersMap, brickWrapperStylesHelpersMap, extractStylePath } from "../styles/helpers";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { getStyleProperties } from "../styles/style-props";
 import { get, merge } from "lodash-es";
 import { type FieldFilter, getSchemaDefaults } from "@upstart.gg/sdk/shared/utils/schema";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
+import { usePageAttributes } from "~/editor/hooks/use-page-data";
 
 type UseSectionStyleProps = {
   section: Section;
@@ -23,10 +18,10 @@ type UseSectionStyleProps = {
 export function useSectionStyle({ section, selected, editable, previewMode }: UseSectionStyleProps) {
   const stylesProps = getStyleProperties(sectionProps);
   const classes = useClassesFromStyleProps(stylesProps, section);
-  const GAP = section.props.gap ?? "12px"; // Default gap if not set
 
   return tx(
-    "flex flex-nowrap @mobile:flex-col @desktop:flex-row w-full @container/section group/section overflow-visible relative mx-auto max-sm:max-w-dvw",
+    // @mobile:flex-col @desktop:flex-row
+    "flex flex-nowrap  w-full @container/section group/section overflow-visible relative mx-auto max-sm:max-w-dvw",
     [
       Object.values(classes),
       section.props.maxWidth as string,
@@ -86,6 +81,7 @@ const sectionDefaultProps = getSchemaDefaults(sectionProps);
 
 function useClassesFromStyleProps(stylesProps: Record<string, string>, section: Section) {
   const { props, mobileProps } = section;
+  const pageAttributes = usePageAttributes();
   const mergedProps = merge({}, sectionDefaultProps, props);
   const filtered = Object.entries(stylesProps).reduce((acc, [key, value]) => {
     const manifestField = get(sectionProps.properties, key);
@@ -94,7 +90,7 @@ function useClassesFromStyleProps(stylesProps: Record<string, string>, section: 
       const resolvedField = resolveSchema(manifestField);
       if (resolvedField.metadata?.filter) {
         const filter = resolvedField.metadata.filter as FieldFilter;
-        if (!filter(resolvedField, mergedProps)) {
+        if (!filter(resolvedField, mergedProps, pageAttributes)) {
           acc.push(key);
         }
       }

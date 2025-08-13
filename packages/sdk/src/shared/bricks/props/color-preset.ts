@@ -1,11 +1,12 @@
-import { Type, type Static, type SchemaOptions } from "@sinclair/typebox";
+import type { Static, SchemaOptions } from "@sinclair/typebox";
+import { StringEnum } from "~/shared/utils/string-enum";
 import { typedRef } from "~/shared/utils/typed-ref";
 
 type ColorPresetOptions = SchemaOptions & {
   "ui:presets"?: Record<string, { className: string; label: string }>;
 };
 
-const defaultPresets: NonNullable<ColorPresetOptions["ui:presets"]> = {
+export const colorPresets: NonNullable<ColorPresetOptions["ui:presets"]> = {
   "primary-50": {
     className: "bg-primary-50 text-primary-50-content",
     label: "Primary 50",
@@ -321,19 +322,15 @@ const defaultPresets: NonNullable<ColorPresetOptions["ui:presets"]> = {
 };
 
 export function colorPreset(options: ColorPresetOptions = {}) {
-  return Type.String({
+  return StringEnum(Object.keys(colorPresets), {
     title: "Color preset",
     description: "Color preset to apply to background and text",
-    "ai:instructions": `Background and text classes to apply. Use the format \`bg-{color}-{shade} text-{color}-{shade}-content\` for background and text colors.
-You can also use gradient presets like \`bg-gradient-to-t from-{color}-{shade} to-{color}-{shade+100}\` for gradients.
-Minimum shade for solid color is 50, maximum is 900.
-For gradients, the "from"" shade should be between 100 and 800, and the "to" shade should be 100 greater than the "from" shade.
-For example, \`bg-gradient-to-t from-primary-100 to-primary-200\` for a gradient from primary 100 to primary 200.
-When no value is selected, no background or text color will be applied.`,
+    enumNames: Object.keys(colorPresets).map((key) => colorPresets[key].label),
+    "ai:instructions": `Presets are predefined color combinations of background and text colors that can be applied to elements. They include various shades of primary, secondary, accent, and neutral colors, as well as gradients. You can also select 'none' to remove any preset.`,
     "ui:styleId": "presets:color",
     "ui:field": "color-preset",
     "ui:responsive": true,
-    "ui:presets": defaultPresets,
+    "ui:presets": colorPresets,
     ...options,
   });
 }

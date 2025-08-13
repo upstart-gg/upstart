@@ -492,11 +492,13 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           id: "get-employees",
           label: "Get all employees",
           datasourceId: "employees",
+          limit: 50,
         },
         {
           id: "get-employee",
           label: "Get employee by ID",
           datasourceId: "employees",
+          limit: 1,
           parameters: ["$id"],
         },
       ],
@@ -573,7 +575,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 type: "box",
                 props: {
                   loop: {
-                    over: "employee",
+                    over: "allEmployees",
                   },
                   direction: "flex-row",
 
@@ -650,7 +652,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               {
                 // dynamic box
                 id: generateId(),
-                type: "dynamic",
+                type: "box",
                 props: {
                   direction: "flex-col",
                   datasource: {
@@ -739,7 +741,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             label: "Dynamic",
             bricks: [
               {
-                type: "dynamic",
+                type: "box",
                 props: {
                   alignSelf: "self-auto",
                   datasource: {},
@@ -824,7 +826,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             bricks: [
               {
                 id: generateId(),
-                type: "dynamic",
+                type: "box",
                 props: {
                   alignSelf: "self-auto",
                   datasource: {
@@ -1086,6 +1088,10 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 },
               ],
             },
+            {
+              queryId: "get-employees",
+              alias: "allEmployees",
+            },
           ],
         }),
       },
@@ -1277,7 +1283,9 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             id: `s_content-${generateId()}`,
             label: "Bottom",
             order: ++order,
-            props: {},
+            props: {
+              direction: "flex-row",
+            },
             bricks: [
               {
                 id: `b_${generateId()}`,

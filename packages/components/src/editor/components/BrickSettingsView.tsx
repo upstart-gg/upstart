@@ -50,8 +50,8 @@ export default function BrickSettingsView({
   const formData = useMemo(() => {
     const defProps = defaultProps[brick.type].props;
     return previewMode === "mobile"
-      ? mergeIgnoringArrays({}, defProps, brick.props, brick.mobileProps ?? {})
-      : mergeIgnoringArrays({}, defProps, brick.props ?? {});
+      ? mergeIgnoringArrays({} as Brick["props"], defProps, brick.props, brick.mobileProps ?? {})
+      : mergeIgnoringArrays({} as Brick["props"], defProps, brick.props ?? {});
   }, [brick, previewMode]);
 
   const onChange = useCallback(

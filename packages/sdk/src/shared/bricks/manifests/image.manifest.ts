@@ -9,6 +9,7 @@ import { Type } from "@sinclair/typebox";
 import type { BrickProps } from "../props/types";
 import { backgroundColorRef } from "../props/background";
 import { borderRef, roundingRef } from "../props/border";
+import { loopRef } from "../props/dynamic";
 
 export const manifest = defineBrickManifest({
   type: "image",
@@ -59,6 +60,7 @@ export const manifest = defineBrickManifest({
         "ai:instructions": "The provider of the image, e.g. 'unsplash', 'pexels', etc.",
       }),
     ),
+    loop: Type.Optional(loopRef()),
   }),
 });
 

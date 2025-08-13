@@ -45,9 +45,9 @@ import { menuBarBtnActiveCls, menuBarBtnCls, menuBarBtnCommonCls } from "../styl
 import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useDatasource, useDatasources } from "~/editor/hooks/use-datasource";
-import { useDynamicParent } from "~/editor/hooks/use-page-data";
 import type { Fragment } from "@tiptap/pm/model";
 import { getEditorNodeFromField, insertInEditor } from "../utils/editor-utils";
+import { usePageQueries } from "~/editor/hooks/use-page-data";
 
 const HeroHeading = Heading.extend({
   addAttributes() {
@@ -144,12 +144,14 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
     const onUpdate = inline ? defaultUpdateHandler : onChange;
     const mainEditor = useEditor();
     const selectedBrickId = useSelectedBrickId();
-    const dynParent = useDynamicParent(brickId);
-    const datasource = useDatasource(dynParent?.props?.datasource?.id);
+    const pageQueries = usePageQueries();
+    const datasources = useDatasources();
     const [menuBarContainer, setMenuBarContainer] = useState<HTMLDivElement | null>(null);
     const [currentContent, setContent] = useState(formatInitialContent(initialContent));
     const [focused, setFocused] = useState(false);
-    const datasourceFields = getJSONSchemaFieldsList(datasource?.schema);
+    const datasourceFields = pageQueries.flatMap((q) =>
+      getJSONSchemaFieldsList(q.datasource.schema, q.alias),
+    );
 
     const extensions = [
       StarterKit.configure({
@@ -316,14 +318,14 @@ const TextEditorMenuBar = ({
   brickId: string;
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 } & Omit<TextEditorProps<any>, "content" | "brickId" | "propPath">) => {
-  const dynParent = useDynamicParent(brickId);
+  const hasPageQueries = usePageQueries().length > 0;
   return (
     <>
       {textSizeMode === "classic" && <TextSizeClassicDropdown editor={editor} />}
       {textSizeMode === "hero" && <TextSizeHeroDropdown editor={editor} />}
       {!noTextAlign && <TextAlignButtonGroup editor={editor} />}
       <TextStyleButtonGroup editor={editor} noTextStrike={noTextStrike} textSizeMode={textSizeMode} />
-      {dynParent !== null && (
+      {hasPageQueries && (
         <DatasourceItemButton editor={editor} brickId={brickId}>
           <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
             <RiBracesLine className="w-5 h-5" />
@@ -386,10 +388,8 @@ type DatasourceFieldPickerModalProps = {
 };
 
 function DatasourceFieldPickerModal({ brickId, onFieldSelect }: DatasourceFieldPickerModalProps) {
-  const dynamicParent = useDynamicParent(brickId);
-  const datasource = useDatasource(dynamicParent?.props?.datasource?.id);
-
-  if (!datasource) {
+  const pageQueries = usePageQueries();
+  if (!pageQueries.length) {
     return (
       <div className="bg-white min-w-52 min-h-80 flex flex-col gap-4">
         No database selected in the dynamic parent brick.
@@ -397,17 +397,29 @@ function DatasourceFieldPickerModal({ brickId, onFieldSelect }: DatasourceFieldP
     );
   }
   return (
-    <div className="bg-white min-w-52 min-h-80 flex flex-col gap-3">
-      <h3 className="text-base font-medium">
-        Insert field from <span className="font-semibold text-upstart-600">{datasource.label}</span>
-      </h3>
+    <div className="bg-white flex flex-col gap-3">
+      <h3 className="text-base font-medium">Insert fields from your queries</h3>
       <Callout.Root className="-mx-4 !py-2 !px-3 !rounded-none">
         <Callout.Text size="1" className={tx("text-pretty")}>
-          Click on a field to insert it into the text box. Fields are inserted as dynamic mentions, which will
-          be replaced with their actual values when the document is rendered.
+          Click on a field to insert it into the text box. Fields are inserted as dynamic placeholders, which
+          will be replaced with their actual values when the document is rendered.
         </Callout.Text>
       </Callout.Root>
-      <JSONSchemaView schema={datasource.schema} onFieldSelect={onFieldSelect} />
+      <div className="flex flex-col gap-1 pb-2">
+        {pageQueries.map((query) => (
+          <div key={query.alias} className="flex flex-col gap-1">
+            <h4 className="text-sm font-semibold">
+              {query.alias} - {query.queryInfo?.label}
+            </h4>
+            <JSONSchemaView
+              key={query.alias}
+              prefix={query.alias}
+              schema={query.datasource.schema}
+              onFieldSelect={onFieldSelect}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -432,7 +444,7 @@ export function DatasourceItemButton({
   return (
     <Popover.Root>
       <Popover.Trigger>{children}</Popover.Trigger>
-      <Popover.Content width="360px" side="top" align="start" size="2" maxHeight="50vh" sideOffset={10}>
+      <Popover.Content minWidth="260px" side="top" align="start" size="2" maxHeight="70dvh" sideOffset={10}>
         <DatasourceFieldPickerModal onFieldSelect={onFieldSelect} brickId={brickId} />
       </Popover.Content>
     </Popover.Root>

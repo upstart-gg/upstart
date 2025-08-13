@@ -11,13 +11,7 @@ import PageHierarchy from "./PageHierarchy";
 import { IconRender } from "./IconRender";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { filterSchemaProperties } from "@upstart.gg/sdk/shared/utils/schema";
-import {
-  useSectionByBrickId,
-  useDraftHelpers,
-  useDynamicParent,
-  useDynamicConfig,
-  usePageQueries,
-} from "../hooks/use-page-data";
+import { useSectionByBrickId, useDraftHelpers, usePageQueries } from "../hooks/use-page-data";
 import { useDatasource } from "../hooks/use-datasource";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 
@@ -228,39 +222,12 @@ function SettingsTab({ brick, section, hasTabs }: { brick: Brick; section: Secti
 }
 
 function ContentTab({ brick, section, hasTabs }: { brick: Brick; section: Section; hasTabs: boolean }) {
-  const dynamicParent = useDynamicParent(brick.id);
-  const dynamicConfig = useDynamicConfig(brick.id);
-  const datasource = useDatasource(dynamicParent?.props.datasource?.id);
-  const manifest = useBrickManifest(brick.type);
   const { deleteBrick } = useDraftHelpers();
   const { deselectBrick, hidePanel } = useEditorHelpers();
-  const kbdClassname = tx("shadow-sm border px-1 py-[3px] rounded border-upstart-300 text-[80%] bg-white/80");
-
-  console.log({ dynamicConfig });
 
   return (
     <div className={tx("flex flex-col h-full")}>
       <div className="basis-[50%] shrink-0 grow flex flex-col">
-        {/* {dynamicParent !== null && (
-          <Callout.Root size="1">
-            <Callout.Text size="1" className="gap-2 flex-col flex">
-              {datasource ? (
-                <span className="block">
-                  This brick can use dynamic content from the database{" "}
-                  <i className="font-semibold">{datasource.label}</i>.
-                </span>
-              ) : (
-                <span className="block">
-                  This brick is inside a dynamic parent brick so it will be rendered with dynamic content.
-                </span>
-              )}
-              <span className="block">
-                Start typing <kbd className={kbdClassname}>{`{{`}</kbd> or simply click the associated button{" "}
-                <kbd className={kbdClassname}>{`{}`}</kbd> to insert a variable from your database.
-              </span>
-            </Callout.Text>
-          </Callout.Root>
-        )} */}
         <BrickSettingsView
           brick={brick}
           label="content"

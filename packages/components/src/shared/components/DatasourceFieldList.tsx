@@ -17,11 +17,19 @@ const DatasourceFieldList = forwardRef<HTMLElement, Props>((props, ref) => {
   };
 
   const upHandler = () => {
-    setSelectedIndex((selectedIndex + props.items.length - 1) % props.items.length);
+    const newIndex = (selectedIndex + props.items.length - 1) % props.items.length;
+    setSelectedIndex(newIndex);
+    document
+      .querySelector(`[data-ds-id="${newIndex}"]`)
+      ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   };
 
   const downHandler = () => {
-    setSelectedIndex((selectedIndex + 1) % props.items.length);
+    const newIndex = (selectedIndex + 1) % props.items.length;
+    setSelectedIndex(newIndex);
+    document
+      .querySelector(`[data-ds-id="${newIndex}"]`)
+      ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   };
 
   const enterHandler = () => {
@@ -56,16 +64,17 @@ const DatasourceFieldList = forwardRef<HTMLElement, Props>((props, ref) => {
   return (
     <div
       className={tx(
-        "bg-white l border border-gray-200 rounded-lg shadow-lg min-w-[200px] flex flex-col gap-0.5 overflow-auto p-2 z-auto",
+        "bg-white l border border-gray-200 rounded-lg shadow-lg min-w-[280px] flex flex-col gap-0.5 max-h-[300px] overflow-auto p-2 z-auto",
       )}
     >
       {props.items.length ? (
         props.items.map((item, index) => (
           <button
+            data-ds-id={index}
             type="button"
             // role="menuitem"
             className={tx(
-              index === selectedIndex && "bg-upstart-100",
+              index === selectedIndex ? "bg-upstart-100" : "hover:bg-upstart-50",
               "flex font-light text-sm text-left w-full items-center px-2 py-1 rounded",
             )}
             key={index}

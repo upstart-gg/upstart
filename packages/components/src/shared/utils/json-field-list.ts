@@ -1,6 +1,10 @@
 import type { TArray, TObject, TSchema } from "@sinclair/typebox";
 
-function getSchemaObject({ schema: { required, properties }, level }: { schema: TObject; level: number }) {
+function getSchemaObject({
+  schema: { required, properties },
+  level,
+  prefix,
+}: { schema: TObject; level: number; prefix: string }) {
   const renderProperties = properties;
 
   if (properties) {
@@ -8,6 +12,7 @@ function getSchemaObject({ schema: { required, properties }, level }: { schema: 
       getSchemaEntry({
         schema: { ...value, name, optional: required && !required.includes(name) },
         level: level + 1,
+        prefix: `${prefix}`,
       }),
     );
   }
@@ -17,26 +22,31 @@ function getSchemaObject({ schema: { required, properties }, level }: { schema: 
 function getSchemaArray({
   schema: { name, items, required, allOf, properties },
   level,
-}: { schema: TArray; level: number }) {
+  prefix,
+}: { schema: TArray; level: number; prefix: string }) {
   if (items) {
     return getSchemaEntry({
       schema: { ...items, name, optional: required && !required.includes(name) },
       level: level + 1,
+      prefix,
     });
   }
   return [];
 }
 
-function getSchemaEntry({ schema, level }: { schema: TSchema; level: number }): string | string[] {
+function getSchemaEntry({
+  schema,
+  level,
+  prefix,
+}: { schema: TSchema; level: number; prefix: string }): string | string[] {
   if (schema.type === "object") {
-    return getSchemaObject({ schema: schema as TObject, level });
+    return getSchemaObject({ schema: schema as TObject, level, prefix });
   } else if (schema.type === "array") {
-    return getSchemaArray({ schema: schema as TArray, level });
+    return getSchemaArray({ schema: schema as TArray, level, prefix });
   }
-  return `${schema.name}`;
+  return `${prefix}.${schema.name}`;
 }
 
-export function getJSONSchemaFieldsList(schema?: TArray) {
-  if (!schema) return [];
-  return (getSchemaEntry({ schema, level: 0 }) as string[]).toSorted((a, b) => a.localeCompare(b));
+export function getJSONSchemaFieldsList(schema: TArray, prefix: string) {
+  return (getSchemaEntry({ schema, level: 0, prefix }) as string[]).toSorted((a, b) => a.localeCompare(b));
 }

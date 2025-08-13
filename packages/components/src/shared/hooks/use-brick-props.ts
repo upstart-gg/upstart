@@ -1,15 +1,15 @@
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { useDynamicParent } from "~/editor/hooks/use-page-data";
+import { usePageQueries } from "~/editor/hooks/use-page-data";
 
 export function useBrickProps<T extends BrickManifest>({
   brick,
   editable,
 }: BrickProps<T>): BrickProps<T>["brick"]["props"] {
   const { props, propsMapping = {} } = brick;
-  const dynamicParent = useDynamicParent(brick.id);
-  if (!dynamicParent) {
-    console.debug("Dynamic box: No dynamic parent found for brick", brick.id);
+  const pageQueries = usePageQueries();
+  if (!pageQueries) {
+    console.debug("Dynamic box: No page queries for brick", brick.id);
     return props;
   }
   // load data

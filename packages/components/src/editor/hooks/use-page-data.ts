@@ -1118,46 +1118,12 @@ export function useHasDynamicParent(brickId: string) {
   return false;
 }
 
-export function useDynamicParent(brickId: string) {
-  const ctx = usePageContext();
-  const getParentBrick = useStore(ctx, (state) => state.getParentBrick);
-  let tmp = getParentBrick(brickId);
-  while (tmp) {
-    if (tmp.type === "dynamic") {
-      return tmp;
-    }
-    brickId = tmp.id;
-    tmp = getParentBrick(brickId);
-  }
-  return null;
-}
-
-/**
- * Returns the dynamic config is set on the brick itself or any of its parents.
- * This is used to determine if the brick should use dynamic configuration.
- */
-export function useDynamicConfig(brickId: string) {
-  const ctx = usePageContext();
-  const props = useBrick(brickId)?.props;
-  const getParentBrick = useStore(ctx, (state) => state.getParentBrick);
-  let tmp = getParentBrick(brickId);
-  const dynamicSettings: LoopSettings[] = props?.dynamic ? [props.dynamic as LoopSettings] : [];
-  while (tmp) {
-    if (tmp.props.dynamic) {
-      dynamicSettings.push(tmp.props.dynamic as LoopSettings);
-    }
-    brickId = tmp.id;
-    tmp = getParentBrick(brickId);
-  }
-  return dynamicSettings.length > 0 ? dynamicSettings : null;
-}
-
-export function useQueries() {
+export function useSiteQueries() {
   const ctx = usePageContext();
   return useStore(ctx, (state) => state.queries);
 }
 
-export function useQuery(queryId?: string) {
+export function useSiteQuery(queryId?: string) {
   const ctx = usePageContext();
   return useStore(ctx, (state) => state.queries.find((q) => q.id === queryId) ?? null);
 }
@@ -1225,15 +1191,51 @@ export const useData = (brickId: string, samples: Record<string, unknown>[] | un
   return useStore(ctx, (state) => state.data[brickId] ?? samples ?? []);
 };
 
+/**
+ * If the brick is looping or one of its parent is looping, this hook will return true.
+ */
+export function useIsInLoop(brickId: string) {
+  const ctx = usePageContext();
+  const getParentBrick = useStore(ctx, (state) => state.getParentBrick);
+
+  let currentBrickId: string | undefined = brickId;
+  while (currentBrickId) {
+    const brick = getBrickFromDraft(currentBrickId, ctx.getState());
+    if (brick?.props.loop === "loop") {
+      return true;
+    }
+    currentBrickId = getParentBrick(currentBrickId)?.id;
+  }
+  return false;
+}
+
 export const usePageQueries = () => {
   const ctx = usePageContext();
   return useStore(
     ctx,
     (state) =>
-      state.pageAttributes.queries?.map((pageQuery) => ({
-        ...pageQuery,
-        queryInfo: state.queries.find((q) => q.id === pageQuery.queryId),
-      })) ?? [],
+      state.pageAttributes.queries
+        ?.map((pageQuery) => {
+          const queryInfo = state.queries.find((q) => q.id === pageQuery.queryId);
+          if (!queryInfo) {
+            console.warn(`Query with id ${pageQuery.queryId} not found in the store`);
+            return null;
+          }
+          // get datasource
+          const datasource = state.datasources.find((ds) => ds.id === queryInfo.datasourceId);
+          if (!datasource) {
+            console.warn(
+              `Datasource with id ${queryInfo.datasourceId} not found for query ${pageQuery.queryId}`,
+            );
+            return null;
+          }
+          return {
+            ...pageQuery,
+            queryInfo,
+            datasource,
+          };
+        })
+        .filter((item): item is NonNullable<typeof item> => item !== null) ?? [],
   );
 };
 

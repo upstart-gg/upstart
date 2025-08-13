@@ -20,7 +20,7 @@ import { useEditorHelpers } from "~/editor/hooks/use-editor";
 import { fieldLabel } from "../form-class";
 import type { FieldProps } from "./types";
 import { FieldTitle } from "../field-factory";
-import { usePagePathParams, useQueries, useQuery } from "~/editor/hooks/use-page-data";
+import { usePagePathParams, useSiteQueries, useSiteQuery } from "~/editor/hooks/use-page-data";
 import { useDatasource, useDatasources } from "~/editor/hooks/use-datasource";
 import { FiEdit } from "react-icons/fi";
 import { tx } from "@upstart.gg/style-system/twind";
@@ -95,7 +95,7 @@ function getValueLabel(value: NonNullable<QueryUseSettings["params"]>[number]["v
 const QueryField: FC<FieldProps<QueryUseSettings[] | undefined>> = (props) => {
   const { currentValue = [], onChange, schema, title, description, brickId } = props;
   const datasources = useDatasources();
-  const availableQueries = useQueries();
+  const availableQueries = useSiteQueries();
   const [showModal, setShowModal] = useState(false);
 
   // If there are no datasources, we cannot create queries
@@ -167,7 +167,7 @@ function QueryModal({
   onClose: () => void;
   onChange: (queries: QueryUseSettings[]) => void;
 }) {
-  const availableQueries = useQueries();
+  const availableQueries = useSiteQueries();
   const [showCreationForm, setShowCreationForm] = useState(initialQueries.length === 0);
   const [editingQuery, setEditingQuery] = useState<QueryUseSettings | null>(null);
   const [queries, setQueries] = useState<QueryUseSettings[]>(initialQueries);
@@ -214,7 +214,6 @@ function QueryModal({
           Page queries can be used for fetching dynamic content and use it in your page. You can specify
           parameters for queries that accept them. Up to 5 queries can be set for a page.
         </Dialog.Description>
-
         {showCreationForm && (
           <QueryEditor
             showCancelBtn={initialQueries.length > 0}
@@ -292,7 +291,7 @@ function QueryEditor({
       params: [],
     },
   );
-  const queryReference = useQuery(query?.queryId);
+  const queryReference = useSiteQuery(query?.queryId);
   const params = queryReference?.parameters ?? [];
 
   const reset = () => {
@@ -302,7 +301,7 @@ function QueryEditor({
   };
 
   const datasource = useDatasource(queryReference?.datasourceId);
-  const availableQueries = useQueries();
+  const availableQueries = useSiteQueries();
   const pageParams = usePagePathParams();
 
   const validateQuery = () => {

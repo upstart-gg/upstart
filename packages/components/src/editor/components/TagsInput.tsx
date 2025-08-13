@@ -102,7 +102,7 @@ export default function TagsInput({
       inputValue={inputValue}
       components={components}
       value={value}
-      onChange={(newValue) => setValue(newValue)}
+      onChange={(newValue) => setValue(newValue ?? [])}
       onInputChange={(newValue) => setInputValue(newValue)}
       onKeyDown={handleKeyDown}
       classNames={getClassNames(className)}

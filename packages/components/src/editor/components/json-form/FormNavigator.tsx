@@ -10,7 +10,7 @@ import {
 } from "react";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 import type { NavItem, NavItemProperty } from "./types";
-import { processObjectSchemaToFields } from "./field-factory";
+import ObjectFields from "./field-factory";
 import { type TObject, Type } from "@sinclair/typebox";
 import { tx } from "@upstart.gg/style-system/twind";
 
@@ -70,18 +70,18 @@ const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
 
 function SchemaField({ item }: { item: NavItemProperty }) {
   const { onChange, formData, formSchema, brickId } = useFormNavigation();
-  const fields = processObjectSchemaToFields({
-    schema: Type.Object({ [item.id]: item.schema }, item.schema),
-    formData,
-    formSchema,
-    onChange,
-    options: {
-      brickId,
-      parents: item.path.split(".").slice(0, -1),
-    },
-  });
-
-  return fields.length ? fields : null;
+  return (
+    <ObjectFields
+      schema={Type.Object({ [item.id]: item.schema }, item.schema)}
+      formData={formData}
+      formSchema={formSchema}
+      onChange={onChange}
+      options={{
+        brickId,
+        parents: item.path.split(".").slice(0, -1),
+      }}
+    />
+  );
 }
 
 // Main navigation component

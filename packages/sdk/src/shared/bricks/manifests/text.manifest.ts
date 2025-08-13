@@ -9,6 +9,7 @@ import { Type } from "@sinclair/typebox";
 import { alignItemsRef } from "../props/align";
 import { shadowRef } from "../props/effects";
 import { colorPresetRef } from "../props/color-preset";
+import { loopRef } from "../props/dynamic";
 
 export const manifest = defineBrickManifest({
   type: "text",
@@ -51,6 +52,7 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
     ),
     border: Type.Optional(borderRef()),
     shadow: Type.Optional(shadowRef()),
+    loop: Type.Optional(loopRef()),
   }),
 });
 

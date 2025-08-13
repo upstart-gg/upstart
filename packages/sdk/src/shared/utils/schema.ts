@@ -1,4 +1,5 @@
 import type { TArray, TObject, TSchema } from "@sinclair/typebox";
+import type { PageAttributes } from "../attributes";
 
 export function normalizeSchemaEnum(schema: TSchema): Array<{ const: string; title: string }> {
   if (!("enum" in schema)) {
@@ -102,7 +103,7 @@ function getNestedDefaults(schema: TSchema, mode?: "mobile" | "desktop"): unknow
 export type FieldFilter<
   T extends TSchema = TSchema,
   P extends Record<string, unknown> = Record<string, unknown>,
-> = (propsSchema: T, formData: P) => boolean;
+> = (propsSchema: T, formData: P, pageAttributes: PageAttributes) => boolean;
 
 export function filterSchemaProperties(schema: TObject, filter: (prop: TSchema) => boolean) {
   function extractProperties(schema: TObject): Record<string, TSchema> {

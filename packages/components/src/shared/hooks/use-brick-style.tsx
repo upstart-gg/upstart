@@ -8,6 +8,7 @@ import { tx, css } from "@upstart.gg/style-system/twind";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
 import { getStyleProperties } from "../styles/style-props";
+import { usePageAttributes } from "~/editor/hooks/use-page-data";
 
 function useClassesFromStyleProps<T extends BrickManifest>(
   stylesProps: Record<string, string>,
@@ -15,6 +16,7 @@ function useClassesFromStyleProps<T extends BrickManifest>(
   type: "brick" | "wrapper",
 ) {
   const { props, mobileProps } = brick;
+  const pageAttributes = usePageAttributes();
   const mergedProps = merge({}, defaultProps[brick.type].props, props);
 
   const manifest = useBrickManifest(brick.type);
@@ -26,7 +28,7 @@ function useClassesFromStyleProps<T extends BrickManifest>(
       const resolvedField = resolveSchema(manifestField);
       if (resolvedField.metadata?.filter) {
         const filter = resolvedField.metadata.filter as FieldFilter;
-        if (!filter(resolvedField, mergedProps)) {
+        if (!filter(resolvedField, mergedProps, pageAttributes)) {
           acc.push(key);
         }
       }

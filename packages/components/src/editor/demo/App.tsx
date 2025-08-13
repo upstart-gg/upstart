@@ -8,10 +8,11 @@ import {
 import { ClientOnly } from "~/shared/utils/client-only";
 // import "@upstart.gg/style-system/default-theme.css";
 // import "@upstart.gg/components/dist/assets/style.css";
-import { createEmptyConfig } from "@upstart.gg/sdk/shared/site";
+import { createEmptyConfig, type SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
 
-export default function App({ path }: { path: string }) {
-  const siteConfig = createEmptyConfig("a site about coffee and tea");
+export default function App({ path, config }: { path: string; config?: SiteAndPagesConfig }) {
+  const siteConfig = config ?? createEmptyConfig("a site about coffee and tea");
+  console.log("Site ID: %s", siteConfig.site.id);
   const searchParams = new URL(`http://localhost${path}`).searchParams;
   const p = searchParams.get("p");
   const pageId = (siteConfig.pages.find((page) => page.id === p) ?? siteConfig.pages[0]).id;

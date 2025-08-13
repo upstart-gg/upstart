@@ -9,6 +9,8 @@ import {
   TextField,
   Tooltip,
 } from "@upstart.gg/style-system/system";
+import { PiListNumbersLight } from "react-icons/pi";
+
 import { useEditorHelpers, useModal } from "~/editor/hooks/use-editor";
 import { BsDatabaseDown, BsDatabase, BsAt, BsCrosshair } from "react-icons/bs";
 import type { TSchema } from "@sinclair/typebox";
@@ -16,7 +18,7 @@ import { type Datasource, type Query, querySchema } from "@upstart.gg/sdk/shared
 import { getDatasourceIndexedFieldsWithTitles } from "@upstart.gg/sdk/shared/datasources";
 import { ajv } from "@upstart.gg/sdk/shared/ajv";
 import { Fragment, startTransition, useCallback, useState } from "react";
-import { useDraftHelpers, useQueries } from "../hooks/use-page-data";
+import { useDraftHelpers, useSiteQueries } from "../hooks/use-page-data";
 import { useDatasource, useDatasources } from "../hooks/use-datasource";
 import { FieldTitle } from "./json-form/field-factory";
 import { TbPlus } from "react-icons/tb";
@@ -50,7 +52,7 @@ function ModalQueries() {
   const [showCreationForm, setShowCreationForm] = useState(false);
   const [editingQuery, setEditingQuery] = useState<Query | null>(null);
   const editorHelpers = useEditorHelpers();
-  const queries = useQueries();
+  const queries = useSiteQueries();
   const datasources = useDatasources();
   const { hideModal } = useEditorHelpers();
   return (
@@ -110,12 +112,18 @@ function ModalQueries() {
               className="flex items-center justify-between p-4 [&:not(:last-child)]:border-b border-gray-200 "
             >
               <div className="flex flex-col gap-2">
-                <span className="font-medium">{query.label}</span>
+                <div className="font-medium">{query.label}</div>
                 <div className="flex gap-6 items-center justify-start text-sm  text-gray-500">
                   <Tooltip content={`Database`}>
-                    <span className="inline-flex gap-0.5 items-center cursor-help">
+                    <span className="inline-flex gap-1 items-center cursor-help">
                       <BsDatabase className="text-upstart-500" />
                       {query.datasourceId}
+                    </span>
+                  </Tooltip>
+                  <Tooltip content={`Number of items`}>
+                    <span className="inline-flex gap-1 items-center cursor-help">
+                      <PiListNumbersLight className="text-upstart-500" />
+                      {query.limit}
                     </span>
                   </Tooltip>
                   {/* <Tooltip content={`Alias`}>
@@ -126,7 +134,7 @@ function ModalQueries() {
                   </Tooltip> */}
                   {(query.parameters?.length ?? 0) > 0 && (
                     <Tooltip content={`Parameters`}>
-                      <span className="inline-flex gap-0.5 items-center cursor-help">
+                      <span className="inline-flex gap-1 items-center cursor-help">
                         <BsCrosshair className="text-upstart-500" />
                         {query.parameters!.join(", ")}
                       </span>

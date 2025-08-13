@@ -34,6 +34,7 @@ import {
   autoUpdate,
   type Placement,
   FloatingPortal,
+  Tooltip,
 } from "@upstart.gg/style-system/system";
 import BaseComponent from "~/shared/components/BrickComponent";
 import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
@@ -47,6 +48,7 @@ import { getBrickResizeOptions } from "~/shared/utils/layout-utils";
 import useIsHovered from "../hooks/use-is-hovered";
 import { useDraftHelpers, useSectionByBrickId } from "../hooks/use-page-data";
 import { IoIosArrowBack, IoIosArrowUp, IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
+import { MdRepeat } from "react-icons/md";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -340,9 +342,21 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                     </>
                   )}
 
-                {/* Arrows */}
                 {previewMode === "desktop" && !dynamicPreview && brick.id === selectedBrickId && (
                   <BrickArrows brick={brick} />
+                )}
+                {typeof brick.props.loop !== "undefined" && (
+                  <Tooltip content="This brick is looping over a query result">
+                    <div
+                      className={tx(
+                        `group-hover/brick:opacity-100 absolute cursor-help -top-4 -right-4 z-[99999] w-5 h-5 rounded-full
+            flex items-center justify-center text-upstart-500 group/dyn-helper bg-white/90 shadow border border-upstart-500`,
+                        brick.id === selectedBrickId ? "opacity-100" : "opacity-0",
+                      )}
+                    >
+                      <MdRepeat className="w-3 h-3" />
+                    </div>
+                  </Tooltip>
                 )}
               </div>
             </BrickContextMenu>

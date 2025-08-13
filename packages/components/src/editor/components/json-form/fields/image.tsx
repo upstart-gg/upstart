@@ -9,15 +9,15 @@ import { debounce } from "lodash-es";
 import { IoMdClose } from "react-icons/io";
 import { FieldTitle } from "../field-factory";
 import { useUploader } from "../../UploaderContext";
-import { useDynamicParent } from "~/editor/hooks/use-page-data";
 import { useDynamicTextEditor } from "~/editor/hooks/use-editable-text";
+import { usePageQueries } from "~/editor/hooks/use-page-data";
 
 const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
   const { schema, formData, onChange, title, description, currentValue, brickId } = props;
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);
   const { onImageUpload } = useUploader();
-  const dynamicParent = useDynamicParent(brickId);
+  const pageQueries = usePageQueries();
 
   const onDynamicSrcChange = (newSrc: string) => {
     onPropsChange({ src: newSrc });
@@ -34,7 +34,7 @@ const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
 
   const debouncedOnPropsChange = debounce(onPropsChange, 300);
 
-  if (dynamicParent) {
+  if (pageQueries.length > 0) {
     return (
       <div className="field field-string basis-full flex flex-col gap-1">
         <FieldTitle title={title} description={description} />

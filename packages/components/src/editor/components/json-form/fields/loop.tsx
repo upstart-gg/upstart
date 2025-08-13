@@ -29,6 +29,8 @@ const DynamicField: FC<FieldProps<LoopSettings | undefined>> = (props) => {
     return null;
   }
 
+  const loopableQueries = pageQueries.filter((q) => !q.queryInfo?.limit || q.queryInfo?.limit > 1);
+
   return (
     <div className="layout-field w-full flex flex-col gap-3">
       <div className="flex items-center justify-between">
@@ -40,7 +42,7 @@ const DynamicField: FC<FieldProps<LoopSettings | undefined>> = (props) => {
           <Select.Trigger radius="medium" variant="ghost" className="!mr-px" />
           <Select.Content position="popper">
             <Select.Item value={NOLOOP}>Do not loop</Select.Item>
-            {pageQueries.map((query) => (
+            {loopableQueries.map((query) => (
               <Select.Item key={query.alias} value={query.alias}>
                 {query.alias} - {query.queryInfo?.label}
               </Select.Item>

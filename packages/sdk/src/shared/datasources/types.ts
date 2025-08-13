@@ -342,15 +342,13 @@ export const querySchema = Type.Object({
     title: "Database",
     description: "ID of the datasource to query",
   }),
-  limit: Type.Optional(
-    Type.Number({
-      title: "Limit",
-      description:
-        "Limit the number of records to fetch from the datasource. Setting to 1 will fetch and render only one item.",
-      minimum: 1,
-      default: 10,
-    }),
-  ),
+  limit: Type.Number({
+    title: "Limit",
+    description: "Limit the number of records to fetch from the datasource.",
+    minimum: 1,
+    maximum: 50,
+    default: 10,
+  }),
   sortDirection: Type.Optional(
     Type.Union([
       Type.Null(),
