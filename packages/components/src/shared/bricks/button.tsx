@@ -3,11 +3,13 @@ import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { css, tx } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import BrickRoot from "../components/BrickRoot";
+import { useSitemap } from "~/editor/hooks/use-page-data";
 
 export default function Button({ brick, editable }: BrickProps<Manifest>) {
   const styles = useBrickStyle<Manifest>(brick);
   const { props } = brick;
   const classes = Object.values(styles);
+  const sitemap = useSitemap();
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (editable) {
@@ -18,9 +20,10 @@ export default function Button({ brick, editable }: BrickProps<Manifest>) {
       if (props.linkToUrlOrPageId.startsWith("http")) {
         window.open(props.linkToUrlOrPageId, "_blank");
       } else {
-        // TODO: Handle internal page navigation
-        // Handle page navigation logic here
-        console.log(`Navigate to page ID: ${props.linkToUrlOrPageId}`);
+        const page = sitemap.find((p) => p.id === props.linkToUrlOrPageId);
+        if (page) {
+          window.location.href = page.path; // Navigate to the page URL if it exists
+        }
       }
     }
   };
@@ -33,13 +36,13 @@ export default function Button({ brick, editable }: BrickProps<Manifest>) {
       type="button"
       className={tx(
         classes,
-        "font-medium min-h-fit max-h-fit flex items-center text-center justify-center flex-wrap text-ellipsis py-[0.55em] px-[1em]",
+        "btn",
         css({
           "&:hover": {
             filter: "brightness(1.15)",
           },
         }),
-        // editable && "pointer-events-none",
+        editable && "pointer-events-none",
       )}
       data-prevented-by-editor={editable ? "true" : "false"}
       onClick={handleClick}

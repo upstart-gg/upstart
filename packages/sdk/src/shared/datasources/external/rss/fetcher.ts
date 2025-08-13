@@ -4,7 +4,10 @@ import type { RssSchema } from "./schema";
 import type { DatasourceFetcher } from "../../fetcher";
 import { createPlaceholderReplacer, placeholderRx } from "../../utils";
 
-const fetchRss: DatasourceFetcher<RssSchema, null, RssOptions> = async ({ options, attr }) => {
+const fetchRss: DatasourceFetcher<RssSchema, null, RssOptions> = async ({
+  options,
+  pageAttributes: attr,
+}) => {
   const replacer = createPlaceholderReplacer(attr);
   const url = options.url.replace(placeholderRx, replacer);
   const content = await (await fetch(url)).text();

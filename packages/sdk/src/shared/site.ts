@@ -1,21 +1,21 @@
 import { Type, type Static } from "@sinclair/typebox";
-import { defaultAttributesSchema, resolveAttributes, type AttributesSchema } from "./attributes";
 import { generateId, type Section } from "./bricks";
 import { datarecordsList } from "./datarecords/types";
-import { datasourcesList } from "./datasources/types";
+import { datasourcesList, querySchema } from "./datasources/types";
 import { pageSchema } from "./page";
 import { sitePrompt } from "./prompt";
-import { pageInfoSchema, sitemapSchema } from "./sitemap";
+import { sitemapSchema } from "./sitemap";
 import { defaultTheme, themeSchema } from "./theme";
+import { resolvePageAttributes, resolveSiteAttributes, siteAttributesSchema } from "./attributes";
 
 export const siteSchema = Type.Object({
   id: Type.String(),
   label: Type.String(),
   hostname: Type.String(),
-  attributes: defaultAttributesSchema,
-  attr: defaultAttributesSchema,
+  attributes: siteAttributesSchema,
   datasources: datasourcesList,
   datarecords: datarecordsList,
+  queries: Type.Array(querySchema),
   themes: Type.Array(themeSchema),
   theme: themeSchema,
   sitemap: sitemapSchema,
@@ -25,27 +25,14 @@ export const siteSchema = Type.Object({
 /**
  * Site config has always attributes and attr.
  */
-export type Site = Omit<Static<typeof siteSchema>, "attributes"> & {
-  attributes: AttributesSchema;
-};
+export type Site = Static<typeof siteSchema>;
 
-const partialSiteAndPagesSchema = Type.Object({
-  site: Type.Omit(siteSchema, ["attributes"]),
-  pages: Type.Array(Type.Composite([Type.Omit(pageSchema, ["attributes"]), pageInfoSchema])),
+const siteAndPagesSchema = Type.Object({
+  site: siteSchema,
+  pages: Type.Array(pageSchema),
 });
 
-type PartialSiteAndPagesSchema = Static<typeof partialSiteAndPagesSchema>;
-
-export type SiteAndPagesConfig = {
-  site: PartialSiteAndPagesSchema["site"] & {
-    attributes: AttributesSchema;
-  };
-  pages: Array<
-    Omit<PartialSiteAndPagesSchema["pages"][number], "attributes"> & {
-      attributes?: AttributesSchema;
-    }
-  >;
-};
+export type SiteAndPagesConfig = Static<typeof siteAndPagesSchema>;
 
 export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
   let order = 0;
@@ -73,8 +60,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           sectionsPlan: [],
         },
       ],
-      attributes: defaultAttributesSchema,
-      attr: resolveAttributes(),
+      attributes: resolveSiteAttributes(),
       datarecords: [
         {
           id: "a7f26d80-d68e-4b7a-a4a3-e41c454670ce",
@@ -261,6 +247,12 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   format: "slug",
                   title: "Slug",
                 },
+                avatarUrl: {
+                  title: "Avatar URL",
+                  type: "string",
+                  format: "uri",
+                  default: "https://placehold.co/100x100",
+                },
                 firstName: {
                   type: "string",
                   title: "First Name",
@@ -307,9 +299,74 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             },
             examples: [
               {
+                $id: "example-1",
+                $publicationDate: "2023-01-01T00:00:00Z",
+                $lastModificationDate: "2023-01-01T00:00:00Z",
+                $slug: "john-doe",
                 firstName: "John",
                 lastName: "Doe",
                 email: "john.doe@example.com",
+                avatarUrl: "https://placehold.co/100x100",
+                height: 180,
+                admin: false,
+                startedOn: "2020-01-01",
+                tags: ["developer", "javascript"],
+              },
+              {
+                $id: "example-2",
+                $publicationDate: "2023-01-02T00:00:00Z",
+                $lastModificationDate: "2023-01-02T00:00:00Z",
+                $slug: "jane-smith",
+                firstName: "Jane",
+                lastName: "Smith",
+                email: "jane.smith@example.com",
+                avatarUrl: "https://placehold.co/100x100",
+                height: 165,
+                admin: false,
+                startedOn: "2020-01-01",
+                tags: ["designer", "figma"],
+              },
+              {
+                $id: "example-3",
+                $publicationDate: "2023-01-03T00:00:00Z",
+                $lastModificationDate: "2023-01-03T00:00:00Z",
+                $slug: "alice-johnson",
+                firstName: "Alice",
+                lastName: "Johnson",
+                email: "alice.johnson@example.com",
+                avatarUrl: "https://placehold.co/100x100",
+                height: 170,
+                admin: false,
+                startedOn: "2020-01-01",
+                tags: ["developer", "react"],
+              },
+              {
+                $id: "example-4",
+                $publicationDate: "2023-01-04T00:00:00Z",
+                $lastModificationDate: "2023-01-04T00:00:00Z",
+                $slug: "bob-brown",
+                firstName: "Bob",
+                lastName: "Brown",
+                email: "bob.brown@example.com",
+                avatarUrl: "https://placehold.co/100x100",
+                height: 175,
+                admin: false,
+                startedOn: "2020-01-01",
+                tags: ["developer", "vue"],
+              },
+              {
+                $id: "example-5",
+                $publicationDate: "2023-01-05T00:00:00Z",
+                $lastModificationDate: "2023-01-05T00:00:00Z",
+                $slug: "charlie-white",
+                firstName: "Charlie",
+                lastName: "White",
+                email: "charlie.white@example.com",
+                avatarUrl: "https://placehold.co/100x100",
+                height: 160,
+                admin: false,
+                startedOn: "2020-01-01",
+                tags: ["designer", "figma"],
               },
             ],
           },
@@ -331,21 +388,10 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               name: "idx_unique_lastModificationDate",
             },
             {
-              fields: ["firstName"],
-              name: "idx_unique_firstName",
-            },
-            {
               fields: ["email"],
               name: "idx_unique_email",
             },
-            {
-              fields: ["lastName"],
-              name: "idx_unique_lastName",
-            },
-            {
-              fields: ["height"],
-              name: "idx_unique_height",
-            },
+
             {
               fields: ["admin"],
               name: "idx_unique_admin",
@@ -441,13 +487,28 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           ],
         },
       ],
+      queries: [
+        {
+          id: "get-employees",
+          label: "Get all employees",
+          datasourceId: "employees",
+          limit: 50,
+        },
+        {
+          id: "get-employee",
+          label: "Get employee by ID",
+          datasourceId: "employees",
+          limit: 1,
+          parameters: ["$id"],
+        },
+      ],
     },
     // we need a fake page
     pages: [
       {
         id: "_default_",
         label: "First page with really really long name that should be truncated",
-        path: "/",
+        path: "/blog/:slug",
         sections: [
           {
             id: `s_${generateId()}`,
@@ -461,7 +522,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 id: generateId(),
                 type: "navbar",
                 props: {
-                  backgroundColor: "neutral-dark-gradient",
                   brand: "My Site",
                   navigation: {
                     staticItems: [{ urlOrPageId: "/about" }, { urlOrPageId: "/contact" }],
@@ -514,7 +574,11 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 id: generateId(),
                 type: "box",
                 props: {
+                  loop: {
+                    over: "allEmployees",
+                  },
                   direction: "flex-row",
+
                   $children: [
                     {
                       id: generateId(),
@@ -547,48 +611,48 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   ],
                 },
               },
-              {
-                // vertical box
-                id: generateId(),
-                type: "box",
-                props: {
-                  direction: "flex-col",
-                  $children: [
-                    {
-                      id: generateId(),
-                      type: "button",
-                      props: {
-                        label: "Button #1",
-                      },
-                    },
-                    {
-                      id: generateId(),
-                      type: "button",
-                      props: {
-                        label: "Button #2",
-                      },
-                    },
-                    {
-                      id: generateId(),
-                      type: "button",
-                      props: {
-                        label: "Button #3",
-                      },
-                    },
-                    {
-                      id: generateId(),
-                      type: "button",
-                      props: {
-                        label: "Button #4",
-                      },
-                    },
-                  ],
-                },
-              },
+              // {
+              //   // vertical box
+              //   id: generateId(),
+              //   type: "box",
+              //   props: {
+              //     direction: "flex-col",
+              //     $children: [
+              //       {
+              //         id: generateId(),
+              //         type: "button",
+              //         props: {
+              //           label: "Button #1",
+              //         },
+              //       },
+              //       {
+              //         id: generateId(),
+              //         type: "button",
+              //         props: {
+              //           label: "Button #2",
+              //         },
+              //       },
+              //       {
+              //         id: generateId(),
+              //         type: "button",
+              //         props: {
+              //           label: "Button #3",
+              //         },
+              //       },
+              //       {
+              //         id: generateId(),
+              //         type: "button",
+              //         props: {
+              //           label: "Button #4",
+              //         },
+              //       },
+              //     ],
+              //   },
+              // },
               {
                 // dynamic box
                 id: generateId(),
-                type: "dynamic",
+                type: "box",
                 props: {
                   direction: "flex-col",
                   datasource: {
@@ -677,7 +741,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             label: "Dynamic",
             bricks: [
               {
-                type: "dynamic",
+                type: "box",
                 props: {
                   alignSelf: "self-auto",
                   datasource: {},
@@ -703,7 +767,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   padding: "p-4",
                   fontSize: "inherit",
                   button: {
-                    color: "btn-color-primary",
                     size: "block",
                     rounding: "rounded-md",
                     border: {
@@ -763,7 +826,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             bricks: [
               {
                 id: generateId(),
-                type: "dynamic",
+                type: "box",
                 props: {
                   alignSelf: "self-auto",
                   datasource: {
@@ -860,7 +923,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   label: "hey ho!",
                   justifyContent: "justify-center",
                   type: "button",
-                  color: "btn-color-primary",
                   height: "42px",
                 },
                 id: generateId(),
@@ -894,7 +956,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                     label: "Register",
                     size: "block",
                     borderRadius: "rounded-lg",
-                    color: "btn-color-primary",
                   },
                 },
               },
@@ -1013,8 +1074,26 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           },
         ] satisfies Section[],
         tags: [],
-        attributes: defaultAttributesSchema,
-        attr: resolveAttributes(),
+        attributes: resolvePageAttributes({
+          path: "/blog/:slug",
+          queries: [
+            {
+              queryId: "get-employee",
+              alias: "employee",
+              params: [
+                {
+                  field: "$id",
+                  op: "eq",
+                  value: ":slug",
+                },
+              ],
+            },
+            {
+              queryId: "get-employees",
+              alias: "allEmployees",
+            },
+          ],
+        }),
       },
       {
         id: "_page_2",
@@ -1033,7 +1112,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 id: generateId(),
                 type: "navbar",
                 props: {
-                  backgroundColor: "neutral-dark-gradient",
                   brand: "My Site",
                   navigation: {
                     staticItems: [{ urlOrPageId: "/about" }, { urlOrPageId: "/contact" }],
@@ -1063,7 +1141,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                     label: "Register",
                     position: "center",
                     borderRadius: "rounded-lg",
-                    color: "btn-color-primary",
                   },
                   align: "horizontal",
                 },
@@ -1089,9 +1166,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                   intro: "This is a complex form with various field types.",
                   button: {
                     label: "Register 2",
-                    position: "left",
                     borderRadius: "rounded-lg",
-                    color: "btn-color-primary",
                   },
                 },
               },
@@ -1208,7 +1283,9 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             id: `s_content-${generateId()}`,
             label: "Bottom",
             order: ++order,
-            props: {},
+            props: {
+              direction: "flex-row",
+            },
             bricks: [
               {
                 id: `b_${generateId()}`,
@@ -1252,8 +1329,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           },
         ] satisfies Section[],
         tags: [],
-        attributes: defaultAttributesSchema,
-        attr: resolveAttributes(),
+        attributes: resolvePageAttributes(),
       },
     ],
   };

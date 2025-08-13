@@ -34,6 +34,7 @@ import {
   autoUpdate,
   type Placement,
   FloatingPortal,
+  Tooltip,
 } from "@upstart.gg/style-system/system";
 import BaseComponent from "~/shared/components/BrickComponent";
 import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
@@ -47,6 +48,7 @@ import { getBrickResizeOptions } from "~/shared/utils/layout-utils";
 import useIsHovered from "../hooks/use-is-hovered";
 import { useDraftHelpers, useSectionByBrickId } from "../hooks/use-page-data";
 import { IoIosArrowBack, IoIosArrowUp, IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
+import { MdRepeat } from "react-icons/md";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -54,6 +56,7 @@ type BrickWrapperProps = ComponentProps<"div"> & {
   index: number;
   // Nesting level of the brick
   level?: number;
+  dynamicPreview?: boolean;
 };
 
 function getDropAnimationStyle(
@@ -105,7 +108,7 @@ function useBarPlacements(brick: Brick): Placement[] {
 }
 
 const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
-  ({ brick, isContainerChild, index, level = 0 }, ref) => {
+  ({ brick, isContainerChild, index, level = 0, dynamicPreview }, ref) => {
     const hasMouseMoved = useRef(false);
     const selectedBrickId = useSelectedBrickId();
     const previewMode = usePreviewMode();
@@ -140,6 +143,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
 
     const hover = useHover(barsFloatingContext, {
       handleClose: safePolygon(),
+      enabled: !dynamicPreview,
       delay: {
         open: 50,
         close: 200,
@@ -180,16 +184,18 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     const onBrickWrapperClick = useCallback(
       (e: MouseEvent<HTMLElement>) => {
+        console.debug("EditableBrickWrapper: Click on brick", e);
         const originalTarget = e.target as HTMLElement;
-        const brickTarget = e.currentTarget as HTMLElement;
+        const brickTarget = e.currentTarget as HTMLElement | null;
         if (
           hasMouseMoved.current ||
-          !brickTarget.matches("[data-brick]") ||
+          (!brickTarget?.matches("[data-brick]") && !originalTarget?.matches("[data-brick]")) ||
           (e.defaultPrevented && !originalTarget.closest('[data-prevented-by-editor="true"]'))
         ) {
           console.debug(
             "EditableBrickWrapper: Click ignored due to mouse movement or default prevented",
             originalTarget,
+            e,
           );
           return;
         }
@@ -251,7 +257,11 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     });
 
     const isDragDisabled =
-      isMouseOverPanel || !manifest.movable || isContainerChild || previewMode === "mobile";
+      !!dynamicPreview ||
+      isMouseOverPanel ||
+      !manifest.movable ||
+      isContainerChild ||
+      previewMode === "mobile";
 
     return (
       <Draggable key={brick.id} draggableId={brick.id} index={index} isDragDisabled={isDragDisabled}>
@@ -282,12 +292,13 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 style={getDropAnimationStyle(section?.id, provided.draggableProps.style, snapshot)}
                 className={tx(
                   wrapperClass,
+                  dynamicPreview && "opacity-50 pointer-events-none",
                   snapshot.isDragging
                     ? "!z-[9999] !shadow-2xl overflow-hidden !cursor-grabbing"
                     : "hover:cursor-auto",
                 )}
                 onClick={onBrickWrapperClick}
-                onDoubleClick={onDoubleClick}
+                onDoubleClickCapture={onDoubleClick}
               >
                 <BaseComponent brick={brick} editable />
                 <FloatingPortal>
@@ -304,6 +315,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 {manifests[brick.type]?.resizable &&
                   !draggingBrickType &&
                   !snapshot.isDragging &&
+                  !dynamicPreview &&
                   selectedBrickId === brick.id && (
                     <>
                       {(resizeOpts.canGrowVertical || resizeOpts.canShrinkVertical) && (
@@ -330,8 +342,22 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                     </>
                   )}
 
-                {/* Arrows */}
-                {previewMode === "desktop" && brick.id === selectedBrickId && <BrickArrows brick={brick} />}
+                {previewMode === "desktop" && !dynamicPreview && brick.id === selectedBrickId && (
+                  <BrickArrows brick={brick} />
+                )}
+                {typeof brick.props.loop !== "undefined" && (
+                  <Tooltip content="This brick is looping over a query result">
+                    <div
+                      className={tx(
+                        `group-hover/brick:opacity-100 absolute cursor-help -top-4 -right-4 z-[99999] w-5 h-5 rounded-full
+            flex items-center justify-center text-upstart-500 group/dyn-helper bg-white/90 shadow border border-upstart-500`,
+                        brick.id === selectedBrickId ? "opacity-100" : "opacity-0",
+                      )}
+                    >
+                      <MdRepeat className="w-3 h-3" />
+                    </div>
+                  </Tooltip>
+                )}
               </div>
             </BrickContextMenu>
           );
@@ -523,27 +549,6 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
               </ContextMenu.Item>
             )}
 
-            {/* <ContextMenu.Item
-              shortcut="⌘C"
-              onClick={(e) => {
-                navigator.clipboard
-                  .writeText(JSON.stringify(brick))
-                  .then(() => {
-                    toast("Brick copied to clipboard. You can paste it to another page.", {
-                      duration: 4000,
-                    });
-                  })
-                  .catch((err) => {
-                    console.error("Failed to copy: ", err);
-                    toast.error("Failed to copy brick to clipboard.", {
-                      duration: 4000,
-                    });
-                  });
-                e.stopPropagation();
-              }}
-            >
-              Copy
-            </ContextMenu.Item> */}
             {canMovePrev && (
               <ContextMenu.Item
                 shortcut={isContainerChild ? "⌘↑" : "⌘←"}
@@ -586,50 +591,6 @@ const BrickContextMenu = forwardRef<HTMLDivElement, BrickContextMenuProps>(
                 </ContextMenu.CheckboxItem>
               </ContextMenu.SubContent>
             </ContextMenu.Sub>
-            {/* <ContextMenu.CheckboxItem
-              checked={
-                previewMode === "mobile" ? brick.mobileProps?.growHorizontally : brick.props.growHorizontally
-              }
-              onCheckedChange={(newVal) => {
-                // e.stopPropagation();
-                draftHelpers.updateBrickProps(
-                  brick.id,
-                  {
-                    growHorizontally: newVal,
-                    width: "auto",
-                  },
-                  previewMode === "mobile",
-                );
-              }}
-            >
-              Auto expand
-            </ContextMenu.CheckboxItem> */}
-            {/* {!isContainerChild && previewMode !== "mobile" && (
-              <ContextMenu.Sub>
-                <ContextMenu.SubTrigger>Vertical Position</ContextMenu.SubTrigger>
-                <ContextMenu.SubContent>
-                  <ContextMenu.RadioGroup
-                    value={brick.props.alignSelf}
-                    onValueChange={(value) => {
-                      draftHelpers.updateBrickProps(brick.id, {
-                        alignSelf: value,
-                      });
-                    }}
-                  >
-                    {Object.entries(normalizeSchemaEnum(commonProps.alignSelf)).map(([key, value]) => (
-                      <ContextMenu.RadioItem
-                        key={key}
-                        value={value.const}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {value.title}
-                      </ContextMenu.RadioItem>
-                    ))}
-                  </ContextMenu.RadioGroup>
-                </ContextMenu.SubContent>
-              </ContextMenu.Sub>
-            )} */}
-
             {parentContainer && (
               <>
                 <ContextMenu.Separator />

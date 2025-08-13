@@ -2,7 +2,7 @@ import type { FieldProps } from "./types";
 import { Text } from "@upstart.gg/style-system/system";
 import { Select } from "@upstart.gg/style-system/system";
 import { type TArray, type TObject, type TProperties, type TSchema, Type } from "@sinclair/typebox";
-import { useBrick, useDynamicParent } from "~/editor/hooks/use-page-data";
+import { useBrick } from "~/editor/hooks/use-page-data";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { type FC, useCallback } from "react";
@@ -19,45 +19,46 @@ type DatasourceMapping = {
 const DatasourceMappingField: FC<FieldProps<DatasourceMapping>> = (props) => {
   const { onChange, currentValue = { datasourceId: "1" } as DatasourceMapping, brickId } = props;
   const brickInfo = useBrick(brickId);
-  const dynamicParent = useDynamicParent(brickId);
-  invariant(brickInfo, `Could not find brick info for ${brickId} in DatasourceRefField`);
 
-  console.log("DatasourceMappingField props", props, brickInfo, dynamicParent);
+  return null;
+  // const dynamicParent = useDynamicParent(brickId);
 
-  const brickManifest = useBrickManifest(brickInfo.type);
-  const datasource = useDatasource(dynamicParent?.props.datasource?.id);
-  const schemaFields = filterSchemaProperties(brickManifest.props, (prop) => {
-    return prop.metadata?.category === "content" && !prop["ui:no-mapping"];
-  });
+  // console.log("DatasourceMappingField props", props, brickInfo, dynamicParent);
 
-  if (!datasource) {
-    return (
-      <div className="field field-datasource flex-1 px-2">
-        <Text className="text-sm text-gray-500">No datasource selected ({currentValue.datasourceId})</Text>
-      </div>
-    );
-  }
+  // const brickManifest = useBrickManifest(brickInfo.type);
+  // const datasource = useDatasource(dynamicParent?.props.datasource?.id);
+  // const schemaFields = filterSchemaProperties(brickManifest.props, (prop) => {
+  //   return prop.metadata?.category === "content" && !prop["ui:no-mapping"];
+  // });
 
-  return (
-    <div className="field field-datasource flex-1 p-2">
-      <div className="flex flex-col gap-6">
-        {Object.keys(brickManifest.props).length > 0 && (
-          <div className="flex flex-col flex-1 gap-2">
-            <FieldTitle title={"Fields mapping"} />
-            <FieldsMapper
-              schemaFields={schemaFields}
-              externalFields={datasource.schema.items.properties}
-              onChange={(mapping) => {
-                console.log("Mapping changed", mapping);
-                // onChange({ ...currentValue, $mapping: mapping });
-              }}
-              currentMapping={currentValue.$mapping ?? {}}
-            />
-          </div>
-        )}
-      </div>
-    </div>
-  );
+  // if (!datasource) {
+  //   return (
+  //     <div className="field field-datasource flex-1 px-2">
+  //       <Text className="text-sm text-gray-500">No datasource selected ({currentValue.datasourceId})</Text>
+  //     </div>
+  //   );
+  // }
+
+  // return (
+  //   <div className="field field-datasource flex-1 p-2">
+  //     <div className="flex flex-col gap-6">
+  //       {Object.keys(brickManifest.props).length > 0 && (
+  //         <div className="flex flex-col flex-1 gap-2">
+  //           <FieldTitle title={"Fields mapping"} />
+  //           <FieldsMapper
+  //             schemaFields={schemaFields}
+  //             externalFields={datasource.schema.items.properties}
+  //             onChange={(mapping) => {
+  //               console.log("Mapping changed", mapping);
+  //               // onChange({ ...currentValue, $mapping: mapping });
+  //             }}
+  //             currentMapping={currentValue.$mapping ?? {}}
+  //           />
+  //         </div>
+  //       )}
+  //     </div>
+  //   </div>
+  // );
 };
 
 function areFieldsCompatible(field1: TSchema, field2: TSchema) {

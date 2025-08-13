@@ -6,7 +6,7 @@ import { imageRef } from "../props/image";
 import { paddingRef } from "../props/padding";
 import { colorPresetRef } from "../props/color-preset";
 import { string, urlOrPageIdRef } from "../props/string";
-import { fontSize, fontSizeRef } from "../props/text";
+import { fontSizeRef } from "../props/text";
 import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({

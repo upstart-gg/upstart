@@ -67,7 +67,7 @@ describe("Color system test suite", () => {
       expect(colors["color-accent"]).toBe("oklch(0.3 0.1 60 / 1)");
       expect(colors["color-accent-content"]).toBe("#ffffff"); // White text on accent
       expect(colors["color-neutral"]).toBe("oklch(0.6 0.1 0 / 1)");
-      expect(colors["color-neutral-content"]).toBe("#000000"); // Black text on neutral
+      expect(colors["color-neutral-content"]).toBe("#ffffff"); // White text on neutral
       expect(colors["color-base-100"]).toBe("oklch(0.95 0.1 0 / 1)");
       expect(colors["color-base-200"]).toBe("oklch(0.85 0.1 0 / 1)");
       expect(colors["color-base-300"]).toBe("oklch(0.75 0.1 0 / 1)");

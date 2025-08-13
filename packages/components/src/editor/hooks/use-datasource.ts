@@ -10,3 +10,8 @@ export function useDatasources() {
   const draft = useDraft();
   return draft.datasources;
 }
+
+export function useDatasourceSamples(id?: string | null): Record<string, unknown>[] | undefined {
+  const datasource = useDatasource(id);
+  return datasource?.schema?.examples;
+}

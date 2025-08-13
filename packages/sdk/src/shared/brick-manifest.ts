@@ -98,7 +98,7 @@ export function getBrickManifestDefaults<M extends BrickManifest>(manifest: M) {
   return {
     ...manifest,
     props: getSchemaDefaults(manifest.props),
-    // mobileProps: {},
+    mobileProps: {},
     // ...(manifest.datarecord ? { datarecord: Value.Create(manifest.datarecord) } : {}),
   };
 }

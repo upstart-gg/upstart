@@ -13,18 +13,17 @@ import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { UrlOrPageIdSettings } from "@upstart.gg/sdk/shared/bricks/props/string";
 import { type ChangeEvent, type FC, useRef, useState } from "react";
-import { useDraftHelpers, useDynamicParent, useSitemap } from "~/editor/hooks/use-page-data";
+import { useDraftHelpers, usePagePathParams, usePageQueries, useSitemap } from "~/editor/hooks/use-page-data";
 import TextEditor from "~/shared/components/TextEditor";
-import { RiBracesLine } from "react-icons/ri";
 import { useDynamicTextEditor } from "~/editor/hooks/use-editable-text";
 
 export const StringField: FC<FieldProps<string>> = (props) => {
   const { currentValue, onChange, title, description, placeholder, schema, brickId } = props;
-  const dynamicParent = useDynamicParent(brickId);
+  const pageQueries = usePageQueries();
   const onChangeDebounced = useDebounceCallback(onChange, 300);
   const DynamicTextEditor = useDynamicTextEditor(props);
 
-  if (dynamicParent) {
+  if (pageQueries.length) {
     return (
       <div className="field field-string basis-full flex flex-col gap-1">
         <FieldTitle title={title} description={description} />
@@ -42,7 +41,7 @@ export const StringField: FC<FieldProps<string>> = (props) => {
           onChange={(e) => onChangeDebounced(e.target.value)}
           className={tx("!mt-1.5 scrollbar-thin", schema["ui:textarea-class"] ?? "h-24")}
           placeholder={placeholder}
-          size={"2"}
+          size={schema["ui:textarea-font-size"] ?? "2"}
           spellCheck={!!schema["ui:spellcheck"]}
         />
       ) : (
@@ -64,6 +63,7 @@ export const PathField: FC<FieldProps<string>> = (props) => {
   const onChangeDebounced = useDebounceCallback(onChange, 300);
   // remove leading slash
   const path = (currentValue || "").toString().replace(/^\//, "");
+  const params = usePagePathParams();
 
   return (
     <div className="field field-path basis-full">
@@ -78,6 +78,18 @@ export const PathField: FC<FieldProps<string>> = (props) => {
           <TbSlash className="bg-transparent h-5 w-5 rounded-md stroke-1 !-ml-1 !-mr-2 -rotate-[20deg]" />
         </TextField.Slot>
       </TextField.Root>
+      {params.length > 0 && (
+        <div className="mt-1.5 text-xs text-gray-500">
+          <span>You'll be able to use the variable{params.length > 1 ? "s" : ""} </span>{" "}
+          {params.map((param, index) => (
+            <span key={param} className="font-medium">
+              {param}
+              {index === params.length - 2 ? " and " : index < params.length - 1 ? ", " : ""}{" "}
+            </span>
+          ))}
+          in queries.
+        </div>
+      )}
     </div>
   );
 };
@@ -88,8 +100,8 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings>> = (props) => 
   const [type, setType] = useState<"url" | "pageId">(
     currentValue?.startsWith("http") || sitemap.length === 1 ? "url" : "pageId",
   );
-  const dynamicParent = useDynamicParent(brickId);
-  const externalLabel = dynamicParent ? "External / Dynamic" : "External link";
+  const pageQueries = usePageQueries();
+  const externalLabel = pageQueries.length ? "External / Dynamic" : "External link";
   const DynamicTextEditor = useDynamicTextEditor(props);
 
   return (
@@ -112,7 +124,7 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings>> = (props) => 
         </SegmentedControl.Root>
       </div>
       {type === "url" ? (
-        dynamicParent ? (
+        pageQueries.length > 0 ? (
           <div className="field field-string basis-full flex items-center gap-2 mt-2">
             {DynamicTextEditor}
           </div>

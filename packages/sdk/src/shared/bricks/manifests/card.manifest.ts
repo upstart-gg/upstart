@@ -1,6 +1,6 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { defineProps, group } from "../props/helpers";
-import { fontSize, textContentRef } from "../props/text";
+import { defineProps } from "../props/helpers";
+import { textContentRef } from "../props/text";
 import { BsCardText } from "react-icons/bs";
 import { imageRef } from "../props/image";
 import { type Static, type TObject, Type } from "@sinclair/typebox";
@@ -9,6 +9,7 @@ import { shadowRef } from "../props/effects";
 import { borderRef, roundingRef } from "../props/border";
 import { colorPresetRef } from "../props/color-preset";
 import { StringEnum } from "~/shared/utils/string-enum";
+import { loopRef } from "../props/dynamic";
 
 export const manifest = defineBrickManifest({
   type: "card",
@@ -161,6 +162,7 @@ export const manifest = defineBrickManifest({
       }),
     ),
     shadow: Type.Optional(shadowRef()),
+    loop: Type.Optional(loopRef()),
   }),
 });
 

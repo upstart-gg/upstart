@@ -24,7 +24,7 @@ import {
   type OnBeforeCaptureResponder,
 } from "@hello-pangea/dnd";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
-import { type Brick, createEmptyBrick, generateId } from "@upstart.gg/sdk/shared/bricks";
+import { createEmptyBrick, generateId } from "@upstart.gg/sdk/shared/bricks";
 import { Toaster } from "@upstart.gg/style-system/system";
 import { useIsLocalDev } from "../hooks/use-is-local-dev";
 import {
@@ -34,6 +34,7 @@ import {
   useGenerationState,
   useDraftHelpers,
 } from "../hooks/use-page-data";
+import Modal from "./Modal";
 
 const Tour = lazy(() => import("./Tour"));
 const NavBar = lazy(() => import("./NavBar"));
@@ -248,7 +249,7 @@ export default function Editor(props: EditorProps) {
           <Page
             page={{
               ...draft,
-              tags: [],
+              attributes: draft.pageAttributes,
             }}
           />
         </Suspense>
@@ -300,6 +301,7 @@ export default function Editor(props: EditorProps) {
           </Suspense>
         )}
         <Suspense>
+          <Modal />
           <Panel />
         </Suspense>
         <main

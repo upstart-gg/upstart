@@ -6,8 +6,7 @@ import { BsAlphabetUppercase } from "react-icons/bs";
 import type { BrickProps } from "../props/types";
 import { type Static, type TObject, Type } from "@sinclair/typebox";
 import { shadowRef, textShadowRef } from "../props/effects";
-import { borderRef, rounding, roundingRef } from "../props/border";
-import { alignItemsRef } from "../props/align";
+import { borderRef, roundingRef } from "../props/border";
 import { StringEnum } from "~/shared/utils/string-enum";
 import { colorPresetRef } from "../props/color-preset";
 

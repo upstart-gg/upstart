@@ -9,7 +9,6 @@ import { boolean } from "../props/boolean";
 import { VscLayoutPanelOff } from "react-icons/vsc";
 import type { BrickProps } from "../props/types";
 import { colorPresetRef } from "../props/color-preset";
-import { StringEnum } from "~/shared/utils/string-enum";
 
 export const manifest = defineBrickManifest({
   type: "navbar",
@@ -29,7 +28,7 @@ export const manifest = defineBrickManifest({
       color: Type.Optional(
         colorPresetRef({
           title: "Color",
-          default: "bg-primary-500 text-primary-content-500",
+          default: "primary-500",
         }),
       ),
       brand: Type.Optional(

@@ -10,7 +10,7 @@ import {
 } from "react";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 import type { NavItem, NavItemProperty } from "./types";
-import { processObjectSchemaToFields } from "./field-factory";
+import ObjectFields from "./field-factory";
 import { type TObject, Type } from "@sinclair/typebox";
 import { tx } from "@upstart.gg/style-system/twind";
 
@@ -28,7 +28,7 @@ type FormNavigatorContextType = {
 const FormNavigatorContext = createContext<FormNavigatorContextType | null>(null);
 
 // Custom hook to use navigation
-export const useFormNavigation = () => {
+const useFormNavigation = () => {
   const context = useContext(FormNavigatorContext);
   if (!context) {
     throw new Error("useNavigation must be used within a FormNavigatorContext");
@@ -37,7 +37,7 @@ export const useFormNavigation = () => {
 };
 
 // Create List component
-export const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
+const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
   const { navigateTo } = useFormNavigation();
   return (
     <ul className="list-none p-0 m-0">
@@ -70,18 +70,18 @@ export const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
 
 function SchemaField({ item }: { item: NavItemProperty }) {
   const { onChange, formData, formSchema, brickId } = useFormNavigation();
-  const fields = processObjectSchemaToFields({
-    schema: Type.Object({ [item.id]: item.schema }, item.schema),
-    formData,
-    formSchema,
-    onChange,
-    options: {
-      brickId,
-      parents: item.path.split(".").slice(0, -1),
-    },
-  });
-
-  return fields.length ? fields : null;
+  return (
+    <ObjectFields
+      schema={Type.Object({ [item.id]: item.schema }, item.schema)}
+      formData={formData}
+      formSchema={formSchema}
+      onChange={onChange}
+      options={{
+        brickId,
+        parents: item.path.split(".").slice(0, -1),
+      }}
+    />
+  );
 }
 
 // Main navigation component
@@ -183,7 +183,7 @@ const FormNavigator: FC<FormNavigatorProps> = ({
     >
       <div
         ref={ref}
-        className={tx("navigator-view transition-all relative overflow-x-hidden", className)}
+        className={tx("navigator-view transition-all relative overflow-x-hidden scrollbar-thin", className)}
         style={{
           width: "100%",
           // ...style,

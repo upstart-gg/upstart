@@ -13,13 +13,7 @@ import { useFontWatcher } from "../hooks/use-font-watcher";
 import { useGridObserver } from "../hooks/use-grid-observer";
 import { useResizable } from "../hooks/use-resizable";
 import Section from "./EditableSection";
-import {
-  useDraftHelpers,
-  useDraft,
-  useAttributes,
-  useSections,
-  useGenerationState,
-} from "../hooks/use-page-data";
+import { useDraftHelpers, useSections, useGenerationState, usePageAttributes } from "../hooks/use-page-data";
 
 type EditablePageProps = {
   showIntro?: boolean;
@@ -32,7 +26,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const { zoom } = useZoom();
   const pageRef = useRef<HTMLDivElement>(null);
   const gridConfig = useGridConfig();
-  const attributes = useAttributes();
+  const attributes = usePageAttributes();
   const sections = useSections();
   const typography = useFontWatcher();
   const selectedBrickId = useSelectedBrickId();
@@ -177,7 +171,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
         // also deselect the library panel
         editorHelpers.hidePanel("library");
         editorHelpers.hidePanel("inspector");
-        editorHelpers.hidePanel("settings");
+        // editorHelpers.hidePanel("settings");
         editorHelpers.hidePanel("theme");
       }
     };

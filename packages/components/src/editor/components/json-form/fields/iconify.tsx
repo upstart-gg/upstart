@@ -1,17 +1,16 @@
-import { Button, IconButton, Popover, Select, Text, TextField } from "@upstart.gg/style-system/system";
+import { Button, Popover, Select, TextField } from "@upstart.gg/style-system/system";
 import { Icon } from "@iconify/react";
 import type { FC } from "react";
-import { useEffect, useState, useMemo, startTransition, useRef, useLayoutEffect } from "react";
-import { MdGridView } from "react-icons/md";
-import { FieldTitle } from "../field-factory";
+import { useEffect, useState, useMemo, startTransition, useRef } from "react";
 import type { FieldProps } from "./types";
-// @ts-ignore There is no type definition for this package
-import { collections } from "@iconify/collections";
+import collections from "~/shared/misc/iconify-collections.json" with { type: "json" };
 import type { IconifyCategories, IconifyJSON } from "@iconify/types";
 import { css, tx } from "@upstart.gg/style-system/twind";
+
 // To show a big list of icons with virtualization
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { RxMagnifyingGlass } from "react-icons/rx";
+import { FieldTitle } from "../field-factory";
 
 const blaclistedCollections = [
   "logos", // Color logos, not suitable for icon selection

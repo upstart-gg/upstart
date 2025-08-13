@@ -1,12 +1,10 @@
 import { type ComponentProps, useEffect, useRef, useState } from "react";
 import { usePreviewMode } from "~/editor/hooks/use-editor";
 import { tx, css } from "@upstart.gg/style-system/twind";
-import { useAttributes } from "../hooks/use-page-data";
 
 export default function DeviceFrame({ children, ...props }: ComponentProps<"div">) {
   const ref = useRef<HTMLDivElement>(null);
   const previewMode = usePreviewMode();
-  const attributes = useAttributes();
   const [show, setShow] = useState<boolean | null>(false);
   // const bodyClasssName = useBodyStyle({ attributes });
 

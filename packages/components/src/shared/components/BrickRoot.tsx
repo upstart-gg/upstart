@@ -24,8 +24,8 @@ const BrickRoot = forwardRef<HTMLElement, BrickRootProps<ElementType>>(function 
       {...props}
       ref={ref}
       className={tx(
-        !manifest.isContainer && "min-h-fit min-w-fit ",
-        "flex flex-1 rounded-[inherit] w-fill h-fill",
+        !manifest.isContainer && "min-h-fit min-w-fit",
+        "flex flex-1 rounded-[inherit] w-fill h-fill flex-wrap",
         className,
       )}
     >

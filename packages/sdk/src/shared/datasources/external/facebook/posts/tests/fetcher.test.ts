@@ -43,7 +43,7 @@ describe("fetchFacebookPostDatasource", () => {
       options: { limit: 10 },
       oauth: { config: { accessToken: "test-token" } },
       // @ts-ignore
-      attr: {
+      pageAttributes: {
         id: "me",
         siteId: "123",
       },
@@ -66,7 +66,7 @@ describe("fetchFacebookPostDatasource", () => {
       fetchFacebookPostDatasource({
         options: { limit: 10 },
         oauth: { config: { accessToken: "invalid-token" } },
-        attr: {},
+        pageAttributes: {},
       } as DatasourceFetcherParams<MetaOAuthConfig, MetaOptions>),
     ).rejects.toThrow(UnauthorizedError);
   });
