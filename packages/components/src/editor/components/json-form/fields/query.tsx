@@ -1,9 +1,4 @@
-import {
-  queryUse,
-  queryUseSchema,
-  type LoopSettings,
-  type QueryUseSettings,
-} from "@upstart.gg/sdk/shared/bricks/props/dynamic";
+import { queryUseSchema, type QueryUseSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
 import {
   Button,
   Dialog,
@@ -13,11 +8,8 @@ import {
   TextField,
   Tooltip,
 } from "@upstart.gg/style-system/system";
-import { Fragment, startTransition, useCallback, useEffect, useState, type FC } from "react";
-import { BsAt, BsCrosshair, BsDatabase, BsDatabaseAdd, BsDatabaseDown } from "react-icons/bs";
-import { useDatarecords } from "~/editor/hooks/use-datarecord";
-import { useEditorHelpers } from "~/editor/hooks/use-editor";
-import { fieldLabel } from "../form-class";
+import { Fragment, startTransition, useCallback, useState, type FC } from "react";
+import { BsAt, BsCrosshair, BsDatabaseAdd, BsDatabaseDown } from "react-icons/bs";
 import type { FieldProps } from "./types";
 import { FieldTitle } from "../field-factory";
 import { usePagePathParams, useSiteQueries, useSiteQuery } from "~/editor/hooks/use-page-data";
@@ -25,12 +17,9 @@ import { useDatasource, useDatasources } from "~/editor/hooks/use-datasource";
 import { FiEdit } from "react-icons/fi";
 import { tx } from "@upstart.gg/style-system/twind";
 import { LuPlus } from "react-icons/lu";
-import { Type, type TSchema } from "@sinclair/typebox";
-import { getDatasourceIndexedFieldsWithTitles } from "@upstart.gg/sdk/shared/datasources";
+import type { TSchema } from "@sinclair/typebox";
 import { ajv } from "@upstart.gg/sdk/shared/ajv";
-import { TbPlus } from "react-icons/tb";
 import TagsInput, { TagsSelect } from "../../TagsInput";
-import debounce from "lodash-es/debounce";
 
 const baseOperators = [
   { value: "eq", label: "Equals" },
@@ -172,10 +161,6 @@ function QueryModal({
   const [editingQuery, setEditingQuery] = useState<QueryUseSettings | null>(null);
   const [queries, setQueries] = useState<QueryUseSettings[]>(initialQueries);
 
-  // useEffect(() => {
-  //   onChange(queries);
-  // }, [queries]);
-
   return (
     <Dialog.Root
       open={open}
@@ -263,7 +248,15 @@ function QueryModal({
                     )}
                   </div>
                 </div>
-                <IconButton size="2" variant="soft" color="violet" onClick={() => {}}>
+                <IconButton
+                  size="2"
+                  variant="soft"
+                  color="violet"
+                  onClick={() => {
+                    setEditingQuery(query);
+                    setShowCreationForm(true);
+                  }}
+                >
                   <FiEdit className="w-4 h-4" />
                 </IconButton>
               </div>
@@ -416,6 +409,7 @@ function QueryEditor({
   }
 
   function getFieldValue(paramName: string, defaultValue: string | number | boolean | string[] = "") {
+    console.log("Getting field value:", { paramName, params: query.params });
     return query.params?.find((p) => p.field === paramName)?.value ?? defaultValue;
   }
 
@@ -649,7 +643,7 @@ function QueryEditor({
           </Button>
         )}
         <Button disabled={validateQuery() === false} onClick={handleSubmit} size="2">
-          Add query
+          {initialQuery ? "Save query" : "Add quer"}
         </Button>
       </div>
     </div>

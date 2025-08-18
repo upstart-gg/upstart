@@ -64,7 +64,7 @@ const DatasourceFieldList = forwardRef<HTMLElement, Props>((props, ref) => {
   return (
     <div
       className={tx(
-        "bg-white l border border-gray-200 rounded-lg shadow-lg min-w-[280px] flex flex-col gap-0.5 max-h-[300px] overflow-auto p-2 z-auto",
+        "bg-white l border border-gray-200 rounded-lg shadow-lg min-w-[280px] flex flex-col gap-0.5 max-h-[200px] overflow-auto p-2 z-auto",
       )}
     >
       {props.items.length ? (

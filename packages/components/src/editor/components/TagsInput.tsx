@@ -70,12 +70,21 @@ export default function TagsInput({
   isSearchable?: boolean;
 }) {
   const [inputValue, setInputValue] = useState("");
-  const [value, setValue] = useState<readonly OptionType[]>([]);
 
   const createOption = (label: string) => ({
     label,
     value: label,
   });
+
+  console.log("init", { initialValue });
+
+  const [value, setValue] = useState<readonly OptionType[]>(
+    Array.isArray(initialValue)
+      ? initialValue.map(createOption)
+      : typeof initialValue === "string"
+        ? [createOption(initialValue)]
+        : [],
+  );
 
   const handleKeyDown: KeyboardEventHandler = (event) => {
     if (!inputValue) return;
@@ -101,7 +110,7 @@ export default function TagsInput({
       isClearable={false}
       inputValue={inputValue}
       components={components}
-      value={value}
+      defaultValue={value}
       onChange={(newValue) => setValue(newValue ?? [])}
       onInputChange={(newValue) => setInputValue(newValue)}
       onKeyDown={handleKeyDown}
@@ -134,13 +143,19 @@ export function TagsSelect({
   creatable?: boolean;
   clearable?: boolean;
 }) {
-  const [inputValue, setInputValue] = useState("");
-  const [value, setValue] = useState<readonly OptionType[] | OptionType | null>([]);
-
   const createOption = (label: string) => ({
     label,
     value: label,
   });
+
+  const [inputValue, setInputValue] = useState("");
+  const [value, setValue] = useState<readonly OptionType[] | OptionType | null>(
+    Array.isArray(initialValue)
+      ? initialValue.map(createOption)
+      : typeof initialValue === "string"
+        ? initialValue
+        : [],
+  );
 
   const handleKeyDown: KeyboardEventHandler = (event) => {
     event.stopPropagation();
@@ -175,7 +190,7 @@ export function TagsSelect({
       inputValue={inputValue}
       components={components}
       options={options}
-      value={value}
+      defaultValue={Array.isArray(initialValue) ? initialValue.map(createOption) : createOption(initialValue)}
       onChange={(newValue) => {
         setValue(newValue);
         if (Array.isArray(newValue)) {

@@ -405,7 +405,7 @@ function DatasourceFieldPickerModal({ brickId, onFieldSelect }: DatasourceFieldP
           will be replaced with their actual values when the document is rendered.
         </Callout.Text>
       </Callout.Root>
-      <div className="flex flex-col gap-1 pb-2">
+      <div className="flex flex-col gap-1 pb-2 max-h-[300px] overflow-y-auto scrollbar-thin">
         {pageQueries.map((query) => (
           <div key={query.alias} className="flex flex-col gap-1">
             <h4 className="text-sm font-semibold">
