@@ -35,8 +35,8 @@ const DynamicField: FC<FieldProps<LoopSettings | undefined>> = (props) => {
     <div className="layout-field w-full flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <FieldTitle
-          title={"Loop over"}
-          description="Loop over data from a query, repeating the brick for each item."
+          title={"Repeat over"}
+          description="repeat the brick for each item returned by the query. If no query is selected, the brick will not repeat."
         />
         <Select.Root defaultValue={over} size="2" onValueChange={onQueryChange}>
           <Select.Trigger radius="medium" variant="ghost" className="!mr-px" />
@@ -54,7 +54,7 @@ const DynamicField: FC<FieldProps<LoopSettings | undefined>> = (props) => {
         <div className="flex items-center justify-between">
           <FieldTitle
             title={"Override limit"}
-            description="Override the number of items to loop over. It can only be inferior to the number of items (limit) set by the query."
+            description="Override the number of items to repeat over. It can only be inferior to the number of items (limit) set by the query."
           />
           <div className="flex items-center gap-1.5">
             <Switch

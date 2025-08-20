@@ -36,7 +36,7 @@ import {
   FloatingPortal,
   Tooltip,
 } from "@upstart.gg/style-system/system";
-import BaseComponent from "~/shared/components/BrickComponent";
+import BrickComponent from "~/shared/components/BrickComponent";
 import { useBrickWrapperStyle } from "~/shared/hooks/use-brick-style";
 import { menuNavBarCls } from "~/shared/styles/menubar-styles";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
@@ -300,7 +300,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 onClick={onBrickWrapperClick}
                 onDoubleClickCapture={onDoubleClick}
               >
-                <BaseComponent brick={brick} editable />
+                <BrickComponent brick={brick} editable />
                 <FloatingPortal>
                   <BrickMenuBarsContainer
                     ref={barsRefs.setFloating}

@@ -120,7 +120,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
     <Droppable
       droppableId={section.id}
       type="brick"
-      direction="horizontal"
+      direction={section.props.direction === "flex-row" ? "horizontal" : "vertical"}
       mode={section.bricks.length > 0 ? "standard" : "virtual"}
       renderClone={
         section.bricks.length > 0

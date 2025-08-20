@@ -10,7 +10,7 @@ type BrickRootProps<T extends ElementType> = ComponentPropsWithoutRef<T> & {
 };
 
 /**
- *  <BrickRoot> should be used as the root element for all bricks.
+ *  <BrickRoot> should be used as the root element for all bricks. It is a direct child of the Brick Wrapper.
  *  It provides a consistent base style and allows for custom elements to be used.
  *  It renders a div by default, but can be customized to render any element using the `as` prop.
  */
