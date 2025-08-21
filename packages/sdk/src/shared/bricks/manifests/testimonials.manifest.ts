@@ -48,7 +48,7 @@ Optionally either use an avatar or a social icon but not both at the same time.`
       ),
       loop: Type.Optional(
         loopRef({
-          title: "Use dynamic content",
+          // title: "Use dynamic content",
           description:
             "If enabled, each row from the query result will be used to create a testimonial. Otherwise, the testimonials will be static.",
           "ui:placeholder": "Not specified (static)",

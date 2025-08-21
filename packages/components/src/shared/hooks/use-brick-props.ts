@@ -61,7 +61,7 @@ export function useBrickProps<T extends BrickManifest>({
           .map((item) => {
             return replacePlaceholders(template, { [alias]: item });
           })
-          .slice(0, editable ? 1 : undefined); // Limit to 1 for editable mode
+          .slice(0, loop?.overrideLimit ?? undefined); // Limit to 1 for editable mode
       } else {
         // console.log("No loop settings for prop %s", key);
         mapped[key] = value;

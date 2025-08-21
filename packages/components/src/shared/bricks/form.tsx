@@ -194,7 +194,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   const { brick } = props;
   const styles = useBrickStyle<Manifest>(brick);
   const [submitState, setSubmitState] = useState<"idle" | "submitting" | "error" | "success">("idle");
-  const { button, buttonPosition, direction, ...rest } = styles;
+  const { button, direction, ...rest } = styles;
   const {
     title,
     buttonLabel,
@@ -292,7 +292,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
       <div className={tx("flex gap-4 flex-wrap @mobile:flex-col", Object.values(direction))}>{fields}</div>
       {submitState === "error" && <div>{errorMessage}</div>}
       {submitState === "success" && <div>{successMessage}</div>}
-      <div className={tx("flex", Object.values(buttonPosition ?? {}))}>
+      <div className={tx("flex", buttonProps.position)}>
         <button
           type="submit"
           disabled={submitState === "submitting"}

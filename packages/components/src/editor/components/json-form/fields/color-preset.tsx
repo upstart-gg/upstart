@@ -45,7 +45,7 @@ const ColorPresetField: FC<FieldProps<ColorPresetSettings>> = (props) => {
                 type="button"
                 className={tx(
                   "rounded-full w-6 h-6 ring ring-transparent hover:ring-upstart-400 border border-upstart-300",
-                  currentValue,
+                  presets[currentValue?.color ?? "none"]?.className,
                 )}
               />
             </div>

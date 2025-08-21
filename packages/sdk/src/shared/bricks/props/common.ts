@@ -2,7 +2,6 @@ import { type Static, type TString, Type } from "@sinclair/typebox";
 import { typedRef } from "~/shared/utils/typed-ref";
 import { cssLengthRef } from "./css-length";
 import { alignSelfRef } from "./align";
-import { loopRef } from "./dynamic";
 
 export function hidden() {
   return Type.Object(
@@ -60,7 +59,6 @@ export const commonProps = {
     }),
   ),
   alignSelf: Type.Optional(alignSelfRef()),
-  // loop: Type.Optional(loopRef()),
 };
 
 const commonPropsSchema = Type.Object(commonProps);

@@ -1,4 +1,4 @@
-import { Type } from "@sinclair/typebox";
+import { type Static, Type } from "@sinclair/typebox";
 import { FaWpforms } from "react-icons/fa6";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
@@ -58,13 +58,6 @@ There is no need to define the form fields manually and the form does not accept
     ),
     border: Type.Optional(borderRef({})),
     fontSize: Type.Optional(fontSizeRef({ default: "inherit", "ui:no-extra-large-sizes": true })),
-    buttonPosition: Type.Optional(
-      justifyContentRef({
-        title: "Button Position",
-        default: "justify-end",
-        "ui:responsive": "desktop",
-      }),
-    ),
     button: group({
       title: "Button",
       children: {
@@ -89,6 +82,20 @@ There is no need to define the form fields manually and the form does not accept
             enumNames: ["Block", "Wide"],
             default: "block",
             "ui:responsive": "desktop",
+          }),
+        ),
+        position: Type.Optional(
+          StringEnum(["justify-start", "justify-center", "justify-end"], {
+            title: "Button Position",
+            description: "The position of the button in the form",
+            enumNames: ["Left", "Center", "Right"],
+            default: "justify-end",
+            "ui:responsive": "desktop",
+            metadata: {
+              filter: (manifestProps: Manifest["props"], formData: Static<Manifest["props"]>) => {
+                return formData.button?.size !== "wide";
+              },
+            },
           }),
         ),
         rounding: Type.Optional(roundingRef({ default: "rounded-md" })),
@@ -157,7 +164,6 @@ export const examples: {
       intro: "We'd love to hear from you. Send us a message and we'll respond as soon as possible.",
       direction: "flex-row",
       datarecordId: "contacts",
-      buttonPosition: "justify-end",
       buttonLabel: "Send Message",
       button: {
         size: "block",
@@ -172,7 +178,6 @@ export const examples: {
       intro: "Join our platform and start your journey today.",
       direction: "flex-row",
       datarecordId: "user-registration",
-      buttonPosition: "justify-end",
       buttonLabel: "Register",
       button: {
         size: "wide",
@@ -187,7 +192,6 @@ export const examples: {
       intro: "Subscribe to our newsletter for the latest updates and exclusive content.",
       direction: "flex-col",
       datarecordId: "newsletter-subscription",
-      buttonPosition: "justify-center",
       buttonLabel: "Subscribe",
       button: {
         size: "block",

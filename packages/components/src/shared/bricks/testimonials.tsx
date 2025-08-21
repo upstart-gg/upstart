@@ -10,7 +10,7 @@ import { useState } from "react";
 export default function Testimonials(props: BrickProps<Manifest>) {
   const { brick, editable } = props;
   const brickProps = useBrickProps(props);
-  const { color, ...styles } = useBrickStyle<Manifest>(brick);
+  const { colorPreset, ...styles } = useBrickStyle<Manifest>(brick);
   const containerClasses = Object.values(styles);
   const testimonials = brickProps.testimonials ?? [];
   const [showImage, setShowImage] = useState(true);
@@ -30,7 +30,7 @@ export default function Testimonials(props: BrickProps<Manifest>) {
           key={index}
           className={tx(
             "flex flex-1 flex-col gap-6 p-6 rounded-lg border shadow-sm @desktop:(min-w-[250px])",
-            color,
+            colorPreset,
           )}
         >
           <blockquote

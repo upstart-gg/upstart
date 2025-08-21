@@ -1222,8 +1222,8 @@ export function useLoopAlias(brickId: string) {
   let currentBrickId: string | undefined = brickId;
   while (currentBrickId) {
     const brick = getBrickFromDraft(currentBrickId, ctx.getState());
-    if (brick?.props.loop?.alias) {
-      return brick?.props.loop.alias as string;
+    if (brick?.props.loop?.over) {
+      return brick?.props.loop.over as string;
     }
     currentBrickId = getParentBrick(currentBrickId)?.id;
   }

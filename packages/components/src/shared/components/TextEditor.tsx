@@ -434,6 +434,8 @@ export function DatasourceItemButton({
 }: PropsWithChildren<{ editor?: Editor | null; brickId: string; onFieldClick?: (field: string) => void }>) {
   const queryAlias = useLoopAlias(brickId);
 
+  console.log("DatasourceItemButton", { brickId, queryAlias });
+
   const onFieldSelect = (field: string) => {
     onFieldClick?.(field);
 
