@@ -4,7 +4,7 @@ import type { FC } from "react";
 import TagsInput from "../../TagsInput";
 
 const TagsField: FC<FieldProps<string[]>> = (props) => {
-  const { schema, currentValue, onChange, title, description } = props;
+  const { currentValue, onChange, title, description } = props;
 
   return (
     <div className="tags-field flex-1 flex flex-col justify-between gap-1 items-start">

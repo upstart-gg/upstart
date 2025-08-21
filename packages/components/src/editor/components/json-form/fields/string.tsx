@@ -1,12 +1,5 @@
 import type { FieldProps } from "./types";
-import {
-  TextField,
-  TextArea,
-  SegmentedControl,
-  Select,
-  IconButton,
-  Tooltip,
-} from "@upstart.gg/style-system/system";
+import { TextField, TextArea, SegmentedControl, Select } from "@upstart.gg/style-system/system";
 import { TbSlash } from "react-icons/tb";
 import { useDebounceCallback } from "usehooks-ts";
 import { FieldTitle } from "../field-factory";
@@ -93,7 +86,7 @@ export const PathField: FC<FieldProps<string>> = (props) => {
   );
 };
 
-export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings>> = (props) => {
+export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (props) => {
   const { currentValue, onChange, title, description, placeholder, schema, brickId } = props;
   const sitemap = useSitemap();
   const [type, setType] = useState<"url" | "pageId">(
@@ -108,7 +101,11 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings>> = (props) => 
       <div className="flex justify-between flex-1 gap-1">
         <FieldTitle title={title} description={description} />
         <SegmentedControl.Root
-          onValueChange={(value) => setType(value as "url" | "pageId")}
+          onValueChange={(value) => {
+            setType(value as "url" | "pageId");
+            // reset current value if switching of type
+            onChange(null);
+          }}
           defaultValue={type}
           size="1"
           className="mt-0.5"
