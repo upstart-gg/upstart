@@ -349,7 +349,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                   <Tooltip content="This brick will be repeated for each item in the query result">
                     <div
                       className={tx(
-                        `group-hover/brick:opacity-100 absolute cursor-help -top-4 -right-4 z-[99999] w-5 h-5 rounded-full
+                        `group-hover/brick:opacity-100 absolute cursor-help -top-[12px] -right-[12px] z-[99999] w-5 h-5 rounded-full
             flex items-center justify-center text-upstart-500 group/dyn-helper bg-white/90 shadow border border-upstart-500`,
                         brick.id === selectedBrickId ? "opacity-100" : "opacity-0",
                       )}

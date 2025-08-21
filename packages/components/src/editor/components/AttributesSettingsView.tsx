@@ -60,9 +60,9 @@ export default function AttributesSettingsView({
     // For this we use lodash.set
     set(attrObj, propertyChanged, data[propertyChanged]);
     if (type === "page") {
-      draft.updatePageAttributes(attrObj);
+      draft.updatePageAttributes(attrObj as PageAttributes);
     } else {
-      draft.updateSiteAttributes(attrObj);
+      draft.updateSiteAttributes(attrObj as SiteAttributes);
     }
   }, []);
 

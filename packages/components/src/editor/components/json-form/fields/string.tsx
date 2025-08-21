@@ -111,10 +111,10 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (pro
           className="mt-0.5"
           radius="medium"
         >
-          <SegmentedControl.Item value="url" className="[&_.rt-SegmentedControlItemLabel]:!px-1.5">
+          <SegmentedControl.Item value="url" className="[&_.rt-SegmentedControlItemLabel]:!px-2.5">
             {externalLabel}
           </SegmentedControl.Item>
-          <SegmentedControl.Item value="pageId" className="[&_.rt-SegmentedControlItemLabel]:!px-1.5">
+          <SegmentedControl.Item value="pageId" className="[&_.rt-SegmentedControlItemLabel]:!px-0">
             Internal
           </SegmentedControl.Item>
         </SegmentedControl.Root>

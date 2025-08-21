@@ -17,6 +17,7 @@ import { examples as spacerExamples, manifest as spacerManifest } from "./spacer
 import { examples as testimonialsExamples, manifest as testimonialsManifest } from "./testimonials.manifest";
 import { examples as textExamples, manifest as textManifest } from "./text.manifest";
 import { examples as videoExamples, manifest as videoManifest } from "./video.manifest";
+import { examples as htmlExamples, manifest as htmlManifest } from "./html.manifest";
 
 import { getBrickManifestDefaults, type BrickDefaults, type BrickManifest } from "../../brick-manifest";
 
@@ -40,6 +41,7 @@ export const manifests: Record<string, BrickManifest> = {
   [spacerManifest.type]: spacerManifest,
   [testimonialsManifest.type]: testimonialsManifest,
   [accordionManifest.type]: accordionManifest,
+  [htmlManifest.type]: htmlManifest,
 };
 
 export const defaultProps: Record<string, BrickDefaults> = {
@@ -62,6 +64,7 @@ export const defaultProps: Record<string, BrickDefaults> = {
   [spacerManifest.type]: getBrickManifestDefaults(spacerManifest),
   [testimonialsManifest.type]: getBrickManifestDefaults(testimonialsManifest),
   [accordionManifest.type]: getBrickManifestDefaults(accordionManifest),
+  [htmlManifest.type]: getBrickManifestDefaults(htmlManifest),
 };
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -85,4 +88,5 @@ export const examples: Record<string, { description: string; type: string; props
   [spacerManifest.type]: spacerExamples,
   [testimonialsManifest.type]: testimonialsExamples,
   [accordionManifest.type]: accordionExamples,
+  [htmlManifest.type]: htmlExamples,
 };

@@ -98,7 +98,6 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
         siteAttributes: site.attributes,
         datasources: site.datasources,
         datarecords: site.datarecords,
-        queries: site.queries,
         pages,
         // todo: pass the appropriate data for the page
         data: {},

@@ -41,12 +41,13 @@ const DynamicField: FC<FieldProps<LoopSettings | undefined>> = (props) => {
             description ??
             "repeat the brick for each item returned by the query. If no query is selected, the brick will not repeat."
           }
+          containerClassName="!basis-1/4"
         />
         <Select.Root defaultValue={over} size="2" onValueChange={onQueryChange}>
           <Select.Trigger
             radius="medium"
             variant="ghost"
-            className="!max-w-[50%]"
+            className="!basis-2/3 !text-[92%]"
             placeholder={placeholder}
           />
           <Select.Content position="popper">
