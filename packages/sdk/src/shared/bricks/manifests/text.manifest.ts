@@ -28,7 +28,7 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
   },
   icon: RxTextAlignLeft,
   props: defineProps({
-    color: Type.Optional(
+    colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",
       }),

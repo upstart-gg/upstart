@@ -92,7 +92,7 @@ function ModalQueries() {
         >
           page settings
         </button>{" "}
-        and then reference them in your sections & bricks to display dynamic data.
+        and reference them to loop over or use their fields in bricks to display dynamic data.
       </Dialog.Description>
       {showCreationForm && <QueryCreator query={editingQuery} onClose={() => setShowCreationForm(false)} />}
       {!showCreationForm && queries.length === 0 && (

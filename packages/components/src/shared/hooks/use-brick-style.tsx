@@ -33,7 +33,6 @@ function useClassesFromStyleProps<T extends BrickManifest>(
         }
       }
     }
-    // console.log("manifestField", manifestField);
     return acc;
   }, [] as string[]);
 

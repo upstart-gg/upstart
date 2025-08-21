@@ -40,16 +40,7 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
     );
   });
   const hasContentProperties = Object.keys(contentProperties).length > 0;
-
-  if (brick.type === "box" || brick.type === "dynamic") {
-    console.log("Box brick detected, skipping inspector panel rendering.", {
-      props: manifest.props,
-      hasContentProperties,
-    });
-  }
-
   const showTabsList = hasContentProperties || debugMode;
-
   const selectedTab = tabsMapping[brick.type] ?? (hasContentProperties ? "content" : "settings");
 
   useEffect(() => {

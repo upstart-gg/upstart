@@ -45,9 +45,8 @@ import { menuBarBtnActiveCls, menuBarBtnCls, menuBarBtnCommonCls } from "../styl
 import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useDatasource, useDatasources } from "~/editor/hooks/use-datasource";
-import type { Fragment } from "@tiptap/pm/model";
 import { getEditorNodeFromField, insertInEditor } from "../utils/editor-utils";
-import { usePageQueries } from "~/editor/hooks/use-page-data";
+import { useBrick, useLoopAlias, usePageQueries } from "~/editor/hooks/use-page-data";
 
 const HeroHeading = Heading.extend({
   addAttributes() {
@@ -145,13 +144,13 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
     const mainEditor = useEditor();
     const selectedBrickId = useSelectedBrickId();
     const pageQueries = usePageQueries();
-    const datasources = useDatasources();
     const [menuBarContainer, setMenuBarContainer] = useState<HTMLDivElement | null>(null);
     const [currentContent, setContent] = useState(formatInitialContent(initialContent));
     const [focused, setFocused] = useState(false);
-    const datasourceFields = pageQueries.flatMap((q) =>
-      getJSONSchemaFieldsList(q.datasource.schema, q.alias),
-    );
+    const queryAlias = useLoopAlias(brickId);
+    const datasourceFields = pageQueries
+      .filter((q) => q.alias === queryAlias || (!queryAlias && q.queryInfo.limit === 1))
+      .flatMap((q) => getJSONSchemaFieldsList(q.datasource.schema, q.alias));
 
     const extensions = [
       StarterKit.configure({
@@ -385,9 +384,10 @@ function TextAlignButtonGroup({ editor }: { editor: Editor }) {
 type DatasourceFieldPickerModalProps = {
   onFieldSelect: (field: string) => void;
   brickId: string;
+  onlyAlias?: string | null;
 };
 
-function DatasourceFieldPickerModal({ brickId, onFieldSelect }: DatasourceFieldPickerModalProps) {
+function DatasourceFieldPickerModal({ brickId, onlyAlias, onFieldSelect }: DatasourceFieldPickerModalProps) {
   const pageQueries = usePageQueries();
   if (!pageQueries.length) {
     return (
@@ -406,19 +406,21 @@ function DatasourceFieldPickerModal({ brickId, onFieldSelect }: DatasourceFieldP
         </Callout.Text>
       </Callout.Root>
       <div className="flex flex-col gap-1 pb-2 max-h-[300px] overflow-y-auto scrollbar-thin">
-        {pageQueries.map((query) => (
-          <div key={query.alias} className="flex flex-col gap-1">
-            <h4 className="text-sm font-semibold">
-              {query.alias} - {query.queryInfo?.label}
-            </h4>
-            <JSONSchemaView
-              key={query.alias}
-              prefix={query.alias}
-              schema={query.datasource.schema}
-              onFieldSelect={onFieldSelect}
-            />
-          </div>
-        ))}
+        {pageQueries
+          .filter((q) => q.alias === onlyAlias || (!onlyAlias && q.queryInfo.limit === 1))
+          .map((query) => (
+            <div key={query.alias} className="flex flex-col gap-1">
+              <h4 className="text-sm font-semibold">
+                {query.alias} - {query.queryInfo?.label}
+              </h4>
+              <JSONSchemaView
+                key={query.alias}
+                prefix={query.alias}
+                schema={query.datasource.schema}
+                onFieldSelect={onFieldSelect}
+              />
+            </div>
+          ))}
       </div>
     </div>
   );
@@ -430,6 +432,8 @@ export function DatasourceItemButton({
   children,
   onFieldClick,
 }: PropsWithChildren<{ editor?: Editor | null; brickId: string; onFieldClick?: (field: string) => void }>) {
+  const queryAlias = useLoopAlias(brickId);
+
   const onFieldSelect = (field: string) => {
     onFieldClick?.(field);
 
@@ -445,7 +449,7 @@ export function DatasourceItemButton({
     <Popover.Root>
       <Popover.Trigger>{children}</Popover.Trigger>
       <Popover.Content minWidth="260px" side="top" align="start" size="2" maxHeight="70dvh" sideOffset={10}>
-        <DatasourceFieldPickerModal onFieldSelect={onFieldSelect} brickId={brickId} />
+        <DatasourceFieldPickerModal onFieldSelect={onFieldSelect} brickId={brickId} onlyAlias={queryAlias} />
       </Popover.Content>
     </Popover.Root>
   );

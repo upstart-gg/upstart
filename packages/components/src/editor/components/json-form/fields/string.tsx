@@ -14,20 +14,19 @@ import { tx } from "@upstart.gg/style-system/twind";
 import type { UrlOrPageIdSettings } from "@upstart.gg/sdk/shared/bricks/props/string";
 import { type ChangeEvent, type FC, useRef, useState } from "react";
 import { useDraftHelpers, usePagePathParams, usePageQueries, useSitemap } from "~/editor/hooks/use-page-data";
-import TextEditor from "~/shared/components/TextEditor";
 import { useDynamicTextEditor } from "~/editor/hooks/use-editable-text";
 
 export const StringField: FC<FieldProps<string>> = (props) => {
-  const { currentValue, onChange, title, description, placeholder, schema, brickId } = props;
+  const { currentValue, onChange, title, description, placeholder, schema, brickId, noDynamic } = props;
   const pageQueries = usePageQueries();
   const onChangeDebounced = useDebounceCallback(onChange, 300);
   const DynamicTextEditor = useDynamicTextEditor(props);
 
-  if (pageQueries.length) {
+  if (pageQueries.length && !noDynamic && !schema["ui:no-dynamic"]) {
     return (
-      <div className="field field-string basis-full flex flex-col gap-1">
+      <div className="field field-string basis-full flex flex-col gap-1 ">
         <FieldTitle title={title} description={description} />
-        <div className="field field-string flex items-center gap-2">{DynamicTextEditor}</div>
+        <div className="field field-string flex items-start gap-2">{DynamicTextEditor}</div>
       </div>
     );
   }

@@ -125,9 +125,10 @@ export type Brick = Omit<Static<typeof brickSchema>, "props" | "mobileProps"> & 
 
 export const sectionProps = Type.Object(
   {
-    color: Type.Optional(
+    colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",
+        default: { color: "none" },
       }),
     ),
     direction: Type.Optional(

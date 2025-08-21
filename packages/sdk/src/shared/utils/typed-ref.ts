@@ -3,14 +3,14 @@ import type { alignItems, alignSelf, justifyContent } from "../bricks/props/alig
 import type { basicGap } from "../bricks/props/gap";
 import type { background, backgroundColor } from "../bricks/props/background";
 import type { border, rounding } from "../bricks/props/border";
-import type { color, gradientDirection } from "../bricks/props/color";
+import type { color } from "../bricks/props/color";
 import type { hidden } from "../bricks/props/common";
 import type { cssLength } from "../bricks/props/css-length";
 import type { shadow, textShadow } from "../bricks/props/effects";
 import type { fontSize, fontSizeXL, textContent } from "../bricks/props/text";
 import type { icon, urlOrPageId } from "../bricks/props/string";
 import type { padding } from "../bricks/props/padding";
-import type { colorPreset } from "../bricks/props/color-preset";
+import type { colorPreset, gradientDirection } from "../bricks/props/color-preset";
 import type { image } from "../bricks/props/image";
 import type { direction } from "../bricks/props/direction";
 import type { loop, queryUse } from "../bricks/props/dynamic";

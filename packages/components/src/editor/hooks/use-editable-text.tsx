@@ -36,7 +36,13 @@ type UseEditorComponentProps = FieldProps<any> & {
   dynamic?: boolean;
 };
 
-export function useDynamicTextEditor({ currentValue, brickId, schema, onChange }: UseEditorComponentProps) {
+export function useDynamicTextEditor({
+  currentValue,
+  brickId,
+  schema,
+  onChange,
+  placeholder,
+}: UseEditorComponentProps) {
   const textEditorRef = useRef<TextEditorRef>(null);
   const onChangeDebounced = useDebounceCallback(onChange, 300);
   return (
@@ -50,7 +56,7 @@ export function useDynamicTextEditor({ currentValue, brickId, schema, onChange }
             css({ lineHeight: "1.5" }),
             schema["ui:multiline"] && `scrollbar-thin ${schema["ui:textarea-class"] ?? "h-24"}`,
           )}
-          placeholder={schema["ui:placeholder"]}
+          placeholder={schema["ui:placeholder"] ?? placeholder}
           spellCheck={!!schema["ui:spellcheck"]}
           singleline
           noMenuBar
@@ -68,8 +74,8 @@ export function useDynamicTextEditor({ currentValue, brickId, schema, onChange }
           }
         }}
       >
-        <IconButton variant="outline">
-          <RiBracesLine />
+        <IconButton variant="surface" radius="large" className="!w-[35px] !h-[35px]">
+          <RiBracesLine className="w-4 h-4" />
         </IconButton>
       </DatasourceItemButton>
     </>

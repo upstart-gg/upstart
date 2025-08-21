@@ -56,9 +56,8 @@ function getSectionEditorStyles({ section, editable, selected, previewMode }: Us
     return null;
   }
   return [
-    "select-none transition-[outline] duration-150 relative",
+    "select-none relative",
     "outline-dashed outline-2 -outline-offset-2",
-    // "self-stretch",
 
     selected ? "outline-upstart-500/40" : "outline-transparent hover:outline-upstart-500/40",
 

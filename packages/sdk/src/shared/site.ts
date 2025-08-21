@@ -762,7 +762,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 props: {
                   alignSelf: "self-auto",
                   color: "base100",
-                  gradientDirection: "bg-gradient-to-br",
                   align: "vertical",
                   padding: "p-4",
                   fontSize: "inherit",

@@ -22,10 +22,10 @@ export const manifest = defineBrickManifest({
     mobile: "100%",
   },
   props: defineProps({
-    color: Type.Optional(
+    colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color preset",
-        default: "bg-neutral text-neutral-content",
+        default: { color: "neutral-600" },
       }),
     ),
     // backgroundColor:Type.Optional(backgroundColorRef()),

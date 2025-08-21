@@ -31,7 +31,7 @@ There is no need to define the form fields manually and the form does not accept
         "ui:responsive": "desktop",
       }),
     ),
-    color: Type.Optional(
+    colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",
         default: "bg-base-100 text-base-100-content",

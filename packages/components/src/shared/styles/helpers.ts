@@ -115,20 +115,25 @@ function getGrowStyles(props?: boolean, mobileProps?: boolean, schema?: TSchema)
 }
 
 function getColorPresetStyles(value: string, mobileValue?: string, schema?: TSchema) {
+  const presets = (schema?.["ui:presets"] ?? colorPresets) as typeof colorPresets;
   if (schema?.["ui:desktop-only"]) {
-    return `@desktop:(${colorPresets[value]?.className})`;
+    return `@desktop:(${presets[value]?.className})`;
   }
-
   if (!mobileValue) {
-    return colorPresets[value]?.className;
+    return presets[value]?.className;
   }
   if (value && mobileValue) {
-    return `@desktop:(${colorPresets[value]?.className}) @mobile:(${colorPresets[mobileValue]?.className})`;
+    return `@desktop:(${presets[value]?.className}) @mobile:(${presets[mobileValue]?.className})`;
   }
   if (mobileValue) {
-    return `@mobile:(${colorPresets[mobileValue]?.className})`;
+    return `@mobile:(${presets[mobileValue]?.className})`;
   }
 }
+
+export const pageStylesHelpersMap = {
+  "presets:color": getColorPresetStyles,
+  "styles:gradientDirection": simpleClassHandler,
+};
 
 export const brickStylesHelpersMap = {
   "styles:color": getColorStyles,

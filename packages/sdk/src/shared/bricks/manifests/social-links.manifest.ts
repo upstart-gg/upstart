@@ -7,7 +7,6 @@ import type { BrickProps } from "../props/types";
 import { fontSizeRef } from "../props/text";
 import { paddingRef } from "../props/padding";
 import { directionRef } from "../props/direction";
-import { gradientDirectionRef } from "../props/color";
 import { colorPresetRef } from "../props/color-preset";
 import { borderRef, roundingRef } from "../props/border";
 
@@ -20,14 +19,9 @@ export const manifest = defineBrickManifest({
     mobile: "100%",
   },
   props: defineProps({
-    color: Type.Optional(
+    colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",
-      }),
-    ),
-    gradientDirection: Type.Optional(
-      gradientDirectionRef("color", {
-        default: "bg-gradient-to-br",
       }),
     ),
     links: Type.Array(

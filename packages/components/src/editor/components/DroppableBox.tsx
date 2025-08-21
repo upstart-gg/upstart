@@ -44,7 +44,7 @@ export default function DroppableBox<T extends BrickManifest>({
           {...droppableProvided.droppableProps}
           ref={droppableProvided.innerRef}
           className={tx(
-            "flex @mobile:flex-wrap relative",
+            "flex @mobile:flex-wrap relative flex-1",
             droppableSnapshot.isDraggingOver && "!outline !outline-2 !outline-orange-300",
             (droppableSnapshot.isDraggingOver || draggingBrickType) && "!overflow-y-hidden",
             droppableSnapshot.isDraggingOver && "[&>*]:(!transform-none)",

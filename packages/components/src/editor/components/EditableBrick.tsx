@@ -346,7 +346,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                   <BrickArrows brick={brick} />
                 )}
                 {typeof brick.props.loop !== "undefined" && (
-                  <Tooltip content="This brick is looping over a query result">
+                  <Tooltip content="This brick will be repeated for each item in the query result">
                     <div
                       className={tx(
                         `group-hover/brick:opacity-100 absolute cursor-help -top-4 -right-4 z-[99999] w-5 h-5 rounded-full

@@ -91,13 +91,17 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       // Horizontal resizing
       if (event.edges.left || event.edges.right) {
         if (futureWidth === 100 && parentBrick) {
-          console.log("Resizing to 100% width, updating parent brick props");
+          console.log("Resizing parent brick to %spx", rectWidth);
           // Also update the parent brick props with fixed values
           draftHelpers.updateBrickProps(parentBrick.id, {
             width: `${rectWidth}px`,
             grow: false,
           });
         }
+        console.debug("Resizing brick", {
+          brickId,
+          width: widthPercentage,
+        });
         draftHelpers.updateBrickProps(brickId, {
           width: widthPercentage,
           grow: false,

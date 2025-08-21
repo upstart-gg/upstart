@@ -335,7 +335,15 @@
           "label": "Hero",
           "order": 2,
           "props": { "minHeight": "400px", "color": "accent-400" },
-          "bricks": [{ "id": "b_zzZYqOu", "type": "hero", "props": {} }]
+          "bricks": [
+            {
+              "id": "b_zzZYqOu",
+              "type": "hero",
+              "props": {
+                "content": "<h1 class='hero-size-1' style='text-align:center'><b>Leading Businesses<br />Choose Upstart {{employee.email}}</b></h1>"
+              }
+            }
+          ]
         },
         {
           "id": "s_XGTvCQz",
@@ -441,18 +449,18 @@
               "type": "box",
               "props": {
                 "alignSelf": "self-auto",
-                "datasource": { "id": "employees2" },
                 "$children": [
                   {
                     "id": "LtEttXh",
                     "type": "testimonials",
                     "props": {
-                      "testimonials": {
-                        "author": "{{firstName}} {{lastName}}",
-                        "text": "{{testimonial}}",
-                        "socialIcon": "{{icon}}",
-                        "company": "{{company}}"
-                      }
+                      "loop": { "over": "allEmployees" },
+                      "testimonials": [
+                        {
+                          "author": "{{allEmployees.firstName}} {{allEmployees.lastName}}",
+                          "text": "My testimonial text goes here. This is a sample testimonial."
+                        }
+                      ]
                     }
                   }
                 ]
@@ -553,8 +561,7 @@
                 "intro": "This is a complex form with various field types.",
                 "button": {
                   "label": "Submit Form",
-                  "borderRadius": "rounded-md",
-                  "color": "btn-color-accent"
+                  "borderRadius": "rounded-md"
                 }
               }
             }
@@ -636,7 +643,7 @@
       ],
       "tags": [],
       "attributes": {
-        "color": "bg-base-100",
+        "colorPreset": { "color": "bg-base-100" },
         "robotsIndexing": true,
         "path": "/blog/:slug",
         "title": "Untitled",
@@ -831,7 +838,7 @@
       ],
       "tags": [],
       "attributes": {
-        "color": "bg-base-100",
+        "colorPreset": { "color": "bg-base-100" },
         "robotsIndexing": true,
         "path": "/",
         "title": "Untitled",

@@ -8,7 +8,6 @@ import { defineProps } from "../props/helpers";
 import { colorPresetRef } from "../props/color-preset";
 import { fontSizeRef, textContentRef } from "../props/text";
 import type { BrickProps } from "../props/types";
-import { gradientDirectionRef } from "../props/color";
 
 export const manifest = defineBrickManifest({
   type: "accordion",
@@ -72,15 +71,10 @@ Multiple panels can be open simultaneously or limited to one at a time.
         },
       ),
     ),
-    color: Type.Optional(
+    colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",
-        default: "bg-primary-500 text-primary-500-content",
-      }),
-    ),
-    gradientDirection: Type.Optional(
-      gradientDirectionRef("color", {
-        default: "bg-gradient-to-br",
+        default: { color: "bg-primary-500 text-primary-500-content" },
       }),
     ),
   }),

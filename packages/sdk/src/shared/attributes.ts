@@ -12,9 +12,9 @@ export type { JSONSchemaType };
 
 // Default attributes
 export const pageAttributesSchema = Type.Object({
-  color: colorPresetRef({
+  colorPreset: colorPresetRef({
     title: "Color",
-    default: "bg-base-100",
+    default: { color: "bg-base-100" },
   }),
   robotsIndexing: Type.Optional(
     boolean("Allow search engines to index this site", true, {
@@ -47,6 +47,7 @@ export const pageAttributesSchema = Type.Object({
     "ui:group": "meta",
     "ui:group:title": "Meta tags",
     description: "The title of the page. Appears in the browser tab and search results",
+    "ui:placeholder": "Page title",
   }),
   description: string("Description", {
     "ui:widget": "textarea",
@@ -56,6 +57,7 @@ export const pageAttributesSchema = Type.Object({
     "ui:multiline": true,
     "ui:textarea-class": "h-24",
     default: "",
+    "ui:placeholder": "A brief description of the page",
   }),
   keywords: string("Keywords", {
     "ui:group": "meta",
@@ -63,6 +65,7 @@ export const pageAttributesSchema = Type.Object({
     description: "Keywords related to the page. Used by search engines",
     "ui:multiline": true,
     default: "",
+    "ui:placeholder": "keyword1, keyword2, keyword3",
   }),
   ogImage: Type.Optional(
     imageRef({
@@ -72,6 +75,8 @@ export const pageAttributesSchema = Type.Object({
       "ui:no-object-options": true,
       "ui:no-alt-text": true,
       "ui:show-img-search": false,
+      "ui:no-dynamic": true,
+      "ui:placeholder": "https://example.com/image.jpg",
     }),
   ),
   lastUpdated: Type.Optional(
@@ -92,6 +97,7 @@ export const siteAttributesSchema = Type.Object({
       "ui:no-object-options": true,
       "ui:no-alt-text": true,
       "ui:show-img-search": false,
+      "ui:no-dynamic": true,
     }),
   ),
   headTags: Type.Optional(
@@ -108,6 +114,7 @@ export const siteAttributesSchema = Type.Object({
       "ui:scope": "site",
       "ui:group": "external-scripts",
       "ui:group:title": "External scripts",
+      "ui:no-dynamic": true,
     }),
   ),
   bodyTags: Type.Optional(
@@ -123,6 +130,7 @@ export const siteAttributesSchema = Type.Object({
       "ui:scope": "site",
       "ui:group": "external-scripts",
       "ui:group:title": "External scripts",
+      "ui:no-dynamic": true,
     }),
   ),
 });

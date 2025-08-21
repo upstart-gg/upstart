@@ -8,11 +8,12 @@ import { usePageQueries } from "~/editor/hooks/use-page-data";
 const NOLOOP = "$NOLOOP$";
 
 const DynamicField: FC<FieldProps<LoopSettings | undefined>> = (props) => {
-  const { currentValue, onChange, schema } = props;
+  const { currentValue, onChange, schema, title, description } = props;
   const { over = NOLOOP } = currentValue ?? {};
   const [overrideLimit, setOverrideLimit] = useState<boolean>(!!currentValue?.overrideLimit);
   const pageQueries = usePageQueries();
   const query = pageQueries.find((q) => q.alias === over);
+  const placeholder = schema["ui:placeholder"] ?? "Do not repeat";
 
   const onQueryChange = (newVal: string) => {
     if (newVal === NOLOOP) {
@@ -35,13 +36,21 @@ const DynamicField: FC<FieldProps<LoopSettings | undefined>> = (props) => {
     <div className="layout-field w-full flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <FieldTitle
-          title={"Repeat over"}
-          description="repeat the brick for each item returned by the query. If no query is selected, the brick will not repeat."
+          title={title ?? "Repeat over"}
+          description={
+            description ??
+            "repeat the brick for each item returned by the query. If no query is selected, the brick will not repeat."
+          }
         />
         <Select.Root defaultValue={over} size="2" onValueChange={onQueryChange}>
-          <Select.Trigger radius="medium" variant="ghost" className="!mr-px" />
+          <Select.Trigger
+            radius="medium"
+            variant="ghost"
+            className="!mr-px !max-w-[50%]"
+            placeholder={placeholder}
+          />
           <Select.Content position="popper">
-            <Select.Item value={NOLOOP}>Do not loop</Select.Item>
+            <Select.Item value={NOLOOP}>{placeholder}</Select.Item>
             {loopableQueries.map((query) => (
               <Select.Item key={query.alias} value={query.alias}>
                 {query.alias} - {query.queryInfo?.label}

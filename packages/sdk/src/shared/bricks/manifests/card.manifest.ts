@@ -21,47 +21,11 @@ export const manifest = defineBrickManifest({
   minHeight: { mobile: 200, desktop: 200 },
   maxWidth: { desktop: 650 },
   props: defineProps({
-    color: Type.Optional(
+    colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color preset",
-        default: "bg-primary-500 text-primary-content-500",
+        default: { color: "bg-primary-500 text-primary-content-500" },
       }),
-    ),
-    gradientDirection: Type.Optional(
-      StringEnum(
-        [
-          "bg-gradient-to-t",
-          "bg-gradient-to-r",
-          "bg-gradient-to-b",
-          "bg-gradient-to-l",
-          "bg-gradient-to-tl",
-          "bg-gradient-to-tr",
-          "bg-gradient-to-br",
-          "bg-gradient-to-bl",
-        ],
-        {
-          title: "Gradient direction",
-          description: "The direction of the gradient. Only applies when color preset is a gradient.",
-          enumNames: [
-            "Top",
-            "Right",
-            "Bottom",
-            "Left",
-            "Top left",
-            "Top right",
-            "Bottom right",
-            "Bottom left",
-          ],
-          default: "bg-gradient-to-br",
-          "ui:responsive": "desktop",
-          "ui:styleId": "styles:gradientDirection",
-          metadata: {
-            filter: (manifestProps: TObject, formData: Static<Manifest["props"]>) => {
-              return formData.color?.includes("gradient") === true;
-            },
-          },
-        },
-      ),
     ),
     // variants: Type.Array(
     //   Type.Union(

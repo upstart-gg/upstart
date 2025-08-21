@@ -29,7 +29,7 @@ export const manifest = defineBrickManifest({
   },
   icon: RxBox,
   props: defineProps({
-    color: Type.Optional(
+    colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",
       }),

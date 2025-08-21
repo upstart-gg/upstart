@@ -7,7 +7,6 @@ import { imageRef } from "../props/image";
 import { paddingRef } from "../props/padding";
 import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
-import { gradientDirectionRef } from "../props/color";
 import { colorPresetRef } from "../props/color-preset";
 import { borderRef, roundingRef } from "../props/border";
 
@@ -31,15 +30,10 @@ export const manifest = defineBrickManifest({
   },
   icon: IoGridOutline,
   props: defineProps({
-    color: Type.Optional(
+    colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",
-        default: "bg-base-100 text-base-100-content",
-      }),
-    ),
-    gradientDirection: Type.Optional(
-      gradientDirectionRef("color", {
-        default: "bg-gradient-to-br",
+        default: { color: "bg-base-100 text-base-100-content" },
       }),
     ),
     images: Type.Array(

@@ -8,8 +8,9 @@ import { iconRef, string } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { fontSizeRef } from "../props/text";
 import { colorPresetRef } from "../props/color-preset";
-import { StringEnum } from "~/shared/utils/string-enum";
 import { cssLengthRef } from "../props/css-length";
+import { StringEnum } from "~/shared/utils/string-enum";
+import { loopRef } from "../props/dynamic";
 
 export const manifest = defineBrickManifest({
   type: "testimonials",
@@ -22,47 +23,11 @@ It is typically used to showcase customer feedback or endorsements.
 Optionally either use an avatar or a social icon but not both at the same time.`,
   props: defineProps(
     {
-      color: Type.Optional(
+      colorPreset: Type.Optional(
         colorPresetRef({
           title: "Color",
           default: "bg-base-100 text-base-100-content",
         }),
-      ),
-      gradientDirection: Type.Optional(
-        StringEnum(
-          [
-            "bg-gradient-to-t",
-            "bg-gradient-to-r",
-            "bg-gradient-to-b",
-            "bg-gradient-to-l",
-            "bg-gradient-to-tl",
-            "bg-gradient-to-tr",
-            "bg-gradient-to-br",
-            "bg-gradient-to-bl",
-          ],
-          {
-            title: "Gradient direction",
-            description: "The direction of the gradient. Only applies when color preset is a gradient.",
-            enumNames: [
-              "Top",
-              "Right",
-              "Bottom",
-              "Left",
-              "Top left",
-              "Top right",
-              "Bottom right",
-              "Bottom left",
-            ],
-            default: "bg-gradient-to-br",
-            "ui:responsive": "desktop",
-            "ui:styleId": "styles:gradientDirection",
-            metadata: {
-              filter: (manifestProps: TObject, formData: Static<Manifest["props"]>) => {
-                return formData.color?.includes("gradient") === true;
-              },
-            },
-          },
-        ),
       ),
       fontSize: Type.Optional(
         fontSizeRef({
@@ -79,6 +44,14 @@ Optionally either use an avatar or a social icon but not both at the same time.`
             "Can be a tailwind gap class like 'gap-1' or 'gap-2', or a custom value like '10px'",
           "ui:placeholder": "Not specified",
           "ui:styleId": "styles:gap",
+        }),
+      ),
+      loop: Type.Optional(
+        loopRef({
+          title: "Use dynamic content",
+          description:
+            "If enabled, each row from the query result will be used to create a testimonial. Otherwise, the testimonials will be static.",
+          "ui:placeholder": "Not specified (static)",
         }),
       ),
       testimonials: Type.Optional(
@@ -107,6 +80,7 @@ Optionally either use an avatar or a social icon but not both at the same time.`
             },
             metadata: {
               category: "content",
+              consumeQuery: true,
             },
             examples: [
               {

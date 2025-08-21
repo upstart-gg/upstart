@@ -1,10 +1,49 @@
-import type { Static, SchemaOptions } from "@sinclair/typebox";
+import { type Static, type ObjectOptions, Type, type StringOptions, TObject } from "@sinclair/typebox";
 import { StringEnum } from "~/shared/utils/string-enum";
 import { typedRef } from "~/shared/utils/typed-ref";
 
-type ColorPresetOptions = SchemaOptions & {
+type ColorPresetOptions = ObjectOptions & {
   "ui:presets"?: Record<string, { className: string; label: string }>;
+  "ui:default-gradient-direction"?: string;
 };
+
+export function gradientDirection(options: StringOptions = {}) {
+  return StringEnum(
+    [
+      "bg-gradient-to-t",
+      "bg-gradient-to-r",
+      "bg-gradient-to-b",
+      "bg-gradient-to-l",
+      "bg-gradient-to-tl",
+      "bg-gradient-to-tr",
+      "bg-gradient-to-br",
+      "bg-gradient-to-bl",
+    ],
+    {
+      title: "Gradient direction",
+      description: "The direction of the gradient. Only applies when color preset is a gradient.",
+      enumNames: ["Top", "Right", "Bottom", "Left", "Top left", "Top right", "Bottom right", "Bottom left"],
+      default: "bg-gradient-to-br",
+      "ui:responsive": "desktop",
+      "ui:styleId": "styles:gradientDirection",
+      // metadata: {
+      //   filter: (manifestProps: TObject, formData: Static<BrickManifest["props"]>) => {
+      //     return (formData[colorPropKey] as string)?.includes("gradient") === true;
+      //   },
+      // },
+      ...options,
+    },
+  );
+}
+
+export type GradientDirectionSettings = Static<ReturnType<typeof gradientDirection>>;
+
+export function gradientDirectionRef(options: StringOptions = {}) {
+  return typedRef("styles:gradientDirection", {
+    ...options,
+    "ui:styleId": "styles:gradientDirection",
+  });
+}
 
 export const colorPresets: NonNullable<ColorPresetOptions["ui:presets"]> = {
   "primary-50": {
@@ -322,17 +361,27 @@ export const colorPresets: NonNullable<ColorPresetOptions["ui:presets"]> = {
 };
 
 export function colorPreset(options: ColorPresetOptions = {}) {
-  return StringEnum(Object.keys(colorPresets), {
-    title: "Color preset",
-    description: "Color preset to apply to background and text",
-    enumNames: Object.keys(colorPresets).map((key) => colorPresets[key].label),
-    "ai:instructions": `Presets are predefined color combinations of background and text colors that can be applied to elements. They include various shades of primary, secondary, accent, and neutral colors, as well as gradients. You can also select 'none' to remove any preset.`,
-    "ui:styleId": "presets:color",
-    "ui:field": "color-preset",
-    "ui:responsive": true,
-    "ui:presets": colorPresets,
-    ...options,
-  });
+  return Type.Object(
+    {
+      color: StringEnum(Object.keys(colorPresets), {
+        title: "Color preset",
+        description: "Color preset to apply to background and text",
+        enumNames: Object.keys(colorPresets).map((key) => colorPresets[key].label),
+        "ai:instructions": `Presets are predefined color combinations of background and text colors that can be applied to elements. They include various shades of primary, secondary, accent, and neutral colors, as well as gradients. You can also select 'none' to remove any preset.`,
+        "ui:styleId": "presets:color",
+        "ui:responsive": true,
+        default: options.default?.color,
+      }),
+      gradientDirection: Type.Optional(gradientDirectionRef(options)),
+    },
+    {
+      "ui:field": "color-preset",
+      $id: "presets:color",
+      "ui:presets": colorPresets,
+      default: options.default,
+      "ui:default-gradient-direction": options["ui:default-gradient-direction"] ?? "bg-gradient-to-br",
+    },
+  );
 }
 
 export type ColorPresetSettings = Static<ReturnType<typeof colorPreset>>;

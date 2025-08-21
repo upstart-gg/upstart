@@ -1,7 +1,11 @@
-import type { PageAttributes } from "@upstart.gg/sdk/shared/attributes";
+import { type PageAttributes, pageAttributesSchema } from "@upstart.gg/sdk/shared/attributes";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import { tx, css } from "@upstart.gg/style-system/twind";
+import { getStyleProperties } from "../styles/style-props";
+import { usePageAttributes } from "~/editor/hooks/use-page-data";
+import get from "lodash-es/get";
+import { extractStylePath, pageStylesHelpersMap } from "../styles/helpers";
 
 type UsePageStyleProps = {
   attributes: PageAttributes;
@@ -12,16 +16,40 @@ type UsePageStyleProps = {
 };
 
 export function usePageStyle({ attributes, editable, typography, showIntro }: UsePageStyleProps) {
+  const stylesProps = getStyleProperties(pageAttributesSchema);
+  const classes = useClassesFromStyleProps(stylesProps);
   return tx(
     "flex flex-col group/page mx-auto relative max-w-full w-full p-0 antialiased",
     editable && "overflow-hidden min-h-[100cqh]",
-    attributes.color as string,
-
+    attributes.colorPreset.color,
+    Object.values(classes),
     getTypographyStyles(typography),
-
     // Animate all bricks when the page is loading
     editable && showIntro && "[&>.brick-wrapper]:(opacity-0 animate-elastic-pop)",
   );
+}
+
+function useClassesFromStyleProps(stylesProps: Record<string, string>) {
+  const pageAttributes = usePageAttributes();
+
+  const classes = Object.entries(stylesProps).reduce(
+    (acc, [path, styleId]) => {
+      const helper = pageStylesHelpersMap[styleId as keyof typeof pageStylesHelpersMap];
+      if (!helper) {
+        return acc;
+      }
+      const part = extractStylePath(path);
+      acc[part] = acc[part] ?? [];
+
+      const resolvedProps = get(pageAttributes, path);
+      const schema = get(pageAttributesSchema.properties, path);
+
+      acc[part].push(tx(helper?.(resolvedProps, undefined, schema)));
+      return acc;
+    },
+    {} as Record<string, string[]>,
+  );
+  return classes;
 }
 
 function getTypographyStyles(typography: Theme["typography"]) {

@@ -74,7 +74,7 @@ export function loop(options: ObjectOptions = {}) {
     },
     {
       $id: "content:loop",
-      title: "Loop",
+      title: "Repeat over",
       "ui:field": "loop",
       "ui:hidden-if": "no-page-queries",
       metadata: {

@@ -24,6 +24,8 @@ export type BrickProps<T extends BrickManifest> = {
   isContainerChild?: boolean;
 
   level?: number; // Nesting level of the brick
+
+  iterationIndex?: number; // Index in a loop or iteration context
 };
 
 export type BrickPropCategory = "settings" | "presets" | "content";

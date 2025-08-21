@@ -3,7 +3,7 @@ import get from "lodash-es/get";
 import type { ReactNode } from "react";
 import { IoIosHelpCircleOutline } from "react-icons/io";
 // Import field components
-import { ArrayField } from "./fields/array";
+import ArrayField from "./fields/array";
 import BackgroundField from "./fields/background";
 import BorderField from "./fields/border";
 import AlignSelfField from "./fields/align-self";
@@ -43,6 +43,7 @@ import { fieldLabel } from "./form-class";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { LoopSettings, QueryUseSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
 import { usePageAttributes } from "~/editor/hooks/use-page-data";
+import type { ColorPresetSettings } from "@upstart.gg/sdk/shared/bricks/props/color-preset";
 
 export interface FieldFactoryOptions {
   brickId: string;
@@ -50,6 +51,7 @@ export interface FieldFactoryOptions {
   fieldSchema: TSchema;
   formSchema: TObject<TProperties>;
   formData: Record<string, unknown>;
+  noDynamic?: boolean;
   id: string;
   onChange: (data: Record<string, unknown>, id: string) => void;
   parents?: string[];
@@ -67,12 +69,13 @@ function getCommonFieldProps(options: FieldFactoryOptions, fieldSchema: TSchema)
     title: (fieldSchema.title ?? fieldSchema["ui:title"]) as string | undefined,
     description: (fieldSchema.description ?? fieldSchema["ui:description"]) as string | undefined,
     placeholder: fieldSchema["ui:placeholder"] as string | undefined,
+    noDynamic: options.noDynamic ?? false,
   };
 }
 
 // Main function to create a field component based on type
 function createFieldComponent(options: FieldFactoryOptions): ReactNode {
-  const { brickId, fieldName, fieldSchema, formSchema, formData, id, onChange } = options;
+  const { brickId, fieldName, fieldSchema, formSchema, formData, id, onChange, noDynamic } = options;
   const schema = resolveSchema(fieldSchema);
   const commonProps = getCommonFieldProps(
     {
@@ -82,6 +85,7 @@ function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       formSchema,
       formData,
       id,
+      noDynamic,
       onChange,
     },
     schema,
@@ -122,12 +126,12 @@ function createFieldComponent(options: FieldFactoryOptions): ReactNode {
     }
 
     case "color-preset": {
-      const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as ColorPresetSettings;
       return (
         <ColorPresetField
           key={`field-${id}`}
           currentValue={currentValue}
-          onChange={(value?: string | null) => onChange({ [id]: value }, id)}
+          onChange={(value?: ColorPresetSettings | null) => onChange({ [id]: value }, id)}
           {...commonProps}
         />
       );
@@ -520,6 +524,7 @@ type ObjectFieldsProps = {
   schema: TObject<TProperties>;
   formData: Record<string, unknown>;
   formSchema: TObject<TProperties>;
+  noDynamic?: boolean;
   onChange: (data: Record<string, unknown>, propPath: string) => void;
   options: {
     brickId: string;
@@ -529,7 +534,14 @@ type ObjectFieldsProps = {
 };
 
 // Process schema to create grouped fields
-export default function ObjectFields({ schema, formData, formSchema, onChange, options }: ObjectFieldsProps) {
+export default function ObjectFields({
+  schema,
+  formData,
+  formSchema,
+  onChange,
+  options,
+  noDynamic,
+}: ObjectFieldsProps) {
   const pageAttributes = usePageAttributes();
   const { brickId, filter, parents = [] } = options;
   const fields: ReactNode[] = [];
@@ -568,6 +580,7 @@ export default function ObjectFields({ schema, formData, formSchema, onChange, o
       id,
       onChange,
       parents,
+      noDynamic,
     });
 
     if (fieldComponent) {

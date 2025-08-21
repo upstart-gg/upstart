@@ -8,7 +8,7 @@ import {
 } from "@hello-pangea/dnd";
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
-import { Button, IconButton, TextField } from "@upstart.gg/style-system/system";
+import { Button, IconButton, SegmentedControl, TextField } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useState, useRef, useEffect } from "react";
 import { MdDragIndicator } from "react-icons/md";
@@ -17,6 +17,9 @@ import { TbPlus } from "react-icons/tb";
 import ObjectFields, { FieldTitle } from "../field-factory";
 import type { FieldProps } from "./types";
 import { usePageQueries } from "~/editor/hooks/use-page-data";
+import type { LoopSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
+import set from "lodash-es/set";
+import { merge } from "lodash-es";
 
 // If the HTML contains any tags, this function will strip them out and return plain text.
 // This is useful for displaying text content without HTML formatting (ie for items title).
@@ -34,9 +37,10 @@ export interface ArrayFieldProps extends FieldProps<unknown[]> {
   parents?: string[];
 }
 
-export function ArrayField({
+export default function ArrayField({
   currentValue = [],
   onChange,
+  formData,
   itemSchema,
   formSchema,
   title,
@@ -50,6 +54,10 @@ export function ArrayField({
   const pageQueries = usePageQueries();
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  console.log("ArrayField, currentValue:", currentValue, "itemSchema:", itemSchema, "fieldName:", fieldName);
+
+  const mode = (formData.loop as LoopSettings | null)?.over ? "dynamic" : "static";
 
   // Get UI options from the array schema (not item schema)
   const uiOptions = schema["ui:options"] as Record<string, boolean> | undefined;
@@ -217,8 +225,8 @@ export function ArrayField({
   const renderArrayItem = (
     item: unknown,
     index: number,
-    provided?: DraggableProvided,
-    snapshot?: DraggableStateSnapshot,
+    provided?: DraggableProvided | null,
+    noDynamic?: boolean,
   ) => {
     const typedItem = item as Record<string, unknown>;
     const isExpanded = expandedItem === index;
@@ -234,11 +242,7 @@ export function ArrayField({
             itemRefs.current[index] = el;
           }}
           {...provided?.draggableProps}
-          className={tx(
-            "border rounded",
-            isExpanded ? "border-gray-300" : "border-gray-200",
-            snapshot?.isDragging && "shadow-lg",
-          )}
+          className={tx("border rounded", isExpanded ? "border-gray-300" : "border-gray-200")}
         >
           {/* Header row - always visible */}
           <div
@@ -287,6 +291,7 @@ export function ArrayField({
                 <ObjectFields
                   schema={resolvedItemSchema as TObject<TProperties>}
                   formData={typedItem || {}}
+                  noDynamic={noDynamic}
                   formSchema={formSchema}
                   onChange={(itemData, itemFieldId) => {
                     const newArray = [...currentValue];
@@ -316,9 +321,7 @@ export function ArrayField({
           itemRefs.current[index] = el;
         }}
         {...provided?.draggableProps}
-        className={`flex items-center gap-2 p-2 border rounded border-gray-200 ${
-          snapshot?.isDragging ? "shadow-lg" : ""
-        }`}
+        className={`flex items-center gap-2 p-2 border rounded border-gray-200`}
       >
         {orderable && (
           <div
@@ -332,7 +335,7 @@ export function ArrayField({
         <TextField.Root
           size="2"
           className="flex-1"
-          value={`${item || ""}`}
+          defaultValue={`${item || ""}`}
           onChange={(e) => {
             const newArray = [...currentValue];
             newArray[index] = e.target.value;
@@ -364,9 +367,9 @@ export function ArrayField({
         <FieldTitle
           title={title}
           description={description}
-          className={tx(pageQueries.length > 0 && "font-medium")}
+          className={tx(mode === "dynamic" && "font-medium")}
         />
-        {addable && pageQueries.length === 0 && (
+        {addable && mode === "static" && (
           <Button type="button" onClick={handleAddItem} variant="soft" size="1" radius="full">
             <TbPlus className="w-3 h-3" /> Add item
           </Button>
@@ -374,14 +377,14 @@ export function ArrayField({
       </div>
 
       {/* Array items */}
-      {pageQueries.length > 0 ? (
+      {mode === "dynamic" ? (
         <div className="space-y-1 -mx-1">
           <div className="px-1">
-            <div className="space-y-3">
+            <div className="space-y-4">
               {/* Edit fields */}
               <ObjectFields
                 schema={resolvedItemSchema as TObject<TProperties>}
-                formData={{}}
+                formData={currentValue[0] as Record<string, unknown>}
                 formSchema={formSchema}
                 onChange={(itemData, itemFieldId) => {
                   console.log("Dynamic parent item data change", {
@@ -390,6 +393,9 @@ export function ArrayField({
                     fieldName,
                     brickId,
                   });
+                  const newData = structuredClone(currentValue ?? []).slice(0, 1);
+                  newData[0] = merge({}, newData[0], itemData);
+                  onChange(newData);
                 }}
                 options={{
                   brickId,
@@ -410,7 +416,7 @@ export function ArrayField({
 
                   return (
                     <Draggable key={stableKey} draggableId={stableKey} index={index}>
-                      {(provided) => renderArrayItem(item, index, provided)}
+                      {(provided) => renderArrayItem(item, index, provided, true)}
                     </Draggable>
                   );
                 })}
@@ -422,7 +428,7 @@ export function ArrayField({
       ) : (
         <div className="space-y-1 -mx-1">
           {currentValue.map((item, index) => (
-            <div key={`${id}-${index}`}>{renderArrayItem(item, index)}</div>
+            <div key={`${id}-${index}`}>{renderArrayItem(item, index, null, true)}</div>
           ))}
         </div>
       )}

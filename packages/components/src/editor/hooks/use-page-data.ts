@@ -23,6 +23,7 @@ export type { Immer } from "immer";
 enableMapSet();
 
 type BrickId = string;
+type QueryAlias = string;
 
 export interface DraftStateProps {
   id: string;
@@ -30,7 +31,7 @@ export interface DraftStateProps {
   label: string;
   tags: string[];
   sections: Section[];
-  data: Record<BrickId, Record<string, unknown>[]>;
+  data: Record<QueryAlias, Record<string, unknown>[]>;
   datasources: DatasourcesList;
   datarecords: DatarecordsList;
 
@@ -1186,9 +1187,14 @@ export const useSiteAttributes = () => {
   return useStore(ctx, (state) => state.siteAttributes);
 };
 
-export const useData = (brickId: string, samples: Record<string, unknown>[] | undefined) => {
+export const useData = (queryAlias?: QueryAlias, samples?: Record<string, unknown>[] | undefined) => {
   const ctx = usePageContext();
-  return useStore(ctx, (state) => state.data[brickId] ?? samples ?? []);
+  return useStore(ctx, (state) => {
+    if (queryAlias && state.data[queryAlias]) {
+      return state.data[queryAlias];
+    }
+    return samples ?? [];
+  });
 };
 
 /**
@@ -1201,12 +1207,26 @@ export function useIsInLoop(brickId: string) {
   let currentBrickId: string | undefined = brickId;
   while (currentBrickId) {
     const brick = getBrickFromDraft(currentBrickId, ctx.getState());
-    if (brick?.props.loop === "loop") {
+    if (brick?.props.loop) {
       return true;
     }
     currentBrickId = getParentBrick(currentBrickId)?.id;
   }
   return false;
+}
+
+export function useLoopAlias(brickId: string) {
+  const ctx = usePageContext();
+  const getParentBrick = useStore(ctx, (state) => state.getParentBrick);
+  let currentBrickId: string | undefined = brickId;
+  while (currentBrickId) {
+    const brick = getBrickFromDraft(currentBrickId, ctx.getState());
+    if (brick?.props.loop?.alias) {
+      return brick?.props.loop.alias as string;
+    }
+    currentBrickId = getParentBrick(currentBrickId)?.id;
+  }
+  return null;
 }
 
 export const usePageQueries = () => {

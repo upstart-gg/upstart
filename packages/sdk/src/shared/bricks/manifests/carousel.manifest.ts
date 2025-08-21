@@ -7,7 +7,6 @@ import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { roundingRef } from "../props/border";
 import { colorPresetRef } from "../props/color-preset";
-import { gradientDirectionRef } from "../props/color";
 import { paddingRef } from "../props/padding";
 
 export const manifest = defineBrickManifest({
@@ -25,7 +24,7 @@ export const manifest = defineBrickManifest({
   },
   icon: TbCarouselHorizontal,
   props: defineProps({
-    color: Type.Optional(
+    colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",
       }),
@@ -35,12 +34,6 @@ export const manifest = defineBrickManifest({
         default: "p-px",
       }),
     ),
-    gradientDirection: Type.Optional(
-      gradientDirectionRef("color", {
-        default: "bg-gradient-to-br",
-      }),
-    ),
-
     images: Type.Optional(
       Type.Array(
         Type.Object({

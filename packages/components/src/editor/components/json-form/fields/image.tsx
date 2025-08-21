@@ -13,7 +13,7 @@ import { useDynamicTextEditor } from "~/editor/hooks/use-editable-text";
 import { usePageQueries } from "~/editor/hooks/use-page-data";
 
 const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
-  const { schema, formData, onChange, title, description, currentValue, brickId } = props;
+  const { schema, formData, onChange, title, description, currentValue, brickId, noDynamic } = props;
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);
   const { onImageUpload } = useUploader();
@@ -34,7 +34,7 @@ const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
 
   const debouncedOnPropsChange = debounce(onPropsChange, 300);
 
-  if (pageQueries.length > 0) {
+  if (pageQueries.length > 0 && !noDynamic && !schema["ui:no-dynamic"]) {
     return (
       <div className="field field-string basis-full flex flex-col gap-1">
         <FieldTitle title={title} description={description} />

@@ -4,12 +4,14 @@ import { css, tx } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { InlineIcon } from "@iconify/react";
 import BrickRoot from "../components/BrickRoot";
+import { useBrickProps } from "../hooks/use-brick-props";
 
-export default function Testimonials({ brick, editable }: BrickProps<Manifest>) {
-  const { props } = brick;
+export default function Testimonials(props: BrickProps<Manifest>) {
+  const { brick, editable } = props;
+  const brickProps = useBrickProps(props);
   const { color, ...styles } = useBrickStyle<Manifest>(brick);
   const containerClasses = Object.values(styles);
-  const testimonials = props.testimonials && Array.isArray(props.testimonials) ? props.testimonials : [];
+  const testimonials = brickProps.testimonials ?? [];
 
   return (
     <BrickRoot
