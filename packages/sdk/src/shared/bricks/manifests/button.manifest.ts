@@ -47,7 +47,13 @@ export const manifest = defineBrickManifest({
       }),
     ),
     border: Type.Optional(borderRef({ default: { width: "border-0" }, "ui:responsive": "desktop" })),
-    linkToUrlOrPageId: Type.Optional(urlOrPageIdRef({ title: "Link", metadata: { category: "content" } })),
+    linkToUrlOrPageId: Type.Optional(
+      urlOrPageIdRef({
+        title: "Link",
+        "ui:placeholder": "https://example.com",
+        metadata: { category: "content" },
+      }),
+    ),
     loop: Type.Optional(loopRef()),
   }),
 });

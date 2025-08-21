@@ -1,5 +1,6 @@
 import { css, tx } from "@upstart.gg/style-system/twind";
-import { type KeyboardEventHandler, useState } from "react";
+import { isEqual } from "lodash-es";
+import { type KeyboardEventHandler, useEffect, useState } from "react";
 import type { Props } from "react-select";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
@@ -20,13 +21,13 @@ function getClassNames(className?: string): Props<OptionType>["classNames"] {
             "rounded py-[3px] outline outline-upstart-500 bg-white overflow-visible !min-h-full border border-gray-300 max-w-full",
           ),
     valueContainer: () => tx("bg-white px-[3px] flex gap-1"),
-    singleValue: () => tx("text-sm px-2"),
-    multiValueLabel: () => tx("bg-upstart-50 px-2 flex py-0.5 rounded-l"),
+    singleValue: () => tx("text-[95%] px-2"),
+    multiValueLabel: () => tx("bg-upstart-50 px-2 flex py-0.5 rounded-l text-[95%]"),
     multiValueRemove: () =>
       tx(
         "bg-upstart-100 font-normal text-upstart-400 px-0.5 py-px hover:(bg-red-200 text-gray-700) rounded-r",
       ),
-    placeholder: () => tx("text-sm text-gray-500 bg-white py-[2px] px-1"),
+    placeholder: () => tx("text-sm text-gray-400 bg-white py-[2px] px-1 cursor-text"),
     input: () =>
       tx(
         "py-[2px] px-1 text-sm outline-none !focus:outline-none !focus-within:outline-none cursor-text [&>input]:focus:ring-0 [&>input]:focus-within:ring-0",
@@ -46,7 +47,7 @@ function getClassNames(className?: string): Props<OptionType>["classNames"] {
       return tx("text-sm py-2");
     },
     indicatorsContainer: () => tx("text-sm pr-1.5 font-normal scale-75"),
-
+    clearIndicator: () => tx("text-sm text-gray-500 hover:text-gray-700 cursor-pointer"),
     option: (state) =>
       state.isSelected
         ? tx("bg-upstart-100 px-2 py-1.5")
@@ -61,13 +62,15 @@ export default function TagsInput({
   onChange,
   className,
   placeholder,
-  isSearchable = false,
+  isSearchable = true,
+  isClearable = false,
 }: {
   initialValue: string[];
   onChange: (value: string[]) => void;
   className?: string;
   placeholder?: string;
   isSearchable?: boolean;
+  isClearable?: boolean;
 }) {
   const [inputValue, setInputValue] = useState("");
 
@@ -75,8 +78,6 @@ export default function TagsInput({
     label,
     value: label,
   });
-
-  console.log("init", { initialValue });
 
   const [value, setValue] = useState<readonly OptionType[]>(
     Array.isArray(initialValue)
@@ -86,32 +87,47 @@ export default function TagsInput({
         : [],
   );
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    if (
+      isEqual(
+        value.map((v) => v.value),
+        initialValue,
+      )
+    )
+      return;
+    onChange(Array.isArray(value) ? value.map((v) => v.value) : []);
+  }, [value]);
+
   const handleKeyDown: KeyboardEventHandler = (event) => {
     if (!inputValue) return;
     switch (event.key) {
       case "Enter":
       case "Tab":
-        setValue((prev) => [...prev, createOption(inputValue)]);
+        console.log("Adding tag:", inputValue);
+        setValue((prev) => {
+          if (prev.find((v) => v.value === inputValue)) return prev; // Prevent duplicates
+          return [...prev, createOption(inputValue)];
+        });
         setInputValue("");
-        event.preventDefault();
+      // event.preventDefault();
     }
   };
-
-  const components = isSearchable
-    ? undefined
-    : {
-        DropdownIndicator: null,
-      };
 
   return (
     <CreatableSelect
       unstyled
       isMulti
-      isClearable={false}
+      isClearable={isClearable}
       inputValue={inputValue}
-      components={components}
-      defaultValue={value}
-      onChange={(newValue) => setValue(newValue ?? [])}
+      components={{
+        DropdownIndicator: null,
+      }}
+      value={value}
+      onChange={(newValue) => {
+        setValue(newValue);
+        onChange(Array.isArray(newValue) ? newValue.map((v) => v.value) : []);
+      }}
       onInputChange={(newValue) => setInputValue(newValue)}
       onKeyDown={handleKeyDown}
       classNames={getClassNames(className)}
@@ -202,7 +218,7 @@ export function TagsSelect({
       onInputChange={(newValue) => setInputValue(newValue)}
       onKeyDown={handleKeyDown}
       classNames={getClassNames(className)}
-      //   menuIsOpen={false}
+      // menuIsOpen={false}
       isSearchable={isSearchable}
       placeholder={placeholder}
     />

@@ -37,7 +37,7 @@
   },
   "biome.enabled": true,
   "prettier.enable": false,
-  "biome.lspBin": "node_modules/@biomejs/biome/bin/biome",
+  "biome.lsp.bin": "node_modules/@biomejs/biome/bin/biome",
 	"editor.codeActionsOnSave": {
 		"quickfix.biome": "explicit",
 		"source.organizeImports.biome": "explicit",

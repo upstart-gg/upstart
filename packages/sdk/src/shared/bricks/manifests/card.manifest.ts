@@ -27,53 +27,7 @@ export const manifest = defineBrickManifest({
         default: { color: "bg-primary-500 text-primary-content-500" },
       }),
     ),
-    // variants: Type.Array(
-    //   Type.Union(
-    //     [
-    //       Type.Literal("centered", {
-    //         title: "Centered",
-    //         "ui:variant-type": "align",
-    //       }),
-    //       Type.Literal("hide-title", {
-    //         title: "Hide title",
-    //         "ui:variant-type": "title",
-    //       }),
-    //       // Type.Literal("text-sm", {
-    //       //   title: "S",
-    //       //   "ui:variant-type": "font-size",
-    //       // }),
-    //       // Type.Literal("text-base", {
-    //       //   title: "M",
-    //       //   "ui:variant-type": "font-size",
-    //       // }),
-    //       // Type.Literal("text-lg", {
-    //       //   title: "L",
-    //       //   "ui:variant-type": "font-size",
-    //       // }),
-    //       // Type.Literal("text-xl", {
-    //       //   title: "XL",
-    //       //   "ui:variant-type": "font-size",
-    //       // }),
-    //       // Type.Literal("text-2xl", {
-    //       //   title: "2XL",
-    //       //   "ui:variant-type": "font-size",
-    //       // }),
-    //     ],
-    //     {
-    //       title: "Variants",
-    //       "ui:display": "select",
-    //     },
-    //   ),
-    //   {
-    //     "ui:field": "variant",
-    //     default: ["image-between", "text-base"],
-    //     "ui:variant-names": {
-    //       "image-placement": "Image Placement",
-    //       align: "Alignment",
-    //       title: "Hide title",
-    //     },
-    //   },
-    // ),
+
     cardImage: Type.Optional(
       imageRef({
         "ui:responsive": "desktop",

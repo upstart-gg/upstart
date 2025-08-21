@@ -15,6 +15,7 @@ import { colorPreset, gradientDirection } from "./bricks/props/color-preset";
 import { image } from "./bricks/props/image";
 import { direction } from "./bricks/props/direction";
 import { loop, queryUse } from "./bricks/props/dynamic";
+import { tags } from "./bricks/props/tags";
 
 export type { AnySchemaObject, JSONSchemaType, JSONType, SchemaObject } from "ajv";
 
@@ -51,6 +52,7 @@ ajv.addSchema(urlOrPageId(), "content:urlOrPageId");
 ajv.addSchema(loop(), "content:loop");
 ajv.addSchema(queryUse(), "content:queryUse");
 ajv.addSchema(colorPreset(), "presets:color");
+ajv.addSchema(tags(), "content:tags");
 
 export const jsonStringsSupportedFormats = [
   "date-time",

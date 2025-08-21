@@ -7,6 +7,7 @@ import { datetime } from "./bricks/props/date";
 import { imageRef } from "./bricks/props/image";
 import { colorPresetRef } from "./bricks/props/color-preset";
 import { queryUseRef } from "./bricks/props/dynamic";
+import { querySchema } from "./datasources/types";
 
 export type { JSONSchemaType };
 
@@ -33,12 +34,11 @@ export const pageAttributesSchema = Type.Object({
   }),
   queries: Type.Optional(
     Type.Array(queryUseRef(), {
-      title: "Queries",
+      title: "Page Queries",
       description:
         "List of queries to use in this page. All listed queries will be executed when the page loads.",
-      "ui:scope": "page",
-      "ui:field": "query",
       "ai:instructions": "Reference Query IDs to use at the page level.",
+      "ui:field": "page-queries",
       maxItems: 5,
     }),
   ),
@@ -88,11 +88,19 @@ export const pageAttributesSchema = Type.Object({
 });
 
 export const siteAttributesSchema = Type.Object({
+  queries: Type.Optional(
+    Type.Array(querySchema, {
+      title: "Site Queries",
+      "ui:field": "site-queries",
+      description: "List of all queries available in this site. These can be used in any page.",
+      "ai:instructions":
+        "This is where queries are first defined. They are then referenced in pages attributes to use them.",
+    }),
+  ),
   ogImage: Type.Optional(
     imageRef({
       title: "Social share image",
       description: "Image shown when this site is shared on social media",
-      "ui:scope": "site",
       "ai:hidden": true,
       "ui:no-object-options": true,
       "ui:no-alt-text": true,
@@ -111,7 +119,6 @@ export const siteAttributesSchema = Type.Object({
       "ui:placeholder": "<script src='https://example.com/script.js'></script>",
       "ui:premium": true,
       "ui:textarea-font-size": "1",
-      "ui:scope": "site",
       "ui:group": "external-scripts",
       "ui:group:title": "External scripts",
       "ui:no-dynamic": true,
@@ -127,7 +134,6 @@ export const siteAttributesSchema = Type.Object({
       "ui:textarea-class": "h-40 !font-mono",
       "ui:textarea-font-size": "1",
       "ui:placeholder": "<script src='https://example.com/script.js'></script>",
-      "ui:scope": "site",
       "ui:group": "external-scripts",
       "ui:group:title": "External scripts",
       "ui:no-dynamic": true,

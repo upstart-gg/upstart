@@ -5,6 +5,7 @@ import { useBrickStyle } from "../hooks/use-brick-style";
 import { InlineIcon } from "@iconify/react";
 import BrickRoot from "../components/BrickRoot";
 import { useBrickProps } from "../hooks/use-brick-props";
+import { useState } from "react";
 
 export default function Testimonials(props: BrickProps<Manifest>) {
   const { brick, editable } = props;
@@ -12,6 +13,11 @@ export default function Testimonials(props: BrickProps<Manifest>) {
   const { color, ...styles } = useBrickStyle<Manifest>(brick);
   const containerClasses = Object.values(styles);
   const testimonials = brickProps.testimonials ?? [];
+  const [showImage, setShowImage] = useState(true);
+
+  const onImageError = (event: React.SyntheticEvent<HTMLImageElement>) => {
+    setShowImage(false);
+  };
 
   return (
     <BrickRoot
@@ -36,11 +42,12 @@ export default function Testimonials(props: BrickProps<Manifest>) {
           </blockquote>
 
           <div className="flex items-center gap-3">
-            {testimonial.avatar && (
+            {showImage && testimonial.avatar?.src && (
               <img
                 src={testimonial.avatar.src}
                 alt={testimonial.avatar.alt || testimonial.author}
                 className="w-12 h-12 rounded-full object-cover"
+                onError={onImageError}
               />
             )}
 

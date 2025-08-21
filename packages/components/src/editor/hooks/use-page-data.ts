@@ -35,7 +35,7 @@ export interface DraftStateProps {
   datasources: DatasourcesList;
   datarecords: DatarecordsList;
 
-  queries: Query[];
+  // queries: Query[];
 
   /**
    * Site attributes key/value pairs
@@ -162,11 +162,12 @@ export const createDraftStore = (
 
           upsertQuery: (query: Query) =>
             set((state) => {
-              const existingIndex = state.queries.findIndex((q) => q.id === query.id);
+              const existingIndex = state.siteAttributes.queries?.findIndex((q) => q.id === query.id) ?? -1;
               if (existingIndex !== -1) {
-                state.queries[existingIndex] = query;
+                state.siteAttributes.queries![existingIndex] = query;
               } else {
-                state.queries.push(query);
+                state.siteAttributes.queries ??= [];
+                state.siteAttributes.queries.push(query);
               }
             }),
 
@@ -1121,12 +1122,12 @@ export function useHasDynamicParent(brickId: string) {
 
 export function useSiteQueries() {
   const ctx = usePageContext();
-  return useStore(ctx, (state) => state.queries);
+  return useStore(ctx, (state) => state.siteAttributes.queries ?? []);
 }
 
 export function useSiteQuery(queryId?: string) {
   const ctx = usePageContext();
-  return useStore(ctx, (state) => state.queries.find((q) => q.id === queryId) ?? null);
+  return useStore(ctx, (state) => state.siteAttributes.queries?.find((q) => q.id === queryId) ?? null);
 }
 
 export function useParentBrick(brickId: string) {
@@ -1236,7 +1237,7 @@ export const usePageQueries = () => {
     (state) =>
       state.pageAttributes.queries
         ?.map((pageQuery) => {
-          const queryInfo = state.queries.find((q) => q.id === pageQuery.queryId);
+          const queryInfo = state.siteAttributes.queries?.find((q) => q.id === pageQuery.queryId);
           if (!queryInfo) {
             console.warn(`Query with id ${pageQuery.queryId} not found in the store`);
             return null;
@@ -1320,7 +1321,6 @@ export const useSite = () => {
     id: state.siteId,
     label: state.label,
     sitemap: state.sitemap,
-    queries: state.queries,
     theme: state.theme,
     themes: state.themes,
     attributes: state.siteAttributes,

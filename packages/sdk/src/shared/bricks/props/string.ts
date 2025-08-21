@@ -24,7 +24,7 @@ const pageIdSchema = Type.String({
   "ui:field": "page-id",
 });
 
-export function urlOrPageId(title = "URL or Page ID", defaultValue?: string) {
+export function urlOrPageId(title = "URL", defaultValue?: string) {
   return Type.Union(
     [
       Type.String({

@@ -201,21 +201,6 @@ export default function NavBar() {
           </button>
         </Tooltip>
 
-        <Tooltip content="Site queries" side="bottom" align="center">
-          <button
-            onClick={() => {
-              editorHelpers.setSelectedBrickId();
-              editorHelpers.setSelectedSectionId();
-              editorHelpers.hidePanel();
-              editorHelpers.toggleModal("queries");
-            }}
-            type="button"
-            className={tx(btnClass, squareBtn, commonCls, modal === "queries" && activeCls)}
-          >
-            <BsDatabaseDown className={tx("h-5 w-auto")} />
-          </button>
-        </Tooltip>
-
         <div className={separator} />
 
         <Tooltip content="Color theme & fonts" side="bottom" align="center">

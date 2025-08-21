@@ -64,7 +64,12 @@ Optionally either use an avatar or a social icon but not both at the same time.`
             }),
             author: string("Author", { default: "John Doe" }),
             company: Type.Optional(string("Company")),
-            avatar: Type.Optional(imageRef({ title: "Avatar" })),
+            avatar: Type.Optional(
+              imageRef({
+                title: "Avatar",
+                "ui:placeholder": "https://via.placeholder.com/80x80.png?text=JD",
+              }),
+            ),
             socialIcon: Type.Optional(iconRef()),
           }),
           {

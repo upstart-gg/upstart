@@ -43,7 +43,18 @@
         "sectionsPlan": []
       }
     ],
-    "attributes": {},
+    "attributes": {
+      "queries": [
+        { "id": "get-employees", "label": "Get all employees", "datasourceId": "employees", "limit": 50 },
+        {
+          "id": "get-employee",
+          "label": "Get employee by ID",
+          "datasourceId": "employees",
+          "limit": 1,
+          "parameters": ["$id"]
+        }
+      ]
+    },
     "datarecords": [
       {
         "id": "a7f26d80-d68e-4b7a-a4a3-e41c454670ce",
@@ -296,16 +307,6 @@
           { "fields": ["tags"], "name": "idx_unique_tags" }
         ]
       }
-    ],
-    "queries": [
-      { "id": "get-employees", "label": "Get all employees", "datasourceId": "employees", "limit": 50 },
-      {
-        "id": "get-employee",
-        "label": "Get employee by ID",
-        "datasourceId": "employees",
-        "limit": 1,
-        "parameters": ["$id"]
-      }
     ]
   },
   "pages": [
@@ -440,7 +441,7 @@
         },
         {
           "id": "s_AlMTPcO",
-          "label": "Testimonial",
+          "label": "Testimonial dynamic",
           "order": 6,
           "props": { "justifyContent": "justify-center", "alignItems": "items-start" },
           "bricks": [
@@ -465,7 +466,15 @@
                   }
                 ]
               }
-            },
+            }
+          ]
+        },
+        {
+          "id": "s_AlMTPcO2",
+          "label": "Testimonial static",
+          "order": 6,
+          "props": { "justifyContent": "justify-center", "alignItems": "items-start" },
+          "bricks": [
             {
               "type": "testimonials",
               "props": {

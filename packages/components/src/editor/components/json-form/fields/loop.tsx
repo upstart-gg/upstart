@@ -34,7 +34,7 @@ const DynamicField: FC<FieldProps<LoopSettings | undefined>> = (props) => {
 
   return (
     <div className="layout-field w-full flex flex-col gap-3">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between pr-1">
         <FieldTitle
           title={title ?? "Repeat over"}
           description={
@@ -46,7 +46,7 @@ const DynamicField: FC<FieldProps<LoopSettings | undefined>> = (props) => {
           <Select.Trigger
             radius="medium"
             variant="ghost"
-            className="!mr-px !max-w-[50%]"
+            className="!max-w-[50%]"
             placeholder={placeholder}
           />
           <Select.Content position="popper">

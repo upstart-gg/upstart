@@ -51,7 +51,7 @@ describe("String prop test suite", () => {
   describe("urlOrPageId", () => {
     it("should have the correct title", () => {
       const prop = urlOrPageId();
-      expect(prop.title).toBe("URL or Page ID");
+      expect(prop.title).toBe("URL");
     });
 
     it("should have custom title when provided", () => {

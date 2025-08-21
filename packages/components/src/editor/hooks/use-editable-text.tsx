@@ -47,7 +47,7 @@ export function useDynamicTextEditor({
   const onChangeDebounced = useDebounceCallback(onChange, 300);
   return (
     <>
-      <div className="rounded-md border border-gray-300 focus:border-upstart-600 focus:ring-1 focus:ring-upstart-600 px-1.5 py-1.5 text-sm w-full bg-white">
+      <div className="rounded border border-gray-300 focus:border-upstart-600 focus:ring-1 focus:ring-upstart-600 px-2 py-[4px] text-sm flex-grow max-w-[calc(100%-34px)] bg-white">
         <TextEditor
           content={currentValue}
           brickId={brickId}
@@ -74,7 +74,7 @@ export function useDynamicTextEditor({
           }
         }}
       >
-        <IconButton variant="surface" radius="large" className="!w-[35px] !h-[35px]">
+        <IconButton variant="surface" radius="large" className="!w-[31px] !h-[31px]">
           <RiBracesLine className="w-4 h-4" />
         </IconButton>
       </DatasourceItemButton>

@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { IoIosHelpCircleOutline } from "react-icons/io";
 // Import field components
 import ArrayField from "./fields/array";
+import TagsField from "./fields/tags";
 import BackgroundField from "./fields/background";
 import BorderField from "./fields/border";
 import AlignSelfField from "./fields/align-self";
@@ -12,7 +13,8 @@ import JustifyContentField from "./fields/justify-content";
 import ColorField from "./fields/color";
 import DatasourceField from "./fields/datasource";
 import DynamicField from "./fields/loop";
-import QueryField from "./fields/query";
+import PageQueriesField from "./fields/page-queries";
+import SiteQueriesField from "./fields/site-queries";
 import EnumField from "./fields/enum";
 import IconifyField from "./fields/iconify";
 import ImageField from "./fields/image";
@@ -20,13 +22,13 @@ import { NumberField, SliderField } from "./fields/number";
 import { PagePaddingField, type TempPadding } from "./fields/padding";
 import { GeoAddressField, PathField, StringField, UrlOrPageIdField } from "./fields/string";
 import SwitchField from "./fields/switch";
-import VariantGroupField from "./fields/variant-group";
 
 // Import types
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import type { DatasourceSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import type { GeolocationSettings } from "@upstart.gg/sdk/shared/bricks/props/geolocation";
+import type { TagsSettings } from "@upstart.gg/sdk/shared/bricks/props/tags";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import type {
   AlignSelfSettings,
@@ -113,6 +115,18 @@ function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       );
     }
 
+    case "tags": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as TagsSettings;
+      return (
+        <TagsField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: TagsSettings | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
     case "color": {
       const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;
       return (
@@ -185,13 +199,25 @@ function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       );
     }
 
-    case "query": {
+    case "page-queries": {
       const currentValue = (get(formData, id) ?? commonProps.schema.default) as QueryUseSettings[];
       return (
-        <QueryField
+        <PageQueriesField
           key={`field-${id}`}
           currentValue={currentValue}
           onChange={(value: QueryUseSettings[] | undefined | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
+    case "site-queries": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as QueryUseSettings[];
+      return (
+        <SiteQueriesField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value) => {}}
           {...commonProps}
         />
       );
@@ -422,22 +448,6 @@ function createFieldComponent(options: FieldFactoryOptions): ReactNode {
             itemSchema.enum ||
             (itemSchema as { union?: unknown[] }).union ||
             [];
-
-          // Check if options have ui:variant-type for grouped selection
-          const hasVariantTypes = options.some(
-            (option: unknown) => typeof option === "object" && option !== null && "ui:variant-type" in option,
-          );
-
-          if (hasVariantTypes) {
-            return (
-              <VariantGroupField
-                key={`field-${id}`}
-                currentValue={currentValue as string[]}
-                onChange={(value: string[] | null) => onChange({ [id]: value || [] }, id)}
-                {...commonProps}
-              />
-            );
-          }
 
           // Fallback to original multi-select buttons for non-variant arrays
           return (

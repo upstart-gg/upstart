@@ -23,7 +23,7 @@ body {
   font-size: inherit;
   height: 0;
   pointer-events: none;
-  white-space: preserve nowrap;
+  white-space: nowrap;
 }
 .tiptap.singleline p.is-editor-empty:first-child::before {
   color: #adb5bd;
@@ -32,7 +32,12 @@ body {
   font-size: inherit;
   height: 0;
   pointer-events: none;
-  white-space: preserve nowrap;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+p[data-placeholder] {
+  overflow: hidden;
 }
 
 .tiptap :first-child {

@@ -18,25 +18,12 @@ export default function SettingsForm() {
       ...attrSchema,
       properties: Object.fromEntries(
         Object.entries(attrSchema.properties).filter(([key, value]) => {
-          // Filter out properties with "ui:hidden" set to true
-          if (value["ui:hidden"]) {
-            return false;
-          }
-          // Filter out properties based on the current tab
-          if (currentTab === "page-settings" && value["ui:scope"] === "site") {
-            return false;
-          }
-          if (currentTab === "site-settings" && value["ui:scope"] !== "site") {
-            return false;
-          }
-          return true;
+          return !value["ui:hidden"];
         }),
       ),
     };
     return filteredSchema as typeof attrSchema;
-  }, [attrSchema, currentTab]);
-
-  console.log({ pageAttributes });
+  }, [attrSchema]);
 
   return (
     <div className="flex flex-col h-full">

@@ -14,6 +14,7 @@ import type { colorPreset, gradientDirection } from "../bricks/props/color-prese
 import type { image } from "../bricks/props/image";
 import type { direction } from "../bricks/props/direction";
 import type { loop, queryUse } from "../bricks/props/dynamic";
+import type { tags } from "../bricks/props/tags";
 
 export interface SchemaTypeMap {
   "styles:background": ReturnType<typeof background>;
@@ -41,6 +42,7 @@ export interface SchemaTypeMap {
   "content:loop": ReturnType<typeof loop>;
   "content:queryUse": ReturnType<typeof queryUse>;
   "assets:icon": ReturnType<typeof icon>;
+  "content:tags": ReturnType<typeof tags>;
   // Add other schema mappings here
 }
 

@@ -26,7 +26,7 @@ export const StringField: FC<FieldProps<string>> = (props) => {
     return (
       <div className="field field-string basis-full flex flex-col gap-1 ">
         <FieldTitle title={title} description={description} />
-        <div className="field field-string flex items-start gap-2">{DynamicTextEditor}</div>
+        <div className="field field-string flex items-start gap-1.5">{DynamicTextEditor}</div>
       </div>
     );
   }
@@ -118,13 +118,13 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings>> = (props) => 
             {externalLabel}
           </SegmentedControl.Item>
           <SegmentedControl.Item value="pageId" className="[&_.rt-SegmentedControlItemLabel]:!px-1.5">
-            Internal page
+            Internal
           </SegmentedControl.Item>
         </SegmentedControl.Root>
       </div>
       {type === "url" ? (
         pageQueries.length > 0 ? (
-          <div className="field field-string basis-full flex items-center gap-2 mt-2">
+          <div className="field field-string basis-full flex items-start gap-1.5 mt-2">
             {DynamicTextEditor}
           </div>
         ) : (

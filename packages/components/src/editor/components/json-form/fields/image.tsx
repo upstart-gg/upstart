@@ -36,9 +36,9 @@ const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
 
   if (pageQueries.length > 0 && !noDynamic && !schema["ui:no-dynamic"]) {
     return (
-      <div className="field field-string basis-full flex flex-col gap-1">
+      <div className="field field-string basis-full flex flex-col gap-1 max-w-full">
         <FieldTitle title={title} description={description} />
-        <div className="field field-string flex items-center gap-2">{DynamicTextEditor}</div>
+        <div className="field field-string flex items-start gap-1.5 max-w-full">{DynamicTextEditor}</div>
       </div>
     );
   }

@@ -9,6 +9,7 @@ import { boolean } from "../props/boolean";
 import { VscLayoutPanelOff } from "react-icons/vsc";
 import type { BrickProps } from "../props/types";
 import { colorPresetRef } from "../props/color-preset";
+import { tagsRef } from "../props/tags";
 
 export const manifest = defineBrickManifest({
   type: "navbar",
@@ -46,6 +47,7 @@ export const manifest = defineBrickManifest({
           title: "Logo",
           "ui:show-img-search": false,
           "ui:no-object-options": true,
+          "ui:placeholder": "https://example.com/logo.png",
           metadata: {
             category: "content",
           },
@@ -70,9 +72,8 @@ export const manifest = defineBrickManifest({
         { title: "Links position", default: "right", "ui:responsive": "desktop" },
       ),
       linksTagsFilter: Type.Optional(
-        Type.Array(Type.String(), {
+        tagsRef({
           description: "Filter pages in the navbar by tags. Only pages with all of these tags will be shown.",
-          title: "Tags",
           default: ["navbar"],
           metadata: {
             category: "content",

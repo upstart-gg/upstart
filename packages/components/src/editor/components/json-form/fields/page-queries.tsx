@@ -119,7 +119,7 @@ const QueryField: FC<FieldProps<QueryUseSettings[] | undefined>> = (props) => {
               setShowModal(true);
             }}
           >
-            Manage queries
+            Manage page queries
           </Button>
         )}
       </div>
