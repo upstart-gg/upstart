@@ -38,10 +38,10 @@
     "nx": "19.7.2",
     "postcss": "8.5.3",
     "rimraf": "6.0.1",
-    "tsx": "4.19.3",
+    "tsx": "^4.20.4",
     "typescript": "5.5.3",
     "vite-tsconfig-paths": "5.1.4",
-    "vitepress": "1.6.3",
+    "vitepress": "1.6.4",
     "vitest": "^3.2.4",
     "vue": "3.5.4"
   },
@@ -57,7 +57,10 @@
       "caniuse-lite": "1.0.30001699",
       "property-information": "7.1.0",
       "typescript": "5.8.3",
-      "vite": "^7.0.6"
+      "vite": "npm:rolldown-vite@latest",
+      "@vitejs/plugin-react": "^5.0.1",
+      "esbuild": "^0.25.0",
+      "tsup": "^8.5.0"
     },
     "onlyBuiltDependencies": [
       "@biomejs/biome",

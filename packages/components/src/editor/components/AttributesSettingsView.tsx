@@ -59,6 +59,7 @@ export default function AttributesSettingsView({
     // `propertyChangedPath` can take the form of `a.b.c` which means we need to update `props.a.b.c`
     // For this we use lodash.set
     set(attrObj, propertyChanged, data[propertyChanged]);
+
     if (type === "page") {
       draft.updatePageAttributes(attrObj as PageAttributes);
     } else {
