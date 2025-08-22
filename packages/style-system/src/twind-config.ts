@@ -38,7 +38,7 @@ export default defineConfig({
     ],
     [
       "dynamic-field",
-      "bg-upstart-50 text-black text-[92%] inline-block outline outline-upstart-50 px-1 rounded-sm mx-0.5",
+      "bg-upstart-200/50 text-black/80 text-[90%] py-0.5 inline-block outline outline-upstart-50 px-1.5 rounded mx-0.5",
     ],
     [
       "btn",

@@ -9,11 +9,13 @@ import { useState } from "react";
 
 export default function Testimonials(props: BrickProps<Manifest>) {
   const { brick, editable } = props;
+
   const brickProps = useBrickProps(props);
-  const { colorPreset, ...styles } = useBrickStyle<Manifest>(brick);
+  const { colorPreset, border, shadow, ...styles } = useBrickStyle<Manifest>(brick);
   const containerClasses = Object.values(styles);
-  const testimonials = brickProps.testimonials ?? [];
   const [showImage, setShowImage] = useState(true);
+
+  const testimonials = brickProps.testimonials ?? [];
 
   const onImageError = (event: React.SyntheticEvent<HTMLImageElement>) => {
     setShowImage(false);
@@ -29,8 +31,10 @@ export default function Testimonials(props: BrickProps<Manifest>) {
         <div
           key={index}
           className={tx(
-            "flex flex-1 flex-col gap-6 p-6 rounded-lg border shadow-sm @desktop:(min-w-[250px])",
+            "flex flex-1 flex-col gap-6 p-6 rounded-lg @desktop:(min-w-[250px])",
             colorPreset,
+            border,
+            shadow,
           )}
         >
           <blockquote
@@ -41,7 +45,7 @@ export default function Testimonials(props: BrickProps<Manifest>) {
             {testimonial.text}
           </blockquote>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-nowrap">
             {showImage && testimonial.avatar?.src && (
               <img
                 src={testimonial.avatar.src}
@@ -56,7 +60,7 @@ export default function Testimonials(props: BrickProps<Manifest>) {
               {testimonial.company && <div className={tx("text-[85%]")}>{testimonial.company}</div>}
             </div>
 
-            {testimonial.socialIcon && <InlineIcon icon={testimonial.socialIcon} className="h-6 w-6" />}
+            {testimonial.socialIcon && <InlineIcon icon={testimonial.socialIcon} className="h-5 w-5" />}
           </div>
         </div>
       ))}

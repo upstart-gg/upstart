@@ -11,27 +11,26 @@ export default function Card(props: BrickProps<Manifest>) {
   const brickProps = useBrickProps(props);
   const styles = useBrickStyle<Manifest>(brick);
   const classes = Object.values(styles);
-  const isOverlay = brickProps.cardImage && brickProps.imagePosition === "overlay";
   return (
     <BrickRoot
       editable={editable}
       manifest={manifest}
       className={tx(
-        "flex relative overflow-hidden",
-        brickProps.imagePosition === "side" ? "flex-row" : "flex-col",
+        "flex relative overflow-hidden !flex-nowrap",
+        brickProps.imagePosition === "left" || brickProps.imagePosition === "right" ? "flex-row" : "flex-col",
         classes,
-        isOverlay &&
-          css({
-            backgroundImage: `url(${brickProps.cardImage?.src})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }),
-        isOverlay && "justify-center",
       )}
     >
-      {isOverlay && <div className="absolute inset-0 bg-[inherit] opacity-20 -z-1" />}
-      <div className={tx("card-inner-wrapper", brickProps.imagePosition === "top" ? "order-2" : "order-1")}>
+      <div
+        className={tx(
+          "card-inner-wrapper",
+          brickProps.imagePosition === "top"
+            ? "order-2"
+            : brickProps.imagePosition === "left"
+              ? "order-last"
+              : "order-1",
+        )}
+      >
         {!brickProps.noTitle && (
           <div className={tx("text-[120%] font-semibold z-auto my-4 mx-4")}>
             <TextContent
@@ -56,18 +55,20 @@ export default function Card(props: BrickProps<Manifest>) {
           </div>
         )}
       </div>
-      {brickProps.cardImage?.src && brickProps.imagePosition !== "overlay" && (
+      {brickProps.cardImage?.src && (
         <img
           className={tx(
             " select-none pointer-events-none bg-transparent",
             brickProps.cardImage.position ?? "object-center",
             brickProps.cardImage.fit ?? "object-cover",
+            brickProps.imagePosition === "left" && "order-1",
+            brickProps.imagePosition === "right" && "order-last",
             brickProps.imagePosition === "middle" && "order-2",
             brickProps.imagePosition === "top" && "order-first",
             brickProps.imagePosition === "bottom" && "order-last mt-auto",
-            brickProps.imagePosition === "side"
+            brickProps.imagePosition === "left" || brickProps.imagePosition === "right"
               ? "h-auto w-[clamp(100px,40%,400px)]"
-              : "w-inherit h-[clamp(200px,50%,300px)]",
+              : "w-inherit h-[clamp(100px,50%,250px)]",
           )}
           src={brickProps.cardImage.src}
           alt={brickProps.cardImage.alt || "Card Image"}

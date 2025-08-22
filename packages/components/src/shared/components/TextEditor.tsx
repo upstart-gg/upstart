@@ -167,7 +167,7 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
         mergeNestedSpanStyles: false,
       }),
       Placeholder.configure({
-        placeholder: placeholder ?? "My text...",
+        placeholder: placeholder ?? "Type your text...",
       }),
       ...(!singleline
         ? [Document.extend({ content: textSizeMode === "hero" ? "heading*" : undefined })]

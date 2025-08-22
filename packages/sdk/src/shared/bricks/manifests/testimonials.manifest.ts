@@ -9,8 +9,9 @@ import type { BrickProps } from "../props/types";
 import { fontSizeRef } from "../props/text";
 import { colorPresetRef } from "../props/color-preset";
 import { cssLengthRef } from "../props/css-length";
-import { StringEnum } from "~/shared/utils/string-enum";
 import { loopRef } from "../props/dynamic";
+import { borderRef } from "../props/border";
+import { shadowRef } from "../props/effects";
 
 export const manifest = defineBrickManifest({
   type: "testimonials",
@@ -27,6 +28,16 @@ Optionally either use an avatar or a social icon but not both at the same time.`
         colorPresetRef({
           title: "Color",
           default: "bg-base-100 text-base-100-content",
+        }),
+      ),
+      border: Type.Optional(
+        borderRef({
+          title: "Border",
+          description: "Customize the border of the testimonial cards.",
+          default: {
+            width: "border",
+            color: "border-accent-500",
+          },
         }),
       ),
       fontSize: Type.Optional(
@@ -46,6 +57,7 @@ Optionally either use an avatar or a social icon but not both at the same time.`
           "ui:styleId": "styles:gap",
         }),
       ),
+      shadow: Type.Optional(shadowRef()),
       loop: Type.Optional(
         loopRef({
           // title: "Use dynamic content",
@@ -68,6 +80,7 @@ Optionally either use an avatar or a social icon but not both at the same time.`
               imageRef({
                 title: "Avatar",
                 "ui:placeholder": "https://via.placeholder.com/80x80.png?text=JD",
+                noObjectOptions: true,
               }),
             ),
             socialIcon: Type.Optional(iconRef()),
@@ -75,8 +88,6 @@ Optionally either use an avatar or a social icon but not both at the same time.`
           {
             title: "Testimonials",
             default: [], // Empty array by default
-            "ui:tab": "content",
-            "ui:widget": "array",
             "ui:displayField": "author", // Affiche le nom de l'auteur dans la vue compacte
             "ui:options": {
               orderable: true, // Enable drag & drop reordering

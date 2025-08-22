@@ -17,7 +17,7 @@ export const manifest = defineBrickManifest({
   description: "A card that can have a title, image, and content",
   icon: BsCardText,
   defaultWidth: { desktop: "400px", mobile: "100%" },
-  minWidth: { desktop: 400 },
+  minWidth: { desktop: 300 },
   minHeight: { mobile: 200, desktop: 200 },
   maxWidth: { desktop: 650 },
   props: defineProps({
@@ -42,8 +42,8 @@ export const manifest = defineBrickManifest({
           Type.Literal("top", { title: "Top" }),
           Type.Literal("middle", { title: "Middle" }),
           Type.Literal("bottom", { title: "Bottom" }),
-          Type.Literal("overlay", { title: "Overlay" }),
-          Type.Literal("side", { title: "Side" }),
+          Type.Literal("left", { title: "Left" }),
+          Type.Literal("right", { title: "Right" }),
         ],
         {
           title: "Image Position",

@@ -19,3 +19,22 @@ export type ColorSettings = Static<ReturnType<typeof color>>;
 export function colorRef(options: SchemaOptions = {}) {
   return typedRef("styles:color", { ...options, "ui:styleId": "styles:color" });
 }
+
+export function borderColor(defaultValue?: string, title = "Border color") {
+  return Type.String({
+    title,
+    $id: "styles:borderColor",
+    "ai:instructions":
+      "hex/rgb/rgba color or classes like `border-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900",
+    default: defaultValue,
+    "ui:styleId": "styles:borderColor",
+    "ui:field": "color",
+    "ui:color-type": "border",
+  });
+}
+
+export type BorderColorSettings = Static<ReturnType<typeof borderColor>>;
+
+export function borderColorRef(options: SchemaOptions = {}) {
+  return typedRef("styles:borderColor", { ...options, "ui:styleId": "styles:borderColor" });
+}

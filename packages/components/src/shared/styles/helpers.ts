@@ -152,6 +152,7 @@ export const brickStylesHelpersMap = {
   "styles:background": getBackgroundStyles,
 
   "presets:color": getColorPresetStyles,
+  "styles:borderColor": simpleClassHandler,
 
   "styles:rounding": simpleClassHandler,
   "styles:direction": simpleClassHandler,
@@ -159,13 +160,14 @@ export const brickStylesHelpersMap = {
   "styles:alignItems": simpleClassHandler,
   "styles:justifyContent": simpleClassHandler,
   "styles:border": simpleClassHandleObject,
+
+  // "styles:rounding": simpleClassHandler,
+  "styles:shadow": simpleClassHandler,
 };
 
 export const brickWrapperStylesHelpersMap = {
   "styles:direction": simpleClassHandler,
-  "styles:rounding": simpleClassHandler,
-  // "styles:alignItems": simpleClassHandler,
-  "styles:shadow": simpleClassHandler,
+
   "styles:justifyContent": simpleClassHandler,
   "styles:alignItems": simpleClassHandler,
   "styles:fixedPositioned": getFixedPositionedStyles,

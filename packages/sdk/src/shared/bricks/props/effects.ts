@@ -2,52 +2,43 @@ import { type SchemaOptions, Type, type Static } from "@sinclair/typebox";
 import { typedRef } from "~/shared/utils/typed-ref";
 import { StringEnum, type StringEnumOptions } from "~/shared/utils/string-enum";
 
-type ShadowOptions = {
-  title?: string;
-  defaultValue?: string;
-};
-
-export function shadow({ title = "Shadow", defaultValue = "shadow-none" }: ShadowOptions = {}) {
+export function shadow(options: StringEnumOptions = {}) {
   return StringEnum(["shadow-none", "shadow-sm", "shadow-md", "shadow-lg", "shadow-xl", "shadow-2xl"], {
     $id: "styles:shadow",
-    title,
-    default: defaultValue,
+    title: "Shadow",
     enumNames: ["None", "S", "M", "L", "XL", "2XL"],
+    default: "shadow-none",
     "ui:placeholder": "Not specified",
     "ui:field": "enum",
     "ui:display": "button-group",
     "ui:responsive": "desktop",
     "ui:styleId": "styles:shadow",
-    // "ui:advanced": true,
+    ...options,
   });
 }
 
 export type ShadowSettings = Static<ReturnType<typeof shadow>>;
 
-export function shadowRef(options: SchemaOptions & ShadowOptions = {}) {
+export function shadowRef(options: StringEnumOptions = {}) {
   return typedRef("styles:shadow", options);
 }
-
-type TextShadowOptions = {
-  title?: string;
-} & StringEnumOptions;
 
 /**
  * This function is used in ajv and type ref translations, but should not be used directly in bricks
  * @deprecated When using OUSTIDE of ajv.addSchema(), use `textShadowRef` instead.
  */
-export function textShadow({ title = "Text shadow", ...rest }: TextShadowOptions = {}) {
+export function textShadow(options: StringEnumOptions = {}) {
   return StringEnum(
     ["text-shadow-none", "text-shadow-sm", "text-shadow-md", "text-shadow-lg", "text-shadow-xl"],
     {
       $id: "styles:textShadow",
-      title,
+      title: "Text shadow",
       enumNames: ["None", "S", "M", "L", "XL"],
       "ui:display": "button-group",
       "ui:placeholder": "Not specified",
       "ui:field": "enum",
       "ui:styleId": "styles:textShadow",
-      ...rest,
+      ...options,
     },
   );
 }
