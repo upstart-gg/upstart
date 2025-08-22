@@ -47,7 +47,17 @@ export function useDynamicTextEditor({
   const onChangeDebounced = useDebounceCallback(onChange, 300);
   return (
     <>
-      <div className="rounded border border-gray-300 focus:border-upstart-600 focus:ring-1 focus:ring-upstart-600 px-2 py-[4px] text-sm flex-grow max-w-[calc(100%-34px)] bg-white">
+      <div
+        className={tx(
+          "rounded border border-gray-300 px-2 py-[4px] text-sm flex-grow max-w-[calc(100%-34px)] bg-white",
+          css({
+            "&:has([contenteditable='true']:focus)": {
+              outline: "1px solid var(--violet-8)",
+              borderColor: "var(--violet-8)",
+            },
+          }),
+        )}
+      >
         <TextEditor
           content={currentValue}
           brickId={brickId}
