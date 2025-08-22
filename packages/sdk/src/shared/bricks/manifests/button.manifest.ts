@@ -54,7 +54,7 @@ export const manifest = defineBrickManifest({
         metadata: { category: "content" },
       }),
     ),
-    loop: Type.Optional(loopRef()),
+    // loop: Type.Optional(loopRef()),
   }),
 });
 

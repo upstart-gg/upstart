@@ -225,7 +225,7 @@ export default function NavBar() {
 
         <div className={separator} />
 
-        <Tooltip content="Redo" side="bottom" align="center" aria-disabled={!canUndo}>
+        <Tooltip content="Undo" side="bottom" align="center" aria-disabled={!canUndo}>
           <button
             disabled={!canUndo}
             onClick={() => undo()}

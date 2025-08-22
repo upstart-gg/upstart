@@ -499,49 +499,6 @@
           ]
         },
         {
-          "id": "s_nFkuAMw",
-          "order": 4,
-          "label": "Dynamic",
-          "bricks": [
-            {
-              "type": "box",
-              "props": { "alignSelf": "self-auto", "datasource": {}, "$children": [] },
-              "id": "rKWPNcG"
-            }
-          ],
-          "props": {}
-        },
-        {
-          "id": "s_DtoBEeN",
-          "order": 5,
-          "label": "Section 8",
-          "bricks": [
-            {
-              "type": "form",
-              "props": {
-                "alignSelf": "self-auto",
-                "color": "base100",
-                "gradientDirection": "bg-gradient-to-br",
-                "align": "vertical",
-                "padding": "p-4",
-                "fontSize": "inherit",
-                "button": {
-                  "size": "block",
-                  "rounding": "rounded-md",
-                  "border": { "width": "border", "rounding": "rounded-md" }
-                },
-                "title": "My form",
-                "buttonLabel": "Submit",
-                "successMessage": "Thank you for your submission!",
-                "errorMessage": "There was an error submitting the form. Please try again later.",
-                "height": "104.4px"
-              },
-              "id": "brick-OKkJLZl"
-            }
-          ],
-          "props": {}
-        },
-        {
           "id": "s_AlMTPcO",
           "label": "Testimonial dynamic",
           "order": 6,

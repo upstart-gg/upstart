@@ -17,12 +17,13 @@ export const pageAttributesSchema = Type.Object({
     title: "Color",
     default: { color: "bg-base-100" },
   }),
-  robotsIndexing: Type.Optional(
-    boolean("Allow search engines to index this site", true, {
-      description: "Disabling this will prevent search engines from indexing this site",
-      "ui:group": "seo",
-      "ui:group:title": "SEO",
-      "ai:hidden": true,
+
+  tags: Type.Optional(
+    Type.Array(string("Tag"), {
+      title: "Tags",
+      description:
+        "Tags for this page. Used for organization and filtering in navigation elements and in the dashboard.",
+      "ui:field": "tags",
     }),
   ),
   path: string("URL path", {
@@ -42,6 +43,7 @@ export const pageAttributesSchema = Type.Object({
       maxItems: 5,
     }),
   ),
+
   title: string("Title", {
     default: "Untitled",
     "ui:group": "meta",
@@ -79,6 +81,12 @@ export const pageAttributesSchema = Type.Object({
       "ui:placeholder": "https://example.com/image.jpg",
     }),
   ),
+  robotsIndexing: Type.Optional(
+    boolean("Allow search engines to index this page", true, {
+      description: "Disabling this will prevent search engines from indexing this page",
+      "ai:hidden": true,
+    }),
+  ),
   lastUpdated: Type.Optional(
     datetime("Last updated", {
       "ui:hidden": true,
@@ -106,6 +114,12 @@ export const siteAttributesSchema = Type.Object({
       "ui:no-alt-text": true,
       "ui:show-img-search": false,
       "ui:no-dynamic": true,
+    }),
+  ),
+  robotsIndexing: Type.Optional(
+    boolean("Allow search engines to index this site", true, {
+      description: "Disabling this will prevent search engines from indexing this site entirely",
+      "ai:hidden": true,
     }),
   ),
   headTags: Type.Optional(

@@ -12,7 +12,6 @@ import { IconRender } from "./IconRender";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { filterSchemaProperties } from "@upstart.gg/sdk/shared/utils/schema";
 import { useSectionByBrickId, useDraftHelpers, usePageQueries } from "../hooks/use-page-data";
-import { useDatasource } from "../hooks/use-datasource";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 
 type TabType = "preset" | "settings" | "content";
@@ -129,7 +128,7 @@ function DebugTab({ brick, section, hasTabs }: { brick: Brick; section: Section;
   const parentBrick = getParentBrick(brick.id);
   return (
     <div className="flex flex-col h-full">
-      <div className="h-[50cqh] grow-0 overflow-y-auto">
+      <div className="h-[50cqh] grow-0 overflow-y-auto scrollbar-thin">
         <PanelBlockTitle>
           Brick <code className="text-xs">Id: {brick.id}</code>
         </PanelBlockTitle>

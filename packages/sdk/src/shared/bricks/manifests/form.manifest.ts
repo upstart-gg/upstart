@@ -25,12 +25,10 @@ There is no need to define the form fields manually and the form does not accept
     desktop: 300,
   },
   props: defineProps({
-    datarecordId: Type.Optional(
-      datarecord("Datarecord ID", {
-        description: "The ID of the datarecord to use to generate the form fields",
-        "ui:responsive": "desktop",
-      }),
-    ),
+    datarecordId: datarecord("Datarecord ID", {
+      description: "The ID of the datarecord to use to generate the form fields",
+      "ui:responsive": "desktop",
+    }),
     colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",

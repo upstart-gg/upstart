@@ -5,10 +5,34 @@ import TextContent from "../components/TextContent";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { tx } from "@upstart.gg/style-system/twind";
 import BrickRoot from "../components/BrickRoot";
+import { useSitemap } from "~/editor/hooks/use-page-data";
+import intersection from "lodash-es/intersection";
 
 export default function Navbar({ brick, editable }: BrickProps<Manifest>) {
   const classes = useBrickStyle<Manifest>(brick);
   const props = brick.props;
+  const pages = useSitemap();
+  const navItems: { urlOrPageId: string; label?: string }[] =
+    pages
+      .filter((p) => intersection(p.tags, props.linksTagsFilter ?? []).length > 0)
+      .map((p) => ({
+        urlOrPageId: p.id,
+        label: p.label,
+      })) ?? [];
+
+  const allItems = [...navItems, ...(props.staticNavItems ?? [])].map((item) => {
+    const href = pages.find((p) => p.id === item.urlOrPageId)?.path ?? item.urlOrPageId;
+    return {
+      href,
+      label: item.label as string,
+    };
+  });
+
+  const onClickNav = (e: React.MouseEvent) => {
+    if (editable) {
+      e.preventDefault();
+    }
+  };
 
   return (
     <BrickRoot
@@ -56,21 +80,18 @@ export default function Navbar({ brick, editable }: BrickProps<Manifest>) {
             props.linksPosition === "center" && "mx-auto",
           )}
         >
-          {/* {ds.data.map((item, index) => {
+          {allItems.map((item, index) => {
             return (
               <a
+                onClick={onClickNav}
                 key={index}
                 href={item.href}
-                className={tx(
-                  "font-semibold py-2 px-4 self-stretch rounded-md",
-                  editable && "hover:bg-black/10",
-                  styles.navigationItem,
-                )}
+                className={tx("font-semibold py-2 px-4 self-stretch rounded-md", "hover:brightness-125")}
               >
                 {item.label}
               </a>
             );
-          })} */}
+          })}
         </nav>
         <div role="menu" className="ml-auto @desktop:hidden items-center gap-4" data-brick-group="actions">
           <RxHamburgerMenu className="w-6 h-6" />

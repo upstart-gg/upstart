@@ -47,6 +47,7 @@ export const manifest = defineBrickManifest({
           title: "Logo",
           "ui:show-img-search": false,
           "ui:no-object-options": true,
+          "ui:no-dynamic": true,
           "ui:placeholder": "https://example.com/logo.png",
           metadata: {
             category: "content",
@@ -87,7 +88,7 @@ export const manifest = defineBrickManifest({
             label: Type.Optional(string("Label")),
           }),
           {
-            title: "Navigation items",
+            title: "Static items",
             description: "Additional static navigation items to show in the navbar",
             default: [],
             metadata: {

@@ -6,11 +6,10 @@ export function shadow(options: StringEnumOptions = {}) {
   return StringEnum(["shadow-none", "shadow-sm", "shadow-md", "shadow-lg", "shadow-xl", "shadow-2xl"], {
     $id: "styles:shadow",
     title: "Shadow",
-    enumNames: ["None", "S", "M", "L", "XL", "2XL"],
-    default: "shadow-none",
+    enumNames: ["None", "Small", "Medium", "Large", "XL", "2XL"],
     "ui:placeholder": "Not specified",
     "ui:field": "enum",
-    "ui:display": "button-group",
+    "ui:display": "select",
     "ui:responsive": "desktop",
     "ui:styleId": "styles:shadow",
     ...options,

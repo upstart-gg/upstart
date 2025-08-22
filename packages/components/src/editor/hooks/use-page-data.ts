@@ -685,6 +685,7 @@ export const createDraftStore = (
                   const originalIndex = children.findIndex((b) => b.id === brickId);
                   if (originalIndex === -1) {
                     console.error("Cannot reorder brick %s, it does not exist in parent's children", brickId);
+                    console.log({ sectionId, parentId });
                     return;
                   }
                   const [movedBrick] = children.splice(originalIndex, 1);

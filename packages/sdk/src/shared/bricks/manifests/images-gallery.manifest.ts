@@ -70,7 +70,8 @@ export const manifest = defineBrickManifest({
     columns: Type.Optional(
       Type.Number({
         title: "Columns",
-        description: "Number of columns (grid layout only)",
+        description:
+          "Number of columns. Only applies to desktop screens. On mobile, it will always display 1 column.",
         minimum: 1,
         maximum: 6,
         default: 3,
