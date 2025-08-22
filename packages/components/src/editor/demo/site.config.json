@@ -47,6 +47,12 @@
       "queries": [
         { "id": "get-employees", "label": "Get all employees", "datasourceId": "employees", "limit": 50 },
         {
+          "id": "get-testimonials",
+          "label": "Get all testimonials",
+          "datasourceId": "testimonials",
+          "limit": 10
+        },
+        {
           "id": "get-employee",
           "label": "Get employee by ID",
           "datasourceId": "employees",
@@ -306,6 +312,102 @@
           { "fields": ["lastName"], "name": "idx_unique_lastName" },
           { "fields": ["tags"], "name": "idx_unique_tags" }
         ]
+      },
+      {
+        "id": "testimonials",
+        "label": "Testimonials",
+        "provider": "custom",
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "$id": { "type": "string", "title": "ID" },
+              "$publicationDate": { "type": "string", "format": "date-time", "title": "Publication Date" },
+              "$lastModificationDate": {
+                "type": "string",
+                "format": "date-time",
+                "title": "Last Modification Date"
+              },
+              "$slug": { "type": "string", "title": "Slug" },
+              "author": { "type": "string", "title": "Author" },
+              "text": { "type": "string", "title": "Text" }
+            },
+            "required": ["author", "text", "$id", "$slug", "$publicationDate", "$lastModificationDate"]
+          },
+          "examples": [
+            {
+              "$id": "example-1",
+              "$publicationDate": "2023-01-01T00:00:00Z",
+              "$lastModificationDate": "2023-01-01T00:00:00Z",
+              "$slug": "john-doe-testimonial",
+              "author": "John Doe",
+              "text": "This is a great service!"
+            },
+            {
+              "$id": "example-2",
+              "$publicationDate": "2023-01-02T00:00:00Z",
+              "$lastModificationDate": "2023-01-02T00:00:00Z",
+              "$slug": "jane-smith-testimonial",
+              "author": "Jane Smith",
+              "text": "I love using this product!"
+            },
+            {
+              "$id": "example-3",
+              "$publicationDate": "2023-01-03T00:00:00Z",
+              "$lastModificationDate": "2023-01-03T00:00:00Z",
+              "$slug": "alice-johnson-testimonial",
+              "author": "Alice Johnson",
+              "text": "Fantastic experience, highly recommend!"
+            },
+            {
+              "$id": "example-4",
+              "$publicationDate": "2023-01-04T00:00:00Z",
+              "$lastModificationDate": "2023-01-04T00:00:00Z",
+              "$slug": "bob-brown-testimonial",
+              "author": "Bob Brown",
+              "text": "Exceptional quality and service!"
+            },
+            {
+              "$id": "example-5",
+              "$publicationDate": "2023-01-05T00:00:00Z",
+              "$lastModificationDate": "2023-01-05T00:00:00Z",
+              "$slug": "charlie-white-testimonial",
+              "author": "Charlie White",
+              "text": "A must-have for anyone in the industry!"
+            },
+            {
+              "$id": "example-6",
+              "$publicationDate": "2023-01-06T00:00:00Z",
+              "$lastModificationDate": "2023-01-06T00:00:00Z",
+              "$slug": "dave-black-testimonial",
+              "author": "Dave Black",
+              "text": "Outstanding performance and reliability!"
+            },
+            {
+              "$id": "example-7",
+              "$publicationDate": "2023-01-07T00:00:00Z",
+              "$lastModificationDate": "2023-01-07T00:00:00Z",
+              "$slug": "eve-green-testimonial",
+              "author": "Eve Green",
+              "text": "Impressed with the results, will use again!"
+            },
+            {
+              "$id": "example-8",
+              "$publicationDate": "2023-01-08T00:00:00Z",
+              "$lastModificationDate": "2023-01-08T00:00:00Z",
+              "$slug": "frank-blue-testimonial",
+              "author": "Frank Blue",
+              "text": "Top-notch service, very satisfied!"
+            }
+          ]
+        },
+        "indexes": [
+          { "fields": ["$id"], "name": "idx_unique_id" },
+          { "fields": ["$slug"], "name": "idx_unique_slug" },
+          { "fields": ["$publicationDate"], "name": "idx_unique_publicationDate" },
+          { "fields": ["$lastModificationDate"], "name": "idx_unique_lastModificationDate" }
+        ]
       }
     ]
   },
@@ -455,11 +557,11 @@
                     "id": "LtEttXh",
                     "type": "testimonials",
                     "props": {
-                      "loop": { "over": "allEmployees" },
+                      "loop": { "over": "allTestimonials" },
                       "testimonials": [
                         {
-                          "author": "{{allEmployees.firstName}} {{allEmployees.lastName}}",
-                          "text": "My testimonial text goes here. This is a sample testimonial."
+                          "author": "{{allTestimonials.author}}",
+                          "text": "{{allTestimonials.text}}"
                         }
                       ]
                     }
@@ -664,7 +766,8 @@
             "alias": "employee",
             "params": [{ "field": "$id", "op": "eq", "value": ":slug" }]
           },
-          { "queryId": "get-employees", "alias": "allEmployees" }
+          { "queryId": "get-employees", "alias": "allEmployees" },
+          { "queryId": "get-testimonials", "alias": "allTestimonials" }
         ]
       }
     },
