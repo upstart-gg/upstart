@@ -156,7 +156,7 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
 
     const extensions = [
       StarterKit.configure({
-        document: false,
+        document: singleline || textSizeMode === "hero" ? false : undefined,
         dropcursor: {
           class: "drop-cursor",
           color: "#FF9900",
@@ -169,9 +169,12 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
       Placeholder.configure({
         placeholder: placeholder ?? "Type your text...",
       }),
-      ...(!singleline
-        ? [Document.extend({ content: textSizeMode === "hero" ? "heading*" : undefined })]
-        : [Document.extend({ content: "paragraph" })]),
+      ...(textSizeMode === "hero"
+        ? [Document.extend({ content: "heading*" })]
+        : singleline
+          ? [Document.extend({ content: "paragraph" })]
+          : []),
+
       ...(textSizeMode === "hero" ? [HeroHeading] : []),
       ...(!noTextAlign
         ? [
