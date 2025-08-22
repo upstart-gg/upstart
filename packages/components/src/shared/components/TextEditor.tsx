@@ -140,7 +140,6 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
     ref,
   ) => {
     const defaultUpdateHandler = useTextEditorUpdateHandler(brickId, propPath, dynamic, inline === true);
-    const onUpdate = inline ? defaultUpdateHandler : onChange;
     const mainEditor = useEditor();
     const selectedBrickId = useSelectedBrickId();
     const pageQueries = usePageQueries();
@@ -148,15 +147,15 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
     const [currentContent, setContent] = useState(formatInitialContent(initialContent));
     const [focused, setFocused] = useState(false);
     const queryAlias = useLoopAlias(brickId);
+
+    const onUpdate = inline ? defaultUpdateHandler : onChange;
+
     const datasourceFields = pageQueries
       .filter((q) => q.alias === queryAlias || (!queryAlias && q.queryInfo.limit === 1))
       .flatMap((q) => getJSONSchemaFieldsList(q.datasource.schema, q.alias));
 
     const extensions = [
       StarterKit.configure({
-        // ...(singleline && {
-        //   document: false,
-        // }),
         document: false,
         dropcursor: {
           class: "drop-cursor",
@@ -182,7 +181,6 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
           ]
         : []),
       Highlight.configure({ multicolor: true }),
-      // DatasourceFieldExtension,
       Mention.configure({
         HTMLAttributes: {
           class: "dynamic-field",
@@ -193,7 +191,6 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
             return datasourceFields.filter((field) => field.toLowerCase().includes(query.toLowerCase()));
           },
         },
-
         renderHTML: ({ options, node }) => {
           const field = node.attrs.label ?? node.attrs.id;
           return [
@@ -267,7 +264,7 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
           },
         },
       },
-      [brickId],
+      [brickId, selectedBrickId, queryAlias],
     );
 
     useEffect(() => {
@@ -433,9 +430,6 @@ export function DatasourceItemButton({
   onFieldClick,
 }: PropsWithChildren<{ editor?: Editor | null; brickId: string; onFieldClick?: (field: string) => void }>) {
   const queryAlias = useLoopAlias(brickId);
-
-  console.log("DatasourceItemButton", { brickId, queryAlias });
-
   const onFieldSelect = (field: string) => {
     onFieldClick?.(field);
 

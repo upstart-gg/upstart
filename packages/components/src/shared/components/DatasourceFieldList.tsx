@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { css, tx } from "@upstart.gg/style-system/twind";
+import { tx } from "@upstart.gg/style-system/twind";
 
 type Props = {
   items: string[];
@@ -84,7 +84,7 @@ const DatasourceFieldList = forwardRef<HTMLElement, Props>((props, ref) => {
           </button>
         ))
       ) : (
-        <div className="item text-sm">No result</div>
+        <div className="item text-sm">No match</div>
       )}
     </div>
   );
