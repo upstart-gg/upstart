@@ -35,10 +35,10 @@ export default function Card(props: BrickProps<Manifest>) {
         {!brickProps.noTitle && (
           <div className={tx("text-[120%] font-semibold z-auto my-4 mx-4")}>
             <TextContent
-              propPath="cardTitle.content"
+              propPath="title.content"
               className={tx("flex-1")}
               brickId={brick.id}
-              content={brickProps.cardTitle}
+              content={brickProps.title}
               editable={editable}
               inline
             />
@@ -47,10 +47,10 @@ export default function Card(props: BrickProps<Manifest>) {
         {brickProps.imagePosition !== "middle" && (
           <div className={tx("z-auto p-4", !brickProps.noTitle && "pt-0")}>
             <TextContent
-              propPath="cardBody.content"
+              propPath="text.content"
               className={tx("flex-grow")}
               brickId={brick.id}
-              content={brickProps.cardBody}
+              content={brickProps.text}
               editable={editable}
             />
           </div>
@@ -75,13 +75,13 @@ export default function Card(props: BrickProps<Manifest>) {
           alt={brickProps.cardImage.alt || "Card Image"}
         />
       )}
-      {brickProps.cardBody && brickProps.imagePosition === "middle" && (
+      {brickProps.text && brickProps.imagePosition === "middle" && (
         <div className={tx("z-auto p-4 order-last")}>
           <TextContent
-            propPath="cardBody.content"
+            propPath="text.content"
             className={tx("flex-1")}
             brickId={brick.id}
-            content={brickProps.cardBody}
+            content={brickProps.text}
             editable={editable}
           />
         </div>

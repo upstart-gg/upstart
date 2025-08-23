@@ -9,7 +9,6 @@ import { useState } from "react";
 
 export default function Testimonials(props: BrickProps<Manifest>) {
   const { brick, editable } = props;
-
   const brickProps = useBrickProps(props);
   const { colorPreset, border, shadow, ...styles } = useBrickStyle<Manifest>(brick);
   const containerClasses = Object.values(styles);

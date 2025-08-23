@@ -1,6 +1,6 @@
 import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { useData, usePageQueries } from "~/editor/hooks/use-page-data";
+import { usePageQueries } from "~/editor/hooks/use-page-data";
 import { useBrickManifest } from "./use-brick-manifest";
 import type { LoopSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
 import get from "lodash-es/get";

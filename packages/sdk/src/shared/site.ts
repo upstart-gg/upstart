@@ -999,8 +999,8 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 id: `b_${generateId()}`,
                 type: "card",
                 props: {
-                  cardTitle: "Welcome to My Site",
-                  cardBody: "This is a sample card body. You can edit this content.",
+                  title: "Welcome to My Site",
+                  text: "This is a sample card body. You can edit this content.",
                   cardImage: {
                     src: "https://placehold.co/300x200@2x/EEEEEE/333333/svg?text=Sample",
                     alt: "Sample",
@@ -1252,8 +1252,8 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                 id: `b_${generateId()}`,
                 type: "card",
                 props: {
-                  cardTitle: "Welcome to My Site",
-                  cardBody: "This is a sample card body. You can edit this content.",
+                  title: "Welcome to My Site",
+                  text: "This is a sample card body. You can edit this content.",
                   cardImage: {
                     src: "https://placehold.co/300x200@2x/EEEEEE/333333/svg?text=Sample",
                     alt: "Sample",

@@ -437,13 +437,30 @@
           "id": "s_hero",
           "label": "Hero",
           "order": 2,
-          "props": { "minHeight": "400px", "color": "accent-400" },
+          "props": { "minHeight": "400px", "colorPreset": { "color": "accent-400" } },
           "bricks": [
             {
               "id": "b_zzZYqOu",
               "type": "hero",
               "props": {
                 "content": "<h1 class='hero-size-1' style='text-align:center'><b>Leading Businesses<br />Choose Upstart {{employee.email}}</b></h1>"
+              }
+            }
+          ]
+        },
+        {
+          "id": "dynamic_content_1",
+          "label": "Testimonial cards",
+          "order": 3,
+          "props": { "colorPreset": { "color": "neutral-100" } },
+          "bricks": [
+            {
+              "id": "b_testimonials",
+              "type": "card",
+              "props": {
+                "loop": { "over": "allTestimonials" },
+                "title": "{{allTestimonials.author}}",
+                "text": "{{allTestimonials.text}}"
               }
             }
           ]
@@ -461,10 +478,26 @@
                 "loop": { "over": "allEmployees" },
                 "direction": "flex-row",
                 "$children": [
-                  { "id": "VmWrhzW", "type": "button", "props": { "label": "Button #1" } },
-                  { "id": "ziZhwtB", "type": "button", "props": { "label": "Button #2" } },
-                  { "id": "dnWFAOf", "type": "button", "props": { "label": "Button #3" } },
-                  { "id": "YMdJSdv", "type": "button", "props": { "label": "Button #4" } }
+                  {
+                    "id": "VmWrhzW",
+                    "type": "button",
+                    "props": { "label": "Button #1", "colorPreset": { "color": "accent-400" } }
+                  },
+                  {
+                    "id": "ziZhwtB",
+                    "type": "button",
+                    "props": { "label": "Button #2", "colorPreset": { "color": "primary-400" } }
+                  },
+                  {
+                    "id": "dnWFAOf",
+                    "type": "button",
+                    "props": { "label": "Button #3", "colorPreset": { "color": "neutral-400" } }
+                  },
+                  {
+                    "id": "YMdJSdv",
+                    "type": "button",
+                    "props": { "label": "Button #4", "colorPreset": { "color": "secondary-400" } }
+                  }
                 ]
               }
             },
@@ -505,23 +538,14 @@
           "props": { "justifyContent": "justify-center", "alignItems": "items-start" },
           "bricks": [
             {
-              "id": "xFsDUhJ",
-              "type": "box",
+              "id": "LtEttXh",
+              "type": "testimonials",
               "props": {
-                "alignSelf": "self-auto",
-                "$children": [
+                "loop": { "over": "allTestimonials" },
+                "testimonials": [
                   {
-                    "id": "LtEttXh",
-                    "type": "testimonials",
-                    "props": {
-                      "loop": { "over": "allTestimonials" },
-                      "testimonials": [
-                        {
-                          "author": "{{allTestimonials.author}}",
-                          "text": "{{allTestimonials.text}}"
-                        }
-                      ]
-                    }
+                    "author": "{{allTestimonials.author}}",
+                    "text": "{{allTestimonials.text}}"
                   }
                 ]
               }
@@ -652,8 +676,8 @@
               "id": "b_mdiLKoA",
               "type": "card",
               "props": {
-                "cardTitle": "Welcome to My Site",
-                "cardBody": "This is a sample card body. You can edit this content.",
+                "title": "Welcome to My Site",
+                "text": "This is a sample card body. You can edit this content.",
                 "cardImage": {
                   "src": "https://placehold.co/300x200@2x/EEEEEE/333333/svg?text=Sample",
                   "alt": "Sample"
@@ -795,7 +819,9 @@
           "label": "Hero",
           "order": 14,
           "props": { "minHeight": "400px" },
-          "bricks": [{ "id": "b_pfyxHPy", "type": "hero", "props": { "color": "primary" } }]
+          "bricks": [
+            { "id": "b_pfyxHPy", "type": "hero", "props": { "colorPreset": { "color": "primary-500" } } }
+          ]
         },
         {
           "id": "s_content-ckAXgwi",
@@ -848,8 +874,8 @@
               "id": "b_vdvHQaa",
               "type": "card",
               "props": {
-                "cardTitle": "Welcome to My Site",
-                "cardBody": "This is a sample card body. You can edit this content.",
+                "title": "Welcome to My Site",
+                "text": "This is a sample card body. You can edit this content.",
                 "cardImage": {
                   "src": "https://placehold.co/300x200@2x/EEEEEE/333333/svg?text=Sample",
                   "alt": "Sample"

@@ -67,8 +67,8 @@ export const manifest = defineBrickManifest({
         "ui:responsive": "desktop",
       }),
     ),
-    cardTitle: Type.Optional(textContentRef({ title: "Title" })),
-    cardBody: Type.Optional(textContentRef({ title: "Body" })),
+    title: Type.Optional(textContentRef({ title: "Title" })),
+    text: Type.Optional(textContentRef({ title: "Text" })),
     rounding: Type.Optional(
       roundingRef({
         default: "rounded-md",
@@ -76,7 +76,7 @@ export const manifest = defineBrickManifest({
     ),
     border: Type.Optional(
       borderRef({
-        default: { width: "border" },
+        default: { width: "border", color: "border-primary-300" },
       }),
     ),
     shadow: Type.Optional(shadowRef()),
@@ -95,8 +95,8 @@ export const examples: {
     description: "A simple card with a title and content",
     type: "card",
     props: {
-      cardTitle: "Card Title",
-      cardBody: "This is the body of the card.",
+      title: "Card Title",
+      text: "This is the body of the card.",
     },
   },
   {
@@ -107,8 +107,8 @@ export const examples: {
         src: "https://via.placeholder.com/400x300",
         alt: "Placeholder image",
       },
-      cardTitle: "Overlay Title",
-      cardBody: "Beautiful overlay content with semi-transparent background.",
+      title: "Overlay Title",
+      text: "Beautiful overlay content with semi-transparent background.",
     },
   },
   {
@@ -119,25 +119,24 @@ export const examples: {
         src: "https://via.placeholder.com/200x200",
         alt: "Product image",
       },
-      cardTitle: "Premium Headphones",
-      cardBody: "High-quality wireless headphones with noise cancellation and 30-hour battery life.",
+      title: "Premium Headphones",
+      text: "High-quality wireless headphones with noise cancellation and 30-hour battery life.",
     },
   },
   {
     description: "Feature card with large padding and background",
     type: "card",
     props: {
-      cardTitle: "Key Feature",
-      cardBody: "This feature provides exceptional value and enhances user experience significantly.",
+      title: "Key Feature",
+      text: "This feature provides exceptional value and enhances user experience significantly.",
     },
   },
   {
     description: "Blog post card with image at the bottom",
     type: "card",
     props: {
-      cardTitle: "The Future of Technology",
-      cardBody:
-        "Exploring emerging trends and innovations that will shape our digital landscape in the coming decade.",
+      title: "The Future of Technology",
+      text: "Exploring emerging trends and innovations that will shape our digital landscape in the coming decade.",
       cardImage: {
         src: "https://via.placeholder.com/400x200",
         alt: "Technology concept",
@@ -148,9 +147,8 @@ export const examples: {
     description: "Testimonial card with right-side image",
     type: "card",
     props: {
-      cardTitle: "Customer Review",
-      cardBody:
-        '"This product exceeded my expectations. The quality is outstanding and the customer service is top-notch!"',
+      title: "Customer Review",
+      text: '"This product exceeded my expectations. The quality is outstanding and the customer service is top-notch!"',
       cardImage: {
         src: "https://via.placeholder.com/150x150",
         alt: "Customer photo",
@@ -161,8 +159,8 @@ export const examples: {
     description: "Minimal centered card without image",
     type: "card",
     props: {
-      cardTitle: "Simple Announcement",
-      cardBody: "Important updates will be posted here regularly.",
+      title: "Simple Announcement",
+      text: "Important updates will be posted here regularly.",
     },
   },
   {
@@ -173,9 +171,8 @@ export const examples: {
         src: "https://via.placeholder.com/400x250",
         alt: "Event venue",
       },
-      cardTitle: "Annual Conference 2025",
-      cardBody:
-        "Join us for three days of inspiring talks, networking opportunities, and hands-on workshops.",
+      title: "Annual Conference 2025",
+      text: "Join us for three days of inspiring talks, networking opportunities, and hands-on workshops.",
     },
   },
   {
@@ -186,16 +183,16 @@ export const examples: {
         src: "https://via.placeholder.com/120x120",
         alt: "News thumbnail",
       },
-      cardTitle: "Breaking News Update",
-      cardBody: "Latest developments in the ongoing story with expert analysis and community reactions.",
+      title: "Breaking News Update",
+      text: "Latest developments in the ongoing story with expert analysis and community reactions.",
     },
   },
   {
     description: "Call-to-action card with prominent styling",
     type: "card",
     props: {
-      cardTitle: "Get Started Today",
-      cardBody: "Transform your workflow with our powerful tools. Sign up now and get 30 days free!",
+      title: "Get Started Today",
+      text: "Transform your workflow with our powerful tools. Sign up now and get 30 days free!",
     },
   },
 ];
