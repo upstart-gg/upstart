@@ -8,6 +8,7 @@ export default function Spacer({ brick, editable, selected }: BrickProps<Manifes
   const styles = useBrickStyle<Manifest>(brick);
   return (
     <BrickRoot
+      brick={brick}
       editable={editable}
       manifest={manifest}
       data-mobile-hidden

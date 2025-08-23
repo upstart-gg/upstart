@@ -13,6 +13,7 @@ export default function Card(props: BrickProps<Manifest>) {
   const classes = Object.values(styles);
   return (
     <BrickRoot
+      brick={brick}
       editable={editable}
       manifest={manifest}
       className={tx(

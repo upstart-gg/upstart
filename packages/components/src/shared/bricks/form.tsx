@@ -245,6 +245,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   if (datarecordId && !datarecord) {
     return editable ? (
       <BrickRoot
+        brick={brick}
         editable={editable}
         manifest={manifest}
         className="p-4 border border-red-200 bg-red-50 text-red-600 rounded"
@@ -257,6 +258,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
   if (!datarecord) {
     return (
       <BrickRoot
+        brick={brick}
         editable={editable}
         manifest={manifest}
         className={tx("text-center p-4 flex items-center justify-center", Object.values(rest))}
@@ -281,6 +283,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
 
   return (
     <BrickRoot
+      brick={brick}
       editable={editable}
       manifest={manifest}
       as="form"

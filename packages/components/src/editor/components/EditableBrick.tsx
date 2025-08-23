@@ -51,9 +51,11 @@ import { IoIosArrowBack, IoIosArrowUp, IoIosArrowDown, IoIosArrowForward } from 
 import { MdRepeat } from "react-icons/md";
 import { useDraggable } from "@dnd-kit/react";
 import { useSortable } from "@dnd-kit/react/sortable";
-import { closestCenter, pointerDistance, pointerIntersection } from "@dnd-kit/collision";
+import { closestCenter, directionBiased, pointerDistance, pointerIntersection } from "@dnd-kit/collision";
 import { SnapModifier, RestrictToHorizontalAxis } from "@dnd-kit/abstract/modifiers";
 import { RestrictToWindow, RestrictToElement } from "@dnd-kit/dom/modifiers";
+import { useCmdOrCtrlPressed } from "../hooks/use-key-pressed";
+import { CollisionPriority } from "@dnd-kit/abstract";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -113,7 +115,7 @@ function useBarPlacements(brick: Brick): Placement[] {
 }
 
 const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
-  ({ brick, isContainerChild, index, level = 0, dynamicPreview }, ref2) => {
+  ({ brick, index, level = 0, dynamicPreview }, ref2) => {
     const hasMouseMoved = useRef(false);
     const selectedBrickId = useSelectedBrickId();
     const previewMode = usePreviewMode();
@@ -128,27 +130,32 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const draggingBrickType = useDraggingBrickType();
     const isMouseOverPanel = useIsMouseOverPanel();
     const wrapperRef = useRef<HTMLDivElement>(null);
-    const { isDragging, isDropping } = useSortable({
+    const isContainerChild = !!parentBrick;
+    const cmdKeyPressed = useCmdOrCtrlPressed();
+    const { isDragging, isDropping, isDropTarget, isDragSource } = useSortable({
       id: brick.id,
       index,
       element: wrapperRef,
       disabled: isContainerChild || manifest.movable === false,
+      collisionPriority: CollisionPriority.Normal,
+      collisionDetector: cmdKeyPressed ? pointerIntersection : undefined,
       type: "brick",
       accept: "brick",
       group: section?.id,
-      data: { brick, parentBrick, section },
-      // collisionDetector: closestCenter,
-      // transition: {
-      //   idle: true,
-      // },
+      data: { brick, parentBrick, section, manifest },
       transition: {
         duration: 250, // Animation duration in ms
         easing: "cubic-bezier(0.25, 1, 0.5, 1)", // Animation easing
-        idle: false, // Whether to animate when no drag is in progress
+        idle: true, // Whether to animate when no drag is in progress but its index changes
       },
       modifiers: [
         RestrictToElement.configure({
-          element: () => document.querySelector("#page-container"),
+          element: (operation) => {
+            if (isContainerChild) {
+              return wrapperRef.current?.parentElement as HTMLElement;
+            }
+            return document.querySelector("#page-container");
+          },
         }),
       ],
     });
@@ -214,9 +221,10 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     const onBrickWrapperClick = useCallback(
       (e: MouseEvent<HTMLElement>) => {
-        console.debug("EditableBrickWrapper: Click on brick", e);
+        console.debug("EditableBrickWrapper: Click on brick", e, brick);
         const originalTarget = e.target as HTMLElement;
         const brickTarget = e.currentTarget as HTMLElement | null;
+
         if (
           hasMouseMoved.current ||
           (!brickTarget?.matches("[data-brick]") && !originalTarget?.matches("[data-brick]")) ||
@@ -234,6 +242,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
         // If has shift key pressed, then we try to select the upper container
         if (e.shiftKey) {
           if (parentBrick) {
+            console.log("Selecting parent brick", parentBrick);
             selectedElement = parentBrick;
           }
         } else if ((e.ctrlKey || e.metaKey) && section) {
@@ -256,6 +265,7 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
           if (elementType === "section") {
             editorHelpers.setSelectedSectionId(selectedElement.id);
           } else {
+            console.log("Selecting brick", selectedElement);
             editorHelpers.setSelectedBrickId(selectedElement.id);
           }
           editorHelpers.setPanel("inspector");
@@ -382,6 +392,16 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
                 <MdRepeat className="w-3 h-3" />
               </div>
             </Tooltip>
+          )}
+
+          {manifest.isContainer && !isDragging && isDropTarget && cmdKeyPressed && !isDragSource && (
+            <div
+              className={tx(
+                "absolute inset-0 z-auto flex items-center justify-center bg-black/30 font-bold text-white rounded",
+              )}
+            >
+              <span className="inline-flex rounded-full px-4 py-2 bg-black/50">Drop in box</span>
+            </div>
           )}
         </div>
       </BrickContextMenu>

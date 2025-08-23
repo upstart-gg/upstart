@@ -32,6 +32,7 @@ const BrickComponent = ({
     console.warn("Brick not found", brick.type);
     return null;
   }
+
   const brickProps = {
     brick,
     editable,

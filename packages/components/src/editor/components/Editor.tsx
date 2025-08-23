@@ -294,6 +294,16 @@ export default function Editor(props: EditorProps) {
           const { cancelable, operation, defaultPrevented } = event;
           console.log("Drag over", operation);
           if (!operation.canceled) {
+            if (
+              operation.target?.data?.manifest?.isContainer &&
+              (operation.activatorEvent as MouseEvent)?.metaKey
+            ) {
+              console.log("operation.activatorEvent", operation.activatorEvent);
+              console.error("Dropping over a container, disable reordering");
+              event.preventDefault();
+              return;
+            }
+
             // Transform section to Record<sectionId, brickId[]>
             const items = sections.reduce(
               (acc, section) => {

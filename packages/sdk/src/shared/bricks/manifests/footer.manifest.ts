@@ -18,6 +18,7 @@ export const manifest = defineBrickManifest({
   icon: VscLayoutPanelOff,
   staticClasses: "flex-1",
   resizable: false,
+  movable: false,
   defaultWidth: {
     desktop: "100%",
     mobile: "100%",

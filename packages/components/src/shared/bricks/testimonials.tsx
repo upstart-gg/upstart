@@ -23,6 +23,7 @@ export default function Testimonials(props: BrickProps<Manifest>) {
 
   return (
     <BrickRoot
+      brick={brick}
       editable={editable}
       manifest={manifest}
       className={tx("flex gap-6 @mobile:flex-col @desktop:flex-row", containerClasses)}

@@ -81,6 +81,7 @@ export default function ImagesGallery({ brick, editable }: BrickProps<Manifest>)
   if (images.length === 0) {
     return (
       <BrickRoot
+        brick={brick}
         editable={editable}
         manifest={manifest}
         className={tx("flex flex-col grow items-center justify-center text-center", Object.values(styles))}
@@ -94,6 +95,7 @@ export default function ImagesGallery({ brick, editable }: BrickProps<Manifest>)
 
   return (
     <BrickRoot
+      brick={brick}
       editable={editable}
       manifest={manifest}
       className={tx(

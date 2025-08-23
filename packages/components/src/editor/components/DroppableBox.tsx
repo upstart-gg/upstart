@@ -56,13 +56,7 @@ export default function DroppableBox<T extends BrickManifest>({
               .filter((b) => !b.props.hidden?.[previewMode])
               .map((brick, index) => {
                 return (
-                  <EditableBrickWrapper
-                    level={level + 1}
-                    key={`${brick.id}`}
-                    brick={brick}
-                    isContainerChild
-                    index={index}
-                  />
+                  <EditableBrickWrapper level={level + 1} key={`${brick.id}`} brick={brick} index={index} />
                 );
               })
           ) : (

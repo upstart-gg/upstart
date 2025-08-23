@@ -14,6 +14,7 @@ export default function Hero(_props: BrickProps<Manifest>) {
 
   return (
     <BrickRoot
+      brick={brick}
       editable={editable}
       manifest={manifest}
       className={tx("flex-col gap-[1.5rem] flex-grow", Object.values(styles))}

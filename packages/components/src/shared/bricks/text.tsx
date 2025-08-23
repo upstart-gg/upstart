@@ -14,7 +14,12 @@ export default function Text({ brick, editable }: BrickProps<Manifest>) {
   const classes = Object.values(styles);
 
   return (
-    <BrickRoot editable={editable} manifest={manifest} className={tx("flex grow h-full", classes)}>
+    <BrickRoot
+      brick={brick}
+      editable={editable}
+      manifest={manifest}
+      className={tx("flex grow h-full", classes)}
+    >
       <TextContent
         propPath="content"
         className={tx("text-pretty grow")}

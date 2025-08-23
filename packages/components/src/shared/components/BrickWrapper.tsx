@@ -12,7 +12,7 @@ const BrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(({ brick }, r
     brick,
   });
   return (
-    <div id={brick.id} className={wrapperClass} ref={ref} data-wrapper-type={brick.type}>
+    <div id={brick.id} className={wrapperClass} ref={ref}>
       <BrickComponent brick={brick} />
     </div>
   );

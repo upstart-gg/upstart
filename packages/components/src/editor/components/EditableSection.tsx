@@ -33,7 +33,7 @@ import { useDraftHelpers, useSection, useSections } from "../hooks/use-page-data
 import { useSortable } from "@dnd-kit/react/sortable";
 import { useDroppable } from "@dnd-kit/react";
 import { CollisionPriority } from "@dnd-kit/abstract";
-import { closestCenter, pointerIntersection, directionBiased } from "@dnd-kit/collision";
+import { closestCenter, pointerIntersection, directionBiased, pointerDistance } from "@dnd-kit/collision";
 
 type EditableSectionProps = {
   section: SectionType;
@@ -51,6 +51,14 @@ export default function EditableSection({ section, index }: EditableSectionProps
   const isMouseOverPanel = useIsMouseOverPanel();
   const { isDesktop } = useDeviceInfo();
   const isSpecialSection = typeof section.props.variant !== "undefined";
+  const dropDisabled =
+    isMouseOverPanel ||
+    isSpecialSection ||
+    /* Not DnD on mobile */ previewMode === "mobile" ||
+    /* No DnD on small screens */
+    !isDesktop ||
+    /* No DnD when dragging a brick that has inline drag disabled */
+    (!!draggingBrickType && manifests[draggingBrickType]?.inlineDragDisabled);
 
   const sectionObj = useSection(section.id);
   const {
@@ -61,10 +69,10 @@ export default function EditableSection({ section, index }: EditableSectionProps
     id,
     type: "section",
     accept: "brick",
-    collisionPriority: CollisionPriority.High,
+    collisionPriority: CollisionPriority.Normal,
     collisionDetector: pointerIntersection,
     data: { section },
-    disabled: isSpecialSection,
+    disabled: dropDisabled,
   });
 
   if (section.id === "s_hero") {
@@ -129,15 +137,6 @@ export default function EditableSection({ section, index }: EditableSectionProps
     },
     [draggingBrickType, section.id],
   );
-
-  const dropDisabled =
-    isMouseOverPanel ||
-    isSpecialSection ||
-    /* Not DnD on mobile */ previewMode === "mobile" ||
-    /* No DnD on small screens */
-    !isDesktop ||
-    /* No DnD when dragging a brick that has inline drag disabled */
-    (!!draggingBrickType && manifests[draggingBrickType]?.inlineDragDisabled);
 
   return (
     <SectionContextMenu section={section}>

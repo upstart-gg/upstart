@@ -30,6 +30,7 @@ export default function Button({ brick, editable }: BrickProps<Manifest>) {
 
   return (
     <BrickRoot
+      brick={brick}
       manifest={manifest}
       editable={editable}
       as="button"
