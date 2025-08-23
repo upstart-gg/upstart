@@ -409,10 +409,14 @@ export const createDraftStore = (
               const section = state.sections.find((s) => s.id === sectionId);
               const sectionIndex = state.sections.findIndex((s) => s.id === sectionId);
               invariant(section, "Section not found");
+
               // next
-              const next = state.sections.find((s) => s.order === section.order + 1);
-              const nextIndex = state.sections.findIndex((s) => s.order === section.order + 1);
-              invariant(next, "Next section not found");
+              const next = state.sections
+                .filter((s) => s.order > section.order)
+                .toSorted((a, b) => a.order - b.order)
+                .at(0);
+              invariant(next, `Next section not found. No section with order > ${section.order} exists.`);
+              const nextIndex = state.sections.findIndex((s) => s.id === next?.id);
 
               // swap
               const currentOrder = section.order;
@@ -1105,6 +1109,11 @@ export const useThemes = () => {
 export const useDraft = () => {
   const ctx = usePageContext();
   return useStore(ctx);
+};
+
+export const isDraftDirty = () => {
+  const ctx = usePageContext();
+  return useStore(ctx, (state) => state.dirty);
 };
 
 export function useHasDynamicParent(brickId: string) {

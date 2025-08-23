@@ -49,6 +49,11 @@ import useIsHovered from "../hooks/use-is-hovered";
 import { useDraftHelpers, useSectionByBrickId } from "../hooks/use-page-data";
 import { IoIosArrowBack, IoIosArrowUp, IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 import { MdRepeat } from "react-icons/md";
+import { useDraggable } from "@dnd-kit/react";
+import { useSortable } from "@dnd-kit/react/sortable";
+import { closestCenter, pointerDistance, pointerIntersection } from "@dnd-kit/collision";
+import { SnapModifier, RestrictToHorizontalAxis } from "@dnd-kit/abstract/modifiers";
+import { RestrictToWindow, RestrictToElement } from "@dnd-kit/dom/modifiers";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
@@ -87,7 +92,7 @@ function useBarPlacements(brick: Brick): Placement[] {
   // const { isLastSection } = useDraftHelpers();
   // const section = useSection(brick.sectionId);
   // const manifest = useBrickManifest(brick.type);
-  return ["bottom", "top"] as Placement[];
+  return ["bottom", "top"];
   // return useMemo(() => {
   //   const placements: Placement[] = [];
   // if (brick.parentId || manifest.isContainer || !section) {
@@ -108,7 +113,7 @@ function useBarPlacements(brick: Brick): Placement[] {
 }
 
 const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
-  ({ brick, isContainerChild, index, level = 0, dynamicPreview }, ref) => {
+  ({ brick, isContainerChild, index, level = 0, dynamicPreview }, ref2) => {
     const hasMouseMoved = useRef(false);
     const selectedBrickId = useSelectedBrickId();
     const previewMode = usePreviewMode();
@@ -122,6 +127,31 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
     const allowedPlacements = useBarPlacements(brick);
     const draggingBrickType = useDraggingBrickType();
     const isMouseOverPanel = useIsMouseOverPanel();
+    const wrapperRef = useRef<HTMLDivElement>(null);
+    const { isDragging, isDropping } = useSortable({
+      id: brick.id,
+      index,
+      element: wrapperRef,
+      disabled: isContainerChild || manifest.movable === false,
+      type: "brick",
+      accept: "brick",
+      group: section?.id,
+      data: { brick, parentBrick, section },
+      // collisionDetector: closestCenter,
+      // transition: {
+      //   idle: true,
+      // },
+      transition: {
+        duration: 250, // Animation duration in ms
+        easing: "cubic-bezier(0.25, 1, 0.5, 1)", // Animation easing
+        idle: false, // Whether to animate when no drag is in progress
+      },
+      modifiers: [
+        RestrictToElement.configure({
+          element: () => document.querySelector("#page-container"),
+        }),
+      ],
+    });
 
     const {
       refs: barsRefs,
@@ -263,106 +293,98 @@ const EditableBrickWrapper = forwardRef<HTMLDivElement, BrickWrapperProps>(
       isContainerChild ||
       previewMode === "mobile";
 
+    // Merge all refs properly to avoid render loops
+    const mergedRef = useMergeRefs([barsRefs.setReference, wrapperRef, hoverRef]);
+    const resizeOpts = getBrickResizeOptions(manifests[brick.type]);
+
     return (
-      <Draggable key={brick.id} draggableId={brick.id} index={index} isDragDisabled={isDragDisabled}>
-        {(provided, snapshot) => {
-          // Merge all refs properly to avoid render loops
-          const mergedRef = useMergeRefs([provided.innerRef, barsRefs.setReference, ref, hoverRef]);
-          const resizeOpts = getBrickResizeOptions(manifests[brick.type]);
+      <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
+        <div
+          ref={mergedRef}
+          {...getReferenceProps()}
+          id={brick.id}
+          data-brick
+          data-brick-id={brick.id}
+          data-brick-type={brick.type}
+          data-last-touched={brick.props.lastTouched ?? "0"}
+          data-is-container={manifest.isContainer}
+          data-is-container-child={isContainerChild}
+          data-dragging={isDragging}
+          data-level={level}
+          data-index={index}
+          data-brick-width={brick.props.width}
+          data-brick-height={brick.props.height}
+          data-brick-max-width={JSON.stringify(manifest.maxWidth)}
+          data-brick-min-width={JSON.stringify(manifest.minWidth)}
+          // style={getDropAnimationStyle(section?.id, provided.draggableProps.style, snapshot)}
+          className={tx(
+            wrapperClass,
+            dynamicPreview && "opacity-50 pointer-events-none",
+            isDragging ? "!z-[9999] !shadow-2xl overflow-hidden !cursor-grabbing" : "hover:cursor-auto",
+          )}
+          onClick={onBrickWrapperClick}
+          onDoubleClickCapture={onDoubleClick}
+        >
+          <BrickComponent brick={brick} editable />
+          <FloatingPortal>
+            <BrickMenuBarsContainer
+              ref={barsRefs.setFloating}
+              brick={brick}
+              isContainerChild={isContainerChild}
+              style={barsFloatingStyles}
+              show={isMenuBarVisible}
+              {...getFloatingProps()}
+            />
+          </FloatingPortal>
+          {/* Resize Handles */}
+          {manifests[brick.type]?.resizable &&
+            !draggingBrickType &&
+            !isDragging &&
+            !dynamicPreview &&
+            selectedBrickId === brick.id && (
+              <>
+                {(resizeOpts.canGrowVertical || resizeOpts.canShrinkVertical) && (
+                  <>
+                    <ResizeHandle direction="s" show={isHovered} manifest={manifest} />
+                    <ResizeHandle direction="n" show={isHovered} manifest={manifest} />
+                  </>
+                )}
+                {(resizeOpts.canGrowHorizontal || resizeOpts.canShrinkHorizontal) && (
+                  <>
+                    <ResizeHandle direction="w" show={isHovered} manifest={manifest} />
+                    <ResizeHandle direction="e" show={isHovered} manifest={manifest} />
+                  </>
+                )}
+                {((resizeOpts.canGrowVertical && resizeOpts.canGrowHorizontal) ||
+                  (resizeOpts.canShrinkVertical && resizeOpts.canShrinkHorizontal)) && (
+                  <>
+                    <ResizeHandle direction="se" show={isHovered} manifest={manifest} />
+                    <ResizeHandle direction="sw" show={isHovered} manifest={manifest} />
+                    <ResizeHandle direction="ne" show={isHovered} manifest={manifest} />
+                    <ResizeHandle direction="nw" show={isHovered} manifest={manifest} />
+                  </>
+                )}
+              </>
+            )}
 
-          return (
-            <BrickContextMenu brick={brick} isContainerChild={isContainerChild}>
+          {previewMode === "desktop" && !dynamicPreview && brick.id === selectedBrickId && (
+            <BrickArrows brick={brick} />
+          )}
+          {typeof brick.props.loop !== "undefined" && (
+            <Tooltip content="This brick will be repeated for each item in the query result">
               <div
-                ref={mergedRef}
-                {...provided.draggableProps}
-                {...provided.dragHandleProps}
-                {...getReferenceProps()}
-                id={brick.id}
-                data-brick
-                data-brick-id={brick.id}
-                data-brick-type={brick.type}
-                data-last-touched={brick.props.lastTouched ?? "0"}
-                data-is-container={manifest.isContainer}
-                data-is-container-child={isContainerChild}
-                data-level={level}
-                data-brick-width={brick.props.width}
-                data-brick-height={brick.props.height}
-                data-brick-max-width={JSON.stringify(manifest.maxWidth)}
-                data-brick-min-width={JSON.stringify(manifest.minWidth)}
-                style={getDropAnimationStyle(section?.id, provided.draggableProps.style, snapshot)}
                 className={tx(
-                  wrapperClass,
-                  dynamicPreview && "opacity-50 pointer-events-none",
-                  snapshot.isDragging
-                    ? "!z-[9999] !shadow-2xl overflow-hidden !cursor-grabbing"
-                    : "hover:cursor-auto",
-                )}
-                onClick={onBrickWrapperClick}
-                onDoubleClickCapture={onDoubleClick}
-              >
-                <BrickComponent brick={brick} editable />
-                <FloatingPortal>
-                  <BrickMenuBarsContainer
-                    ref={barsRefs.setFloating}
-                    brick={brick}
-                    isContainerChild={isContainerChild}
-                    style={barsFloatingStyles}
-                    show={isMenuBarVisible}
-                    {...getFloatingProps()}
-                  />
-                </FloatingPortal>
-                {/* Resize Handles */}
-                {manifests[brick.type]?.resizable &&
-                  !draggingBrickType &&
-                  !snapshot.isDragging &&
-                  !dynamicPreview &&
-                  selectedBrickId === brick.id && (
-                    <>
-                      {(resizeOpts.canGrowVertical || resizeOpts.canShrinkVertical) && (
-                        <>
-                          <ResizeHandle direction="s" show={isHovered} manifest={manifest} />
-                          <ResizeHandle direction="n" show={isHovered} manifest={manifest} />
-                        </>
-                      )}
-                      {(resizeOpts.canGrowHorizontal || resizeOpts.canShrinkHorizontal) && (
-                        <>
-                          <ResizeHandle direction="w" show={isHovered} manifest={manifest} />
-                          <ResizeHandle direction="e" show={isHovered} manifest={manifest} />
-                        </>
-                      )}
-                      {((resizeOpts.canGrowVertical && resizeOpts.canGrowHorizontal) ||
-                        (resizeOpts.canShrinkVertical && resizeOpts.canShrinkHorizontal)) && (
-                        <>
-                          <ResizeHandle direction="se" show={isHovered} manifest={manifest} />
-                          <ResizeHandle direction="sw" show={isHovered} manifest={manifest} />
-                          <ResizeHandle direction="ne" show={isHovered} manifest={manifest} />
-                          <ResizeHandle direction="nw" show={isHovered} manifest={manifest} />
-                        </>
-                      )}
-                    </>
-                  )}
-
-                {previewMode === "desktop" && !dynamicPreview && brick.id === selectedBrickId && (
-                  <BrickArrows brick={brick} />
-                )}
-                {typeof brick.props.loop !== "undefined" && (
-                  <Tooltip content="This brick will be repeated for each item in the query result">
-                    <div
-                      className={tx(
-                        `group-hover/brick:opacity-100 absolute cursor-help -top-[12px] -right-[12px] z-[99999] w-5 h-5 rounded-full
+                  `group-hover/brick:opacity-100 absolute cursor-help -top-[12px] -right-[12px] z-[99999] w-5 h-5 rounded-full
             flex items-center justify-center text-upstart-500 group/dyn-helper bg-white/90 shadow border border-upstart-500`,
-                        brick.id === selectedBrickId ? "opacity-100" : "opacity-0",
-                      )}
-                    >
-                      <MdRepeat className="w-3 h-3" />
-                    </div>
-                  </Tooltip>
+                  brick.id === selectedBrickId ? "opacity-100" : "opacity-0",
                 )}
+              >
+                <MdRepeat className="w-3 h-3" />
               </div>
-            </BrickContextMenu>
-          );
-        }}
-      </Draggable>
+            </Tooltip>
+          )}
+        </div>
+      </BrickContextMenu>
     );
   },
 );

@@ -14,6 +14,7 @@ export const manifest = defineBrickManifest({
   name: "Footer",
   category: "layout",
   description: "A footer with links and an optional logo",
+  aiInstructions: "This brick should be used on most sites/pages. It must be placed on its own section.",
   icon: VscLayoutPanelOff,
   staticClasses: "flex-1",
   resizable: false,

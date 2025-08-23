@@ -150,7 +150,9 @@ function getBrickWrapperEditorStyles<T extends BrickManifest>({
   }
 
   return [
-    "select-none transition-[outline] duration-[200ms]",
+    "select-none",
+    // "select-none transition-[outline] duration-[200ms]",
+    editable && "transition-all duration-300",
     "outline outline-2 outline-transparent outline-dashed",
     {
       "outline-offset-2": !isContainer && !isContainerChild,

@@ -130,7 +130,7 @@ function DebugTab({ brick, section, hasTabs }: { brick: Brick; section: Section;
     <div className="flex flex-col h-full">
       <div className="h-[50cqh] grow-0 overflow-y-auto scrollbar-thin">
         <PanelBlockTitle>
-          Brick <code className="text-xs">Id: {brick.id}</code>
+          Brick <code className="text-xs">{brick.id}</code>
         </PanelBlockTitle>
         <div className="flex-1 ">
           <pre className="p-1">
@@ -140,7 +140,7 @@ function DebugTab({ brick, section, hasTabs }: { brick: Brick; section: Section;
         {parentBrick && (
           <>
             <PanelBlockTitle>
-              Parent Brick <code className="text-xs">Id: {parentBrick.id}</code>
+              Parent Brick <code className="text-xs">{parentBrick.id}</code>
             </PanelBlockTitle>
             <div className="flex-1 ">
               <pre className="p-1">
@@ -150,7 +150,7 @@ function DebugTab({ brick, section, hasTabs }: { brick: Brick; section: Section;
           </>
         )}
         <PanelBlockTitle>
-          Section <code className="text-xs">Id: {section.id}</code>
+          Section <code className="text-xs">{section.id}</code>
         </PanelBlockTitle>
         <div className="flex-1 ">
           <pre className="p-1">

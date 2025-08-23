@@ -13,9 +13,16 @@ type UseSectionStyleProps = {
   editable?: boolean;
   selected?: boolean;
   previewMode?: Resolution;
+  isDropTarget?: boolean;
 };
 
-export function useSectionStyle({ section, selected, editable, previewMode }: UseSectionStyleProps) {
+export function useSectionStyle({
+  section,
+  selected,
+  editable,
+  previewMode,
+  isDropTarget,
+}: UseSectionStyleProps) {
   const stylesProps = getStyleProperties(sectionProps);
   const classes = useClassesFromStyleProps(stylesProps, section);
 
@@ -43,7 +50,7 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
       }),
 
       // Section editor styles
-      getSectionEditorStyles({ editable, previewMode, section, selected }),
+      getSectionEditorStyles({ editable, previewMode, section, selected, isDropTarget }),
       // Manage the section order using css "order" (flex) property
       css({
         order: section.order,
@@ -51,19 +58,17 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
     ],
   );
 }
-function getSectionEditorStyles({ section, editable, selected, previewMode }: UseSectionStyleProps) {
+function getSectionEditorStyles({ editable, selected, previewMode, isDropTarget }: UseSectionStyleProps) {
   if (!editable) {
     return null;
   }
   return [
-    "select-none relative",
-    "outline-dashed outline-2 -outline-offset-2",
-
-    selected ? "outline-upstart-500/40" : "outline-transparent hover:outline-upstart-500/40",
+    "select-none relative outline-dashed outline-2 -outline-offset-2",
+    !isDropTarget && !selected && "outline-transparent",
+    selected || isDropTarget ? "outline-upstart-500/40" : "hover:outline-upstart-500/40",
 
     // this is the grid overlay shown when dragging
-    editable &&
-      previewMode &&
+    previewMode &&
       css`
       &:has(.moving), &:has(.moving) ~ section {
         & [data-floating-ui-portal] {

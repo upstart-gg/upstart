@@ -9,6 +9,7 @@ import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { colorPresetRef } from "../props/color-preset";
 import { borderRef, roundingRef } from "../props/border";
+import { loopRef } from "../props/dynamic";
 
 export const manifest = defineBrickManifest({
   type: "images-gallery",
@@ -36,12 +37,14 @@ export const manifest = defineBrickManifest({
         default: { color: "bg-base-100 text-base-100-content" },
       }),
     ),
+    loop: Type.Optional(loopRef()),
     images: Type.Array(
       Type.Object({
         src: imageRef({
           "ui:responsive": "desktop",
           "ui:no-alt-text": true,
           "ui:no-object-options": true,
+          "ui:placeholder": "https://example.com/image.jpg",
         }),
         legend: Type.Optional(string("Legend")),
       }),

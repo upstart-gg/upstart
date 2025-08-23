@@ -30,6 +30,10 @@ import { Droppable } from "@hello-pangea/dnd";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { useDeviceInfo } from "../hooks/use-device-info";
 import { useDraftHelpers, useSection, useSections } from "../hooks/use-page-data";
+import { useSortable } from "@dnd-kit/react/sortable";
+import { useDroppable } from "@dnd-kit/react";
+import { CollisionPriority } from "@dnd-kit/abstract";
+import { closestCenter, pointerIntersection, directionBiased } from "@dnd-kit/collision";
 
 type EditableSectionProps = {
   section: SectionType;
@@ -46,14 +50,34 @@ export default function EditableSection({ section, index }: EditableSectionProps
   const draggingBrickType = useDraggingBrickType();
   const isMouseOverPanel = useIsMouseOverPanel();
   const { isDesktop } = useDeviceInfo();
+  const isSpecialSection = typeof section.props.variant !== "undefined";
+
+  const sectionObj = useSection(section.id);
+  const {
+    isDropTarget,
+    ref: sectionRef,
+    droppable,
+  } = useDroppable({
+    id,
+    type: "section",
+    accept: "brick",
+    collisionPriority: CollisionPriority.High,
+    collisionDetector: pointerIntersection,
+    data: { section },
+    disabled: isSpecialSection,
+  });
+
+  if (section.id === "s_hero") {
+    console.log("isDropTarget", isDropTarget, "for section", section.id, "droppable", droppable);
+  }
+
   const className = useSectionStyle({
     section,
     editable: true,
     selected: selectedSectionId === section.id,
     previewMode,
+    isDropTarget,
   });
-  const sectionObj = useSection(section.id);
-  const isSpecialSection = typeof section.props.variant !== "undefined";
 
   useResizableSection(section);
 
@@ -70,7 +94,6 @@ export default function EditableSection({ section, index }: EditableSectionProps
         sectionEl.scrollWidth,
         sectionEl.clientWidth,
       );
-
       // do {
       //   const bricks = section.bricks;
       //   // Reduce the width of each brick by 1% until it fits
@@ -117,76 +140,42 @@ export default function EditableSection({ section, index }: EditableSectionProps
     (!!draggingBrickType && manifests[draggingBrickType]?.inlineDragDisabled);
 
   return (
-    <Droppable
-      droppableId={section.id}
-      type="brick"
-      direction={section.props.direction === "flex-row" ? "horizontal" : "vertical"}
-      mode={section.bricks.length > 0 ? "standard" : "virtual"}
-      renderClone={
-        section.bricks.length > 0
-          ? undefined
-          : (provided, snapshot) => {
-              return null; // No clone rendering for empty sections
-            }
-      }
-      isDropDisabled={dropDisabled}
-    >
-      {(droppableProvided, droppableSnapshot) => {
-        return (
-          <SectionContextMenu section={section}>
-            <section
-              key={id}
-              id={id}
-              ref={(el) => {
-                // Combine both refs
-                droppableProvided.innerRef(el);
+    <SectionContextMenu section={section}>
+      <section id={id} ref={sectionRef} data-element-kind="section" onClick={onClick} className={className}>
+        {!editingBrick && !draggingBrickType && <SectionOptionsButtons section={section} />}
+        {bricks
+          .filter((b) => !b.props.hidden?.[previewMode])
+          .map((brick, brickIndex) => (
+            <EditableBrickWrapper key={`${previewMode}-${brick.id}`} brick={brick} index={brickIndex} />
+          ))}
+        {bricks.length === 0 && (
+          <div
+            data-trigger-section-inspector
+            className={tx(
+              "w-full min-w-full self-stretch py-2 h-auto flex-1 text-center rounded",
+              "flex justify-center items-center font-normal",
+              isDropTarget && "bg-upstart-50",
+              "opacity-0 hover:opacity-80 transition-opacity duration-300",
+            )}
+          >
+            This section is empty. Drag bricks here to stack them inside,&nbsp;
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                draftHelpers.deleteSection(section.id);
+                setSelectedSectionId();
+                setPanel();
               }}
-              data-element-kind="section"
-              onClick={onClick}
-              className={tx(
-                className,
-                droppableSnapshot.isDraggingOver && "!outline-2 !outline-dashed !outline-usptart-300",
-              )}
-              {...droppableProvided.droppableProps}
+              className="inline-block underline underline-offset-2"
             >
-              {!editingBrick && !draggingBrickType && <SectionOptionsButtons section={section} />}
-              {bricks
-                .filter((b) => !b.props.hidden?.[previewMode])
-                .map((brick, brickIndex) => (
-                  <EditableBrickWrapper key={`${previewMode}-${brick.id}`} brick={brick} index={brickIndex} />
-                ))}
-              {bricks.length === 0 && (
-                <div
-                  data-trigger-section-inspector
-                  className={tx(
-                    "w-full min-w-full self-stretch py-2 h-auto flex-1 text-center rounded",
-                    "flex justify-center items-center font-normal",
-                    droppableSnapshot.isDraggingOver && "bg-upstart-50",
-                    "opacity-0 hover:opacity-80 transition-opacity duration-300",
-                  )}
-                >
-                  This section is empty. Drag bricks here to stack them inside,&nbsp;
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      draftHelpers.deleteSection(section.id);
-                      setSelectedSectionId();
-                      setPanel();
-                    }}
-                    className="inline-block underline underline-offset-2"
-                  >
-                    delete it
-                  </button>
-                  , or leave it empty.
-                </div>
-              )}
-              {bricks.length === 0 ? null : droppableProvided.placeholder}
-            </section>
-          </SectionContextMenu>
-        );
-      }}
-    </Droppable>
+              delete it
+            </button>
+            , or leave it empty.
+          </div>
+        )}
+      </section>
+    </SectionContextMenu>
   );
 }
 

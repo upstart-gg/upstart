@@ -8,6 +8,7 @@ import type { BrickProps } from "../props/types";
 import { roundingRef } from "../props/border";
 import { colorPresetRef } from "../props/color-preset";
 import { paddingRef } from "../props/padding";
+import { loopRef } from "../props/dynamic";
 
 export const manifest = defineBrickManifest({
   type: "carousel",
@@ -59,6 +60,7 @@ export const manifest = defineBrickManifest({
         default: "rounded-md",
       }),
     ),
+    loop: Type.Optional(loopRef()),
   }),
 });
 

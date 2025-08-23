@@ -47,7 +47,7 @@ const DynamicField: FC<FieldProps<LoopSettings | undefined>> = (props) => {
           <Select.Trigger
             radius="medium"
             variant="ghost"
-            className="!basis-2/3 !text-[92%]"
+            className="!basis-2/3 !text-[92%] !max-w-fit"
             placeholder={placeholder}
           />
           <Select.Content position="popper">

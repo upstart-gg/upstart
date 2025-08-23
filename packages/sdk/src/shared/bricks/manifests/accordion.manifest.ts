@@ -8,6 +8,7 @@ import { defineProps } from "../props/helpers";
 import { colorPresetRef } from "../props/color-preset";
 import { fontSizeRef, textContentRef } from "../props/text";
 import type { BrickProps } from "../props/types";
+import { loopRef } from "../props/dynamic";
 
 export const manifest = defineBrickManifest({
   type: "accordion",
@@ -77,6 +78,7 @@ Multiple panels can be open simultaneously or limited to one at a time.
         default: { color: "bg-primary-500 text-primary-500-content" },
       }),
     ),
+    loop: Type.Optional(loopRef()),
   }),
 });
 

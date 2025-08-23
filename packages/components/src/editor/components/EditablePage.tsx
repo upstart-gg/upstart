@@ -58,16 +58,28 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
             s: true,
           },
     onResizeStart: (event) => {
+      console.log("Resize start", event);
       // startTransition(() => {
       //   editorHelpers.setIsResizing(true);
       // });
       // disable flex-grow temporarily to allow resize
-      //target.style.setProperty("flex-grow", "0");
+      event.target.style.setProperty(
+        "--original-transition-duration",
+        event.target.style.getPropertyValue("transition-duration"),
+      );
+      event.target.style.setProperty("transition-duration", "0ms");
       // Disable fixed height of the upper section ?
     },
 
     onResizeEnd: (event) => {
       const target = event.target as HTMLElement;
+      // restore transition duration
+      target.style.setProperty(
+        "transition-duration",
+        target.style.getPropertyValue("--original-transition-duration"),
+      );
+      target.style.removeProperty("--original-transition-duration");
+
       const brickId = target.dataset.brickId as string;
       const parentBrick = draftHelpers.getParentBrick(brickId);
       // parentElement corresponds to the wrapper of the brick
@@ -172,10 +184,8 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       ) {
         console.debug("click out, hidding", event, event.target);
         editorHelpers.deselectBrick();
-        // also deselect the library panel
         editorHelpers.hidePanel("library");
         editorHelpers.hidePanel("inspector");
-        // editorHelpers.hidePanel("settings");
         editorHelpers.hidePanel("theme");
       }
     };

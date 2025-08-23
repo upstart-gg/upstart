@@ -434,7 +434,7 @@
           ]
         },
         {
-          "id": "s_content-KZBWYYF",
+          "id": "s_hero",
           "label": "Hero",
           "order": 2,
           "props": { "minHeight": "400px", "color": "accent-400" },
