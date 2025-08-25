@@ -90,7 +90,7 @@ export function useBrickWrapperStyle<T extends BrickManifest>(_props: BrickProps
     manifest.staticClasses,
     props.className as string,
     props.preset as string,
-    "brick-wrapper group/brick flex",
+    "brick-wrapper group/brick flex max-w-full",
 
     isContainer
       ? "@desktop:min-w-min min-h-fit h-auto flex-wrap"
@@ -179,7 +179,6 @@ function getBrickWrapperEditorStyles<T extends BrickManifest>({
       },
       "& [data-brick-group]:hover": {
         outline: "1px dashed var(--violet-8)",
-        opacity: 0.85,
       },
       // Hide any UI children elements when dragging
       "&.moving [data-ui]": {

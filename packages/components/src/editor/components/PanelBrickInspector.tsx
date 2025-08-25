@@ -122,6 +122,8 @@ function DebugTab({ brick, section, hasTabs }: { brick: Brick; section: Section;
       fontFamily: "monospace",
       fontSize: "0.7rem",
       lineHeight: "1.3",
+      wordWrap: "break-word",
+      whiteSpace: "pre-wrap",
     }),
   );
   const { getParentBrick } = useDraftHelpers();

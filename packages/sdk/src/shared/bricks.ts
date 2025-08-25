@@ -128,7 +128,6 @@ export const sectionProps = Type.Object(
     colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",
-        default: { color: "none" },
       }),
     ),
     direction: Type.Optional(

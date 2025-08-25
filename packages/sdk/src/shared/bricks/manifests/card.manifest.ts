@@ -3,12 +3,11 @@ import { defineProps } from "../props/helpers";
 import { textContentRef } from "../props/text";
 import { BsCardText } from "react-icons/bs";
 import { imageRef } from "../props/image";
-import { type Static, type TObject, Type } from "@sinclair/typebox";
+import { type Static, Type } from "@sinclair/typebox";
 import type { BrickProps } from "../props/types";
 import { shadowRef } from "../props/effects";
 import { borderRef, roundingRef } from "../props/border";
 import { colorPresetRef } from "../props/color-preset";
-import { StringEnum } from "~/shared/utils/string-enum";
 import { loopRef } from "../props/dynamic";
 
 export const manifest = defineBrickManifest({
@@ -24,7 +23,7 @@ export const manifest = defineBrickManifest({
     colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color preset",
-        default: { color: "bg-primary-500 text-primary-content-500" },
+        default: { color: "bg-base-100 text-base-content" },
       }),
     ),
 

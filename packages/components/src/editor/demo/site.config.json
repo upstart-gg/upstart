@@ -443,7 +443,7 @@
               "id": "b_zzZYqOu",
               "type": "hero",
               "props": {
-                "content": "<h1 class='hero-size-1' style='text-align:center'><b>Leading Businesses<br />Choose Upstart {{employee.email}}</b></h1>"
+                "content": "<h1 class='hero-size-1' style='text-align:center'><b>Leading Businesses<br />Choose Upstart</b></h1>"
               }
             }
           ]
@@ -452,7 +452,7 @@
           "id": "dynamic_content_1",
           "label": "Testimonial cards",
           "order": 3,
-          "props": { "colorPreset": { "color": "neutral-100" } },
+          "props": {},
           "bricks": [
             {
               "id": "b_testimonials",

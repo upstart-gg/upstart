@@ -75,7 +75,8 @@ export const manifest = defineBrickManifest({
       ),
       linksTagsFilter: Type.Optional(
         tagsRef({
-          description: "Filter pages in the navbar by tags. Only pages with all of these tags will be shown.",
+          title: "Pages tags",
+          description: "Filter pages links in the navbar by tags. Only pages with these tags will be shown.",
           default: ["navbar"],
           metadata: {
             category: "content",
@@ -89,8 +90,8 @@ export const manifest = defineBrickManifest({
             label: Type.Optional(string("Label")),
           }),
           {
-            title: "Static items",
-            description: "Additional static navigation items to show in the navbar",
+            title: "Static links",
+            description: "Additional static navigation links to show in the navbar",
             default: [],
             metadata: {
               category: "content",
