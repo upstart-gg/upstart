@@ -56,7 +56,7 @@ type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
   isContainerChild?: boolean;
   index: number;
-  iterationIndex: number;
+  iterationIndex?: number;
   // Nesting level of the brick
   level?: number;
   isDynamicPreview?: boolean;

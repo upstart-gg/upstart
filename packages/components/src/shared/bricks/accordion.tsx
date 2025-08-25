@@ -61,6 +61,7 @@ export default function Accordion({ brick, editable }: BrickProps<Manifest>) {
                   className={tx("w-full", editable && "cursor-text")}
                   brickId={brick.id}
                   content={item.title}
+                  rawContent={item.title}
                   editable={editable}
                   inline
                 />
@@ -73,6 +74,7 @@ export default function Accordion({ brick, editable }: BrickProps<Manifest>) {
                 className={tx("w-full", editable && "cursor-text")}
                 brickId={brick.id}
                 content={item.content}
+                rawContent={item.content}
                 editable={editable}
               />
             </div>

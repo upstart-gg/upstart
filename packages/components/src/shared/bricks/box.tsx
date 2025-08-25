@@ -8,7 +8,13 @@ import { useBrickStyle } from "../hooks/use-brick-style";
 
 // const LazyDroppableBox = lazy(() => import("../../editor/components/DroppableBox"));
 
-export default function Box({ brick, editable, isDynamicPreview, level = 0 }: BrickProps<Manifest>) {
+export default function Box({
+  brick,
+  editable,
+  isDynamicPreview,
+  iterationIndex,
+  level = 0,
+}: BrickProps<Manifest>) {
   const styles = useBrickStyle<Manifest>(brick);
   return (
     <BrickRoot editable={editable} manifest={manifest} className={tx(Object.values(styles))} brick={brick}>
@@ -18,6 +24,7 @@ export default function Box({ brick, editable, isDynamicPreview, level = 0 }: Br
             key={child.id}
             brick={child}
             index={index}
+            iterationIndex={iterationIndex}
             isDynamicPreview={isDynamicPreview}
           />
         ) : (
