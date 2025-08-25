@@ -30,6 +30,12 @@ export default function Panel({ className, ...props }: PanelProps) {
   const { togglePanelPosition, hidePanel } = useEditorHelpers();
   const selectedBrick = useBrick(selectedBrickId);
 
+  console.log({ selectedBrick });
+
+  if (panel === "inspector" && !selectedBrick && !selectedSection) {
+    return null;
+  }
+
   return (
     <aside
       id="floating-panel"
@@ -56,7 +62,6 @@ export default function Panel({ className, ...props }: PanelProps) {
         )}
         {panel === "theme" && <PanelTheme />}
         {panel === "settings" && <PanelSettings />}
-
         {panel && (
           <>
             <Tooltip content="Close panel" delayDuration={500}>

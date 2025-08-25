@@ -24,9 +24,10 @@ export const manifest = defineBrickManifest({
       title: "HTML Content",
       description: "The HTML content to render. Use with caution, as it can introduce security risks.",
       default: "<div>Your HTML content here</div>",
+      "ui:placeholder": "<div>Your HTML content here</div>",
+      "ui:multiline": true,
       metadata: {
         category: "content",
-        "ui:placeholder": "<div>Your HTML content here</div>",
       },
     }),
   }),
