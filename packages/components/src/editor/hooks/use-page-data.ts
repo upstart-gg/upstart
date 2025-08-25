@@ -94,7 +94,6 @@ export interface DraftState extends DraftStateProps {
   setLastSaved: (date: Date) => void;
   setDirty: (dirty: boolean) => void;
   setVersion(version: string): void;
-  adjustMobileLayout(): void;
 
   addPage: (page: GenericPageConfig) => void;
   addDatasource: (datasource: Datasource) => void;
@@ -1019,11 +1018,6 @@ export const createDraftStore = (
               state.version = version;
             }),
 
-          adjustMobileLayout: () =>
-            set((state) => {
-              // state.bricks = adjustMobileLayout(state.bricks);
-            }),
-
           setLastSaved: (date) =>
             set((state) => {
               state.lastSaved = date;
@@ -1305,7 +1299,6 @@ export const useDraftHelpers = () => {
     addBrick: state.addBrick,
     getBrick: state.getBrick,
     validatePreviewTheme: state.validatePreviewTheme,
-    adjustMobileLayout: state.adjustMobileLayout,
     duplicateSection: state.duplicateSection,
     toggleBrickVisibilityPerBreakpoint: state.toggleBrickVisibility,
     getParentBrick: state.getParentBrick,

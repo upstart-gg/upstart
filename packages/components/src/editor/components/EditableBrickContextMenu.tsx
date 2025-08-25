@@ -1,7 +1,7 @@
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { forwardRef, type PropsWithChildren } from "react";
 import { useDebugMode, useEditorHelpers } from "../hooks/use-editor";
-import { ContextMenu, Portal } from "@upstart.gg/style-system/system";
+import { ContextMenu, Portal, toast } from "@upstart.gg/style-system/system";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { useDraftHelpers } from "../hooks/use-page-data";
 
@@ -49,6 +49,20 @@ const EditableBrickContextMenu = forwardRef<HTMLDivElement, EditableBrickContext
                 Duplicate
               </ContextMenu.Item>
             )}
+            <ContextMenu.Item
+              onClick={(e) => {
+                e.stopPropagation();
+                navigator.clipboard.writeText(JSON.stringify(brick));
+                toast(
+                  `Brick "${manifest.name}" copied to clipboard. You can paste it on this page or another page.`,
+                  {
+                    className: "min-w-fit",
+                  },
+                );
+              }}
+            >
+              Copy brick
+            </ContextMenu.Item>
 
             {canMovePrev && (
               <ContextMenu.Item
@@ -110,6 +124,7 @@ const EditableBrickContextMenu = forwardRef<HTMLDivElement, EditableBrickContext
                       onClick={(e) => {
                         e.stopPropagation();
                         navigator.clipboard.writeText(JSON.stringify(parentContainer));
+                        toast.success(`Container copied to clipboard`);
                       }}
                     >
                       Copy container

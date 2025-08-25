@@ -43,7 +43,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const generationState = useGenerationState();
   useGridObserver(pageRef);
 
-  useResizable("[data-brick]", {
+  useResizable("[data-element-kind='brick']", {
     gridSnap: {
       width: gridConfig.colWidth,
       height: gridConfig.rowHeight,

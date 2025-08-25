@@ -18,7 +18,7 @@ import { useDeviceInfo } from "../hooks/use-device-info";
 import { useDraftHelpers, useSection } from "../hooks/use-page-data";
 import { useDroppable } from "@dnd-kit/react";
 import { CollisionPriority } from "@dnd-kit/abstract";
-import { pointerIntersection } from "@dnd-kit/collision";
+import { pointerDistance, pointerIntersection } from "@dnd-kit/collision";
 import EditableSectionContextMenu from "./EditableSectionContextMenu";
 import EditableSectionButtons from "./EditableSectionButtons";
 import { useResizableSection } from "../hooks/use-resizable-section";
@@ -36,11 +36,12 @@ export default function EditableSection({ section, index }: EditableSectionProps
   const selectedSectionId = useSelectedSectionId();
   const editingBrick = useEditingTextForBrickId();
   const draggingBrickType = useDraggingBrickType();
-  const isMouseOverPanel = useIsMouseOverPanel();
+  // const isMouseOverPanel = useIsMouseOverPanel();
+
+  const isMouseOverPanel = false;
   const { isDesktop } = useDeviceInfo();
   const isSpecialSection = typeof section.props.variant !== "undefined";
   const dropDisabled =
-    isMouseOverPanel ||
     isSpecialSection ||
     /* Not DnD on mobile */ previewMode === "mobile" ||
     /* No DnD on small screens */
@@ -49,16 +50,12 @@ export default function EditableSection({ section, index }: EditableSectionProps
     (!!draggingBrickType && manifests[draggingBrickType]?.inlineDragDisabled);
 
   const sectionObj = useSection(section.id);
-  const {
-    isDropTarget,
-    ref: sectionRef,
-    droppable,
-  } = useDroppable({
+  const { isDropTarget, ref: sectionRef } = useDroppable({
     id,
     type: "section",
-    accept: "brick",
+    accept: (source) => source.type === "brick" || source.type === "library",
     collisionPriority: CollisionPriority.Normal,
-    collisionDetector: pointerIntersection,
+    collisionDetector: pointerDistance,
     data: { section },
     disabled: dropDisabled,
   });
@@ -86,18 +83,6 @@ export default function EditableSection({ section, index }: EditableSectionProps
         sectionEl.scrollWidth,
         sectionEl.clientWidth,
       );
-      // do {
-      //   const bricks = section.bricks;
-      //   // Reduce the width of each brick by 1% until it fits
-      //   bricks.forEach((brick) => {
-      //     const brickEl = document.getElementById(brick.id) as HTMLDivElement;
-      //     if (brickEl) {
-      //       const currentWidth = parseFloat(brickEl.style.width || "100%");
-      //       const newWidth = Math.max(currentWidth - 1, 10); // Ensure it doesn't go below 10%
-      //       brickEl.style.width = `${newWidth}%`;
-      //     }
-      //   });
-      // } while (isOverflowing());
     }
   }, [sectionObj]);
 

@@ -8,7 +8,7 @@ import type { Site, SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { enableMapSet } from "immer";
-import { isEqual } from "lodash-es";
+import { isEqual, isNil } from "lodash-es";
 import { createContext, startTransition, useContext } from "react";
 import { temporal } from "zundo";
 import { createStore, useStore } from "zustand";
@@ -207,10 +207,11 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                     : currentState.selectedSectionId,
                   panelPosition: currentState.panelPosition,
                   modal: currentState.modal,
+                  debug: import.meta.env.DEV ? currentState.debugMode : undefined,
                 };
                 const newUrl = new URL(window.location.href);
                 Object.entries(state).forEach(([key, value]) => {
-                  if (value && value.toString().trim() !== "") {
+                  if (!isNil(value) && value.toString().trim() !== "") {
                     newUrl.searchParams.set(key, value.toString());
                   } else {
                     newUrl.searchParams.delete(key);

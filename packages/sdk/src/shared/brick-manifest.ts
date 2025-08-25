@@ -101,10 +101,9 @@ export type BrickManifest = ReturnType<typeof defineBrickManifest>;
 
 export function getBrickManifestDefaults<M extends BrickManifest>(manifest: M) {
   return {
-    ...manifest,
+    manifest,
     props: getSchemaDefaults(manifest.props),
     mobileProps: {},
-    // ...(manifest.datarecord ? { datarecord: Value.Create(manifest.datarecord) } : {}),
   };
 }
 

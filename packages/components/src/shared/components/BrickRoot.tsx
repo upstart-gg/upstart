@@ -35,6 +35,7 @@ export default function BrickRoot({
     data: { brick, manifest },
     disabled: !editable || !manifest.isContainer,
     type: "brick",
+    accept: (source) => source.type === "brick" || source.type === "library",
     collisionDetector: directionBiased,
     collisionPriority: CollisionPriority.High,
   });

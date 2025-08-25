@@ -67,8 +67,8 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
     ref,
   ) => {
     const { site, pages } = config;
-    const debugMode = new URLSearchParams(window.location.search).has("debug");
     const urlParams = new URL(self.location.href).searchParams;
+    const debugMode = urlParams.has("debug") && urlParams.get("debug") !== "false";
 
     const editorStore = useRef(
       createEditorStore({

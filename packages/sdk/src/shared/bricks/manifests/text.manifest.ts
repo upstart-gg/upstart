@@ -31,6 +31,7 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
     colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",
+        default: { color: "base-100" },
       }),
     ),
     content: textContentRef({
