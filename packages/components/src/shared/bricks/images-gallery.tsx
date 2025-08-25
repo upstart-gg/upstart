@@ -5,19 +5,21 @@ import { useCallback, useEffect, useState } from "react";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { MdClose, MdChevronLeft, MdChevronRight } from "react-icons/md";
 import BrickRoot from "../components/BrickRoot";
+import { useBrickProps } from "../hooks/use-brick-props";
 
-export default function ImagesGallery({ brick, editable }: BrickProps<Manifest>) {
-  const { props } = brick;
+export default function ImagesGallery(props_: BrickProps<Manifest>) {
+  const { brick, editable } = props_;
+  const brickProps = useBrickProps(props_);
   const styles = useBrickStyle<Manifest>(brick);
 
-  const images = (props.images || []).filter(
-    (image) => typeof image.src.src === "string" && image.src.src !== "",
+  const images = (brickProps.images || []).filter(
+    ({ image }) => typeof image.src === "string" && image.src !== "",
   );
 
   // State for managing the selected image in the popover
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
-  const columns = Number(props.columns) || 3;
+  const columns = Number(brickProps.columns) || 3;
 
   const getGridClasses = () => {
     const colsMap: Record<number, string> = {
@@ -81,6 +83,7 @@ export default function ImagesGallery({ brick, editable }: BrickProps<Manifest>)
   if (images.length === 0) {
     return (
       <BrickRoot
+        brick={brick}
         editable={editable}
         manifest={manifest}
         className={tx("flex flex-col grow items-center justify-center text-center", Object.values(styles))}
@@ -94,6 +97,7 @@ export default function ImagesGallery({ brick, editable }: BrickProps<Manifest>)
 
   return (
     <BrickRoot
+      brick={brick}
       editable={editable}
       manifest={manifest}
       className={tx(
@@ -101,7 +105,7 @@ export default function ImagesGallery({ brick, editable }: BrickProps<Manifest>)
         Object.values(styles),
       )}
     >
-      {images.map((image, index) => {
+      {images.map(({ image }, index) => {
         return (
           <div
             key={index}
@@ -110,8 +114,8 @@ export default function ImagesGallery({ brick, editable }: BrickProps<Manifest>)
             )}
           >
             <img
-              src={image.src.src}
-              alt={image.src.alt}
+              src={image.src}
+              alt={image.src}
               className={tx(`w-full h-full object-cover cursor-pointer`)}
               onClick={(e) => handleImageClick(e, index)}
             />
@@ -140,8 +144,8 @@ export default function ImagesGallery({ brick, editable }: BrickProps<Manifest>)
             )}
           >
             <img
-              src={images[selectedImageIndex].src.src}
-              alt={images[selectedImageIndex].src.alt}
+              src={images[selectedImageIndex].image.src}
+              alt={images[selectedImageIndex].image.alt}
               className={"w-full h-full  object-contain"}
             />
             {images[selectedImageIndex].legend && (
@@ -159,7 +163,6 @@ export default function ImagesGallery({ brick, editable }: BrickProps<Manifest>)
                 onClick={goToPrevious}
                 className={tx(
                   "absolute aspect-square h-14 left-2 top-1/2 -translate-y-1/2 bg-black/60 text-white/80",
-                  // "bg-primary-light hover:bg-primary text-primary-content-light",
                   "rounded-full p-2 duration-200  opacity-0 group-hover:opacity-100 transition-opacity flex justify-center items-center",
                 )}
                 aria-label="Previous image"
@@ -175,7 +178,6 @@ export default function ImagesGallery({ brick, editable }: BrickProps<Manifest>)
                 onClick={goToNext}
                 className={tx(
                   "absolute aspect-square h-14 right-2 top-1/2 -translate-y-1/2 bg-black/60 text-white/80",
-                  // "bg-primary-light hover:bg-primary text-primary-content-light",
                   "rounded-full p-2 duration-200  opacity-0 group-hover:opacity-100 transition-opacity flex justify-center items-center",
                 )}
                 aria-label="Next image"

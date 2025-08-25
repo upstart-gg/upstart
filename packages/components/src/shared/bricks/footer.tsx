@@ -16,6 +16,7 @@ export default function Footer({ brick, editable }: BrickProps<Manifest>) {
     : undefined;
   return (
     <BrickRoot
+      brick={brick}
       editable={editable}
       manifest={manifest}
       data-no-section-padding

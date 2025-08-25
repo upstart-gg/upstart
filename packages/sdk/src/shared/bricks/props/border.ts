@@ -1,7 +1,7 @@
 import { type ObjectOptions, Type, type Static, type StringOptions } from "@sinclair/typebox";
 import { typedRef } from "~/shared/utils/typed-ref";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { colorRef } from "./color";
+import { borderColorRef } from "./color";
 
 export function border(opts: ObjectOptions = {}) {
   return Type.Object(
@@ -15,7 +15,7 @@ export function border(opts: ObjectOptions = {}) {
         "ui:placeholder": "None",
         default: "border-0",
       }),
-      color: colorRef({
+      color: borderColorRef({
         title: "Color",
         description: "The color of the border.",
         default: "border-current",
@@ -27,7 +27,7 @@ export function border(opts: ObjectOptions = {}) {
       "ui:styleId": "styles:border",
       description: "Set the border width and color.",
       "ui:field": "border",
-      "ui:responsive": "desktop",
+      "ui:responsive": true,
       ...opts,
     },
   );

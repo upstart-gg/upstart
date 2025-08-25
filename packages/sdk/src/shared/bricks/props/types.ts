@@ -23,7 +23,11 @@ export type BrickProps<T extends BrickManifest> = {
    */
   isContainerChild?: boolean;
 
+  isDynamicPreview?: boolean;
+
   level?: number; // Nesting level of the brick
+
+  iterationIndex?: number; // Index in a loop or iteration context
 };
 
 export type BrickPropCategory = "settings" | "presets" | "content";
@@ -34,7 +38,6 @@ export type { TSchema };
 type CommonMetadata = {
   "ui:responsive"?: boolean | "mobile" | "mobile-only";
   "ui:hidden"?: boolean | "if-empty";
-  "ui:scope"?: "site" | "page";
   "ui:tab"?: BrickPropCategory;
 };
 

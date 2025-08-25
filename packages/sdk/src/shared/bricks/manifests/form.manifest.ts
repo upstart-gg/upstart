@@ -1,4 +1,4 @@
-import { Type } from "@sinclair/typebox";
+import { type Static, Type } from "@sinclair/typebox";
 import { FaWpforms } from "react-icons/fa6";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
@@ -11,7 +11,6 @@ import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { fontSizeRef } from "../props/text";
 import { colorPresetRef } from "../props/color-preset";
-import { gradientDirectionRef } from "../props/color";
 import { directionRef } from "../props/direction";
 
 export const manifest = defineBrickManifest({
@@ -26,16 +25,14 @@ There is no need to define the form fields manually and the form does not accept
     desktop: 300,
   },
   props: defineProps({
-    datarecordId: Type.Optional(
-      datarecord("Datarecord ID", {
-        description: "The ID of the datarecord to use to generate the form fields",
-        "ui:responsive": "desktop",
-      }),
-    ),
-    color: Type.Optional(
+    datarecordId: datarecord("Datarecord ID", {
+      description: "The ID of the datarecord to use to generate the form fields",
+      "ui:responsive": "desktop",
+    }),
+    colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",
-        default: "bg-base-100 text-base-content-100",
+        default: "bg-base-100 text-base-100-content",
       }),
     ),
     direction: Type.Optional(
@@ -59,35 +56,46 @@ There is no need to define the form fields manually and the form does not accept
     ),
     border: Type.Optional(borderRef({})),
     fontSize: Type.Optional(fontSizeRef({ default: "inherit", "ui:no-extra-large-sizes": true })),
-    buttonPosition: Type.Optional(
-      justifyContentRef({
-        title: "Button Position",
-        default: "justify-end",
-        "ui:responsive": "desktop",
-      }),
-    ),
     button: group({
       title: "Button",
       children: {
-        color: Type.Union(
-          [
-            Type.Literal("btn-color-neutral", { title: "Neutral" }),
-            Type.Literal("btn-color-primary", { title: "Primary" }),
-            Type.Literal("btn-color-secondary", { title: "Secondary" }),
-            Type.Literal("btn-color-accent", { title: "Accent" }),
-          ],
-          {
-            title: "Color",
-            default: "btn-color-primary",
-          },
+        color: Type.Optional(
+          Type.Union(
+            [
+              Type.Literal("btn-neutral", { title: "Neutral" }),
+              Type.Literal("btn-primary", { title: "Primary" }),
+              Type.Literal("btn-secondary", { title: "Secondary" }),
+              Type.Literal("btn-accent", { title: "Accent" }),
+            ],
+            {
+              title: "Color",
+              default: "btn-primary",
+            },
+          ),
         ),
-        size: StringEnum(["block", "wide"], {
-          title: "Size",
-          description: "Button sizes.",
-          enumNames: ["Block", "Wide"],
-          default: "block",
-          "ui:responsive": "desktop",
-        }),
+        size: Type.Optional(
+          StringEnum(["block", "wide"], {
+            title: "Size",
+            description: "Button sizes.",
+            enumNames: ["Block", "Wide"],
+            default: "block",
+            "ui:responsive": "desktop",
+          }),
+        ),
+        position: Type.Optional(
+          StringEnum(["justify-start", "justify-center", "justify-end"], {
+            title: "Button Position",
+            description: "The position of the button in the form",
+            enumNames: ["Left", "Center", "Right"],
+            default: "justify-end",
+            "ui:responsive": "desktop",
+            metadata: {
+              filter: (manifestProps: Manifest["props"], formData: Static<Manifest["props"]>) => {
+                return formData.button?.size !== "wide";
+              },
+            },
+          }),
+        ),
         rounding: Type.Optional(roundingRef({ default: "rounded-md" })),
       },
     }),
@@ -154,10 +162,8 @@ export const examples: {
       intro: "We'd love to hear from you. Send us a message and we'll respond as soon as possible.",
       direction: "flex-row",
       datarecordId: "contacts",
-      buttonPosition: "justify-end",
       buttonLabel: "Send Message",
       button: {
-        color: "btn-color-primary",
         size: "block",
       },
     },
@@ -170,10 +176,8 @@ export const examples: {
       intro: "Join our platform and start your journey today.",
       direction: "flex-row",
       datarecordId: "user-registration",
-      buttonPosition: "justify-end",
       buttonLabel: "Register",
       button: {
-        color: "btn-color-secondary",
         size: "wide",
       },
     },
@@ -186,10 +190,8 @@ export const examples: {
       intro: "Subscribe to our newsletter for the latest updates and exclusive content.",
       direction: "flex-col",
       datarecordId: "newsletter-subscription",
-      buttonPosition: "justify-center",
       buttonLabel: "Subscribe",
       button: {
-        color: "btn-color-accent",
         size: "block",
       },
     },
@@ -204,7 +206,6 @@ export const examples: {
       datarecordId: "event-registration",
       buttonLabel: "Register Now",
       button: {
-        color: "btn-color-primary",
         size: "block",
       },
     },
@@ -219,7 +220,6 @@ export const examples: {
       datarecordId: "job-application",
       buttonLabel: "Submit Application",
       button: {
-        color: "btn-color-secondary",
         size: "block",
       },
     },

@@ -5,7 +5,10 @@ import type { HttpJsonOptions } from "./options";
 /**
  * For this fetcher, validation is done outside of the fetcher.
  */
-const fetchHttpJSON: DatasourceFetcher<unknown, null, HttpJsonOptions> = async ({ options, attr }) => {
+const fetchHttpJSON: DatasourceFetcher<unknown, null, HttpJsonOptions> = async ({
+  options,
+  pageAttributes: attr,
+}) => {
   const replacer = createPlaceholderReplacer(attr);
   const url = options.url.replace(placeholderRx, replacer);
   const headers: Record<string, string> = {};

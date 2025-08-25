@@ -1,8 +1,7 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
-import { backgroundColorRef } from "../props/background";
 import { makeContainerProps } from "../props/container";
-import { type Static, type TObject, Type } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { borderRef, roundingRef } from "../props/border";
 import { shadowRef } from "../props/effects";
 import { paddingRef } from "../props/padding";
@@ -11,8 +10,8 @@ import { cssLengthRef } from "../props/css-length";
 import { directionRef } from "../props/direction";
 import { RxBox } from "react-icons/rx";
 import { alignItemsRef, justifyContentRef } from "../props/align";
-import { StringEnum } from "~/shared/utils/string-enum";
 import { colorPresetRef } from "../props/color-preset";
+import { loopRef } from "../props/dynamic";
 
 // Generic container can hold any type of array data source
 export const manifest = defineBrickManifest({
@@ -30,7 +29,7 @@ export const manifest = defineBrickManifest({
   },
   icon: RxBox,
   props: defineProps({
-    color: Type.Optional(
+    colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",
       }),
@@ -47,7 +46,7 @@ export const manifest = defineBrickManifest({
     ),
     alignItems: Type.Optional(
       alignItemsRef({
-        default: "items-center",
+        default: "items-stretch",
       }),
     ),
     gap: Type.Optional(
@@ -73,6 +72,7 @@ export const manifest = defineBrickManifest({
     ),
     border: Type.Optional(borderRef()),
     shadow: Type.Optional(shadowRef()),
+    loop: Type.Optional(loopRef()),
     ...makeContainerProps(),
   }),
 });

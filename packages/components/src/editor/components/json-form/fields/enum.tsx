@@ -5,7 +5,7 @@ import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { FC } from "react";
 import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Icon } from "@iconify/react";
 
 interface EnumOption {
   const: string;
@@ -18,23 +18,8 @@ interface EnumOption {
 const EnumField: FC<FieldProps<string> & { noFieldGrow?: boolean }> = (props) => {
   const { schema, currentValue, formData, onChange, title, description, noFieldGrow } = props;
 
-  // console.log("EnumField props", schema);
-  // const context = formContext as { brickId: Brick["id"] };
-  // const brick = draft.getBrick(context.brickId);
-
-  // if (!brick) {
-  //   return null;
-  // }
-
   // Extract options from the schema
   const options: EnumOption[] = normalizeSchemaEnum(schema) ?? [];
-  // (schema.anyOf ?? schema.oneOf ?? schema.enum)?.map((option: any, index: number) => ({
-  //   const: typeof option === "string" ? option : option.const,
-  //   title: typeof option === "string" ? (schema.enumNames ?? []).at(index) : option.title || option.const,
-  //   description: option.description || "",
-  //   icon: option.icon || "",
-  //   "ui:hidden-option": option["ui:hidden-option"],
-  // })) || [];
 
   const displayAs: "select" | "radio" | "button-group" | "icon-group" =
     schema["ui:display"] ?? (options.length > 3 ? "select" : "button-group");

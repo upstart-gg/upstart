@@ -26,6 +26,7 @@ export type FieldProps<T = unknown, F = Record<string, unknown>> = {
   title?: string;
   description?: string;
   placeholder?: string;
+  noDynamic?: boolean;
   /**
    * Used for anyOf/oneOf fields
    */

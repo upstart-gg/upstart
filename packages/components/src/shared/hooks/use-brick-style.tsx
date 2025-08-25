@@ -8,6 +8,7 @@ import { tx, css } from "@upstart.gg/style-system/twind";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
 import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
 import { getStyleProperties } from "../styles/style-props";
+import { usePageAttributes } from "~/editor/hooks/use-page-data";
 
 function useClassesFromStyleProps<T extends BrickManifest>(
   stylesProps: Record<string, string>,
@@ -15,6 +16,7 @@ function useClassesFromStyleProps<T extends BrickManifest>(
   type: "brick" | "wrapper",
 ) {
   const { props, mobileProps } = brick;
+  const pageAttributes = usePageAttributes();
   const mergedProps = merge({}, defaultProps[brick.type].props, props);
 
   const manifest = useBrickManifest(brick.type);
@@ -26,12 +28,11 @@ function useClassesFromStyleProps<T extends BrickManifest>(
       const resolvedField = resolveSchema(manifestField);
       if (resolvedField.metadata?.filter) {
         const filter = resolvedField.metadata.filter as FieldFilter;
-        if (!filter(resolvedField, mergedProps)) {
+        if (!filter(resolvedField, mergedProps, pageAttributes)) {
           acc.push(key);
         }
       }
     }
-    // console.log("manifestField", manifestField);
     return acc;
   }, [] as string[]);
 
@@ -76,12 +77,8 @@ export function useBrickStyle<T extends BrickManifest>(brick: BrickProps<T>["bri
  * Styles for the wrapper of the brick.
  * IMPORTANT: do not add any transitions or animations here, as it will affect the drag-and-drop experience.
  */
-export function useBrickWrapperStyle<T extends BrickManifest>({
-  brick,
-  editable,
-  selected,
-  isContainerChild = false,
-}: BrickProps<T>) {
+export function useBrickWrapperStyle<T extends BrickManifest>(_props: BrickProps<T>) {
+  const { brick, editable, selected, isContainerChild = false } = _props;
   const { props, mobileProps } = brick;
   const manifest = useBrickManifest(brick.type);
   const stylesProps = getStyleProperties(manifest.props);
@@ -93,7 +90,7 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
     manifest.staticClasses,
     props.className as string,
     props.preset as string,
-    "brick-wrapper group/brick flex",
+    "brick-wrapper group/brick flex max-w-full",
 
     isContainer
       ? "@desktop:min-w-min min-h-fit h-auto flex-wrap"
@@ -133,24 +130,29 @@ export function useBrickWrapperStyle<T extends BrickManifest>({
     // When a brick is hidden on mobile, hide the wrapper as well
     "@mobile:[&:has([data-mobile-hidden])]:hidden @desktop:[&:has([data-mobile-hidden])]:flex",
 
-    getBrickWrapperEditorStyles(editable === true, manifest.isContainer, isContainerChild, selected),
+    getBrickWrapperEditorStyles(_props),
 
     ...Object.values(classes).flat(),
   );
 }
 
-function getBrickWrapperEditorStyles(
-  editable: boolean,
-  isContainer: boolean,
-  isContainerChild: boolean,
-  selected?: boolean,
-  modKeyPressed?: boolean,
-) {
+function getBrickWrapperEditorStyles<T extends BrickManifest>({
+  brick,
+  editable,
+  isContainerChild,
+  selected,
+}: BrickProps<T>) {
+  const manifest = useBrickManifest(brick.type);
+  const isContainer = !!manifest.isContainer;
+
   if (!editable) {
     return null;
   }
+
   return [
-    "select-none transition-[outline] duration-[200ms]",
+    "select-none",
+    // "select-none transition-[outline] duration-[200ms]",
+    editable && "transition-all duration-300",
     "outline outline-2 outline-transparent outline-dashed",
     {
       "outline-offset-2": !isContainer && !isContainerChild,
@@ -177,16 +179,7 @@ function getBrickWrapperEditorStyles(
       },
       "& [data-brick-group]:hover": {
         outline: "1px dashed var(--violet-8)",
-        opacity: 0.85,
       },
-      // This is the class of the drag element original emplacement
-      // "&.moving": {
-      //   backgroundColor: "var(--gray-a6)",
-      // },
-      // Hide all content when dragging
-      // "&.moving > *": {
-      //   visibility: "hidden",
-      // },
       // Hide any UI children elements when dragging
       "&.moving [data-ui]": {
         display: "none",

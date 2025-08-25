@@ -2,6 +2,7 @@ import { Type, type Static, type TObject, type TArray } from "@sinclair/typebox"
 import { youtubeListOptions } from "./external/youtube/list/options";
 import { httpJsonOptions } from "./external/http-json/options";
 import { rssOptions } from "./external/rss/options";
+import { StringEnum } from "../utils/string-enum";
 
 export const providersSchema = Type.Union([
   // Type.Literal("facebook-posts"),
@@ -237,3 +238,145 @@ export const datasourceManifest = Type.Union([
 export type Datasource = Static<typeof datasourceManifest>;
 export const datasourcesList = Type.Array(datasourceManifest);
 export type DatasourcesList = Static<typeof datasourcesList>;
+
+const stringFilter = Type.Object({
+  field: Type.String(),
+  op: Type.Union([
+    Type.Literal("eq"),
+    Type.Literal("ne"),
+    Type.Literal("contains"),
+    Type.Literal("notContains"),
+    Type.Literal("startsWith"),
+    Type.Literal("notStartsWith"),
+    Type.Literal("endsWith"),
+    Type.Literal("notEndsWith"),
+  ]),
+  value: Type.String(),
+});
+
+const numberFilter = Type.Object({
+  field: Type.String(),
+  op: Type.Union([
+    Type.Literal("eq"),
+    Type.Literal("ne"),
+    Type.Literal("lt"),
+    Type.Literal("lte"),
+    Type.Literal("gt"),
+    Type.Literal("gte"),
+  ]),
+  value: Type.Number(),
+});
+
+const dateFilterAbsolute = Type.Object({
+  field: Type.String(),
+  op: Type.Union([Type.Literal("before"), Type.Literal("after")]),
+  value: Type.String(),
+});
+
+const dateFilterRelative = Type.Object({
+  field: Type.String(),
+  op: Type.Union([Type.Literal("beforeNow"), Type.Literal("afterNow")]),
+  value: Type.Null(),
+});
+
+const arrayFilter = Type.Object({
+  field: Type.String(),
+  op: Type.Union([
+    Type.Literal("contains"),
+    Type.Literal("notContains"),
+    Type.Literal("containsAll"),
+    Type.Literal("containsAny"),
+    Type.Literal("notContainsAny"),
+  ]),
+  value: Type.Array(Type.String()),
+});
+
+const booleanFilter = Type.Object({
+  field: Type.String(),
+  op: Type.Literal("eq"),
+  value: Type.Boolean(),
+});
+
+export const queryFilter = Type.Union([
+  stringFilter,
+  numberFilter,
+  dateFilterAbsolute,
+  dateFilterRelative,
+  arrayFilter,
+  booleanFilter,
+]);
+
+const filterExpression = Type.Recursive((This) =>
+  Type.Union(
+    [
+      Type.Object({
+        op: Type.Literal("and"),
+        fields: Type.Array(Type.Union([queryFilter, This])),
+      }),
+      Type.Object({
+        op: Type.Literal("or"),
+        fields: Type.Array(Type.Union([queryFilter, This])),
+      }),
+    ],
+    {
+      default: {
+        op: "and",
+        fields: [],
+      },
+    },
+  ),
+);
+
+export const querySchema = Type.Object({
+  id: Type.String({
+    title: "Query ID",
+    description:
+      "Unique identifier for the query. Used to reference the query in the system. URL-safe string like a slug.",
+  }),
+  label: Type.String({
+    title: "Label",
+    maxLength: 100,
+    description: "Label of the query displayed in the UI",
+  }),
+  datasourceId: Type.String({
+    title: "Database",
+    description: "ID of the datasource to query",
+  }),
+  limit: Type.Number({
+    title: "Limit",
+    description: "Limit the number of records to fetch from the datasource.",
+    minimum: 1,
+    maximum: 50,
+    default: 10,
+  }),
+  sortDirection: Type.Optional(
+    Type.Union([
+      Type.Null(),
+      StringEnum(["asc", "desc"], {
+        title: "Sort",
+        enumNames: ["Ascending", "Descending"],
+        description: "Direction to sort the records by",
+        default: "desc",
+      }),
+    ]),
+  ),
+  sortField: Type.Optional(
+    Type.String({
+      title: "Sort Field",
+      description: "Select a field to sort by (must be indexed)",
+      default: "$publicationDate",
+    }),
+  ),
+  filters: Type.Optional(filterExpression),
+  parameters: Type.Optional(
+    Type.Array(Type.String(), {
+      title: "Parameters",
+      description:
+        "Field names that will be used as parameters when using the query. Only indexed fields can be used as parameters.",
+      default: [],
+      examples: [["$slug"], ["$id"], ["category", "tags"]],
+    }),
+  ),
+});
+
+export type Query = Static<typeof querySchema>;

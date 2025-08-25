@@ -16,7 +16,7 @@ export default function ResizeHandle({
   if (previewMode === "mobile" && direction !== "s" && direction !== "n") {
     return null; // Hide resize handles for mobile view except for vertical resizing
   }
-  const dotShift = manifest.isContainer ? 8 : 4; // Adjust dot position based on whether it's a container
+  const dotShift = manifest.isContainer ? 8 : 6; // Adjust dot position based on whether it's a container
   return (
     <button
       type="button"

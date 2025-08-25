@@ -30,6 +30,11 @@ export default function Panel({ className, ...props }: PanelProps) {
   const { togglePanelPosition, hidePanel } = useEditorHelpers();
   const selectedBrick = useBrick(selectedBrickId);
 
+  // Prevent blank panel when invalid brick / section id is selected
+  if (panel === "inspector" && !selectedBrick && !selectedSection) {
+    return null;
+  }
+
   return (
     <aside
       id="floating-panel"
@@ -56,14 +61,13 @@ export default function Panel({ className, ...props }: PanelProps) {
         )}
         {panel === "theme" && <PanelTheme />}
         {panel === "settings" && <PanelSettings />}
-
         {panel && (
           <>
             <Tooltip content="Close panel" delayDuration={500}>
               <button
                 type="button"
                 className={tx(
-                  "absolute z-[9999] aspect-square h-7 w-7 top-0 flex justify-center items-center bg-gradient-to-tr from-red-800 to-red-700 hover:opacity-90 backdrop-blur-md border border-t-0 border-red-900 text-white/90",
+                  "absolute z-[9999] aspect-square h-7 w-7 top-0 flex justify-center items-center bg-gradient-to-tr from-red-800 to-red-700 hover:(opacity-80 text-white) border border-t-0 border-red-900 text-white/90",
                   panelPosition === "right" ? "-left-7 rounded-bl" : "-right-7 rounded-br",
                 )}
                 onClick={() => {

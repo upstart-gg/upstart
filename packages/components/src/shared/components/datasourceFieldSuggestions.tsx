@@ -33,7 +33,7 @@ const config: Omit<SuggestionOptions<any, MentionNodeAttrs>, "editor"> = {
           showOnCreate: true,
           interactive: true,
           trigger: "manual",
-          placement: "top-start",
+          placement: "bottom-start",
         });
       },
 
@@ -52,7 +52,6 @@ const config: Omit<SuggestionOptions<any, MentionNodeAttrs>, "editor"> = {
       onKeyDown(props) {
         if (props.event.key === "Escape") {
           popup[0].hide();
-
           return true;
         }
 

@@ -26,6 +26,7 @@ export default function Carousel({ brick, editable }: BrickProps<Manifest>) {
   if (images.length === 0) {
     return (
       <BrickRoot
+        brick={brick}
         editable={editable}
         manifest={manifest}
         className={tx("flex flex-col items-center justify-center text-center", Object.values(styles))}
@@ -38,7 +39,12 @@ export default function Carousel({ brick, editable }: BrickProps<Manifest>) {
   }
 
   return (
-    <BrickRoot editable={editable} manifest={manifest} className={tx("flex flex-col", Object.values(styles))}>
+    <BrickRoot
+      brick={brick}
+      editable={editable}
+      manifest={manifest}
+      className={tx("flex flex-col", Object.values(styles))}
+    >
       <div className={tx("relative overflow-hidden group flex-1")}>
         <div
           className="flex transition-transform duration-300 ease-in-out absolute inset-0"
@@ -71,7 +77,6 @@ export default function Carousel({ brick, editable }: BrickProps<Manifest>) {
                 onClick={goToPrevious}
                 className={tx(
                   "absolute left-2 top-1/2 -translate-y-1/2",
-                  // "bg-primary-light hover:bg-primary text-primary-content-light",
                   // presetClasses.arrows,
                   "rounded-full p-2 transition-all duration-200",
                   "opacity-0 group-hover:opacity-100",
@@ -89,7 +94,6 @@ export default function Carousel({ brick, editable }: BrickProps<Manifest>) {
                 onClick={goToNext}
                 className={tx(
                   "absolute right-2 top-1/2 -translate-y-1/2",
-                  // "bg-primary-light hover:bg-primary text-primary-content-light",
                   // presetClasses.arrows,
                   "rounded-full p-2 transition-all duration-200",
                   "opacity-0 group-hover:opacity-100",

@@ -4,7 +4,7 @@ import BrickRoot from "../components/BrickRoot";
 
 export default function Sidebar({ brick, editable }: BrickProps<Manifest>) {
   return (
-    <BrickRoot editable={editable} manifest={manifest}>
+    <BrickRoot brick={brick} editable={editable} manifest={manifest}>
       Im a sidebar
     </BrickRoot>
   );

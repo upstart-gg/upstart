@@ -1,9 +1,10 @@
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
 import get from "lodash-es/get";
 import type { ReactNode } from "react";
-
+import { IoIosHelpCircleOutline } from "react-icons/io";
 // Import field components
-import { ArrayField } from "./fields/array";
+import ArrayField from "./fields/array";
+import TagsField from "./fields/tags";
 import BackgroundField from "./fields/background";
 import BorderField from "./fields/border";
 import AlignSelfField from "./fields/align-self";
@@ -11,6 +12,9 @@ import AlignItemsField from "./fields/align-items";
 import JustifyContentField from "./fields/justify-content";
 import ColorField from "./fields/color";
 import DatasourceField from "./fields/datasource";
+import DynamicField from "./fields/loop";
+import PageQueriesField from "./fields/page-queries";
+import SiteQueriesField from "./fields/site-queries";
 import EnumField from "./fields/enum";
 import IconifyField from "./fields/iconify";
 import ImageField from "./fields/image";
@@ -18,13 +22,13 @@ import { NumberField, SliderField } from "./fields/number";
 import { PagePaddingField, type TempPadding } from "./fields/padding";
 import { GeoAddressField, PathField, StringField, UrlOrPageIdField } from "./fields/string";
 import SwitchField from "./fields/switch";
-import VariantGroupField from "./fields/variant-group";
 
 // Import types
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 import type { DatasourceSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import type { GeolocationSettings } from "@upstart.gg/sdk/shared/bricks/props/geolocation";
+import type { TagsSettings } from "@upstart.gg/sdk/shared/bricks/props/tags";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import type {
   AlignSelfSettings,
@@ -39,6 +43,9 @@ import { CssLengthField } from "./fields/css-length";
 import { DatarecordField } from "./fields/datarecord";
 import { fieldLabel } from "./form-class";
 import { tx } from "@upstart.gg/style-system/twind";
+import type { LoopSettings, QueryUseSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
+import { usePageAttributes } from "~/editor/hooks/use-page-data";
+import type { ColorPresetSettings } from "@upstart.gg/sdk/shared/bricks/props/color-preset";
 
 export interface FieldFactoryOptions {
   brickId: string;
@@ -46,6 +53,7 @@ export interface FieldFactoryOptions {
   fieldSchema: TSchema;
   formSchema: TObject<TProperties>;
   formData: Record<string, unknown>;
+  noDynamic?: boolean;
   id: string;
   onChange: (data: Record<string, unknown>, id: string) => void;
   parents?: string[];
@@ -63,12 +71,13 @@ function getCommonFieldProps(options: FieldFactoryOptions, fieldSchema: TSchema)
     title: (fieldSchema.title ?? fieldSchema["ui:title"]) as string | undefined,
     description: (fieldSchema.description ?? fieldSchema["ui:description"]) as string | undefined,
     placeholder: fieldSchema["ui:placeholder"] as string | undefined,
+    noDynamic: options.noDynamic ?? false,
   };
 }
 
 // Main function to create a field component based on type
-export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
-  const { brickId, fieldName, fieldSchema, formSchema, formData, id, onChange } = options;
+function createFieldComponent(options: FieldFactoryOptions): ReactNode {
+  const { brickId, fieldName, fieldSchema, formSchema, formData, id, onChange, noDynamic } = options;
   const schema = resolveSchema(fieldSchema);
   const commonProps = getCommonFieldProps(
     {
@@ -78,6 +87,7 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       formSchema,
       formData,
       id,
+      noDynamic,
       onChange,
     },
     schema,
@@ -105,6 +115,18 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       );
     }
 
+    case "tags": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as TagsSettings;
+      return (
+        <TagsField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: TagsSettings | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
     case "color": {
       const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;
       return (
@@ -116,13 +138,14 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
         />
       );
     }
+
     case "color-preset": {
-      const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as ColorPresetSettings;
       return (
         <ColorPresetField
           key={`field-${id}`}
           currentValue={currentValue}
-          onChange={(value?: string | null) => onChange({ [id]: value }, id)}
+          onChange={(value?: ColorPresetSettings | null) => onChange({ [id]: value }, id)}
           {...commonProps}
         />
       );
@@ -159,6 +182,42 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
           key={`field-${id}`}
           currentValue={currentValue}
           onChange={(value: DatasourceSettings | undefined | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
+    case "loop": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as LoopSettings;
+      return (
+        <DynamicField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: LoopSettings | undefined | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
+    case "page-queries": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as QueryUseSettings[];
+      return (
+        <PageQueriesField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: QueryUseSettings[] | undefined | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
+    case "site-queries": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as QueryUseSettings[];
+      return (
+        <SiteQueriesField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value) => {}}
           {...commonProps}
         />
       );
@@ -390,22 +449,6 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
             (itemSchema as { union?: unknown[] }).union ||
             [];
 
-          // Check if options have ui:variant-type for grouped selection
-          const hasVariantTypes = options.some(
-            (option: unknown) => typeof option === "object" && option !== null && "ui:variant-type" in option,
-          );
-
-          if (hasVariantTypes) {
-            return (
-              <VariantGroupField
-                key={`field-${id}`}
-                currentValue={currentValue as string[]}
-                onChange={(value: string[] | null) => onChange({ [id]: value || [] }, id)}
-                {...commonProps}
-              />
-            );
-          }
-
           // Fallback to original multi-select buttons for non-variant arrays
           return (
             <div key={`field-${id}`} className="space-y-2">
@@ -487,10 +530,11 @@ export function createFieldComponent(options: FieldFactoryOptions): ReactNode {
   }
 }
 
-type ProcessObjectSchemaToFieldsProps = {
+type ObjectFieldsProps = {
   schema: TObject<TProperties>;
   formData: Record<string, unknown>;
   formSchema: TObject<TProperties>;
+  noDynamic?: boolean;
   onChange: (data: Record<string, unknown>, propPath: string) => void;
   options: {
     brickId: string;
@@ -500,13 +544,15 @@ type ProcessObjectSchemaToFieldsProps = {
 };
 
 // Process schema to create grouped fields
-export function processObjectSchemaToFields({
+export default function ObjectFields({
   schema,
   formData,
   formSchema,
   onChange,
   options,
-}: ProcessObjectSchemaToFieldsProps): ReactNode[] {
+  noDynamic,
+}: ObjectFieldsProps) {
+  const pageAttributes = usePageAttributes();
   const { brickId, filter, parents = [] } = options;
   const fields: ReactNode[] = [];
 
@@ -515,7 +561,7 @@ export function processObjectSchemaToFields({
 
     // Apply global filter if provided
     if (filter && field.type !== "object" && !filter(field)) {
-      console.warn("processObjectSchemaToFields: Ignoring field", field);
+      console.warn("ObjectFields: Ignoring field", field);
       return;
     }
 
@@ -523,7 +569,7 @@ export function processObjectSchemaToFields({
     if (field.metadata?.filter) {
       // field filter should be called with the current formData and the schema
       const filter = field.metadata.filter as FieldFilter;
-      if (!filter(formSchema, formData)) {
+      if (!filter(formSchema, formData, pageAttributes)) {
         return;
       }
     }
@@ -544,6 +590,7 @@ export function processObjectSchemaToFields({
       id,
       onChange,
       parents,
+      noDynamic,
     });
 
     if (fieldComponent) {
@@ -558,26 +605,55 @@ export function FieldTitle({
   title,
   description,
   className,
-}: { title?: string; description?: string; className?: string }) {
+  containerClassName,
+  withIcon = false,
+}: {
+  title?: string;
+  description?: string;
+  className?: string;
+  containerClassName?: string;
+  withIcon?: boolean;
+}) {
   if (!title) return null;
   return (
-    <div className="flex items-center text-nowrap text-sm basis-[45%]">
+    <div className={tx("flex items-center text-nowrap basis-[45%]", containerClassName)}>
       {description ? (
-        <Tooltip
-          content={<span className="block text-xs p-1">{description}</span>}
-          className="!z-[10000]"
-          align="start"
-        >
+        withIcon ? (
           <label
             className={tx(
               className,
               fieldLabel,
-              "underline-offset-4 no-underline hover:underline decoration-upstart-300 decoration-dotted cursor-default",
+              " underline-offset-4 no-underline decoration-upstart-300 decoration-dotted cursor-default",
             )}
           >
-            {title}
+            <Tooltip
+              content={<span className="block text-sm p-1">{description}</span>}
+              className="!z-[10000]"
+              align="start"
+            >
+              <span className="cursor-help flex items-center">
+                {title}
+                <IoIosHelpCircleOutline className="ml-1 text-[110%] opacity-50" />
+              </span>
+            </Tooltip>
           </label>
-        </Tooltip>
+        ) : (
+          <Tooltip
+            content={<span className="block text-sm p-1">{description}</span>}
+            className="!z-[10000]"
+            align="start"
+          >
+            <label
+              className={tx(
+                className,
+                fieldLabel,
+                "underline-offset-4 no-underline hover:underline decoration-upstart-300 decoration-dotted cursor-default",
+              )}
+            >
+              {title}
+            </label>
+          </Tooltip>
+        )
       ) : (
         <label className={tx(className, fieldLabel)}>{title}</label>
       )}

@@ -15,10 +15,10 @@ import { useResizable } from "../hooks/use-resizable";
 import Section from "./EditableSection";
 import {
   useDraftHelpers,
-  useDraft,
-  useAttributes,
   useSections,
   useGenerationState,
+  usePageAttributes,
+  useSiteAttributes,
 } from "../hooks/use-page-data";
 
 type EditablePageProps = {
@@ -32,14 +32,14 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const { zoom } = useZoom();
   const pageRef = useRef<HTMLDivElement>(null);
   const gridConfig = useGridConfig();
-  const attributes = useAttributes();
+  const pageAttributes = usePageAttributes();
   const sections = useSections();
   const typography = useFontWatcher();
   const selectedBrickId = useSelectedBrickId();
   const selectedSectionId = useSelectedSectionId();
 
   const pageClassName = usePageStyle({
-    attributes,
+    attributes: pageAttributes,
     typography,
     editable: true,
     previewMode,
@@ -49,7 +49,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const generationState = useGenerationState();
   useGridObserver(pageRef);
 
-  useResizable("[data-brick]", {
+  useResizable("[data-element-kind='brick']", {
     gridSnap: {
       width: gridConfig.colWidth,
       height: gridConfig.rowHeight,
@@ -64,16 +64,28 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
             s: true,
           },
     onResizeStart: (event) => {
+      console.log("Resize start", event);
       // startTransition(() => {
       //   editorHelpers.setIsResizing(true);
       // });
       // disable flex-grow temporarily to allow resize
-      //target.style.setProperty("flex-grow", "0");
+      event.target.style.setProperty(
+        "--original-transition-duration",
+        event.target.style.getPropertyValue("transition-duration"),
+      );
+      event.target.style.setProperty("transition-duration", "0ms");
       // Disable fixed height of the upper section ?
     },
 
     onResizeEnd: (event) => {
       const target = event.target as HTMLElement;
+      // restore transition duration
+      target.style.setProperty(
+        "transition-duration",
+        target.style.getPropertyValue("--original-transition-duration"),
+      );
+      target.style.removeProperty("--original-transition-duration");
+
       const brickId = target.dataset.brickId as string;
       const parentBrick = draftHelpers.getParentBrick(brickId);
       // parentElement corresponds to the wrapper of the brick
@@ -97,13 +109,17 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       // Horizontal resizing
       if (event.edges.left || event.edges.right) {
         if (futureWidth === 100 && parentBrick) {
-          console.log("Resizing to 100% width, updating parent brick props");
+          console.log("Resizing parent brick to %spx", rectWidth);
           // Also update the parent brick props with fixed values
           draftHelpers.updateBrickProps(parentBrick.id, {
             width: `${rectWidth}px`,
             grow: false,
           });
         }
+        console.debug("Resizing brick", {
+          brickId,
+          width: widthPercentage,
+        });
         draftHelpers.updateBrickProps(brickId, {
           width: widthPercentage,
           grow: false,
@@ -174,10 +190,8 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
       ) {
         console.debug("click out, hidding", event, event.target);
         editorHelpers.deselectBrick();
-        // also deselect the library panel
         editorHelpers.hidePanel("library");
         editorHelpers.hidePanel("inspector");
-        editorHelpers.hidePanel("settings");
         editorHelpers.hidePanel("theme");
       }
     };

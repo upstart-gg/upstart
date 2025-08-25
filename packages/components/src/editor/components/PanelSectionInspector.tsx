@@ -55,7 +55,7 @@ function SettingsTab({ section }: { section: Section }) {
   return (
     <div className="flex flex-col h-full">
       {previewMode === "mobile" && (
-        <Callout.Root size="1" className="m-2">
+        <Callout.Root size="1">
           <Callout.Text size="1">
             <strong>Note</strong>: You are editing mobile-only styles. Any changes here will only affect how
             the brick appears on mobile devices.

@@ -1,11 +1,12 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
 import { PiConfetti } from "react-icons/pi";
-import { iconRef, string, urlOrPageIdRef } from "../props/string";
+import { iconRef, urlOrPageIdRef } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { Type } from "@sinclair/typebox";
 import { cssLengthRef } from "../props/css-length";
 import { colorRef } from "../props/color";
+import { loopRef } from "../props/dynamic";
 
 export const manifest = defineBrickManifest({
   type: "icon",
@@ -37,6 +38,7 @@ export const manifest = defineBrickManifest({
         }),
       ),
       link: Type.Optional(urlOrPageIdRef({ title: "Link" })),
+      loop: Type.Optional(loopRef()),
     },
     { noGrow: true },
   ),

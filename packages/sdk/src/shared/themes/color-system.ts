@@ -71,7 +71,8 @@ export function getContrastingTextColor(
 
   // If both options meet the contrast threshold, return the one with better contrast
   if (contrastWithWhite >= contrastThreshold && contrastWithBlack >= contrastThreshold) {
-    return contrastWithWhite >= contrastWithBlack ? white : black;
+    return white;
+    // return contrastWithWhite >= contrastWithBlack ? white : black;
   }
 
   // If only one meets the threshold, use that one
@@ -104,37 +105,35 @@ export function generateColorsVars(theme: Theme) {
     // Add the original color as the default (without number suffix)
     shades[`color-${colorName}`] = color;
 
-    // Handle base colors separately (they already have shades)
-    if (colorName.startsWith("base")) {
-      return;
-    }
+    // Generate base color content
+    const contentColor = getContrastingTextColor(color);
+    shades[`color-${colorName}-content`] = contentColor;
 
     const darkest = chroma(color).darken(2.5);
     const lightest = chroma(color).brighten(3.5);
 
     const colorScale = chroma.scale([lightest, color, darkest]).domain([50, 500, 900]).mode("lch"); // Use LCH color space for better perceptual scaling
 
-    // Generate base color content
-    const contentColor = getContrastingTextColor(color);
-    shades[`color-${colorName}-content`] = contentColor;
+    // Generate shades for other colors than base colors
+    if (!colorName.startsWith("base")) {
+      shadeNumbers.forEach((shade) => {
+        const varName = `color-${colorName}-${shade}`;
 
-    shadeNumbers.forEach((shade) => {
-      const varName = `color-${colorName}-${shade}`;
+        // Gen color for the specific shade
+        const shadedColor = colorScale(shade);
+        // @ts-ignore oklch is a valid color format
+        shades[varName] = shadedColor.css("oklch");
 
-      // Gen color for the specific shade
-      const shadedColor = colorScale(shade);
-      // @ts-ignore oklch is a valid color format
-      shades[varName] = shadedColor.css("oklch");
+        // Gen content color for this same shade
+        const contentColor = getContrastingTextColor(shadedColor);
+        shades[`color-${colorName}-${shade}-content`] = contentColor;
 
-      // Gen content color for this same shade
-      const contentColor = getContrastingTextColor(shadedColor);
-      shades[`color-${colorName}-${shade}-content`] = contentColor;
-
-      if (semanticAliases[shade]) {
-        shades[`color-${colorName}-${semanticAliases[shade]}`] = shades[varName];
-        shades[`color-${colorName}-${semanticAliases[shade]}-content`] = contentColor;
-      }
-    });
+        if (semanticAliases[shade]) {
+          shades[`color-${colorName}-${semanticAliases[shade]}`] = shades[varName];
+          shades[`color-${colorName}-${semanticAliases[shade]}-content`] = contentColor;
+        }
+      });
+    }
   });
 
   return shades;

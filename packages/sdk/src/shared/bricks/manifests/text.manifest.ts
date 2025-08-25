@@ -5,11 +5,11 @@ import { paddingRef } from "../props/padding";
 import { borderRef, roundingRef } from "../props/border";
 import { RxTextAlignLeft } from "react-icons/rx";
 import type { BrickProps } from "../props/types";
-import { type Static, type TObject, Type } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { alignItemsRef } from "../props/align";
 import { shadowRef } from "../props/effects";
 import { colorPresetRef } from "../props/color-preset";
-import { StringEnum } from "~/shared/utils/string-enum";
+import { loopRef } from "../props/dynamic";
 
 export const manifest = defineBrickManifest({
   type: "text",
@@ -27,71 +27,34 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
     mobile: "auto",
   },
   icon: RxTextAlignLeft,
-  props: defineProps(
-    {
-      color: Type.Optional(
-        colorPresetRef({
-          title: "Color",
-        }),
-      ),
-      gradientDirection: Type.Optional(
-        StringEnum(
-          [
-            "bg-gradient-to-t",
-            "bg-gradient-to-r",
-            "bg-gradient-to-b",
-            "bg-gradient-to-l",
-            "bg-gradient-to-tl",
-            "bg-gradient-to-tr",
-            "bg-gradient-to-br",
-            "bg-gradient-to-bl",
-          ],
-          {
-            title: "Gradient direction",
-            description: "The direction of the gradient. Only applies when color preset is a gradient.",
-            enumNames: [
-              "Top",
-              "Right",
-              "Bottom",
-              "Left",
-              "Top left",
-              "Top right",
-              "Bottom right",
-              "Bottom left",
-            ],
-            default: "bg-gradient-to-br",
-            "ui:responsive": "desktop",
-            "ui:styleId": "styles:gradientDirection",
-            metadata: {
-              filter: (manifestProps: TObject, formData: Static<Manifest["props"]>) => {
-                return formData.color?.includes("gradient") === true;
-              },
-            },
-          },
-        ),
-      ),
-      content: textContentRef(),
-      verticalAlign: Type.Optional(
-        alignItemsRef({
-          default: "items-center",
-          title: "Align",
-        }),
-      ),
-      padding: Type.Optional(paddingRef({ default: "p-4" })),
-      rounding: Type.Optional(
-        roundingRef({
-          default: "rounded-md",
-        }),
-      ),
-      border: Type.Optional(borderRef()),
-      shadow: Type.Optional(shadowRef()),
-    },
-    {
-      default: {
-        padding: "p-8",
-      },
-    },
-  ),
+  props: defineProps({
+    colorPreset: Type.Optional(
+      colorPresetRef({
+        title: "Color",
+        default: { color: "base-100" },
+      }),
+    ),
+    content: textContentRef({
+      // metadata: {
+      //   category: "content",
+      // },
+    }),
+    verticalAlign: Type.Optional(
+      alignItemsRef({
+        default: "items-center",
+        title: "Align",
+      }),
+    ),
+    padding: Type.Optional(paddingRef({ default: "p-4" })),
+    rounding: Type.Optional(
+      roundingRef({
+        default: "rounded-md",
+      }),
+    ),
+    border: Type.Optional(borderRef()),
+    shadow: Type.Optional(shadowRef()),
+    loop: Type.Optional(loopRef()),
+  }),
 });
 
 export type Manifest = typeof manifest;

@@ -1,15 +1,8 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { StringEnum } from "./utils/string-enum";
+import { pageSchema } from "./page";
 
-export const pageInfoSchema = Type.Object(
-  {
-    id: Type.String({ title: "Page ID" }),
-    label: Type.String(),
-    path: Type.String(),
-  },
-  { additionalProperties: false },
-);
-
+export const pageInfoSchema = Type.Pick(pageSchema, ["id", "label", "path"]);
 export type PageInfo = Static<typeof pageInfoSchema>;
 
 export const sectionsPlanSchema = Type.Array(

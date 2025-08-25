@@ -6,7 +6,7 @@ import { imageRef } from "../props/image";
 import { paddingRef } from "../props/padding";
 import { colorPresetRef } from "../props/color-preset";
 import { string, urlOrPageIdRef } from "../props/string";
-import { fontSize, fontSizeRef } from "../props/text";
+import { fontSizeRef } from "../props/text";
 import type { BrickProps } from "../props/types";
 
 export const manifest = defineBrickManifest({
@@ -14,18 +14,20 @@ export const manifest = defineBrickManifest({
   name: "Footer",
   category: "layout",
   description: "A footer with links and an optional logo",
+  aiInstructions: "This brick should be used on most sites/pages. It must be placed on its own section.",
   icon: VscLayoutPanelOff,
   staticClasses: "flex-1",
   resizable: false,
+  movable: false,
   defaultWidth: {
     desktop: "100%",
     mobile: "100%",
   },
   props: defineProps({
-    color: Type.Optional(
+    colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color preset",
-        default: "bg-neutral text-neutral-content",
+        default: { color: "neutral-600" },
       }),
     ),
     // backgroundColor:Type.Optional(backgroundColorRef()),

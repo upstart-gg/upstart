@@ -3,23 +3,31 @@ import { getSchemaDefaults } from "@upstart.gg/sdk/shared/utils/schema";
 import { useCallback, useMemo } from "react";
 import { merge, set } from "lodash-es";
 import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
-import type { AttributesSchema } from "@upstart.gg/sdk/shared/attributes";
+import type {
+  PageAttributes,
+  pageAttributesSchema,
+  SiteAttributes,
+  siteAttributesSchema,
+} from "@upstart.gg/sdk/shared/attributes";
 import { usePreviewMode } from "../hooks/use-editor";
-import { useAttributes, useDraft } from "../hooks/use-page-data";
+import { useDraft } from "../hooks/use-page-data";
 
 type AttributesSettingsViewProps = {
-  attributesSchema: AttributesSchema;
+  attributes: PageAttributes | SiteAttributes;
+  attributesSchema: typeof pageAttributesSchema | typeof siteAttributesSchema;
+  type: "page" | "site";
   title: string;
   group?: string;
 };
 
 export default function AttributesSettingsView({
+  attributes,
   attributesSchema,
   title,
   group,
+  type,
 }: AttributesSettingsViewProps) {
   const previewMode = usePreviewMode();
-  const attr = useAttributes();
   const draft = useDraft();
   const filter: SchemaFilter = (prop) => {
     return (
@@ -28,8 +36,8 @@ export default function AttributesSettingsView({
         prop.metadata?.["ui:responsive"] === previewMode) &&
       (typeof prop["ui:responsive"] === "undefined" ||
         prop["ui:responsive"] === true ||
-        prop["ui:responsive"] === previewMode) &&
-      (!prop.metadata?.category || prop.metadata?.category === "settings")
+        prop["ui:responsive"] === previewMode)
+      // &&       (!prop.metadata?.category || prop.metadata?.category === "settings")
       /* &&
       (!group || !prop.metadata?.group || (prop.metadata?.group && key === group))*/
     );
@@ -40,22 +48,24 @@ export default function AttributesSettingsView({
   const formData = useMemo(() => {
     // const resolvedSchema = resolveSchema(attributesSchema);
     const defProps = getSchemaDefaults(attributesSchema);
-    return merge({}, defProps, attr ?? {});
-  }, [attr, attributesSchema]);
+    return merge({}, defProps, attributes ?? {});
+  }, [attributes, attributesSchema]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: draft.updateAttributes is a stable function
-  const onChange = useCallback(
-    (data: Record<string, unknown>, propertyChanged: string) => {
-      // Note: this is a weird way to update the brick props, but it'it allows us to deal with frozen trees
-      const attrObj = structuredClone(attr);
-      // `propertyChangedPath` can take the form of `a.b.c` which means we need to update `props.a.b.c`
-      // For this we use lodash.set
-      set(attrObj, propertyChanged, data[propertyChanged]);
-      console.log("changed attr, setting path %s to %s", propertyChanged, data[propertyChanged]);
-      draft.updateAttributes(attrObj);
-    },
-    [attr],
-  );
+  // biome-ignore lint/correctness/useExhaustiveDependencies: draft.updatePageAttributes and draft.updateSiteAttributes are stable functions
+  const onChange = useCallback((data: Record<string, unknown>, propertyChanged: string) => {
+    console.trace("AttributesSettingsView onChange");
+    // Note: this is a weird way to update the brick props, but it'it allows us to deal with frozen trees
+    const attrObj = structuredClone(attributes);
+    // `propertyChangedPath` can take the form of `a.b.c` which means we need to update `props.a.b.c`
+    // For this we use lodash.set
+    set(attrObj, propertyChanged, data[propertyChanged]);
+
+    if (type === "page") {
+      draft.updatePageAttributes(attrObj as PageAttributes);
+    } else {
+      draft.updateSiteAttributes(attrObj as SiteAttributes);
+    }
+  }, []);
 
   return (
     <FormNavigator

@@ -3,7 +3,6 @@ import { examples as boxExamples, manifest as boxManifest } from "./box.manifest
 import { examples as buttonExamples, manifest as buttonManifest } from "./button.manifest";
 import { examples as cardExamples, manifest as cardManifest } from "./card.manifest";
 import { examples as carouselExamples, manifest as carouselManifest } from "./carousel.manifest";
-import { examples as dynamicExamples, manifest as dynamicManifest } from "./dynamic.manifest";
 import { examples as footerExamples, manifest as footerManifest } from "./footer.manifest";
 import { examples as formExamples, manifest as formManifest } from "./form.manifest";
 import { examples as heroExamples, manifest as heroManifest } from "./hero.manifest";
@@ -18,6 +17,7 @@ import { examples as spacerExamples, manifest as spacerManifest } from "./spacer
 import { examples as testimonialsExamples, manifest as testimonialsManifest } from "./testimonials.manifest";
 import { examples as textExamples, manifest as textManifest } from "./text.manifest";
 import { examples as videoExamples, manifest as videoManifest } from "./video.manifest";
+import { examples as htmlExamples, manifest as htmlManifest } from "./html.manifest";
 
 import { getBrickManifestDefaults, type BrickDefaults, type BrickManifest } from "../../brick-manifest";
 
@@ -38,10 +38,10 @@ export const manifests: Record<string, BrickManifest> = {
   [iconManifest.type]: iconManifest,
   [socialLinksManifest.type]: socialLinksManifest,
   [boxManifest.type]: boxManifest,
-  [dynamicManifest.type]: dynamicManifest,
   [spacerManifest.type]: spacerManifest,
   [testimonialsManifest.type]: testimonialsManifest,
   [accordionManifest.type]: accordionManifest,
+  [htmlManifest.type]: htmlManifest,
 };
 
 export const defaultProps: Record<string, BrickDefaults> = {
@@ -61,10 +61,10 @@ export const defaultProps: Record<string, BrickDefaults> = {
   [iconManifest.type]: getBrickManifestDefaults(iconManifest),
   [socialLinksManifest.type]: getBrickManifestDefaults(socialLinksManifest),
   [boxManifest.type]: getBrickManifestDefaults(boxManifest),
-  [dynamicManifest.type]: getBrickManifestDefaults(dynamicManifest),
   [spacerManifest.type]: getBrickManifestDefaults(spacerManifest),
   [testimonialsManifest.type]: getBrickManifestDefaults(testimonialsManifest),
   [accordionManifest.type]: getBrickManifestDefaults(accordionManifest),
+  [htmlManifest.type]: getBrickManifestDefaults(htmlManifest),
 };
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -85,8 +85,8 @@ export const examples: Record<string, { description: string; type: string; props
   [iconManifest.type]: iconExamples,
   [socialLinksManifest.type]: socialLinksExamples,
   [boxManifest.type]: boxExamples,
-  [dynamicManifest.type]: dynamicExamples,
   [spacerManifest.type]: spacerExamples,
   [testimonialsManifest.type]: testimonialsExamples,
   [accordionManifest.type]: accordionExamples,
+  [htmlManifest.type]: htmlExamples,
 };

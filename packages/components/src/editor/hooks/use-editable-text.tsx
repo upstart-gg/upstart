@@ -20,7 +20,9 @@ export function useTextEditorUpdateHandler(
   if (!enabled) {
     return;
   }
+
   return (e: EditorEvents["update"]) => {
+    console.log("Updating text editor props", brickId, propPath);
     if (dynamic) {
       helpers.updateBrickProps(brickId, {
         [propPath]: e.editor.getText(),
@@ -36,21 +38,37 @@ type UseEditorComponentProps = FieldProps<any> & {
   dynamic?: boolean;
 };
 
-export function useDynamicTextEditor({ currentValue, brickId, schema, onChange }: UseEditorComponentProps) {
+export function useDynamicTextEditor({
+  currentValue,
+  brickId,
+  schema,
+  onChange,
+  placeholder,
+}: UseEditorComponentProps) {
   const textEditorRef = useRef<TextEditorRef>(null);
   const onChangeDebounced = useDebounceCallback(onChange, 300);
   return (
     <>
-      <div className="rounded-md border border-gray-300 focus:border-upstart-600 focus:ring-1 focus:ring-upstart-600 px-1.5 py-1.5 text-sm w-full bg-white">
+      <div
+        className={tx(
+          "rounded border border-gray-300 px-2 py-[4px] text-sm flex-grow max-w-[calc(100%-34px)] bg-white",
+          css({
+            "&:has([contenteditable='true']:focus)": {
+              outline: "1px solid var(--violet-8)",
+              borderColor: "var(--violet-8)",
+            },
+          }),
+        )}
+      >
         <TextEditor
           content={currentValue}
           brickId={brickId}
           ref={textEditorRef}
           className={tx(
             css({ lineHeight: "1.5" }),
-            schema["ui:multiline"] && `scrollbar-thin ${schema["ui:textarea-class"] ?? "h-24"}`,
+            schema["ui:multiline"] && `scrollbar-thin ${schema["ui:textarea-class"] ?? "min-h-24"}`,
           )}
-          placeholder={schema["ui:placeholder"]}
+          placeholder={schema["ui:placeholder"] ?? placeholder}
           spellCheck={!!schema["ui:spellcheck"]}
           singleline
           noMenuBar
@@ -68,8 +86,8 @@ export function useDynamicTextEditor({ currentValue, brickId, schema, onChange }
           }
         }}
       >
-        <IconButton variant="outline">
-          <RiBracesLine />
+        <IconButton variant="surface" radius="large" className="!w-[31px] !h-[31px]">
+          <RiBracesLine className="w-4 h-4" />
         </IconButton>
       </DatasourceItemButton>
     </>

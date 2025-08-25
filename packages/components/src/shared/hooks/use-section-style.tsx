@@ -1,32 +1,34 @@
 import { sectionProps, type Section } from "@upstart.gg/sdk/shared/bricks";
-import {
-  brickStylesHelpersMap,
-  brickWrapperStylesHelpersMap,
-  extractStylePath,
-  getGapStyles,
-  simpleClassHandler,
-} from "../styles/helpers";
+import { brickStylesHelpersMap, brickWrapperStylesHelpersMap, extractStylePath } from "../styles/helpers";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { getStyleProperties } from "../styles/style-props";
 import { get, merge } from "lodash-es";
 import { type FieldFilter, getSchemaDefaults } from "@upstart.gg/sdk/shared/utils/schema";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
+import { usePageAttributes } from "~/editor/hooks/use-page-data";
 
 type UseSectionStyleProps = {
   section: Section;
   editable?: boolean;
   selected?: boolean;
   previewMode?: Resolution;
+  isDropTarget?: boolean;
 };
 
-export function useSectionStyle({ section, selected, editable, previewMode }: UseSectionStyleProps) {
+export function useSectionStyle({
+  section,
+  selected,
+  editable,
+  previewMode,
+  isDropTarget,
+}: UseSectionStyleProps) {
   const stylesProps = getStyleProperties(sectionProps);
   const classes = useClassesFromStyleProps(stylesProps, section);
-  const GAP = section.props.gap ?? "12px"; // Default gap if not set
 
   return tx(
-    "flex flex-nowrap @mobile:flex-col @desktop:flex-row w-full @container/section group/section overflow-visible relative mx-auto max-sm:max-w-dvw",
+    // @mobile:flex-col @desktop:flex-row
+    "flex flex-wrap w-full @container/section group/section overflow-visible relative mx-auto max-sm:max-w-dvw",
     [
       Object.values(classes),
       section.props.maxWidth as string,
@@ -39,14 +41,6 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
           ? "min-h-[calc(100dvh-60px)]" // when in editor mode
           : "min-h-dvh"),
 
-      // Padding and gap
-      // css({ gap: `${GAP}`, paddingInline: `${GAP}`, paddingBlock: `${GAP}` }),
-      // getGapStyles(GAP, section.mobileProps?.gap),
-      simpleClassHandler(
-        `p-[${GAP}]`,
-        section.mobileProps?.gap ? `p-[${section.mobileProps.gap}]` : undefined,
-      ),
-
       css({
         "&:has([data-no-section-padding])": {
           // This is a hack to ensure that the navbar is not affected by the section's padding
@@ -56,7 +50,7 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
       }),
 
       // Section editor styles
-      getSectionEditorStyles({ editable, previewMode, section, selected }),
+      getSectionEditorStyles({ editable, previewMode, section, selected, isDropTarget }),
       // Manage the section order using css "order" (flex) property
       css({
         order: section.order,
@@ -64,20 +58,17 @@ export function useSectionStyle({ section, selected, editable, previewMode }: Us
     ],
   );
 }
-function getSectionEditorStyles({ section, editable, selected, previewMode }: UseSectionStyleProps) {
+function getSectionEditorStyles({ editable, selected, previewMode, isDropTarget }: UseSectionStyleProps) {
   if (!editable) {
     return null;
   }
   return [
-    "select-none transition-[outline] duration-150 relative",
-    "outline-dashed outline-2 -outline-offset-2",
-    // "self-stretch",
-
-    selected ? "outline-upstart-500/40" : "outline-transparent hover:outline-upstart-500/40",
+    "select-none relative outline-dashed outline-2 -outline-offset-2",
+    !isDropTarget && !selected && "outline-transparent",
+    selected || isDropTarget ? "outline-upstart-500/40" : "hover:outline-upstart-500/40",
 
     // this is the grid overlay shown when dragging
-    editable &&
-      previewMode &&
+    previewMode &&
       css`
       &:has(.moving), &:has(.moving) ~ section {
         & [data-floating-ui-portal] {
@@ -90,12 +81,12 @@ function getSectionEditorStyles({ section, editable, selected, previewMode }: Us
   ];
 }
 
-const defaultProps = getSchemaDefaults(sectionProps);
+const sectionDefaultProps = getSchemaDefaults(sectionProps);
 
 function useClassesFromStyleProps(stylesProps: Record<string, string>, section: Section) {
   const { props, mobileProps } = section;
-  const mergedProps = merge({}, defaultProps, props);
-
+  const pageAttributes = usePageAttributes();
+  const mergedProps = merge({}, sectionDefaultProps, props);
   const filtered = Object.entries(stylesProps).reduce((acc, [key, value]) => {
     const manifestField = get(sectionProps.properties, key);
     if (manifestField) {
@@ -103,7 +94,7 @@ function useClassesFromStyleProps(stylesProps: Record<string, string>, section: 
       const resolvedField = resolveSchema(manifestField);
       if (resolvedField.metadata?.filter) {
         const filter = resolvedField.metadata.filter as FieldFilter;
-        if (!filter(resolvedField, mergedProps)) {
+        if (!filter(resolvedField, mergedProps, pageAttributes)) {
           acc.push(key);
         }
       }

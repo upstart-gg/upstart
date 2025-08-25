@@ -1,4 +1,5 @@
-import type { Static, TArray, TObject, TSchema } from "@sinclair/typebox";
+import type { TArray, TObject, TSchema } from "@sinclair/typebox";
+import type { PageAttributes } from "../attributes";
 
 export function normalizeSchemaEnum(schema: TSchema): Array<{ const: string; title: string }> {
   if (!("enum" in schema)) {
@@ -19,6 +20,7 @@ export function normalizeSchemaEnum(schema: TSchema): Array<{ const: string; tit
 
 export function getSchemaDefaults<T extends TObject | TArray>(
   schema: T,
+  mode?: "mobile" | "desktop",
 ): T extends TObject ? Record<string, unknown> : unknown[] {
   // Handle object schemas
   if (schema.type === "object" && "properties" in schema) {
@@ -26,7 +28,7 @@ export function getSchemaDefaults<T extends TObject | TArray>(
     const defaults: Record<string, unknown> = {};
 
     for (const [key, propertySchema] of Object.entries(objectSchema.properties)) {
-      const defaultValue = getNestedDefaults(propertySchema as TSchema);
+      const defaultValue = getNestedDefaults(propertySchema as TSchema, mode);
 
       // Only include properties that have explicit defaults
       if (defaultValue !== undefined) {
@@ -41,6 +43,11 @@ export function getSchemaDefaults<T extends TObject | TArray>(
   // Handle array schemas
   if (schema.type === "array" && "items" in schema) {
     const arraySchema = schema as TArray;
+
+    if (mode && typeof arraySchema[`default:${mode}`] !== "undefined") {
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      return arraySchema[`default:${mode}`] as any;
+    }
 
     // If the array itself has an explicit default, return it
     if (arraySchema.default) {
@@ -57,7 +64,10 @@ export function getSchemaDefaults<T extends TObject | TArray>(
 }
 
 // Helper function for nested schema processing
-function getNestedDefaults(schema: TSchema): unknown {
+function getNestedDefaults(schema: TSchema, mode?: "mobile" | "desktop"): unknown {
+  if (mode && typeof schema[`default:${mode}`] !== "undefined") {
+    return schema[`default:${mode}`];
+  }
   // Handle schemas with explicit default values
   if ("default" in schema && schema.default !== undefined) {
     return schema.default;
@@ -69,7 +79,7 @@ function getNestedDefaults(schema: TSchema): unknown {
     const defaults: Record<string, unknown> = {};
 
     for (const [key, propertySchema] of Object.entries(objectSchema.properties)) {
-      const defaultValue = getNestedDefaults(propertySchema as TSchema);
+      const defaultValue = getNestedDefaults(propertySchema as TSchema, mode);
 
       // Only include properties that have explicit defaults
       if (defaultValue !== undefined) {
@@ -93,7 +103,7 @@ function getNestedDefaults(schema: TSchema): unknown {
 export type FieldFilter<
   T extends TSchema = TSchema,
   P extends Record<string, unknown> = Record<string, unknown>,
-> = (propsSchema: T, formData: P) => boolean;
+> = (propsSchema: T, formData: P, pageAttributes: PageAttributes) => boolean;
 
 export function filterSchemaProperties(schema: TObject, filter: (prop: TSchema) => boolean) {
   function extractProperties(schema: TObject): Record<string, TSchema> {

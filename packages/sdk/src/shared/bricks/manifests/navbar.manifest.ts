@@ -9,16 +9,17 @@ import { boolean } from "../props/boolean";
 import { VscLayoutPanelOff } from "react-icons/vsc";
 import type { BrickProps } from "../props/types";
 import { colorPresetRef } from "../props/color-preset";
-import { StringEnum } from "~/shared/utils/string-enum";
+import { tagsRef } from "../props/tags";
 
 export const manifest = defineBrickManifest({
   type: "navbar",
   name: "Navbar",
   category: "layout",
   description: "A navigation bar with logo and navigation",
-  aiInstructions: "This brick should be used on most sites/pages.",
+  aiInstructions: "This brick should be used on most sites/pages. It must be placed on its own section.",
   duplicatable: false,
   resizable: false,
+  movable: false,
   staticClasses: "flex-grow",
   defaultWidth: { mobile: "100%" },
   defaultHeight: { mobile: "60px", desktop: "60px" },
@@ -29,7 +30,7 @@ export const manifest = defineBrickManifest({
       color: Type.Optional(
         colorPresetRef({
           title: "Color",
-          default: "bg-primary-500 text-primary-content-500",
+          default: { color: "primary-500" },
         }),
       ),
       brand: Type.Optional(
@@ -47,6 +48,8 @@ export const manifest = defineBrickManifest({
           title: "Logo",
           "ui:show-img-search": false,
           "ui:no-object-options": true,
+          "ui:no-dynamic": true,
+          "ui:placeholder": "https://example.com/logo.png",
           metadata: {
             category: "content",
           },
@@ -71,9 +74,9 @@ export const manifest = defineBrickManifest({
         { title: "Links position", default: "right", "ui:responsive": "desktop" },
       ),
       linksTagsFilter: Type.Optional(
-        Type.Array(Type.String(), {
-          description: "Filter pages in the navbar by tags. Only pages with all of these tags will be shown.",
-          title: "Tags",
+        tagsRef({
+          title: "Pages tags",
+          description: "Filter pages links in the navbar by tags. Only pages with these tags will be shown.",
           default: ["navbar"],
           metadata: {
             category: "content",
@@ -87,8 +90,8 @@ export const manifest = defineBrickManifest({
             label: Type.Optional(string("Label")),
           }),
           {
-            title: "Navigation items",
-            description: "Additional static navigation items to show in the navbar",
+            title: "Static links",
+            description: "Additional static navigation links to show in the navbar",
             default: [],
             metadata: {
               category: "content",

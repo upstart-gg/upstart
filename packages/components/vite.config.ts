@@ -34,6 +34,12 @@ export default defineConfig(({ mode }) => ({
   },
   server: {
     port: +(process.env.PORT ?? 3008),
+    server: {
+      watch: {
+        // Ignore node_modules and build outputs from other packages
+        ignored: ["**/node_modules/**", "**/dist/**", "**/build/**"],
+      },
+    },
     ...(process.env.PROXY_API_REQUESTS
       ? {
           proxy: {

@@ -5,7 +5,7 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { get, set } from "lodash-es";
 import { useCallback, useMemo } from "react";
 import { usePreviewMode } from "~/editor/hooks/use-editor";
-import { useBrick, useDraftHelpers, useDynamicParent } from "~/editor/hooks/use-page-data";
+import { useBrick, useDraftHelpers } from "~/editor/hooks/use-page-data";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
 import FormNavigator from "./json-form/FormNavigator";
@@ -50,14 +50,14 @@ export default function BrickSettingsView({
   const formData = useMemo(() => {
     const defProps = defaultProps[brick.type].props;
     return previewMode === "mobile"
-      ? mergeIgnoringArrays({}, defProps, brick.props, brick.mobileProps ?? {})
-      : mergeIgnoringArrays({}, defProps, brick.props ?? {});
+      ? mergeIgnoringArrays({} as Brick["props"], defProps, brick.props, brick.mobileProps ?? {})
+      : mergeIgnoringArrays({} as Brick["props"], defProps, brick.props ?? {});
   }, [brick, previewMode]);
 
   const onChange = useCallback(
     (data: Record<string, unknown>, propertyChangedPath: string) => {
       if (!propertyChangedPath) {
-        console.warn("propertyChangedPath is missing in style tab");
+        console.warn("propertyChangedPath is missing in onChange");
         // ignore changes unrelated to the brick
         return;
       }

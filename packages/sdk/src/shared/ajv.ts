@@ -4,16 +4,18 @@ import { alignItems, alignSelf, justifyContent } from "./bricks/props/align";
 import { basicGap } from "./bricks/props/gap";
 import { background, backgroundColor } from "./bricks/props/background";
 import { border, rounding } from "./bricks/props/border";
-import { color, gradientDirection } from "./bricks/props/color";
+import { borderColor, color } from "./bricks/props/color";
 import { hidden } from "./bricks/props/common";
 import { cssLength } from "./bricks/props/css-length";
 import { shadow, textShadow } from "./bricks/props/effects";
 import { fontSize, textContent } from "./bricks/props/text";
 import { icon, urlOrPageId } from "./bricks/props/string";
 import { padding } from "./bricks/props/padding";
-import { colorPreset } from "./bricks/props/color-preset";
+import { colorPreset, gradientDirection } from "./bricks/props/color-preset";
 import { image } from "./bricks/props/image";
 import { direction } from "./bricks/props/direction";
+import { loop, queryUse } from "./bricks/props/dynamic";
+import { tags } from "./bricks/props/tags";
 
 export type { AnySchemaObject, JSONSchemaType, JSONType, SchemaObject } from "ajv";
 
@@ -40,6 +42,7 @@ ajv.addSchema(gradientDirection(), "styles:gradientDirection");
 ajv.addSchema(border(), "styles:border");
 ajv.addSchema(padding(), "styles:padding");
 ajv.addSchema(color(), "styles:color");
+ajv.addSchema(borderColor(), "styles:borderColor");
 ajv.addSchema(shadow(), "styles:shadow");
 ajv.addSchema(textShadow(), "styles:textShadow");
 ajv.addSchema(cssLength(), "styles:cssLength");
@@ -47,7 +50,10 @@ ajv.addSchema(image(), "assets:image");
 ajv.addSchema(icon(), "assets:icon");
 ajv.addSchema(textContent(), "content:textContent");
 ajv.addSchema(urlOrPageId(), "content:urlOrPageId");
+ajv.addSchema(loop(), "content:loop");
+ajv.addSchema(queryUse(), "content:queryUse");
 ajv.addSchema(colorPreset(), "presets:color");
+ajv.addSchema(tags(), "content:tags");
 
 export const jsonStringsSupportedFormats = [
   "date-time",
@@ -72,6 +78,11 @@ addFormats(ajv, [...jsonStringsSupportedFormats]);
 ajv.addFormat("date-object", {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   validate: (data: any) => data instanceof Date && !Number.isNaN(data.getTime()),
+  async: false,
+});
+
+ajv.addFormat("nanoid", {
+  validate: (data: string) => typeof data === "string",
   async: false,
 });
 

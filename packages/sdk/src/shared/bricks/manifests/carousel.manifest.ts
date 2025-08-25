@@ -1,4 +1,4 @@
-import { type Static, type TObject, Type } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { TbCarouselHorizontal } from "react-icons/tb";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
@@ -7,8 +7,8 @@ import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { roundingRef } from "../props/border";
 import { colorPresetRef } from "../props/color-preset";
-import { gradientDirectionRef } from "../props/color";
 import { paddingRef } from "../props/padding";
+import { loopRef } from "../props/dynamic";
 
 export const manifest = defineBrickManifest({
   type: "carousel",
@@ -25,7 +25,7 @@ export const manifest = defineBrickManifest({
   },
   icon: TbCarouselHorizontal,
   props: defineProps({
-    color: Type.Optional(
+    colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",
       }),
@@ -35,12 +35,6 @@ export const manifest = defineBrickManifest({
         default: "p-px",
       }),
     ),
-    gradientDirection: Type.Optional(
-      gradientDirectionRef("color", {
-        default: "bg-gradient-to-br",
-      }),
-    ),
-
     images: Type.Optional(
       Type.Array(
         Type.Object({
@@ -66,6 +60,7 @@ export const manifest = defineBrickManifest({
         default: "rounded-md",
       }),
     ),
+    loop: Type.Optional(loopRef()),
   }),
 });
 

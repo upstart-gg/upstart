@@ -83,7 +83,7 @@ export default function PageHierarchy({
     disabledDragging?: boolean;
   }) {
     return bricks.map((brick, brickIndex) => {
-      const childBricks: Brick[] = "$children" in brick.props ? brick.props.$children : [];
+      const childBricks = ("$children" in brick.props ? brick.props.$children : []) as Brick[];
       const hasChildren = childBricks.length > 0;
       const isContainer = manifests[brick.type].isContainer;
       const Icon = manifests[brick.type].icon;

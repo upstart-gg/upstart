@@ -13,6 +13,7 @@ export default function Image({ brick, editable }: BrickProps<Manifest>) {
 
   return (
     <BrickRoot
+      brick={brick}
       editable={editable}
       manifest={manifest}
       as="picture"

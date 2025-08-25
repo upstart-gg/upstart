@@ -44,6 +44,11 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
   };
   props: TObject<BProps>;
   hideInLibrary?: boolean;
+  /**
+   * If true, the brick can consume multiple rows of data from a data source.
+   * This is useful for bricks that display lists or collections of items.
+   */
+  consumesMultipleQueryRows?: boolean;
   defaultInspectorTab?: "preset" | "style" | "content";
   deletable?: boolean;
   movable?: boolean;
@@ -96,10 +101,9 @@ export type BrickManifest = ReturnType<typeof defineBrickManifest>;
 
 export function getBrickManifestDefaults<M extends BrickManifest>(manifest: M) {
   return {
-    ...manifest,
+    manifest,
     props: getSchemaDefaults(manifest.props),
-    // mobileProps: {},
-    // ...(manifest.datarecord ? { datarecord: Value.Create(manifest.datarecord) } : {}),
+    mobileProps: {},
   };
 }
 

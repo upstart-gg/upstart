@@ -5,11 +5,11 @@ import type {
 import type { ColorSettings } from "@upstart.gg/sdk/shared/bricks/props/color";
 import type { OpacitySettings } from "@upstart.gg/sdk/shared/bricks/props/effects";
 import type { GapBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/gap";
+import { colorPresets } from "@upstart.gg/sdk/shared/bricks/props/color-preset";
 import type { FixedPositionedSettings } from "@upstart.gg/sdk/shared/bricks/props/position";
 import { propToClass, propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
 import { css } from "@upstart.gg/style-system/twind";
 import type { TSchema } from "@sinclair/typebox";
-import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
 
 export function getBackgroundStyles(props?: BackgroundSettings) {
   if (!props) {
@@ -65,6 +65,25 @@ export function simpleClassHandler(value: string, mobileValue?: string, schema?:
   }
 }
 
+export function simpleClassHandleObject(
+  value: Record<string, unknown>,
+  mobileValue?: Record<string, unknown>,
+  schema?: TSchema,
+) {
+  if (schema?.["ui:desktop-only"]) {
+    return `@desktop:(${Object.values(value).join(" ")})`;
+  }
+  if (value && !mobileValue) {
+    return Object.values(value);
+  }
+  if (value && mobileValue) {
+    return `@desktop:(${Object.values(value).join(" ")}) @mobile:(${Object.values(mobileValue).join(" ")})`;
+  }
+  if (mobileValue) {
+    return `@mobile:(${Object.values(mobileValue).join(" ")})`;
+  }
+}
+
 function getFixedPositionedStyles(value: FixedPositionedSettings) {
   if (!value) {
     return null;
@@ -74,13 +93,6 @@ function getFixedPositionedStyles(value: FixedPositionedSettings) {
 
 export function getBasicGapStyles(props?: GapBasicSettings, mobileProps?: GapBasicSettings) {
   return props;
-}
-
-export function getBorderStyles(props?: BorderSettings, mobileProps?: BorderSettings, schema?: TSchema) {
-  if (!props) {
-    return null;
-  }
-  return [props.width, props.color];
 }
 
 // function getContainerLayoutStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {
@@ -102,6 +114,27 @@ function getGrowStyles(props?: boolean, mobileProps?: boolean, schema?: TSchema)
   }
 }
 
+function getColorPresetStyles(value: string, mobileValue?: string, schema?: TSchema) {
+  const presets = (schema?.["ui:presets"] ?? colorPresets) as typeof colorPresets;
+  if (schema?.["ui:desktop-only"]) {
+    return `@desktop:(${presets[value]?.className})`;
+  }
+  if (!mobileValue) {
+    return presets[value]?.className;
+  }
+  if (value && mobileValue) {
+    return `@desktop:(${presets[value]?.className}) @mobile:(${presets[mobileValue]?.className})`;
+  }
+  if (mobileValue) {
+    return `@mobile:(${presets[mobileValue]?.className})`;
+  }
+}
+
+export const pageStylesHelpersMap = {
+  "presets:color": getColorPresetStyles,
+  "styles:gradientDirection": simpleClassHandler,
+};
+
 export const brickStylesHelpersMap = {
   "styles:color": getColorStyles,
   "styles:basicGap": getBasicGapStyles,
@@ -118,21 +151,23 @@ export const brickStylesHelpersMap = {
   "styles:backgroundColor": getBackgroundColorStyles,
   "styles:background": getBackgroundStyles,
 
-  "presets:color": simpleClassHandler,
+  "presets:color": getColorPresetStyles,
+  "styles:borderColor": simpleClassHandler,
 
   "styles:rounding": simpleClassHandler,
   "styles:direction": simpleClassHandler,
   // test putting here
   "styles:alignItems": simpleClassHandler,
   "styles:justifyContent": simpleClassHandler,
-  "styles:border": getBorderStyles,
+  "styles:border": simpleClassHandleObject,
+
+  // "styles:rounding": simpleClassHandler,
+  "styles:shadow": simpleClassHandler,
 };
 
 export const brickWrapperStylesHelpersMap = {
   "styles:direction": simpleClassHandler,
   "styles:rounding": simpleClassHandler,
-  // "styles:alignItems": simpleClassHandler,
-  "styles:shadow": simpleClassHandler,
   "styles:justifyContent": simpleClassHandler,
   "styles:alignItems": simpleClassHandler,
   "styles:fixedPositioned": getFixedPositionedStyles,

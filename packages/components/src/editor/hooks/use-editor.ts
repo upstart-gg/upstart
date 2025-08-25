@@ -8,8 +8,8 @@ import type { Site, SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { enableMapSet } from "immer";
-import { isEqual } from "lodash-es";
-import { createContext, useContext } from "react";
+import { isEqual, isNil } from "lodash-es";
+import { createContext, startTransition, useContext } from "react";
 import { temporal } from "zundo";
 import { createStore, useStore } from "zustand";
 import { persist, subscribeWithSelector } from "zustand/middleware";
@@ -79,8 +79,8 @@ export interface EditorStateProps {
   resizing?: boolean;
 
   isEditingTextForBrickId?: string;
-  panel?: "library" | "inspector" | "theme" | "settings" | "data";
-  modal?: "image-search" | "datasources";
+  panel?: "library" | "inspector" | "theme" | "settings";
+  modal?: "image-search" | "datasources" | "queries";
   panelPosition: "left" | "right";
   chatVisible: boolean;
   logoLink: string;
@@ -123,6 +123,7 @@ export interface EditorState extends EditorStateProps {
   togglePanelPosition: () => void;
   toggleDebugMode: () => void;
   showModal: (modal: EditorStateProps["modal"]) => void;
+  toggleModal: (modal: EditorStateProps["modal"]) => void;
   hideModal: () => void;
   toggleChat: () => void;
   zoomIn: () => void;
@@ -130,6 +131,7 @@ export interface EditorState extends EditorStateProps {
   resetZoom: () => void;
   setDraggingBrickType: (type: Brick["type"] | null) => void;
   setMouseOverPanel: (over: boolean) => void;
+  updateHistory(): void;
 }
 
 export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
@@ -194,6 +196,30 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
           immer((set, _get) => ({
             ...DEFAULT_PROPS,
             ...initProps,
+            updateHistory: () => {
+              setTimeout(() => {
+                const currentState = _get();
+                const state = {
+                  panel: currentState.panel,
+                  selectedBrickId: currentState.selectedBrickId,
+                  selectedSectionId: currentState.selectedBrickId
+                    ? undefined
+                    : currentState.selectedSectionId,
+                  panelPosition: currentState.panelPosition,
+                  modal: currentState.modal,
+                  debug: import.meta.env.DEV ? currentState.debugMode : undefined,
+                };
+                const newUrl = new URL(window.location.href);
+                Object.entries(state).forEach(([key, value]) => {
+                  if (!isNil(value) && value.toString().trim() !== "") {
+                    newUrl.searchParams.set(key, value.toString());
+                  } else {
+                    newUrl.searchParams.delete(key);
+                  }
+                });
+                window.history.pushState(state, "", newUrl.toString());
+              }, 100);
+            },
             setIsResizing: (resizing) =>
               set((state) => {
                 state.resizing = resizing;
@@ -226,6 +252,7 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                   state.panel = undefined;
                   state.panelPosition = "right";
                 }
+                state.updateHistory();
               }),
             toggleDebugMode: () =>
               set((state) => {
@@ -244,11 +271,13 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
             setSettingsVisible: (visible) =>
               set((state) => {
                 state.settingsVisible = visible;
+                state.updateHistory();
               }),
 
             toggleSettings: () =>
               set((state) => {
                 state.settingsVisible = !state.settingsVisible;
+                state.updateHistory();
               }),
 
             setIsEditingText: (forBrickId: string | false) =>
@@ -259,11 +288,13 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
             setPanel: (panel) =>
               set((state) => {
                 state.panel = panel;
+                state.updateHistory();
               }),
 
             togglePanel: (panel) =>
               set((state) => {
                 state.panel = panel && state.panel === panel ? undefined : panel;
+                state.updateHistory();
               }),
 
             hidePanel: (panel) =>
@@ -271,6 +302,13 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                 if (!panel || state.panel === panel) {
                   state.panel = undefined;
                 }
+                state.updateHistory();
+              }),
+
+            toggleModal: (modal) =>
+              set((state) => {
+                state.modal = modal && state.modal === modal ? undefined : modal;
+                state.updateHistory();
               }),
 
             zoomIn: () =>
@@ -299,6 +337,7 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                 if (brickId) {
                   state.selectedSectionId = undefined;
                 }
+                state.updateHistory();
               }),
 
             setSelectedSectionId: (sectionId) =>
@@ -308,6 +347,7 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                   state.selectedBrickId = undefined;
                   state.selectedGroup = undefined;
                 }
+                state.updateHistory();
               }),
 
             deselectBrick: (brickId) =>
@@ -315,21 +355,25 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                 if (state.selectedBrickId && (!brickId || state.selectedBrickId === brickId)) {
                   state.selectedBrickId = undefined;
                 }
+                state.updateHistory();
               }),
 
             togglePanelPosition: () =>
               set((state) => {
                 state.panelPosition = state.panelPosition === "left" ? "right" : "left";
+                state.updateHistory();
               }),
 
             showModal: (modal) =>
               set((state) => {
                 state.modal = modal;
+                state.updateHistory();
               }),
 
             hideModal: () =>
               set((state) => {
                 state.modal = undefined;
+                state.updateHistory();
               }),
           })),
           // limit undo history to 100
@@ -423,6 +467,11 @@ export const usePanel = () => {
   }));
 };
 
+export const useModal = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.modal);
+};
+
 export const useIsPremiumPlan = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => state.planIndex > 0);
@@ -501,6 +550,7 @@ export const useEditorHelpers = () => {
     setImagesSearchResults: state.setImagesSearchResults,
     setPanel: state.setPanel,
     togglePanel: state.togglePanel,
+    toggleModal: state.toggleModal,
     hidePanel: state.hidePanel,
     setSelectedGroup: state.setSelectedGroup,
     setSelectedBrickId: state.setSelectedBrickId,

@@ -1,37 +1,29 @@
 import { describe, it, expect } from "vitest";
-import { defineAttributes, resolveAttributes } from "../attributes";
-import { string, url } from "../bricks/props/string";
-import { number } from "../bricks/props/number";
-import { boolean } from "../bricks/props/boolean";
-import { date } from "../bricks/props/date";
-import { Type } from "@sinclair/typebox";
+import {
+  type PageAttributes,
+  resolvePageAttributes,
+  resolveSiteAttributes,
+  type SiteAttributes,
+} from "../attributes";
 
 describe("Attributes test suite", () => {
-  describe("defineAttributes", () => {
-    it("should define custom attributes", () => {
-      const attributes = defineAttributes({
-        name: string("Name"),
-        age: number("Age"),
-        isStudent: boolean("Is Student"),
-        createdAt: date("Created At"),
+  describe("resolvePageAttributes", () => {
+    it("should resolve attributes with default values", () => {
+      const attributes = {};
+      expect(resolvePageAttributes(attributes)).toMatchObject<PageAttributes>({
+        colorPreset: { color: "bg-base-100" },
+        robotsIndexing: true,
+        path: "/",
+        title: "Untitled",
+        description: "",
+        keywords: "",
       });
-      expect(attributes.type).toBe("object");
-      expect(attributes.properties).toBeTypeOf("object");
-      expect(attributes.properties).toHaveProperty("name");
-      expect(attributes.properties).toHaveProperty("age");
-      expect(attributes.properties).toHaveProperty("isStudent");
-      expect(attributes.properties).toHaveProperty("createdAt");
     });
   });
-  describe("resolveAttributes", () => {
-    it("should resolve attributes with default values", () => {
-      const attributes = Type.Object({
-        mainButtonUrl: url("Main Button URL", "https://facebook.com"),
-        testBoolTrue: boolean("Test Bool True", true),
-        customerId: string("Customer ID"),
-        testUrl: url("Test URL", "https://upstart.gg"),
-      });
-      expect(resolveAttributes(attributes)).toBeTruthy();
+  describe("resolveSiteAttributes", () => {
+    it("should resolve site attributes with default values", () => {
+      const attributes = {};
+      expect(resolveSiteAttributes(attributes)).toMatchObject<SiteAttributes>({});
     });
   });
 });

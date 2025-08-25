@@ -540,7 +540,7 @@ What should we work on together? 🤖`,
           }
           size="2"
           className={tx(
-            "h-full w-full scrollbar-thin p-2 bg-white !pb-9 !border-0 !outline-0 !box-shadow-none [&>textarea]:focus:(!outline-0 !shadow-none !ring-0 !border-0)",
+            "h-full w-full scrollbar-thin p-2 !bg-white !pb-9 !border-0 !outline-0 !box-shadow-none [&>textarea]:focus:(!outline-0 !shadow-none !ring-0 !border-0)",
           )}
         />
         <div

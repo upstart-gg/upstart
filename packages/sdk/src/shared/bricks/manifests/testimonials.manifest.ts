@@ -1,8 +1,6 @@
 import { type Static, type TObject, Type } from "@sinclair/typebox";
 import { HiOutlineChatBubbleBottomCenter } from "react-icons/hi2";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { backgroundRef } from "../props/background";
-import { shadowRef } from "../props/effects";
 import { defineProps } from "../props/helpers";
 import { imageRef } from "../props/image";
 import { paddingRef } from "../props/padding";
@@ -10,8 +8,10 @@ import { iconRef, string } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { fontSizeRef } from "../props/text";
 import { colorPresetRef } from "../props/color-preset";
-import { StringEnum } from "~/shared/utils/string-enum";
 import { cssLengthRef } from "../props/css-length";
+import { loopRef } from "../props/dynamic";
+import { borderRef } from "../props/border";
+import { shadowRef } from "../props/effects";
 
 export const manifest = defineBrickManifest({
   type: "testimonials",
@@ -19,49 +19,27 @@ export const manifest = defineBrickManifest({
   description: "Display testimonials from users",
   defaultWidth: { desktop: "100%" },
   icon: HiOutlineChatBubbleBottomCenter,
+  consumesMultipleQueryRows: true,
+  aiInstructions: `This brick displays user testimonials with optional avatars and social icons.
+It is typically used to showcase customer feedback or endorsements.
+Optionally either use an avatar or a social icon but not both at the same time.`,
   props: defineProps(
     {
-      color: Type.Optional(
+      colorPreset: Type.Optional(
         colorPresetRef({
           title: "Color",
-          default: "bg-base-100 text-base-content-100",
+          default: "bg-base-100 text-base-100-content",
         }),
       ),
-      gradientDirection: Type.Optional(
-        StringEnum(
-          [
-            "bg-gradient-to-t",
-            "bg-gradient-to-r",
-            "bg-gradient-to-b",
-            "bg-gradient-to-l",
-            "bg-gradient-to-tl",
-            "bg-gradient-to-tr",
-            "bg-gradient-to-br",
-            "bg-gradient-to-bl",
-          ],
-          {
-            title: "Gradient direction",
-            description: "The direction of the gradient. Only applies when color preset is a gradient.",
-            enumNames: [
-              "Top",
-              "Right",
-              "Bottom",
-              "Left",
-              "Top left",
-              "Top right",
-              "Bottom right",
-              "Bottom left",
-            ],
-            default: "bg-gradient-to-br",
-            "ui:responsive": "desktop",
-            "ui:styleId": "styles:gradientDirection",
-            metadata: {
-              filter: (manifestProps: TObject, formData: Static<Manifest["props"]>) => {
-                return formData.color?.includes("gradient") === true;
-              },
-            },
+      border: Type.Optional(
+        borderRef({
+          title: "Border",
+          description: "Customize the border of the testimonial cards.",
+          default: {
+            width: "border",
+            color: "border-accent-500",
           },
-        ),
+        }),
       ),
       fontSize: Type.Optional(
         fontSizeRef({
@@ -80,6 +58,15 @@ export const manifest = defineBrickManifest({
           "ui:styleId": "styles:gap",
         }),
       ),
+      shadow: Type.Optional(shadowRef()),
+      loop: Type.Optional(
+        loopRef({
+          // title: "Use dynamic content",
+          description:
+            "If enabled, each row from the query result will be used to create a testimonial. Otherwise, the testimonials will be static.",
+          "ui:placeholder": "Not specified (static)",
+        }),
+      ),
       testimonials: Type.Optional(
         Type.Array(
           Type.Object({
@@ -90,14 +77,18 @@ export const manifest = defineBrickManifest({
             }),
             author: string("Author", { default: "John Doe" }),
             company: Type.Optional(string("Company")),
-            avatar: Type.Optional(imageRef({ title: "Avatar" })),
+            avatar: Type.Optional(
+              imageRef({
+                title: "Avatar",
+                "ui:placeholder": "https://via.placeholder.com/80x80.png?text=JD",
+                noObjectOptions: true,
+              }),
+            ),
             socialIcon: Type.Optional(iconRef()),
           }),
           {
             title: "Testimonials",
             default: [], // Empty array by default
-            "ui:tab": "content",
-            "ui:widget": "array",
             "ui:displayField": "author", // Affiche le nom de l'auteur dans la vue compacte
             "ui:options": {
               orderable: true, // Enable drag & drop reordering
@@ -106,6 +97,7 @@ export const manifest = defineBrickManifest({
             },
             metadata: {
               category: "content",
+              consumeQuery: true,
             },
             examples: [
               {

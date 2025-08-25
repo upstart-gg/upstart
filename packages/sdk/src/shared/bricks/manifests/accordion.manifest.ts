@@ -1,4 +1,4 @@
-import { type Static, Type, type TObject } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { TfiLayoutAccordionSeparated } from "react-icons/tfi";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
@@ -8,7 +8,7 @@ import { defineProps } from "../props/helpers";
 import { colorPresetRef } from "../props/color-preset";
 import { fontSizeRef, textContentRef } from "../props/text";
 import type { BrickProps } from "../props/types";
-import { gradientDirectionRef } from "../props/color";
+import { loopRef } from "../props/dynamic";
 
 export const manifest = defineBrickManifest({
   type: "accordion",
@@ -72,17 +72,13 @@ Multiple panels can be open simultaneously or limited to one at a time.
         },
       ),
     ),
-    color: Type.Optional(
+    colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",
-        default: "bg-primary-500 text-primary-content-500",
+        default: { color: "bg-primary-500 text-primary-500-content" },
       }),
     ),
-    gradientDirection: Type.Optional(
-      gradientDirectionRef("color", {
-        default: "bg-gradient-to-br",
-      }),
-    ),
+    loop: Type.Optional(loopRef()),
   }),
 });
 

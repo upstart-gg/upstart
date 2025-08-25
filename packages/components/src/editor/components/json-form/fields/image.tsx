@@ -9,17 +9,15 @@ import { debounce } from "lodash-es";
 import { IoMdClose } from "react-icons/io";
 import { FieldTitle } from "../field-factory";
 import { useUploader } from "../../UploaderContext";
-import { useDynamicParent } from "~/editor/hooks/use-page-data";
-import TextEditor from "~/shared/components/TextEditor";
-import { RiBracesLine } from "react-icons/ri";
 import { useDynamicTextEditor } from "~/editor/hooks/use-editable-text";
+import { usePageQueries } from "~/editor/hooks/use-page-data";
 
 const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
-  const { schema, formData, onChange, title, description, currentValue, brickId } = props;
+  const { schema, formData, onChange, title, description, currentValue, brickId, noDynamic } = props;
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);
   const { onImageUpload } = useUploader();
-  const dynamicParent = useDynamicParent(brickId);
+  const pageQueries = usePageQueries();
 
   const onDynamicSrcChange = (newSrc: string) => {
     onPropsChange({ src: newSrc });
@@ -36,11 +34,11 @@ const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
 
   const debouncedOnPropsChange = debounce(onPropsChange, 300);
 
-  if (dynamicParent) {
+  if (pageQueries.length > 0 && !noDynamic && !schema["ui:no-dynamic"]) {
     return (
-      <div className="field field-string basis-full flex flex-col gap-1">
+      <div className="field field-string basis-full flex flex-col gap-1 max-w-full">
         <FieldTitle title={title} description={description} />
-        <div className="field field-string flex items-center gap-2">{DynamicTextEditor}</div>
+        <div className="field field-string flex items-start gap-1.5 max-w-full">{DynamicTextEditor}</div>
       </div>
     );
   }

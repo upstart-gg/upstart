@@ -38,7 +38,11 @@ export default defineConfig({
     ],
     [
       "dynamic-field",
-      "bg-upstart-50 text-black text-[92%] inline-block outline outline-upstart-50 px-1 rounded-sm mx-0.5",
+      "bg-upstart-200/50 text-black/80 text-[90%] py-0.5 inline-block outline outline-upstart-50 px-1.5 rounded mx-0.5",
+    ],
+    [
+      "btn",
+      "text-nowrap font-medium min-h-fit max-h-fit flex items-center text-center justify-center flex-wrap text-ellipsis py-[0.55em] px-[1em]",
     ],
     [
       "btn-",
@@ -47,6 +51,7 @@ export default defineConfig({
         color: `var(--color-${$$}-content)`,
       }),
     ],
+
     [
       "rounded-auto",
       {
@@ -172,6 +177,7 @@ export default defineConfig({
     ["text-accent-", ({ $$ }) => ({ color: `var(--color-accent-${$$})` })],
     ["text-primary-", ({ $$ }) => ({ color: `var(--color-primary-${$$})` })],
     ["text-secondary-", ({ $$ }) => ({ color: `var(--color-secondary-${$$})` })],
+    ["text-base-", ({ $$ }) => ({ color: `var(--color-base-${$$})` })],
 
     ["outline-primary-", ({ $$ }) => ({ outlineColor: `var(--color-primary-${$$})` })],
     ["outline-secondary-", ({ $$ }) => ({ outlineColor: `var(--color-secondary-${$$})` })],

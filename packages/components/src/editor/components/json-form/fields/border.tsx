@@ -12,14 +12,16 @@ export default function BorderField(props: FieldProps<BorderSettings>) {
     <div className="flex justify-between flex-1 gap-1 flex-wrap">
       <FieldTitle title={title} description={description} />
       <div className="flex-1 gap-3 flex items-center justify-end">
-        <ColorElementPreviewPill
-          elementColorType="border"
-          onChange={(color) => {
-            onPropsChange({ color: color || undefined });
-          }}
-          color={currentValue?.color}
-          hideColorLabel={true}
-        />
+        {currentValue?.width && currentValue.width !== "border-0" && (
+          <ColorElementPreviewPill
+            elementColorType="border"
+            onChange={(color) => {
+              onPropsChange({ color: color || undefined });
+            }}
+            color={currentValue?.color}
+            hideColorLabel={true}
+          />
+        )}
         <EnumField
           {...props}
           title={undefined}

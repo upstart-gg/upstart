@@ -14,8 +14,8 @@ const ContextMenuWrapper = ({ children }: ComponentProps<"div">) => {
   useEffect(() => {
     const handler = (e: Event) => {
       const target = e.target as HTMLElement | null;
-      const isBrick = target?.matches("[data-brick]");
-      const isBrickChild = target?.closest("[data-brick]");
+      const isBrick = target?.matches("[data-element-kind='brick']");
+      const isBrickChild = target?.closest("[data-element-kind='brick']");
       const brickElement = (isBrick ? target : (isBrickChild ?? null)) as HTMLElement | null;
 
       if (brickElement) {

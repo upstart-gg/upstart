@@ -19,12 +19,16 @@ const bricksMap = Object.entries(bricks).reduce(
   {} as Record<string, LazyExoticComponent<ComponentType<any>>>,
 );
 
-const BaseComponent = ({
+const BrickComponent = ({
   brick,
   editable,
+  isDynamicPreview,
+  iterationIndex,
 }: {
   brick: Brick;
   editable?: boolean;
+  isDynamicPreview?: boolean;
+  iterationIndex?: number;
 } & ComponentProps<"div">) => {
   const selectedBrickId = useSelectedBrickId();
   const BrickModule = bricksMap[brick.type];
@@ -32,10 +36,13 @@ const BaseComponent = ({
     console.warn("Brick not found", brick.type);
     return null;
   }
+
   const brickProps = {
     brick,
     editable,
+    isDynamicPreview,
     selected: brick.id === selectedBrickId,
+    iterationIndex,
   } satisfies BrickProps<BrickManifest>;
 
   return (
@@ -45,4 +52,4 @@ const BaseComponent = ({
   );
 };
 
-export default BaseComponent;
+export default BrickComponent;

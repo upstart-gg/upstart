@@ -4,12 +4,11 @@ import { textContentRef } from "../props/text";
 import { paddingRef } from "../props/padding";
 import { BsAlphabetUppercase } from "react-icons/bs";
 import type { BrickProps } from "../props/types";
-import { type Static, type TObject, Type } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { shadowRef, textShadowRef } from "../props/effects";
-import { borderRef, rounding, roundingRef } from "../props/border";
-import { alignItemsRef } from "../props/align";
-import { StringEnum } from "~/shared/utils/string-enum";
+import { borderRef, roundingRef } from "../props/border";
 import { colorPresetRef } from "../props/color-preset";
+import { alignItemsRef, justifyContentRef } from "../props/align";
 
 export const manifest = defineBrickManifest({
   type: "hero",
@@ -39,47 +38,12 @@ It is typically used on home pages to grab the user's attention.
         default: "<p style='text-align:center'>Use our platform to build your business with confidence.</p>",
       }),
     ),
-    color: Type.Optional(
+    colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",
       }),
     ),
-    gradientDirection: Type.Optional(
-      StringEnum(
-        [
-          "bg-gradient-to-t",
-          "bg-gradient-to-r",
-          "bg-gradient-to-b",
-          "bg-gradient-to-l",
-          "bg-gradient-to-tl",
-          "bg-gradient-to-tr",
-          "bg-gradient-to-br",
-          "bg-gradient-to-bl",
-        ],
-        {
-          title: "Gradient direction",
-          description: "The direction of the gradient. Only applies when color preset is a gradient.",
-          enumNames: [
-            "Top",
-            "Right",
-            "Bottom",
-            "Left",
-            "Top left",
-            "Top right",
-            "Bottom right",
-            "Bottom left",
-          ],
-          default: "bg-gradient-to-br",
-          "ui:responsive": "desktop",
-          "ui:styleId": "styles:gradientDirection",
-          metadata: {
-            filter: (manifestProps: TObject, formData: Static<Manifest["props"]>) => {
-              return formData.color?.includes("gradient") === true;
-            },
-          },
-        },
-      ),
-    ),
+
     textShadow: Type.Optional(
       textShadowRef({
         default: "text-shadow-sm",
@@ -97,11 +61,16 @@ It is typically used on home pages to grab the user's attention.
     ),
     border: Type.Optional(borderRef()),
     shadow: Type.Optional(shadowRef()),
-    // alignItems: Type.Optional(
-    //   alignItemsRef({
-    //     default: "items-center",
-    //   }),
-    // ),
+    justifyContent: Type.Optional(
+      justifyContentRef({
+        default: "justify-center",
+      }),
+    ),
+    alignItems: Type.Optional(
+      alignItemsRef({
+        default: "items-center",
+      }),
+    ),
   }),
 });
 

@@ -1,4 +1,4 @@
-import { type Attributes, defaultAttributesSchema, type AttributesSchema } from "./attributes";
+import { type PageAttributes, pageAttributesSchema } from "./attributes";
 import { type Section, sectionSchema } from "./bricks";
 import type { Theme } from "./theme";
 import { Type, type Static } from "@sinclair/typebox";
@@ -21,11 +21,8 @@ export type PageConfig<D extends DatasourcesList> = PageInfo & {
   /**
    * Page attributes. (can override site attributes)
    */
-  attributes?: AttributesSchema;
-  /**
-   * Resolved attributes for the page.
-   */
-  attr?: Attributes;
+  attributes: PageAttributes;
+
   sections: Section[];
   tags: string[];
 };
@@ -34,14 +31,13 @@ export type GenericPageConfig = PageConfig<DatasourcesList>;
 
 /**
  * Page context has attr (possibly inherited from site) but not attributes declaration, as they are not needed to render the page.
- * It alwso have the sitemap and theme.
+ * It also have the sitemap and theme.
  */
-export type GenericPageContext = Omit<GenericPageConfig, "attr" | "attributes"> & {
+export type GenericPageContext = GenericPageConfig & {
   siteId: string;
   hostname: string;
   theme: Theme;
   sitemap: Sitemap;
-  attr: Attributes;
   pathParams?: Record<string, string>;
 };
 
@@ -55,7 +51,7 @@ export const pageSchema = Type.Object({
   tags: Type.Array(Type.String(), {
     description: "The tags of the page, used for organizating and filtering pages",
   }),
-  attr: Type.Optional(defaultAttributesSchema),
+  attributes: pageAttributesSchema,
 });
 
 export type Page = Static<typeof pageSchema>;

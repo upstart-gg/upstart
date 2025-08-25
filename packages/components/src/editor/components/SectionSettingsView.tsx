@@ -39,7 +39,7 @@ export default function SectionSettingsView({ section, group }: SectionSettingsV
   const navItems = useMemo(() => getNavItemsFromManifest(sectionSchema.properties.props, filter), [filter]);
 
   const formData = useMemo(() => {
-    const defProps = getSchemaDefaults(sectionSchema.properties.props);
+    const defProps = getSchemaDefaults(sectionSchema.properties.props, previewMode);
     return previewMode === "mobile"
       ? merge({}, defProps, section.props, section.mobileProps)
       : merge({}, defProps, section.props ?? {});

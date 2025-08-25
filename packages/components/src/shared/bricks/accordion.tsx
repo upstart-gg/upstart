@@ -11,7 +11,7 @@ export default function Accordion({ brick, editable }: BrickProps<Manifest>) {
   const styles = useBrickStyle<Manifest>(brick);
   const { props } = brick;
   const items = Array.isArray(props.items) ? props.items : [];
-  const { gradientDirection, rounding, ...otherStyles } = styles;
+  const { rounding, ...otherStyles } = styles;
   // For single mode, we manage the opened item here
   const [itemOpened, setItemOpened] = useState<number | null>(
     items.findIndex((item) => !!item.defaultOpen) || null,
@@ -21,6 +21,7 @@ export default function Accordion({ brick, editable }: BrickProps<Manifest>) {
 
   return (
     <BrickRoot
+      brick={brick}
       editable={editable}
       manifest={manifest}
       className={tx("flex flex-col overflow-hidden relative", Object.values(otherStyles))}
@@ -51,7 +52,6 @@ export default function Accordion({ brick, editable }: BrickProps<Manifest>) {
               className={tx(
                 "flex flex-grow shrink-0 items-center p-3 gap-1 justify-between w-full",
                 "font-semibold cursor-pointer select-none text-left text-[110%] ",
-                gradientDirection,
                 isOpen && "rounded-b-none border-b",
               )}
             >
@@ -61,6 +61,7 @@ export default function Accordion({ brick, editable }: BrickProps<Manifest>) {
                   className={tx("w-full", editable && "cursor-text")}
                   brickId={brick.id}
                   content={item.title}
+                  rawContent={item.title}
                   editable={editable}
                   inline
                 />
@@ -73,6 +74,7 @@ export default function Accordion({ brick, editable }: BrickProps<Manifest>) {
                 className={tx("w-full", editable && "cursor-text")}
                 brickId={brick.id}
                 content={item.content}
+                rawContent={item.content}
                 editable={editable}
               />
             </div>

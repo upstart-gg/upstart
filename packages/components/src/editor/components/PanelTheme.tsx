@@ -20,7 +20,7 @@ export default function ThemePanel() {
     <Tabs.Root defaultValue="current">
       <Tabs.List className="sticky top-0 z-50 bg-gray-100">
         <Tabs.Trigger value="current" className="!flex-1">
-          Theme
+          Current Theme
         </Tabs.Trigger>
         <Tabs.Trigger value="list" className="!flex-1">
           Themes library

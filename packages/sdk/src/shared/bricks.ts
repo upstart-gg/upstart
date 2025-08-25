@@ -8,6 +8,9 @@ import { mergeIgnoringArrays } from "./utils/merge";
 import { getSchemaDefaults } from "./utils/schema";
 import { StringEnum } from "./utils/string-enum";
 import { alignItemsRef, justifyContentRef } from "./bricks/props/align";
+import { paddingRef } from "./bricks/props/padding";
+import type { CommonBrickProps } from "./bricks/props/common";
+import { directionRef } from "./bricks/props/direction";
 
 /**
  * Generates a unique identifier for bricks.
@@ -115,13 +118,24 @@ export const brickSchema = Type.Object(
   { $id: "brick", additionalProperties: true },
 );
 
-export type Brick = Static<typeof brickSchema>;
+export type Brick = Omit<Static<typeof brickSchema>, "props" | "mobileProps"> & {
+  props: CommonBrickProps & Record<string, unknown>;
+  mobileProps?: CommonBrickProps & Record<string, unknown>;
+};
 
 export const sectionProps = Type.Object(
   {
-    color: Type.Optional(
+    colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",
+      }),
+    ),
+    direction: Type.Optional(
+      directionRef({
+        default: "flex-row",
+        title: "Direction",
+        description: "The direction of the section. Only apply to desktop. On mobile, it is always vertical.",
+        "ui:responsive": "desktop",
       }),
     ),
     minHeight: Type.Optional(
@@ -180,6 +194,14 @@ export const sectionProps = Type.Object(
         description: "The vertical alignment of bricks within the section.",
       }),
     ),
+    padding: Type.Optional(
+      paddingRef({
+        default: "p-4",
+        description: "The padding of the section.",
+        "ui:responsive": true,
+        "default:mobile": "p-3",
+      }),
+    ),
     gap: Type.Optional(
       cssLengthRef({
         title: "Gap",
@@ -192,6 +214,7 @@ export const sectionProps = Type.Object(
       Type.Number({
         description: "Do not use this field. It is used internally by the editor.",
         "ui:field": "hidden",
+        "ai:hidden": true,
       }),
     ),
   },
@@ -225,7 +248,9 @@ export const sectionSchema = Type.Object(
   },
 );
 
-export const sectionDefaultprops = getSchemaDefaults(sectionSchema.properties.props);
+const sectionDefaultprops = getSchemaDefaults(sectionSchema.properties.props, "desktop");
+const sectionMobileDefaultprops = getSchemaDefaults(sectionSchema.properties.mobileProps, "mobile");
+
 export type Section = Static<typeof sectionSchema>;
 
 export function processSections(sections: Section[]) {
@@ -233,6 +258,7 @@ export function processSections(sections: Section[]) {
     return {
       ...section,
       props: mergeIgnoringArrays({}, sectionDefaultprops, section.props),
+      mobileProps: mergeIgnoringArrays({}, sectionMobileDefaultprops, section.mobileProps || {}),
       bricks: section.bricks.map(processBrick).filter(Boolean) as Brick[],
     } as const;
   });
@@ -249,7 +275,7 @@ export function processBrick<T extends Brick>(brick: T): T | false {
   }
   const result = {
     ...brick,
-    props: mergeIgnoringArrays({}, defProps.props, {
+    props: mergeIgnoringArrays({} as Brick["props"], defProps.props, {
       ...brick.props,
       ...(brick.props.$children
         ? { $children: (brick.props.$children as T[]).map(processBrick).filter(Boolean) }
@@ -259,8 +285,8 @@ export function processBrick<T extends Brick>(brick: T): T | false {
   return result;
 }
 
-export function createEmptyBrick(type: string): Brick {
-  const props = { ...defaultProps[type].props };
+export function createEmptyBrick(type: string, ghost = false): Brick {
+  const props = { ...defaultProps[type].props, ghost };
   const newBrick = {
     id: `b-${generateId()}`,
     type,

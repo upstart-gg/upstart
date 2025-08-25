@@ -45,9 +45,8 @@ import { menuBarBtnActiveCls, menuBarBtnCls, menuBarBtnCommonCls } from "../styl
 import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useDatasource, useDatasources } from "~/editor/hooks/use-datasource";
-import { useDynamicParent } from "~/editor/hooks/use-page-data";
-import type { Fragment } from "@tiptap/pm/model";
 import { getEditorNodeFromField, insertInEditor } from "../utils/editor-utils";
+import { useBrick, useLoopAlias, usePageQueries } from "~/editor/hooks/use-page-data";
 
 const HeroHeading = Heading.extend({
   addAttributes() {
@@ -75,6 +74,7 @@ type PolymorphicProps<E extends ElementType> = PropsWithChildren<
 
 export type TextEditorProps<E extends ElementType> = PolymorphicProps<E> & {
   content: string | undefined;
+  rawContent: string | undefined;
   className?: string;
   brickId: Brick["id"];
   propPath: string;
@@ -125,6 +125,7 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
   (
     {
       content: initialContent,
+      rawContent: rawInitialContent,
       className,
       brickId,
       inline,
@@ -141,22 +142,24 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
     ref,
   ) => {
     const defaultUpdateHandler = useTextEditorUpdateHandler(brickId, propPath, dynamic, inline === true);
-    const onUpdate = inline ? defaultUpdateHandler : onChange;
     const mainEditor = useEditor();
     const selectedBrickId = useSelectedBrickId();
-    const dynParent = useDynamicParent(brickId);
-    const datasource = useDatasource(dynParent?.props?.datasource?.id);
+    const pageQueries = usePageQueries();
     const [menuBarContainer, setMenuBarContainer] = useState<HTMLDivElement | null>(null);
     const [currentContent, setContent] = useState(formatInitialContent(initialContent));
+    const [rawContent, setRawContent] = useState(formatInitialContent(rawInitialContent));
     const [focused, setFocused] = useState(false);
-    const datasourceFields = getJSONSchemaFieldsList(datasource?.schema);
+    const queryAlias = useLoopAlias(brickId);
+
+    const onUpdate = inline ? defaultUpdateHandler : onChange;
+
+    const datasourceFields = pageQueries
+      .filter((q) => q.alias === queryAlias || (!queryAlias && q.queryInfo.limit === 1))
+      .flatMap((q) => getJSONSchemaFieldsList(q.datasource.schema, q.alias));
 
     const extensions = [
       StarterKit.configure({
-        // ...(singleline && {
-        //   document: false,
-        // }),
-        document: false,
+        document: singleline || textSizeMode === "hero" ? false : undefined,
         dropcursor: {
           class: "drop-cursor",
           color: "#FF9900",
@@ -167,11 +170,14 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
         mergeNestedSpanStyles: false,
       }),
       Placeholder.configure({
-        placeholder: placeholder ?? "My text...",
+        placeholder: placeholder ?? "Type your text...",
       }),
-      ...(!singleline
-        ? [Document.extend({ content: textSizeMode === "hero" ? "heading*" : "paragraph" })]
-        : [Document.extend({ content: "paragraph" })]),
+      ...(textSizeMode === "hero"
+        ? [Document.extend({ content: "heading*" })]
+        : singleline
+          ? [Document.extend({ content: "paragraph" })]
+          : []),
+
       ...(textSizeMode === "hero" ? [HeroHeading] : []),
       ...(!noTextAlign
         ? [
@@ -181,7 +187,6 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
           ]
         : []),
       Highlight.configure({ multicolor: true }),
-      // DatasourceFieldExtension,
       Mention.configure({
         HTMLAttributes: {
           class: "dynamic-field",
@@ -192,7 +197,6 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
             return datasourceFields.filter((field) => field.toLowerCase().includes(query.toLowerCase()));
           },
         },
-
         renderHTML: ({ options, node }) => {
           const field = node.attrs.label ?? node.attrs.id;
           return [
@@ -215,6 +219,7 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
     ] as Extension[];
 
     const onFocus = (e: EditorEvents["focus"]) => {
+      console.log("Editor focused", e);
       // e.event.stopPropagation();
       mainEditor.setIsEditingText(brickId);
       mainEditor.setSelectedBrickId(brickId);
@@ -231,9 +236,7 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
     };
 
     const onBlur = (e: EditorEvents["blur"]) => {
-      // For whatever reason, the editor content is not updated when the blur event is triggered the first time
-      // So we need to manually update the content here
-      setContent(e.editor.getHTML());
+      // console.log("Editor blured", e);
 
       // If there is a related target, it means the blur event was triggered by a click on the editor buttons
       if (e.event.relatedTarget && !(e.event.relatedTarget as HTMLElement).classList.contains("tiptap")) {
@@ -245,6 +248,9 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
       mainEditor.setIsEditingText(false);
 
       startTransition(() => {
+        // For whatever reason, the editor content is not updated when the blur event is triggered the first time
+        // So we need to manually update the content here
+        setContent(e.editor.getHTML());
         setFocused(false);
       });
     };
@@ -264,8 +270,18 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
           },
         },
       },
-      [brickId],
+      [brickId, selectedBrickId, queryAlias],
     );
+
+    useEffect(() => {
+      if (focused) {
+        // console.log("Editor focused, set content to %s", rawContent);
+        editor.commands.setContent(rawContent, false);
+      } else {
+        // console.log("Editor blurred, set content to %s", currentContent);
+        editor.commands.setContent(currentContent, false);
+      }
+    }, [focused, currentContent, rawContent, editor]);
 
     useEffect(() => {
       if (brickId !== selectedBrickId) {
@@ -314,14 +330,14 @@ const TextEditorMenuBar = ({
   brickId: string;
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 } & Omit<TextEditorProps<any>, "content" | "brickId" | "propPath">) => {
-  const dynParent = useDynamicParent(brickId);
+  const hasPageQueries = usePageQueries().length > 0;
   return (
     <>
       {textSizeMode === "classic" && <TextSizeClassicDropdown editor={editor} />}
       {textSizeMode === "hero" && <TextSizeHeroDropdown editor={editor} />}
       {!noTextAlign && <TextAlignButtonGroup editor={editor} />}
       <TextStyleButtonGroup editor={editor} noTextStrike={noTextStrike} textSizeMode={textSizeMode} />
-      {dynParent !== null && (
+      {hasPageQueries && (
         <DatasourceItemButton editor={editor} brickId={brickId}>
           <button type="button" className={tx(menuBarBtnCls, menuBarBtnCommonCls)}>
             <RiBracesLine className="w-5 h-5" />
@@ -381,13 +397,12 @@ function TextAlignButtonGroup({ editor }: { editor: Editor }) {
 type DatasourceFieldPickerModalProps = {
   onFieldSelect: (field: string) => void;
   brickId: string;
+  onlyAlias?: string | null;
 };
 
-function DatasourceFieldPickerModal({ brickId, onFieldSelect }: DatasourceFieldPickerModalProps) {
-  const dynamicParent = useDynamicParent(brickId);
-  const datasource = useDatasource(dynamicParent?.props?.datasource?.id);
-
-  if (!datasource) {
+function DatasourceFieldPickerModal({ brickId, onlyAlias, onFieldSelect }: DatasourceFieldPickerModalProps) {
+  const pageQueries = usePageQueries();
+  if (!pageQueries.length) {
     return (
       <div className="bg-white min-w-52 min-h-80 flex flex-col gap-4">
         No database selected in the dynamic parent brick.
@@ -395,17 +410,31 @@ function DatasourceFieldPickerModal({ brickId, onFieldSelect }: DatasourceFieldP
     );
   }
   return (
-    <div className="bg-white min-w-52 min-h-80 flex flex-col gap-3">
-      <h3 className="text-base font-medium">
-        Insert field from <span className="font-semibold text-upstart-600">{datasource.label}</span>
-      </h3>
+    <div className="bg-white flex flex-col gap-3">
+      <h3 className="text-base font-medium">Insert fields from your queries</h3>
       <Callout.Root className="-mx-4 !py-2 !px-3 !rounded-none">
         <Callout.Text size="1" className={tx("text-pretty")}>
-          Click on a field to insert it into the text box. Fields are inserted as dynamic mentions, which will
-          be replaced with their actual values when the document is rendered.
+          Click on a field to insert it into the text box. Fields are inserted as dynamic placeholders, which
+          will be replaced with their actual values when the document is rendered.
         </Callout.Text>
       </Callout.Root>
-      <JSONSchemaView schema={datasource.schema} onFieldSelect={onFieldSelect} />
+      <div className="flex flex-col gap-1 pb-2 max-h-[300px] overflow-y-auto scrollbar-thin">
+        {pageQueries
+          .filter((q) => q.alias === onlyAlias || (!onlyAlias && q.queryInfo.limit === 1))
+          .map((query) => (
+            <div key={query.alias} className="flex flex-col gap-1">
+              <h4 className="text-sm font-semibold">
+                {query.alias} - {query.queryInfo?.label}
+              </h4>
+              <JSONSchemaView
+                key={query.alias}
+                prefix={query.alias}
+                schema={query.datasource.schema}
+                onFieldSelect={onFieldSelect}
+              />
+            </div>
+          ))}
+      </div>
     </div>
   );
 }
@@ -416,6 +445,7 @@ export function DatasourceItemButton({
   children,
   onFieldClick,
 }: PropsWithChildren<{ editor?: Editor | null; brickId: string; onFieldClick?: (field: string) => void }>) {
+  const queryAlias = useLoopAlias(brickId);
   const onFieldSelect = (field: string) => {
     onFieldClick?.(field);
 
@@ -430,8 +460,8 @@ export function DatasourceItemButton({
   return (
     <Popover.Root>
       <Popover.Trigger>{children}</Popover.Trigger>
-      <Popover.Content width="360px" side="top" align="start" size="2" maxHeight="50vh" sideOffset={10}>
-        <DatasourceFieldPickerModal onFieldSelect={onFieldSelect} brickId={brickId} />
+      <Popover.Content minWidth="260px" side="top" align="start" size="2" maxHeight="70dvh" sideOffset={10}>
+        <DatasourceFieldPickerModal onFieldSelect={onFieldSelect} brickId={brickId} onlyAlias={queryAlias} />
       </Popover.Content>
     </Popover.Root>
   );
