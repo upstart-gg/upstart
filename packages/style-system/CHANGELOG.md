@@ -1,5 +1,15 @@
 # @upstart.gg/style-system
 
+## 0.0.124
+
+### Patch Changes
+
+- [#397](https://github.com/upstart-gg/upstart/pull/397) [`f3142b7`](https://github.com/upstart-gg/upstart/commit/f3142b75d66599b3cafbf93749d72860f4c84bce) Thanks [@mattallty](https://github.com/mattallty)! - Enhance dynamic field and editor components
+
+- [#397](https://github.com/upstart-gg/upstart/pull/397) [`f3142b7`](https://github.com/upstart-gg/upstart/commit/f3142b75d66599b3cafbf93749d72860f4c84bce) Thanks [@mattallty](https://github.com/mattallty)! - Various fixes
+
+- [#399](https://github.com/upstart-gg/upstart/pull/399) [`f1339a3`](https://github.com/upstart-gg/upstart/commit/f1339a35fc8ce5de013118b4385b375aa9f727d5) Thanks [@mattallty](https://github.com/mattallty)! - Implement dynamic handling in various bricks
+
 ## 0.0.123
 
 ### Patch Changes
