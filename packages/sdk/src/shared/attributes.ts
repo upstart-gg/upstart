@@ -8,6 +8,7 @@ import { imageRef } from "./bricks/props/image";
 import { colorPresetRef } from "./bricks/props/color-preset";
 import { queryUseRef } from "./bricks/props/dynamic";
 import { querySchema } from "./datasources/types";
+import { group } from "./bricks/props/helpers";
 
 export type { JSONSchemaType };
 
@@ -87,6 +88,44 @@ export const pageAttributesSchema = Type.Object({
       "ai:hidden": true,
     }),
   ),
+  additionalTags: Type.Optional(
+    group({
+      title: "Additional script tags",
+      children: {
+        headTags: Type.Optional(
+          Type.String({
+            title: "Head script tags",
+            description:
+              "Add custom tags to the <head> of your site. Useful for analytics tags, custom scripts, etc.",
+            "ai:guidelines": "Don't include meta tags here, they are automatically generated.",
+            "ui:multiline": true,
+            "ui:textarea-class": "h-40 !font-mono",
+            "ui:placeholder": "<script src='https://example.com/script.js'></script>",
+            "ui:premium": true,
+            "ui:textarea-font-size": "1",
+            "ui:group": "external-scripts",
+            "ui:group:title": "External scripts",
+            "ui:no-dynamic": true,
+          }),
+        ),
+        bodyTags: Type.Optional(
+          Type.String({
+            title: "Body script tags",
+            description:
+              "Add custom tags to the <body> of your site. Useful for analytics tags, custom scripts, etc.",
+            "ui:multiline": true,
+            "ui:premium": true,
+            "ui:textarea-class": "h-40 !font-mono",
+            "ui:textarea-font-size": "1",
+            "ui:placeholder": "<script src='https://example.com/script.js'></script>",
+            "ui:group": "external-scripts",
+            "ui:group:title": "External scripts",
+            "ui:no-dynamic": true,
+          }),
+        ),
+      },
+    }),
+  ),
   lastUpdated: Type.Optional(
     datetime("Last updated", {
       "ui:hidden": true,
@@ -124,7 +163,7 @@ export const siteAttributesSchema = Type.Object({
   ),
   headTags: Type.Optional(
     Type.String({
-      title: "Head tags",
+      title: "Head script tags",
       description:
         "Add custom tags to the <head> of your site. Useful for analytics tags, custom scripts, etc.",
       "ai:guidelines": "Don't include meta tags here, they are automatically generated.",
@@ -140,7 +179,7 @@ export const siteAttributesSchema = Type.Object({
   ),
   bodyTags: Type.Optional(
     Type.String({
-      title: "Body tags",
+      title: "Body script tags",
       description:
         "Add custom tags to the <body> of your site. Useful for analytics tags, custom scripts, etc.",
       "ui:multiline": true,

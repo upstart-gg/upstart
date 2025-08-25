@@ -66,7 +66,7 @@ export function useDynamicTextEditor({
           ref={textEditorRef}
           className={tx(
             css({ lineHeight: "1.5" }),
-            schema["ui:multiline"] && `scrollbar-thin ${schema["ui:textarea-class"] ?? "h-24"}`,
+            schema["ui:multiline"] && `scrollbar-thin ${schema["ui:textarea-class"] ?? "min-h-24"}`,
           )}
           placeholder={schema["ui:placeholder"] ?? placeholder}
           spellCheck={!!schema["ui:spellcheck"]}

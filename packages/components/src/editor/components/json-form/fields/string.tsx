@@ -17,7 +17,7 @@ export const StringField: FC<FieldProps<string>> = (props) => {
 
   if (pageQueries.length && !noDynamic && !schema["ui:no-dynamic"]) {
     return (
-      <div className="field field-string basis-full flex flex-col gap-1 ">
+      <div className="field field-string basis-full flex flex-col gap-1 max-w-full">
         <FieldTitle title={title} description={description} />
         <div className="field field-string flex items-start gap-1.5">{DynamicTextEditor}</div>
       </div>
@@ -31,7 +31,7 @@ export const StringField: FC<FieldProps<string>> = (props) => {
         <TextArea
           defaultValue={currentValue}
           onChange={(e) => onChangeDebounced(e.target.value)}
-          className={tx("!mt-1.5 scrollbar-thin", schema["ui:textarea-class"] ?? "h-24")}
+          className={tx("!mt-1.5 scrollbar-thin", schema["ui:textarea-class"] ?? "min-h-24")}
           placeholder={placeholder}
           size={schema["ui:textarea-font-size"] ?? "2"}
           spellCheck={!!schema["ui:spellcheck"]}

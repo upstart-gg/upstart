@@ -79,6 +79,7 @@ export default function Editor(props: EditorProps) {
               ...draft,
               attributes: draft.pageAttributes,
             }}
+            site={{ ...draft, attributes: draft.siteAttributes }}
           />
         </Suspense>
       </div>
