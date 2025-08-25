@@ -3,16 +3,23 @@ import type { AlignSelfSettings } from "@upstart.gg/sdk/shared/bricks/props/alig
 import { useParentBrick, useSectionByBrickId } from "~/editor/hooks/use-page-data";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import EnumField from "./enum";
-import { describe } from "node:test";
 
 export default function AlignSelfField(props: FieldProps<AlignSelfSettings>) {
   const { brickId, onChange, schema } = props;
   const section = useSectionByBrickId(brickId);
   const parentBrick = useParentBrick(brickId);
   const parentElement = parentBrick ?? section;
-  invariant(parentElement, "Parent element not found for AlignSelfField");
+
+  if (!parentElement) {
+    // Parent element not found for AlignSelfField
+    return null;
+  }
+
   const htmlElement = document.getElementById(parentElement.id);
-  invariant(htmlElement, "HTML element not found for AlignSelfField");
+  if (!htmlElement) {
+    // HTML element not found for AlignSelfField
+    return null;
+  }
   const parentFlexOrientation = getComputedStyle(htmlElement).flexDirection;
 
   const customSchema = {

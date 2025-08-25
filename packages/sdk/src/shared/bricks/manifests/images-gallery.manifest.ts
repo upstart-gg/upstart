@@ -17,6 +17,7 @@ export const manifest = defineBrickManifest({
   category: "media",
   description: "An image collection",
   aiInstructions: "This brick should mostly be used for image galleries and collections.",
+  consumesMultipleQueryRows: true,
   defaultInspectorTab: "content",
   isContainer: false,
   minHeight: {
@@ -40,7 +41,7 @@ export const manifest = defineBrickManifest({
     loop: Type.Optional(loopRef()),
     images: Type.Array(
       Type.Object({
-        src: imageRef({
+        image: imageRef({
           "ui:responsive": "desktop",
           "ui:no-alt-text": true,
           "ui:no-object-options": true,
@@ -50,23 +51,11 @@ export const manifest = defineBrickManifest({
       }),
       {
         title: "Images",
-        default: [
-          // {
-          //   src: canvasDataURI,
-          //   legend: "Image description",
-          // },
-          // {
-          //   src: canvasDataURI,
-          //   legend: "Image description",
-          // },
-          // {
-          //   src: canvasDataURI,
-          //   legend: "Image description",
-          // },
-        ],
+        default: [],
         maxItems: 12,
         metadata: {
           category: "content",
+          consumeQuery: true,
         },
       },
     ),
@@ -113,25 +102,25 @@ export const examples: {
       padding: "p-4",
       images: [
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/400x400.png?text=Product+1",
           },
           legend: "Premium wireless headphones",
         },
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/400x400.png?text=Product+2",
           },
           legend: "Bluetooth speaker",
         },
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/400x400.png?text=Product+3",
           },
           legend: "Smart fitness tracker",
         },
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/400x400.png?text=Product+4",
           },
           legend: "Wireless charging pad",
@@ -148,49 +137,49 @@ export const examples: {
       padding: "p-6",
       images: [
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/300x300.png?text=CEO",
           },
           legend: "Sarah Johnson - Chief Executive Officer",
         },
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/300x300.png?text=CTO",
           },
           legend: "Mike Chen - Chief Technology Officer",
         },
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/300x300.png?text=Design",
           },
           legend: "Emily Rodriguez - Head of Design",
         },
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/300x300.png?text=Marketing",
           },
           legend: "David Park - Marketing Director",
         },
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/300x300.png?text=Sales",
           },
           legend: "Lisa Wong - Sales Manager",
         },
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/300x300.png?text=Support",
           },
           legend: "Alex Thompson - Customer Support Lead",
         },
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/300x300.png?text=Dev",
           },
           legend: "Carlos Martinez - Senior Developer",
         },
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/300x300.png?text=HR",
           },
           legend: "Jennifer Adams - HR Specialist",
@@ -207,25 +196,25 @@ export const examples: {
       padding: "p-6",
       images: [
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/600x400.png?text=Website+Redesign",
           },
           legend: "Modern e-commerce website redesign project",
         },
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/600x400.png?text=Mobile+App",
           },
           legend: "iOS and Android mobile application",
         },
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/600x400.png?text=Brand+Identity",
           },
           legend: "Complete brand identity design package",
         },
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/600x400.png?text=Dashboard+UI",
           },
           legend: "Analytics dashboard user interface",
@@ -242,37 +231,37 @@ export const examples: {
       padding: "p-6",
       images: [
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/250x180.png?text=Opening",
           },
           legend: "Conference opening ceremony",
         },
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/250x180.png?text=Keynote",
           },
           legend: "Keynote presentation",
         },
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/250x180.png?text=Workshop",
           },
           legend: "Technical workshop session",
         },
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/250x180.png?text=Networking",
           },
           legend: "Networking lunch break",
         },
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/250x180.png?text=Panel",
           },
           legend: "Expert panel discussion",
         },
         {
-          src: {
+          image: {
             src: "https://via.placeholder.com/250x180.png?text=Awards",
           },
           legend: "Awards ceremony",

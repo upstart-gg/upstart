@@ -20,7 +20,7 @@ export const manifest = defineBrickManifest({
   },
   icon: BsCodeSquare,
   props: defineProps({
-    content: Type.String({
+    html: Type.String({
       title: "HTML Content",
       description: "The HTML content to render. Use with caution, as it can introduce security risks.",
       default: "<div>Your HTML content here</div>",
@@ -43,8 +43,7 @@ export const examples: {
     description: "A tally form",
     type: "html",
     props: {
-      content:
-        '<iframe data-tally-src="https://tally.so/embed/wQZpd8?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="282" frameborder="0" marginheight="0" marginwidth="0" title="test"></iframe>',
+      html: '<iframe data-tally-src="https://tally.so/embed/wQZpd8?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="282" frameborder="0" marginheight="0" marginwidth="0" title="test"></iframe>',
     },
   },
 ];

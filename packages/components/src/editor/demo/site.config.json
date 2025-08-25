@@ -205,7 +205,7 @@
               "firstName": "John",
               "lastName": "Doe",
               "email": "john.doe@example.com",
-              "avatarUrl": "https://placehold.co/100x100",
+              "avatarUrl": "https://placehold.co/100x100?text=John%20Doe",
               "height": 180,
               "admin": false,
               "startedOn": "2020-01-01",
@@ -219,7 +219,7 @@
               "firstName": "Jane",
               "lastName": "Smith",
               "email": "jane.smith@example.com",
-              "avatarUrl": "https://placehold.co/100x100",
+              "avatarUrl": "https://placehold.co/100x100?text=Jane%20Smith",
               "height": 165,
               "admin": false,
               "startedOn": "2020-01-01",
@@ -233,7 +233,7 @@
               "firstName": "Alice",
               "lastName": "Johnson",
               "email": "alice.johnson@example.com",
-              "avatarUrl": "https://placehold.co/100x100",
+              "avatarUrl": "https://placehold.co/100x100?text=Alice%20Johnson",
               "height": 170,
               "admin": false,
               "startedOn": "2020-01-01",
@@ -247,7 +247,7 @@
               "firstName": "Bob",
               "lastName": "Brown",
               "email": "bob.brown@example.com",
-              "avatarUrl": "https://placehold.co/100x100",
+              "avatarUrl": "https://placehold.co/100x100?text=Bob%20Brown",
               "height": 175,
               "admin": false,
               "startedOn": "2020-01-01",
@@ -261,7 +261,7 @@
               "firstName": "Charlie",
               "lastName": "White",
               "email": "charlie.white@example.com",
-              "avatarUrl": "https://placehold.co/100x100",
+              "avatarUrl": "https://placehold.co/100x100?text=Charlie%20White",
               "height": 160,
               "admin": false,
               "startedOn": "2020-01-01",
@@ -524,7 +524,7 @@
                   {
                     "id": "IsfUXnQ",
                     "type": "button",
-                    "props": { "label": "Button #3 width the largest label" }
+                    "props": { "label": "Button #3 with the largest label" }
                   }
                 ]
               }
@@ -631,7 +631,22 @@
           "order": 8,
           "props": { "justifyContent": "justify-center", "alignItems": "items-start" },
           "bricks": [
-            { "id": "ZiUChet", "type": "images-gallery", "props": {} },
+            {
+              "id": "ZiUChet",
+              "type": "images-gallery",
+              "props": {
+                "loop": {
+                  "over": "allEmployees"
+                },
+                "images": [
+                  {
+                    "image": {
+                      "src": "{{allEmployees.avatarUrl}}"
+                    }
+                  }
+                ]
+              }
+            },
             {
               "id": "mCupCAw",
               "type": "form",

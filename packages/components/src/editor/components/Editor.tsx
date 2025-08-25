@@ -39,6 +39,7 @@ import { move } from "@dnd-kit/helpers";
 import Modal from "./Modal";
 import useBeforeUnload from "../hooks/use-beforeunload";
 import { isEqual } from "lodash-es";
+import { useHistoryState } from "../hooks/use-history-state";
 
 const Tour = lazy(() => import("./Tour"));
 const NavBar = lazy(() => import("./NavBar"));

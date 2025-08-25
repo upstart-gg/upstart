@@ -236,7 +236,7 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
     };
 
     const onBlur = (e: EditorEvents["blur"]) => {
-      console.log("Editor blured", e);
+      // console.log("Editor blured", e);
 
       // If there is a related target, it means the blur event was triggered by a click on the editor buttons
       if (e.event.relatedTarget && !(e.event.relatedTarget as HTMLElement).classList.contains("tiptap")) {
@@ -275,10 +275,10 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
 
     useEffect(() => {
       if (focused) {
-        console.log("Editor focused, set content to %s", rawContent);
+        // console.log("Editor focused, set content to %s", rawContent);
         editor.commands.setContent(rawContent, false);
       } else {
-        console.log("Editor blurred, set content to %s", currentContent);
+        // console.log("Editor blurred, set content to %s", currentContent);
         editor.commands.setContent(currentContent, false);
       }
     }, [focused, currentContent, rawContent, editor]);

@@ -4,6 +4,7 @@ import { useData, useLoopedQuery, usePageQueries } from "~/editor/hooks/use-page
 import { useBrickManifest } from "./use-brick-manifest";
 import type { LoopSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
 import get from "lodash-es/get";
+import isPlainObject from "lodash-es/isPlainObject";
 
 export function useBrickProps<T extends BrickManifest>({
   brick,
@@ -27,13 +28,15 @@ export function useBrickProps<T extends BrickManifest>({
   ) {
     if (typeof template === "string") {
       return (template as string).replace(/{{(.*?)}}/g, (_, key) => {
-        // console.log("Getting value for key:", key.trim(), "from data:", data);
         return get(item, key.trim(), "") as string;
       });
     } else if (typeof template === "object" && template !== null) {
       const newValue: Record<string, unknown> = {};
       for (const [key, val] of Object.entries(template)) {
-        newValue[key] = typeof val === "string" ? replacePlaceholdersForItem(val, item) : val;
+        newValue[key] =
+          typeof val === "string" || isPlainObject(val)
+            ? replacePlaceholdersForItem(val as string | Record<string, unknown>, item)
+            : val;
       }
       return newValue as T;
     }
@@ -62,15 +65,10 @@ export function useBrickProps<T extends BrickManifest>({
   function mapDynamicProps(props: BrickProps<T>["brick"]["props"]): BrickProps<T>["brick"]["props"] {
     const mapped: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(props)) {
-      // console.log("Mapping prop %s = %s", key, value);
       const manifestSchema = manifest.props.properties[key];
-      // console.log("Manifest schema for %s: %o", key, manifestSchema);
       if (manifestSchema?.metadata?.consumeQuery && loopQuery) {
-        // console.log("LOOOOP settings found for prop %s: %o", key, loop);
         const data: Record<string, unknown>[] = allData[loopQuery.alias] ?? [];
         const template: string | Record<string, string> = (Array.isArray(value) ? value : [value])[0];
-
-        // console.log("Mapped value for prop %s: %o and template %o", key, data, template);
         mapped[key] = data
           .map((item) => {
             return replacePlaceholdersForItem(template, { [loopQuery.alias]: item });
@@ -79,19 +77,11 @@ export function useBrickProps<T extends BrickManifest>({
       } else {
         mapped[key] = typeof value === "string" ? replacePlaceholdersGeneric(value) : value;
       }
-
-      // const mappedKey = propsMapping[key] || key;
     }
     return mapped;
   }
 
   const dynamicProps: Record<string, unknown> = mapDynamicProps(props);
-
-  // if (brick.id === "b_zzZYqOu") {
-  //   console.log("original props for hero", props);
-  //   console.log("mapping width data", allData);
-  //   console.log("dynamic props for hero", dynamicProps);
-  // }
 
   return dynamicProps;
 }

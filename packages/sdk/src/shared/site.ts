@@ -669,7 +669,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
                       id: generateId(),
                       type: "button",
                       props: {
-                        label: "Button #3 width the largest label",
+                        label: "Button #3 with the largest label",
                       },
                     },
                   ],
@@ -711,7 +711,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
               //         id: generateId(),
               //         type: "button",
               //         props: {
-              //           label: "Button #3 width the largest label",
+              //           label: "Button #3 with the largest label",
               //         },
               //       },
               //     ],

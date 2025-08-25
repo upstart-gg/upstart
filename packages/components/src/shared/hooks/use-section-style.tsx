@@ -26,8 +26,6 @@ export function useSectionStyle({
   const stylesProps = getStyleProperties(sectionProps);
   const classes = useClassesFromStyleProps(stylesProps, section);
 
-  if (section.id === "s_hero") console.log({ stylesProps, section });
-
   return tx(
     // @mobile:flex-col @desktop:flex-row
     "flex flex-wrap w-full @container/section group/section overflow-visible relative mx-auto max-sm:max-w-dvw",

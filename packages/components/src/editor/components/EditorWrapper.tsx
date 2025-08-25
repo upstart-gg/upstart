@@ -68,6 +68,7 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
   ) => {
     const { site, pages } = config;
     const debugMode = new URLSearchParams(window.location.search).has("debug");
+    const urlParams = new URL(self.location.href).searchParams;
 
     const editorStore = useRef(
       createEditorStore({
@@ -76,7 +77,13 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
         onSavePage,
         onShowPopup,
         debugMode,
-        panel: (new URL(self.location.href).searchParams.get("panel") as EditorState["panel"]) ?? undefined,
+        panel: (urlParams.get("panel") as EditorState["panel"]) ?? undefined,
+        selectedBrickId: (urlParams.get("selectedBrickId") as EditorState["selectedBrickId"]) ?? undefined,
+        selectedSectionId: urlParams.get("selectedBrickId")
+          ? undefined
+          : ((urlParams.get("selectedSectionId") as EditorState["selectedSectionId"]) ?? undefined),
+        modal: (urlParams.get("modal") as EditorState["modal"]) ?? undefined,
+        panelPosition: (urlParams.get("panelPosition") as EditorState["panelPosition"]) ?? undefined,
         sitePrompt: site.sitePrompt,
       }),
     ).current;
