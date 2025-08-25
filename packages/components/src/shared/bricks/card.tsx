@@ -39,6 +39,7 @@ export default function Card(props: BrickProps<Manifest>) {
               className={tx("flex-1")}
               brickId={brick.id}
               content={brickProps.title}
+              rawContent={brick.props.title}
               editable={editable}
               inline
             />
@@ -51,6 +52,7 @@ export default function Card(props: BrickProps<Manifest>) {
               className={tx("flex-grow")}
               brickId={brick.id}
               content={brickProps.text}
+              rawContent={brick.props.text}
               editable={editable}
             />
           </div>
@@ -82,6 +84,7 @@ export default function Card(props: BrickProps<Manifest>) {
             className={tx("flex-1")}
             brickId={brick.id}
             content={brickProps.text}
+            rawContent={brick.props.text}
             editable={editable}
           />
         </div>

@@ -130,7 +130,7 @@ function DebugTab({ brick, section, hasTabs }: { brick: Brick; section: Section;
     <div className="flex flex-col h-full">
       <div className="h-[50cqh] grow-0 overflow-y-auto scrollbar-thin">
         <PanelBlockTitle>
-          Brick <code className="text-xs">{brick.id}</code>
+          Brick <code className="text-xs cursor-text select-all">{brick.id}</code>
         </PanelBlockTitle>
         <div className="flex-1 ">
           <pre className="p-1">

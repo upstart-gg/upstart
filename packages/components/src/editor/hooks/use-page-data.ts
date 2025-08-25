@@ -1198,14 +1198,31 @@ export const useSiteAttributes = () => {
   return useStore(ctx, (state) => state.siteAttributes);
 };
 
-export const useData = (queryAlias?: QueryAlias, samples?: Record<string, unknown>[] | undefined) => {
+/**
+ * return all available data
+ */
+export const useData = (editable?: boolean) => {
   const ctx = usePageContext();
+  const pageQueries = usePageQueries();
   return useStore(ctx, (state) => {
-    if (queryAlias && state.data[queryAlias]) {
-      return state.data[queryAlias];
+    if (!editable) {
+      return state.data;
     }
-    return samples ?? [];
+    // Reduce page queries to build an abject that is a Record<alias, examples>
+    const data: Record<string, Record<string, unknown>[]> = {};
+    for (const query of pageQueries) {
+      const examples = query.datasource.schema.examples;
+      if (examples) {
+        data[query.alias] = examples;
+      }
+    }
+    return data;
   });
+};
+
+export const useLoopedQuery = (loopAlias?: string) => {
+  const pageQueries = usePageQueries();
+  return pageQueries.find((q) => q.alias === loopAlias) ?? null;
 };
 
 /**

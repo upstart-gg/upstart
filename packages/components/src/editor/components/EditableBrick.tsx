@@ -50,14 +50,16 @@ import EditableBrickContextMenu from "./EditableBrickContextMenu";
 import EditableBrickNavBar from "./EditableBrickNavBar";
 import type { LoopSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
 import { range } from "lodash-es";
+import { useDragDropMonitor } from "@dnd-kit/react";
 
 type BrickWrapperProps = ComponentProps<"div"> & {
   brick: Brick;
   isContainerChild?: boolean;
   index: number;
+  iterationIndex: number;
   // Nesting level of the brick
   level?: number;
-  dynamicPreview?: boolean;
+  isDynamicPreview?: boolean;
 };
 
 function useBarPlacements(brick: Brick): Placement[] {
@@ -86,7 +88,7 @@ function useBarPlacements(brick: Brick): Placement[] {
 }
 
 const EditableBrickWrapperSimple = forwardRef<HTMLDivElement, BrickWrapperProps>(
-  ({ brick, index, level = 0, dynamicPreview }, ref2) => {
+  ({ brick, index, level = 0, isDynamicPreview, iterationIndex }, ref2) => {
     const hasMouseMoved = useRef(false);
     const selectedBrickId = useSelectedBrickId();
     const previewMode = usePreviewMode();
@@ -104,12 +106,25 @@ const EditableBrickWrapperSimple = forwardRef<HTMLDivElement, BrickWrapperProps>
     const isContainerChild = !!parentBrick;
     const cmdKeyPressed = useCmdOrCtrlPressed();
 
+    const [globalDragging, setGlobalDragging] = useState(false);
+
     const isDragDisabled =
-      !!dynamicPreview ||
+      !!isDynamicPreview ||
       isMouseOverPanel ||
       !manifest.movable ||
       isContainerChild ||
       previewMode === "mobile";
+
+    useDragDropMonitor({
+      onBeforeDragStart(event) {
+        setGlobalDragging(true);
+      },
+      onDragEnd(event) {
+        setTimeout(() => {
+          setGlobalDragging(false);
+        }, 200);
+      },
+    });
 
     const { isDragging, isDropping, isDropTarget, isDragSource } = useSortable({
       id: brick.id,
@@ -159,7 +174,7 @@ const EditableBrickWrapperSimple = forwardRef<HTMLDivElement, BrickWrapperProps>
 
     const hover = useHover(barsFloatingContext, {
       handleClose: safePolygon(),
-      enabled: !dynamicPreview,
+      enabled: !isDynamicPreview,
       delay: {
         open: 50,
         close: 200,
@@ -279,6 +294,10 @@ const EditableBrickWrapperSimple = forwardRef<HTMLDivElement, BrickWrapperProps>
     const mergedRef = useMergeRefs([barsRefs.setReference, wrapperRef, hoverRef]);
     const resizeOpts = getBrickResizeOptions(manifests[brick.type]);
 
+    // if (dynamicPreview && globalDragging) {
+    //   return null;
+    // }
+
     return (
       <EditableBrickContextMenu brick={brick} isContainerChild={isContainerChild}>
         <div
@@ -301,13 +320,20 @@ const EditableBrickWrapperSimple = forwardRef<HTMLDivElement, BrickWrapperProps>
           // style={getDropAnimationStyle(section?.id, provided.draggableProps.style, snapshot)}
           className={tx(
             wrapperClass,
-            dynamicPreview && "hover:(opacity-40 grayscale) group-hover/section:(opacity-40 grayscale)",
+            isDynamicPreview &&
+              "hover:(opacity-40 grayscale) group-hover/section:(opacity-40 grayscale pointer-events-none)",
             isDragging ? "!z-[9999] !shadow-2xl overflow-hidden !cursor-grabbing" : "hover:cursor-auto",
+            isDynamicPreview && globalDragging && "scale-0",
           )}
           onClick={onBrickWrapperClick}
           onDoubleClickCapture={onDoubleClick}
         >
-          <BrickComponent brick={brick} editable />
+          <BrickComponent
+            brick={brick}
+            iterationIndex={iterationIndex}
+            isDynamicPreview={isDynamicPreview}
+            editable
+          />
           <FloatingPortal>
             <EditableBrickNavBar
               ref={barsRefs.setFloating}
@@ -322,7 +348,7 @@ const EditableBrickWrapperSimple = forwardRef<HTMLDivElement, BrickWrapperProps>
           {manifests[brick.type]?.resizable &&
             !draggingBrickType &&
             !isDragging &&
-            !dynamicPreview &&
+            !isDynamicPreview &&
             selectedBrickId === brick.id && (
               <>
                 {(resizeOpts.canGrowVertical || resizeOpts.canShrinkVertical) && (
@@ -349,10 +375,10 @@ const EditableBrickWrapperSimple = forwardRef<HTMLDivElement, BrickWrapperProps>
               </>
             )}
 
-          {previewMode === "desktop" && !dynamicPreview && brick.id === selectedBrickId && (
+          {previewMode === "desktop" && !isDynamicPreview && brick.id === selectedBrickId && (
             <EditableBrickArrows brick={brick} />
           )}
-          {typeof brick.props.loop !== "undefined" && !dynamicPreview && (
+          {typeof brick.props.loop !== "undefined" && !isDynamicPreview && (
             <Tooltip content="This brick will be repeated for each item in the query result">
               <div
                 className={tx(
@@ -395,11 +421,21 @@ export default function EditableBrickWrapper(props: BrickWrapperProps) {
 
   const loopQuery = pageQueries.find((q) => q.alias === loop?.over);
   const limit = Math.min(loop.overrideLimit ?? Infinity, loopQuery?.queryInfo.limit ?? 1, 3);
+  const { brick, ...rest } = props;
 
   return (
     <>
       {range(0, limit).map((i, index) => (
-        <EditableBrickWrapperSimple key={i} {...props} dynamicPreview={index > 0} />
+        <EditableBrickWrapperSimple
+          key={i}
+          {...rest}
+          iterationIndex={index}
+          isDynamicPreview={index > 0}
+          brick={{
+            ...brick,
+            id: index > 0 ? `${brick.id}-${index}` : brick.id,
+          }}
+        />
       ))}
     </>
   );

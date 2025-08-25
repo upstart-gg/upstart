@@ -74,6 +74,7 @@ type PolymorphicProps<E extends ElementType> = PropsWithChildren<
 
 export type TextEditorProps<E extends ElementType> = PolymorphicProps<E> & {
   content: string | undefined;
+  rawContent: string | undefined;
   className?: string;
   brickId: Brick["id"];
   propPath: string;
@@ -124,6 +125,7 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
   (
     {
       content: initialContent,
+      rawContent: rawInitialContent,
       className,
       brickId,
       inline,
@@ -145,6 +147,7 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
     const pageQueries = usePageQueries();
     const [menuBarContainer, setMenuBarContainer] = useState<HTMLDivElement | null>(null);
     const [currentContent, setContent] = useState(formatInitialContent(initialContent));
+    const [rawContent, setRawContent] = useState(formatInitialContent(rawInitialContent));
     const [focused, setFocused] = useState(false);
     const queryAlias = useLoopAlias(brickId);
 
@@ -234,9 +237,6 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
 
     const onBlur = (e: EditorEvents["blur"]) => {
       console.log("Editor blured", e);
-      // For whatever reason, the editor content is not updated when the blur event is triggered the first time
-      // So we need to manually update the content here
-      setContent(e.editor.getHTML());
 
       // If there is a related target, it means the blur event was triggered by a click on the editor buttons
       if (e.event.relatedTarget && !(e.event.relatedTarget as HTMLElement).classList.contains("tiptap")) {
@@ -248,6 +248,9 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
       mainEditor.setIsEditingText(false);
 
       startTransition(() => {
+        // For whatever reason, the editor content is not updated when the blur event is triggered the first time
+        // So we need to manually update the content here
+        setContent(e.editor.getHTML());
         setFocused(false);
       });
     };
@@ -269,6 +272,16 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
       },
       [brickId, selectedBrickId, queryAlias],
     );
+
+    useEffect(() => {
+      if (focused) {
+        console.log("Editor focused, set content to %s", rawContent);
+        editor.commands.setContent(rawContent, false);
+      } else {
+        console.log("Editor blurred, set content to %s", currentContent);
+        editor.commands.setContent(currentContent, false);
+      }
+    }, [focused, currentContent, rawContent, editor]);
 
     useEffect(() => {
       if (brickId !== selectedBrickId) {

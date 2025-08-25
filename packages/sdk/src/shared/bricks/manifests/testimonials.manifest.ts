@@ -19,6 +19,7 @@ export const manifest = defineBrickManifest({
   description: "Display testimonials from users",
   defaultWidth: { desktop: "100%" },
   icon: HiOutlineChatBubbleBottomCenter,
+  consumesMultipleQueryRows: true,
   aiInstructions: `This brick displays user testimonials with optional avatars and social icons.
 It is typically used to showcase customer feedback or endorsements.
 Optionally either use an avatar or a social icon but not both at the same time.`,

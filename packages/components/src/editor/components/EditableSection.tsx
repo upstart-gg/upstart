@@ -63,10 +63,6 @@ export default function EditableSection({ section, index }: EditableSectionProps
     disabled: dropDisabled,
   });
 
-  if (section.id === "s_hero") {
-    console.log("isDropTarget", isDropTarget, "for section", section.id, "droppable", droppable);
-  }
-
   const className = useSectionStyle({
     section,
     editable: true,
@@ -134,7 +130,12 @@ export default function EditableSection({ section, index }: EditableSectionProps
           .filter((b) => !b.props.hidden?.[previewMode])
           .map((brick, brickIndex) => {
             return (
-              <EditableBrickWrapper key={`${previewMode}-${brick.id}`} brick={brick} index={brickIndex} />
+              <EditableBrickWrapper
+                key={`${previewMode}-${brick.id}`}
+                brick={brick}
+                index={brickIndex}
+                iterationIndex={brickIndex}
+              />
             );
           })}
         {bricks.length === 0 && (

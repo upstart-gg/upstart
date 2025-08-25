@@ -20,7 +20,9 @@ export function useTextEditorUpdateHandler(
   if (!enabled) {
     return;
   }
+
   return (e: EditorEvents["update"]) => {
+    console.log("Updating text editor props", brickId, propPath);
     if (dynamic) {
       helpers.updateBrickProps(brickId, {
         [propPath]: e.editor.getText(),

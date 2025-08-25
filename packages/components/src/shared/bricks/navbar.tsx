@@ -65,6 +65,7 @@ export default function Navbar({ brick, editable }: BrickProps<Manifest>) {
               className={tx("text-2xl font-bold flex-1")}
               brickId={brick.id}
               content={props.brand}
+              rawContent={props.brand}
               editable={editable}
               noTextAlign={true}
               noTextType={true}

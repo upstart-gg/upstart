@@ -30,16 +30,16 @@
     "sitemap": [
       {
         "id": "_default_",
-        "label": "First page with really really long name that should be truncated",
+        "label": "Home",
         "path": "/",
-        "tags": [],
+        "tags": ["navbar"],
         "sectionsPlan": []
       },
       {
         "id": "_page_2",
-        "label": "Second page with really really long name that should be truncated",
+        "label": "Second page",
         "path": "/secondPage",
-        "tags": [],
+        "tags": ["navbar"],
         "sectionsPlan": []
       }
     ],

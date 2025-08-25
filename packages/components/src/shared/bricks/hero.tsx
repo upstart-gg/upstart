@@ -24,6 +24,7 @@ export default function Hero(_props: BrickProps<Manifest>) {
         propPath="content"
         brickId={brick.id}
         content={props.content}
+        rawContent={brick.props.content}
         textSizeMode="hero"
         editable={editable}
         noTextType
@@ -40,6 +41,7 @@ export default function Hero(_props: BrickProps<Manifest>) {
         )}
         brickId={brick.id}
         content={props.tagline}
+        rawContent={brick.props.tagline}
         editable={editable}
       />
     </BrickRoot>

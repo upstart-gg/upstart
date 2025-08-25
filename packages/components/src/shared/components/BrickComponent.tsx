@@ -22,9 +22,13 @@ const bricksMap = Object.entries(bricks).reduce(
 const BrickComponent = ({
   brick,
   editable,
+  isDynamicPreview,
+  iterationIndex,
 }: {
   brick: Brick;
   editable?: boolean;
+  isDynamicPreview?: boolean;
+  iterationIndex?: number;
 } & ComponentProps<"div">) => {
   const selectedBrickId = useSelectedBrickId();
   const BrickModule = bricksMap[brick.type];
@@ -36,7 +40,9 @@ const BrickComponent = ({
   const brickProps = {
     brick,
     editable,
+    isDynamicPreview,
     selected: brick.id === selectedBrickId,
+    iterationIndex,
   } satisfies BrickProps<BrickManifest>;
 
   return (
