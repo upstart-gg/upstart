@@ -10,6 +10,7 @@ export const providersSchema = Type.Union([
   // Type.Literal("mastodon-account"),
   // Type.Literal("mastodon-status"),
   // Type.Literal("mastodon-status-list"),
+  Type.Literal("custom"),
   Type.Literal("rss"),
   // Type.Literal("threads-media"),
   // Type.Literal("tiktok-video"),
