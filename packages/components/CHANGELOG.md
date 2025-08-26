@@ -1,5 +1,15 @@
 # @upstart.gg/components
 
+## 0.0.127
+
+### Patch Changes
+
+- [#406](https://github.com/upstart-gg/upstart/pull/406) [`2b4d02c`](https://github.com/upstart-gg/upstart/commit/2b4d02c00da31013d983a9bebf35eccab7ee7a07) Thanks [@mattallty](https://github.com/mattallty)! - Do not externalize react
+
+- Updated dependencies []:
+  - @upstart.gg/sdk@0.0.127
+  - @upstart.gg/style-system@0.0.127
+
 ## 0.0.126
 
 ### Patch Changes
