@@ -122,9 +122,7 @@ const datasourceBaseFields = Type.Object({
     description:
       "Unique identifier of the datasource. Used to reference the datasource in the system. Use a url-safe string like a slug.",
   }),
-  label: Type.Optional(
-    Type.String({ title: "Label", description: "Label of the datasource displayed in the UI" }),
-  ),
+  label: Type.String({ title: "Label", description: "Label of the datasource displayed in the UI" }),
 });
 
 const datasourceProviderManifest = Type.Composite([
