@@ -9,6 +9,7 @@ import { colorPresetRef } from "./bricks/props/color-preset";
 import { queryUseRef } from "./bricks/props/dynamic";
 import { querySchema } from "./datasources/types";
 import { group } from "./bricks/props/helpers";
+import { StringEnum } from "./utils/string-enum";
 
 export type { JSONSchemaType };
 
@@ -18,7 +19,6 @@ export const pageAttributesSchema = Type.Object({
     title: "Color",
     default: { color: "bg-base-100" },
   }),
-
   tags: Type.Optional(
     Type.Array(string("Tag"), {
       title: "Tags",
@@ -88,6 +88,58 @@ export const pageAttributesSchema = Type.Object({
       "ai:hidden": true,
     }),
   ),
+  language: Type.Optional(
+    StringEnum(
+      [
+        "ar",
+        "zh",
+        "cs",
+        "nl",
+        "en",
+        "fr",
+        "de",
+        "he",
+        "hi",
+        "it",
+        "ja",
+        "ko",
+        "fa",
+        "pl",
+        "pt",
+        "ru",
+        "es",
+        "tr",
+        "vi",
+      ],
+      {
+        "ai:hidden": true,
+        title: "Language",
+        description:
+          "Overrides the site language for this page. Leave blank to use the site default language.",
+        enumNames: [
+          "Arabic",
+          "Chinese",
+          "Czech",
+          "Dutch",
+          "English",
+          "French",
+          "German",
+          "Hebrew",
+          "Hindi",
+          "Italian",
+          "Japanese",
+          "Korean",
+          "Persian",
+          "Polish",
+          "Portuguese",
+          "Russian",
+          "Spanish",
+          "Turkish",
+          "Vietnamese",
+        ],
+      },
+    ),
+  ),
   additionalTags: Type.Optional(
     group({
       title: "Additional script tags",
@@ -97,7 +149,7 @@ export const pageAttributesSchema = Type.Object({
             title: "Head script tags",
             description:
               "Add custom tags to the <head> of your site. Useful for analytics tags, custom scripts, etc.",
-            "ai:guidelines": "Don't include meta tags here, they are automatically generated.",
+            "ai:instructions": "Don't include meta tags here, they are automatically generated.",
             "ui:multiline": true,
             "ui:textarea-class": "h-40 !font-mono",
             "ui:placeholder": "<script src='https://example.com/script.js'></script>",
@@ -129,7 +181,6 @@ export const pageAttributesSchema = Type.Object({
   lastUpdated: Type.Optional(
     datetime("Last updated", {
       "ui:hidden": true,
-      "ai:guidelines": "Don't generate this property.",
     }),
   ),
 });
@@ -143,6 +194,56 @@ export const siteAttributesSchema = Type.Object({
       "ai:instructions":
         "This is where queries are first defined. They are then referenced in pages attributes to use them.",
     }),
+  ),
+  language: StringEnum(
+    [
+      "ar",
+      "zh",
+      "cs",
+      "nl",
+      "en",
+      "fr",
+      "de",
+      "he",
+      "hi",
+      "it",
+      "ja",
+      "ko",
+      "fa",
+      "pl",
+      "pt",
+      "ru",
+      "es",
+      "tr",
+      "vi",
+    ],
+    {
+      title: "Language",
+      default: "en",
+      enumNames: [
+        "Arabic",
+        "Chinese",
+        "Czech",
+        "Dutch",
+        "English",
+        "French",
+        "German",
+        "Hebrew",
+        "Hindi",
+        "Italian",
+        "Japanese",
+        "Korean",
+        "Persian",
+        "Polish",
+        "Portuguese",
+        "Russian",
+        "Spanish",
+        "Turkish",
+        "Vietnamese",
+      ],
+      "ai:instructions":
+        "Choose a value based on the site description. If the site is in multiple languages, use 'en'.",
+    },
   ),
   ogImage: Type.Optional(
     imageRef({
@@ -166,7 +267,7 @@ export const siteAttributesSchema = Type.Object({
       title: "Head script tags",
       description:
         "Add custom tags to the <head> of your site. Useful for analytics tags, custom scripts, etc.",
-      "ai:guidelines": "Don't include meta tags here, they are automatically generated.",
+      "ai:hidden": true,
       "ui:multiline": true,
       "ui:textarea-class": "h-40 !font-mono",
       "ui:placeholder": "<script src='https://example.com/script.js'></script>",
@@ -182,6 +283,7 @@ export const siteAttributesSchema = Type.Object({
       title: "Body script tags",
       description:
         "Add custom tags to the <body> of your site. Useful for analytics tags, custom scripts, etc.",
+      "ai:hidden": true,
       "ui:multiline": true,
       "ui:premium": true,
       "ui:textarea-class": "h-40 !font-mono",
