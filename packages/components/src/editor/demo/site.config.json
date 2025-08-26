@@ -44,6 +44,7 @@
       }
     ],
     "attributes": {
+      "language": "en",
       "queries": [
         { "id": "get-employees", "label": "Get all employees", "datasourceId": "employees", "limit": 50 },
         {
