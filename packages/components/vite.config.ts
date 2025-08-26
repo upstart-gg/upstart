@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => ({
     Inspect({
       open: true,
     }),
-    react() as PluginOption,
+    react({}) as PluginOption,
     dts({
       include: [
         "src/editor/components/Editor.tsx",
@@ -77,10 +77,10 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       external: [
         "react-icons",
-        "react",
-        "react-dom",
+        // "react",
+        // "react-dom",
         // "ajv",
-        "react/jsx-runtime",
+        // "react/jsx-runtime",
         "@sinclair/typebox",
         "@upstart.gg/style-system",
         "@upstart.gg/sdk",
