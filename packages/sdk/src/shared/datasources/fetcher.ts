@@ -1,11 +1,8 @@
-import type { PageAttributes } from "../attributes";
-
 export type DatasourceFetcherParams<
   OAuthProps = unknown,
   Opts extends Record<string, unknown> = Record<string, unknown>,
 > = {
   options: Opts;
-  pageAttributes: PageAttributes;
   oauth: OAuthProps;
 };
 
