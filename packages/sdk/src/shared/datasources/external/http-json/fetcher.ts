@@ -7,9 +7,9 @@ import type { HttpJsonOptions } from "./options";
  */
 const fetchHttpJSON: DatasourceFetcher<unknown, null, HttpJsonOptions> = async ({
   options,
-  pageAttributes: attr,
+  pageAttributes,
 }) => {
-  const replacer = createPlaceholderReplacer(attr);
+  const replacer = createPlaceholderReplacer(pageAttributes);
   const url = options.url.replace(placeholderRx, replacer);
   const headers: Record<string, string> = {};
 
