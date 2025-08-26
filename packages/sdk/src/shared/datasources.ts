@@ -12,7 +12,7 @@ export function defineDatasource<D extends Omit<Datasource, "id">>(datasource: D
   };
 }
 
-function getSchemaByProvider(provider: DatasourceProvider) {
+function getSchemaByProvider(provider: Exclude<DatasourceProvider, "custom">) {
   return schemasMap[provider];
 }
 

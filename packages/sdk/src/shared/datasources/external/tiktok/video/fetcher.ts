@@ -1,5 +1,5 @@
 import type { TiktokVideoOptions } from "./options";
-import { type TiktokVideoListSchema, tiktokVideoListSchema } from "./schema";
+import type { TiktokVideoListSchema } from "./schema";
 import { UnauthorizedError } from "~/shared/errors";
 import type { TiktokFullOAuthConfig } from "../oauth/config";
 import type { DatasourceFetcher } from "~/shared/datasources/fetcher";
@@ -15,7 +15,7 @@ const fetchTiktokVideoDatasource: DatasourceFetcher<
   });
 
   const url = `https://open.tiktokapis.com/v2/video/list/?${params.toString()}`;
-  const { refreshInterval, ...body } = options;
+  const body = options;
   const response = await fetch(url, {
     method: "POST",
     headers: {
