@@ -1,6 +1,6 @@
 {
   "name": "@upstart.gg/style-system",
-  "version": "0.0.124",
+  "version": "0.0.125",
   "description": "Base tailwindcss setup with some extra plugins as well as colors and editor styles",
   "type": "module",
   "scripts": {
