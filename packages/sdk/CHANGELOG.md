@@ -1,5 +1,14 @@
 # @upstart.gg/sdk
 
+## 0.0.126
+
+### Patch Changes
+
+- [#405](https://github.com/upstart-gg/upstart/pull/405) [`bd2de9d`](https://github.com/upstart-gg/upstart/commit/bd2de9d763362bd1cdcc079ac1c1e0905fd78462) Thanks [@mattallty](https://github.com/mattallty)! - add language to page and site
+
+- Updated dependencies []:
+  - @upstart.gg/style-system@0.0.126
+
 ## 0.0.125
 
 ### Patch Changes
