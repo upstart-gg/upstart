@@ -69,6 +69,7 @@ export default defineConfig(({ mode }) => ({
         "use-page-data": "src/editor/hooks/use-page-data.ts",
         "get-theme-css": "src/shared/utils/get-theme-css.ts",
       },
+      cssFileName: "upstart-components",
       formats: ["es"],
     },
     minify: process.env.NODE_ENV === "production" && process.env.NOMINIFY !== "1",
