@@ -1,7 +1,7 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { generateId, type Section } from "./bricks";
 import { datarecordsList } from "./datarecords/types";
-import { datasourcesList, querySchema } from "./datasources/types";
+import { datasourcesList } from "./datasources/types";
 import { pageSchema } from "./page";
 import { sitePrompt } from "./prompt";
 import { sitemapSchema } from "./sitemap";
@@ -18,7 +18,7 @@ export const siteSchema = Type.Object({
   themes: Type.Array(themeSchema),
   theme: themeSchema,
   sitemap: sitemapSchema,
-  sitePrompt: sitePrompt,
+  sitePrompt,
 });
 
 /**
