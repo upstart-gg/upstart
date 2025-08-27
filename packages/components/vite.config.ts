@@ -93,7 +93,7 @@ export default defineConfig(({ mode }) => ({
         "lodash",
       ],
       output: {
-        preserveModules: true, // This can help with static imports
+        preserveModules: true,
         exports: "named",
         chunkFileNames: "chunks/[name].[hash].js",
         assetFileNames: "assets/[name][extname]",
