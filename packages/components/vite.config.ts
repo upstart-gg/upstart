@@ -84,8 +84,8 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       external: [
         "react-icons",
-        // "ajv",
-        // "react/jsx-runtime",
+        "react",
+        "react-dom",
         "@sinclair/typebox",
         "@upstart.gg/style-system",
         "@upstart.gg/sdk",
