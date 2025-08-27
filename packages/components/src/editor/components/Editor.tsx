@@ -253,7 +253,7 @@ export default function Editor(props: EditorProps) {
         </Suspense>
         <main
           className={tx(
-            "flex-1 flex place-content-center z-40 overflow-x-auto overscroll-none ",
+            "flex-1 flex place-content-center z-40 overflow-x-auto overscroll-none",
             generationState.isReady === false && "!hidden",
             css({
               gridArea: "main",
@@ -342,8 +342,8 @@ function getEditorCss(generationState: GenerationState, chatVisible: boolean) {
 function ThemePreviewConfirmButton() {
   const { validatePreviewTheme } = useDraftHelpers();
   return (
-    <div className="sticky bottom-4 left-0 right-0 flex justify-center items-center z-[9999]">
-      <div className="p-3 bg-black/70 backdrop-blur-md rounded-lg max-w-fit flex gap-2 shadow-xl">
+    <div className="fixed bottom-0 left-0 right-0 flex justify-center items-center z-[9999]">
+      <div className="p-3 pb-2 bg-black/70 backdrop-blur-md rounded-t-lg max-w-fit flex gap-2 shadow-xl">
         <Button variant="solid" color="gray" onClick={() => validatePreviewTheme(false)}>
           Revert
         </Button>

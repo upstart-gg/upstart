@@ -23,7 +23,7 @@ export const manifest = defineBrickManifest({
     colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color preset",
-        default: { color: "bg-base-100 text-base-content" },
+        default: { color: "base-100" },
       }),
     ),
 
@@ -75,10 +75,14 @@ export const manifest = defineBrickManifest({
     ),
     border: Type.Optional(
       borderRef({
-        default: { width: "border", color: "border-primary-300" },
+        // default: { width: "border", color: "border-base-300" },
       }),
     ),
-    shadow: Type.Optional(shadowRef()),
+    shadow: Type.Optional(
+      shadowRef({
+        default: "shadow-sm",
+      }),
+    ),
     loop: Type.Optional(loopRef()),
   }),
 });
