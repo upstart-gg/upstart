@@ -73,12 +73,9 @@ export default defineConfig(({ mode }) => ({
       formats: ["es"],
     },
     minify: process.env.NODE_ENV === "production" && process.env.NOMINIFY !== "1",
-    // cssMinify: false,
     rollupOptions: {
       external: [
         "react-icons",
-        // "react",
-        // "react-dom",
         // "ajv",
         // "react/jsx-runtime",
         "@sinclair/typebox",
