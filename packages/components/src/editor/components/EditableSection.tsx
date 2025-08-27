@@ -37,8 +37,6 @@ export default function EditableSection({ section, index }: EditableSectionProps
   const editingBrick = useEditingTextForBrickId();
   const draggingBrickType = useDraggingBrickType();
   // const isMouseOverPanel = useIsMouseOverPanel();
-
-  const isMouseOverPanel = false;
   const { isDesktop } = useDeviceInfo();
   const isSpecialSection = typeof section.props.variant !== "undefined";
   const dropDisabled =

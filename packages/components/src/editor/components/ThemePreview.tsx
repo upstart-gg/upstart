@@ -6,26 +6,28 @@ export default function ThemePreview({
   theme,
   noPreview,
   className,
+  selected,
   onClick,
-}: { theme: Theme; noPreview?: boolean; className?: string; onClick?: () => void }) {
+}: { theme: Theme; noPreview?: boolean; selected?: boolean; className?: string; onClick?: () => void }) {
   const draft = useDraft();
   return (
     <button
       type="button"
       className={tx(
-        "relative border aspect-square border-upstart-500 flex flex-col flex-grow gap-1 items-stretch justify-stretch group transition-all",
+        "group/theme-button overflow-hidden relative h-[44px] w-full rounded outline shadow-sm  flex flex-grow p-1 gap-1 items-stretch justify-stretch group transition-all",
         css({
           backgroundColor: theme.colors.base100,
           // color: theme.colors.baseContent
         }),
-        noPreview ? "cursor-default" : "cursor-pointer hover:(ring-2 ring-upstart-500)",
+        selected ? "outline-upstart-500" : "outline-gray-200",
+        noPreview ? "cursor-default" : "cursor-pointer hover:(outline-upstart-400)",
         className,
       )}
       onClick={noPreview ? undefined : onClick}
     >
       <div
         className={tx(
-          "flex-1",
+          "flex-1 rounded-l",
           css({
             backgroundColor: theme.colors.primary,
           }),
@@ -47,26 +49,26 @@ export default function ThemePreview({
           }),
         )}
       />
+      <div
+        className={tx(
+          "flex-1 rounded-r",
+          css({
+            backgroundColor: theme.colors.neutral,
+          }),
+        )}
+      />
 
       <h3
         className={tx(
-          "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 py-1 text-ellipsis text-nowrap z-20 bg-black/30 px-2 font-medium text-white backdrop-blur-md rounded-full",
+          `absolute  left-1/2 -translate-x-1/2 transition-all top-1/2 translate-y-full scale-75
+          -bottom-6 h-6
+          group-hover/theme-button:(-translate-y-1/2 scale-100)
+          py-px text-xs max-w-[86%] inline-flex items-center
+          overflow-hidden text-ellipsis text-nowrap z-20 bg-black/30 px-2 font-normal text-white backdrop-blur-md rounded-full`,
         )}
       >
         {theme.name}
       </h3>
-      {!noPreview && (
-        <span
-          className={tx(
-            `!opacity-0 w-fit absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-           text-xs text-white font-medium
-          justify-end items-center gap-1.5 text-upstart-700 px-2 py-1 bg-upstart-700/80 rounded-md
-          group-hover:!opacity-100 transition-opacity duration-150 `,
-          )}
-        >
-          Preview
-        </span>
-      )}
     </button>
   );
 }

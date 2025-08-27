@@ -1,17 +1,18 @@
 import { useEffect } from "react";
-import { useTheme } from "./use-page-data";
+import { useDraft } from "./use-page-data";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 
 /**
  * Watch for changes in the configured font families and update the page with needed styles.
  */
 export function useFontWatcher() {
-  const theme = useTheme();
+  const draft = useDraft();
+  const themeUsed = draft.previewTheme ?? draft.theme;
   useEffect(() => {
     buildHtmlHeadLinks();
-    updateLinks(theme.typography);
-  }, [theme.typography]);
-  return theme.typography;
+    updateLinks(themeUsed.typography);
+  }, [themeUsed.typography]);
+  return themeUsed.typography;
 }
 
 function updateLinks(typography: Theme["typography"]) {
