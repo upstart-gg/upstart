@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => ({
     }),
   ],
   optimizeDeps: {
-    // include: ["@upstart.gg/sdk"],
+    include: ["@upstart.gg/sdk"],
   },
   server: {
     port: +(process.env.PORT ?? 3008),
@@ -82,6 +82,7 @@ export default defineConfig(({ mode }) => ({
     },
     minify: process.env.NODE_ENV === "production" && process.env.NOMINIFY !== "1",
     rollupOptions: {
+      preserveEntrySignatures: "strict",
       external: [
         "react-icons",
         "react",
