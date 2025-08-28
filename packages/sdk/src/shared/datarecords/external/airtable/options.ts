@@ -1,22 +1,21 @@
 import { Type, type Static } from "@sinclair/typebox";
 
 export const airtableOptions = Type.Object({
-  accessToken: Type.String({
-    description: "Airtable Personal Token or OAuth Access Token",
-  }),
+  externalUrl: Type.Optional(Type.String()),
   baseId: Type.String({
     pattern: "^app[A-Za-z0-9]+$",
     description: 'Airtable Base ID starting with "app"',
   }),
-  tableIdOrName: Type.Union([
-    Type.String({
+  baseName: Type.Optional(Type.String({
+    description: 'Airtable Base Name',
+  })),
+  tableId: Type.String({
       pattern: "^tbl[A-Za-z0-9]+$",
       description: 'Airtable Table ID starting with "tbl"',
     }),
-    Type.String({
-      description: "Table name as shown in Airtable interface",
-    }),
-  ]),
+  tableName: Type.Optional(Type.String({
+    description: "Table name as shown in Airtable interface",
+  })),
 });
 
 export type AirtableOptions = Static<typeof airtableOptions>;

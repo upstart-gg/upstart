@@ -2,6 +2,7 @@ import { Type, type Static } from "@sinclair/typebox";
 import { airtableOptions } from "./external/airtable/options";
 import { genericWebhookOptions } from "./external/generic-webhook/options";
 import { googleSheetsOptions } from "./external/google/sheets/options";
+import { notionOptions } from "./external/notion/options";
 
 export const connectorSchema = Type.Union([
   Type.Literal("airtable"),
@@ -112,6 +113,13 @@ export const datarecordsConnectors = Type.Union([
   ]),
   Type.Composite([
     Type.Object({
+      provider: Type.Literal("notion"),
+      options: notionOptions,
+    }),
+    commonDatarecordSchema,
+  ]),
+  Type.Composite([
+    Type.Object({
       provider: Type.Literal("generic-webhook"),
       options: genericWebhookOptions,
     }),
@@ -119,6 +127,7 @@ export const datarecordsConnectors = Type.Union([
   ]),
   internalDatarecord,
 ]);
+
 
 const datarecordMetadata = Type.Object({
   id: Type.String({
