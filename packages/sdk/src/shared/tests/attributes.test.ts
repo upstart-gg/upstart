@@ -23,7 +23,9 @@ describe("Attributes test suite", () => {
   describe("resolveSiteAttributes", () => {
     it("should resolve site attributes with default values", () => {
       const attributes = {};
-      expect(resolveSiteAttributes(attributes)).toMatchObject<SiteAttributes>({});
+      expect(resolveSiteAttributes(attributes)).toMatchObject<SiteAttributes>({
+        language: "en",
+      });
     });
   });
 });

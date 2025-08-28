@@ -50,6 +50,35 @@ const darkTheme: Theme = {
   },
 };
 
+const redTheme: Theme = {
+  id: "sunset-coral-glow",
+  name: "Sunset Coral Glow",
+  tags: ["warm", "coral", "sunset"],
+  colors: {
+    accent: "oklch(60 0.5 30)",
+    base100: "oklch(99 0.05 0)",
+    base200: "oklch(97 0.1 0)",
+    base300: "oklch(95 0.15 0)",
+    neutral: "oklch(95 0.2 5)",
+    primary: "oklch(85 0.7 20)",
+    secondary: "oklch(75 0.6 25)",
+  },
+  typography: {
+    base: 16,
+    body: {
+      type: "google",
+      family: "Raleway",
+    },
+    heading: {
+      type: "google",
+      family: "Pacifico",
+    },
+    alternatives: [],
+  },
+  browserColorScheme: "light",
+  description: "",
+};
+
 describe("Color system test suite", () => {
   describe("generateColorsVars", () => {
     it("Should generate the correct colors for a light theme", () => {
@@ -115,6 +144,27 @@ describe("Color system test suite", () => {
       expect(Object.keys(colors)).toContain("color-primary-700");
       expect(Object.keys(colors)).toContain("color-primary-800");
       expect(Object.keys(colors)).toContain("color-primary-900");
+    });
+    it('should not generate "none" oklch values for the dark theme', () => {
+      const colors = generateColorsVars(darkTheme);
+
+      expect(colors["color-primary"], "color primary contains none").not.toContain("none");
+      expect(colors["color-primary-500"], "color-primary-500 contains none").not.toContain("none");
+      expect(colors["color-primary-200"], "color-primary-200 contains none").not.toContain("none");
+      expect(colors["color-primary-content"], "color-primary-content contains none").not.toContain("none");
+      expect(colors["color-secondary"], "color-secondary contains none").not.toContain("none");
+      expect(colors["color-secondary-500"], "color-secondary-500 contains none").not.toContain("none");
+      expect(colors["color-secondary-200"], "color-secondary-200 contains none").not.toContain("none");
+      expect(colors["color-secondary-content"], "color-secondary-content contains none").not.toContain(
+        "none",
+      );
+      expect(colors["color-accent"], "color-accent contains none").not.toContain("none");
+      expect(colors["color-accent-content"], "color-accent-content contains none").not.toContain("none");
+      expect(colors["color-neutral"], "color-neutral contains none").not.toContain("none");
+      expect(colors["color-neutral-content"], "color-neutral-content contains none").not.toContain("none");
+      expect(colors["color-base-100"], "color-base-100 contains none").not.toContain("none");
+      expect(colors["color-base-200"], "color-base-200 contains none").not.toContain("none");
+      expect(colors["color-base-300"], "color-base-300 contains none").not.toContain("none");
     });
   });
 });

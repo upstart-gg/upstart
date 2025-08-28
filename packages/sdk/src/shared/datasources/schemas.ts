@@ -42,4 +42,7 @@ export const schemasMap = {
   "http-json": {
     description: "JSON array retrieved from an HTTP endpoint",
   },
-} as const satisfies Record<DatasourceProvider, TArray | TArray[] | { description: string }>;
+} as const satisfies Record<
+  Exclude<DatasourceProvider, "custom">,
+  TArray | TArray[] | { description: string }
+>;

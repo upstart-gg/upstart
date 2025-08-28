@@ -31,7 +31,7 @@ export default function Panel({ className, ...props }: PanelProps) {
   const selectedBrick = useBrick(selectedBrickId);
 
   // Prevent blank panel when invalid brick / section id is selected
-  if (panel === "inspector" && !selectedBrick && !selectedSection) {
+  if (!panel || (panel === "inspector" && !selectedBrick && !selectedSection)) {
     return null;
   }
 

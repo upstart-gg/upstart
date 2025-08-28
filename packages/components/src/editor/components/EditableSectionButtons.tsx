@@ -46,6 +46,7 @@ export default function EditableSectionButtons({ section }: { section: SectionTy
     <div
       role="toolbar"
       className={tx(
+        "font-sans",
         // bottom-[3px]
         isLastSection ? "bottom-3" : "bottom-0",
         dropdownOpen ? "opacity-100" : "opacity-0",

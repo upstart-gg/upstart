@@ -1,5 +1,35 @@
 # @upstart.gg/components
 
+## 0.0.127
+
+### Patch Changes
+
+- [#406](https://github.com/upstart-gg/upstart/pull/406) [`2b4d02c`](https://github.com/upstart-gg/upstart/commit/2b4d02c00da31013d983a9bebf35eccab7ee7a07) Thanks [@mattallty](https://github.com/mattallty)! - Do not externalize react
+
+- Updated dependencies []:
+  - @upstart.gg/sdk@0.0.127
+  - @upstart.gg/style-system@0.0.127
+
+## 0.0.126
+
+### Patch Changes
+
+- [#403](https://github.com/upstart-gg/upstart/pull/403) [`1deb8f0`](https://github.com/upstart-gg/upstart/commit/1deb8f0ec954296bb217b8bc0f39f62a4ac97931) Thanks [@mattallty](https://github.com/mattallty)! - Rebuild release
+
+- Updated dependencies [[`bd2de9d`](https://github.com/upstart-gg/upstart/commit/bd2de9d763362bd1cdcc079ac1c1e0905fd78462)]:
+  - @upstart.gg/sdk@0.0.126
+  - @upstart.gg/style-system@0.0.126
+
+## 0.0.125
+
+### Patch Changes
+
+- [#401](https://github.com/upstart-gg/upstart/pull/401) [`cc78908`](https://github.com/upstart-gg/upstart/commit/cc78908733126366e657a64e5223071f4156d373) Thanks [@mattallty](https://github.com/mattallty)! - Various changes
+
+- Updated dependencies [[`cc78908`](https://github.com/upstart-gg/upstart/commit/cc78908733126366e657a64e5223071f4156d373)]:
+  - @upstart.gg/sdk@0.0.125
+  - @upstart.gg/style-system@0.0.125
+
 ## 0.0.124
 
 ### Patch Changes

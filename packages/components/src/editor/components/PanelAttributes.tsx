@@ -33,7 +33,7 @@ export default function SettingsForm() {
         onValueChange={setCurrentTab}
         className="flex-grow flex flex-col h-dvh"
       >
-        <Tabs.List className="sticky top-0 z-50 bg-gray-100">
+        <Tabs.List size="1" className="sticky top-0 z-50 bg-gray-100">
           <Tabs.Trigger value="site-settings" className={tx("!flex-1")}>
             Site
           </Tabs.Trigger>

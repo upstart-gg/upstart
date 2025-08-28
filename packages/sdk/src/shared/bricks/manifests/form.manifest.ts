@@ -32,7 +32,7 @@ There is no need to define the form fields manually and the form does not accept
     colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",
-        default: "bg-base-100 text-base-100-content",
+        default: "base-200",
       }),
     ),
     direction: Type.Optional(

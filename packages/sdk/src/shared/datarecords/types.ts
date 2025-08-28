@@ -8,7 +8,6 @@ export const connectorSchema = Type.Union([
   Type.Literal("airtable"),
   Type.Literal("google-sheets"),
   Type.Literal("notion"),
-  // a generic webhook
   Type.Literal("generic-webhook"),
   // saved to Upstart platform
   Type.Literal("internal"),
@@ -149,7 +148,3 @@ export type Datarecord = Static<typeof datarecordManifest>;
 
 export const datarecordsList = Type.Array(datarecordManifest);
 export type DatarecordsList = Static<typeof datarecordsList>;
-
-// export type DatarecordResolved<T extends DatarecordsMap> = {
-//   [K in keyof T]: unknown;
-// };
