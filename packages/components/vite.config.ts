@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => ({
     }),
   ],
   optimizeDeps: {
-    // include: ["@upstart.gg/sdk"],
+    include: ["@upstart.gg/sdk"],
   },
   server: {
     port: +(process.env.PORT ?? 3008),
