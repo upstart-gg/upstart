@@ -494,9 +494,6 @@ importers:
       vite-plugin-inspect:
         specifier: 0.8.7
         version: 0.8.7(rolldown-vite@7.1.4(@types/node@22.15.30)(esbuild@0.25.2)(jiti@2.4.2)(tsx@4.20.4)(yaml@2.7.1))(rollup@4.46.2)
-      vite-plugin-virtual:
-        specifier: 0.3.0
-        version: 0.3.0(rolldown-vite@7.1.4(@types/node@22.15.30)(esbuild@0.25.2)(jiti@2.4.2)(tsx@4.20.4)(yaml@2.7.1))
       vite-tsconfig-paths:
         specifier: 5.0.1
         version: 5.0.1(rolldown-vite@7.1.4(@types/node@22.15.30)(esbuild@0.25.2)(jiti@2.4.2)(tsx@4.20.4)(yaml@2.7.1))(typescript@5.8.3)
@@ -7055,11 +7052,6 @@ packages:
     peerDependenciesMeta:
       '@nuxt/kit':
         optional: true
-
-  vite-plugin-virtual@0.3.0:
-    resolution: {integrity: sha512-TOtrWw6jKrJNXfxhGRUiQzfAP1gRkYkVzMkJNjHUJ8idLuxf8eeeDKZKZHhdeYfaCc/87rv+KvWE2iCy1QInWA==}
-    peerDependencies:
-      vite: ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0
 
   vite-tsconfig-paths@5.0.1:
     resolution: {integrity: sha512-yqwv+LstU7NwPeNqajZzLEBVpUFU6Dugtb2P84FXuvaoYA+/70l9MHE+GYfYAycVyPSDYZ7mjOFuYBRqlEpTig==}
@@ -14679,10 +14671,6 @@ snapshots:
     transitivePeerDependencies:
       - rollup
       - supports-color
-
-  vite-plugin-virtual@0.3.0(rolldown-vite@7.1.4(@types/node@22.15.30)(esbuild@0.25.2)(jiti@2.4.2)(tsx@4.20.4)(yaml@2.7.1)):
-    dependencies:
-      vite: rolldown-vite@7.1.4(@types/node@22.15.30)(esbuild@0.25.2)(jiti@2.4.2)(tsx@4.20.4)(yaml@2.7.1)
 
   vite-tsconfig-paths@5.0.1(rolldown-vite@7.1.4(@types/node@22.15.30)(esbuild@0.25.2)(jiti@2.4.2)(tsx@4.20.4)(yaml@2.7.1))(typescript@5.8.3):
     dependencies:

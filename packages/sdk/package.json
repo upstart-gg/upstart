@@ -85,7 +85,6 @@
     "vite-plugin-dts": "4.2.1",
     "vite-plugin-image-optimizer": "1.1.8",
     "vite-plugin-inspect": "0.8.7",
-    "vite-plugin-virtual": "0.3.0",
     "vite-tsconfig-paths": "5.0.1"
   },
   "scripts": {
