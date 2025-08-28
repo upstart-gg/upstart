@@ -60,7 +60,6 @@
     "@tiptap/extension-document": "2.14.0",
     "@tiptap/extension-heading": "2.14.0",
     "@tiptap/extension-highlight": "2.14.0",
-    "@tiptap/extension-list": "3.2.1",
     "@tiptap/extension-mention": "2.14.0",
     "@tiptap/extension-paragraph": "2.14.0",
     "@tiptap/extension-placeholder": "2.14.0",
@@ -117,7 +116,6 @@
     "express": "^4.21.2",
     "import-meta-resolve": "4.1.0",
     "json-schema-deref-sync": "0.14.0",
-    "lodash-es": "4.17.21",
     "postcss": "8.5.4",
     "postcss-import": "16.1.0",
     "postcss-preset-env": "10.0.1",
@@ -125,26 +123,16 @@
     "typescript": "^5.8.3",
     "vite": "5.4.10",
     "vite-plugin-bundlesize": "0.2.0",
-    "vite-plugin-devtools-json": "0.2.0",
+    "vite-plugin-devtools-json": "1.0.0",
     "vite-plugin-dts": "4.5.4",
-    "vite-plugin-inspect": "0.8.7"
-  },
-  "peerDependencies": {
+    "vite-plugin-inspect": "11.3.3",
     "@upstart.gg/sdk": "workspace:*",
     "@upstart.gg/style-system": "workspace:*",
-    "lodash-es": "4.17.21",
-    "posthog-js": "1.242.1",
+    "lodash-es": "^4.17.21",
+    "posthog-js": "^1.242.1",
     "react": "18.3.0-canary-3d9b20132-20240124",
     "react-dom": "18.3.0-canary-3d9b20132-20240124",
     "react-icons": "5.3.0"
-  },
-  "peerDependenciesMeta": {
-    "@upstart.gg/sdk": {
-      "optional": false
-    },
-    "@upstart.gg/style-system": {
-      "optional": false
-    }
   },
   "publishConfig": {
     "access": "public"
