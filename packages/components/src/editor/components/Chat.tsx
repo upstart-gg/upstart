@@ -1,6 +1,5 @@
-import { TextArea } from "@radix-ui/themes";
 import { tx, css } from "@upstart.gg/style-system/twind";
-import { Button, Text, Switch } from "@upstart.gg/style-system/system";
+import { Button, TextArea, Text, Switch } from "@upstart.gg/style-system/system";
 import { motion, AnimatePresence } from "motion/react";
 import { TbSend2 } from "react-icons/tb";
 import { IoIosAttach } from "react-icons/io";

@@ -128,7 +128,6 @@ export const datarecordsConnectors = Type.Union([
   internalDatarecord,
 ]);
 
-
 const datarecordMetadata = Type.Object({
   id: Type.String({
     title: "Datarecord ID",

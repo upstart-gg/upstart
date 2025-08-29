@@ -29,6 +29,7 @@ export type EditorWrapperProps = {
   pageVersion?: string;
   pageId?: string;
   config: SiteAndPagesConfig;
+  logoLink?: string;
   /**
    * Callback when an image is uploaded through the editor.
    * The callback should return the URL of the uploaded image.
@@ -76,6 +77,7 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
         onSaveSite,
         onSavePage,
         onShowPopup,
+        logoLink: import.meta.env.DEV ? "/" : `/dashboard/sites/${site.id}`,
         debugMode,
         panel: (urlParams.get("panel") as EditorState["panel"]) ?? undefined,
         selectedBrickId: (urlParams.get("selectedBrickId") as EditorState["selectedBrickId"]) ?? undefined,
