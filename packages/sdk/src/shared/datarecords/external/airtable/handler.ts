@@ -44,7 +44,6 @@ export async function createTable(
   baseId: string,
   accessToken: string,
 ): Promise<CreateAirtableTableResponse | null> {
-
   const fields = Object.entries(schema.properties).map(([fieldName, field]) => {
     // Seulement 3 cas : string, number, boolean
     if (field.type === "string") {
