@@ -1,5 +1,39 @@
 # @upstart.gg/components
 
+## 0.0.129
+
+### Patch Changes
+
+- [#418](https://github.com/upstart-gg/upstart/pull/418) [`9401c1f`](https://github.com/upstart-gg/upstart/commit/9401c1fc93614605bd7792fd09bbba83960b3643) Thanks [@mattallty](https://github.com/mattallty)! - fix: remove @upstart/sdk from optimizeDeps since its root is not resolvable
+
+- [#419](https://github.com/upstart-gg/upstart/pull/419) [`f06033a`](https://github.com/upstart-gg/upstart/commit/f06033a6eda61979b2e039ea23f590dc55f62e0e) Thanks [@mattallty](https://github.com/mattallty)! - chore: update deps
+
+- Updated dependencies [[`df015f9`](https://github.com/upstart-gg/upstart/commit/df015f97f84243ae56485f2f1494cce7c84782d3), [`df015f9`](https://github.com/upstart-gg/upstart/commit/df015f97f84243ae56485f2f1494cce7c84782d3), [`df015f9`](https://github.com/upstart-gg/upstart/commit/df015f97f84243ae56485f2f1494cce7c84782d3)]:
+  - @upstart.gg/sdk@0.0.129
+  - @upstart.gg/style-system@0.0.129
+
+## 0.0.128
+
+### Patch Changes
+
+- [`b8ab649`](https://github.com/upstart-gg/upstart/commit/b8ab649cc3087928059105bf4d33f4ab14135883) Thanks [@mattallty](https://github.com/mattallty)! - use preserveModules: true
+
+- [#408](https://github.com/upstart-gg/upstart/pull/408) [`56dd8f8`](https://github.com/upstart-gg/upstart/commit/56dd8f8bec0cabaff22c8edf269a401278e0e5d8) Thanks [@mattallty](https://github.com/mattallty)! - rework themes panel
+
+- [#410](https://github.com/upstart-gg/upstart/pull/410) [`0d42138`](https://github.com/upstart-gg/upstart/commit/0d42138f24a3bf6428ac58380041ad5dea3075f2) Thanks [@mattallty](https://github.com/mattallty)! - fix: include react and react-dom as external dependencies in Rollup config
+
+- [#411](https://github.com/upstart-gg/upstart/pull/411) [`54c563b`](https://github.com/upstart-gg/upstart/commit/54c563b341ff22023c3a5da43f8c47dcbf8b27fb) Thanks [@mattallty](https://github.com/mattallty)! - Prepare release
+
+- [#413](https://github.com/upstart-gg/upstart/pull/413) [`70c2583`](https://github.com/upstart-gg/upstart/commit/70c2583c08b0b6967be7b297cdd9e88e768ace6c) Thanks [@mattallty](https://github.com/mattallty)! - Test switching to vite instead of rolldown to prevent react errors on cloudflare
+
+- [#412](https://github.com/upstart-gg/upstart/pull/412) [`2a49f4c`](https://github.com/upstart-gg/upstart/commit/2a49f4c4ee82ed1212cdee4c4aeb92c7d35eaedf) Thanks [@mattallty](https://github.com/mattallty)! - Move some deps from peer to deps
+
+- [#415](https://github.com/upstart-gg/upstart/pull/415) [`5e125da`](https://github.com/upstart-gg/upstart/commit/5e125da11eedd5d89631aaa598e2a1accfce8a81) Thanks [@mattallty](https://github.com/mattallty)! - Various fixes
+
+- Updated dependencies [[`b8ab649`](https://github.com/upstart-gg/upstart/commit/b8ab649cc3087928059105bf4d33f4ab14135883), [`56dd8f8`](https://github.com/upstart-gg/upstart/commit/56dd8f8bec0cabaff22c8edf269a401278e0e5d8), [`5e125da`](https://github.com/upstart-gg/upstart/commit/5e125da11eedd5d89631aaa598e2a1accfce8a81)]:
+  - @upstart.gg/sdk@0.0.128
+  - @upstart.gg/style-system@0.0.128
+
 ## 0.0.127
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @upstart.gg/style-system
 
+## 0.0.129
+
+### Patch Changes
+
+- [#416](https://github.com/upstart-gg/upstart/pull/416) [`df015f9`](https://github.com/upstart-gg/upstart/commit/df015f97f84243ae56485f2f1494cce7c84782d3) Thanks [@mattallty](https://github.com/mattallty)! - Update dep tsup
+
+## 0.0.128
+
+### Patch Changes
+
+- [`b8ab649`](https://github.com/upstart-gg/upstart/commit/b8ab649cc3087928059105bf4d33f4ab14135883) Thanks [@mattallty](https://github.com/mattallty)! - use preserveModules: true
+
+- [#415](https://github.com/upstart-gg/upstart/pull/415) [`5e125da`](https://github.com/upstart-gg/upstart/commit/5e125da11eedd5d89631aaa598e2a1accfce8a81) Thanks [@mattallty](https://github.com/mattallty)! - Various fixes
+
 ## 0.0.127
 
 ## 0.0.126

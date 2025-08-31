@@ -1,6 +1,6 @@
 {
   "name": "@upstart.gg/style-system",
-  "version": "0.0.127",
+  "version": "0.0.129",
   "description": "Base tailwindcss setup with some extra plugins as well as colors and editor styles",
   "type": "module",
   "scripts": {
@@ -24,7 +24,7 @@
     "@formkit/auto-animate": "0.8.2",
     "@radix-ui/react-context-menu": "2.2.2",
     "@radix-ui/react-toggle-group": "1.1.0",
-    "@radix-ui/themes": "3.1.4",
+    "@radix-ui/themes": "3.2.1",
     "@twind/core": "1.1.3",
     "@twind/preset-autoprefix": "1.0.7",
     "@twind/preset-container-queries": "1.0.7",
@@ -35,12 +35,11 @@
     "@twind/preset-typography": "1.0.7",
     "@twind/with-react": "1.1.3",
     "animate.css": "^4.1.1",
-    "polished": "4.3.1",
     "react-hot-toast": "2.5.2"
   },
   "devDependencies": {
     "@types/node": "22",
-    "tsup": "8.2.4"
+    "tsup": "^8.5.0"
   },
   "publishConfig": {
     "access": "public"
