@@ -64,7 +64,8 @@
     "onlyBuiltDependencies": [
       "@biomejs/biome",
       "esbuild",
-      "nx"
+      "nx",
+      "core-js"
     ]
   }
 }
