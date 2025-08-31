@@ -22,7 +22,7 @@ export const siteSchema = Type.Object({
 });
 
 export type Site = Static<typeof siteSchema>;
-export type PublicSite = Omit<Site, 'sitePrompt'>
+export type PublicSite = Omit<Site, "sitePrompt">;
 
 const siteAndPagesSchema = Type.Object({
   site: siteSchema,
