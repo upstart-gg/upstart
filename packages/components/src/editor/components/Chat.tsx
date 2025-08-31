@@ -9,7 +9,8 @@ import { createIdGenerator, type ToolInvocation } from "ai";
 import {
   useDraftHelpers,
   useGenerationState,
-  useSiteAndPages,
+  useSite,
+  useSitemap,
   useSitePrompt,
   useThemes,
 } from "../hooks/use-page-data";
@@ -21,7 +22,7 @@ import { type Theme, processTheme } from "@upstart.gg/sdk/shared/theme";
 import type { CallContextProps } from "@upstart.gg/sdk/shared/context";
 import { useDeepCompareEffect } from "use-deep-compare";
 import type { ImageSearchResultsType, SimpleImageMetadata } from "@upstart.gg/sdk/shared/images";
-import type { GenericPageConfig } from "@upstart.gg/sdk/shared/page";
+import type { Page } from "@upstart.gg/sdk/shared/page";
 import type { Sitemap } from "@upstart.gg/sdk/shared/sitemap";
 import { useEditorHelpers } from "../hooks/use-editor";
 
@@ -95,7 +96,8 @@ export default function Chat() {
   const draftHelpers = useDraftHelpers();
   const { setImagesSearchResults } = useEditorHelpers();
   const generationState = useGenerationState();
-  const siteAndPages = useSiteAndPages();
+  const site = useSite();
+  const sitemap = useSitemap();
   const siteThemes = useThemes();
   const [userLanguage, setUserLanguage] = useState<string>();
   const [flow, setFlow] = useState<CallContextProps["flow"]>(
@@ -221,7 +223,7 @@ What should we work on together? 🤖`,
     experimental_prepareRequestBody({ requestData, ...rest }) {
       return {
         ...rest,
-        requestData: { ...siteAndPages, flow, generationState, userLanguage } satisfies CallContextProps,
+        requestData: { site, sitemap, flow, generationState, userLanguage } satisfies CallContextProps,
       };
     },
     generateId: createIdGenerator({
@@ -233,7 +235,7 @@ What should we work on together? 🤖`,
     onError: (error) => {
       console.error("ERROR", error);
     },
-    key: `chat-${flow}-${siteAndPages.site.id}`,
+    key: `chat-${flow}-${site.id}`,
 
     /**
      * For tools that should be called client-side
@@ -324,13 +326,13 @@ What should we work on together? 🤖`,
       handledToolResults.current.add(toolInvocation.toolCallId);
       switch (toolInvocation.toolName) {
         case "generatePage": {
-          const result = toolInvocation.result as { page: GenericPageConfig } | { error: string };
+          const result = toolInvocation.result as { page: Page } | { error: string };
           if ("error" in result) {
             console.error("Error generating page:", result.error);
             return;
           }
           console.log("Generated page", result.page);
-          draftHelpers.addPage(result.page);
+          draftHelpers.addPage({ ...result.page, version: crypto.randomUUID() });
           break;
         }
 

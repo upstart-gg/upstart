@@ -1,6 +1,6 @@
 import { Tabs, Callout, useAutoAnimate, Text, Select } from "@upstart.gg/style-system/system";
 import { type Theme, themeSchema, type FontType } from "@upstart.gg/sdk/shared/theme";
-import { useDraft, useDraftHelpers, useTheme, useThemes } from "~/editor/hooks/use-page-data";
+import { useDraft, usePreviewTheme, useTheme, useThemes } from "~/editor/hooks/use-page-data";
 import { ColorFieldRow } from "./json-form/fields/color";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import {
@@ -52,7 +52,7 @@ export default function ThemePanel() {
           <div className="flex flex-col">
             <PanelBlockTitle className="-mx-2 my-2">Colors</PanelBlockTitle>
             <div className="grid grid-cols-2 gap-x-3 text-sm flex-col gap-y-3 pb-2">
-              {Object.entries(draft.theme.colors)
+              {Object.entries(theme.colors)
                 // Don't show base200 and base300 in the color picker because they are automatically computed
                 .filter(
                   ([colorType]) =>
@@ -128,7 +128,7 @@ export default function ThemePanel() {
 
             <PanelBlockTitle className="-mx-2 my-2">Typography</PanelBlockTitle>
             <div className="text-sm flex flex-col gap-y-4 p-2">
-              {Object.entries(draft.theme.typography)
+              {Object.entries(theme.typography)
                 .filter((obj) => obj[0] === "body" || obj[0] === "heading")
                 .map(([fontType, font]) => (
                   <div key={fontType}>
@@ -162,7 +162,7 @@ export default function ThemePanel() {
                   Can be changed for fonts that are too small or too big
                 </Text>
                 <Select.Root
-                  defaultValue={`${draft.theme.typography.base}`}
+                  defaultValue={`${theme.typography.base}`}
                   size="2"
                   onValueChange={(chosen) => {
                     draft.setTheme({
@@ -324,7 +324,8 @@ function DebugTab() {
       whiteSpace: "pre-wrap",
     }),
   );
-  const { previewTheme, theme } = useDraft();
+  const previewTheme = usePreviewTheme();
+  const theme = useTheme();
   return (
     <div className="overflow-y-auto scrollbar-thin grow-0 max-h-[92cqh]">
       {previewTheme && (

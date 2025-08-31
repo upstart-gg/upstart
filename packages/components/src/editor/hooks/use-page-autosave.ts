@@ -2,26 +2,28 @@ import { useDebounceCallback } from "usehooks-ts";
 import { useEditorHelpers, type PageSavePayload, type SiteSavePayload } from "./use-editor";
 import {
   useDraft,
-  usePageInfo,
+  usePage,
   useSectionsSubscribe,
   usePageAttributesSubscribe,
   useSiteAttributesSubscribe,
   usePagePathSubscribe,
   useThemeSubscribe,
+  useSite,
 } from "./use-page-data";
 
 const AUTO_SAVE_MIN_INTERVAL = 1000; // Auto save every N seconds
 
 export function usePageAutoSave() {
   const draft = useDraft();
-  const pageConfig = usePageInfo();
+  const pageConfig = usePage();
+  const site = useSite();
   const { onSavePage, onSaveSite } = useEditorHelpers();
 
   const savePage = useDebounceCallback(async (data: PageSavePayload["data"]) => {
     await onSavePage?.({
       pageId: pageConfig.id,
       pageVersionId: "latest",
-      siteId: pageConfig.siteId,
+      siteId: site.id,
       data,
     });
     draft.setDirty(false);
@@ -29,7 +31,7 @@ export function usePageAutoSave() {
 
   const saveSite = useDebounceCallback(async (data: SiteSavePayload["data"]) => {
     await onSaveSite?.({
-      siteId: pageConfig.siteId,
+      siteId: site.id,
       data,
     });
     draft.setDirty(false);

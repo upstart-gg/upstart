@@ -26,6 +26,7 @@ export default defineConfig(({ mode }) => ({
         "src/shared/components/Page.tsx",
         "src/shared/utils/get-theme-css.ts",
       ],
+
       outDir: "dist/types",
     }),
   ],

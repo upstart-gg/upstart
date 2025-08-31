@@ -32,15 +32,25 @@
         "id": "_default_",
         "label": "Home",
         "path": "/",
-        "tags": ["navbar"],
-        "sectionsPlan": []
+        "attributes": {
+          "title": "Home",
+          "colorPreset": { "color": "base-100" },
+          "path": "/",
+          "description": "The main landing page",
+          "keywords": "home,landing,welcome"
+        }
       },
       {
         "id": "_page_2",
         "label": "Second page",
         "path": "/secondPage",
-        "tags": ["navbar"],
-        "sectionsPlan": []
+        "attributes": {
+          "title": "Second Page",
+          "colorPreset": { "color": "base-100" },
+          "path": "/secondPage",
+          "description": "The second page",
+          "keywords": "second,page"
+        }
       }
     ],
     "attributes": {

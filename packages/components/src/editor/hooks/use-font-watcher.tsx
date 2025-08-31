@@ -7,7 +7,7 @@ import type { Theme } from "@upstart.gg/sdk/shared/theme";
  */
 export function useFontWatcher() {
   const draft = useDraft();
-  const themeUsed = draft.previewTheme ?? draft.theme;
+  const themeUsed = draft.previewTheme ?? draft.site.theme;
   useEffect(() => {
     buildHtmlHeadLinks();
     updateLinks(themeUsed.typography);

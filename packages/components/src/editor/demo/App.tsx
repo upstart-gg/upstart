@@ -18,7 +18,7 @@ export default function App({ path, config }: { path: string; config?: SiteAndPa
   const pageId = (siteConfig.pages.find((page) => page.id === p) ?? siteConfig.pages[0]).id;
   return (
     <ClientOnly>
-      <InnerEditor config={siteConfig} pageId={pageId}>
+      <InnerEditor config={siteConfig} pageId={pageId} pageVersion="dummy-version">
         <Editor />
       </InnerEditor>
     </ClientOnly>
