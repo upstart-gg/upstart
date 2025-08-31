@@ -1,5 +1,17 @@
 # @upstart.gg/components
 
+## 0.0.129
+
+### Patch Changes
+
+- [#418](https://github.com/upstart-gg/upstart/pull/418) [`9401c1f`](https://github.com/upstart-gg/upstart/commit/9401c1fc93614605bd7792fd09bbba83960b3643) Thanks [@mattallty](https://github.com/mattallty)! - fix: remove @upstart/sdk from optimizeDeps since its root is not resolvable
+
+- [#419](https://github.com/upstart-gg/upstart/pull/419) [`f06033a`](https://github.com/upstart-gg/upstart/commit/f06033a6eda61979b2e039ea23f590dc55f62e0e) Thanks [@mattallty](https://github.com/mattallty)! - chore: update deps
+
+- Updated dependencies [[`df015f9`](https://github.com/upstart-gg/upstart/commit/df015f97f84243ae56485f2f1494cce7c84782d3), [`df015f9`](https://github.com/upstart-gg/upstart/commit/df015f97f84243ae56485f2f1494cce7c84782d3), [`df015f9`](https://github.com/upstart-gg/upstart/commit/df015f97f84243ae56485f2f1494cce7c84782d3)]:
+  - @upstart.gg/sdk@0.0.129
+  - @upstart.gg/style-system@0.0.129
+
 ## 0.0.128
 
 ### Patch Changes
