@@ -9,6 +9,7 @@ import { createIdGenerator, type ToolInvocation } from "ai";
 import {
   useDraftHelpers,
   useGenerationState,
+  usePage,
   useSite,
   useSitemap,
   useSitePrompt,
@@ -97,6 +98,7 @@ export default function Chat() {
   const { setImagesSearchResults } = useEditorHelpers();
   const generationState = useGenerationState();
   const site = useSite();
+  const page = usePage();
   const sitemap = useSitemap();
   const siteThemes = useThemes();
   const [userLanguage, setUserLanguage] = useState<string>();
@@ -223,7 +225,7 @@ What should we work on together? 🤖`,
     experimental_prepareRequestBody({ requestData, ...rest }) {
       return {
         ...rest,
-        requestData: { site, sitemap, flow, generationState, userLanguage } satisfies CallContextProps,
+        requestData: { site, sitemap, page, flow, generationState, userLanguage } satisfies CallContextProps,
       };
     },
     generateId: createIdGenerator({
