@@ -105,6 +105,7 @@ export async function createTable(
       };
     }
   });
+  
   const data = {
     name,
     description: `Table created by Upstart for ${name}`,
