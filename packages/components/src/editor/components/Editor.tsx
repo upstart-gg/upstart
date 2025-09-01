@@ -64,23 +64,17 @@ export default function Editor(props: EditorProps) {
   useBeforeUnload(() => !!draft.dirty, "You have unsaved changes. Are you sure you want to leave?");
 
   useEffect(() => {
-    const themeUsed = draft.previewTheme ?? draft.theme;
+    const themeUsed = draft.previewTheme ?? draft.site.theme;
     if (themeUsed) {
       tw(css(getThemeCss(themeUsed)));
     }
-  }, [draft.previewTheme, draft.theme]);
+  }, [draft.previewTheme, draft.site.theme]);
 
   if (!editorEnabled) {
     return (
       <div className="@container">
         <Suspense>
-          <Page
-            page={{
-              ...draft,
-              attributes: draft.pageAttributes,
-            }}
-            site={{ ...draft, attributes: draft.siteAttributes }}
-          />
+          <Page page={draft.page} site={draft.site} />
         </Suspense>
       </div>
     );

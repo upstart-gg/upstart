@@ -26,8 +26,8 @@ export interface EditorWrapperRef {
 }
 
 export type EditorWrapperProps = {
-  pageVersion?: string;
-  pageId?: string;
+  pageVersion: string;
+  pageId: string;
   config: SiteAndPagesConfig;
   logoLink?: string;
   /**
@@ -86,7 +86,6 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
           : ((urlParams.get("selectedSectionId") as EditorState["selectedSectionId"]) ?? undefined),
         modal: (urlParams.get("modal") as EditorState["modal"]) ?? undefined,
         panelPosition: (urlParams.get("panelPosition") as EditorState["panelPosition"]) ?? undefined,
-        sitePrompt: site.sitePrompt,
       }),
     ).current;
 
@@ -94,23 +93,11 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
 
     const draftStore = useRef(
       createDraftStore({
-        siteId: site.id,
-        hostname: site.hostname,
-        sitemap: site.sitemap,
-        siteLabel: site.label,
-        id: page.id,
-        version: pageVersion,
-        path: page.path,
-        label: page.label,
-        sections: page.sections,
-        pageAttributes: page.attributes,
-        siteAttributes: site.attributes,
-        datasources: site.datasources,
-        datarecords: site.datarecords,
-        pages,
-        // todo: pass the appropriate data for the page
-        data: {},
-        theme: site.theme,
+        site,
+        page: {
+          ...page,
+          version: pageVersion,
+        },
       }),
     ).current;
 

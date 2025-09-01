@@ -1,4 +1,4 @@
-import type { GenericPageConfig } from "./page";
+import type { VersionedPage } from "./page";
 import type { Site } from "./site";
 import type { Sitemap } from "./sitemap";
 
@@ -6,7 +6,6 @@ export type GenerationState = {
   isReady: boolean;
   hasSitemap: boolean;
   hasThemesGenerated: boolean;
-  pages: GenericPageConfig[];
   sitemap: Sitemap;
 };
 
@@ -16,13 +15,13 @@ export type CallContextProps = {
    */
   site: Site;
   /**
-   * All pages in the site.
+   * Sitemap
    */
-  pages: GenericPageConfig[];
+  sitemap: Sitemap;
   /**
-   * Current page ID. Undefined if flow is "setup" and no paage has been created yet.
+   * Current page. Undefined if flow is "setup" and no page has been created yet.
    */
-  currentPageId?: string;
+  page?: VersionedPage;
   /**
    * When generating a new site, the flow should be "setup".
    * Otherwise, it should be "edit".
