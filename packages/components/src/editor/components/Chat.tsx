@@ -21,11 +21,13 @@ import { Spinner } from "@upstart.gg/style-system/system";
 import { BiStopCircle } from "react-icons/bi";
 import { type Theme, processTheme } from "@upstart.gg/sdk/shared/theme";
 import type { CallContextProps } from "@upstart.gg/sdk/shared/context";
+import { defineDataRecord } from "@upstart.gg/sdk/shared/datarecords";
 import { useDeepCompareEffect } from "use-deep-compare";
 import type { ImageSearchResultsType, SimpleImageMetadata } from "@upstart.gg/sdk/shared/images";
 import type { Page } from "@upstart.gg/sdk/shared/page";
 import type { Sitemap } from "@upstart.gg/sdk/shared/sitemap";
 import { useEditorHelpers } from "../hooks/use-editor";
+import { defineDatasource } from "@upstart.gg/sdk/shared/datasources";
 
 const WEB_SEARCH_ENABLED = false;
 
@@ -287,14 +289,14 @@ What should we work on together? 🤖`,
         case "generateDatasource": {
           const datasource = toolInvocation.result as Parameters<typeof draftHelpers.addDatasource>[0];
           console.log("Generated datasource", datasource);
-          draftHelpers.addDatasource(datasource);
+          draftHelpers.addDatasource(defineDatasource(datasource));
           break;
         }
 
         case "generateDatarecord": {
           const datarecord = toolInvocation.result as Parameters<typeof draftHelpers.addDatarecord>[0];
           console.log("Generated data record", datarecord);
-          draftHelpers.addDatarecord(datarecord);
+          draftHelpers.addDatarecord(defineDataRecord(datarecord));
           break;
         }
 
