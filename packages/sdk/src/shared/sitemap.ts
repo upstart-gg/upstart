@@ -1,7 +1,7 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { StringEnum } from "./utils/string-enum";
 import { pageSchema } from "./page";
-import { resolveSchema } from "./utils/schema";
+import { resolveSchema, toLLMSchema } from "./utils/schema";
 
 export const sitemapPageEntry = Type.Pick(pageSchema, ["id", "label", "path", "attributes"]);
 export type SitemapPageEntry = Static<typeof sitemapPageEntry>;
@@ -78,7 +78,7 @@ export const sitemapEntry = Type.Composite(
 export const sitemapSchema = Type.Array(sitemapEntry);
 export type Sitemap = Static<typeof sitemapSchema>;
 
-export const sitemapSchemaLLM = resolveSchema(
+export const sitemapSchemaLLM = toLLMSchema(
   Type.Array(
     Type.Composite([
       sitemapEntry,

@@ -364,18 +364,13 @@ function resolveSchemaRecursive(schema: TSchema, visited: Set<string>): TSchema 
  * Also removes properties that have "ai:hidden" set to true
  */
 export function toLLMSchema<T extends TSchema>(schema: T): T {
-  return cleanSchemaRecursive(schema) as T;
+  return cleanSchemaRecursive(inlineSchemaRefs(schema)) as T;
 }
 
 /**
  * Recursively removes custom metadata from schema and filters out properties with ai:hidden = true
  */
 function cleanSchemaRecursive(schema: TSchema): TSchema {
-  // Handle primitive types and null
-  if (!schema || typeof schema !== "object") {
-    return schema;
-  }
-
   // Create a new object without custom metadata properties
   const cleaned: Record<string, unknown> = {};
 
@@ -466,7 +461,7 @@ interface SchemaWithDefs extends TSchema {
  * @param ajv - The AJV instance containing the referenced schemas
  * @returns A new schema with references inlined in $defs
  */
-export function inlineSchemaRefs<T extends TSchema>(schema: T): T & { $defs: Record<string, TSchema> } {
+export function inlineSchemaRefs<T extends TSchema>(schema: T): T {
   const inlinedSchema = JSON.parse(JSON.stringify(schema)) as T & SchemaWithDefs;
   const collectedRefs = new Set<string>();
 
@@ -555,7 +550,8 @@ export function inlineSchemaRefs<T extends TSchema>(schema: T): T & { $defs: Rec
     }
 
     // Add to $defs
-    inlinedSchema.$defs![uniqueDefKey] = referencedSchema.schema as TSchema;
+    const { $id, ...schemaWithoutId } = referencedSchema.schema as TSchema;
+    inlinedSchema.$defs![uniqueDefKey] = schemaWithoutId;
 
     // Map original reference to local reference
     refToLocalMap.set(refId, `#/$defs/${uniqueDefKey}`);
@@ -566,32 +562,71 @@ export function inlineSchemaRefs<T extends TSchema>(schema: T): T & { $defs: Rec
 
   // Recursively inline references in the newly added $defs schemas
   if (finalSchema.$defs) {
-    for (const [defKey, defSchema] of Object.entries(finalSchema.$defs)) {
-      collectRefs(defSchema);
+    // Keep processing until no new references are found
+    let foundNewRefs = true;
+    while (foundNewRefs) {
+      foundNewRefs = false;
+      const newRefsFound = new Set<string>();
 
-      // Process any new references found in the $defs
-      for (const refId of collectedRefs) {
-        if (!refToLocalMap.has(refId)) {
-          const referencedSchema = ajv.getSchema(refId);
-          if (referencedSchema?.schema) {
-            const newDefKey =
-              refId.replace(/[^a-zA-Z0-9_-]/g, "_").replace(/^_+|_+$/g, "") ||
-              `ref_${Object.keys(finalSchema.$defs).length}`;
+      // Check each $defs schema for new references
+      for (const [defKey, defSchema] of Object.entries(finalSchema.$defs)) {
+        const defCollectedRefs = new Set<string>();
 
-            let uniqueNewDefKey = newDefKey;
-            let counter = 1;
-            while (finalSchema.$defs[uniqueNewDefKey]) {
-              uniqueNewDefKey = `${newDefKey}_${counter}`;
-              counter++;
+        // Collect refs specifically for this schema
+        function collectDefsRefs(obj: unknown): void {
+          if (typeof obj !== "object" || obj === null) return;
+
+          if (Array.isArray(obj)) {
+            obj.forEach(collectDefsRefs);
+            return;
+          }
+
+          for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
+            if (key === "$ref" && typeof value === "string") {
+              const refId = value.startsWith("#/") ? value : value;
+              if (!refId.startsWith("#/")) {
+                defCollectedRefs.add(refId);
+              }
+            } else {
+              collectDefsRefs(value);
             }
+          }
+        }
 
-            finalSchema.$defs[uniqueNewDefKey] = referencedSchema.schema as TSchema;
-            refToLocalMap.set(refId, `#/$defs/${uniqueNewDefKey}`);
+        collectDefsRefs(defSchema);
+
+        // Process any new references found in this $defs schema
+        for (const refId of defCollectedRefs) {
+          if (!refToLocalMap.has(refId)) {
+            newRefsFound.add(refId);
+            foundNewRefs = true;
           }
         }
       }
 
-      // Update the def schema with converted references
+      // Add all newly found references to $defs
+      for (const refId of newRefsFound) {
+        const referencedSchema = ajv.getSchema(refId);
+        if (referencedSchema?.schema) {
+          const newDefKey =
+            refId.replace(/[^a-zA-Z0-9_-]/g, "_").replace(/^_+|_+$/g, "") ||
+            `ref_${Object.keys(finalSchema.$defs).length}`;
+
+          let uniqueNewDefKey = newDefKey;
+          let counter = 1;
+          while (finalSchema.$defs[uniqueNewDefKey]) {
+            uniqueNewDefKey = `${newDefKey}_${counter}`;
+            counter++;
+          }
+
+          finalSchema.$defs[uniqueNewDefKey] = referencedSchema.schema as TSchema;
+          refToLocalMap.set(refId, `#/$defs/${uniqueNewDefKey}`);
+        }
+      }
+    }
+
+    // Finally, update all $defs schemas with converted references
+    for (const [defKey, defSchema] of Object.entries(finalSchema.$defs)) {
       finalSchema.$defs[defKey] = convertRefsToLocal(defSchema, refToLocalMap) as TSchema;
     }
   }

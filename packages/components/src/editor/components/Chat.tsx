@@ -65,7 +65,7 @@ const msgCommon = tx(
       flexWrap: "wrap",
       justifyContent: "space-between",
       gap: ".5rem",
-      marginTop: "1rem",
+      marginBlock: "1rem",
       "& > button": {
         backgroundColor: "var(--violet-10)",
         color: "#fff",
@@ -327,7 +327,8 @@ What should we work on together? 🤖`,
       className={tx(
         "flex flex-col mx-auto w-full",
         {
-          "rounded-xl animate-border h-fill my-12": generationState.isReady === false,
+          "rounded-xl animate-border h-[calc(100%-6rem)] max-h-[calc(100%-6rem)] my-[3rem]":
+            generationState.isReady === false,
           "rounded-tr-xl bg-gray-50 max-h-[inherit]": generationState.isReady === true,
         },
         css({
@@ -441,7 +442,7 @@ What should we work on together? 🤖`,
         )}
         {error && (
           <div className={tx(msgCommon, "bg-red-200 text-red-800 text-sm")}>
-            <p>An error occured: {error.message}</p>
+            <p>An error occured. {error.message ?? "Please retry."}</p>
             <button
               type="button"
               className={tx(
@@ -467,8 +468,9 @@ What should we work on together? 🤖`,
           // "[&:has(textarea:focus)]:(ring-2 ring-upstart-700)",
         )}
       >
-        <TextArea
+        <textarea
           ref={promptRef}
+          // biome-ignore lint/a11y/noAutofocus: <explanation>
           autoFocus
           onChange={handleInputChange}
           onKeyDown={(e) => {
@@ -484,16 +486,15 @@ What should we work on together? 🤖`,
               ? undefined
               : "Add a section just below the navbar containing a paragraph with a short description of the site."
           }
-          size="2"
           className={tx(
+            "form-textarea ",
             generationState.isReady === false && "!text-fluid-sm",
-            "h-full w-full scrollbar-thin p-2 !bg-white !pb-9 !border-0 !outline-0 !box-shadow-none [&>textarea]:focus:(!outline-0 !shadow-none !ring-0 !border-0)",
+            "h-full w-full rounded scrollbar-thin p-2 !bg-white !pb-9 border-upstart-300 shadow-inner focus:(!outline-0 !ring-upstart-500 !border-upstart-500)",
           )}
         />
         <div
           className={tx(
-            "flex justify-between items-center h-9 text-gray-500 absolute left-[9px] right-[9px] rounded bottom-2.5 px-2 z-50",
-            { "bg-white": !messagingDisabled, "bg-transparent": messagingDisabled },
+            "flex justify-between items-center h-9 text-gray-500 absolute left-[9px] right-[9px] rounded bottom-2.5 px-2 z-50 bg-white",
           )}
         >
           <button type="button" className={tx("hover:bg-upstart-200 p-1 rounded inline-flex text-sm gap-1")}>
@@ -677,7 +678,7 @@ function ToolRenderer({
             exit={{ opacity: 0, height: 0 }}
           >
             <Spinner size="1" className="w-4" />
-            <Text size="2">{waitLabel}</Text>
+            <span>{waitLabel}</span>
           </motion.div>
         ) : (
           <motion.div
@@ -687,7 +688,7 @@ function ToolRenderer({
             exit={{ opacity: 0, height: 0 }}
           >
             <MdDone className="w-4 h-4 text-green-600" />
-            <Text size="2">{waitLabel}</Text>
+            <span>{waitLabel}</span>
           </motion.div>
         )}
       </AnimatePresence>

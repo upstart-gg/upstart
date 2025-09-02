@@ -17,7 +17,7 @@ export type { JSONSchemaType };
 export const pageAttributesSchema = Type.Object({
   colorPreset: colorPresetRef({
     title: "Color",
-    default: { color: "bg-base-100" },
+    default: { color: "base-100" },
     examples: [
       { color: "base-100" },
       { color: "primary-500" },

@@ -209,7 +209,7 @@ export default function Editor(props: EditorProps) {
         className={tx(
           "grid relative transition-all mx-auto w-full",
           getEditorCss(generationState, chatVisible),
-          "min-h-[100dvh] max-h-[100dvh]",
+          "h-[100dvh] min-h-[100dvh] max-h-[100dvh]",
           generationState.isReady === false &&
             css({
               background: `linear-gradient(120deg,

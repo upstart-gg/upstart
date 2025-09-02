@@ -1,5 +1,4 @@
 import { Type, type Static } from "@sinclair/typebox";
-import { generateId, type Section } from "./bricks";
 import { datarecordsList } from "./datarecords/types";
 import { datasourcesList } from "./datasources/types";
 import { pageSchema } from "./page";

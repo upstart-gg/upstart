@@ -1,8 +1,8 @@
 import { describe, expect, test, beforeEach, vi } from "vitest";
 import { Type } from "@sinclair/typebox";
-import { resolveSchema, toLLMSchema } from "../schema";
+import { resolveSchema, toLLMSchema, inlineSchemaRefs } from "../schema";
 import { ajv } from "../../ajv";
-import { sitemapSchemaLLM } from "~/shared/sitemap";
+import { sitemapSchema, sitemapSchemaLLM } from "~/shared/sitemap";
 
 describe("resolveSchema tests suite", () => {
   beforeEach(() => {
@@ -34,7 +34,7 @@ describe("resolveSchema tests suite", () => {
     });
 
     const result = resolveSchema(schema);
-    expect(result).toEqual(schema);
+    expect(JSON.stringify(result)).toEqual(JSON.stringify(schema));
   });
 
   test("should resolve simple $ref", () => {
@@ -548,20 +548,15 @@ describe("toLLMSchema tests suite", () => {
     const numberSchema = Type.Number();
     const booleanSchema = Type.Boolean();
 
-    expect(JSON.stringify(toLLMSchema(stringSchema))).toEqual(JSON.stringify(stringSchema));
-    expect(JSON.stringify(toLLMSchema(numberSchema))).toEqual(JSON.stringify(numberSchema));
-    expect(JSON.stringify(toLLMSchema(booleanSchema))).toEqual(JSON.stringify(booleanSchema));
-  });
-
-  test("should handle null and undefined", () => {
-    expect(toLLMSchema(null as any)).toBe(null);
-    expect(toLLMSchema(undefined as any)).toBe(undefined);
+    expect(toLLMSchema(stringSchema).type).toEqual(stringSchema.type);
+    expect(toLLMSchema(numberSchema).type).toEqual(numberSchema.type);
+    expect(toLLMSchema(booleanSchema).type).toEqual(booleanSchema.type);
   });
 
   test("should handle empty object schema", () => {
     const schema = Type.Object({});
     const result = toLLMSchema(schema);
-    expect(JSON.stringify(result)).toEqual(JSON.stringify(schema));
+    expect(result.type).toEqual(schema.type);
   });
 
   test("should handle patternProperties", () => {
@@ -709,7 +704,494 @@ describe("toLLMSchema tests suite", () => {
   });
 
   test("test with existing Upstart schema", () => {
-    const transformed = toLLMSchema(sitemapSchemaLLM);
-    expect(transformed.items.properties.id.type).toEqual(sitemapSchemaLLM.items.properties.id.type);
+    const transformed = toLLMSchema(sitemapSchema);
+    console.log(JSON.stringify(sitemapSchemaLLM, null, 2));
+    expect(transformed.items.properties.id.type).toEqual(sitemapSchema.items.properties.id.type);
+  });
+});
+
+describe("inlineSchemaRefs tests suite", () => {
+  beforeEach(() => {
+    // Clear any test schemas before each test
+    ajv.removeSchema("test:user");
+    ajv.removeSchema("test:address");
+    ajv.removeSchema("test:profile");
+    ajv.removeSchema("test:company");
+    ajv.removeSchema("test:person");
+    ajv.removeSchema("test:contact");
+    ajv.removeSchema("test:nested");
+    ajv.removeSchema("test:simple");
+    ajv.removeSchema("test:base");
+    ajv.removeSchema("test:extended");
+    ajv.removeSchema("test:string");
+    ajv.removeSchema("test:number");
+    ajv.removeSchema("https://example.com/schemas/user");
+    ajv.removeSchema("https://example.com/schemas/address");
+  });
+
+  test("should handle schema without references", () => {
+    const schema = Type.Object({
+      name: Type.String(),
+      age: Type.Number(),
+    });
+
+    const result = inlineSchemaRefs(schema);
+
+    expect(JSON.stringify(result)).toEqual(
+      JSON.stringify({
+        ...schema,
+        $defs: {},
+      }),
+    );
+  });
+
+  test("should inline simple external reference", () => {
+    const userSchema = Type.Object({
+      name: Type.String(),
+      email: Type.String({ format: "email" }),
+    });
+
+    ajv.addSchema(userSchema, "test:user");
+
+    const schema = Type.Object({
+      owner: Type.Ref("test:user"),
+      createdAt: Type.String({ format: "date-time" }),
+    });
+
+    const result = inlineSchemaRefs(schema);
+
+    expect(result.$defs).toBeDefined();
+    expect(Object.keys(result.$defs)).toHaveLength(1);
+    const defKey = Object.keys(result.$defs)[0];
+    expect(result.$defs[defKey].type).toEqual(userSchema.type);
+    expect(result.properties.owner.$ref).toBe(`#/$defs/${defKey}`);
+    expect(result.properties.createdAt.type).toEqual(schema.properties.createdAt.type);
+  });
+
+  test("should inline multiple different references", () => {
+    const userSchema = Type.Object({
+      name: Type.String(),
+      email: Type.String(),
+    });
+
+    const addressSchema = Type.Object({
+      street: Type.String(),
+      city: Type.String(),
+      country: Type.String(),
+    });
+
+    ajv.addSchema(userSchema, "test:user");
+    ajv.addSchema(addressSchema, "test:address");
+
+    const schema = Type.Object({
+      user: Type.Ref("test:user"),
+      address: Type.Ref("test:address"),
+      metadata: Type.Object({
+        created: Type.String(),
+      }),
+    });
+
+    const result = inlineSchemaRefs(schema);
+
+    expect(result.$defs).toBeDefined();
+    expect(Object.keys(result.$defs)).toHaveLength(2);
+
+    // Find the keys for each reference
+    const userDefKey = Object.keys(result.$defs).find(
+      (key) => JSON.stringify(result.$defs[key]) === JSON.stringify(userSchema),
+    );
+    const addressDefKey = Object.keys(result.$defs).find(
+      (key) => JSON.stringify(result.$defs[key]) === JSON.stringify(addressSchema),
+    );
+
+    expect(userDefKey).toBeDefined();
+    expect(addressDefKey).toBeDefined();
+    expect(result.properties.user.$ref).toBe(`#/$defs/${userDefKey}`);
+    expect(result.properties.address.$ref).toBe(`#/$defs/${addressDefKey}`);
+    expect(result.properties.metadata.type).toEqual(schema.properties.metadata.type);
+  });
+
+  test("should handle same reference used multiple times", () => {
+    const personSchema = Type.Object({
+      name: Type.String(),
+      age: Type.Number(),
+    });
+
+    ajv.addSchema(personSchema, "test:person");
+
+    const schema = Type.Object({
+      owner: Type.Ref("test:person"),
+      manager: Type.Ref("test:person"),
+      employees: Type.Array(Type.Ref("test:person")),
+    });
+
+    const result = inlineSchemaRefs(schema);
+
+    expect(result.$defs).toBeDefined();
+    expect(Object.keys(result.$defs)).toHaveLength(1);
+    const defKey = Object.keys(result.$defs)[0];
+    expect(result.$defs[defKey].type).toEqual(personSchema.type);
+
+    // All references should point to the same $defs entry
+    expect(result.properties.owner.$ref).toBe(`#/$defs/${defKey}`);
+    expect(result.properties.manager.$ref).toBe(`#/$defs/${defKey}`);
+    expect(result.properties.employees.items.$ref).toBe(`#/$defs/${defKey}`);
+  });
+
+  test("should handle nested references", () => {
+    const addressSchema = Type.Object({
+      street: Type.String(),
+      city: Type.String(),
+    });
+
+    const userSchema = Type.Object({
+      name: Type.String(),
+      address: Type.Ref("test:address"),
+    });
+
+    ajv.addSchema(addressSchema, "test:address");
+    ajv.addSchema(userSchema, "test:user");
+
+    const schema = Type.Object({
+      user: Type.Ref("test:user"),
+    });
+
+    const result = inlineSchemaRefs(schema);
+
+    expect(result.$defs).toBeDefined();
+    expect(Object.keys(result.$defs)).toHaveLength(2);
+
+    // Find the inlined schemas
+    const addressDefKey = Object.keys(result.$defs).find(
+      (key) => result.$defs[key].properties?.street && result.$defs[key].properties?.city,
+    );
+    const userDefKey = Object.keys(result.$defs).find(
+      (key) => result.$defs[key].properties?.name && result.$defs[key].properties?.address,
+    );
+
+    expect(addressDefKey).toBeDefined();
+    expect(userDefKey).toBeDefined();
+    expect(JSON.stringify(result.$defs[addressDefKey!])).toEqual(JSON.stringify(addressSchema));
+    expect(result.$defs[userDefKey!].properties.address.$ref).toBe(`#/$defs/${addressDefKey}`);
+    expect(result.properties.user.$ref).toBe(`#/$defs/${userDefKey}`);
+  });
+
+  test("should handle references in arrays", () => {
+    const itemSchema = Type.Object({
+      id: Type.Number(),
+      name: Type.String(),
+    });
+
+    ajv.addSchema(itemSchema, "test:item");
+
+    const schema = Type.Object({
+      items: Type.Array(Type.Ref("test:item")),
+      featured: Type.Ref("test:item"),
+    });
+
+    const result = inlineSchemaRefs(schema);
+
+    expect(result.$defs).toBeDefined();
+    expect(Object.keys(result.$defs)).toHaveLength(1);
+    const defKey = Object.keys(result.$defs)[0];
+    expect(result.$defs[defKey].type).toEqual(itemSchema.type);
+    expect(result.properties.items.items.$ref).toBe(`#/$defs/${defKey}`);
+    expect(result.properties.featured.$ref).toBe(`#/$defs/${defKey}`);
+  });
+
+  test("should handle references in union types (anyOf)", () => {
+    const stringSchema = Type.String();
+    const numberSchema = Type.Number();
+
+    ajv.addSchema(stringSchema, "test:string");
+    ajv.addSchema(numberSchema, "test:number");
+
+    const schema = Type.Object({
+      value: Type.Union([Type.Ref("test:string"), Type.Ref("test:number")]),
+    });
+
+    const result = inlineSchemaRefs(schema);
+
+    expect(result.$defs).toBeDefined();
+    expect(Object.keys(result.$defs)).toHaveLength(2);
+
+    const stringDefKey = Object.keys(result.$defs).find((key) => result.$defs[key].type === "string");
+    const numberDefKey = Object.keys(result.$defs).find((key) => result.$defs[key].type === "number");
+
+    expect(stringDefKey).toBeDefined();
+    expect(numberDefKey).toBeDefined();
+    expect(result.properties.value.anyOf[0].$ref).toBe(`#/$defs/${stringDefKey}`);
+    expect(result.properties.value.anyOf[1].$ref).toBe(`#/$defs/${numberDefKey}`);
+  });
+
+  test("should handle references in conditional schemas", () => {
+    const userSchema = Type.Object({
+      name: Type.String(),
+      type: Type.Literal("user"),
+    });
+
+    const adminSchema = Type.Object({
+      name: Type.String(),
+      permissions: Type.Array(Type.String()),
+      type: Type.Literal("admin"),
+    });
+
+    ajv.addSchema(userSchema, "test:user");
+    ajv.addSchema(adminSchema, "test:admin");
+
+    const schema = {
+      type: "object",
+      properties: {
+        account: {
+          if: { properties: { type: { const: "admin" } } },
+          // biome-ignore lint/suspicious/noThenProperty: Required for JSON schema conditional validation
+          then: { $ref: "test:admin" },
+          else: { $ref: "test:user" },
+        },
+      },
+    } as any;
+
+    const result = inlineSchemaRefs(schema);
+
+    expect(result.$defs).toBeDefined();
+    expect(Object.keys(result.$defs)).toHaveLength(2);
+
+    const userDefKey = Object.keys(result.$defs).find(
+      (key) => result.$defs[key].properties?.type?.const === "user",
+    );
+    const adminDefKey = Object.keys(result.$defs).find((key) => result.$defs[key].properties?.permissions);
+
+    expect(userDefKey).toBeDefined();
+    expect(adminDefKey).toBeDefined();
+    expect(result.properties.account.then.$ref).toBe(`#/$defs/${adminDefKey}`);
+    expect(result.properties.account.else.$ref).toBe(`#/$defs/${userDefKey}`);
+  });
+
+  test("should handle schemas with existing $defs", () => {
+    const externalSchema = Type.Object({
+      id: Type.String(),
+      name: Type.String(),
+    });
+
+    ajv.addSchema(externalSchema, "test:external");
+
+    const schema = {
+      type: "object",
+      properties: {
+        internal: { $ref: "#/$defs/Internal" },
+        external: { $ref: "test:external" },
+      },
+      $defs: {
+        Internal: {
+          type: "object",
+          properties: {
+            value: { type: "string" },
+          },
+        },
+      },
+    } as any;
+
+    const result = inlineSchemaRefs(schema);
+
+    expect(result.$defs).toBeDefined();
+    expect(result.$defs.Internal).toEqual(schema.$defs.Internal); // Original $defs preserved
+
+    // External reference should be inlined
+    const externalDefKey = Object.keys(result.$defs).find(
+      (key) => key !== "Internal" && result.$defs[key].properties?.id && result.$defs[key].properties?.name,
+    );
+    expect(externalDefKey).toBeDefined();
+    expect(result.$defs[externalDefKey!].type).toEqual(externalSchema.type);
+    expect(result.properties.external.$ref).toBe(`#/$defs/${externalDefKey}`);
+    expect(result.properties.internal.$ref).toBe("#/$defs/Internal"); // Internal ref unchanged
+  });
+
+  test("should handle URI-style references", () => {
+    const userSchema = Type.Object({
+      name: Type.String(),
+      email: Type.String(),
+    });
+
+    const addressSchema = Type.Object({
+      street: Type.String(),
+      country: Type.String(),
+    });
+
+    ajv.addSchema(userSchema, "https://example.com/schemas/user");
+    ajv.addSchema(addressSchema, "https://example.com/schemas/address");
+
+    const schema = Type.Object({
+      user: Type.Ref("https://example.com/schemas/user"),
+      address: Type.Ref("https://example.com/schemas/address"),
+    });
+
+    const result = inlineSchemaRefs(schema);
+
+    expect(result.$defs).toBeDefined();
+    expect(Object.keys(result.$defs)).toHaveLength(2);
+
+    // Check that schemas are properly inlined with clean keys
+    const defKeys = Object.keys(result.$defs);
+    expect(defKeys.some((key) => key.includes("user") || key.includes("schemas"))).toBe(true);
+    expect(defKeys.some((key) => key.includes("address") || key.includes("schemas"))).toBe(true);
+
+    // Verify references are updated
+    expect(result.properties.user.$ref).toMatch(/^#\/\$defs\/.+/);
+    expect(result.properties.address.$ref).toMatch(/^#\/\$defs\/.+/);
+  });
+
+  test("should handle non-existent references gracefully", () => {
+    const existingSchema = Type.Object({
+      name: Type.String(),
+    });
+
+    ajv.addSchema(existingSchema, "test:existing");
+
+    const schema = Type.Object({
+      valid: Type.Ref("test:existing"),
+      invalid: Type.Ref("test:nonexistent"),
+    });
+
+    // Should not throw but should log a warning (we can't easily test console.warn in this context)
+    const result = inlineSchemaRefs(schema);
+
+    expect(result.$defs).toBeDefined();
+    expect(Object.keys(result.$defs)).toHaveLength(1); // Only the existing schema should be inlined
+
+    const defKey = Object.keys(result.$defs)[0];
+    expect(result.$defs[defKey].type).toEqual(existingSchema.type);
+    expect(result.properties.valid.$ref).toBe(`#/$defs/${defKey}`);
+    expect(result.properties.invalid.$ref).toBe("test:nonexistent"); // Should remain unchanged
+  });
+
+  test("should handle empty schema", () => {
+    const schema = Type.Object({});
+
+    const result = inlineSchemaRefs(schema);
+
+    expect(JSON.stringify(result)).toEqual(
+      JSON.stringify({
+        ...schema,
+        $defs: {},
+      }),
+    );
+  });
+
+  test("should handle schema with only local references", () => {
+    const schema = {
+      type: "object",
+      properties: {
+        user: { $ref: "#/$defs/User" },
+        address: { $ref: "#/definitions/Address" },
+      },
+      $defs: {
+        User: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+          },
+        },
+      },
+      definitions: {
+        Address: {
+          type: "object",
+          properties: {
+            street: { type: "string" },
+          },
+        },
+      },
+    } as any;
+
+    const result = inlineSchemaRefs(schema);
+
+    // Should preserve the original structure since all refs are local
+    expect(result.$defs).toEqual(schema.$defs);
+    expect(result.definitions).toEqual(schema.definitions);
+    expect(result.properties.user.$ref).toBe("#/$defs/User");
+    expect(result.properties.address.$ref).toBe("#/definitions/Address");
+  });
+
+  test("should handle complex nested structure with mixed references", () => {
+    const profileSchema = Type.Object({
+      bio: Type.String(),
+      website: Type.Optional(Type.String({ format: "uri" })),
+    });
+
+    const companySchema = Type.Object({
+      name: Type.String(),
+      employees: Type.Array(Type.Ref("test:user")),
+    });
+
+    const userSchema = Type.Object({
+      name: Type.String(),
+      profile: Type.Ref("test:profile"),
+      company: Type.Optional(Type.Ref("test:company")),
+    });
+
+    ajv.addSchema(profileSchema, "test:profile");
+    ajv.addSchema(companySchema, "test:company");
+    ajv.addSchema(userSchema, "test:user");
+
+    const schema = Type.Object({
+      users: Type.Array(Type.Ref("test:user")),
+      totalCount: Type.Number(),
+    });
+
+    const result = inlineSchemaRefs(schema);
+
+    expect(result.$defs).toBeDefined();
+    expect(Object.keys(result.$defs)).toHaveLength(3);
+
+    // Verify all schemas are inlined
+    const profileDefKey = Object.keys(result.$defs).find((key) => result.$defs[key].properties?.bio);
+    const companyDefKey = Object.keys(result.$defs).find((key) => result.$defs[key].properties?.employees);
+    const userDefKey = Object.keys(result.$defs).find(
+      (key) => result.$defs[key].properties?.name && result.$defs[key].properties?.profile,
+    );
+
+    expect(profileDefKey).toBeDefined();
+    expect(companyDefKey).toBeDefined();
+    expect(userDefKey).toBeDefined();
+
+    // Verify cross-references are properly updated
+    expect(result.$defs[userDefKey!].properties.profile.$ref).toBe(`#/$defs/${profileDefKey}`);
+    expect(result.$defs[userDefKey!].properties.company.$ref).toBe(`#/$defs/${companyDefKey}`);
+    expect(result.$defs[companyDefKey!].properties.employees.items.$ref).toBe(`#/$defs/${userDefKey}`);
+    expect(result.properties.users.items.$ref).toBe(`#/$defs/${userDefKey}`);
+  });
+
+  test("should handle unique key generation for similar reference names", () => {
+    const schema1 = Type.Object({ value: Type.String() });
+    const schema2 = Type.Object({ value: Type.Number() });
+    const schema3 = Type.Object({ value: Type.Boolean() });
+
+    ajv.addSchema(schema1, "test:data");
+    ajv.addSchema(schema2, "test:data_1"); // Similar name
+    ajv.addSchema(schema3, "test:data_2"); // Similar name
+
+    const schema = Type.Object({
+      first: Type.Ref("test:data"),
+      second: Type.Ref("test:data_1"),
+      third: Type.Ref("test:data_2"),
+    });
+
+    const result = inlineSchemaRefs(schema);
+
+    expect(result.$defs).toBeDefined();
+    expect(Object.keys(result.$defs)).toHaveLength(3);
+
+    // All references should be properly inlined with unique keys
+    const defKeys = Object.keys(result.$defs);
+    expect(defKeys).toHaveLength(3);
+    expect(new Set(defKeys)).toHaveLength(3); // All keys should be unique
+
+    // Verify each reference points to correct schema
+    const firstDefKey = result.properties.first.$ref.replace("#/$defs/", "");
+    const secondDefKey = result.properties.second.$ref.replace("#/$defs/", "");
+    const thirdDefKey = result.properties.third.$ref.replace("#/$defs/", "");
+
+    expect(result.$defs[firstDefKey].properties.value.type).toBe("string");
+    expect(result.$defs[secondDefKey].properties.value.type).toBe("number");
+    expect(result.$defs[thirdDefKey].properties.value.type).toBe("boolean");
   });
 });

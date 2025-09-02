@@ -2,11 +2,10 @@ import type { DatasourceProvider, Datasource } from "./datasources/types";
 import { schemasMap } from "./datasources/schemas";
 import type { TArray } from "@sinclair/typebox";
 
-export function defineDatasource<D extends Omit<Datasource, "id">>(datasource: D) {
+export function defineDatasource<D extends Datasource>(datasource: D) {
   return {
-    id: crypto.randomUUID(),
     ...datasource,
-    schema: mapDatasourceSchema(
+    schema: mapDatasourceSchemaWithInternalProperties(
       datasource.provider === "custom" ? datasource.schema : getSchemaByProvider(datasource.provider),
     ),
   };
@@ -19,7 +18,7 @@ function getSchemaByProvider(provider: Exclude<DatasourceProvider, "custom">) {
 /**
  * Map a datasource schema to include $id, $createdAt, and $updatedAt properties.
  */
-export function mapDatasourceSchema(schema: TArray): Datasource["schema"] {
+export function mapDatasourceSchemaWithInternalProperties(schema: TArray): Datasource["schema"] {
   const { items, ...rest } = schema;
   return {
     ...rest,

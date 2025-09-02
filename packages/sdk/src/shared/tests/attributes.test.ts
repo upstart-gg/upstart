@@ -11,7 +11,7 @@ describe("Attributes test suite", () => {
     it("should resolve attributes with default values", () => {
       const attributes = {};
       expect(resolvePageAttributes(attributes)).toMatchObject<PageAttributes>({
-        colorPreset: { color: "bg-base-100" },
+        colorPreset: { color: "base-100" },
         robotsIndexing: true,
         path: "/",
         title: "Untitled",

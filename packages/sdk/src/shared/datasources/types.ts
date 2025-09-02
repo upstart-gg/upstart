@@ -1,4 +1,4 @@
-import { Type, type Static, type TObject, type TArray } from "@sinclair/typebox";
+import { Type, type Static } from "@sinclair/typebox";
 import { youtubeListOptions } from "./external/youtube/list/options";
 import { httpJsonOptions } from "./external/http-json/options";
 import { rssOptions } from "./external/rss/options";

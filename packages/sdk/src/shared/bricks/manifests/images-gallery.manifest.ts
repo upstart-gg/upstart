@@ -35,7 +35,7 @@ export const manifest = defineBrickManifest({
     colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",
-        default: { color: "bg-base-100 text-base-100-content" },
+        default: { color: "base-100" },
       }),
     ),
     loop: Type.Optional(loopRef()),

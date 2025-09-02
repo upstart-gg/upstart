@@ -14,9 +14,6 @@ const vite = await createServer({
   server: {
     middlewareMode: true,
     warmup: true,
-    proxy: {
-      "/editor/chat": "http://localhost:8080",
-    },
   },
   appType: "custom",
   base,

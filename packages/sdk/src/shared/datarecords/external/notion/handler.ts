@@ -4,9 +4,10 @@ import {
   type DatabaseObjectResponse,
   type PageObjectResponse,
 } from "@notionhq/client";
-import type { Schema, Table, TablesList } from "../../types";
+import type { Table, TablesList } from "../../types";
 import type { NotionOptions } from "./options";
 import { buildCreatePageParameters } from "./utils";
+import type { TObject } from "@sinclair/typebox";
 export type { CreateDatabaseResponse, DatabaseObjectResponse };
 
 export async function saveRecord(formData: FormData, options: NotionOptions, accessToken: string) {
@@ -100,7 +101,7 @@ export async function listPages(accessToken: string): Promise<TablesList> {
   }
 }
 
-function buildDatabaseProperties(schema: Schema) {
+function buildDatabaseProperties(schema: TObject) {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const properties: Record<string, any> = {};
 
@@ -136,7 +137,7 @@ function buildDatabaseProperties(schema: Schema) {
 
 export async function createTable(
   name: string,
-  schema: Schema,
+  schema: TObject,
   pageId: string,
   accessToken: string,
 ): Promise<NotionOptions> {

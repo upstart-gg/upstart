@@ -761,7 +761,7 @@
       ],
       "tags": [],
       "attributes": {
-        "colorPreset": { "color": "bg-base-100" },
+        "colorPreset": { "color": "base-100" },
         "robotsIndexing": true,
         "path": "/blog/:slug",
         "title": "Untitled",
@@ -959,7 +959,7 @@
       ],
       "tags": [],
       "attributes": {
-        "colorPreset": { "color": "bg-base-100" },
+        "colorPreset": { "color": "base-100" },
         "robotsIndexing": true,
         "path": "/",
         "title": "Untitled",
