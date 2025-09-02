@@ -6,7 +6,6 @@ import {
   useSectionsSubscribe,
   usePageAttributesSubscribe,
   useSiteAttributesSubscribe,
-  usePagePathSubscribe,
   useThemeSubscribe,
   useSite,
 } from "./use-page-data";
@@ -49,10 +48,7 @@ export function usePageAutoSave() {
     console.debug("Site attributes have changed:", attributes);
     saveSite({ attributes });
   });
-  usePagePathSubscribe((path) => {
-    console.debug("pagePath has changed, updating page version");
-    savePage({ path });
-  });
+
   useThemeSubscribe((theme) => {
     console.debug("theme has changed, updating page version");
     saveSite({ theme });

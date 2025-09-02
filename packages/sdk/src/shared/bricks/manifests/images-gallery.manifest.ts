@@ -1,7 +1,6 @@
 import { Type } from "@sinclair/typebox";
 import { IoGridOutline } from "react-icons/io5";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { basicGapRef } from "../props/gap";
 import { defineProps } from "../props/helpers";
 import { imageRef } from "../props/image";
 import { paddingRef } from "../props/padding";
@@ -10,6 +9,7 @@ import type { BrickProps } from "../props/types";
 import { colorPresetRef } from "../props/color-preset";
 import { borderRef, roundingRef } from "../props/border";
 import { loopRef } from "../props/dynamic";
+import { cssLengthRef } from "../props/css-length";
 
 export const manifest = defineBrickManifest({
   type: "images-gallery",
@@ -72,8 +72,11 @@ export const manifest = defineBrickManifest({
       }),
     ),
     gap: Type.Optional(
-      basicGapRef({
-        default: "gap-4",
+      cssLengthRef({
+        title: "Gap",
+        description: "The gap between the images.",
+        default: "1rem",
+        "ui:styleId": "styles:gap",
       }),
     ),
     padding: Type.Optional(

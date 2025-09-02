@@ -3,7 +3,7 @@
     "id": "4289a8c6-681c-4c03-bf22-83f39076b957",
     "label": "New site",
     "hostname": "example.com",
-    "sitePrompt": "a site about coffee and tea",
+    "sitePrompt": "A blog named 'Coffee and Beans' about various kinds of coffee and also coffee recipes",
     "theme": {
       "id": "_default_",
       "name": "default",
@@ -169,7 +169,7 @@
       {
         "id": "employees",
         "label": "Company employees",
-        "provider": "custom",
+        "provider": "internal",
         "schema": {
           "type": "array",
           "items": {
@@ -294,7 +294,7 @@
       {
         "id": "employees2",
         "label": "Company employees 2",
-        "provider": "custom",
+        "provider": "internal",
         "schema": {
           "type": "array",
           "items": {
@@ -327,7 +327,7 @@
       {
         "id": "testimonials",
         "label": "Testimonials",
-        "provider": "custom",
+        "provider": "internal",
         "schema": {
           "type": "array",
           "items": {
@@ -426,7 +426,6 @@
     {
       "id": "_default_",
       "label": "First page with really really long name that should be truncated",
-      "path": "/blog/:slug",
       "sections": [
         {
           "id": "s_mDrsvye",
@@ -781,7 +780,6 @@
     {
       "id": "_page_2",
       "label": "Second page with really really long name that should be truncated",
-      "path": "/secondPage",
       "sections": [
         {
           "id": "s_kTYhPDw",

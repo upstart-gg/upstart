@@ -1,7 +1,7 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { StringEnum } from "./utils/string-enum";
 import { pageSchema } from "./page";
-import { resolveSchema, toLLMSchema } from "./utils/schema";
+import { toLLMSchema } from "./utils/schema";
 
 export const sitemapPageEntry = Type.Pick(pageSchema, ["id", "label", "path", "attributes"]);
 export type SitemapPageEntry = Static<typeof sitemapPageEntry>;
@@ -62,6 +62,7 @@ export const sitemapEntry = Type.Composite(
           title: "Page status",
           enumNames: ["Draft", "Published"],
           default: "draft",
+          "ai:hidden": true,
           description:
             "The status of the page. Can be draft or published. [AI instructions: Dont generate this.]",
           "ai:instructions": "Upsie: Never generate this optional field.",

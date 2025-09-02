@@ -28,6 +28,7 @@ import type { Page } from "@upstart.gg/sdk/shared/page";
 import type { Sitemap } from "@upstart.gg/sdk/shared/sitemap";
 import { useEditorHelpers } from "../hooks/use-editor";
 import { defineDatasource } from "@upstart.gg/sdk/shared/datasources";
+import type { SiteAttributes } from "@upstart.gg/sdk/shared/attributes";
 
 const WEB_SEARCH_ENABLED = false;
 
@@ -230,7 +231,7 @@ What should we work on together? 🤖`,
     if (setupRef.current) return;
     setupRef.current = true;
     if (generationState.isReady === false) {
-      console.log("Chat initialized");
+      console.log("Chat initialized", { sitePrompt });
       reload();
     }
   }, []);
@@ -306,6 +307,12 @@ What should we work on together? 🤖`,
           draftHelpers.setSitemap(sitemap);
           break;
         }
+        case "generateSiteAttributes": {
+          const siteAttributes = toolInvocation.result as SiteAttributes;
+          console.log("Generated site attributes", siteAttributes);
+          draftHelpers.updateSiteAttributes(siteAttributes);
+          break;
+        }
 
         case "searchImages": {
           const images = toolInvocation.result as ImageSearchResultsType;
@@ -351,7 +358,7 @@ What should we work on together? 🤖`,
         ref={messagesListRef}
         className={tx(
           // h-full max-h-[calc(100cqh-250px)]
-          ` overflow-y-auto h-full max-h-[inherit]
+          ` overflow-y-auto h-[calc(100cqh-250px-6rem)]
             flex flex-col gap-y-2.5 flex-grow scroll-smooth scrollbar-thin relative`,
           {
             "rounded-tr-xl shadow-inner": generationState.isReady === true,
@@ -366,7 +373,10 @@ What should we work on together? 🤖`,
         )}
       >
         {displayedMessages.map((msg, index) => (
-          <div key={msg.id} className={tx(msg.role === "assistant" ? aiMsgClass : userMsgClass, msgCommon)}>
+          <div
+            key={msg.id}
+            className={tx(msg.role === "assistant" ? aiMsgClass : userMsgClass, msgCommon, "empty:hidden")}
+          >
             {msg.parts.map((part, i) => {
               switch (part.type) {
                 case "text":
@@ -379,8 +389,15 @@ What should we work on together? 🤖`,
                 case "source":
                   // @ts-ignore
                   if (part.source.sourceType === "images") {
-                    // @ts-ignore
-                    return <ImagesPreview key={i} images={part.source.images as SimpleImageMetadata[]} />;
+                    return (
+                      <ImagesPreview
+                        key={i}
+                        // @ts-ignore
+                        query={part.source.query as string}
+                        // @ts-ignore
+                        images={part.source.images as SimpleImageMetadata[]}
+                      />
+                    );
                   }
                   return <p key={i}>{JSON.stringify(part)}</p>;
                 case "reasoning":
@@ -390,7 +407,7 @@ What should we work on together? 🤖`,
                   }
                   return (
                     <p key={i} className="flex items-center gap-1.5">
-                      <Spinner size="1" />
+                      <Spinner size="1" className="mr-1" />
                       <Text as="p" size="1" className="text-black/60">
                         <details>
                           <summary className="cursor-pointer list-none flex gap-1 items-center">
@@ -559,24 +576,27 @@ function getToolWaitingLabel(toolInvocation: ToolInvocation) {
   }
 }
 
-function ImagesPreview({ images }: { images: SimpleImageMetadata[] }) {
+function ImagesPreview({ query, images }: { query: string; images: SimpleImageMetadata[] }) {
   return (
-    <div className="grid grid-cols-3 gap-1 max-h-60 overflow-y-auto">
-      {images.map((image, index) => (
-        <img
-          key={image.url}
-          src={image.url}
-          alt={image.description}
-          className={tx(
-            "rounded-md h-auto !object-cover object-center w-full aspect-video animate-fade-in",
-            css({
-              // animation delay
-              animationDelay: `${index * 100}ms`,
-            }),
-          )}
-          loading="lazy"
-        />
-      ))}
+    <div className="flex flex-col gap-2 my-3">
+      <span>I found those images on the web for query: "{query}"</span>
+      <div className="grid grid-cols-3 gap-1 max-h-60 overflow-y-auto">
+        {images.map((image, index) => (
+          <img
+            key={image.url}
+            src={image.url}
+            alt={image.description}
+            className={tx(
+              "rounded-md h-auto !object-cover object-center w-full aspect-video animate-fade-in",
+              css({
+                // animation delay
+                animationDelay: `${index * 100}ms`,
+              }),
+            )}
+            loading="lazy"
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -613,7 +633,7 @@ function ToolRenderer({
     const args = toolInvocation.args as {
       choices: string[];
       question?: string;
-      allowMultiple: boolean;
+      allowMultiple?: boolean;
     };
     return (
       <Suspense key={toolInvocation.toolCallId}>
@@ -679,7 +699,7 @@ function ToolRenderer({
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
           >
-            <Spinner size="1" className="w-4" />
+            <Spinner size="1" className="w-4 mx-0.5" />
             <span>{waitLabel}</span>
           </motion.div>
         ) : (

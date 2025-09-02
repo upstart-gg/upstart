@@ -2,16 +2,22 @@ import type { DatasourceProvider, Datasource } from "./datasources/types";
 import { schemasMap } from "./datasources/schemas";
 import type { TArray } from "@sinclair/typebox";
 
+/**
+ * For now, defineDatasources() force the usage of a custom (internal) datasource
+ * @returns
+ */
 export function defineDatasource<D extends Datasource>(datasource: D) {
   return {
     ...datasource,
+    provider: "internal", // make sure to use Upstart provider
     schema: mapDatasourceSchemaWithInternalProperties(
-      datasource.provider === "custom" ? datasource.schema : getSchemaByProvider(datasource.provider),
+      // datasource.provider === "internal" ? datasource.schema : getSchemaByProvider(datasource.provider),
+      datasource.schema,
     ),
   };
 }
 
-function getSchemaByProvider(provider: Exclude<DatasourceProvider, "custom">) {
+function getSchemaByProvider(provider: Exclude<DatasourceProvider, "internal">) {
   return schemasMap[provider];
 }
 
@@ -25,13 +31,15 @@ export function mapDatasourceSchemaWithInternalProperties(schema: TArray): Datas
     items: {
       type: "object",
       properties: {
+        ...items.properties,
         $id: { type: "string", title: "Id" },
         $slug: { type: "string", format: "slug", title: "Slug" },
         $publicationDate: { type: "string", format: "date-time", title: "Publication Date" },
         $lastModificationDate: { type: "string", format: "date-time", title: "Last Modification Date" },
-        ...items.properties,
       },
-      required: ["$id", "$slug", "$publicationDate", "$lastModificationDate", ...items.required],
+      required: Array.from(
+        new Set(["$id", "$slug", "$publicationDate", "$lastModificationDate", ...items.required]),
+      ),
     },
   };
 }

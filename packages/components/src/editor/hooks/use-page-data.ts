@@ -249,7 +249,10 @@ export const createDraftStore = (
               ...state.page,
               id: `page-${generateId()}`,
               label: `${state.page.label} (page ${pageCount})`,
-              path: `${state.page.path}-${pageCount}`,
+              attributes: {
+                ...state.page.attributes,
+                path: `${state.page.attributes.path}-${pageCount}`,
+              },
             } satisfies VersionedPage;
             return newPage;
           },
@@ -1187,6 +1190,7 @@ export const useDraftHelpers = () => {
   return useStore(ctx, (state) => ({
     deleteBrick: state.deleteBrick,
     detachBrickFromContainer: state.detachBrickFromContainer,
+    updateSiteAttributes: state.updateSiteAttributes,
     upsertQuery: state.upsertQuery,
     setSections: state.setSections,
     setThemes: state.setThemes,
@@ -1291,14 +1295,6 @@ export const usePagePathParams = () => {
     const matches = Array.from(path.matchAll(regex));
     return matches.map((match) => match[0]);
   });
-};
-
-export const usePagePathSubscribe = (callback: (path: DraftState["page"]["path"]) => void) => {
-  const ctx = usePageContext();
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    return ctx.subscribe((state) => state.page.path, callback);
-  }, []);
 };
 
 function getBrickFromMap(id: string, state: DraftState) {

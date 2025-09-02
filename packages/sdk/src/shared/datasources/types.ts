@@ -3,6 +3,7 @@ import { youtubeListOptions } from "./external/youtube/list/options";
 import { httpJsonOptions } from "./external/http-json/options";
 import { rssOptions } from "./external/rss/options";
 import { StringEnum } from "../utils/string-enum";
+import { toLLMSchema } from "../utils/schema";
 
 export const providersSchema = Type.Union([
   // Type.Literal("facebook-posts"),
@@ -10,18 +11,18 @@ export const providersSchema = Type.Union([
   // Type.Literal("mastodon-account"),
   // Type.Literal("mastodon-status"),
   // Type.Literal("mastodon-status-list"),
-  Type.Literal("custom"),
+  Type.Literal("internal"),
   Type.Literal("rss"),
   // Type.Literal("threads-media"),
   // Type.Literal("tiktok-video"),
   Type.Literal("youtube-list"),
   Type.Literal("http-json"),
-  Type.Literal("internal-blog"),
-  Type.Literal("internal-changelog"),
-  // Type.Literal("internal-contact-info"),
-  Type.Literal("internal-faq"),
-  Type.Literal("internal-links"),
-  Type.Literal("internal-recipes"),
+  // Type.Literal("internal-blog"),
+  // Type.Literal("internal-changelog"),
+  // // Type.Literal("internal-contact-info"),
+  // Type.Literal("internal-faq"),
+  // Type.Literal("internal-links"),
+  // Type.Literal("internal-recipes"),
   // Type.Literal("internal-restaurant"),
   // Type.Literal("internal-cv"),
 ]);
@@ -157,18 +158,17 @@ const datasourceProviderManifest = Type.Composite([
 
 export type DatasourceProviderManifest = Static<typeof datasourceProviderManifest>;
 
-const datasourceCustomManifest = Type.Composite([
+const datasourceInternalManifest = Type.Composite([
   datasourceBaseFields,
   Type.Object(
     {
-      provider: Type.Literal("custom", {
-        title: "Custom",
-        description: "Custom datasource saved locally in Upstart.",
+      provider: Type.Literal("internal", {
+        title: "Internal",
+        description: "Internal datasource saved locally in Upstart.",
       }),
-      options: Type.Optional(Type.Object({}, { additionalProperties: true })),
       schema: Type.Any({
         title: "Schema",
-        description: "JSON Schema of datasource. Always an array of objects.",
+        description: "JSON Schema of datasource. MUST Always an array of objects.",
       }),
       indexes: Type.Optional(
         Type.Array(
@@ -185,11 +185,64 @@ const datasourceCustomManifest = Type.Composite([
         ),
       ),
     },
-    { $id: "datasource:custom" },
+    {
+      $id: "datasource:internal",
+      examples: [
+        {
+          id: "customers",
+          label: "Customers",
+          provider: "internal",
+          schema: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                name: { type: "string", title: "Name" },
+                email: { type: "string", title: "Email", format: "email" },
+              },
+              required: ["name", "email"],
+              title: "Customer",
+            },
+          },
+          indexes: [
+            {
+              name: "idx_customers_email",
+              fields: ["email"],
+              unique: true,
+            },
+          ],
+        },
+        {
+          id: "blog_posts",
+          label: "Blog Posts",
+          provider: "internal",
+          schema: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                title: { type: "string", title: "Title" },
+                content: { type: "string", title: "Content" },
+                author: { type: "string", title: "Author" },
+              },
+              required: ["title", "content", "author"],
+              title: "Blog Post",
+            },
+          },
+          indexes: [
+            {
+              name: "idx_blog_posts_title",
+              fields: ["title"],
+              unique: true,
+            },
+          ],
+        },
+      ],
+    },
   ),
 ]);
 
-export type DatasourceCustomManifest = Static<typeof datasourceCustomManifest>;
+export type DatasourceCustomManifest = Static<typeof datasourceInternalManifest>;
 
 const datasourceJsonManifest = Type.Composite([
   datasourceBaseFields,
@@ -228,11 +281,15 @@ const datasourceJsonManifest = Type.Composite([
 
 export type DatasourceJsonArrayManifest = Static<typeof datasourceJsonManifest>;
 
+// Fow now, let support only custom (internal) datasource
+// export const datasourceManifest = datasourceCustomManifest;
 export const datasourceManifest = Type.Union([
-  datasourceCustomManifest,
+  datasourceInternalManifest,
   datasourceJsonManifest,
   datasourceProviderManifest,
 ]);
+
+export const datasourceInternalForLLM = toLLMSchema(datasourceInternalManifest);
 
 export type Datasource = Static<typeof datasourceManifest>;
 export const datasourcesList = Type.Array(datasourceManifest);
@@ -305,25 +362,46 @@ export const queryFilter = Type.Union([
   booleanFilter,
 ]);
 
-const filterExpression = Type.Recursive((This) =>
-  Type.Union(
-    [
-      Type.Object({
-        op: Type.Literal("and"),
-        fields: Type.Array(Type.Union([queryFilter, This])),
-      }),
-      Type.Object({
-        op: Type.Literal("or"),
-        fields: Type.Array(Type.Union([queryFilter, This])),
-      }),
-    ],
-    {
-      default: {
-        op: "and",
-        fields: [],
+const filterExpression = Type.Recursive(
+  (This) =>
+    Type.Union(
+      [
+        Type.Object({
+          op: Type.Literal("and"),
+          fields: Type.Array(Type.Union([queryFilter, This]), { title: "Indexed Fields" }),
+        }),
+        Type.Object({
+          op: Type.Literal("or"),
+          fields: Type.Array(Type.Union([queryFilter, This])),
+        }),
+      ],
+      {
+        default: {
+          op: "and",
+          fields: [],
+        },
+        examples: [
+          {
+            op: "and",
+            fields: [
+              {
+                field: "$id",
+                op: "eq",
+                value: "123",
+              },
+              {
+                field: "$publicationDate",
+                op: "beforeNow",
+              },
+            ],
+          },
+        ],
       },
-    },
-  ),
+    ),
+  {
+    title: "Filter Expression",
+    description: "Expression used to filter query results. Can be a combination of and/or conditions.",
+  },
 );
 
 export const querySchema = Type.Object({
@@ -345,24 +423,20 @@ export const querySchema = Type.Object({
     title: "Limit",
     description: "Limit the number of records to fetch from the datasource.",
     minimum: 1,
-    maximum: 50,
     default: 10,
   }),
   sortDirection: Type.Optional(
-    Type.Union([
-      Type.Null(),
-      StringEnum(["asc", "desc"], {
-        title: "Sort",
-        enumNames: ["Ascending", "Descending"],
-        description: "Direction to sort the records by",
-        default: "desc",
-      }),
-    ]),
+    StringEnum(["asc", "desc"], {
+      title: "Sort",
+      enumNames: ["Ascending", "Descending"],
+      description: "Direction to sort the records by",
+      default: "desc",
+    }),
   ),
   sortField: Type.Optional(
     Type.String({
       title: "Sort Field",
-      description: "Select a field to sort by (must be indexed)",
+      description: "Field to sort by (must be an indexed field)",
       default: "$publicationDate",
     }),
   ),
@@ -371,7 +445,7 @@ export const querySchema = Type.Object({
     Type.Array(Type.String(), {
       title: "Parameters",
       description:
-        "Field names that will be used as parameters when using the query. Only indexed fields can be used as parameters.",
+        "Field names that will be used as parameters when using the query in pages. Only indexed fields can be used as parameters.",
       default: [],
       examples: [["$slug"], ["$id"], ["category", "tags"]],
     }),

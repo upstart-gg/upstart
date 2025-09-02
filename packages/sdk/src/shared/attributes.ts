@@ -1,6 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 import type { JSONSchemaType } from "ajv";
-import { getSchemaDefaults } from "../shared/utils/schema";
+import { getSchemaDefaults, toLLMSchema } from "../shared/utils/schema";
 import { string } from "./bricks/props/string";
 import { boolean } from "./bricks/props/boolean";
 import { datetime } from "./bricks/props/date";
@@ -39,6 +39,7 @@ export const pageAttributesSchema = Type.Object({
     "ui:group": "location",
     "ui:group:title": "Location",
     "ui:field": "path",
+    pattern: "^/[a-z0-9-:/]*$",
     examples: ["/", "/about", "/products/:id"],
   }),
   queries: Type.Optional(
@@ -202,6 +203,23 @@ export const siteAttributesSchema = Type.Object({
       description: "List of all queries available in this site. These can be used in any page.",
       "ai:instructions":
         "This is where queries are first defined. They are then referenced in pages attributes to use them.",
+      examples: [
+        [
+          {
+            id: "latest-blog-posts",
+            description: "Get the latest blog posts",
+            sortField: "$publicationDate",
+            sortDirection: "desc",
+            limit: 20,
+          },
+          {
+            id: "get-blog-post",
+            description: "Get a single blog post",
+            parameters: ["$slug"],
+            limit: 1,
+          },
+        ],
+      ],
     }),
   ),
   language: StringEnum(
@@ -304,6 +322,9 @@ export const siteAttributesSchema = Type.Object({
     }),
   ),
 });
+
+export const siteAttributesSchemaLLM = toLLMSchema(siteAttributesSchema);
+export const pageAttributesSchemaLLM = toLLMSchema(pageAttributesSchema);
 
 export type PageAttributes = Static<typeof pageAttributesSchema>;
 export type SiteAttributes = Static<typeof siteAttributesSchema>;

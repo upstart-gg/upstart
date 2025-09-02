@@ -63,7 +63,8 @@ app.use("*", async (req, res) => {
     let template = await fs.readFile("./index.html", "utf-8");
     template = await vite.transformIndexHtml(url, template);
     const render = (await vite.ssrLoadModule("/src/editor/demo/entry-server.tsx")).render;
-    const rendered = await render(req.originalUrl);
+    const fullUrl = new URL(`http://localhost:${PORT}${req.originalUrl}`);
+    const rendered = await render(fullUrl);
     const html = template.replace(`<!--ssr-outlet-->`, rendered);
     res.status(200).set({ "Content-Type": "text/html" }).send(html);
   } catch (e) {

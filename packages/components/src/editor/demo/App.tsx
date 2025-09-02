@@ -11,7 +11,8 @@ import { ClientOnly } from "~/shared/utils/client-only";
 import { createEmptyConfig, type SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
 
 export default function App({ path, config }: { path: string; config?: SiteAndPagesConfig }) {
-  const siteConfig = config ?? createEmptyConfig("a site about coffee and tea");
+  const siteConfig =
+    config ?? createEmptyConfig("A blog about various kind of coffee and also coffee recipes");
   const searchParams = new URL(`http://localhost${path}`).searchParams;
   const p = searchParams.get("p");
   const pageId = (siteConfig.pages.find((page) => page.id === p) ?? siteConfig.pages[0]).id;

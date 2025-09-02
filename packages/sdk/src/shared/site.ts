@@ -49,7 +49,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
       {
         id: "_default_",
         label: "First page with really really long name that should be truncated",
-        path: "/",
         sections: [],
         attributes: resolvePageAttributes({
           path: "/",

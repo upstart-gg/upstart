@@ -244,6 +244,19 @@ export default function Editor(props: EditorProps) {
         <Suspense>
           <Modal />
           <Panel />
+          {!generationState.isReady && debug === true && (
+            <div className="fixed flex flex-col gap-3 w-[30dvw] top-[60px] right-0 bottom-0 bg-gray-100 dark:bg-dark-800 border-gray-300 dark:border-gray-700 p-5 overflow-y-auto">
+              <h2 className="text-xl font-bold">Debug Information</h2>
+              <h4 className="text-lg font-semibold">Site</h4>
+              <pre className="whitespace-pre-wrap break-words text-[75%]">
+                {JSON.stringify(draft.site, null, 2)}
+              </pre>
+              <h4 className="text-lg font-semibold">Page</h4>
+              <pre className="whitespace-pre-wrap break-words text-[75%]">
+                {JSON.stringify(draft.page, null, 2)}
+              </pre>
+            </div>
+          )}
         </Suspense>
         <main
           className={tx(
@@ -279,6 +292,7 @@ export default function Editor(props: EditorProps) {
                 <BlankWaitPage />
               </DeviceFrame>
             ))}
+
           <Toaster
             toastOptions={{
               position: "bottom-center",

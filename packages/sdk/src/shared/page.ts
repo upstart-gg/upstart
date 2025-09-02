@@ -1,6 +1,7 @@
 import { pageAttributesSchema } from "./attributes";
 import { sectionSchema } from "./bricks";
 import { Type, type Static } from "@sinclair/typebox";
+import { toLLMSchema } from "./utils/schema";
 
 export const pageSchema = Type.Object({
   id: Type.String({
@@ -11,18 +12,20 @@ export const pageSchema = Type.Object({
     description: "The label (name) of the page",
     examples: ["Home", "About us", "Products"],
   }),
-  path: Type.String({
-    description: "The path of the page in the URL. Should be unique",
-    examples: ["/", "/about", "/products/:id"],
-  }),
+  // path: Type.String({
+  //   description: "The path of the page in the URL. Should be unique",
+  //   pattern: "^/[a-z0-9\\-:/]+$",
+  //   examples: ["/", "/about", "/products/:id"],
+  // }),
   sections: Type.Array(sectionSchema, {
     description: "The sections of the page. See the Section schema",
   }),
   attributes: pageAttributesSchema,
 });
 
-export type Page = Static<typeof pageSchema>;
+export const pageSchemaLLM = toLLMSchema(pageSchema);
 
+export type Page = Static<typeof pageSchema>;
 export type VersionedPage = Page & { version: string };
 
 /**
