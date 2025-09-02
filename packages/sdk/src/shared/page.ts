@@ -3,9 +3,18 @@ import { sectionSchema } from "./bricks";
 import { Type, type Static } from "@sinclair/typebox";
 
 export const pageSchema = Type.Object({
-  id: Type.String({ description: "The unique ID of the page. Use a human readable url-safe slug" }),
-  label: Type.String({ description: "The label (name) of the page" }),
-  path: Type.String({ description: "The path of the page in the URL. Should be unique" }),
+  id: Type.String({
+    description: "The unique ID of the page. Use a human readable url-safe slug",
+    examples: ["home", "about-us", "products-list"],
+  }),
+  label: Type.String({
+    description: "The label (name) of the page",
+    examples: ["Home", "About us", "Products"],
+  }),
+  path: Type.String({
+    description: "The path of the page in the URL. Should be unique",
+    examples: ["/", "/about", "/products/:id"],
+  }),
   sections: Type.Array(sectionSchema, {
     description: "The sections of the page. See the Section schema",
   }),

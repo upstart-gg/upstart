@@ -379,6 +379,11 @@ export function colorPreset(options: ColorPresetOptions = {}) {
       $id: "presets:color",
       "ui:presets": colorPresets,
       default: options.default,
+      examples: [
+        { color: "primary-500" },
+        { color: "secondary-500" },
+        { color: "accent-800", gradientDirection: "bg-gradient-to-t" },
+      ],
       "ui:default-gradient-direction": options["ui:default-gradient-direction"] ?? "bg-gradient-to-br",
     },
   );

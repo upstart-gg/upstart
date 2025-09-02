@@ -65,7 +65,6 @@ export interface DraftState extends DraftStateProps {
   upsertQuery: (query: Query) => void;
   addBrick: (brick: Brick, sectiondId: string, index: number, parentContainerId: Brick["id"] | null) => void;
   updateBrickProps: (id: string, props: Record<string, unknown>, isMobileProps?: boolean) => void;
-  updatePropsMapping: (id: string, mapping: Record<string, string>) => void;
   toggleBrickVisibility: (id: string, resolution: Resolution) => void;
   setPreviewTheme: (theme: Theme) => void;
   setTheme: (theme: Theme) => void;
@@ -229,7 +228,13 @@ export const createDraftStore = (
 
           setThemes: (themes) =>
             set((state) => {
+              const hasAlreadyThemes = state.site.themes.length > 0;
               state.site.themes = themes;
+
+              // Set default theme if it is the first time setting themes
+              if (!hasAlreadyThemes) {
+                state.site.theme = themes[0];
+              }
             }),
 
           setSitemap: (sitemap) =>
@@ -525,23 +530,6 @@ export const createDraftStore = (
 
               // Update the brickMap with the new brick and all its children
               updateBrickMap(newBrick, sectionId, parentId);
-            }),
-
-          updatePropsMapping: (id, mapping) =>
-            set((state) => {
-              // Update the brick in the brickMap
-              const brick = getBrickFromDraft(id, state);
-              if (brick) {
-                brick.propsMapping = merge({}, brick.propsMapping, mapping);
-                brick.props.lastTouched = Date.now();
-                // rebuild map
-                state.brickMap = buildBrickMap(state.page.sections);
-              } else {
-                console.error(
-                  "Cannot update props mapping for brick %s, it does not exist in the brick map",
-                  id,
-                );
-              }
             }),
 
           updateBrickProps: (id, props, isMobileProps) =>
@@ -1029,13 +1017,14 @@ export const useGenerationState = () => {
   return useStore(draft, (state) => {
     const hasSitemap = state.site.sitemap.length > 0;
     const hasThemesGenerated = state.site.themes.length > 0;
-    const isReady = hasSitemap && hasThemesGenerated && state.site.sitemap.length > 0;
-    const isGenerating = new URL(window.location.href).searchParams.get("action") === "generate";
+    const hasPages = state.page.id !== "_default_";
+    const isReady = hasSitemap && hasThemesGenerated && hasPages;
+    const isSetup = new URL(window.location.href).searchParams.get("action") === "setup";
     return {
       hasSitemap,
       hasThemesGenerated,
       sitemap: state.site.sitemap,
-      isReady: !isGenerating || isReady,
+      isReady: !isSetup || isReady,
     } satisfies GenerationState;
   });
 };
@@ -1215,7 +1204,6 @@ export const useDraftHelpers = () => {
     toggleBrickVisibilityPerBreakpoint: state.toggleBrickVisibility,
     getParentBrick: state.getParentBrick,
     updateBrickProps: state.updateBrickProps,
-    updatePropsMapping: state.updatePropsMapping,
     moveBrick: state.moveBrick,
     reorderBrickWithin: state.reorderBrickWithin,
     getPositionWithinParent: state.getPositionWithinParent,

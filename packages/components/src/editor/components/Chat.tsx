@@ -30,7 +30,6 @@ import { useEditorHelpers } from "../hooks/use-editor";
 const WEB_SEARCH_ENABLED = false;
 
 // Lazy import "Markdown"
-// import Markdown from "./Markdown";
 const Markdown = lazy(() => import("./Markdown"));
 
 const msgCommon = tx(
@@ -38,8 +37,8 @@ const msgCommon = tx(
   css({
     // whiteSpace: "pre-line",
     "& p": {
-      marginTop: ".5rem",
-      // marginBottom: ".5rem",
+      marginBlock: ".5rem",
+      lineHeight: "1.625",
     },
     "& p:first-child": {
       marginTop: "0",
@@ -53,12 +52,13 @@ const msgCommon = tx(
     "& ul, ol": {
       listStyle: "outside",
       listStyleType: "square",
-      paddingLeft: "1rem",
-      // marginTop: "0.25rem",
+      paddingLeft: "1.6rem",
+      marginTop: "0.5rem",
       marginBottom: "0.2rem",
     },
     "& li": {
       marginBottom: "0.25rem",
+      paddingLeft: ".3rem",
     },
     "& div.choices": {
       display: "flex",
@@ -66,18 +66,14 @@ const msgCommon = tx(
       justifyContent: "space-between",
       gap: ".5rem",
       marginTop: "1rem",
-      // "&:not(:last-child)": {
-      //   marginBottom: "1rem",
-      // },
-
       "& > button": {
         backgroundColor: "var(--violet-10)",
         color: "#fff",
         flexGrow: "1",
-        padding: "0.3rem 0.7rem",
+        padding: "0.4rem 0.7rem",
         borderRadius: "0.5rem",
         border: "none",
-        fontSize: "0.8rem",
+        fontSize: ".95em",
         fontWeight: "500",
         "&:hover": {
           backgroundColor: "var(--violet-9)",
@@ -102,18 +98,18 @@ export default function Chat() {
   const sitemap = useSitemap();
   const siteThemes = useThemes();
   const [userLanguage, setUserLanguage] = useState<string>();
-  const [flow, setFlow] = useState<CallContextProps["flow"]>(
-    new URL(window.location.href).searchParams.get("action") === "generate" ? "setup" : "edit",
-  );
+  // const [flow, setFlow] = useState<CallContextProps["flow"]>(
+  //   new URL(window.location.href).searchParams.get("action") === "setup" ? "setup" : "edit",
+  // );
 
   const listPlaceholderRef = useRef<HTMLDivElement>(null);
   const handledToolResults = useRef(new Set<string>());
 
   const aiMsgClass = tx(
-    " text-sm text-black/80 dark:text-upstart-200",
+    "text-black/80 dark:text-upstart-200",
     generationState.isReady
-      ? "bg-gradient-to-tr from-upstart-200/80 to-upstart-100"
-      : "bg-white/80 dark:bg-dark-800",
+      ? "bg-gradient-to-tr from-upstart-200/80 to-upstart-100 text-sm"
+      : "bg-white/80 dark:bg-dark-800 text-fluid-sm",
   );
 
   const onFinish = useCallback(
@@ -144,72 +140,14 @@ export default function Chat() {
     // sendExtraMessageFields: true,
     // maxSteps: 30,
     initialMessages:
-      flow === "setup"
-        ? import.meta.env.DEV
-          ? ([
-              {
-                id: "fake-1",
-                role: "assistant",
-                content: `Welcome to Upsie! This is a fake message to test the chat component in dev mode. You can ignore it.`,
-              },
-              {
-                id: "fake-1-2",
-                role: "user",
-                content: `Hey Upsie, can you help me create a website?`,
-              },
-              {
-                id: "fake-2",
-                role: "assistant",
-                content: `Sure! I can help you create a website. What kind of website do you want to create?`,
-              },
-              {
-                id: "fake-3",
-                role: "user",
-                content: `I want to create a website about my favorite hobby.`,
-              },
-              {
-                id: "fake-4",
-                role: "assistant",
-                content: `Great! What is your favorite hobby?`,
-              },
-              {
-                id: "fake-5",
-                role: "user",
-                content: `My favorite hobby is photography. I love taking pictures of nature and landscapes.
-I also enjoy editing my photos to make them look even better.
-I would like to create a website to showcase my photography work and share my passion with others.
-
-I want the website to have a clean and modern design, with a gallery to display my photos,
-a blog section to share my thoughts and experiences, and a contact page for people to reach out to me.
-
-I would also like to have a section where I can share tips and tutorials on photography techniques and editing software.
-I want the website to be easy to navigate and visually appealing, with a focus on showcasing my photography work.
-                `,
-              },
-              {
-                id: "fake-6",
-                role: "assistant",
-                content: `That sounds like a great idea! I can help you create a website that showcases your photography work and shares your passion with others.
-Let's start by generating some color themes for your website. This will help us create a cohesive design that reflects your style and personality.`,
-              },
-              {
-                id: "fake-7",
-                role: "user",
-                content: `Super! I can't wait to see the color themes you come up with. Let's do it!`,
-              },
-              {
-                id: "fake-8",
-                role: "assistant",
-                content: `Great! Let's get started on generating some color themes for your website. I'll start by analyzing your preferences and the type of photography you do.`,
-              },
-            ] satisfies Message[])
-          : [
-              {
-                id: "init-generate",
-                role: "user",
-                content: `Create a website based on this prompt:\n${sitePrompt}`,
-              },
-            ]
+      generationState.isReady === false
+        ? [
+            {
+              id: "init-generate",
+              role: "user",
+              content: `Create a website based on this prompt:\n${sitePrompt}`,
+            },
+          ]
         : [
             {
               id: "init-edit",
@@ -225,7 +163,7 @@ What should we work on together? 🤖`,
     experimental_prepareRequestBody({ requestData, ...rest }) {
       return {
         ...rest,
-        requestData: { site, sitemap, page, flow, generationState, userLanguage } satisfies CallContextProps,
+        requestData: { site, sitemap, page, generationState, userLanguage } satisfies CallContextProps,
       };
     },
     generateId: createIdGenerator({
@@ -237,7 +175,7 @@ What should we work on together? 🤖`,
     onError: (error) => {
       console.error("ERROR", error);
     },
-    key: `chat-${flow}-${site.id}`,
+    key: `chat-${generationState.isReady}-${site.id}`,
 
     /**
      * For tools that should be called client-side
@@ -289,7 +227,7 @@ What should we work on together? 🤖`,
   useEffect(() => {
     if (setupRef.current) return;
     setupRef.current = true;
-    if (flow === "setup") {
+    if (generationState.isReady === false) {
       console.log("Chat initialized");
       reload();
     }
@@ -381,18 +319,20 @@ What should we work on together? 🤖`,
     }
   }, [toolInvocations, draftHelpers, siteThemes]);
 
+  // filter out the "init" messages
+  const displayedMessages = messages.filter((msg) => msg.id !== "init-generate" && msg.parts.length > 0);
+
   return (
     <div
       className={tx(
         "flex flex-col mx-auto w-full",
         {
-          "rounded-xl animate-border my-auto h-full max-h-[calc(100dvh-100px)]":
-            generationState.isReady === false,
+          "rounded-xl animate-border h-fill my-12": generationState.isReady === false,
           "rounded-tr-xl bg-gray-50 max-h-[inherit]": generationState.isReady === true,
         },
         css({
           gridArea: "chat",
-          maxWidth: generationState.isReady ? "none" : "clamp(500px, 40dvw, 650px)",
+          maxWidth: generationState.isReady ? "none" : "clamp(500px, 40dvw, 640px)",
         }),
         generationState.isReady === false &&
           css({
@@ -408,10 +348,12 @@ What should we work on together? 🤖`,
         ref={messagesListRef}
         className={tx(
           // h-full max-h-[calc(100cqh-250px)]
-          ` overflow-y-auto h-full max-h-[inherit] p-2
+          ` overflow-y-auto h-full max-h-[inherit]
             flex flex-col gap-y-2.5 flex-grow scroll-smooth scrollbar-thin relative`,
           {
             "rounded-tr-xl shadow-inner": generationState.isReady === true,
+            "p-2": generationState.isReady === true,
+            "p-6": generationState.isReady === false,
           },
           css({
             scrollbarColor: "var(--violet-a8) var(--violet-a2)",
@@ -420,79 +362,80 @@ What should we work on together? 🤖`,
           }),
         )}
       >
-        {messages
-          // filter out the "init" messages
-          .filter((msg) => msg.id !== "init-generate" && msg.parts.length > 0)
-          .map((msg, index) => (
-            <div key={msg.id} className={tx(msg.role === "assistant" ? aiMsgClass : userMsgClass, msgCommon)}>
-              {msg.parts.map((part, i) => {
-                switch (part.type) {
-                  case "text":
-                    return (
-                      <Suspense key={i}>
-                        <Markdown content={part.text} key={i} />
-                      </Suspense>
-                    );
+        {displayedMessages.map((msg, index) => (
+          <div key={msg.id} className={tx(msg.role === "assistant" ? aiMsgClass : userMsgClass, msgCommon)}>
+            {msg.parts.map((part, i) => {
+              switch (part.type) {
+                case "text":
+                  return (
+                    <Suspense key={i}>
+                      <Markdown content={part.text} key={i} />
+                    </Suspense>
+                  );
 
-                  case "source":
+                case "source":
+                  // @ts-ignore
+                  if (part.source.sourceType === "images") {
                     // @ts-ignore
-                    if (part.source.sourceType === "images") {
-                      // @ts-ignore
-                      return <ImagesPreview key={i} images={part.source.images as SimpleImageMetadata[]} />;
-                    }
-                    return <p key={i}>{JSON.stringify(part)}</p>;
-                  case "reasoning":
-                    if (index !== messages.length - 1 || msg.parts.length - 1 !== i) {
-                      // If the last message is not the current one, we don't show the reasoning
-                      return null;
-                    }
-                    return (
-                      <p key={i} className="flex items-center gap-1.5">
-                        <Spinner size="1" />
-                        <Text as="p" size="1" className="text-black/60">
-                          <details>
-                            <summary className="cursor-pointer list-none flex gap-1 items-center">
-                              <svg
-                                className="-rotate-90 transform opacity-60 transition-all duration-300"
-                                fill="none"
-                                height="14"
-                                width="14"
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                viewBox="0 0 24 24"
-                              >
-                                <title>Arrow</title>
-                                <polyline points="6 9 12 15 18 9" />
-                              </svg>
-                              <span className="text-xs font-normal">Thinking...</span>
-                            </summary>
-                            <Text size="2" className="text-gray-500">
-                              {part.reasoning}
-                            </Text>
-                          </details>
-                        </Text>
-                      </p>
-                    );
-                  case "tool-invocation":
-                    return (
-                      <ToolRenderer
-                        key={i}
-                        toolInvocation={part.toolInvocation}
-                        addToolResult={addToolResult}
-                        append={append}
-                        error={error}
-                      />
-                    );
-                  case "file":
-                    return <img key={i} alt="" src={`data:${part.mimeType};base64,${part.data}`} />;
-                }
-              })}
-            </div>
-          ))}
+                    return <ImagesPreview key={i} images={part.source.images as SimpleImageMetadata[]} />;
+                  }
+                  return <p key={i}>{JSON.stringify(part)}</p>;
+                case "reasoning":
+                  if (index !== messages.length - 1 || msg.parts.length - 1 !== i) {
+                    // If the last message is not the current one, we don't show the reasoning
+                    return null;
+                  }
+                  return (
+                    <p key={i} className="flex items-center gap-1.5">
+                      <Spinner size="1" />
+                      <Text as="p" size="1" className="text-black/60">
+                        <details>
+                          <summary className="cursor-pointer list-none flex gap-1 items-center">
+                            <svg
+                              className="-rotate-90 transform opacity-60 transition-all duration-300"
+                              fill="none"
+                              height="14"
+                              width="14"
+                              stroke="currentColor"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              viewBox="0 0 24 24"
+                            >
+                              <title>Arrow</title>
+                              <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                            <span className="text-xs font-normal">Thinking...</span>
+                          </summary>
+                          <Text size="2" className="text-gray-500">
+                            {part.reasoning}
+                          </Text>
+                        </details>
+                      </Text>
+                    </p>
+                  );
+                case "tool-invocation":
+                  return (
+                    <ToolRenderer
+                      key={i}
+                      toolInvocation={part.toolInvocation}
+                      addToolResult={addToolResult}
+                      append={append}
+                      error={error}
+                    />
+                  );
+                case "file":
+                  return <img key={i} alt="" src={`data:${part.mimeType};base64,${part.data}`} />;
+              }
+            })}
+          </div>
+        ))}
         {!hasRunningTools && (status === "submitted" || status === "streaming") && (
-          <div className={tx("h-6 px-2 text-sm text-gray-600 flex items-center justify-center gap-1.5")}>
+          <div
+            className={tx(
+              "h-6 px-2 my-4 text-fluid-sm text-gray-600 flex items-center justify-center gap-1.5",
+            )}
+          >
             <Spinner size="2" /> Please wait...
           </div>
         )}
@@ -532,7 +475,7 @@ What should we work on together? 🤖`,
             if (e.key === "Enter" && !e.shiftKey) onSubmit(e);
           }}
           name="prompt"
-          disabled={messagingDisabled}
+          // disabled={messagingDisabled}
           spellCheck={false}
           autoComplete="off"
           autoCorrect="off"
@@ -543,6 +486,7 @@ What should we work on together? 🤖`,
           }
           size="2"
           className={tx(
+            generationState.isReady === false && "!text-fluid-sm",
             "h-full w-full scrollbar-thin p-2 !bg-white !pb-9 !border-0 !outline-0 !box-shadow-none [&>textarea]:focus:(!outline-0 !shadow-none !ring-0 !border-0)",
           )}
         />

@@ -18,6 +18,11 @@ export const pageAttributesSchema = Type.Object({
   colorPreset: colorPresetRef({
     title: "Color",
     default: { color: "bg-base-100" },
+    examples: [
+      { color: "base-100" },
+      { color: "primary-500" },
+      { color: "accent-100", gradientDirection: "bg-gradient-to-r" },
+    ],
   }),
   tags: Type.Optional(
     Type.Array(string("Tag"), {
@@ -25,6 +30,7 @@ export const pageAttributesSchema = Type.Object({
       description:
         "Tags for this page. Used for organization and filtering in navigation elements and in the dashboard.",
       "ui:field": "tags",
+      examples: [["navbar", "navbar"], ["navbar", "sidebar"], ["sidebar"]],
     }),
   ),
   path: string("URL path", {
@@ -33,6 +39,7 @@ export const pageAttributesSchema = Type.Object({
     "ui:group": "location",
     "ui:group:title": "Location",
     "ui:field": "path",
+    examples: ["/", "/about", "/products/:id"],
   }),
   queries: Type.Optional(
     Type.Array(queryUseRef(), {
@@ -114,6 +121,7 @@ export const pageAttributesSchema = Type.Object({
       {
         "ai:hidden": true,
         title: "Language",
+        default: "en",
         description:
           "Overrides the site language for this page. Leave blank to use the site default language.",
         enumNames: [
@@ -181,6 +189,7 @@ export const pageAttributesSchema = Type.Object({
   lastUpdated: Type.Optional(
     datetime("Last updated", {
       "ui:hidden": true,
+      "ai:hidden": true,
     }),
   ),
 });

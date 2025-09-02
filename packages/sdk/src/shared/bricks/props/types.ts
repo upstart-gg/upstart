@@ -5,10 +5,9 @@ import type { Brick } from "~/shared/bricks";
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export type BrickProps<T extends BrickManifest> = {
-  brick: Omit<Brick, "props" | "mobileProps" | "propsMapping"> & {
+  brick: Omit<Brick, "props" | "mobileProps"> & {
     props: Static<T["props"]>;
     mobileProps?: Partial<Static<T["props"]>>;
-    propsMapping?: Record<`$.${string}`, `$.${string}`>;
   };
   /**
    * True if we are in the context of the Editor

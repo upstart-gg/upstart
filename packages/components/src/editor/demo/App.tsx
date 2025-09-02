@@ -12,7 +12,6 @@ import { createEmptyConfig, type SiteAndPagesConfig } from "@upstart.gg/sdk/shar
 
 export default function App({ path, config }: { path: string; config?: SiteAndPagesConfig }) {
   const siteConfig = config ?? createEmptyConfig("a site about coffee and tea");
-  console.log("Site ID: %s", siteConfig.site.id);
   const searchParams = new URL(`http://localhost${path}`).searchParams;
   const p = searchParams.get("p");
   const pageId = (siteConfig.pages.find((page) => page.id === p) ?? siteConfig.pages[0]).id;

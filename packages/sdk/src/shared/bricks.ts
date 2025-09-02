@@ -91,29 +91,6 @@ export const brickSchema = Type.Object(
         description: "The overriden props for mobile, merged with desktop props.",
       }),
     ),
-    propsMapping: Type.Optional(
-      Type.Object(
-        {},
-        {
-          description:
-            "Dynamic props mapping for the brick. Used to map dynamic content to the brick's props. " +
-            "Can only be used if the brick is a child of a 'dynamic' brick. " +
-            "One can only reference the fields from the database that is specified in the dynamic brick.",
-          "ui:field": "hidden",
-          examples: [
-            {
-              // Paths to the props and the fields are JSONPath, e.g. "$.name" or "$.address.street"
-              "$.property1": "$.databaseField1",
-              "$.property2": "$.databaseField2.subField1",
-              // You can also map nested properties
-              "$.property3.subProp1": "$.databaseField3",
-              "$.property3.subProp3": "$.databaseField4.subField2",
-            },
-          ],
-          additionalProperties: true,
-        },
-      ),
-    ),
   },
   { $id: "brick", additionalProperties: true },
 );
