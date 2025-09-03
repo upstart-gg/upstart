@@ -4,12 +4,17 @@ export const notionOptions = Type.Object({
   url: Type.Optional(Type.String()),
   id: Type.String({
     pattern: "^[A-Za-z0-9\\-]+$",
-    description: 'Notion Database ID',
+    description: "Notion Database ID",
   }),
   name: Type.String({
-    description: 'Notion Database Name',
+    description: "Notion Database Name",
   }),
-  properties: Type.Any()
+  properties: Type.Any(),
 });
 
 export type NotionOptions = Static<typeof notionOptions>;
+
+export type NotionPages = {
+  id: string;
+  name: string;
+}[];
