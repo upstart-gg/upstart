@@ -187,6 +187,13 @@ export const sectionProps = Type.Object(
         "ui:styleId": "styles:gap",
       }),
     ),
+    wrap: Type.Optional(
+      Type.Boolean({
+        title: "Wrap",
+        description: "Wrap bricks if they overflow the section.",
+        default: true,
+      }),
+    ),
     lastTouched: Type.Optional(
       Type.Number({
         description: "Do not use this field. It is used internally by the editor.",
@@ -196,7 +203,7 @@ export const sectionProps = Type.Object(
     ),
   },
   {
-    additionalProperties: true,
+    additionalProperties: false,
     "ai:instructions": "Do not use the border prop",
   },
 );

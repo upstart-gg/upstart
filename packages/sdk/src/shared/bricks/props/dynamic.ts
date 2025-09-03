@@ -1,6 +1,7 @@
 import { typedRef } from "~/shared/utils/typed-ref";
 import { type ObjectOptions, Type, type Static } from "@sinclair/typebox";
 import { queryFilter } from "~/shared/datasources/types";
+import { over } from "lodash-es";
 
 export function queryUse() {
   return Type.Object(
@@ -80,6 +81,19 @@ export function loop(options: ObjectOptions = {}) {
       metadata: {
         category: "content",
       },
+      examples: [
+        {
+          over: "latestBlogPosts",
+          overrideLimit: 5,
+        },
+        {
+          over: "featuredProducts",
+          overrideLimit: 3,
+        },
+        {
+          over: "popularProducts",
+        },
+      ],
       ...options,
     },
   );

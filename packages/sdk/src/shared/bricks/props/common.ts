@@ -6,8 +6,8 @@ import { alignSelfRef } from "./align";
 export function hidden() {
   return Type.Object(
     {
-      desktop: Type.Boolean(),
-      mobile: Type.Boolean(),
+      desktop: Type.Optional(Type.Boolean()),
+      mobile: Type.Optional(Type.Boolean()),
     },
     {
       $id: "styles:hidden",

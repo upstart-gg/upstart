@@ -30,7 +30,6 @@ export const manifest = defineBrickManifest({
         default: { color: "neutral-600" },
       }),
     ),
-    // backgroundColor:Type.Optional(backgroundColorRef()),
     padding: Type.Optional(paddingRef({ default: "p-10" })),
     logo: Type.Optional(imageRef({ title: "Logo", "ui:no-object-options": true, "ui:no-alt-text": true })),
     fontSize: Type.Optional(fontSizeRef({ default: "text-sm", "ui:no-extra-large-sizes": true })),

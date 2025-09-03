@@ -11,6 +11,7 @@ export function cssLength(options: StringOptions = {}) {
     default: options.default,
     "ui:field": "css-length",
     "ui:css-units": cssUnits,
+    examples: ["100px", "50%", "2em", "1.5rem"],
     ...options,
   });
 }

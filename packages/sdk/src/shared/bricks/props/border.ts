@@ -28,6 +28,20 @@ export function border(opts: ObjectOptions = {}) {
       description: "Set the border width and color.",
       "ui:field": "border",
       "ui:responsive": true,
+      examples: [
+        {
+          width: "border-2",
+          color: "border-primary-200",
+        },
+        {
+          width: "border-4",
+          color: "border-accent-400",
+        },
+        {
+          width: "border",
+          color: "border-neutral-100",
+        },
+      ],
       ...opts,
     },
   );
