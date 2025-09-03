@@ -26,8 +26,8 @@ export function padding() {
       "ai:instructions": "Can be a tailwind class like `p-4` or a custom value like `p-[16px]`.",
       "ui:field": "enum",
       "ui:responsive": true,
-      // "ui:advanced": true,
       "ui:styleId": "styles:padding",
+      examples: ["p-4", "p-8"],
     },
   );
 }

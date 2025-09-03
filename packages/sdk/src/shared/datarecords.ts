@@ -1,5 +1,5 @@
-import type { DatarecordsList } from "./datarecords/types";
+import type { Datarecord } from "./datarecords/types";
 
-export function defineDataRecords<T extends DatarecordsList>(datarecords: T) {
-  return datarecords;
+export function defineDataRecord<T extends Datarecord>(datarecord: T) {
+  return datarecord;
 }

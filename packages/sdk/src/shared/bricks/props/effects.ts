@@ -24,7 +24,6 @@ export function shadowRef(options: StringEnumOptions = {}) {
 
 /**
  * This function is used in ajv and type ref translations, but should not be used directly in bricks
- * @deprecated When using OUSTIDE of ajv.addSchema(), use `textShadowRef` instead.
  */
 export function textShadow(options: StringEnumOptions = {}) {
   return StringEnum(
@@ -37,6 +36,7 @@ export function textShadow(options: StringEnumOptions = {}) {
       "ui:placeholder": "Not specified",
       "ui:field": "enum",
       "ui:styleId": "styles:textShadow",
+      examples: ["text-shadow-sm", "text-shadow-md", "text-shadow-lg"],
       ...options,
     },
   );
@@ -63,6 +63,7 @@ export function opacity({ defaultValue = 1, title = "Opacity" }: OpacityOptions 
     "ui:field": "slider",
     "ui:unit": "%",
     "ui:multiplier": 100,
+    examples: [0.5, 0.75, 1],
   });
 }
 

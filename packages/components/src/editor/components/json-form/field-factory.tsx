@@ -36,7 +36,7 @@ import type {
   JustifyContentSettings,
 } from "@upstart.gg/sdk/shared/bricks/props/align";
 import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
+import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
 import { Tooltip } from "@upstart.gg/style-system/system";
 import ColorPresetField from "./fields/color-preset";
 import { CssLengthField } from "./fields/css-length";

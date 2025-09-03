@@ -21,7 +21,7 @@ export default function Navbar({ brick, editable }: BrickProps<Manifest>) {
       })) ?? [];
 
   const allItems = [...navItems, ...(props.staticNavItems ?? [])].map((item) => {
-    const href = pages.find((p) => p.id === item.urlOrPageId)?.path ?? item.urlOrPageId;
+    const href = pages.find((p) => p.id === item.urlOrPageId)?.attributes.path ?? item.urlOrPageId;
     return {
       href,
       label: item.label as string,

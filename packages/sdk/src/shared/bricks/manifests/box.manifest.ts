@@ -1,6 +1,5 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
-import { makeContainerProps } from "../props/container";
 import { Type } from "@sinclair/typebox";
 import { borderRef, roundingRef } from "../props/border";
 import { shadowRef } from "../props/effects";
@@ -73,7 +72,28 @@ export const manifest = defineBrickManifest({
     border: Type.Optional(borderRef()),
     shadow: Type.Optional(shadowRef()),
     loop: Type.Optional(loopRef()),
-    ...makeContainerProps(),
+    $children: Type.Array(Type.Any(), {
+      "ui:field": "hidden",
+      description: "List of nested bricks",
+      default: [],
+      examples: [
+        [
+          {
+            type: "text",
+            props: {
+              content: "Hello World",
+            },
+          },
+          {
+            type: "image",
+            props: {
+              src: "https://via.placeholder.com/150",
+              alt: "Placeholder Image",
+            },
+          },
+        ],
+      ],
+    }),
   }),
 });
 

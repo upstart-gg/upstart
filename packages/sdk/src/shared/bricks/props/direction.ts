@@ -8,6 +8,7 @@ export function direction(options: StringOptions = {}) {
     enumNames: ["Horizontal", "Vertical"],
     $id: "styles:direction",
     "ui:styleId": "styles:direction",
+    examples: ["flex-row", "flex-col"],
     ...options,
   });
 }

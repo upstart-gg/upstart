@@ -137,7 +137,6 @@ export const pageStylesHelpersMap = {
 
 export const brickStylesHelpersMap = {
   "styles:color": getColorStyles,
-  "styles:basicGap": getBasicGapStyles,
   "styles:textShadow": simpleClassHandler,
   "styles:opacity": getOpacityStyles,
   "styles:objectFit": simpleClassHandler,

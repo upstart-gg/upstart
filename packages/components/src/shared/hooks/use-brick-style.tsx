@@ -5,7 +5,7 @@ import { get, merge } from "lodash-es";
 import { useBrickManifest } from "./use-brick-manifest";
 import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { tx, css } from "@upstart.gg/style-system/twind";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
+import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
 import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
 import { getStyleProperties } from "../styles/style-props";
 import { usePageAttributes } from "~/editor/hooks/use-page-data";

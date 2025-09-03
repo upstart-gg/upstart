@@ -1,6 +1,6 @@
 import type { TArray, TObject, TSchema } from "@sinclair/typebox";
 import type { NavItem } from "./types";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
+import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
 
 export type SchemaFilter = (prop: TSchema, key: string) => boolean;
 

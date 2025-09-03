@@ -246,19 +246,6 @@ export default defineConfig({
     ["scrollbar-gutter-stable", { scrollbarGutter: "stable" }],
     ["scrollbar-gutter-stable-both", { scrollbarGutter: "stable both-edges" }],
     ["scrollbar-color-", ({ $$ }) => ({ scrollbarColor: `var(--${$$}-8) var(--${$$}-surface)` })],
-
-    // presets preview
-    // ["primary", `@(bg-primary text-primary)`],
-    // ["secondary", `@(bg-secondary text-secondary)`],
-    // ["accent", `@(bg-accent text-accent)`],
-    // ["neutral", `@(bg-neutral text-neutral-content)`],
-
-    // ["surface-", ({ $$ }) => `@(bg-base-${$$}00 text-base-content)`],
-    // ["prominent-", ({ $$ }) => `@(bg-${$$}-700 text-${$$})`],
-    // ["medium-", ({ $$ }) => `@(bg-${$$}-200 text-${$$}-800)`],
-    // ["subtle-", ({ $$ }) => `@(bg-${$$}-50 text-${$$}-800)`],
-
-    // ["light", `@(bg-white text-base-content border-base-300)`],
   ],
 
   theme: {
@@ -345,6 +332,18 @@ export default defineConfig({
           800: "var(--color-neutral-800)",
           900: "var(--color-neutral-900)",
         },
+      },
+      fontSize: {
+        "fluid-xs": "clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem)",
+        "fluid-sm": "clamp(0.875rem, 0.8rem + 0.375vw, 1rem)",
+        "fluid-base": "clamp(1rem, 0.9rem + 0.5vw, 1.25rem)",
+        "fluid-lg": "clamp(1.125rem, 1rem + 0.625vw, 1.5rem)",
+        "fluid-xl": "clamp(1.25rem, 1.1rem + 0.75vw, 1.75rem)",
+        "fluid-2xl": "clamp(1.5rem, 1.3rem + 1vw, 2.25rem)",
+        "fluid-3xl": "clamp(1.875rem, 1.6rem + 1.375vw, 2.75rem)",
+        "fluid-4xl": "clamp(2.25rem, 1.9rem + 1.75vw, 3.5rem)",
+        "fluid-5xl": "clamp(3rem, 2.5rem + 2.5vw, 4.5rem)",
+        "fluid-6xl": "clamp(3.75rem, 3rem + 3.75vw, 6rem)",
       },
       containers: {
         mobile: "1px",

@@ -5,7 +5,7 @@ import { tx, css } from "@upstart.gg/style-system/twind";
 import { getStyleProperties } from "../styles/style-props";
 import { get, merge } from "lodash-es";
 import { type FieldFilter, getSchemaDefaults } from "@upstart.gg/sdk/shared/utils/schema";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
+import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
 import { usePageAttributes } from "~/editor/hooks/use-page-data";
 
 type UseSectionStyleProps = {

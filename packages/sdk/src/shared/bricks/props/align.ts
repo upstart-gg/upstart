@@ -12,6 +12,7 @@ export function justifyContent(options: StringOptions = {}) {
       "ui:field": "justify-content",
       "ui:responsive": true,
       "ui:styleId": "styles:justifyContent",
+      examples: ["justify-center", "justify-evenly"],
       ...options,
     },
   );
@@ -31,6 +32,7 @@ export function alignItems(options: StringOptions = {}) {
     "ui:field": "align-items",
     "ui:responsive": true,
     "ui:styleId": "styles:alignItems",
+    examples: ["items-center", "items-stretch"],
     ...options,
   });
 }

@@ -1,4 +1,5 @@
-import type { Schema } from "../../types";
+// import type { Schema } from "../../types";
+import type { TSchema, TObject } from "@sinclair/typebox";
 import getClient from "./client";
 import type { AirtableOptions } from "./options";
 import type { CreateAirtableTableResponse } from "./types";
@@ -40,7 +41,7 @@ export async function saveRecord(
 
 export async function createTable(
   name: string,
-  schema: Schema,
+  schema: TObject,
   baseId: string,
   accessToken: string,
 ): Promise<CreateAirtableTableResponse | null> {
@@ -81,7 +82,7 @@ export async function createTable(
         return {
           name: field.title,
           type: "singleSelect",
-          options: field.enum.map((value) => ({
+          options: (field.enum as string[]).map((value) => ({
             id: value,
             name: value,
           })),
@@ -105,7 +106,7 @@ export async function createTable(
       };
     }
   });
-  
+
   const data = {
     name,
     description: `Table created by Upstart for ${name}`,

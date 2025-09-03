@@ -3,12 +3,12 @@ import { TfiLayoutAccordionSeparated } from "react-icons/tfi";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
 import { boolean } from "../props/boolean";
-import { basicGapRef } from "../props/gap";
 import { defineProps } from "../props/helpers";
 import { colorPresetRef } from "../props/color-preset";
 import { fontSizeRef, textContentRef } from "../props/text";
 import type { BrickProps } from "../props/types";
 import { loopRef } from "../props/dynamic";
+import { cssLengthRef } from "../props/css-length";
 
 export const manifest = defineBrickManifest({
   type: "accordion",
@@ -48,7 +48,14 @@ Multiple panels can be open simultaneously or limited to one at a time.
       description:
         "Restrict to one open item at a time. If false, multiple items can be open simultaneously.",
     }),
-    gap: Type.Optional(basicGapRef({ allowNoGap: false, default: "gap-px" })),
+    gap: Type.Optional(
+      cssLengthRef({
+        title: "Gap",
+        description: "The gap between the accordion items.",
+        default: "1px",
+        "ui:styleId": "styles:gap",
+      }),
+    ),
     rounding: Type.Optional(
       StringEnum(
         [

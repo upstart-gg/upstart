@@ -12,7 +12,7 @@ import { IconRender } from "./IconRender";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { filterSchemaProperties } from "@upstart.gg/sdk/shared/utils/schema";
 import { useSectionByBrickId, useDraftHelpers, usePageQueries } from "../hooks/use-page-data";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
+import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
 
 type TabType = "preset" | "settings" | "content";
 

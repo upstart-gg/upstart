@@ -1,6 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 import type { JSONSchemaType } from "ajv";
-import { getSchemaDefaults } from "../shared/utils/schema";
+import { getSchemaDefaults, toLLMSchema } from "../shared/utils/schema";
 import { string } from "./bricks/props/string";
 import { boolean } from "./bricks/props/boolean";
 import { datetime } from "./bricks/props/date";
@@ -17,7 +17,12 @@ export type { JSONSchemaType };
 export const pageAttributesSchema = Type.Object({
   colorPreset: colorPresetRef({
     title: "Color",
-    default: { color: "bg-base-100" },
+    default: { color: "base-100" },
+    examples: [
+      { color: "base-100" },
+      { color: "primary-500" },
+      { color: "accent-100", gradientDirection: "bg-gradient-to-r" },
+    ],
   }),
   tags: Type.Optional(
     Type.Array(string("Tag"), {
@@ -25,6 +30,7 @@ export const pageAttributesSchema = Type.Object({
       description:
         "Tags for this page. Used for organization and filtering in navigation elements and in the dashboard.",
       "ui:field": "tags",
+      examples: [["navbar", "navbar"], ["navbar", "sidebar"], ["sidebar"]],
     }),
   ),
   path: string("URL path", {
@@ -33,6 +39,8 @@ export const pageAttributesSchema = Type.Object({
     "ui:group": "location",
     "ui:group:title": "Location",
     "ui:field": "path",
+    pattern: "^/[a-z0-9-:/]*$",
+    examples: ["/", "/about", "/products/:id"],
   }),
   queries: Type.Optional(
     Type.Array(queryUseRef(), {
@@ -114,6 +122,7 @@ export const pageAttributesSchema = Type.Object({
       {
         "ai:hidden": true,
         title: "Language",
+        default: "en",
         description:
           "Overrides the site language for this page. Leave blank to use the site default language.",
         enumNames: [
@@ -181,6 +190,7 @@ export const pageAttributesSchema = Type.Object({
   lastUpdated: Type.Optional(
     datetime("Last updated", {
       "ui:hidden": true,
+      "ai:hidden": true,
     }),
   ),
 });
@@ -193,6 +203,23 @@ export const siteAttributesSchema = Type.Object({
       description: "List of all queries available in this site. These can be used in any page.",
       "ai:instructions":
         "This is where queries are first defined. They are then referenced in pages attributes to use them.",
+      examples: [
+        [
+          {
+            id: "latest-blog-posts",
+            description: "Get the latest blog posts",
+            sortField: "$publicationDate",
+            sortDirection: "desc",
+            limit: 20,
+          },
+          {
+            id: "get-blog-post",
+            description: "Get a single blog post",
+            parameters: ["$slug"],
+            limit: 1,
+          },
+        ],
+      ],
     }),
   ),
   language: StringEnum(
@@ -295,6 +322,9 @@ export const siteAttributesSchema = Type.Object({
     }),
   ),
 });
+
+export const siteAttributesSchemaLLM = toLLMSchema(siteAttributesSchema);
+export const pageAttributesSchemaLLM = toLLMSchema(pageAttributesSchema);
 
 export type PageAttributes = Static<typeof pageAttributesSchema>;
 export type SiteAttributes = Static<typeof siteAttributesSchema>;
