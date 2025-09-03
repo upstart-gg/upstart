@@ -1,5 +1,16 @@
 # @upstart.gg/sdk
 
+## 0.0.130
+
+### Patch Changes
+
+- [#420](https://github.com/upstart-gg/upstart/pull/420) [`16163fa`](https://github.com/upstart-gg/upstart/commit/16163fa22544fc445827f5118c6a870401770421) Thanks [@mattallty](https://github.com/mattallty)! - refactor: simpler types
+
+- [#423](https://github.com/upstart-gg/upstart/pull/423) [`8b3901e`](https://github.com/upstart-gg/upstart/commit/8b3901e432fac7192c2796a4647a677f0cfac614) Thanks [@benjamindarnault](https://github.com/benjamindarnault)! - release
+
+- Updated dependencies []:
+  - @upstart.gg/style-system@0.0.130
+
 ## 0.0.129
 
 ### Patch Changes

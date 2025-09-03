@@ -1,21 +1,19 @@
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
 import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
-import type { GenericPageConfig } from "@upstart.gg/sdk/shared/page";
-import type { SitePrompt } from "@upstart.gg/sdk/shared/prompt";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
 import type { Site, SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { enableMapSet } from "immer";
 import { isEqual, isNil } from "lodash-es";
-import { createContext, startTransition, useContext } from "react";
+import { createContext, useContext } from "react";
 import { temporal } from "zundo";
 import { createStore, useStore } from "zustand";
 import { persist, subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { type DraftState, usePageContext } from "./use-page-data";
-import type { Editor as TextEditor } from "@tiptap/react";
+import type { Page } from "@upstart.gg/sdk/shared/page";
 export type { Immer } from "immer";
 
 enableMapSet();
@@ -34,7 +32,7 @@ export type PageSavePayload = {
   siteId: string;
   pageId: string;
   pageVersionId: string;
-  data: Partial<GenericPageConfig>;
+  data: Partial<Page>;
 };
 
 export type SiteSavePayload = {
@@ -61,16 +59,12 @@ export interface EditorStateProps {
    */
   planIndex: number;
 
-  sitePrompt: SitePrompt;
-  // pages: GenericPageConfig[];
-
   previewMode: Resolution;
   gridConfig?: {
     colWidth: number;
     rowHeight: number;
   };
   settingsVisible?: boolean;
-  genFlowDone?: boolean;
 
   selectedBrickId?: Brick["id"];
   selectedGroup?: Brick["id"][];
@@ -88,7 +82,6 @@ export interface EditorStateProps {
   imagesSearchResults?: ImageSearchResultsType;
   contextMenuVisible: boolean;
   draggingBrickType?: Brick["type"];
-
   isMouseOverPanel?: boolean;
 
   onShowPopup?: (id: string | false) => void;
@@ -138,7 +131,6 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
   const DEFAULT_PROPS = {
     previewMode: "desktop" satisfies EditorStateProps["previewMode"],
     themesLibrary: [] as Theme[],
-    pages: [] as GenericPageConfig[],
     panelPosition: "left" satisfies EditorStateProps["panelPosition"],
     logoLink: "/dashboard",
     zoom: 1,
@@ -179,7 +171,6 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
           },
         ]
       : undefined,
-    sitePrompt: "",
     onPublish: () => {
       console.warn("onPublish is not implemented");
     },
@@ -446,7 +437,7 @@ export function useSelectedSection() {
   const ctx = useEditorStoreContext();
   const draft = usePageContext();
   return useStore(ctx, (state) => {
-    const section = draft.getState().sections.find((s) => s.id === state.selectedSectionId);
+    const section = draft.getState().page.sections.find((s) => s.id === state.selectedSectionId);
     if (!section) {
       return null;
     }

@@ -1,11 +1,12 @@
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
 import { generateId, processSections } from "@upstart.gg/sdk/shared/bricks";
 import type { GenerationState } from "@upstart.gg/sdk/shared/context";
-import type { DatasourcesList, Datasource, Query } from "@upstart.gg/sdk/shared/datasources/types";
-import type { DatarecordsList, Datarecord } from "@upstart.gg/sdk/shared/datarecords/types";
-import type { GenericPageConfig, GenericPageContext } from "@upstart.gg/sdk/shared/page";
+import type { Datasource, Query } from "@upstart.gg/sdk/shared/datasources/types";
+import type { Datarecord } from "@upstart.gg/sdk/shared/datarecords/types";
+import type { VersionedPage } from "@upstart.gg/sdk/shared/page";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
 import type { Site } from "@upstart.gg/sdk/shared/site";
+import type { SitemapPageEntry } from "@upstart.gg/sdk/shared/sitemap";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
@@ -16,61 +17,44 @@ import { temporal } from "zundo";
 import { createStore, useStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import type { LoopSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
 import type { PageAttributes, SiteAttributes } from "@upstart.gg/sdk/shared/attributes";
 export type { Immer } from "immer";
 
 enableMapSet();
 
-type BrickId = string;
 type QueryAlias = string;
 
 export interface DraftStateProps {
-  id: string;
-  path: string;
-  label: string;
-  tags: string[];
-  sections: Section[];
+  /**
+   * Page ID being edited
+   */
   data: Record<QueryAlias, Record<string, unknown>[]>;
-  datasources: DatasourcesList;
-  datarecords: DatarecordsList;
 
-  // queries: Query[];
+  site: Site;
+  page: VersionedPage;
 
-  /**
-   * Site attributes key/value pairs
-   */
-  siteAttributes: Site["attributes"];
-
-  /**
-   * Page attributes key/value pairs
-   */
-  pageAttributes: GenericPageContext["attributes"];
-
-  theme: Theme;
   previewTheme?: Theme;
-  themes: Theme[];
-  siteId: Site["id"];
-  siteLabel: Site["label"];
-  sitemap: Site["sitemap"];
-  sitePrompt: string;
-  hostname: Site["hostname"];
-  version?: string;
+  /**
+   * Last saved date
+   */
   lastSaved?: Date;
+
+  /**
+   * True if the draft has unsaved changes
+   */
   dirty?: boolean;
+
+  /**
+   * Map of brick IDs to their metadata - temporary structure to facilitate dealing with the nested structure
+   */
   brickMap: Map<string, { brick: Brick; sectionId: string; parentId: string | null }>;
-  // All pages in the site, used when in setup mode
-  pages: GenericPageConfig[];
 }
 
 export interface DraftState extends DraftStateProps {
   getBrick: (id: string) => Brick | undefined;
   getParentBrick: (id: string) => Brick | undefined;
   deleteBrick: (id: string) => void;
-  getPageDataForDuplication: () => Pick<
-    DraftStateProps,
-    "id" | "label" | "path" | "sections" | "pageAttributes" | "siteAttributes" | "datasources" | "datarecords"
-  >;
+  getPageDataForDuplication: () => VersionedPage;
   duplicateBrick: (id: string) => void;
   duplicateSection: (id: string) => void;
   moveBrick: (id: string, to: "previous" | "next") => void;
@@ -95,7 +79,7 @@ export interface DraftState extends DraftStateProps {
   setDirty: (dirty: boolean) => void;
   setVersion(version: string): void;
 
-  addPage: (page: GenericPageConfig) => void;
+  addPage: (page: VersionedPage) => void;
   addDatasource: (datasource: Datasource) => void;
   addDatarecord: (datarecord: Datarecord) => void;
 
@@ -124,34 +108,14 @@ export interface DraftState extends DraftStateProps {
 
 export const createDraftStore = (
   initProps: Partial<DraftStateProps> & {
-    id: DraftStateProps["id"];
-    version: DraftStateProps["version"];
-    path: DraftStateProps["path"];
-    label: DraftStateProps["label"];
-    pageAttributes: DraftStateProps["pageAttributes"];
-    siteAttributes: DraftStateProps["siteAttributes"];
-    datasources?: DraftStateProps["datasources"];
-    datarecords?: DraftStateProps["datarecords"];
-    siteLabel: DraftStateProps["siteLabel"];
-    siteId: DraftStateProps["siteId"];
-    hostname: DraftStateProps["hostname"];
-    sitemap: DraftStateProps["sitemap"];
-    theme: DraftStateProps["theme"];
-    sections: DraftStateProps["sections"];
+    page: VersionedPage;
+    site: DraftStateProps["site"];
   },
 ) => {
   const DEFAULT_PROPS = {
     data: {},
-    mode: "local" as const,
-    brickMap: buildBrickMap(initProps.sections),
-    themes: [],
-    pages: [],
-    datasources: [],
-    datarecords: [],
-    queries: [],
-    tags: [],
-    sitePrompt: "",
-  };
+    brickMap: buildBrickMap(initProps.page.sections),
+  } satisfies Partial<DraftStateProps>;
   return createStore<DraftState>()(
     subscribeWithSelector(
       temporal(
@@ -161,12 +125,12 @@ export const createDraftStore = (
 
           upsertQuery: (query: Query) =>
             set((state) => {
-              const existingIndex = state.siteAttributes.queries?.findIndex((q) => q.id === query.id) ?? -1;
+              const existingIndex = state.site.attributes.queries?.findIndex((q) => q.id === query.id) ?? -1;
               if (existingIndex !== -1) {
-                state.siteAttributes.queries![existingIndex] = query;
+                state.site.attributes.queries![existingIndex] = query;
               } else {
-                state.siteAttributes.queries ??= [];
-                state.siteAttributes.queries.push(query);
+                state.site.attributes.queries ??= [];
+                state.site.attributes.queries.push(query);
               }
             }),
 
@@ -185,7 +149,7 @@ export const createDraftStore = (
                 console.error("Cannot detach brick %s, its parent %s does not exist", id, parentId);
                 return;
               }
-              const parentSection = state.sections.find((s) => s.id === sectionId);
+              const parentSection = state.page.sections.find((s) => s.id === sectionId);
               if (!parentSection) {
                 console.error("Cannot detach brick %s, its parent section %s does not exist", id, sectionId);
                 return;
@@ -201,16 +165,16 @@ export const createDraftStore = (
               });
 
               // Rebuild the brickMap
-              state.brickMap = buildBrickMap(state.sections);
+              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           createEmptySection: (id, afterSectionId) =>
             set((state) => {
-              const count = state.sections.length;
+              const count = state.page.sections.length;
               const nextOrder =
                 1 +
                 (afterSectionId
-                  ? (state.sections.find((s) => s.id === afterSectionId)?.order ?? count)
+                  ? (state.page.sections.find((s) => s.id === afterSectionId)?.order ?? count)
                   : count);
               const newSection: Section = {
                 id,
@@ -220,114 +184,109 @@ export const createDraftStore = (
                 props: {},
               };
               // Update all section that have an order greater than or equal to nextOrder
-              state.sections.forEach((s) => {
+              state.page.sections.forEach((s) => {
                 if (s.order >= nextOrder) {
                   s.order += 1;
                 }
               });
               // Add the new section to the state
-              state.sections.push(newSection);
+              state.page.sections.push(newSection);
             }),
 
           addPage: (page) =>
             set((state) => {
-              state.pages.push(page);
               //  Overwrite the default page if it exists
-              if (state.id === "_default_") {
-                state.id = page.id;
-                state.path = page.path;
-                state.label = page.label;
-                state.sections = page.sections;
-                if (page.attributes) {
-                  state.pageAttributes = page.attributes;
-                }
+              state.page = page;
+
+              // Add to sitemap if not already present
+              const existing = state.site.sitemap.find((p) => p.id === page.id);
+              if (!existing) {
+                state.site.sitemap.push(page);
               }
             }),
 
           isFirstSection: (sectionId) => {
             const state = _get();
-            return state.sections.find((s) => s.order === 0)?.id === sectionId;
+            return state.page.sections.find((s) => s.order === 0)?.id === sectionId;
           },
 
           setSections: (sections) =>
             set((state) => {
-              state.sections = sections;
+              state.page.sections = sections;
               // Rebuild the brickMap based on the new sections
               state.brickMap = buildBrickMap(sections);
             }),
 
           pickTheme: (themeId) =>
             set((state) => {
-              const theme = state.themes.find((t) => t.id === themeId);
+              const theme = state.site.themes.find((t) => t.id === themeId);
               if (!theme) {
                 console.error("Cannot pick theme %s, it does not exist", themeId);
                 return;
               }
-              state.theme = theme;
+              state.site.theme = theme;
             }),
 
           setThemes: (themes) =>
             set((state) => {
-              state.themes = themes;
+              state.site.themes = themes;
             }),
 
           setSitemap: (sitemap) =>
             set((state) => {
-              state.sitemap = sitemap;
+              state.site.sitemap = sitemap;
             }),
 
           getPageDataForDuplication: () => {
             const state = _get();
-            const pageCount = state.sitemap.length + 1;
+            const pageCount = state.site.sitemap.length + 1;
             const newPage = {
+              ...state.page,
               id: `page-${generateId()}`,
-              label: `${state.label} (page ${pageCount})`,
-              path: `${state.path}-${pageCount}`,
-              sections: state.sections,
-              pageAttributes: state.pageAttributes,
-              siteAttributes: state.siteAttributes,
-              datasources: state.datasources,
-              datarecords: state.datarecords,
-            };
+              label: `${state.page.label} (page ${pageCount})`,
+              path: `${state.page.path}-${pageCount}`,
+            } satisfies VersionedPage;
             return newPage;
           },
 
           isLastSection: (sectionId) => {
             const state = _get();
-            return state.sections.find((s) => s.order === state.sections.length - 1)?.id === sectionId;
+            return (
+              state.page.sections.find((s) => s.order === state.page.sections.length - 1)?.id === sectionId
+            );
           },
 
           addDatasource: (datasource) =>
             set((state) => {
-              const existing = state.datasources.find((ds) => ds.id === datasource.id);
+              const existing = state.site.datasources.find((ds) => ds.id === datasource.id);
               if (existing) {
                 console.error("Cannot add datasource %s, it already exists", datasource.id);
                 return;
               }
-              state.datasources.push(datasource);
+              state.site.datasources.push(datasource);
             }),
 
           addDatarecord: (datarecord) =>
             set((state) => {
-              const existing = state.datarecords.find((dr) => dr.id === datarecord.id);
+              const existing = state.site.datarecords.find((dr) => dr.id === datarecord.id);
               if (existing) {
                 console.error("Cannot add datarecord %s, it already exists", datarecord.id);
                 return;
               }
-              state.datarecords.push(datarecord);
+              state.site.datarecords.push(datarecord);
             }),
 
           addSection: (section) =>
             set((state) => {
-              state.sections.push(section);
+              state.page.sections.push(section);
             }),
 
           updateSection: (id, sectionData) =>
             set((state) => {
-              const sectionIndex = state.sections.findIndex((s) => s.id === id);
+              const sectionIndex = state.page.sections.findIndex((s) => s.id === id);
               if (sectionIndex !== -1) {
-                state.sections[sectionIndex] = {
-                  ...state.sections[sectionIndex],
+                state.page.sections[sectionIndex] = {
+                  ...state.page.sections[sectionIndex],
                   ...sectionData,
                 };
               }
@@ -335,12 +294,12 @@ export const createDraftStore = (
 
           duplicateSection: (id) =>
             set((state) => {
-              const section = state.sections.find((s) => s.id === id);
+              const section = state.page.sections.find((s) => s.id === id);
               if (!section) {
                 console.error("Cannot duplicate section %s, it does not exist", id);
                 return;
               }
-              const sectionIndex = state.sections.findIndex((s) => s.id === id);
+              const sectionIndex = state.page.sections.findIndex((s) => s.id === id);
               const newSection = {
                 ...section,
                 id: `s_${generateId()}`,
@@ -358,13 +317,13 @@ export const createDraftStore = (
                   }),
                 })),
               };
-              state.sections.splice(sectionIndex + 1, 0, newSection);
-              state.brickMap = buildBrickMap(state.sections);
+              state.page.sections.splice(sectionIndex + 1, 0, newSection);
+              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           deleteSection: (id) =>
             set((state) => {
-              const section = state.sections.find((s) => s.id === id);
+              const section = state.page.sections.find((s) => s.id === id);
               if (!section) {
                 console.warn("Cannot delete section %s: not found", id);
                 return null;
@@ -376,53 +335,50 @@ export const createDraftStore = (
                 }
               });
               // Then remove the section
-              state.sections = state.sections.filter((s) => s.id !== id);
+              state.page.sections = state.page.sections.filter((s) => s.id !== id);
             }),
 
           getSection: (id) => {
-            return _get().sections.find((s) => s.id === id);
+            return _get().page.sections.find((s) => s.id === id);
           },
 
           moveSectionUp: (sectionId) =>
             set((state) => {
               // current
-              const section = state.sections.find((s) => s.id === sectionId);
-              const sectionIndex = state.sections.findIndex((s) => s.id === sectionId);
+              const section = state.page.sections.find((s) => s.id === sectionId);
+              const sectionIndex = state.page.sections.findIndex((s) => s.id === sectionId);
               invariant(section, "Section not found");
               // previous
-              const previous = state.sections.find((s) => s.order === section.order - 1);
-              const previousIndex = state.sections.findIndex((s) => s.order === section.order - 1);
+              const previous = state.page.sections.find((s) => s.order === section.order - 1);
+              const previousIndex = state.page.sections.findIndex((s) => s.order === section.order - 1);
               invariant(previous, "Previous section not found");
               // swap
               const temp = section.order;
               section.order = previous.order;
               previous.order = temp;
-
-              // state.sections[sectionIndex] = section;
-              // state.sections[previousIndex] = previous;
             }),
 
           moveSectionDown: (sectionId) =>
             set((state) => {
               // current
-              const section = state.sections.find((s) => s.id === sectionId);
-              const sectionIndex = state.sections.findIndex((s) => s.id === sectionId);
+              const section = state.page.sections.find((s) => s.id === sectionId);
+              const sectionIndex = state.page.sections.findIndex((s) => s.id === sectionId);
               invariant(section, "Section not found");
 
               // next
-              const next = state.sections
+              const next = state.page.sections
                 .filter((s) => s.order > section.order)
                 .toSorted((a, b) => a.order - b.order)
                 .at(0);
               invariant(next, `Next section not found. No section with order > ${section.order} exists.`);
-              const nextIndex = state.sections.findIndex((s) => s.id === next?.id);
+              const nextIndex = state.page.sections.findIndex((s) => s.id === next?.id);
 
               // swap
               const currentOrder = section.order;
               const nextOrder = next.order;
 
-              state.sections[sectionIndex].order = nextOrder;
-              state.sections[nextIndex].order = currentOrder;
+              state.page.sections[sectionIndex].order = nextOrder;
+              state.page.sections[nextIndex].order = currentOrder;
             }),
 
           reorderSections: (orderedIds) =>
@@ -433,24 +389,24 @@ export const createDraftStore = (
 
               // Add sections in the order specified by orderedIds
               orderedIds.forEach((id) => {
-                const section = state.sections.find((s) => s.id === id);
+                const section = state.page.sections.find((s) => s.id === id);
                 if (section) {
                   newSections.push({ ...section, order: ++tmpOrder });
                 }
               });
 
               // Add any sections not included in orderedIds at the end
-              state.sections.forEach((section) => {
+              state.page.sections.forEach((section) => {
                 if (!orderedIds.includes(section.id)) {
                   newSections.push({ ...section, order: ++tmpOrder });
                 }
               });
 
               // Replace the sections array
-              state.sections = newSections;
+              state.page.sections = newSections;
 
               // rebuild map
-              state.brickMap = buildBrickMap(state.sections);
+              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           deleteBrick: (id) =>
@@ -478,7 +434,7 @@ export const createDraftStore = (
 
               // 2. delete brick in state sections
               const { sectionId, parentId } = brickToDelete;
-              const section = state.sections.find((s) => s.id === sectionId);
+              const section = state.page.sections.find((s) => s.id === sectionId);
 
               if (parentId) {
                 // Brick is inside a container, remove from parent's $children
@@ -560,7 +516,7 @@ export const createDraftStore = (
                 }
               } else {
                 // Brick is at the top level of a section
-                const section = state.sections.find((s) => s.id === sectionId);
+                const section = state.page.sections.find((s) => s.id === sectionId);
                 if (section) {
                   const originalIndex = section.bricks.findIndex((b) => b.id === id);
                   section.bricks.splice(originalIndex + 1, 0, newBrick);
@@ -579,7 +535,7 @@ export const createDraftStore = (
                 brick.propsMapping = merge({}, brick.propsMapping, mapping);
                 brick.props.lastTouched = Date.now();
                 // rebuild map
-                state.brickMap = buildBrickMap(state.sections);
+                state.brickMap = buildBrickMap(state.page.sections);
               } else {
                 console.error(
                   "Cannot update props mapping for brick %s, it does not exist in the brick map",
@@ -603,7 +559,7 @@ export const createDraftStore = (
                   });
                 }
                 // rebuild map
-                state.brickMap = buildBrickMap(state.sections);
+                state.brickMap = buildBrickMap(state.page.sections);
               } else {
                 console.error("Cannot update props for brick %s, it does not exist in the brick map", id);
               }
@@ -611,7 +567,7 @@ export const createDraftStore = (
 
           updateSectionProps: (id, props, isMobileProps) =>
             set((state) => {
-              const section = state.sections.find((s) => s.id === id);
+              const section = state.page.sections.find((s) => s.id === id);
               if (section) {
                 if (isMobileProps) {
                   section.mobileProps = mergeIgnoringArrays({}, section.mobileProps, props, {
@@ -663,7 +619,7 @@ export const createDraftStore = (
               // Remove from current position and insert at new position
               const [brickToMove] = children.splice(currentIndex, 1);
               children.splice(newIndex, 0, brickToMove);
-              state.brickMap = buildBrickMap(state.sections);
+              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           /**
@@ -702,7 +658,7 @@ export const createDraftStore = (
                 }
               } else {
                 // Brick is at the top level of a section
-                const section = state.sections.find((s) => s.id === sectionId);
+                const section = state.page.sections.find((s) => s.id === sectionId);
                 if (section) {
                   const originalIndex = section.bricks.findIndex((b) => b.id === brickId);
                   if (originalIndex === -1) {
@@ -746,7 +702,7 @@ export const createDraftStore = (
                 }
               } else {
                 // Brick is currently at the top level of a section
-                const section = state.sections.find((s) => s.id === sectionId);
+                const section = state.page.sections.find((s) => s.id === sectionId);
                 if (section) {
                   section.bricks = section.bricks.filter((b) => b.id !== id);
                 }
@@ -796,7 +752,7 @@ export const createDraftStore = (
               if (!sectionId) {
                 sectionId = state.brickMap.get(id)?.sectionId!;
               }
-              const targetSection = state.sections.find((s) => s.id === sectionId);
+              const targetSection = state.page.sections.find((s) => s.id === sectionId);
               const brickMapping = state.brickMap.get(id);
 
               if (!brick || !targetSection || !brickMapping) {
@@ -821,7 +777,7 @@ export const createDraftStore = (
                 }
               } else {
                 // Brick is currently at the top level of a section
-                const currentSection = state.sections.find((s) => s.id === currentSectionId);
+                const currentSection = state.page.sections.find((s) => s.id === currentSectionId);
                 if (currentSection) {
                   currentSection.bricks = currentSection.bricks.filter((b) => b.id !== id);
                 }
@@ -906,7 +862,7 @@ export const createDraftStore = (
           validatePreviewTheme: (accept) =>
             set((state) => {
               if (state.previewTheme && accept) {
-                state.theme = state.previewTheme;
+                state.site.theme = state.previewTheme;
               }
               state.previewTheme = undefined;
             }),
@@ -918,7 +874,7 @@ export const createDraftStore = (
 
           setTheme: (theme) =>
             set((state) => {
-              state.theme = theme;
+              state.site.theme = theme;
             }),
 
           toggleBrickVisibility: (id, breakpoint) =>
@@ -933,7 +889,7 @@ export const createDraftStore = (
           addBrick: (brick, sectionId, index, parentContainerId) =>
             set((state) => {
               // Find the section to add the brick to
-              const section = state.sections.find((s) => s.id === sectionId);
+              const section = state.page.sections.find((s) => s.id === sectionId);
               if (!section) {
                 console.error("Cannot add brick, section %s does not exist", sectionId);
                 return;
@@ -949,7 +905,7 @@ export const createDraftStore = (
                 }
 
                 // Find the section of the parent brick
-                const parentSection = state.sections.find((s) => s.id === sectionId);
+                const parentSection = state.page.sections.find((s) => s.id === sectionId);
                 if (!parentSection) {
                   console.warn("Cannot add brick, parent section %s does not exist", sectionId);
                   return;
@@ -1005,17 +961,17 @@ export const createDraftStore = (
 
           updatePageAttributes: (attr) =>
             set((state) => {
-              state.pageAttributes = { ..._get().pageAttributes, ...attr };
+              state.page.attributes = { ..._get().page.attributes, ...attr };
             }),
 
           updateSiteAttributes: (attr) =>
             set((state) => {
-              state.siteAttributes = { ..._get().siteAttributes, ...attr };
+              state.site.attributes = { ..._get().site.attributes, ...attr };
             }),
 
           setVersion: (version) =>
             set((state) => {
-              state.version = version;
+              state.page.version = version;
             }),
 
           setLastSaved: (date) =>
@@ -1065,39 +1021,28 @@ export const useDraftUndoManager = () => {
 
 export const useSitemap = () => {
   const ctx = usePageContext();
-  return useStore(ctx, (state) => state.sitemap);
+  return useStore(ctx, (state) => state.site.sitemap);
 };
 
 export const useGenerationState = () => {
   const draft = usePageContext();
   return useStore(draft, (state) => {
-    const hasSitemap = state.sitemap.length > 0;
-    const hasThemesGenerated = state.themes.length > 0;
-    const isReady = hasSitemap && hasThemesGenerated && state.sitemap.length > 0;
+    const hasSitemap = state.site.sitemap.length > 0;
+    const hasThemesGenerated = state.site.themes.length > 0;
+    const isReady = hasSitemap && hasThemesGenerated && state.site.sitemap.length > 0;
     const isGenerating = new URL(window.location.href).searchParams.get("action") === "generate";
     return {
       hasSitemap,
       hasThemesGenerated,
-      sitemap: state.sitemap,
-      pages: state.pages,
-      isReady: !isGenerating || isReady || import.meta.env.DEV,
+      sitemap: state.site.sitemap,
+      isReady: !isGenerating || isReady,
     } satisfies GenerationState;
   });
 };
 
-export const useSiteAndPages = () => {
-  const ctx = usePageContext();
-  const pages = useStore(ctx, (state) => state.pages);
-  const site = useSite();
-  return {
-    site,
-    pages,
-  };
-};
-
 export const useThemes = () => {
   const ctx = usePageContext();
-  return useStore(ctx, (state) => state.themes);
+  return useStore(ctx, (state) => state.site.themes);
 };
 
 export const useDraft = () => {
@@ -1105,33 +1050,14 @@ export const useDraft = () => {
   return useStore(ctx);
 };
 
-export const isDraftDirty = () => {
-  const ctx = usePageContext();
-  return useStore(ctx, (state) => state.dirty);
-};
-
-export function useHasDynamicParent(brickId: string) {
-  const ctx = usePageContext();
-  const getParentBrick = useStore(ctx, (state) => state.getParentBrick);
-  let tmp = getParentBrick(brickId);
-  while (tmp) {
-    if (tmp.type === "dynamic") {
-      return true;
-    }
-    brickId = tmp.id;
-    tmp = getParentBrick(brickId);
-  }
-  return false;
-}
-
 export function useSiteQueries() {
   const ctx = usePageContext();
-  return useStore(ctx, (state) => state.siteAttributes.queries ?? []);
+  return useStore(ctx, (state) => state.site.attributes.queries ?? []);
 }
 
 export function useSiteQuery(queryId?: string) {
   const ctx = usePageContext();
-  return useStore(ctx, (state) => state.siteAttributes.queries?.find((q) => q.id === queryId) ?? null);
+  return useStore(ctx, (state) => state.site.attributes.queries?.find((q) => q.id === queryId) ?? null);
 }
 
 export function useParentBrick(brickId: string) {
@@ -1142,7 +1068,7 @@ export function useParentBrick(brickId: string) {
 
 export function usePageVersion() {
   const ctx = usePageContext();
-  return useStore(ctx, (state) => state.version);
+  return useStore(ctx, (state) => state.page.version);
 }
 
 export function useLastSaved() {
@@ -1152,14 +1078,14 @@ export function useLastSaved() {
 
 export const useSections = () => {
   const ctx = usePageContext();
-  const sections = useStore(ctx, (state) => state.sections);
+  const sections = useStore(ctx, (state) => state.page.sections);
   return processSections(sections);
 };
 
 export const useSection = (sectionId?: string) => {
   const ctx = usePageContext();
   return useStore(ctx, (state) => {
-    const section = state.sections.find((s) => sectionId && s.id === sectionId);
+    const section = state.page.sections.find((s) => sectionId && s.id === sectionId);
     if (!section) {
       return null;
     }
@@ -1184,12 +1110,12 @@ export const useSectionByBrickId = (brickId: string) => {
 
 export const usePageAttributes = () => {
   const ctx = usePageContext();
-  return useStore(ctx, (state) => state.pageAttributes);
+  return useStore(ctx, (state) => state.page.attributes);
 };
 
 export const useSiteAttributes = () => {
   const ctx = usePageContext();
-  return useStore(ctx, (state) => state.siteAttributes);
+  return useStore(ctx, (state) => state.site.attributes);
 };
 
 /**
@@ -1220,23 +1146,9 @@ export const useLoopedQuery = (loopAlias?: string) => {
 };
 
 /**
- * If the brick is looping or one of its parent is looping, this hook will return true.
+ * If the brick is looping or one of its parent is looping, this hook will return the query alias used to loop on.
+ * Otherwise, it will return null.
  */
-export function useIsInLoop(brickId: string) {
-  const ctx = usePageContext();
-  const getParentBrick = useStore(ctx, (state) => state.getParentBrick);
-
-  let currentBrickId: string | undefined = brickId;
-  while (currentBrickId) {
-    const brick = getBrickFromDraft(currentBrickId, ctx.getState());
-    if (brick?.props.loop) {
-      return true;
-    }
-    currentBrickId = getParentBrick(currentBrickId)?.id;
-  }
-  return false;
-}
-
 export function useLoopAlias(brickId: string) {
   const ctx = usePageContext();
   const getParentBrick = useStore(ctx, (state) => state.getParentBrick);
@@ -1256,15 +1168,15 @@ export const usePageQueries = () => {
   return useStore(
     ctx,
     (state) =>
-      state.pageAttributes.queries
+      state.page.attributes.queries
         ?.map((pageQuery) => {
-          const queryInfo = state.siteAttributes.queries?.find((q) => q.id === pageQuery.queryId);
+          const queryInfo = state.site.attributes.queries?.find((q) => q.id === pageQuery.queryId);
           if (!queryInfo) {
             console.warn(`Query with id ${pageQuery.queryId} not found in the store`);
             return null;
           }
           // get datasource
-          const datasource = state.datasources.find((ds) => ds.id === queryInfo.datasourceId);
+          const datasource = state.site.datasources.find((ds) => ds.id === queryInfo.datasourceId);
           if (!datasource) {
             console.warn(
               `Datasource with id ${queryInfo.datasourceId} not found for query ${pageQuery.queryId}`,
@@ -1323,82 +1235,69 @@ export const useDraftHelpers = () => {
   }));
 };
 
-export const usePageInfo = () => {
+export const usePage = () => {
   const ctx = usePageContext();
-  return useStore(ctx, (state) => ({
-    id: state.id,
-    path: state.path,
-    label: state.label,
-    siteLabel: state.siteLabel,
-    siteId: state.siteId,
-    hostname: state.hostname,
-  }));
+  return useStore(ctx, (state) => state.page);
 };
 
 export const useSite = () => {
   const draft = usePageContext();
-  const draftData = useStore(draft, (state) => ({
-    id: state.siteId,
-    label: state.label,
-    sitemap: state.sitemap,
-    theme: state.theme,
-    themes: state.themes,
-    attributes: state.siteAttributes,
-    hostname: state.hostname,
-    datasources: state.datasources,
-    datarecords: state.datarecords,
-    sitePrompt: state.sitePrompt,
-  }));
+  const draftData = useStore(draft, (state) => state.site);
   return draftData;
 };
 
 export const useTheme = () => {
   const ctx = usePageContext();
-  return useStore(ctx, (state) => state.theme);
+  return useStore(ctx, (state) => state.site.theme);
 };
 
-export const useSectionsSubscribe = (callback: (sections: DraftState["sections"]) => void) => {
+export const usePreviewTheme = () => {
+  const ctx = usePageContext();
+  return useStore(ctx, (state) => state.previewTheme);
+};
+
+export const useSectionsSubscribe = (callback: (sections: DraftState["page"]["sections"]) => void) => {
   const ctx = usePageContext();
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    return ctx.subscribe((state) => state?.sections ?? [], debounce(callback, 200), {
+    return ctx.subscribe((state) => state?.page.sections ?? [], debounce(callback, 200), {
       fireImmediately: false,
     });
   }, []);
 };
 
-export const usePageAttributesSubscribe = (callback: (attr: DraftState["pageAttributes"]) => void) => {
+export const usePageAttributesSubscribe = (callback: (attr: DraftState["page"]["attributes"]) => void) => {
   const ctx = usePageContext();
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    return ctx.subscribe((state) => state.pageAttributes, callback, {
+    return ctx.subscribe((state) => state.page.attributes, callback, {
       equalityFn: isEqual,
     });
   }, []);
 };
 
-export const useSiteAttributesSubscribe = (callback: (attr: DraftState["siteAttributes"]) => void) => {
+export const useSiteAttributesSubscribe = (callback: (attr: DraftState["site"]["attributes"]) => void) => {
   const ctx = usePageContext();
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    return ctx.subscribe((state) => state.siteAttributes, callback, {
+    return ctx.subscribe((state) => state.site.attributes, callback, {
       equalityFn: isEqual,
     });
   }, []);
 };
 
-export const useThemeSubscribe = (callback: (theme: DraftState["theme"]) => void) => {
+export const useThemeSubscribe = (callback: (theme: DraftState["site"]["theme"]) => void) => {
   const ctx = usePageContext();
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    return ctx.subscribe((state) => state.theme, callback);
+    return ctx.subscribe((state) => state.site.theme, callback);
   }, []);
 };
 
 export const usePagePathParams = () => {
   const ctx = usePageContext();
   return useStore(ctx, (state) => {
-    const path = state.pageAttributes.path;
+    const path = state.page.attributes.path;
     // Extract placeholders like ":slug" from the path
     const regex = /:([a-zA-Z0-9_]+)/g;
     const matches = Array.from(path.matchAll(regex));
@@ -1406,11 +1305,11 @@ export const usePagePathParams = () => {
   });
 };
 
-export const usePagePathSubscribe = (callback: (path: DraftState["path"]) => void) => {
+export const usePagePathSubscribe = (callback: (path: DraftState["page"]["path"]) => void) => {
   const ctx = usePageContext();
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    return ctx.subscribe((state) => state.path, callback);
+    return ctx.subscribe((state) => state.page.path, callback);
   }, []);
 };
 
@@ -1422,13 +1321,13 @@ function getBrickFromMap(id: string, state: DraftState) {
 function getBrickSection(brickId: string, state: DraftState) {
   const mapping = state.brickMap.get(brickId);
   if (mapping) {
-    return state.sections.find((s) => s.id === mapping.sectionId);
+    return state.page.sections.find((s) => s.id === mapping.sectionId);
   }
 }
 
 function getBrickFromDraft(id: string, state: DraftState) {
   // Find the brick in the sections
-  for (const section of state.sections) {
+  for (const section of state.page.sections) {
     const brick = section.bricks.find((b) => b.id === id);
     if (brick) {
       return brick;
@@ -1458,7 +1357,7 @@ function getBrickFromDraft(id: string, state: DraftState) {
 
 export const useSitePrompt = () => {
   const ctx = usePageContext();
-  return useStore(ctx, (state) => state.sitePrompt);
+  return useStore(ctx, (state) => state.site.sitePrompt);
 };
 
 function buildBrickMap(sections: Section[]): DraftState["brickMap"] {

@@ -32,6 +32,8 @@ import {
   useSitemap,
   useDraftUndoManager,
   useGenerationState,
+  useSite,
+  usePage,
 } from "../hooks/use-page-data";
 
 export default function NavBar() {
@@ -41,6 +43,8 @@ export default function NavBar() {
   const draft = useDraft();
   const pageVersion = usePageVersion();
   const pages = useSitemap();
+  const site = useSite();
+  const page = usePage();
   const { panel } = usePanel();
   const modal = useModal();
   const { canZoomIn, canZoomOut, zoomIn, zoomOut, zoom, resetZoom } = useZoom();
@@ -49,24 +53,23 @@ export default function NavBar() {
   const { undo, redo, futureStates, pastStates } = useDraftUndoManager();
   const canRedo = useMemo(() => futureStates.length > 0, [futureStates]);
   const canUndo = useMemo(() => pastStates.length > 0, [pastStates]);
-  const currentPageLabel =
-    pages.find((page) => page.id === draft.id)?.label ?? draft.label ?? "Untitled Page";
+  const currentPageLabel = page.label ?? "Untitled Page";
   const generationState = useGenerationState();
 
   const publish = useCallback(
     (wholeSite = false) => {
       if (wholeSite) {
-        editorHelpers.onPublish({ mode: "publish-site", siteId: draft.siteId });
+        editorHelpers.onPublish({ mode: "publish-site", siteId: site.id });
       } else {
         editorHelpers.onPublish({
           mode: "publish-page",
-          pageId: draft.id,
-          siteId: draft.siteId,
+          pageId: page.id,
+          siteId: site.id,
           pageVersionId: pageVersion ?? "latest",
         });
       }
     },
-    [draft.siteId, draft.id, pageVersion, editorHelpers.onPublish],
+    [site.id, page.id, pageVersion, editorHelpers.onPublish],
   );
 
   const switchPreviewMode = useCallback(
@@ -139,13 +142,13 @@ export default function NavBar() {
             { type: "separator" as const },
             ...(pages.length > 1 ? [{ type: "label", label: "Switch to page" } as const] : []),
             ...(pages.length > 1
-              ? pages.map((page) => ({
-                  label: page.label,
+              ? pages.map((p) => ({
+                  label: p.label,
                   type: "checkbox" as const,
-                  checked: draft.id === page.id || draft.path === page.path,
+                  checked: page.id === p.id || page.path === p.path,
                   onClick: () => {
                     const currentURL = new URL(window.location.href);
-                    currentURL.searchParams.set("p", page.id);
+                    currentURL.searchParams.set("p", p.id);
                     currentURL.searchParams.set("r", `${Date.now()}`);
                     window.location.href = currentURL.href;
                   },
@@ -295,7 +298,7 @@ export default function NavBar() {
             type="button"
             className={tx(btnClass, squareBtn, commonCls)}
             onClick={() => {
-              window.open(`/sites/${draft.siteId}/pages/${draft.id}/preview`, "upstart_preview");
+              window.open(`/sites/${site.id}/pages/${page.id}/preview`, "upstart_preview");
             }}
           >
             <RxExternalLink className="h-5 w-auto" />

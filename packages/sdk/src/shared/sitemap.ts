@@ -2,8 +2,8 @@ import { Type, type Static } from "@sinclair/typebox";
 import { StringEnum } from "./utils/string-enum";
 import { pageSchema } from "./page";
 
-export const pageInfoSchema = Type.Pick(pageSchema, ["id", "label", "path"]);
-export type PageInfo = Static<typeof pageInfoSchema>;
+export const sitemapPageEntry = Type.Pick(pageSchema, ["id", "label", "path", "attributes"]);
+export type SitemapPageEntry = Static<typeof sitemapPageEntry>;
 
 export const sectionsPlanSchema = Type.Array(
   Type.Object(
@@ -30,13 +30,8 @@ IMPORTANT: be very descriptive and precise in your plan. The more details you pr
 
 export const sitemapEntry = Type.Composite(
   [
-    pageInfoSchema,
+    sitemapPageEntry,
     Type.Object({
-      tags: Type.Array(Type.String(), {
-        default: [],
-        description:
-          "Tags for the page. Use the tag 'main-nav' for pages that should appear in the main navbar",
-      }),
       status: Type.Optional(
         StringEnum(["draft", "published"], {
           title: "Page status",
@@ -46,11 +41,10 @@ export const sitemapEntry = Type.Composite(
           "ai:instructions": "Do not generate this.",
         }),
       ),
-      sectionsPlan: sectionsPlanSchema,
     }),
   ],
   {
-    description: "Pages map. The complete list of site pages, their metadata and their sections summary",
+    description: "Pages map. The complete list of site pages & their metadata",
     additionalProperties: false,
   },
 );

@@ -15,7 +15,6 @@ const loader = {
 const external = [
   // "jsdom",
   "vite",
-  "vite-plugin-inspect",
   "@vitejs/plugin-react",
   // "vite-tsconfig-paths",
   // "postcss",

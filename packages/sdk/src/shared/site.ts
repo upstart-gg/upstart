@@ -46,15 +46,13 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
           id: "_default_",
           label: "First page with really really long name that should be truncated",
           path: "/",
-          tags: [],
-          sectionsPlan: [],
+          attributes: resolvePageAttributes({ path: "/" }),
         },
         {
           id: "_page_2",
           label: "Second page with really really long name that should be truncated",
           path: "/secondPage",
-          tags: [],
-          sectionsPlan: [],
+          attributes: resolvePageAttributes({ path: "/secondPage" }),
         },
       ],
       attributes: resolveSiteAttributes(),
@@ -1054,7 +1052,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             ],
           },
         ] satisfies Section[],
-        tags: [],
         attributes: resolvePageAttributes({
           path: "/blog/:slug",
           queries: [
@@ -1309,7 +1306,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
             ],
           },
         ] satisfies Section[],
-        tags: [],
         attributes: resolvePageAttributes(),
       },
     ],
