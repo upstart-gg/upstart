@@ -248,19 +248,19 @@ function buildAirtableTableData(properties: TProperties) {
     if (field.type === "string") {
       if (field.format === "email") {
         return {
-          name: field.title,
+          name: fieldName,
           type: "email",
         };
       }
       if (field.format === "uri") {
         return {
-          name: field.title,
+          name: fieldName,
           type: "url",
         };
       }
       if (field.format === "date") {
         return {
-          name: field.title,
+          name: fieldName,
           type: "date",
           options: {
             dateFormat: {
@@ -271,7 +271,7 @@ function buildAirtableTableData(properties: TProperties) {
       }
       if (field.format === "date-time") {
         return {
-          name: field.title,
+          name: fieldName,
           type: "dateTime",
           options: {
             dateFormat: {
@@ -286,14 +286,14 @@ function buildAirtableTableData(properties: TProperties) {
       }
       if (field.metadata?.["ui:multiline"]) {
         return {
-          name: field.title,
+          name: fieldName,
           type: "multilineText",
         };
       }
       if (field.enum) {
         if (field.metadata?.["ui:widget"] === "checkbox") {
           return {
-            name: field.title,
+            name: fieldName,
             type: "multipleSelects",
             options: {
               choices: (field.enum as Array<string>).map((value) => ({
@@ -303,7 +303,7 @@ function buildAirtableTableData(properties: TProperties) {
           };
         }
         return {
-          name: field.title,
+          name: fieldName,
           type: "singleSelect",
           options: {
             choices: (field.enum as Array<string>).map((value) => ({
@@ -313,13 +313,13 @@ function buildAirtableTableData(properties: TProperties) {
         };
       }
       return {
-        name: field.title,
+        name: fieldName,
         type: "singleLineText",
       };
     }
     if (field.type === "boolean") {
       return {
-        name: field.title,
+        name: fieldName,
         type: "checkbox",
         options: {
           icon: "check",
@@ -329,7 +329,7 @@ function buildAirtableTableData(properties: TProperties) {
     }
     if (field.type === "number") {
       return {
-        name: field.title,
+        name: fieldName,
         type: "number",
         options: {
           precision: 8,

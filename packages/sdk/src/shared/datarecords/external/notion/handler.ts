@@ -139,7 +139,7 @@ function buildDatabaseProperties(schemaProperties: TProperties, requiredFields: 
           } else {
             properties[fieldName] = {
               rich_text: {},
-              name: field.title || fieldName,
+              name: fieldName,
               type: "rich_text",
             };
           }
