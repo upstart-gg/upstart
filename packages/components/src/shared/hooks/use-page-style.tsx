@@ -33,6 +33,7 @@ export function usePageStyle({ editable, showIntro }: UsePageStyleProps = {}) {
 }
 
 function useClassesFromStyleProps(stylesProps: Record<string, string>) {
+  const siteAttributes = useSiteAttributes();
   const pageAttributes = usePageAttributes();
 
   const classes = Object.entries(stylesProps).reduce(
@@ -44,7 +45,8 @@ function useClassesFromStyleProps(stylesProps: Record<string, string>) {
       const part = extractStylePath(path);
       acc[part] = acc[part] ?? [];
 
-      const resolvedProps = get(pageAttributes, path);
+      // If we can't find the attribute in the page, fall back to the site attributes
+      const resolvedProps = get(pageAttributes, path) ?? get(siteAttributes, path);
       const schema = get(pageAttributesSchema.properties, path);
 
       acc[part].push(tx(helper?.(resolvedProps, undefined, schema)));
