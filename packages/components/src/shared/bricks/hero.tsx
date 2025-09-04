@@ -25,6 +25,7 @@ export default function Hero(_props: BrickProps<Manifest>) {
         brickId={brick.id}
         content={props.content}
         rawContent={brick.props.content}
+        className={tx("prose xl:prose-xl")}
         textSizeMode="hero"
         editable={editable}
         noTextType

@@ -14,7 +14,7 @@ export function string(title: string, options: StrFieldOptions = {}) {
 export function url(title = "URL", defaultValue?: string) {
   return Type.String({
     title,
-    format: "uri",
+    format: "url",
     "ui:field": "url",
     default: defaultValue,
   });
@@ -28,12 +28,12 @@ export function urlOrPageId(title = "URL", defaultValue?: string) {
   return Type.Union(
     [
       Type.String({
-        format: "uri",
+        format: "url",
       }),
       pageIdSchema,
     ],
     {
-      $id: "content:urlOrPageId",
+      // $id: "content:urlOrPageId",
       default: defaultValue,
       title,
       metadata: {
@@ -59,7 +59,7 @@ export function icon(title?: string, options: IconOptions = {}) {
     title: title ?? "Icon",
     "ai:instructions": "Use a iconify reference like 'mdi:heart' or 'fa-solid:coffee'.",
     "ui:field": "iconify",
-    $id: "assets:icon",
+    // $id: "assets:icon",
     metadata: {
       category: "content",
     },

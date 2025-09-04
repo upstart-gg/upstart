@@ -1,8 +1,8 @@
-import type { ThemeArray } from "@upstart.gg/sdk/shared/theme";
+import type { themesArray } from "@upstart.gg/sdk/shared/theme";
 import { useEffect, useState, useRef } from "react";
 
-const ColorThemeAnimation = ({ themes: defaultThemes }: { themes: ThemeArray }) => {
-  const [themes, setThemes] = useState<ThemeArray>(defaultThemes);
+const ColorThemeAnimation = ({ themes: defaultThemes }: { themes: themesArray }) => {
+  const [themes, setThemes] = useState<themesArray>(defaultThemes);
 
   const [currentThemeIndex, setCurrentThemeIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(true);

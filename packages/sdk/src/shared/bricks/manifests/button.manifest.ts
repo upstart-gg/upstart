@@ -5,15 +5,14 @@ import { defineProps } from "../props/helpers";
 import { string, urlOrPageIdRef } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { borderRef, roundingRef } from "../props/border";
-import { fontSize, fontSizeRef } from "../props/text";
+import { fontSizeRef } from "../props/text";
 import { colorPresetRef } from "../props/color-preset";
-import { loopRef } from "../props/dynamic";
 
 export const manifest = defineBrickManifest({
   type: "button",
   name: "Button",
   category: "basic",
-  description: "A button with text and optional icon",
+  description: "A button",
   resizable: "horizontal",
   icon: RxButton,
   minWidth: {
@@ -54,7 +53,6 @@ export const manifest = defineBrickManifest({
         metadata: { category: "content" },
       }),
     ),
-    // loop: Type.Optional(loopRef()),
   }),
 });
 

@@ -12,7 +12,7 @@ export const manifest = defineBrickManifest({
   type: "video",
   name: "Video",
   category: "media",
-  description: "Youtube video",
+  description: "An embedded video player for YouTube / Vimeo / Wistia links",
   icon: RxVideo,
   defaultWidth: {
     mobile: "auto",
@@ -32,7 +32,8 @@ export const manifest = defineBrickManifest({
   },
   props: defineProps({
     url: string("Video URL", {
-      description: "URL of the video to embed. It can be a YouTube link or an embed link.",
+      description:
+        "URL of the video to embed. It can be a YouTube link or an embed link. It also supports Vimeo and Wistia links.",
       default: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       metadata: {
         category: "content",

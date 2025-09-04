@@ -8,17 +8,15 @@ import {
 import { ClientOnly } from "~/shared/utils/client-only";
 // import "@upstart.gg/style-system/default-theme.css";
 // import "@upstart.gg/components/dist/assets/style.css";
-import { createEmptyConfig, type SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
+import type { SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
 
-export default function App({ path, config }: { path: string; config?: SiteAndPagesConfig }) {
-  const siteConfig =
-    config ?? createEmptyConfig("A blog about various kind of coffee and also coffee recipes");
+export default function App({ path, config }: { path: string; config: SiteAndPagesConfig }) {
   const searchParams = new URL(`http://localhost${path}`).searchParams;
   const p = searchParams.get("p");
-  const pageId = (siteConfig.pages.find((page) => page.id === p) ?? siteConfig.pages[0]).id;
+  const pageId = (config.pages.find((page) => page.id === p) ?? config.pages[0]).id;
   return (
     <ClientOnly>
-      <InnerEditor config={siteConfig} pageId={pageId} pageVersion="dummy-version">
+      <InnerEditor config={config} pageId={pageId} pageVersion="dummy-version">
         <Editor />
       </InnerEditor>
     </ClientOnly>

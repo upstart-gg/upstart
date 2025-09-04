@@ -40,7 +40,7 @@ export function queryUse() {
       title: "Query",
       description:
         "When set, this brick will loop through the results of the query and render the content for each item.",
-      $id: "content:queryUse",
+      // $id: "content:queryUse",
       "ui:field": "query",
       metadata: {
         category: "content",
@@ -74,7 +74,7 @@ export function loop(options: ObjectOptions = {}) {
       ),
     },
     {
-      $id: "content:loop",
+      // $id: "content:loop",
       title: "Repeat over",
       "ui:field": "loop",
       "ui:hidden-if": "no-page-queries",

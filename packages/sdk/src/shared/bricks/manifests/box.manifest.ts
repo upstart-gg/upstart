@@ -103,4 +103,33 @@ export const examples: {
   description: string;
   type: string;
   props: BrickProps<Manifest>["brick"]["props"];
-}[] = [];
+}[] = [
+  {
+    description: "A simple box with 2 text bricks aligned vertically",
+    type: "box",
+    props: {
+      direction: "flex-col",
+      $children: [
+        {
+          type: "text",
+          props: {
+            $children: [
+              {
+                type: "text",
+                props: {
+                  content: "Hello World",
+                },
+              },
+              {
+                type: "text",
+                props: {
+                  content: "Hello World",
+                },
+              },
+            ],
+          },
+        },
+      ],
+    },
+  },
+];

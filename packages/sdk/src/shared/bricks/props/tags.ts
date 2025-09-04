@@ -8,7 +8,7 @@ export function tags(options?: StringOptions) {
       ...options,
     }),
     {
-      $id: "content:tags",
+      // $id: "content:tags",
       "ui:field": "tags",
       title: options?.title ?? "Tags",
       metadata: {

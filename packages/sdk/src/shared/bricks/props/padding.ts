@@ -7,7 +7,7 @@ export function padding() {
     ["p-0", "p-px", "p-1", "p-2", "p-3", "p-4", "p-6", "p-8", "p-10", "p-12", "p-16", "p-24"],
     {
       title: "Padding",
-      $id: "styles:padding",
+      // $id: "styles:padding",
       enumNames: [
         "None",
         "Minimal",

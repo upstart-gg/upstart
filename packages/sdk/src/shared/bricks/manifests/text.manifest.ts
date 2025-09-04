@@ -18,6 +18,7 @@ export const manifest = defineBrickManifest({
   description: "Text with formatting options",
   aiInstructions: `Text "content" can contain minimal HTML tags like <strong>, <em>, <br> and <a> as well as <p> and <span> and lists.
 Only 'align' is supported as an inline style, so don't use other inline styles like 'font-size' or 'color' in the content prop.
+You may simply omit the colorPreset property so that the brick will inherit the default color from its parent container.
 `,
   defaultWidth: {
     mobile: "100%",
@@ -26,12 +27,12 @@ Only 'align' is supported as an inline style, so don't use other inline styles l
     desktop: "auto",
     mobile: "auto",
   },
+  staticClasses: "prose lg:prose-lg",
   icon: RxTextAlignLeft,
   props: defineProps({
     colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",
-        default: { color: "base-100" },
       }),
     ),
     content: textContentRef({

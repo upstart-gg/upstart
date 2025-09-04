@@ -1,4 +1,4 @@
-import { type SchemaOptions, Type } from "@sinclair/typebox";
+import { type SchemaOptions, TSchema, Type, TypeRegistry } from "@sinclair/typebox";
 import type { alignItems, alignSelf, justifyContent } from "../bricks/props/align";
 import type { background, backgroundColor } from "../bricks/props/background";
 import type { border, rounding } from "../bricks/props/border";
@@ -9,7 +9,7 @@ import type { shadow, textShadow } from "../bricks/props/effects";
 import type { fontSize, fontSizeXL, textContent } from "../bricks/props/text";
 import type { icon, urlOrPageId } from "../bricks/props/string";
 import type { padding } from "../bricks/props/padding";
-import type { colorPreset, gradientDirection } from "../bricks/props/color-preset";
+import type { colorPreset } from "../bricks/props/color-preset";
 import type { image } from "../bricks/props/image";
 import type { direction } from "../bricks/props/direction";
 import type { loop, queryUse } from "../bricks/props/dynamic";
@@ -29,7 +29,6 @@ export interface SchemaTypeMap {
   "styles:color": ReturnType<typeof color>;
   "styles:borderColor": ReturnType<typeof borderColor>;
   "styles:direction": ReturnType<typeof direction>;
-  "styles:gradientDirection": ReturnType<typeof gradientDirection>;
   "styles:shadow": ReturnType<typeof shadow>;
   "styles:textShadow": ReturnType<typeof textShadow>;
   "styles:cssLength": ReturnType<typeof cssLength>;

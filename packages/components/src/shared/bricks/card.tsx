@@ -81,7 +81,7 @@ export default function Card(props: BrickProps<Manifest>) {
         <div className={tx("z-auto p-4 order-last")}>
           <TextContent
             propPath="text.content"
-            className={tx("flex-1")}
+            className={tx("flex-1 prose lg:prose-lg")}
             brickId={brick.id}
             content={brickProps.text}
             rawContent={brick.props.text}

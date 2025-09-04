@@ -279,16 +279,6 @@ export function EditableBrickWrapperSimple({
     [panelPosition],
   );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  const onDoubleClick = useCallback(
-    (e: MouseEvent<HTMLElement>) => {
-      console.log("EditableBrickWrapper: Double click on brick");
-      e.stopPropagation();
-      updateBrickProps(brick.id, { lastTouched: Date.now(), grow: !brick.props.grow });
-    },
-    [brick.props],
-  );
-
   const { ref: hoverRef, isHovered } = useIsHovered({ tolerance: 6, deepCheck: true });
   const wrapperClass = useBrickWrapperStyle({
     brick,
@@ -333,7 +323,6 @@ export function EditableBrickWrapperSimple({
           !!brick.props.ghost && "opacity-50 pointer-events-none grayscale bg-white",
         )}
         onClick={onBrickWrapperClick}
-        onDoubleClickCapture={onDoubleClick}
       >
         <BrickComponent
           brick={brick}

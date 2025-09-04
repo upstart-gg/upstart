@@ -8,7 +8,7 @@ export const connectorSchema = Type.Union([
   Type.Literal("airtable"),
   Type.Literal("google-sheets"),
   Type.Literal("notion"),
-  Type.Literal("generic-webhook"),
+  // Type.Literal("generic-webhook"),
   // saved to Upstart platform
   Type.Literal("internal"),
 ]);
@@ -118,13 +118,13 @@ export const datarecordsConnectors = Type.Union([
     }),
     commonDatarecordSchema,
   ]),
-  Type.Composite([
-    Type.Object({
-      provider: Type.Literal("generic-webhook"),
-      options: genericWebhookOptions,
-    }),
-    commonDatarecordSchema,
-  ]),
+  // Type.Composite([
+  //   Type.Object({
+  //     provider: Type.Literal("generic-webhook"),
+  //     options: genericWebhookOptions,
+  //   }),
+  //   commonDatarecordSchema,
+  // ]),
   internalDatarecord,
 ]);
 

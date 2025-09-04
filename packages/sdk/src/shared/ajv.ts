@@ -10,7 +10,7 @@ import { shadow, textShadow } from "./bricks/props/effects";
 import { fontSize, textContent } from "./bricks/props/text";
 import { icon, urlOrPageId } from "./bricks/props/string";
 import { padding } from "./bricks/props/padding";
-import { colorPreset, gradientDirection } from "./bricks/props/color-preset";
+import { colorPreset } from "./bricks/props/color-preset";
 import { image } from "./bricks/props/image";
 import { direction } from "./bricks/props/direction";
 import { loop, queryUse } from "./bricks/props/dynamic";
@@ -24,7 +24,7 @@ export const ajv = new Ajv({
   validateSchema: false,
   coerceTypes: true,
   allErrors: true,
-  inlineRefs: false,
+  inlineRefs: true,
 });
 
 ajv.addSchema(background(), "styles:background");
@@ -36,7 +36,6 @@ ajv.addSchema(rounding(), "styles:rounding");
 ajv.addSchema(fontSize(), "styles:fontSize");
 ajv.addSchema(hidden(), "styles:hidden");
 ajv.addSchema(direction(), "styles:direction");
-ajv.addSchema(gradientDirection(), "styles:gradientDirection");
 ajv.addSchema(border(), "styles:border");
 ajv.addSchema(padding(), "styles:padding");
 ajv.addSchema(color(), "styles:color");
@@ -46,62 +45,57 @@ ajv.addSchema(textShadow(), "styles:textShadow");
 ajv.addSchema(cssLength(), "styles:cssLength");
 ajv.addSchema(image(), "assets:image");
 ajv.addSchema(icon(), "assets:icon");
-ajv.addSchema(textContent(), "content:textContent");
+ajv.addSchema(textContent(), "content:text");
 ajv.addSchema(urlOrPageId(), "content:urlOrPageId");
 ajv.addSchema(loop(), "content:loop");
 ajv.addSchema(queryUse(), "content:queryUse");
 ajv.addSchema(colorPreset(), "presets:color");
 ajv.addSchema(tags(), "content:tags");
 
-export const jsonStringsSupportedFormats = [
-  "date-time",
-  "time",
-  "date",
-  "email",
-  "hostname",
-  "ipv4",
-  "ipv6",
-  "uri",
-  "uri-reference",
-  "uuid",
-  "uri-template",
-  "json-pointer",
-  "relative-json-pointer",
-  "regex",
-] as const;
+export const jsonStringsSupportedFormats = ["date-time", "date", "email", "url", "uri"] as const;
 
 // Add formats to Ajv
 addFormats(ajv, [...jsonStringsSupportedFormats]);
 
-ajv.addFormat("date-object", {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  validate: (data: any) => data instanceof Date && !Number.isNaN(data.getTime()),
+ajv.addFormat("slug", {
+  validate: (data: string) => typeof data === "string",
   async: false,
+  type: "string",
+});
+ajv.addFormat("image", {
+  validate: (data: string) => typeof data === "string",
+  async: false,
+  type: "string",
 });
 
 ajv.addFormat("nanoid", {
   validate: (data: string) => typeof data === "string",
   async: false,
+  type: "string",
 });
 
 ajv.addFormat("richtext", {
   validate: (data: string) => typeof data === "string",
   async: false,
+  type: "string",
 });
 
 ajv.addFormat("markdown", {
   validate: (data: string) => typeof data === "string",
   async: false,
+  type: "string",
 });
 
 ajv.addFormat("multiline", {
   validate: (data: string) => typeof data === "string",
   async: false,
+  type: "string",
 });
 
 ajv.addFormat("password", {
   validate: (data: string) => typeof data === "string",
   async: false,
+  type: "string",
 });
 
 export function serializeAjvErrors(errors: ErrorObject[] | null | undefined): string {

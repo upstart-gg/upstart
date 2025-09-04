@@ -14,8 +14,6 @@ export const manifest = defineBrickManifest({
   type: "carousel",
   name: "Carousel",
   description: "An image carousel with navigation arrows and dots or numbers indicator",
-  aiInstructions:
-    "This brick should be used for image carousels with sliding functionality and navigation controls.",
   defaultInspectorTab: "content",
   minHeight: {
     desktop: 200,

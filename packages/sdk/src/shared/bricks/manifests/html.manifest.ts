@@ -5,6 +5,20 @@ import { BsCodeSquare } from "react-icons/bs";
 
 import { Type } from "@sinclair/typebox";
 
+export const examples: {
+  description: string;
+  type: string;
+  props: BrickProps<Manifest>["brick"]["props"];
+}[] = [
+  {
+    description: "A tally form",
+    type: "html",
+    props: {
+      html: '<iframe data-tally-src="https://tally.so/embed/wQZpd8?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="282" frameborder="0" marginheight="0" marginwidth="0" title="test"></iframe>',
+    },
+  },
+];
+
 export const manifest = defineBrickManifest({
   type: "html",
   name: "Html",
@@ -34,17 +48,3 @@ export const manifest = defineBrickManifest({
 });
 
 export type Manifest = typeof manifest;
-
-export const examples: {
-  description: string;
-  type: string;
-  props: BrickProps<Manifest>["brick"]["props"];
-}[] = [
-  {
-    description: "A tally form",
-    type: "html",
-    props: {
-      html: '<iframe data-tally-src="https://tally.so/embed/wQZpd8?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="282" frameborder="0" marginheight="0" marginwidth="0" title="test"></iframe>',
-    },
-  },
-];

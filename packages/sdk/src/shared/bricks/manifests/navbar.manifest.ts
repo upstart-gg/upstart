@@ -20,6 +20,7 @@ export const manifest = defineBrickManifest({
   duplicatable: false,
   resizable: false,
   movable: false,
+  hideInLibrary: true,
   staticClasses: "flex-grow",
   defaultWidth: { mobile: "100%" },
   defaultHeight: { mobile: "60px", desktop: "60px" },
@@ -57,6 +58,7 @@ export const manifest = defineBrickManifest({
       ),
       hideBrand: Type.Optional(
         boolean("Hide brand name", undefined, {
+          "ai:hidden": true,
           metadata: {
             filter: (manifestProps: TObject, formData: Static<Manifest["props"]>) => {
               return !!formData.logo; // Enable this field only if logo is set
@@ -115,7 +117,6 @@ export const examples: {
     description: "Corporate navbar with logo and right-aligned navigation",
     type: "navbar",
     props: {
-      brand: "TechCorp Solutions",
       logo: {
         src: "https://via.placeholder.com/120x40.png?text=TechCorp",
         alt: "TechCorp Solutions logo",
@@ -130,14 +131,10 @@ export const examples: {
     },
   },
   {
-    description: "Dark theme navbar with centered navigation",
+    description: "Dark theme navbar with a brand text and centered navigation, no logo",
     type: "navbar",
     props: {
       brand: "TechCorp Solutions",
-      logo: {
-        src: "https://via.placeholder.com/100x35.png?text=Studio",
-        alt: "Creative Studio logo",
-      },
       linksPosition: "center",
       staticNavItems: [
         { urlOrPageId: "/work" },
@@ -148,14 +145,10 @@ export const examples: {
     },
   },
   {
-    description: "SaaS platform navbar with fixed positioning",
+    description: "SaaS platform navbar with fixed positioning and brand text",
     type: "navbar",
     props: {
       brand: "TechCorp Solutions",
-      logo: {
-        src: "https://via.placeholder.com/110x38.png?text=CloudFlow",
-        alt: "CloudFlow platform logo",
-      },
       linksPosition: "right",
       staticNavItems: [
         { urlOrPageId: "/features" },
@@ -166,10 +159,9 @@ export const examples: {
     },
   },
   {
-    description: "E-commerce navbar",
+    description: "E-commerce navbar with logo and shopping links",
     type: "navbar",
     props: {
-      brand: "TechCorp Solutions",
       logo: {
         src: "https://via.placeholder.com/130x45.png?text=ShopEasy",
         alt: "ShopEasy store logo",
@@ -188,12 +180,10 @@ export const examples: {
     description: "Agency navbar with logo-only brand",
     type: "navbar",
     props: {
-      brand: "TechCorp Solutions",
       logo: {
         src: "https://via.placeholder.com/140x50.png?text=Agency+Logo",
         alt: "Digital agency logo",
       },
-      hideBrand: true,
       linksPosition: "right",
       staticNavItems: [
         { urlOrPageId: "/projects" },

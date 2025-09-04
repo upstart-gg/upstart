@@ -6,7 +6,7 @@ export const cssUnits = ["px", "%", "em", "rem", "vh", "vw", "dvh", "dvw", "rlh"
 export function cssLength(options: StringOptions = {}) {
   return Type.String({
     title: "Length",
-    $id: "styles:cssLength",
+    // $id: "styles:cssLength",
     description: `A CSS length value. Must be a number with a unit (e.g. "10px", "50%"). The unit can be one of the following: ${cssUnits?.join(", ")}.`,
     default: options.default,
     "ui:field": "css-length",

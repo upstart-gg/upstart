@@ -4,7 +4,7 @@ import { StringEnum, type StringEnumOptions } from "~/shared/utils/string-enum";
 
 export function shadow(options: StringEnumOptions = {}) {
   return StringEnum(["shadow-none", "shadow-sm", "shadow-md", "shadow-lg", "shadow-xl", "shadow-2xl"], {
-    $id: "styles:shadow",
+    // $id: "styles:shadow",
     title: "Shadow",
     enumNames: ["None", "Small", "Medium", "Large", "XL", "2XL"],
     "ui:placeholder": "Not specified",
@@ -29,7 +29,7 @@ export function textShadow(options: StringEnumOptions = {}) {
   return StringEnum(
     ["text-shadow-none", "text-shadow-sm", "text-shadow-md", "text-shadow-lg", "text-shadow-xl"],
     {
-      $id: "styles:textShadow",
+      // $id: "styles:textShadow",
       title: "Text shadow",
       enumNames: ["None", "S", "M", "L", "XL"],
       "ui:display": "button-group",

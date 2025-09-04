@@ -6,7 +6,7 @@ export function direction(options: StringOptions = {}) {
   return StringEnum(["flex-row", "flex-col"], {
     title: "Direction",
     enumNames: ["Horizontal", "Vertical"],
-    $id: "styles:direction",
+    // $id: "styles:direction",
     "ui:styleId": "styles:direction",
     examples: ["flex-row", "flex-col"],
     ...options,

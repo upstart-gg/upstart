@@ -1,7 +1,7 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { StringEnum } from "./utils/string-enum";
 import { pageSchema } from "./page";
-import { toLLMSchema } from "./utils/schema";
+import { toLLMSchema } from "./utils/llm";
 
 export const sitemapPageEntry = Type.Pick(pageSchema, ["id", "label", "path", "attributes"]);
 export type SitemapPageEntry = Static<typeof sitemapPageEntry>;
@@ -90,3 +90,5 @@ export const sitemapSchemaLLM = toLLMSchema(
     ]),
   ),
 );
+
+export const sitemapSchemaNoPlansLLM = toLLMSchema(sitemapSchema);

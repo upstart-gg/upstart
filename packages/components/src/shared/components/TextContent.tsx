@@ -12,12 +12,15 @@ export default function TextContent(props: TextEditorProps<any>) {
       </Suspense>
     );
   }
-  const Component = props.as || "div";
+
+  const { as, className, content, ...rest } = props;
+  const Component = as ?? "div";
   return (
     <Component
-      className={props.className}
+      className={className}
       // biome-ignore lint/security/noDangerouslySetInnerHtml: We do actually want the user to be able to set HTML content
-      dangerouslySetInnerHTML={{ __html: props.content }}
+      dangerouslySetInnerHTML={{ __html: content }}
+      {...rest}
     />
   );
 }

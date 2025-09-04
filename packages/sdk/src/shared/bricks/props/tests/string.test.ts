@@ -39,7 +39,7 @@ describe("String prop test suite", () => {
 
     it("should have the correct format", () => {
       const urlProp = url();
-      expect(urlProp.format).toBe("uri");
+      expect(urlProp.format).toBe("url");
     });
 
     it("should use the correct UI field", () => {
@@ -70,7 +70,7 @@ describe("String prop test suite", () => {
 
       // First option should be URL
       const urlOption = prop.anyOf?.[0];
-      expect(urlOption?.format).toBe("uri");
+      expect(urlOption?.format).toBe("url");
 
       // Second option should be page-id
       const pageIdOption = prop.anyOf?.[1];

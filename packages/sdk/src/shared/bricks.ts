@@ -92,7 +92,7 @@ export const brickSchema = Type.Object(
       }),
     ),
   },
-  { $id: "brick", additionalProperties: true },
+  { additionalProperties: true },
 );
 
 export type Brick = Omit<Static<typeof brickSchema>, "props" | "mobileProps"> & {
@@ -226,7 +226,6 @@ export const sectionSchema = Type.Object(
     bricks: Type.Array(brickSchema),
   },
   {
-    $id: "section",
     description:
       "Sections are direct children of the page that are stacked vertically, but they always align their children horizontally (flex-row).",
   },

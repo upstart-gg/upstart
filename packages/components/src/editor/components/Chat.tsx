@@ -211,9 +211,9 @@ What should we work on together? 🤖`,
   const debouncedScroll = useDebounceCallback(() => {
     // when messages change, scroll to the bottom
     if (listPlaceholderRef.current) {
-      listPlaceholderRef.current.scrollIntoView({ behavior: "smooth" });
+      listPlaceholderRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, 200);
+  }, 300);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(debouncedScroll, [status, data, messages]);
@@ -281,9 +281,8 @@ What should we work on together? 🤖`,
 
         case "generateThemes": {
           const themes = toolInvocation.result as Theme[];
-          const themesProcessed = themes.map(processTheme);
-          console.log("Generated themes", themesProcessed);
-          draftHelpers.setThemes(themesProcessed);
+          console.log("Generated themes", themes);
+          draftHelpers.setThemes(themes);
           break;
         }
 
@@ -363,7 +362,7 @@ What should we work on together? 🤖`,
           {
             "rounded-tr-xl shadow-inner": generationState.isReady === true,
             "p-2": generationState.isReady === true,
-            "p-6": generationState.isReady === false,
+            "p-6 pb-12": generationState.isReady === false,
           },
           css({
             scrollbarColor: "var(--violet-a8) var(--violet-a2)",
@@ -450,15 +449,19 @@ What should we work on together? 🤖`,
             })}
           </div>
         ))}
-        {!hasRunningTools && (status === "submitted" || status === "streaming") && (
-          <div
-            className={tx(
-              "h-6 px-2 my-4 text-fluid-sm text-gray-600 flex items-center justify-center gap-1.5",
-            )}
-          >
-            <Spinner size="2" /> Please wait...
-          </div>
-        )}
+        <AnimatePresence initial={false}>
+          {!hasRunningTools && (status === "submitted" || status === "streaming") && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "1.5rem" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className={tx("px-2 my-4 text-fluid-sm text-gray-600 flex items-center justify-center gap-1.5")}
+            >
+              <Spinner size="2" /> Please wait...
+            </motion.div>
+          )}
+        </AnimatePresence>
         {error && (
           <div className={tx(msgCommon, "bg-red-200 text-red-800 text-sm")}>
             <p>An error occured. {error.message ?? "Please retry."}</p>
@@ -570,7 +573,7 @@ function getToolWaitingLabel(toolInvocation: ToolInvocation) {
   }
   switch (toolInvocation.toolName) {
     case "generatePage":
-      return `Generating page '${toolInvocation.args.pageLabel}', this can take a while`;
+      return `Generating page '${toolInvocation.args.pageId}', this can take a while`;
     default:
       return toolsWorkingLabels[toolInvocation.toolName];
   }
@@ -578,7 +581,7 @@ function getToolWaitingLabel(toolInvocation: ToolInvocation) {
 
 function ImagesPreview({ query, images }: { query: string; images: SimpleImageMetadata[] }) {
   return (
-    <div className="flex flex-col gap-2 my-3">
+    <div className="flex flex-col gap-2 my-3" key={query}>
       <span>I found those images on the web for query: "{query}"</span>
       <div className="grid grid-cols-3 gap-1 max-h-60 overflow-y-auto">
         {images.map((image, index) => (
@@ -587,7 +590,7 @@ function ImagesPreview({ query, images }: { query: string; images: SimpleImageMe
             src={image.url}
             alt={image.description}
             className={tx(
-              "rounded-md h-auto !object-cover object-center w-full aspect-video animate-fade-in",
+              "rounded-md h-auto !object-cover object-center w-full aspect-video",
               css({
                 // animation delay
                 animationDelay: `${index * 100}ms`,

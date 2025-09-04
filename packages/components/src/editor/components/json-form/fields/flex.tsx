@@ -6,6 +6,7 @@ import { HelpIcon } from "../HelpIcon";
 import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { FC } from "react";
+import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export const FlexField: FC<FieldProps<any>> = (props) => {
@@ -42,8 +43,7 @@ export const FlexField: FC<FieldProps<any>> = (props) => {
             className="w-full mt-0.5 !max-w-full"
             radius="large"
           >
-            {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
-            {schema.properties.direction.anyOf.map((option: any) => (
+            {normalizeSchemaEnum(schema.properties.direction).map((option) => (
               <SegmentedControl.Item
                 key={option.const}
                 value={option.const}

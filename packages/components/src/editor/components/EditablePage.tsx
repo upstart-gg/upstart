@@ -32,17 +32,12 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const { zoom } = useZoom();
   const pageRef = useRef<HTMLDivElement>(null);
   const gridConfig = useGridConfig();
-  const pageAttributes = usePageAttributes();
   const sections = useSections();
-  const typography = useFontWatcher();
   const selectedBrickId = useSelectedBrickId();
   const selectedSectionId = useSelectedSectionId();
 
   const pageClassName = usePageStyle({
-    attributes: pageAttributes,
-    typography,
     editable: true,
-    previewMode,
     showIntro,
   });
 

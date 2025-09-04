@@ -11,9 +11,10 @@ const hydrate = () =>
   startTransition(() => {
     const url = new URL(window.location.href);
     const resolvedConfig =
-      url.searchParams.get("debug") === "true"
+      url.searchParams.get("action") === "setup"
         ? createEmptyConfig("A blog about various kind of coffee and also coffee recipes")
         : (config as SiteAndPagesConfig);
+
     hydrateRoot(
       document.getElementById("root") as HTMLElement,
       <StrictMode>

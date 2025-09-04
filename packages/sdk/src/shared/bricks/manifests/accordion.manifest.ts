@@ -10,6 +10,48 @@ import type { BrickProps } from "../props/types";
 import { loopRef } from "../props/dynamic";
 import { cssLengthRef } from "../props/css-length";
 
+export const examples: {
+  description: string;
+  type: string;
+  props: BrickProps<Manifest>["brick"]["props"];
+}[] = [
+  {
+    description: "FAQ section with card styling with single open",
+    type: "accordion",
+    props: {
+      restrictOneOpen: true,
+      items: [
+        {
+          title: "What is included in the basic plan?",
+          content:
+            "The basic plan includes access to all core features, up to 10 projects, 5GB storage, email support, and basic analytics. You can upgrade at any time to access advanced features like API access, priority support, and unlimited projects.",
+          defaultOpen: true,
+        },
+        {
+          title: "How do I cancel my subscription?",
+          content:
+            "You can cancel your subscription at any time from your account settings. Go to Billing > Manage Subscription > Cancel. Your access will continue until the end of your current billing period, and you won't be charged for the next cycle.",
+        },
+        {
+          title: "Is there a free trial available?",
+          content:
+            "Yes! We offer a 14-day free trial with full access to all premium features. No credit card required to start. You can upgrade to a paid plan anytime during or after the trial period.",
+        },
+        {
+          title: "What payment methods do you accept?",
+          content:
+            "We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and bank transfers for annual subscriptions. All payments are processed securely through our payment partners.",
+        },
+        {
+          title: "Do you offer refunds?",
+          content:
+            "We offer a 30-day money-back guarantee for all new subscriptions. If you're not satisfied with our service, contact our support team within 30 days of your purchase for a full refund.",
+        },
+      ],
+    },
+  },
+];
+
 export const manifest = defineBrickManifest({
   type: "accordion",
   name: "Accordion",
@@ -90,45 +132,3 @@ Multiple panels can be open simultaneously or limited to one at a time.
 });
 
 export type Manifest = typeof manifest;
-
-export const examples: {
-  description: string;
-  type: string;
-  props: BrickProps<Manifest>["brick"]["props"];
-}[] = [
-  {
-    description: "FAQ section with card styling with single open",
-    type: "accordion",
-    props: {
-      restrictOneOpen: true,
-      items: [
-        {
-          title: "What is included in the basic plan?",
-          content:
-            "The basic plan includes access to all core features, up to 10 projects, 5GB storage, email support, and basic analytics. You can upgrade at any time to access advanced features like API access, priority support, and unlimited projects.",
-          defaultOpen: true,
-        },
-        {
-          title: "How do I cancel my subscription?",
-          content:
-            "You can cancel your subscription at any time from your account settings. Go to Billing > Manage Subscription > Cancel. Your access will continue until the end of your current billing period, and you won't be charged for the next cycle.",
-        },
-        {
-          title: "Is there a free trial available?",
-          content:
-            "Yes! We offer a 14-day free trial with full access to all premium features. No credit card required to start. You can upgrade to a paid plan anytime during or after the trial period.",
-        },
-        {
-          title: "What payment methods do you accept?",
-          content:
-            "We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and bank transfers for annual subscriptions. All payments are processed securely through our payment partners.",
-        },
-        {
-          title: "Do you offer refunds?",
-          content:
-            "We offer a 30-day money-back guarantee for all new subscriptions. If you're not satisfied with our service, contact our support team within 30 days of your purchase for a full refund.",
-        },
-      ],
-    },
-  },
-];

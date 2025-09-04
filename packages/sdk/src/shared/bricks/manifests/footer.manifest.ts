@@ -17,6 +17,7 @@ export const manifest = defineBrickManifest({
   aiInstructions: "This brick should be used on most sites/pages. It must be placed on its own section.",
   icon: VscLayoutPanelOff,
   staticClasses: "flex-1",
+  hideInLibrary: true,
   resizable: false,
   movable: false,
   defaultWidth: {

@@ -15,10 +15,7 @@ export const manifest = defineBrickManifest({
   category: "basic",
   name: "Hero",
   description: "A big textual element for home pages",
-  aiInstructions: `
-This hero element is a large text element that can be used to display a title and an optional tagline.
-It is typically used on home pages to grab the user's attention.
-  `.trim(),
+  aiInstructions: `Displays a large text element that can be used to display a title and an optional tagline. Typically used on home pages to grab the user's attention.`,
   icon: BsAlphabetUppercase,
 
   defaultWidth: { desktop: "60dvw", mobile: "auto" },
@@ -29,8 +26,7 @@ It is typically used on home pages to grab the user's attention.
   props: defineProps({
     content: textContentRef({
       title: "Hero title",
-      default:
-        "<h1 class='hero-size-1' style='text-align:center'><b>Leading Businesses<br />Choose Leading Software</b></h1>",
+      default: "<h1 class='hero-size-1' style='text-align:center'>Lorem Ipsum<br />dolor sit amet</h1>",
     }),
     tagline: Type.Optional(
       textContentRef({
@@ -75,6 +71,7 @@ It is typically used on home pages to grab the user's attention.
 });
 
 export type Manifest = typeof manifest;
+
 export const examples: {
   description: string;
   type: string;

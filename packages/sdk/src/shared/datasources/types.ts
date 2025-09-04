@@ -3,7 +3,8 @@ import { youtubeListOptions } from "./external/youtube/list/options";
 import { httpJsonOptions } from "./external/http-json/options";
 import { rssOptions } from "./external/rss/options";
 import { StringEnum } from "../utils/string-enum";
-import { toLLMSchema } from "../utils/schema";
+import { toLLMSchema } from "../utils/llm";
+import { examples } from "../bricks/manifests/accordion.manifest";
 
 export const providersSchema = Type.Union([
   // Type.Literal("facebook-posts"),
@@ -186,7 +187,6 @@ const datasourceInternalManifest = Type.Composite([
       ),
     },
     {
-      $id: "datasource:internal",
       examples: [
         {
           id: "customers",
@@ -202,6 +202,25 @@ const datasourceInternalManifest = Type.Composite([
               },
               required: ["name", "email"],
               title: "Customer",
+              examples: [
+                { name: "John Doe", email: "john.doe@example.com" },
+                {
+                  name: "Jane Smith",
+                  email: "jane.smith@example.com",
+                },
+                {
+                  name: "Alice Johnson",
+                  email: "alice.johnson@example.com",
+                },
+                {
+                  name: "Bob Brown",
+                  email: "bob.brown@example.com",
+                },
+                {
+                  name: "Charlie Davis",
+                  email: "charlie.davis@example.com",
+                },
+              ],
             },
           },
           indexes: [
@@ -227,6 +246,33 @@ const datasourceInternalManifest = Type.Composite([
               },
               required: ["title", "content", "author"],
               title: "Blog Post",
+              examples: [
+                {
+                  title: "My First Blog Post",
+                  content: "This is the content of my first blog post.",
+                  author: "John Doe",
+                },
+                {
+                  title: "Exploring the Cosmos",
+                  content: "A journey through the stars and galaxies.",
+                  author: "Jane Smith",
+                },
+                {
+                  title: "The Art of Cooking",
+                  content: "Delicious recipes and cooking tips.",
+                  author: "Alice Johnson",
+                },
+                {
+                  title: "Traveling the World",
+                  content: "My adventures in different countries.",
+                  author: "Bob Brown",
+                },
+                {
+                  title: "Technology Trends",
+                  content: "The latest trends in technology.",
+                  author: "Charlie Davis",
+                },
+              ],
             },
           },
           indexes: [

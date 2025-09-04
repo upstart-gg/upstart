@@ -9,6 +9,7 @@ import { shadowRef } from "../props/effects";
 import { borderRef, roundingRef } from "../props/border";
 import { colorPresetRef } from "../props/color-preset";
 import { loopRef } from "../props/dynamic";
+import { StringEnum } from "~/shared/utils/string-enum";
 
 export const manifest = defineBrickManifest({
   type: "card",
@@ -36,27 +37,19 @@ export const manifest = defineBrickManifest({
       }),
     ),
     imagePosition: Type.Optional(
-      Type.Union(
-        [
-          Type.Literal("top", { title: "Top" }),
-          Type.Literal("middle", { title: "Middle" }),
-          Type.Literal("bottom", { title: "Bottom" }),
-          Type.Literal("left", { title: "Left" }),
-          Type.Literal("right", { title: "Right" }),
-        ],
-        {
-          title: "Image Position",
-          description: "Where the image should be placed in the card",
-          default: "top",
-          "ui:responsive": "desktop",
-          metadata: {
-            category: "content",
-            filter: (manifestProps: Manifest["props"], formData: Static<Manifest["props"]>) => {
-              return !!formData.cardImage?.src;
-            },
+      StringEnum(["top", "middle", "bottom", "left", "right"], {
+        enumNames: ["Top", "Middle", "Bottom", "Left", "Right"],
+        title: "Image Position",
+        description: "Where the image should be placed in the card",
+        default: "top",
+        "ui:responsive": "desktop",
+        metadata: {
+          category: "content",
+          filter: (manifestProps: Manifest["props"], formData: Static<Manifest["props"]>) => {
+            return !!formData.cardImage?.src;
           },
         },
-      ),
+      }),
     ),
     noTitle: Type.Optional(
       Type.Boolean({

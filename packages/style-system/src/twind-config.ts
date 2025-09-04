@@ -23,7 +23,6 @@ export default defineConfig({
       // to avoid conflicts with our custom button styles.
       //
     }),
-    presetTypo(),
   ],
   variants: [
     ["hasChildMenudHover", "&:has(.container-menu-wrapper:hover)"],
@@ -225,11 +224,26 @@ export default defineConfig({
     ["object-top-right", { objectPosition: "top right" }],
 
     ["hero", { "&::first-line": { lineHeight: "1", margin: "0" } }],
-    ["hero-size-1", { fontSize: "clamp(2.5rem, 1.5rem + 3.913cqw, 4rem)", lineHeight: "1.05" }],
-    ["hero-size-2", { fontSize: "clamp(3rem, 2rem + 3.913cqw, 4.5rem)", lineHeight: "1.05" }],
-    ["hero-size-3", { fontSize: "clamp(3.5rem, 2.5rem + 3.913cqw, 5rem)", lineHeight: "1.05" }],
-    ["hero-size-4", { fontSize: "clamp(4rem, 3rem + 3.913cqw, 5.5rem)", lineHeight: "1.05" }],
-    ["hero-size-5", { fontSize: "clamp(4.5rem, 3.5rem + 3.913cqw, 6rem)", lineHeight: "1.05" }],
+    [
+      "hero-size-1",
+      { fontSize: "clamp(2.5rem, 1.5rem + 3.913cqw, 4rem)", lineHeight: "1.05", fontWeight: "800" },
+    ],
+    [
+      "hero-size-2",
+      { fontSize: "clamp(3rem, 2rem + 3.913cqw, 4.5rem)", lineHeight: "1.05", fontWeight: "bold" },
+    ],
+    [
+      "hero-size-3",
+      { fontSize: "clamp(3.5rem, 2.5rem + 3.913cqw, 5rem)", lineHeight: "1.05", fontWeight: "bold" },
+    ],
+    [
+      "hero-size-4",
+      { fontSize: "clamp(4rem, 3rem + 3.913cqw, 5.5rem)", lineHeight: "1.05", fontWeight: "bold" },
+    ],
+    [
+      "hero-size-5",
+      { fontSize: "clamp(4.5rem, 3.5rem + 3.913cqw, 6rem)", lineHeight: "1.05", fontWeight: "bold" },
+    ],
 
     ["text-shadow-none", { textShadow: "none" }],
     ["text-shadow-sm", { textShadow: "0 1px 2px rgba(0, 0, 0, 0.15)" }],
@@ -396,3 +410,7 @@ export default defineConfig({
     },
   },
 });
+
+function em(px: number, base: number) {
+  return `${(px / base).toFixed(3).replace(/^0|\.?0+$/g, "")}em`;
+}

@@ -453,7 +453,7 @@
               "id": "b_zzZYqOu",
               "type": "hero",
               "props": {
-                "content": "<h1 class='hero-size-1' style='text-align:center'><b>Leading Businesses<br />Choose Upstart</b></h1>"
+                "content": "<h1 class='hero-size-1' style='text-align:center'>Leading Businesses<br />Choose Upstart</h1>"
               }
             }
           ]
@@ -470,7 +470,7 @@
               "props": {
                 "loop": { "over": "allTestimonials" },
                 "title": "{{allTestimonials.author}}",
-                "text": "{{allTestimonials.text}}"
+                "text": "{{allTestimonials.text}} <a href=\"example.com\">my link</a> and <a href=\"https://example.com\" class=\"not-prose\">another link</a>"
               }
             }
           ]

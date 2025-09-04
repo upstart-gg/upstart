@@ -31,6 +31,7 @@ import { move } from "@dnd-kit/helpers";
 import Modal from "./Modal";
 import useBeforeUnload from "../hooks/use-beforeunload";
 import { isEqual } from "lodash-es";
+import { useUserConfig } from "../hooks/use-user-config";
 
 const Tour = lazy(() => import("./Tour"));
 const NavBar = lazy(() => import("./NavBar"));
@@ -57,7 +58,10 @@ export default function Editor(props: EditorProps) {
   const selectedSectionId = useSelectedSectionId();
   const islocalDev = useIsLocalDev();
   const debug = useDebugMode();
+  const userConfig = useUserConfig();
   const tmpAddedBrick = useRef<string | null>(null);
+
+  console.log({ generationState, sections });
 
   usePageAutoSave();
   useEditorHotKeys();
@@ -254,6 +258,10 @@ export default function Editor(props: EditorProps) {
               <h4 className="text-lg font-semibold">Page</h4>
               <pre className="whitespace-pre-wrap break-words text-[75%]">
                 {JSON.stringify(draft.page, null, 2)}
+              </pre>
+              <h4 className="text-lg font-semibold">User config</h4>
+              <pre className="whitespace-pre-wrap break-words text-[75%]">
+                {JSON.stringify(userConfig, null, 2)}
               </pre>
             </div>
           )}

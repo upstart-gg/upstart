@@ -196,12 +196,13 @@ export const createDraftStore = (
             set((state) => {
               //  Overwrite the default page if it exists
               state.page = page;
-
               // Add to sitemap if not already present
               const existing = state.site.sitemap.find((p) => p.id === page.id);
               if (!existing) {
                 state.site.sitemap.push(page);
               }
+
+              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           isFirstSection: (sectionId) => {
@@ -1164,7 +1165,7 @@ export const usePageQueries = () => {
         ?.map((pageQuery) => {
           const queryInfo = state.site.attributes.queries?.find((q) => q.id === pageQuery.queryId);
           if (!queryInfo) {
-            console.warn(`Query with id ${pageQuery.queryId} not found in the store`);
+            console.log(`WARN: Query with id ${pageQuery.queryId} not found in the store`);
             return null;
           }
           // get datasource

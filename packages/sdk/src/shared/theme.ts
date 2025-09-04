@@ -2,6 +2,7 @@ import { Type, type Static } from "@sinclair/typebox";
 import chroma from "chroma-js";
 import { colorPalette } from "@upstart.gg/style-system/colors";
 import { StringEnum } from "./utils/string-enum";
+import { toLLMSchema } from "./utils/llm";
 
 export const fontStacks = [
   { value: "system-ui", label: "System UI" },
@@ -63,7 +64,7 @@ export const themeSchema = Type.Object(
     name: Type.String({ title: "Name", description: "The name of the theme" }),
     description: Type.String({ title: "Description", description: "The description of the theme" }),
     tags: Type.Array(Type.String({ title: "Tag" }), { title: "Tags", description: "The tags of the theme" }),
-    browserColorScheme: Type.String({
+    browserColorScheme: StringEnum(["light", "dark"], {
       title: "Browser scheme",
       description: "Color of browser-provided UI. Either 'light' or 'dark'",
     }),
@@ -73,40 +74,52 @@ export const themeSchema = Type.Object(
         primary: Type.String({
           title: "Primary",
           description: "The brand's primary color.",
+          "ai:instructions": "Use oklch() css notation.",
+          examples: ["oklch(65.6% 0.241 354.308)"],
         }),
         secondary: Type.String({
           title: "Secondary",
           description: "The brand's second most used color",
+          "ai:instructions": "Use oklch() css notation.",
+          examples: ["oklch(0.65 0.22 185)"],
         }),
         accent: Type.String({
           title: "Accent",
           description: "The brand's least used color",
+          "ai:instructions": "Use oklch() css notation.",
+          examples: ["oklch(0.82 0.18 85)"],
         }),
         neutral: Type.String({
           title: "Neutral",
           description: "The base neutral color",
+          "ai:instructions": "Use oklch() css notation.",
+          examples: ["oklch(0.38 0.08 280)"],
         }),
         base100: Type.String({
           title: "Base",
           description:
             "Base surface color of page, used for blank backgrounds. Should be white or near-white for light color-schemes, and black or near-black for dark color-schemes.",
+          "ai:instructions": "Use oklab() css notation.",
+          examples: ["oklch(0.99 0.008 92)"],
         }),
         base200: Type.String({
           title: "Base 2",
           description:
             "Should be darker than base 1 but still light for light color-schemes, and lighter but still dark for dark color-schemes.",
+          "ai:instructions": "Use oklab() css notation.",
+          examples: ["oklch(0.97 0.01 85)"],
         }),
         base300: Type.String({
           title: "Base 3",
           description:
             "3rd base color, should be darker than base 2 for light color-schemes, and lighter than base 2 for dark color-schemes.",
+          "ai:instructions": "Use oklab() css notation.",
+          examples: ["oklch(0.95 0.02 80)"],
         }),
       },
       {
         title: "Theme base colors",
         description: "The base colors of the theme. Each theme must declare all these colors",
-        "ai:instructions":
-          "You can use CSS notations like rgb #hex, hsl() oklab() or any tailwind color like slate-500 or red-200",
         additionalProperties: false,
       },
     ),
@@ -116,7 +129,8 @@ export const themeSchema = Type.Object(
       {
         base: Type.Number({
           title: "Base font size",
-          description: "The base font size in pixels. It is safe to keep it as is",
+          description: "The base font size in pixels. It is safe to keep it as is.",
+          "ai:instructions": "A safe value is 16.",
         }),
         heading: headingFont,
         body: bodyFont,
@@ -143,8 +157,9 @@ export const themeSchema = Type.Object(
 );
 
 export type Theme = Static<typeof themeSchema>;
-export const themeArray = Type.Array(themeSchema);
-export type ThemeArray = Static<typeof themeArray>;
+export const themesArray = Type.Array(themeSchema);
+export const themesArrayLLM = toLLMSchema(themesArray);
+export type ThemesArray = Static<typeof themesArray>;
 export type FontType = Theme["typography"]["body"];
 
 export const defaultTheme: Theme = {
@@ -181,6 +196,10 @@ export function isDefaultTheme(theme: Theme): boolean {
 export function processTheme(theme: Theme): Theme {
   return {
     ...theme,
+    typography: {
+      ...theme.typography,
+      base: 16, // override any base size
+    },
     colors: Object.entries(theme.colors).reduce(
       (acc, [key, value]) => {
         const fixedColor = fixOklchColor(value);

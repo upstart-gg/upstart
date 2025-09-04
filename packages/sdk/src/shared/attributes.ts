@@ -1,6 +1,7 @@
 import { Type, type Static } from "@sinclair/typebox";
 import type { JSONSchemaType } from "ajv";
-import { getSchemaDefaults, toLLMSchema } from "../shared/utils/schema";
+import { getSchemaDefaults } from "../shared/utils/schema";
+import { manifest as navbarManifest } from "./bricks/manifests/navbar.manifest";
 import { string } from "./bricks/props/string";
 import { boolean } from "./bricks/props/boolean";
 import { datetime } from "./bricks/props/date";
@@ -10,20 +11,25 @@ import { queryUseRef } from "./bricks/props/dynamic";
 import { querySchema } from "./datasources/types";
 import { group } from "./bricks/props/helpers";
 import { StringEnum } from "./utils/string-enum";
+import { backgroundRef } from "./bricks/props/background";
+import { toLLMSchema } from "./utils/llm";
 
 export type { JSONSchemaType };
 
 // Default attributes
 export const pageAttributesSchema = Type.Object({
-  colorPreset: colorPresetRef({
-    title: "Color",
-    default: { color: "base-100" },
-    examples: [
-      { color: "base-100" },
-      { color: "primary-500" },
-      { color: "accent-100", gradientDirection: "bg-gradient-to-r" },
-    ],
-  }),
+  backgroundImage: Type.Optional(backgroundRef()),
+  colorPreset: Type.Optional(
+    colorPresetRef({
+      title: "Color",
+      default: { color: "base-100" },
+      examples: [
+        { color: "base-100" },
+        { color: "primary-500" },
+        { color: "accent-100", gradientDirection: "bg-gradient-to-r" },
+      ],
+    }),
+  ),
   tags: Type.Optional(
     Type.Array(string("Tag"), {
       title: "Tags",
@@ -52,7 +58,6 @@ export const pageAttributesSchema = Type.Object({
       maxItems: 5,
     }),
   ),
-
   title: string("Title", {
     default: "Untitled",
     "ui:group": "meta",
@@ -78,6 +83,7 @@ export const pageAttributesSchema = Type.Object({
     default: "",
     "ui:placeholder": "keyword1, keyword2, keyword3",
   }),
+
   ogImage: Type.Optional(
     imageRef({
       title: "Social share image",
@@ -187,6 +193,8 @@ export const pageAttributesSchema = Type.Object({
       },
     }),
   ),
+  noNavbar: Type.Optional(boolean("Hide navbar", false)),
+  noFooter: Type.Optional(boolean("Hide footer", false)),
   lastUpdated: Type.Optional(
     datetime("Last updated", {
       "ui:hidden": true,
@@ -196,6 +204,21 @@ export const pageAttributesSchema = Type.Object({
 });
 
 export const siteAttributesSchema = Type.Object({
+  backgroundImage: Type.Optional(backgroundRef()),
+  colorPreset: Type.Optional(
+    colorPresetRef({
+      title: "Color",
+      default: { color: "base-100" },
+      examples: [
+        { color: "base-100" },
+        { color: "primary-500" },
+        { color: "secondary-400" },
+        { color: "neutral-400" },
+        { color: "accent-200-gradient", gradientDirection: "bg-gradient-to-r" },
+        { color: "neutral-800-gradient", gradientDirection: "bg-gradient-to-t" },
+      ],
+    }),
+  ),
   queries: Type.Optional(
     Type.Array(querySchema, {
       title: "Site Queries",
@@ -289,6 +312,7 @@ export const siteAttributesSchema = Type.Object({
       "ai:hidden": true,
     }),
   ),
+  navbar: Type.Optional(navbarManifest.props),
   headTags: Type.Optional(
     Type.String({
       title: "Head script tags",

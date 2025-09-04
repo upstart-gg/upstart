@@ -26,29 +26,21 @@ describe("Background prop test suite", () => {
     it("should accept custom default values", () => {
       const customBg = background({
         default: {
-          color: "#000000",
           size: "cover",
           repeat: "repeat",
+          image: "https://example.com/image.jpg",
         },
       });
       expect(customBg.default).toEqual({
-        color: "#000000",
         size: "cover",
         repeat: "repeat",
+        image: "https://example.com/image.jpg",
       });
     });
 
     it("should accept custom title", () => {
       const customBg = background({ title: "Custom Title" });
       expect(customBg.title).toBe("Custom Title");
-    });
-
-    describe("color property", () => {
-      it("should have correct metadata", () => {
-        const colorProp = background().properties.color;
-        expect(colorProp.title).toBe("Color");
-        expect(colorProp.type).toBe("string");
-      });
     });
 
     describe("image property", () => {

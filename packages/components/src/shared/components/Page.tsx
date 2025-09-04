@@ -4,7 +4,7 @@ import Section from "./Section";
 import type { Site } from "@upstart.gg/sdk/shared/site";
 
 export default function Page({ page, site }: { page: PageContext; site: Site }) {
-  const pageClassName = usePageStyle({ attributes: page.attributes, typography: site.theme.typography });
+  const pageClassName = usePageStyle();
   return (
     <div className={pageClassName}>
       {page.sections.map((section) => (
