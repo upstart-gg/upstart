@@ -61,8 +61,6 @@ export default function Editor(props: EditorProps) {
   const userConfig = useUserConfig();
   const tmpAddedBrick = useRef<string | null>(null);
 
-  console.log({ generationState, sections });
-
   usePageAutoSave();
   useEditorHotKeys();
   useBeforeUnload(() => !!draft.dirty, "You have unsaved changes. Are you sure you want to leave?");

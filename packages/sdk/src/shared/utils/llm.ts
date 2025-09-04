@@ -136,7 +136,6 @@ export function inlineSchemaRefs<T extends TSchema>(schema: T): T {
       if (key === "$ref" && typeof value === "string") {
         // Extract the schema ID from the reference
         if (!value.startsWith("#/")) {
-          //   console.log("Collected ref:", value, "for object", obj);
           collectedRefs.add(value);
         }
       } else {
@@ -179,7 +178,7 @@ export function inlineSchemaRefs<T extends TSchema>(schema: T): T {
     const referencedSchema = ajv.getSchema(refId);
 
     if (!referencedSchema?.schema) {
-      console.warn(`Schema with ID "${refId}" not found in AJV instance`);
+      //   console.log(`Schema with ID "${refId}" not found in AJV instance`, { referencedSchema });
       continue;
     }
 

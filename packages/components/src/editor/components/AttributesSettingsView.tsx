@@ -1,7 +1,7 @@
 import FormNavigator from "./json-form/FormNavigator";
 import { getSchemaDefaults } from "@upstart.gg/sdk/shared/utils/schema";
 import { useCallback, useMemo } from "react";
-import { merge, set } from "lodash-es";
+import { merge, set, unset } from "lodash-es";
 import { getNavItemsFromManifest, type SchemaFilter } from "./json-form/form-utils";
 import type {
   PageAttributes,
@@ -53,17 +53,29 @@ export default function AttributesSettingsView({
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: draft.updatePageAttributes and draft.updateSiteAttributes are stable functions
   const onChange = useCallback((data: Record<string, unknown>, propertyChanged: string) => {
-    console.trace("AttributesSettingsView onChange");
     // Note: this is a weird way to update the brick props, but it'it allows us to deal with frozen trees
-    const attrObj = structuredClone(attributes);
-    // `propertyChangedPath` can take the form of `a.b.c` which means we need to update `props.a.b.c`
-    // For this we use lodash.set
-    set(attrObj, propertyChanged, data[propertyChanged]);
+    // const attrObj = structuredClone(attributes);
+    // // `propertyChangedPath` can take the form of `a.b.c` which means we need to update `props.a.b.c`
+    // // For this we use lodash.set
+    // if (data[propertyChanged] === null) {
+    //   console.log("AttributesSettingsView onChange - unset", { propertyChanged });
+    //   unset(attrObj, propertyChanged);
+    // } else {
+    //   set(attrObj, propertyChanged, data[propertyChanged]);
+    // }
 
     if (type === "page") {
-      draft.updatePageAttributes(attrObj as PageAttributes);
+      if (data[propertyChanged] === null) {
+        draft.deletePageAttribute(propertyChanged);
+      } else {
+        draft.updatePageAttributes({ [propertyChanged]: data[propertyChanged] } as PageAttributes);
+      }
     } else {
-      draft.updateSiteAttributes(attrObj as SiteAttributes);
+      if (data[propertyChanged] === null) {
+        draft.deleteSiteAttribute(propertyChanged);
+      } else {
+        draft.updateSiteAttributes({ [propertyChanged]: data[propertyChanged] } as SiteAttributes);
+      }
     }
   }, []);
 

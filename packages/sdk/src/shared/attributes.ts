@@ -22,7 +22,6 @@ export const pageAttributesSchema = Type.Object({
   colorPreset: Type.Optional(
     colorPresetRef({
       title: "Color",
-      default: { color: "base-100" },
       examples: [
         { color: "base-100" },
         { color: "primary-500" },
@@ -208,7 +207,6 @@ export const siteAttributesSchema = Type.Object({
   colorPreset: Type.Optional(
     colorPresetRef({
       title: "Color",
-      default: { color: "base-100" },
       examples: [
         { color: "base-100" },
         { color: "primary-500" },

@@ -11,7 +11,7 @@ import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
 import { enableMapSet } from "immer";
-import { debounce, isEqual, merge } from "lodash-es";
+import { debounce, isEqual, merge, unset } from "lodash-es";
 import { createContext, useContext, useEffect } from "react";
 import { temporal } from "zundo";
 import { createStore, useStore } from "zustand";
@@ -73,7 +73,9 @@ export interface DraftState extends DraftStateProps {
   validatePreviewTheme: (accept: boolean) => void;
   cancelPreviewTheme: () => void;
   updatePageAttributes: (attr: Partial<PageAttributes>) => void;
+  deletePageAttribute: (key: string) => void;
   updateSiteAttributes: (attr: Partial<SiteAttributes>) => void;
+  deleteSiteAttribute: (key: string) => void;
   setLastSaved: (date: Date) => void;
   setDirty: (dirty: boolean) => void;
   setVersion(version: string): void;
@@ -956,9 +958,19 @@ export const createDraftStore = (
               state.page.attributes = { ..._get().page.attributes, ...attr };
             }),
 
+          deletePageAttribute: (key) =>
+            set((state) => {
+              unset(state.page.attributes, key);
+            }),
+
           updateSiteAttributes: (attr) =>
             set((state) => {
               state.site.attributes = { ..._get().site.attributes, ...attr };
+            }),
+
+          deleteSiteAttribute: (key) =>
+            set((state) => {
+              unset(state.site.attributes, key);
             }),
 
           setVersion: (version) =>

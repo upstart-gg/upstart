@@ -145,7 +145,7 @@ function resolveSchemaRecursive(schema: TSchema, visited: Set<string>): TSchema 
   if ("$ref" in schema && typeof schema.$ref === "string") {
     // Prevent infinite recursion with circular references
     if (visited.has(schema.$ref) || schema[Kind] === "This") {
-      console.warn(`Circular reference detected: ${schema.$ref}`);
+      // console.warn(`Circular reference detected: ${schema.$ref}`);
       return schema; // Return original schema to avoid infinite loop
     }
 
