@@ -2,6 +2,7 @@ import {
   Client,
   type CreateDatabaseResponse,
   type DatabaseObjectResponse,
+  type GetPageResponse,
   type PageObjectResponse,
 } from "@notionhq/client";
 import type { TObject, TProperties } from "@sinclair/typebox";
@@ -251,6 +252,31 @@ export async function createTable({
     properties: table.properties,
     url: table.url,
   };
+}
+
+export async function checkPage({
+  pageId,
+  accessToken,
+}: {
+  pageId: string;
+  accessToken: string;
+}): Promise<GetPageResponse | undefined> {
+  const client = new Client({
+    auth: accessToken,
+  });
+  try {
+    const response = (await client.pages.retrieve({ page_id: pageId })) as GetPageResponse;
+    if (!response) {
+      console.log("Failed to retrieve Notion page");
+      return;
+    }
+    if (response) {
+      return response;
+    }
+  } catch (e) {
+    console.error("Error retrieving Notion page:", e);
+  }
+  return;
 }
 
 function buildCreatePageParameters(data: FormData, databaseProperties: NotionOptions["properties"]) {
