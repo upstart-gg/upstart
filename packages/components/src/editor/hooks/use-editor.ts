@@ -10,7 +10,7 @@ import { isEqual, isNil } from "lodash-es";
 import { createContext, useContext } from "react";
 import { temporal } from "zundo";
 import { createStore, useStore } from "zustand";
-import { persist, subscribeWithSelector } from "zustand/middleware";
+import { subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { type DraftState, usePageContext } from "./use-page-data";
 import type { Page } from "@upstart.gg/sdk/shared/page";
@@ -70,6 +70,9 @@ export interface EditorStateProps {
   selectedGroup?: Brick["id"][];
   selectedSectionId?: string;
 
+  attributesTab?: "site" | "page";
+  attributesGroup?: string;
+
   resizing?: boolean;
 
   isEditingTextForBrickId?: string;
@@ -125,6 +128,8 @@ export interface EditorState extends EditorStateProps {
   setDraggingBrickType: (type: Brick["type"] | null) => void;
   setMouseOverPanel: (over: boolean) => void;
   updateHistory(): void;
+  setAttributesTab: (tab: "site" | "page") => void;
+  setAttributesGroup: (group: string | undefined) => void;
 }
 
 export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
@@ -194,6 +199,7 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
                 selectedBrickId: currentState.selectedBrickId,
                 selectedSectionId: currentState.selectedBrickId ? undefined : currentState.selectedSectionId,
                 panelPosition: currentState.panelPosition,
+                attributesTab: currentState.attributesTab,
                 modal: currentState.modal,
                 debug: import.meta.env.DEV ? currentState.debugMode : undefined,
               };
@@ -208,6 +214,16 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
               window.history.pushState(state, "", newUrl.toString());
             }, 100);
           },
+
+          setAttributesGroup: (group) =>
+            set((state) => {
+              state.attributesGroup = group;
+            }),
+
+          setAttributesTab: (tab) =>
+            set((state) => {
+              state.attributesTab = tab;
+            }),
           setIsResizing: (resizing) =>
             set((state) => {
               state.resizing = resizing;
@@ -417,6 +433,16 @@ export const useSelectedBrickId = () => {
   return useStore(ctx, (state) => state.selectedBrickId);
 };
 
+export const useAttributesTab = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.attributesTab ?? "page");
+};
+
+export const useAttributesGroup = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.attributesGroup);
+};
+
 export function useSelectedSectionId() {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => state.selectedSectionId);
@@ -517,6 +543,8 @@ export const useIsMouseOverPanel = () => {
 export const useEditorHelpers = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => ({
+    setAttributesGroup: state.setAttributesGroup,
+    setAttributesTab: state.setAttributesTab,
     setIsResizing: state.setIsResizing,
     setMouseOverPanel: state.setMouseOverPanel,
     toggleDebugMode: state.toggleDebugMode,

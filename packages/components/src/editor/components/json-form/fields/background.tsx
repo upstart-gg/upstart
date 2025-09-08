@@ -15,16 +15,17 @@ import { useIsPremiumPlan } from "~/editor/hooks/use-editor";
 import { tx } from "@upstart.gg/style-system/twind";
 import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
 
-const BackgroundField: FC<FieldProps<BackgroundSettings>> = (props) => {
-  const { schema, formData, onChange, title, description, currentValue = {} } = props;
+const BackgroundField: FC<FieldProps<BackgroundSettings | null>> = (props) => {
+  const { schema, formData, onChange, title, description, currentValue } = props;
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);
   const { onImageUpload } = useUploader();
-  const onPropsChange = (newVal: Partial<BackgroundSettings>) => onChange({ ...currentValue, ...newVal });
+  const onPropsChange = (newVal: Partial<BackgroundSettings>) =>
+    onChange({ ...(currentValue ?? {}), ...newVal } as BackgroundSettings);
   const isPremium = useIsPremiumPlan();
 
   return (
-    <div className="flex-1 flex flex-col gap-1 relative">
+    <div className="flex-1 flex flex-col gap-2.5 relative">
       <div className={tx("background-field flex items-center justify-between flex-wrap gap-1 flex-1")}>
         <div className="flex items-center">
           <FieldTitle title={title ?? "Background image"} description={description} />
@@ -55,7 +56,7 @@ const BackgroundField: FC<FieldProps<BackgroundSettings>> = (props) => {
                 className="!leading-[inherit] !mb-0 !font-medium !text-inherit cursor-[inherit]"
                 htmlFor={id}
               >
-                {currentValue.image ? "Upload new" : "Upload image"}
+                {currentValue?.image ? "Upload new" : "Upload image"}
               </label>
             </Button>
 
@@ -76,7 +77,7 @@ const BackgroundField: FC<FieldProps<BackgroundSettings>> = (props) => {
           </Text>
         </div>
       )}
-      {currentValue.image && (
+      {currentValue?.image && (
         <>
           <div className="flex justify-between items-center">
             <div className="flex flex-col flex-1 gap-1">
@@ -135,14 +136,14 @@ const BackgroundField: FC<FieldProps<BackgroundSettings>> = (props) => {
               </div>
             </div>
           </div>
-          <div className="basis-full w-0 h-2" />
+          <div className="basis-full h-0" />
           {/* image preview */}
           <div className="border border-upstart-200 p-1.5 self-end relative">
             <img src={currentValue.image} alt={id} className="max-w-full h-auto" />
             <IconButton
               onClick={(e) => {
                 e.stopPropagation();
-                onChange({ ...currentValue, image: undefined });
+                onChange(null);
               }}
               title="Close"
               size="1"

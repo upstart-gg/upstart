@@ -6,14 +6,18 @@ import { css, tx } from "@upstart.gg/style-system/twind";
 import AttributesSettingsView from "./AttributesSettingsView";
 import { PanelBlockTitle } from "./PanelBlockTitle";
 import { usePageAttributes, useSiteAttributes } from "../hooks/use-page-data";
-import { useDebugMode } from "../hooks/use-editor";
+import { useAttributesGroup, useAttributesTab, useDebugMode, useEditorHelpers } from "../hooks/use-editor";
+import { useLocalStorage } from "usehooks-ts";
 
 export default function SettingsForm() {
-  const [currentTab, setCurrentTab] = useState("page-settings");
-  const attrSchema = currentTab === "page-settings" ? pageAttributesSchema : siteAttributesSchema; // Assuming both tabs use the same schema for simplicity
+  // const [currentTab, setCurrentTab] = useState("page-settings");
+  const currentTab = useAttributesTab();
+  const attrSchema = currentTab === "page" ? pageAttributesSchema : siteAttributesSchema;
+  const editorHelpers = useEditorHelpers();
   const pageAttributes = usePageAttributes();
   const siteAttributes = useSiteAttributes();
   const debugMode = useDebugMode();
+  const attributesGroup = useAttributesGroup();
 
   const filteredAttrSchema = useMemo(() => {
     const filteredSchema = {
@@ -31,16 +35,17 @@ export default function SettingsForm() {
     <div className="flex flex-col h-full">
       <PanelBlockTitle>Settings</PanelBlockTitle>
       <Tabs.Root
-        defaultValue={currentTab}
-        onValueChange={setCurrentTab}
+        // defaultValue={currentTab}
+        value={currentTab}
+        onValueChange={(tab) => editorHelpers.setAttributesTab(tab as "site" | "page")}
         className="flex-grow flex flex-col h-dvh"
       >
         <Tabs.List size="1" className="sticky top-0 z-50 bg-gray-100">
-          <Tabs.Trigger value="site-settings" className={tx("!flex-1")}>
+          <Tabs.Trigger value="site" className={tx("!flex-1")}>
             Site
           </Tabs.Trigger>
-          <Tabs.Trigger value="page-settings" className={tx("!flex-1")}>
-            Current Page
+          <Tabs.Trigger value="page" className={tx("!flex-1")}>
+            Page
           </Tabs.Trigger>
           {debugMode && (
             <Tabs.Trigger value="debug" className={tx("!flex-1")}>
@@ -48,20 +53,22 @@ export default function SettingsForm() {
             </Tabs.Trigger>
           )}
         </Tabs.List>
-        <ScrollablePanelTab tab="page-settings">
+        <ScrollablePanelTab tab="page">
           <AttributesSettingsView
             type="page"
             attributes={pageAttributes}
             attributesSchema={filteredAttrSchema}
             title="Page settings"
+            group={attributesGroup}
           />
         </ScrollablePanelTab>
-        <ScrollablePanelTab tab="site-settings">
+        <ScrollablePanelTab tab="site">
           <AttributesSettingsView
             type="site"
             attributes={siteAttributes}
             attributesSchema={filteredAttrSchema}
             title="Site settings"
+            group={attributesGroup}
           />
         </ScrollablePanelTab>
         <ScrollablePanelTab tab="debug">

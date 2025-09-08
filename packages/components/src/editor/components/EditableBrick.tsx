@@ -238,6 +238,15 @@ export function EditableBrickWrapperSimple({
         );
         return;
       }
+
+      if (manifest.isGlobalBrick) {
+        console.log("GLOBAL BRICK CLIKED");
+        editorHelpers.setPanel("settings");
+        editorHelpers.setAttributesGroup(manifest.type);
+        editorHelpers.setAttributesTab("site");
+        return;
+      }
+
       let selectedElement: Brick | Section = brick;
       let elementType: "brick" | "section" = "brick";
       // If has shift key pressed, then we try to select the upper container

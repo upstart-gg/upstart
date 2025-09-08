@@ -17,6 +17,7 @@ export const manifest = defineBrickManifest({
   category: "layout",
   description: "A navigation bar with logo and navigation",
   aiInstructions: "This brick should be used on most sites/pages. It must be placed on its own section.",
+  isGlobalBrick: true,
   duplicatable: false,
   resizable: false,
   movable: false,
@@ -66,15 +67,7 @@ export const manifest = defineBrickManifest({
           },
         }),
       ),
-      shadow: Type.Optional(shadowRef()),
-      linksPosition: Type.Union(
-        [
-          Type.Literal("left", { title: "Left" }),
-          Type.Literal("center", { title: "Center" }),
-          Type.Literal("right", { title: "Right" }),
-        ],
-        { title: "Links position", default: "right", "ui:responsive": "desktop" },
-      ),
+
       linksTagsFilter: Type.Optional(
         tagsRef({
           title: "Pages tags",
@@ -101,8 +94,19 @@ export const manifest = defineBrickManifest({
           },
         ),
       ),
+      linksPosition: Type.Optional(
+        Type.Union(
+          [
+            Type.Literal("left", { title: "Left" }),
+            Type.Literal("center", { title: "Center" }),
+            Type.Literal("right", { title: "Right" }),
+          ],
+          { title: "Links position", default: "right", "ui:responsive": "desktop" },
+        ),
+      ),
+      shadow: Type.Optional(shadowRef()),
     },
-    { noAlignSelf: true },
+    { noAlignSelf: true, noGrow: true },
   ),
 });
 

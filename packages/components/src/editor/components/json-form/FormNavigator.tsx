@@ -51,7 +51,7 @@ const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
             dark:border-dark-800 transition-colors duration-200 flex-wrap`,
               // if empty, hide
               "[&:not(:has(*))]:hidden",
-              item.children && "cursor-pointer hover:bg-upstart-50 dark:hover:bg-dark-600",
+              item.children && "cursor-pointer hover:bg-upstart-50 dark:hover:bg-dark-600 font-medium",
             )}
             onClick={() => {
               if (item.children) {
@@ -89,6 +89,7 @@ type FormNavigatorProps = {
   title: string;
   navItems: NavItem[];
   onChange: (data: Record<string, unknown>, changedPath: string) => void;
+  onNavigate?: (item: NavItem | null) => void;
   formData: Record<string, unknown>;
   formSchema: TObject;
   className?: string;
@@ -101,11 +102,13 @@ const FormNavigator: FC<FormNavigatorProps> = ({
   title,
   navItems,
   className,
+  onNavigate,
   // style,
   onChange,
   formData,
   formSchema,
   initialGroup,
+
   brickId,
 }) => {
   // Stack of views (each with content and title)
@@ -124,7 +127,9 @@ const FormNavigator: FC<FormNavigatorProps> = ({
   const [animationDirection, setAnimationDirection] = useState<"forward" | "backward" | null>(null);
 
   // Navigate to a new view
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const navigateTo = useCallback((item: NavItem, direction: typeof animationDirection = "forward") => {
+    onNavigate?.(item);
     setAnimationDirection(direction);
 
     const content = item.children ? <NavList items={item.children} /> : <div>content: {item.label}</div>;
@@ -137,11 +142,14 @@ const FormNavigator: FC<FormNavigatorProps> = ({
   }, []);
 
   // Navigate back to previous view
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const navigateBack = useCallback(() => {
     if (viewStack.length <= 1) return;
 
     setAnimationDirection("backward");
     setViewStack((prev) => prev.slice(0, -1));
+
+    onNavigate?.(null);
 
     // Reset animation direction after animation completes
     setTimeout(() => {

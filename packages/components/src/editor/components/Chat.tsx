@@ -510,7 +510,7 @@ What should we work on together? 🤖`,
           }
           className={tx(
             "form-textarea ",
-            generationState.isReady === false && "!text-fluid-sm",
+            generationState.isReady === false ? "!text-fluid-sm" : "text-sm",
             "h-full w-full rounded scrollbar-thin p-2 !bg-white !pb-9 border-upstart-300 shadow-inner focus:(!outline-0 !ring-upstart-500 !border-upstart-500)",
           )}
         />

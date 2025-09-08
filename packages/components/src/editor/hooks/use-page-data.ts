@@ -1084,7 +1084,9 @@ export function useLastSaved() {
 export const useSections = () => {
   const ctx = usePageContext();
   const sections = useStore(ctx, (state) => state.page.sections);
-  return processSections(sections);
+  const siteAttributes = useSiteAttributes();
+  const pageAttributes = usePageAttributes();
+  return processSections(sections, siteAttributes, pageAttributes);
 };
 
 export const useSection = (sectionId?: string) => {

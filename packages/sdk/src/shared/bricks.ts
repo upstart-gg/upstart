@@ -11,6 +11,7 @@ import { alignItemsRef, justifyContentRef } from "./bricks/props/align";
 import { paddingRef } from "./bricks/props/padding";
 import type { CommonBrickProps } from "./bricks/props/common";
 import { directionRef } from "./bricks/props/direction";
+import type { PageAttributes, SiteAttributes } from "./attributes";
 
 /**
  * Generates a unique identifier for bricks.
@@ -236,8 +237,12 @@ const sectionMobileDefaultprops = getSchemaDefaults(sectionSchema.properties.mob
 
 export type Section = Static<typeof sectionSchema>;
 
-export function processSections(sections: Section[]) {
-  return sections.map((section) => {
+export function processSections(
+  sections: Section[],
+  siteAttributes: SiteAttributes,
+  pageAttributes: PageAttributes,
+) {
+  const finalSections = sections.map((section) => {
     return {
       ...section,
       props: mergeIgnoringArrays({}, sectionDefaultprops, section.props),
@@ -245,6 +250,45 @@ export function processSections(sections: Section[]) {
       bricks: section.bricks.map(processBrick).filter(Boolean) as Brick[],
     } as const;
   });
+
+  if (siteAttributes.navbar && !pageAttributes.noNavbar) {
+    finalSections.unshift({
+      order: -1,
+      id: "navbar-section",
+      label: "Navbar section",
+      props: {
+        variant: "navbar",
+      },
+      mobileProps: {},
+      bricks: [
+        {
+          id: "navbar",
+          type: "navbar",
+          props: siteAttributes.navbar,
+        },
+      ],
+    });
+  }
+  if (siteAttributes.footer && !pageAttributes.noFooter) {
+    finalSections.push({
+      order: 1000,
+      id: "footer-section",
+      label: "Footer section",
+      props: {
+        variant: "footer",
+      },
+      mobileProps: {},
+      bricks: [
+        {
+          id: "footer",
+          type: "footer",
+          props: siteAttributes.footer,
+        },
+      ],
+    });
+  }
+
+  return finalSections;
 }
 
 /**

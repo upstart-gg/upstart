@@ -93,22 +93,16 @@ const QueryField: FC<FieldProps<QueryUseSettings[] | undefined>> = (props) => {
       <div className="field field-query basis-full">
         <FieldTitle title={title} description={description} />
         <div className="text-sm text-gray-500">
-          No datasources available. Create a datasource first so you can create queries.
+          No database available. Create a database first so you can create queries.
         </div>
       </div>
     );
   }
 
   return (
-    <>
-      <QueryModal
-        onChange={onChange}
-        queries={currentValue}
-        open={showModal}
-        onClose={() => setShowModal(false)}
-      />
+    <div className="flex flex-col flex-1 gap-2">
       <div className="query-field flex items-center justify-between flex-1">
-        <FieldTitle title={title} description={description} />
+        <FieldTitle withIcon title={title} description={description} />
         {availableQueries.length > 0 && (
           <Button
             variant="soft"
@@ -130,7 +124,7 @@ const QueryField: FC<FieldProps<QueryUseSettings[] | undefined>> = (props) => {
           </div>
         )}
         {currentValue.length > 0 && (
-          <ul className="list-none p-0 m-0 mt-2">
+          <ul className="list-none p-0 m-0 mt-2 ml-3 font-normal">
             {currentValue.map((query, index) => (
               <li key={index} className="flex items-center gap-1.5 mb-2">
                 <BsDatabaseAdd />
@@ -141,7 +135,13 @@ const QueryField: FC<FieldProps<QueryUseSettings[] | undefined>> = (props) => {
           </ul>
         )}
       </div>
-    </>
+      <QueryModal
+        onChange={onChange}
+        queries={currentValue}
+        open={showModal}
+        onClose={() => setShowModal(false)}
+      />
+    </div>
   );
 };
 

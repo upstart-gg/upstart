@@ -55,6 +55,41 @@
     ],
     "attributes": {
       "language": "en",
+      "navbar": {
+        "brand": "My Site",
+        "navigation": { "staticItems": [{ "urlOrPageId": "/about" }, { "urlOrPageId": "/contact" }] }
+      },
+      "footer": {
+        "linksSections": [
+          {
+            "sectionTitle": "Links",
+            "links": [
+              { "title": "About", "url": "/about" },
+              { "title": "Contact", "url": "/contact" },
+              { "title": "Privacy Policy", "url": "/privacy" }
+            ]
+          },
+          {
+            "sectionTitle": "Social",
+            "links": [
+              { "title": "Twitter", "url": "https://twitter.com" },
+              { "title": "Facebook", "url": "https://facebook.com" },
+              { "title": "Instagram", "url": "https://instagram.com" }
+            ]
+          },
+          {
+            "sectionTitle": "Legal",
+            "links": [
+              { "title": "Terms of Service", "url": "/terms" },
+              { "title": "Cookie Policy", "url": "/cookies" }
+            ]
+          },
+          {
+            "sectionTitle": "Contact",
+            "links": [{ "title": "Email Us", "url": "mailto:" }, { "title": "Support", "url": "/support" }]
+          }
+        ]
+      },
       "queries": [
         { "id": "get-employees", "label": "Get all employees", "datasourceId": "employees", "limit": 50 },
         {
@@ -428,22 +463,6 @@
       "label": "First page with really really long name that should be truncated",
       "sections": [
         {
-          "id": "s_mDrsvye",
-          "label": "Top",
-          "order": 1,
-          "props": { "variant": "navbar" },
-          "bricks": [
-            {
-              "id": "bVVtvDk",
-              "type": "navbar",
-              "props": {
-                "brand": "My Site",
-                "navigation": { "staticItems": [{ "urlOrPageId": "/about" }, { "urlOrPageId": "/contact" }] }
-              }
-            }
-          ]
-        },
-        {
           "id": "s_hero",
           "label": "Hero",
           "order": 2,
@@ -707,52 +726,6 @@
                   "src": "https://placehold.co/300x200@2x/EEEEEE/333333/svg?text=Sample",
                   "alt": "Sample"
                 }
-              }
-            }
-          ]
-        },
-        {
-          "id": "s_content-BopUbnQ",
-          "label": "Bottom",
-          "order": 11,
-          "props": {},
-          "bricks": [
-            {
-              "id": "b_zcgsoYj",
-              "type": "footer",
-              "props": {
-                "linksSections": [
-                  {
-                    "sectionTitle": "Links",
-                    "links": [
-                      { "title": "About", "url": "/about" },
-                      { "title": "Contact", "url": "/contact" },
-                      { "title": "Privacy Policy", "url": "/privacy" }
-                    ]
-                  },
-                  {
-                    "sectionTitle": "Social",
-                    "links": [
-                      { "title": "Twitter", "url": "https://twitter.com" },
-                      { "title": "Facebook", "url": "https://facebook.com" },
-                      { "title": "Instagram", "url": "https://instagram.com" }
-                    ]
-                  },
-                  {
-                    "sectionTitle": "Legal",
-                    "links": [
-                      { "title": "Terms of Service", "url": "/terms" },
-                      { "title": "Cookie Policy", "url": "/cookies" }
-                    ]
-                  },
-                  {
-                    "sectionTitle": "Contact",
-                    "links": [
-                      { "title": "Email Us", "url": "mailto:" },
-                      { "title": "Support", "url": "/support" }
-                    ]
-                  }
-                ]
               }
             }
           ]

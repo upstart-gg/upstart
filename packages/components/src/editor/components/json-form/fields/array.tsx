@@ -55,8 +55,6 @@ export default function ArrayField({
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  console.log("ArrayField, currentValue:", currentValue, "itemSchema:", itemSchema, "fieldName:", fieldName);
-
   const mode = (formData.loop as LoopSettings | null)?.over ? "dynamic" : "static";
 
   // Get UI options from the array schema (not item schema)
@@ -409,7 +407,11 @@ export default function ArrayField({
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId={`array-${id}`} direction="vertical">
             {(provided, snapshot) => (
-              <div {...provided.droppableProps} ref={provided.innerRef} className={`space-y-1 rounded`}>
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className={`space-y-1 rounded empty:hidden`}
+              >
                 {currentValue.map((item, index) => {
                   // Create stable key for drag and drop
                   const stableKey = `item-${index}`;

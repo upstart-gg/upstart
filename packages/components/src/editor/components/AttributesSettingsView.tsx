@@ -9,8 +9,9 @@ import type {
   SiteAttributes,
   siteAttributesSchema,
 } from "@upstart.gg/sdk/shared/attributes";
-import { usePreviewMode } from "../hooks/use-editor";
+import { useAttributesGroup, useEditorHelpers, usePreviewMode } from "../hooks/use-editor";
 import { useDraft } from "../hooks/use-page-data";
+import type { NavItem } from "./json-form/types";
 
 type AttributesSettingsViewProps = {
   attributes: PageAttributes | SiteAttributes;
@@ -28,7 +29,9 @@ export default function AttributesSettingsView({
   type,
 }: AttributesSettingsViewProps) {
   const previewMode = usePreviewMode();
+  const editorHelpers = useEditorHelpers();
   const draft = useDraft();
+
   const filter: SchemaFilter = (prop) => {
     return (
       (typeof prop.metadata?.["ui:responsive"] === "undefined" ||
@@ -53,17 +56,6 @@ export default function AttributesSettingsView({
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: draft.updatePageAttributes and draft.updateSiteAttributes are stable functions
   const onChange = useCallback((data: Record<string, unknown>, propertyChanged: string) => {
-    // Note: this is a weird way to update the brick props, but it'it allows us to deal with frozen trees
-    // const attrObj = structuredClone(attributes);
-    // // `propertyChangedPath` can take the form of `a.b.c` which means we need to update `props.a.b.c`
-    // // For this we use lodash.set
-    // if (data[propertyChanged] === null) {
-    //   console.log("AttributesSettingsView onChange - unset", { propertyChanged });
-    //   unset(attrObj, propertyChanged);
-    // } else {
-    //   set(attrObj, propertyChanged, data[propertyChanged]);
-    // }
-
     if (type === "page") {
       if (data[propertyChanged] === null) {
         draft.deletePageAttribute(propertyChanged);
@@ -79,8 +71,17 @@ export default function AttributesSettingsView({
     }
   }, []);
 
+  const onNavigate = (item: NavItem | null) => {
+    // reset group if navigating to top
+    if (!item) {
+      editorHelpers.setAttributesGroup(undefined);
+    }
+  };
+
   return (
     <FormNavigator
+      key={`${type}-attributes-form-${group || "all"}`}
+      onNavigate={onNavigate}
       brickId="none"
       title={title}
       initialGroup={group}

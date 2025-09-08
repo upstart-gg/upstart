@@ -1,6 +1,6 @@
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
 import get from "lodash-es/get";
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { IoIosHelpCircleOutline } from "react-icons/io";
 // Import field components
 import ArrayField from "./fields/array";
@@ -523,6 +523,24 @@ function createFieldComponent(options: FieldFactoryOptions): ReactNode {
     case "Function":
       return null;
 
+    // case "object": {
+    //   console.log("Unknown schema", schema.pro);
+
+    //   const tmpSchema = schema as TObject;
+
+    //   return Object.entries(tmpSchema.properties).map(([keyBy, prop]) => {
+    //     return createFieldComponent({
+    //       ...options,
+    //       id: `field-${options.id}-$`,
+    //       fieldName: prop.title ?? "FOOOO",
+    //       fieldSchema: {
+    //         ...prop,
+    //         "ui:group": tmpSchema["ui:group"],
+    //       },
+    //     });
+    //   });
+    // }
+
     default:
       console.log("!!! Unknown field type: %s", fieldType);
       console.log("Field schema", schema);
@@ -606,13 +624,15 @@ export function FieldTitle({
   description,
   className,
   containerClassName,
-  withIcon = false,
+  htmlFor,
+  withIcon = true,
 }: {
   title?: string;
   description?: string;
   className?: string;
   containerClassName?: string;
   withIcon?: boolean;
+  htmlFor?: string;
 }) {
   if (!title) return null;
   return (
@@ -625,6 +645,7 @@ export function FieldTitle({
               fieldLabel,
               " underline-offset-4 no-underline decoration-upstart-300 decoration-dotted cursor-default",
             )}
+            htmlFor={htmlFor}
           >
             <Tooltip
               content={<span className="block text-sm p-1">{description}</span>}
@@ -649,13 +670,16 @@ export function FieldTitle({
                 fieldLabel,
                 "underline-offset-4 no-underline hover:underline decoration-upstart-300 decoration-dotted cursor-default",
               )}
+              htmlFor={htmlFor}
             >
               {title}
             </label>
           </Tooltip>
         )
       ) : (
-        <label className={tx(className, fieldLabel)}>{title}</label>
+        <label htmlFor={htmlFor} className={tx(className, fieldLabel)}>
+          {title}
+        </label>
       )}
     </div>
   );

@@ -17,17 +17,12 @@ export function background(opts: BackgroundOptions = {}) {
   const { default: defValue, ...restOpts } = opts;
   return Type.Object(
     {
-      image: Type.Optional(
-        Type.String({
-          title: "Image",
-          description: "The background image. Can be a URL or a data URI",
-          format: "image",
-          examples: [
-            "https://example.com/image.png",
-            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...",
-          ],
-        }),
-      ),
+      image: Type.String({
+        title: "Image",
+        description: "The background image. Can be a URL or a data URI",
+        format: "image",
+        examples: ["https://example.com/image.png", "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA..."],
+      }),
       size: Type.Optional(
         StringEnum(["auto", "cover", "contain"], {
           enumNames: ["Auto", "Cover", "Contain"],
@@ -47,8 +42,6 @@ export function background(opts: BackgroundOptions = {}) {
       // $id: "styles:background",
       "ui:styleId": "styles:background",
       "ui:field": "background",
-      "ui:group": "background",
-      "ui:group:title": "Background",
       title: "Background image",
       // disable for now
       // "ui:show-img-search": true,

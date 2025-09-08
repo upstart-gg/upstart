@@ -6,6 +6,7 @@ export function shadow(options: StringEnumOptions = {}) {
   return StringEnum(["shadow-none", "shadow-sm", "shadow-md", "shadow-lg", "shadow-xl", "shadow-2xl"], {
     // $id: "styles:shadow",
     title: "Shadow",
+    description: "Box shadow around the brick",
     enumNames: ["None", "Small", "Medium", "Large", "XL", "2XL"],
     "ui:placeholder": "Not specified",
     "ui:field": "enum",

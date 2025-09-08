@@ -33,7 +33,7 @@ export const manifest = defineBrickManifest({
     label: string("Label", { default: "My button", metadata: { category: "content" } }),
     fontSize: Type.Optional(
       fontSizeRef({
-        title: "Font Size",
+        title: "Font size",
         description: "The font size of the button text.",
         default: "text-base",
         "ui:responsive": "desktop",

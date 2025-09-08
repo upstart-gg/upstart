@@ -36,7 +36,7 @@ const ColorPresetField: FC<FieldProps<ColorPresetSettings | null>> = (props) => 
 
   return (
     <div className="flex justify-between flex-1 gap-2 flex-wrap">
-      <FieldTitle title={title} description={description} />
+      <FieldTitle withIcon title={title} description={description} />
       <div>
         <Popover.Root>
           <Popover.Trigger>

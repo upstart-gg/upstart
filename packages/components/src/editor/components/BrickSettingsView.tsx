@@ -62,6 +62,11 @@ export default function BrickSettingsView({
         return;
       }
 
+      if (manifest.isGlobalBrick) {
+        console.log("Updating global brick, mutating site attributes instead of brick props");
+        return;
+      }
+
       // Get property schema from the manifest
       const manifestField = get(manifest.props.properties, propertyChangedPath);
       // All content props should be set on the brick props, not mobileProps

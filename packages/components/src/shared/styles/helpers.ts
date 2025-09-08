@@ -11,17 +11,15 @@ import { css } from "@upstart.gg/style-system/twind";
 import type { TSchema } from "@sinclair/typebox";
 
 export function getBackgroundStyles(props?: BackgroundSettings) {
-  if (!props) {
+  if (!props?.image) {
     return null;
   }
   return [
-    props.color && propToStyle(props.color, "backgroundColor"),
-    props.image &&
-      css({
-        backgroundImage: `url(${props.image})`,
-        backgroundSize: props.size ?? "auto",
-        backgroundRepeat: props.repeat ?? "no-repeat",
-      }),
+    css({
+      backgroundImage: `url(${props.image})`,
+      backgroundSize: props.size ?? "auto",
+      backgroundRepeat: props.repeat ?? "no-repeat",
+    }),
   ];
 }
 

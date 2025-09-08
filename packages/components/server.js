@@ -8,6 +8,8 @@ const base = process.env.BASE || "/";
 // Create http server
 const app = express();
 
+const template = await fs.readFile("./index.html", "utf-8");
+
 // Add Vite or respective production middlewares
 const { createServer } = await import("vite");
 const vite = await createServer({
@@ -60,12 +62,12 @@ app.use("*", async (req, res) => {
   try {
     const url = req.originalUrl.replace(base, "");
     // Always read fresh template in development
-    let template = await fs.readFile("./index.html", "utf-8");
-    template = await vite.transformIndexHtml(url, template);
+
+    let html = await vite.transformIndexHtml(url, template);
     const render = (await vite.ssrLoadModule("/src/editor/demo/entry-server.tsx")).render;
     const fullUrl = new URL(`http://localhost:${PORT}${req.originalUrl}`);
     const rendered = await render(fullUrl);
-    const html = template.replace(`<!--ssr-outlet-->`, rendered);
+    html = html.replace(`<!--ssr-outlet-->`, rendered);
     res.status(200).set({ "Content-Type": "text/html" }).send(html);
   } catch (e) {
     vite?.ssrFixStacktrace(e);

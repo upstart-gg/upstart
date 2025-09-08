@@ -17,6 +17,7 @@ export const manifest = defineBrickManifest({
   aiInstructions: "This brick should be used on most sites/pages. It must be placed on its own section.",
   icon: VscLayoutPanelOff,
   staticClasses: "flex-1",
+  isGlobalBrick: true,
   hideInLibrary: true,
   resizable: false,
   movable: false,
@@ -24,56 +25,59 @@ export const manifest = defineBrickManifest({
     desktop: "100%",
     mobile: "100%",
   },
-  props: defineProps({
-    colorPreset: Type.Optional(
-      colorPresetRef({
-        title: "Color preset",
-        default: { color: "neutral-600" },
-      }),
-    ),
-    padding: Type.Optional(paddingRef({ default: "p-10" })),
-    logo: Type.Optional(imageRef({ title: "Logo", "ui:no-object-options": true, "ui:no-alt-text": true })),
-    fontSize: Type.Optional(fontSizeRef({ default: "text-sm", "ui:no-extra-large-sizes": true })),
-    // rows:Type.Optional(number("Rows", { default: 1, "ui:field": "slider", minimum: 1, maximum: 5 })),
-    linksSections: array(
-      Type.Object({
-        sectionTitle: string("Title"),
-        links: array(
-          Type.Object({
-            title: string("Title"),
-            url: urlOrPageIdRef(),
-          }),
-          {
-            title: "Links",
+  props: defineProps(
+    {
+      colorPreset: Type.Optional(
+        colorPresetRef({
+          title: "Color preset",
+          default: { color: "neutral-600" },
+        }),
+      ),
+      padding: Type.Optional(paddingRef({ default: "p-10" })),
+      logo: Type.Optional(imageRef({ title: "Logo", "ui:no-object-options": true, "ui:no-alt-text": true })),
+      fontSize: Type.Optional(fontSizeRef({ default: "text-sm", "ui:no-extra-large-sizes": true })),
+      // rows:Type.Optional(number("Rows", { default: 1, "ui:field": "slider", minimum: 1, maximum: 5 })),
+      linksSections: array(
+        Type.Object({
+          sectionTitle: string("Title"),
+          links: array(
+            Type.Object({
+              title: string("Title"),
+              url: urlOrPageIdRef(),
+            }),
+            {
+              title: "Links",
+            },
+          ),
+        }),
+        {
+          default: [
+            {
+              sectionTitle: "Links",
+              links: [
+                {
+                  title: "Link",
+                  url: "/",
+                },
+              ],
+            },
+          ],
+          title: "Links",
+          "ui:displayField": "sectionTitle",
+          "ui:options": {
+            orderable: true, // Enable drag & drop reordering
+            removable: true, // Enable delete button
+            addable: true, // Enable add button
           },
-        ),
-      }),
-      {
-        default: [
-          {
-            sectionTitle: "Links",
-            links: [
-              {
-                title: "Link",
-                url: "/",
-              },
-            ],
+          description: "List of Links Sections",
+          metadata: {
+            category: "content",
           },
-        ],
-        title: "Links",
-        "ui:displayField": "sectionTitle",
-        "ui:options": {
-          orderable: true, // Enable drag & drop reordering
-          removable: true, // Enable delete button
-          addable: true, // Enable add button
         },
-        description: "List of Links Sections",
-        metadata: {
-          category: "content",
-        },
-      },
-    ),
-  }),
+      ),
+    },
+    { noGrow: true, noAlignSelf: true },
+  ),
 });
 
 export type Manifest = typeof manifest;
