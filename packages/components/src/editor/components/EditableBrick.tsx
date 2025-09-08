@@ -221,7 +221,6 @@ export function EditableBrickWrapperSimple({
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const onBrickWrapperClick = useCallback(
     (e: MouseEvent<HTMLElement>) => {
-      console.debug("EditableBrickWrapper: Click on brick", e, brick);
       const originalTarget = e.target as HTMLElement;
       const brickTarget = e.currentTarget as HTMLElement | null;
 
@@ -240,10 +239,10 @@ export function EditableBrickWrapperSimple({
       }
 
       if (manifest.isGlobalBrick) {
-        console.log("GLOBAL BRICK CLIKED");
         editorHelpers.setPanel("settings");
         editorHelpers.setAttributesGroup(manifest.type);
         editorHelpers.setAttributesTab("site");
+        editorHelpers.setSelectedBrickId(brick.id);
         return;
       }
 

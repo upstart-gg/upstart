@@ -242,50 +242,56 @@ export function processSections(
   siteAttributes: SiteAttributes,
   pageAttributes: PageAttributes,
 ) {
-  const finalSections = sections.map((section) => {
+  const processSection = (section: Section) => {
     return {
       ...section,
       props: mergeIgnoringArrays({}, sectionDefaultprops, section.props),
       mobileProps: mergeIgnoringArrays({}, sectionMobileDefaultprops, section.mobileProps || {}),
       bricks: section.bricks.map(processBrick).filter(Boolean) as Brick[],
     } as const;
-  });
+  };
+
+  const finalSections = sections.map(processSection);
 
   if (siteAttributes.navbar && !pageAttributes.noNavbar) {
-    finalSections.unshift({
-      order: -1,
-      id: "navbar-section",
-      label: "Navbar section",
-      props: {
-        variant: "navbar",
-      },
-      mobileProps: {},
-      bricks: [
-        {
-          id: "navbar",
-          type: "navbar",
-          props: siteAttributes.navbar,
+    finalSections.unshift(
+      processSection({
+        order: -1,
+        id: "navbar-section",
+        label: "Navbar section",
+        props: {
+          variant: "navbar",
         },
-      ],
-    });
+        mobileProps: {},
+        bricks: [
+          {
+            id: "navbar",
+            type: "navbar",
+            props: siteAttributes.navbar,
+          },
+        ],
+      }),
+    );
   }
   if (siteAttributes.footer && !pageAttributes.noFooter) {
-    finalSections.push({
-      order: 1000,
-      id: "footer-section",
-      label: "Footer section",
-      props: {
-        variant: "footer",
-      },
-      mobileProps: {},
-      bricks: [
-        {
-          id: "footer",
-          type: "footer",
-          props: siteAttributes.footer,
+    finalSections.push(
+      processSection({
+        order: 1000,
+        id: "footer-section",
+        label: "Footer section",
+        props: {
+          variant: "footer",
         },
-      ],
-    });
+        mobileProps: {},
+        bricks: [
+          {
+            id: "footer",
+            type: "footer",
+            props: siteAttributes.footer,
+          },
+        ],
+      }),
+    );
   }
 
   return finalSections;
@@ -294,12 +300,12 @@ export function processSections(
 /**
  *  process a brick and add default props
  */
-export function processBrick<T extends Brick>(brick: T): T | false {
+export function processBrick<T extends Brick>(brick: T): T {
   const defProps = defaultProps[brick.type];
-  if (!defProps) {
-    console.warn(`No default props found for brick type: ${brick.type}`);
-    return false; // or throw an error if you prefer
-  }
+  // if (!defProps) {
+  //   console.warn(`No default props found for brick type: ${brick.type}`);
+  //   return false; // or throw an error if you prefer
+  // }
   const result = {
     ...brick,
     props: mergeIgnoringArrays({} as Brick["props"], defProps.props, {

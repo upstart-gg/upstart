@@ -55,21 +55,29 @@ export default function AttributesSettingsView({
   }, [attributes, attributesSchema]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: draft.updatePageAttributes and draft.updateSiteAttributes are stable functions
-  const onChange = useCallback((data: Record<string, unknown>, propertyChanged: string) => {
-    if (type === "page") {
-      if (data[propertyChanged] === null) {
-        draft.deletePageAttribute(propertyChanged);
+  const onChange = useCallback(
+    (data: Record<string, unknown>, propertyChanged: string) => {
+      console.log("attributes -> propertyChanged", propertyChanged);
+      if (type === "page") {
+        if (data[propertyChanged] === null) {
+          draft.deletePageAttribute(propertyChanged);
+        } else {
+          const props = {};
+          set(props, propertyChanged, data[propertyChanged]);
+          draft.updatePageAttributes(props as PageAttributes);
+        }
       } else {
-        draft.updatePageAttributes({ [propertyChanged]: data[propertyChanged] } as PageAttributes);
+        if (data[propertyChanged] === null) {
+          draft.deleteSiteAttribute(propertyChanged);
+        } else {
+          const props = {};
+          set(props, propertyChanged, data[propertyChanged]);
+          draft.updateSiteAttributes(props as SiteAttributes);
+        }
       }
-    } else {
-      if (data[propertyChanged] === null) {
-        draft.deleteSiteAttribute(propertyChanged);
-      } else {
-        draft.updateSiteAttributes({ [propertyChanged]: data[propertyChanged] } as SiteAttributes);
-      }
-    }
-  }, []);
+    },
+    [attributes],
+  );
 
   const onNavigate = (item: NavItem | null) => {
     // reset group if navigating to top

@@ -955,7 +955,7 @@ export const createDraftStore = (
 
           updatePageAttributes: (attr) =>
             set((state) => {
-              state.page.attributes = { ..._get().page.attributes, ...attr };
+              state.page.attributes = merge({}, _get().page.attributes, attr);
             }),
 
           deletePageAttribute: (key) =>
@@ -965,7 +965,7 @@ export const createDraftStore = (
 
           updateSiteAttributes: (attr) =>
             set((state) => {
-              state.site.attributes = { ..._get().site.attributes, ...attr };
+              state.site.attributes = merge({}, _get().site.attributes, attr);
             }),
 
           deleteSiteAttribute: (key) =>

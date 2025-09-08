@@ -37,7 +37,8 @@
           "colorPreset": { "color": "base-100" },
           "path": "/",
           "description": "The main landing page",
-          "keywords": "home,landing,welcome"
+          "keywords": "home,landing,welcome",
+          "tags": ["navbar", "home"]
         }
       },
       {
@@ -49,7 +50,8 @@
           "colorPreset": { "color": "base-100" },
           "path": "/secondPage",
           "description": "The second page",
-          "keywords": "second,page"
+          "keywords": "second,page",
+          "tags": ["navbar"]
         }
       }
     ],
