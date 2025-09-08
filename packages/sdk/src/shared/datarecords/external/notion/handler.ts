@@ -7,8 +7,12 @@ import {
 } from "@notionhq/client";
 import type { TObject, TProperties } from "@sinclair/typebox";
 import { nanoid } from "nanoid";
-import type { NotionOptions, NotionPages } from "./types";
-export type { CreateDatabaseResponse, DatabaseObjectResponse };
+import type { ListPagesResponse, NotionOptions, NotionPage, NotionPages } from "./types";
+
+const MAX_CALL = 10;
+const MAX_PAGES = 1000;
+
+export type { CreateDatabaseResponse, DatabaseObjectResponse, ListPagesResponse };
 
 export async function saveRecord({
   formData,
@@ -38,26 +42,44 @@ export async function saveRecord({
   }
 }
 
-export async function listPages(accessToken: string): Promise<unknown> {
+async function searchPages(
+  client: Client,
+  pages: NotionPages,
+  parameters: {
+    maxResults?: number;
+    maxCalls?: number;
+  },
+  offset?: string,
+  resultIndex?: number,
+): Promise<ListPagesResponse> {
+  const nextIndex = resultIndex ? resultIndex + 1 : 1;
+  // Notion API has a hard limit of 300 results (3 requests of 100 results)
+  if (nextIndex > (parameters?.maxCalls ?? MAX_CALL)) {
+    return {
+      status: "max_call_reached",
+      pages,
+    };
+  }
   try {
-    const client = new Client({
-      auth: accessToken,
-    });
-
-    // Alternative 1: Utiliser une requête search avec un filter composé
-    const pages = await client.search({
+    const response = await client.search({
       filter: {
         property: "object",
         value: "page",
       },
+      start_cursor: offset,
+      page_size: 100, // default
     });
-
-    const results = [] as NotionPages;
-    for (const d in pages.results) {
-      const p = pages.results[d] as PageObjectResponse;
+    if (!response) {
+      return {
+        status: "error",
+        pages,
+      };
+    }
+    for (const d in response.results) {
+      const p = response.results[d] as PageObjectResponse;
 
       if (p.parent.type !== "database_id") {
-        const notionPageProperties = {
+        const page = {
           id: p.id,
           name:
             p.properties.title &&
@@ -66,12 +88,49 @@ export async function listPages(accessToken: string): Promise<unknown> {
             p.properties.title.title[0]?.plain_text
               ? p.properties.title.title[0].plain_text
               : "No Title",
-          // data: p.properties,
         };
-        results.push(notionPageProperties);
+        pages.push(page);
+        if (pages.length >= (parameters?.maxResults ?? MAX_PAGES)) {
+          return {
+            status: "max_pages_reached",
+            pages: pages,
+          };
+        }
       }
     }
-    return results;
+    if (response.has_more && response.next_cursor) {
+      const moreResults = await searchPages(client, pages, parameters, response.next_cursor, nextIndex);
+      if (moreResults.status !== "success") {
+        return {
+          status: moreResults.status,
+          pages: pages,
+        };
+      }
+      return moreResults;
+    }
+  } catch (error) {
+    console.error("Error searching Notion pages:", error);
+  }
+  return {
+    status: "success",
+    pages,
+  };
+}
+
+export async function listPages(
+  accessToken: string,
+  parameters?: {
+    maxResults?: number;
+    maxCalls?: number;
+  },
+): Promise<ListPagesResponse> {
+  try {
+    const client = new Client({
+      auth: accessToken,
+    });
+
+    const response = await searchPages(client, [], { ...parameters });
+    return response;
   } catch (error) {
     console.error("Error listing Notion databases:", error);
     throw error;
@@ -260,7 +319,7 @@ export async function checkPage({
 }: {
   pageId: string;
   accessToken: string;
-}): Promise<GetPageResponse | undefined> {
+}): Promise<NotionPage | undefined> {
   const client = new Client({
     auth: accessToken,
   });
@@ -271,7 +330,18 @@ export async function checkPage({
       return;
     }
     if (response) {
-      return response;
+      // Convert the complex Notion response to a simple type
+      const page = response as PageObjectResponse;
+      return {
+        id: page.id,
+        name:
+          page.properties.title &&
+          page.properties.title.type === "title" &&
+          Array.isArray(page.properties.title.title) &&
+          page.properties.title.title[0]?.plain_text
+            ? page.properties.title.title[0].plain_text
+            : "No Title",
+      };
     }
   } catch (e) {
     console.error("Error retrieving Notion page:", e);
