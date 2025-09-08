@@ -14,7 +14,15 @@ export const notionOptions = Type.Object({
 
 export type NotionOptions = Static<typeof notionOptions>;
 
-export type NotionPages = {
+export type NotionPage = {
   id: string;
   name: string;
-}[];
+};
+
+export type NotionPages = NotionPage[];
+export type listPageStatus = "success" | "error" | "max_call_reached" | "max_pages_reached";
+
+export type ListPagesResponse = {
+  status: listPageStatus;
+  pages: NotionPages;
+};
