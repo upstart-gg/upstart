@@ -20,6 +20,7 @@ import { examples as videoExamples, manifest as videoManifest } from "./video.ma
 import { examples as htmlExamples, manifest as htmlManifest } from "./html.manifest";
 
 import { getBrickManifestDefaults, type BrickDefaults, type BrickManifest } from "../../brick-manifest";
+import { StringEnum } from "~/shared/utils/string-enum";
 
 export const manifests: Record<string, BrickManifest> = {
   [textManifest.type]: textManifest,
@@ -44,7 +45,7 @@ export const manifests: Record<string, BrickManifest> = {
   [htmlManifest.type]: htmlManifest,
 };
 
-export const defaultProps: Record<string, BrickDefaults> = {
+export const defaultProps: Record<keyof typeof manifests, BrickDefaults> = {
   [textManifest.type]: getBrickManifestDefaults(textManifest),
   [heroManifest.type]: getBrickManifestDefaults(heroManifest),
   [imageManifest.type]: getBrickManifestDefaults(imageManifest),
@@ -66,6 +67,27 @@ export const defaultProps: Record<string, BrickDefaults> = {
   [accordionManifest.type]: getBrickManifestDefaults(accordionManifest),
   [htmlManifest.type]: getBrickManifestDefaults(htmlManifest),
 };
+
+// Do not include footer, navbar and sidebar
+export const brickTypesEnumForLLM = StringEnum<(keyof typeof manifests)[]>([
+  textManifest.type,
+  heroManifest.type,
+  imageManifest.type,
+  videoManifest.type,
+  cardManifest.type,
+  mapManifest.type,
+  formManifest.type,
+  imagesWallManifest.type,
+  carouselManifest.type,
+  buttonManifest.type,
+  iconManifest.type,
+  socialLinksManifest.type,
+  boxManifest.type,
+  spacerManifest.type,
+  testimonialsManifest.type,
+  accordionManifest.type,
+  htmlManifest.type,
+]);
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export const examples: Record<string, { description: string; type: string; props: any }[]> = {

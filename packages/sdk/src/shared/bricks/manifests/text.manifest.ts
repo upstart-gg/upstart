@@ -66,7 +66,7 @@ export const examples: {
   props: BrickProps<Manifest>["brick"]["props"];
 }[] = [
   {
-    description: "Welcome paragraph with emphasis, using a preset",
+    description: "Welcome paragraph with emphasis and padding",
     type: "text",
     props: {
       content:
@@ -75,7 +75,7 @@ export const examples: {
     },
   },
   {
-    description: "Feature list with HTML formatting",
+    description: "Feature list with HTML formatting and smaller padding",
     type: "text",
     props: {
       content:
@@ -84,7 +84,7 @@ export const examples: {
     },
   },
   {
-    description: "Quote block with styling",
+    description: "Quote block with text styling but no background",
     type: "text",
     props: {
       content:
@@ -93,41 +93,18 @@ export const examples: {
     },
   },
   {
-    description: "Multi-paragraph article content",
-    type: "text",
-    props: {
-      content:
-        "<p>The future of web development is rapidly evolving with new technologies and frameworks emerging every year. <strong>Modern developers</strong> need to stay current with trends while maintaining focus on <em>user experience</em> and performance.</p><p>Our platform provides the tools and resources you need to build <a href='/docs'>exceptional web applications</a> that scale with your business needs.</p><p>Join thousands of developers who trust our solutions for their most critical projects.</p>",
-      padding: "p-8",
-    },
-  },
-  {
-    description: "Call-to-action text with bright styling",
-    type: "text",
-    props: {
-      content:
-        "<p style='text-align: center'><strong>Ready to Get Started?</strong><br>Join over <span style='color: #ef4444'>50,000</span> satisfied customers and transform your business today!</p><p style='text-align: center'><a href='/signup'>Sign up now</a> and get your first month <em>absolutely free</em>.</p>",
-    },
-  },
-  {
     description: "Simple heading with subtle background",
     type: "text",
     props: {
       content:
         "<h2>About Our Company</h2><p>We've been serving customers since 2010, building trust through quality products and exceptional service.</p>",
+      colorPreset: {
+        color: "base-100",
+      },
     },
   },
   {
-    description: "Technical documentation snippet",
-    type: "text",
-    props: {
-      content:
-        "<h4>API Configuration</h4><p>To get started with our API, you'll need to:</p><ol><li>Create an account and <strong>generate an API key</strong></li><li>Install the SDK: <code>npm install @company/sdk</code></li><li>Initialize with your credentials</li></ol><p>For detailed instructions, visit our <a href='/docs/api'>API documentation</a>.</p>",
-      padding: "p-8",
-    },
-  },
-  {
-    description: "Team introduction with formatting",
+    description: "Team introduction with formatting, no background color",
     type: "text",
     props: {
       content:
@@ -136,21 +113,15 @@ export const examples: {
     },
   },
   {
-    description: "Warning notice with dark theme",
+    description: "Paragraph with an emoji, neutral background",
     type: "text",
     props: {
       content:
-        "<p><strong>⚠️ Important Notice:</strong><br>Scheduled maintenance will occur on <em>Sunday, March 15th</em> from 2:00 AM to 6:00 AM UTC.</p><p>During this time, some features may be temporarily unavailable. We apologize for any inconvenience.</p>",
+        "<p>Scheduled maintenance will occur on <em>Sunday, March 15th</em> from 2:00 AM to 6:00 AM UTC.</p><p>During this time, some features may be temporarily unavailable. We apologize for any inconvenience.</p>",
       padding: "p-8",
-    },
-  },
-  {
-    description: "Success message with green theme",
-    type: "text",
-    props: {
-      content:
-        "<p style='text-align: center'><strong>✅ Success!</strong><br>Your account has been created successfully.</p><p style='text-align: center'>Check your email for verification instructions and <a href='/dashboard' style='color: #065f46'>start exploring</a> your new dashboard.</p>",
-      padding: "p-8",
+      colorPreset: {
+        color: "neutral-700",
+      },
     },
   },
 ];

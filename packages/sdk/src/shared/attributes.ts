@@ -375,7 +375,7 @@ export const siteAttributesSchema = Type.Object(
   },
 );
 
-export const siteAttributesSchemaLLM = toLLMSchema(siteAttributesSchema);
+export const siteAttributesSchemaLLM = toLLMSchema(Type.Omit(siteAttributesSchema, ["navbar", "footer"]));
 export const pageAttributesSchemaLLM = toLLMSchema(pageAttributesSchema);
 
 export type PageAttributes = Static<typeof pageAttributesSchema>;

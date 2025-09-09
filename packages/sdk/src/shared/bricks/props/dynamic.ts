@@ -76,6 +76,7 @@ export function loop(options: ObjectOptions = {}) {
     {
       // $id: "content:loop",
       title: "Repeat over",
+      description: "Repeat this brick for each item in the specified query results.",
       "ui:field": "loop",
       "ui:hidden-if": "no-page-queries",
       metadata: {

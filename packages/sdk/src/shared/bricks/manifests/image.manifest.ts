@@ -72,7 +72,7 @@ export const examples: {
   props: BrickProps<Manifest>["brick"]["props"];
 }[] = [
   {
-    description: "Hero landscape image with shadow",
+    description: "Hero landscape image with large shadow",
     type: "image",
     props: {
       image: {
@@ -83,7 +83,7 @@ export const examples: {
     },
   },
   {
-    description: "Team member profile photo",
+    description: "Team member profile photo, full rounded",
     type: "image",
     props: {
       image: {
@@ -91,6 +91,7 @@ export const examples: {
         alt: "Team member profile photo",
       },
       shadow: "shadow-md",
+      rounding: "rounded-full",
     },
   },
   {
@@ -105,7 +106,7 @@ export const examples: {
     },
   },
   {
-    description: "Blog article featured image",
+    description: "Blog article featured image with medium shadow and full author info",
     type: "image",
     props: {
       image: {
@@ -120,20 +121,9 @@ export const examples: {
       shadow: "shadow-md",
     },
   },
-  {
-    description: "Gallery thumbnail with hover effect",
-    type: "image",
-    props: {
-      image: {
-        src: "https://via.placeholder.com/250x250.png?text=Gallery+Thumb",
-        alt: "Gallery thumbnail image",
-      },
 
-      shadow: "shadow-md",
-    },
-  },
   {
-    description: "Logo image with padding",
+    description: "Logo image with padding and small shadow",
     type: "image",
     props: {
       image: {
@@ -145,7 +135,7 @@ export const examples: {
     },
   },
   {
-    description: "Testimonial customer photo",
+    description: "Testimonial customer photo with large shadow and small padding",
     type: "image",
     props: {
       image: {
@@ -173,7 +163,7 @@ export const examples: {
     },
   },
   {
-    description: "Illustration with background",
+    description: "Illustration with background and padding",
     type: "image",
     props: {
       image: {

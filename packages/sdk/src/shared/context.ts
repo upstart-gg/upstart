@@ -21,7 +21,7 @@ export type CallContextProps = {
   /**
    * Current page. Undefined if flow is "setup" and no page has been created yet.
    */
-  page?: VersionedPage;
+  page: VersionedPage;
 
   /**
    * The current generation state of the site. Only used when flow is "setup".

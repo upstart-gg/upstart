@@ -12,6 +12,7 @@ import { paddingRef } from "./bricks/props/padding";
 import type { CommonBrickProps } from "./bricks/props/common";
 import { directionRef } from "./bricks/props/direction";
 import type { PageAttributes, SiteAttributes } from "./attributes";
+import { toLLMSchema } from "./utils/llm";
 
 /**
  * Generates a unique identifier for bricks.
@@ -227,10 +228,11 @@ export const sectionSchema = Type.Object(
     bricks: Type.Array(brickSchema),
   },
   {
-    description:
-      "Sections are direct children of the page that are stacked vertically, but they always align their children horizontally (flex-row).",
+    description: "Sections are direct children of the page that are stacked vertically.",
   },
 );
+
+export const sectionSchemaLLM = toLLMSchema(sectionSchema);
 
 const sectionDefaultprops = getSchemaDefaults(sectionSchema.properties.props, "desktop");
 const sectionMobileDefaultprops = getSchemaDefaults(sectionSchema.properties.mobileProps, "mobile");

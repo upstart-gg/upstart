@@ -3,6 +3,7 @@ import { Button, TextArea, Text, Switch } from "@upstart.gg/style-system/system"
 import { motion, AnimatePresence } from "motion/react";
 import { TbSend2 } from "react-icons/tb";
 import { IoIosAttach } from "react-icons/io";
+import { applyPatch, type Operation } from "fast-json-patch";
 import { type CreateMessage, type Message, useChat } from "@ai-sdk/react";
 import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 import { createIdGenerator, type ToolInvocation } from "ai";
@@ -268,45 +269,58 @@ What should we work on together? 🤖`,
       }
       handledToolResults.current.add(toolInvocation.toolCallId);
       switch (toolInvocation.toolName) {
-        case "generatePage": {
+        case "createEmptyPage": {
           const result = toolInvocation.result as { page: Page } | { error: string };
           if ("error" in result) {
             console.error("Error generating page:", result.error);
             return;
           }
           console.log("Generated page", result.page);
-          draftHelpers.addPage({ ...result.page, version: crypto.randomUUID() });
+          draftHelpers.addPage({ ...result.page, version: crypto.randomUUID(), sections: [] });
           break;
         }
 
-        case "generateThemes": {
+        case "editPage": {
+          const result = toolInvocation.result as { patches: Array<Operation> };
+          const pageClone = structuredClone(page);
+          console.log("Editing page, result", result);
+          applyPatch(pageClone, result.patches);
+          break;
+        }
+
+        case "createNavbar":
+          console.log("Generated navbar", toolInvocation.result);
+          break;
+
+        case "createThemes": {
           const themes = toolInvocation.result as Theme[];
           console.log("Generated themes", themes);
           draftHelpers.setThemes(themes);
           break;
         }
 
-        case "generateDatasource": {
+        case "createDatasource": {
           const datasource = toolInvocation.result as Parameters<typeof draftHelpers.addDatasource>[0];
           console.log("Generated datasource", datasource);
           draftHelpers.addDatasource(defineDatasource(datasource));
           break;
         }
 
-        case "generateDatarecord": {
+        case "createDatarecord": {
           const datarecord = toolInvocation.result as Parameters<typeof draftHelpers.addDatarecord>[0];
           console.log("Generated data record", datarecord);
           draftHelpers.addDatarecord(defineDataRecord(datarecord));
           break;
         }
 
-        case "generateSitemap": {
+        case "createSitemap": {
           const sitemap = toolInvocation.result as Sitemap;
           console.log("Generated sitemap", sitemap);
           draftHelpers.setSitemap(sitemap);
           break;
         }
-        case "generateSiteAttributes": {
+
+        case "createSiteAttributes": {
           const siteAttributes = toolInvocation.result as SiteAttributes;
           console.log("Generated site attributes", siteAttributes);
           draftHelpers.updateSiteAttributes(siteAttributes);
@@ -560,8 +574,8 @@ What should we work on together? 🤖`,
 }
 
 const toolsWorkingLabels: Record<string, string> = {
-  generateThemes: "Generating color themes",
-  generateSitemap: "Generating site map",
+  createThemes: "Generating color themes",
+  createSitemap: "Generating site map",
   generateImages: "Generating images",
   setTheme: "Applying theme",
   searchImages: "Searching images",
