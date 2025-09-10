@@ -1,5 +1,4 @@
 import { readFileSync } from "node:fs";
-import { execSync } from "node:child_process";
 import { defineConfig } from "tsdown";
 
 const bannerText = readFileSync("../../banner.txt", "utf-8");
@@ -39,18 +38,6 @@ export default defineConfig((options) => {
       esbuildOptions(input) {
         input.banner = banner;
       },
-      // onSuccess: async () => {
-      //   console.time("Types build time");
-      //   execSync("pnpm build:types", {
-      //     stdio: "inherit",
-      //     // @ts-ignore
-      //     cwd: import.meta.dirname,
-      //   });
-      //   console.timeEnd("Types build time");
-      // },
-      // loader: {
-      //   ".html": "copy",
-      // },
       removeNodeProtocol: false,
     },
   ];
