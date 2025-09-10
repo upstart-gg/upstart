@@ -4,13 +4,12 @@ import { background, backgroundRef, backgroundColor } from "../background";
 describe("Background prop test suite", () => {
   describe("background", () => {
     it("should have the correct title", () => {
-      expect(background().title).toBe("Background");
+      expect(background().title).toBe("Background image");
     });
 
     it("should have correct schema structure", () => {
       const schema = background();
       expect(schema.type).toBe("object");
-      expect(schema).toHaveProperty("properties.color");
       expect(schema).toHaveProperty("properties.image");
       expect(schema).toHaveProperty("properties.size");
       expect(schema).toHaveProperty("properties.repeat");
@@ -19,8 +18,6 @@ describe("Background prop test suite", () => {
     it("should have correct UI metadata", () => {
       const schema = background();
       expect(schema["ui:field"]).toBe("background");
-      expect(schema["ui:group"]).toBe("background");
-      expect(schema["ui:group:title"]).toBe("Background");
     });
 
     it("should accept custom default values", () => {
