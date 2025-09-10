@@ -1,6 +1,6 @@
 import type { TObject, TSchema } from "@sinclair/typebox";
 import { ajv } from "../ajv";
-import { resolveSchema } from "./schema";
+import { cloneDeep } from "lodash-es";
 
 /**
  * Clean all properties from custom metadata recursively. Custom metadata are key that:
@@ -113,7 +113,9 @@ interface SchemaWithDefs extends TSchema {
  * @returns A new schema with references inlined in $defs
  */
 export function inlineSchemaRefs<T extends TSchema>(schema: T) {
-  const inlinedSchema = structuredClone(schema) as T & SchemaWithDefs;
+  //
+  const inlinedSchema = cloneDeep(schema) as T & SchemaWithDefs;
+  // const inlinedSchema = JSON.parse(JSON.stringify(schema)) as T & SchemaWithDefs;
   const collectedRefs = new Set<string>();
 
   // Initialize $defs if it doesn't exist

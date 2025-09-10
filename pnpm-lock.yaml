@@ -323,12 +323,6 @@ importers:
       ai:
         specifier: ^5.0.0
         version: 5.0.39(zod@4.1.5)
-      ajv:
-        specifier: 8.17.1
-        version: 8.17.1
-      ajv-formats:
-        specifier: 3.0.1
-        version: 3.0.1(ajv@8.17.1)
       chroma-js:
         specifier: 3.1.2
         version: 3.1.2
@@ -350,9 +344,6 @@ importers:
       immer:
         specifier: 10.1.1
         version: 10.1.1
-      lodash-es:
-        specifier: 4.17.21
-        version: 4.17.21
       nanoid:
         specifier: 5.1.5
         version: 5.1.5
@@ -411,12 +402,21 @@ importers:
       '@types/sortablejs':
         specifier: 1.15.8
         version: 1.15.8
+      ajv:
+        specifier: ^8.17.1
+        version: 8.17.1
+      ajv-formats:
+        specifier: ^3.0.1
+        version: 3.0.1(ajv@8.17.1)
       concurrently:
         specifier: 8.2.2
         version: 8.2.2
       express:
         specifier: ^4.21.2
         version: 4.21.2
+      lodash-es:
+        specifier: ^4.17.21
+        version: 4.17.21
       rimraf:
         specifier: 6.0.1
         version: 6.0.1

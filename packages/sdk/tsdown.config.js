@@ -28,6 +28,7 @@ export default defineConfig((options) => {
     {
       entry: ["src/shared/**/*.ts", ...ignored],
       outDir: "dist/shared",
+      logLevel: "warn",
       target: "es2022",
       format: ["esm"],
       metafile: !!process.env.ANALYZE_BUNDLE,
