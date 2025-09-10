@@ -58,6 +58,7 @@
       "property-information": "7.1.0"
     },
     "onlyBuiltDependencies": [
+      "tsdown",
       "@biomejs/biome",
       "esbuild",
       "nx",
