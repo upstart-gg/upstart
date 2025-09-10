@@ -1,8 +1,8 @@
 import { Type, type Static } from "@sinclair/typebox";
-import { airtableOptions } from "./external/airtable/options";
+import { airtableOptions } from "./external/airtable/types";
 import { genericWebhookOptions } from "./external/generic-webhook/options";
-import { googleSheetsOptions } from "./external/google/sheets/options";
-import { notionOptions } from "./external/notion/options";
+import { googleSheetsOptions } from "./external/google/sheets/types";
+import { notionOptions } from "./external/notion/types";
 
 export const connectorSchema = Type.Union([
   Type.Literal("airtable"),
@@ -148,91 +148,3 @@ export type Datarecord = Static<typeof datarecordManifest>;
 
 export const datarecordsList = Type.Array(datarecordManifest);
 export type DatarecordsList = Static<typeof datarecordsList>;
-
-// export const table = Type.Object({
-//   id: Type.String(),
-//   name: Type.String(),
-//   data: Type.Any(),
-//   base: Type.Optional(
-//     Type.Object({
-//       id: Type.String(),
-//       name: Type.String(),
-//       data: Type.Any(),
-//     }),
-//   ),
-// });
-export type Table = {
-  id: string;
-  name: string;
-  data: unknown;
-  base?: {
-    id: string;
-    name: string;
-    data: unknown;
-  };
-};
-
-export type TablesList = Table[];
-
-// Schema field types - each field type as a separate schema
-
-// export const stringProperty = Type.Object({
-//   type: Type.Literal("string"),
-//   title: Type.String({ description: "String field. May be single-line or multi-line, enum, email or url" }),
-//   format: Type.Optional(
-//     Type.Union([Type.Literal("email"), Type.Literal("url"), Type.Literal("date"), Type.Literal("date-time")]),
-//   ),
-//   "ui:placeholder": Type.Optional(Type.String()),
-//   minLength: Type.Optional(Type.Number()),
-//   maxLength: Type.Optional(Type.Number()),
-//   enum: Type.Optional(Type.Array(Type.String(), { minItems: 1 })),
-//   metadata: Type.Optional(
-//     Type.Object({
-//       order: Type.Optional(Type.Number()),
-//       "ui:multiline": Type.Literal(true),
-//     }),
-//   ),
-// });
-// export type StringProperty = Static<typeof stringProperty>;
-
-// export const booleanProperty = Type.Object({
-//   type: Type.Literal("boolean"),
-//   title: Type.String(),
-//   metadata: Type.Optional(
-//     Type.Object({
-//       order: Type.Optional(Type.Number()),
-//     }),
-//   ),
-// });
-// export type BooleanProperty = Static<typeof booleanProperty>;
-
-// export const numberProperty = Type.Object({
-//   type: Type.Literal("number"),
-//   title: Type.String(),
-//   min: Type.Optional(Type.Number()),
-//   max: Type.Optional(Type.Number()),
-//   default: Type.Optional(Type.Number()),
-//   metadata: Type.Optional(
-//     Type.Object({
-//       order: Type.Optional(Type.Number()),
-//     }),
-//   ),
-// });
-
-// export type NumberProperty = Static<typeof numberProperty>;
-
-// // Union of all field types
-// export const schemaProperty = Type.Union([stringProperty, booleanProperty, numberProperty]);
-
-// export type SchemaProperty = Static<typeof schemaProperty>;
-
-// export const schemaProperties = Type.Record(Type.String(), schemaProperty);
-// export type SchemaProperties = Static<typeof schemaProperties>;
-
-// export const schema = Type.Object({
-//   id: Type.Optional(Type.String()),
-//   type: Type.Literal("object"),
-//   properties: schemaProperties,
-//   required: Type.Optional(Type.Array(Type.String())),
-// });
-// export type Schema = Static<typeof schema>;
