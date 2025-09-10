@@ -709,8 +709,6 @@ describe("toLLMSchema tests suite", () => {
 
   test("test with existing Upstart schema", () => {
     const transformed = toLLMSchema(sitemapSchema);
-
-    console.log("My schema: ", JSON.stringify(pageOutputObjectLLM));
     expect(transformed.items.properties.id.type).toEqual(sitemapSchema.items.properties.id.type);
   });
 });
