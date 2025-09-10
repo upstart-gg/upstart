@@ -52,7 +52,7 @@ ajv.addSchema(queryUse(), "content:queryUse");
 ajv.addSchema(colorPreset(), "presets:color");
 ajv.addSchema(tags(), "content:tags");
 
-export const jsonStringsSupportedFormats = ["date-time", "date", "email", "url", "uri"] as const;
+export const jsonStringsSupportedFormats = ["date-time", "date", "email", "url"] as const;
 
 // Add formats to Ajv
 addFormats(ajv, [...jsonStringsSupportedFormats]);
@@ -63,6 +63,11 @@ ajv.addFormat("slug", {
   type: "string",
 });
 ajv.addFormat("image", {
+  validate: (data: string) => typeof data === "string",
+  async: false,
+  type: "string",
+});
+ajv.addFormat("file", {
   validate: (data: string) => typeof data === "string",
   async: false,
   type: "string",

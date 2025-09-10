@@ -288,7 +288,7 @@ const datasourceInternalManifest = Type.Composite([
   ),
 ]);
 
-export type DatasourceCustomManifest = Static<typeof datasourceInternalManifest>;
+export type InternalDatasource = Static<typeof datasourceInternalManifest>;
 
 const datasourceJsonManifest = Type.Composite([
   datasourceBaseFields,

@@ -143,6 +143,7 @@ const datarecordMetadata = Type.Object({
 const datarecordManifest = Type.Composite([datarecordsConnectors, datarecordMetadata]);
 
 export const internalDatarecordManifest = Type.Composite([datarecordMetadata, internalDatarecord]);
+export type InternalDatarecord = Static<typeof internalDatarecordManifest>;
 export type Datarecord = Static<typeof datarecordManifest>;
 
 export const datarecordsList = Type.Array(datarecordManifest);

@@ -7,6 +7,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig(({ mode }) => ({
   envPrefix: ["PUBLIC_"],
   base: "./",
+  logLevel: "warn",
   plugins: [
     tsconfigPaths() as PluginOption,
     devtoolsJson(),
@@ -21,9 +22,14 @@ export default defineConfig(({ mode }) => ({
         "src/shared/utils/get-theme-css.ts",
       ],
       outDir: "dist/types",
+      afterDiagnostic: (diagnostics) => {
+        if (diagnostics.length) {
+          console.error("Error while building types in @upstart/components. Please check error(s) above.\n");
+          process.exit(1);
+        }
+      },
     }),
   ],
-  optimizeDeps: {},
   server: {
     port: +(process.env.PORT ?? 3008),
     server: {
@@ -58,6 +64,7 @@ export default defineConfig(({ mode }) => ({
   build: {
     copyPublicDir: false,
     sourcemap: true,
+    reportCompressedSize: false,
     lib: {
       entry: {
         Editor: "src/editor/components/Editor.tsx",

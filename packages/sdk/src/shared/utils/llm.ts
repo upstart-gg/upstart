@@ -1,4 +1,4 @@
-import type { TSchema } from "@sinclair/typebox";
+import type { TObject, TSchema } from "@sinclair/typebox";
 import { ajv } from "../ajv";
 import { resolveSchema } from "./schema";
 
@@ -8,7 +8,7 @@ import { resolveSchema } from "./schema";
  * - Or starting with "ui:"
  * Also removes properties that have "ai:hidden" set to true
  */
-export function toLLMSchema<T extends TSchema>(schema: T): T {
+export function toLLMSchema<T extends TSchema = TObject>(schema: T): T {
   //
   // const compiledSchema = ajv.getSchema(schema.$id as string);
   // if (!compiledSchema) {
@@ -112,8 +112,8 @@ interface SchemaWithDefs extends TSchema {
  * @param ajv - The AJV instance containing the referenced schemas
  * @returns A new schema with references inlined in $defs
  */
-export function inlineSchemaRefs<T extends TSchema>(schema: T): T {
-  const inlinedSchema = JSON.parse(JSON.stringify(schema)) as T & SchemaWithDefs;
+export function inlineSchemaRefs<T extends TSchema>(schema: T) {
+  const inlinedSchema = structuredClone(schema) as T & SchemaWithDefs;
   const collectedRefs = new Set<string>();
 
   // Initialize $defs if it doesn't exist

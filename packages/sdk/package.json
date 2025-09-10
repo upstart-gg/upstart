@@ -32,7 +32,7 @@
     "@notionhq/client": "4.0.2",
     "@radix-ui/themes": "3.2.1",
     "@rowanmanning/feed-parser": "2.1.0",
-    "@sinclair/typebox": "0.33.7",
+    "@sinclair/typebox": "0.34.41",
     "@upstart.gg/style-system": "workspace:*",
     "ajv": "8.17.1",
     "ajv-formats": "3.0.1",
@@ -55,7 +55,8 @@
   "peerDependencies": {
     "@headlessui/react": "^2.2.1",
     "react": "18.3.0-canary-3d9b20132-20240124",
-    "react-dom": "18.3.0-canary-3d9b20132-20240124"
+    "react-dom": "18.3.0-canary-3d9b20132-20240124",
+    "ai": "^5.0.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "4.20240806.0",

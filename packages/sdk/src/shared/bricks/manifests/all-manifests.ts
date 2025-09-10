@@ -18,9 +18,9 @@ import { examples as testimonialsExamples, manifest as testimonialsManifest } fr
 import { examples as textExamples, manifest as textManifest } from "./text.manifest";
 import { examples as videoExamples, manifest as videoManifest } from "./video.manifest";
 import { examples as htmlExamples, manifest as htmlManifest } from "./html.manifest";
-
 import { getBrickManifestDefaults, type BrickDefaults, type BrickManifest } from "../../brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
+import type { Static } from "@sinclair/typebox";
 
 export const manifests: Record<string, BrickManifest> = {
   [textManifest.type]: textManifest,
@@ -88,6 +88,8 @@ export const brickTypesEnumForLLM = StringEnum<(keyof typeof manifests)[]>([
   accordionManifest.type,
   htmlManifest.type,
 ]);
+
+export type BrickTypeForLLM = Static<typeof brickTypesEnumForLLM>;
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export const examples: Record<string, { description: string; type: string; props: any }[]> = {

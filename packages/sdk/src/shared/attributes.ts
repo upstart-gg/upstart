@@ -13,7 +13,6 @@ import { querySchema } from "./datasources/types";
 import { StringEnum } from "./utils/string-enum";
 import { backgroundRef } from "./bricks/props/background";
 import { toLLMSchema } from "./utils/llm";
-import { group } from "./bricks/props/helpers";
 
 export type { JSONSchemaType };
 

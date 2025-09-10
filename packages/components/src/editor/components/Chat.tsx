@@ -1,12 +1,19 @@
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { Button, TextArea, Text, Switch } from "@upstart.gg/style-system/system";
 import { motion, AnimatePresence } from "motion/react";
+import {
+  ChatOnFinishCallback,
+  DefaultChatTransport,
+  lastAssistantMessageIsCompleteWithToolCalls,
+  type ToolUIPart,
+} from "ai";
+
 import { TbSend2 } from "react-icons/tb";
 import { IoIosAttach } from "react-icons/io";
 import { applyPatch, type Operation } from "fast-json-patch";
-import { type CreateMessage, type Message, useChat } from "@ai-sdk/react";
+import { type CreateUIMessage, type UIMessage, useChat, type UseChatOptions } from "@ai-sdk/react";
 import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
-import { createIdGenerator, type ToolInvocation } from "ai";
+import { createIdGenerator, type ToolCallPart, type FilePart } from "ai";
 import {
   useDraftHelpers,
   useGenerationState,
@@ -30,6 +37,7 @@ import type { Sitemap } from "@upstart.gg/sdk/shared/sitemap";
 import { useEditorHelpers } from "../hooks/use-editor";
 import { defineDatasource } from "@upstart.gg/sdk/shared/datasources";
 import type { SiteAttributes } from "@upstart.gg/sdk/shared/attributes";
+import type { Tools, UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/ui-message";
 
 const WEB_SEARCH_ENABLED = false;
 
@@ -102,9 +110,7 @@ export default function Chat() {
   const sitemap = useSitemap();
   const siteThemes = useThemes();
   const [userLanguage, setUserLanguage] = useState<string>();
-  // const [flow, setFlow] = useState<CallContextProps["flow"]>(
-  //   new URL(window.location.href).searchParams.get("action") === "setup" ? "setup" : "edit",
-  // );
+  const [input, setInput] = useState("");
 
   const listPlaceholderRef = useRef<HTMLDivElement>(null);
   const handledToolResults = useRef(new Set<string>());
@@ -116,98 +122,88 @@ export default function Chat() {
       : "bg-white/80 dark:bg-dark-800 text-fluid-sm",
   );
 
-  const onFinish = useCallback(
-    (message: Message, options: unknown) => {
-      console.log("message finished", message, options);
-      console.log("Generation state after message finish", generationState);
-    },
-    [generationState],
-  );
-
-  const {
-    messages,
-    handleInputChange,
-    handleSubmit,
-    error,
-    status,
-    reload,
-    append,
-    stop,
-    data,
-    setData,
-    addToolResult,
-    id,
-    metadata,
-    experimental_resume,
-  } = useChat({
-    api: "/editor/chat",
-    // sendExtraMessageFields: true,
-    // maxSteps: 30,
-    initialMessages:
-      generationState.isReady === false
-        ? [
-            {
-              id: "init-generate",
-              role: "user",
-              content: `Create a website based on this prompt:\n${sitePrompt}`,
+  const { messages, sendMessage, error, status, regenerate, stop, addToolResult } = useChat<UpstartUIMessage>(
+    {
+      transport: new DefaultChatTransport({
+        api: "/editor/chat",
+        credentials: "include",
+        prepareSendMessagesRequest({ body, ...rest }) {
+          return {
+            ...rest,
+            body: {
+              ...body,
+              ...({ site, sitemap, page, generationState, userLanguage } satisfies CallContextProps),
             },
-          ]
-        : [
-            {
-              id: "init-edit",
-              role: "assistant",
-              content: `Hey! 👋\n\nReady to keep building? You can:
+          };
+        },
+      }),
+      sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
+      messages:
+        generationState.isReady === false
+          ? ([
+              {
+                id: "init-generate",
+                role: "user",
+                parts: [
+                  {
+                    type: "text",
+                    text: `Create a website based on this prompt:\n${sitePrompt}`,
+                  },
+                ],
+              },
+            ] as UpstartUIMessage[])
+          : ([
+              {
+                id: "init-edit",
+                role: "assistant",
+                parts: [
+                  {
+                    type: "text",
+                    text: `Hey! 👋\n\nReady to keep building? You can:
 - Chat with me to make changes
 - Use the visual editor for direct editing
 
 What should we work on together? 🤖`,
-            },
-          ],
-    credentials: "include",
-    experimental_prepareRequestBody({ requestData, ...rest }) {
-      return {
-        ...rest,
-        requestData: { site, sitemap, page, generationState, userLanguage } satisfies CallContextProps,
-      };
-    },
-    generateId: createIdGenerator({
-      prefix: "ups",
-      separator: "_",
-      size: 16,
-    }),
-    onFinish,
-    onError: (error) => {
-      console.error("ERROR", error);
-    },
-    key: `chat-${generationState.isReady}-${site.id}`,
+                  },
+                ],
+              },
+            ] as UpstartUIMessage[]),
 
-    /**
-     * For tools that should be called client-side
-     */
-    onToolCall: ({ toolCall }) => {
-      console.log("Tool call: %s: ", toolCall.toolName, toolCall);
-      // The "done" tool is a special case that indicates the server has finished processing the request.
-      // We need to handle it client-side and return the "result" for the tool call.
-      // here, we just return true to indicate that we handled the tool call
-      if (toolCall.toolName === "done") {
-        return true;
-      }
+      generateId: createIdGenerator({
+        prefix: "ups",
+        separator: "_",
+        size: 16,
+      }),
+      onError: (error) => {
+        console.error("ERROR", error);
+      },
+      id: `chat-${site.id}`,
+
+      /**
+       * For tools that should be called client-side
+       */
+      // onToolCall: ({ toolCall }) => {
+      //   console.log("Tool call: %s: ", toolCall.toolName, toolCall);
+      //   // The "done" tool is a special case that indicates the server has finished processing the request.
+      //   // We need to handle it client-side and return the "result" for the tool call.
+      //   // here, we just return true to indicate that we handled the tool call
+      //   if (toolCall.toolName === "done") {
+      //     return true;
+      //   }
+      // },
     },
-  });
+  );
   const promptRef = useRef<HTMLTextAreaElement>(null);
   const messagesListRef = useRef<HTMLDivElement>(null);
 
-  const onSubmit = useCallback(
-    (e: Event | FormEvent) => {
-      e.preventDefault();
-      handleSubmit();
-      if (promptRef?.current) {
-        promptRef.current.value = "";
-        promptRef.current.focus();
-      }
-    },
-    [handleSubmit],
-  );
+  const onSubmit = (e: Event | FormEvent) => {
+    e.preventDefault();
+    sendMessage({ text: input });
+    setInput("");
+    if (promptRef?.current) {
+      promptRef.current.focus();
+    }
+  };
 
   const debouncedScroll = useDebounceCallback(() => {
     // when messages change, scroll to the bottom
@@ -217,15 +213,15 @@ What should we work on together? 🤖`,
   }, 300);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(debouncedScroll, [status, data, messages]);
+  useEffect(debouncedScroll, [status, messages]);
 
-  useDeepCompareEffect(() => {
-    data?.forEach((item) => {
-      if (typeof item === "object" && !Array.isArray(item) && item?.userLanguage) {
-        setUserLanguage(item.userLanguage as string);
-      }
-    });
-  }, [data]);
+  // useDeepCompareEffect(() => {
+  //   data?.forEach((item) => {
+  //     if (typeof item === "object" && !Array.isArray(item) && item?.userLanguage) {
+  //       setUserLanguage(item.userLanguage as string);
+  //     }
+  //   });
+  // }, [data]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -233,19 +229,18 @@ What should we work on together? 🤖`,
     setupRef.current = true;
     if (generationState.isReady === false) {
       console.log("Chat initialized", { sitePrompt });
-      reload();
+      regenerate();
     }
   }, []);
 
   const toolInvocations = useMemo(() => {
     const results = messages
       .filter((msg) => msg.role === "assistant")
-      .flatMap((msg) => msg.parts)
-      .filter((part) => part.type === "tool-invocation")
-      .map((part) => part.toolInvocation)
+      .flatMap((msg) => msg.parts as ToolUIPart<Tools>[])
+      .filter((part) => part.type.startsWith("tool-"))
+      // .map((part) => part.toolInvocation)
       .filter(
-        (toolInvocation) =>
-          toolInvocation.state === "result" && !handledToolResults.current.has(toolInvocation.toolCallId),
+        (part) => part.state === "output-available" && !handledToolResults.current.has(part.toolCallId),
       );
     return results;
   }, [messages]);
@@ -253,89 +248,84 @@ What should we work on together? 🤖`,
   const hasRunningTools = useMemo(() => {
     const results = messages
       .filter((msg) => msg.role === "assistant")
-      .flatMap((msg) => msg.parts)
-      .filter((part) => part.type === "tool-invocation")
-      .map((part) => part.toolInvocation)
-      .filter((toolInvocation) => toolInvocation.state !== "result");
+      .flatMap((msg) => msg.parts as ToolUIPart<Tools>[])
+      .filter((part) => part.type.startsWith("tool-"))
+      .filter((part) => part.state !== "output-available" && part.state !== "output-error");
     return results.length > 0;
   }, [messages]);
 
   const messagingDisabled = status === "streaming" || status === "submitted" || hasRunningTools;
 
   useDeepCompareEffect(() => {
-    for (const toolInvocation of toolInvocations.filter((t) => t.state === "result")) {
+    for (const toolInvocation of toolInvocations.filter((t) => t.state === "output-available")) {
       if (handledToolResults.current.has(toolInvocation.toolCallId)) {
         continue;
       }
       handledToolResults.current.add(toolInvocation.toolCallId);
-      switch (toolInvocation.toolName) {
-        case "createEmptyPage": {
-          const result = toolInvocation.result as { page: Page } | { error: string };
-          if ("error" in result) {
-            console.error("Error generating page:", result.error);
-            return;
-          }
-          console.log("Generated page", result.page);
-          draftHelpers.addPage({ ...result.page, version: crypto.randomUUID(), sections: [] });
+      switch (toolInvocation.type) {
+        case "tool-createPage": {
+          const page = toolInvocation.output;
+          console.log("Generated page", page);
+          draftHelpers.addPage({ ...page, version: crypto.randomUUID(), sections: [] });
           break;
         }
 
-        case "editPage": {
-          const result = toolInvocation.result as { patches: Array<Operation> };
-          const pageClone = structuredClone(page);
-          console.log("Editing page, result", result);
-          applyPatch(pageClone, result.patches);
-          break;
-        }
+        // case "tool-editPage": {
+        //   const result = toolInvocation.result as { patches: Array<Operation> };
+        //   const pageClone = structuredClone(page);
+        //   console.log("Editing page, result", result);
+        //   applyPatch(pageClone, result.patches);
+        //   break;
+        // }
 
-        case "createNavbar":
-          console.log("Generated navbar", toolInvocation.result);
+        case "tool-createNavbar":
+          console.log("Generated navbar", toolInvocation);
           break;
 
-        case "createThemes": {
-          const themes = toolInvocation.result as Theme[];
+        case "tool-createThemes": {
+          const themes = toolInvocation.output;
           console.log("Generated themes", themes);
           draftHelpers.setThemes(themes);
           break;
         }
 
-        case "createDatasource": {
-          const datasource = toolInvocation.result as Parameters<typeof draftHelpers.addDatasource>[0];
+        case "tool-createDatasource": {
+          const datasource = toolInvocation.output;
           console.log("Generated datasource", datasource);
           draftHelpers.addDatasource(defineDatasource(datasource));
           break;
         }
 
-        case "createDatarecord": {
-          const datarecord = toolInvocation.result as Parameters<typeof draftHelpers.addDatarecord>[0];
+        case "tool-createDatarecord": {
+          const datarecord = toolInvocation.output;
           console.log("Generated data record", datarecord);
           draftHelpers.addDatarecord(defineDataRecord(datarecord));
           break;
         }
 
-        case "createSitemap": {
-          const sitemap = toolInvocation.result as Sitemap;
+        case "tool-createSitemap": {
+          const sitemap = toolInvocation.output;
           console.log("Generated sitemap", sitemap);
           draftHelpers.setSitemap(sitemap);
           break;
         }
 
-        case "createSiteAttributes": {
-          const siteAttributes = toolInvocation.result as SiteAttributes;
+        case "tool-createSiteAttributes": {
+          const siteAttributes = toolInvocation.output;
           console.log("Generated site attributes", siteAttributes);
           draftHelpers.updateSiteAttributes(siteAttributes);
           break;
         }
 
-        case "searchImages": {
-          const images = toolInvocation.result as ImageSearchResultsType;
+        case "tool-searchImages": {
+          const images = toolInvocation.output;
           console.log("Generated images", images);
           setImagesSearchResults(images);
           break;
         }
 
         default:
-          console.log("Default tool invocation", toolInvocation.toolName, toolInvocation);
+          console.log("Default tool invocation", toolInvocation.type, toolInvocation);
           break;
       }
     }
@@ -391,6 +381,17 @@ What should we work on together? 🤖`,
             className={tx(msg.role === "assistant" ? aiMsgClass : userMsgClass, msgCommon, "empty:hidden")}
           >
             {msg.parts.map((part, i) => {
+              if (part.type.startsWith("tool-")) {
+                return (
+                  <ToolRenderer
+                    key={i}
+                    toolPart={part as ToolUIPart<Tools>}
+                    addToolResult={addToolResult}
+                    error={error}
+                  />
+                );
+              }
+
               switch (part.type) {
                 case "text":
                   return (
@@ -399,20 +400,21 @@ What should we work on together? 🤖`,
                     </Suspense>
                   );
 
-                case "source":
-                  // @ts-ignore
-                  if (part.source.sourceType === "images") {
-                    return (
-                      <ImagesPreview
-                        key={i}
-                        // @ts-ignore
-                        query={part.source.query as string}
-                        // @ts-ignore
-                        images={part.source.images as SimpleImageMetadata[]}
-                      />
-                    );
-                  }
-                  return <p key={i}>{JSON.stringify(part)}</p>;
+                // case "source":
+                //   // @ts-ignore
+                //   if (part.sourceType === "images") {
+                //     return (
+                //       <ImagesPreview
+                //         key={i}
+                //         // @ts-ignore
+                //         query={part.source.query as string}
+                //         // @ts-ignore
+                //         images={part.source.images as SimpleImageMetadata[]}
+                //       />
+                //     );
+                //   }
+                //   return <p key={i}>{JSON.stringify(part)}</p>;
+
                 case "reasoning":
                   if (index !== messages.length - 1 || msg.parts.length - 1 !== i) {
                     // If the last message is not the current one, we don't show the reasoning
@@ -441,24 +443,15 @@ What should we work on together? 🤖`,
                             <span className="text-xs font-normal">Thinking...</span>
                           </summary>
                           <Text size="2" className="text-gray-500">
-                            {part.reasoning}
+                            {part.text}
                           </Text>
                         </details>
                       </Text>
                     </p>
                   );
-                case "tool-invocation":
-                  return (
-                    <ToolRenderer
-                      key={i}
-                      toolInvocation={part.toolInvocation}
-                      addToolResult={addToolResult}
-                      append={append}
-                      error={error}
-                    />
-                  );
-                case "file":
-                  return <img key={i} alt="" src={`data:${part.mimeType};base64,${part.data}`} />;
+
+                // case "file":
+                //   return <img key={i} alt="" src={`data:${part.mediaType};base64,${part.url}`} />;
               }
             })}
           </div>
@@ -485,7 +478,7 @@ What should we work on together? 🤖`,
                 "rounded bg-red-700 text-white border border-red-600 hover:opacity-90 block w-full text-center font-semibold py-1 px-2",
               )}
               onClick={() => {
-                reload();
+                regenerate();
               }}
             >
               Retry
@@ -505,10 +498,11 @@ What should we work on together? 🤖`,
         )}
       >
         <textarea
+          onChange={(e) => setInput(e.target.value)}
           ref={promptRef}
+          value={input}
           // biome-ignore lint/a11y/noAutofocus: <explanation>
           autoFocus
-          onChange={handleInputChange}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) onSubmit(e);
           }}
@@ -573,26 +567,6 @@ What should we work on together? 🤖`,
   );
 }
 
-const toolsWorkingLabels: Record<string, string> = {
-  createThemes: "Generating color themes",
-  createSitemap: "Generating site map",
-  generateImages: "Generating images",
-  setTheme: "Applying theme",
-  searchImages: "Searching images",
-};
-
-function getToolWaitingLabel(toolInvocation: ToolInvocation) {
-  if (toolInvocation.args?.waitingMessage) {
-    return toolInvocation.args.waitingMessage;
-  }
-  switch (toolInvocation.toolName) {
-    case "generatePage":
-      return `Generating page '${toolInvocation.args.pageId}', this can take a while`;
-    default:
-      return toolsWorkingLabels[toolInvocation.toolName];
-  }
-}
-
 function ImagesPreview({ query, images }: { query: string; images: SimpleImageMetadata[] }) {
   return (
     <div className="flex flex-col gap-2 my-3" key={query}>
@@ -621,41 +595,36 @@ function ImagesPreview({ query, images }: { query: string; images: SimpleImageMe
 const hiddenTools = ["setUserLanguage", "getUserLanguage"];
 
 function ToolRenderer({
-  toolInvocation,
+  toolPart,
   addToolResult,
   error,
-  append,
 }: {
-  toolInvocation: ToolInvocation;
+  toolPart: ToolUIPart<Tools>;
   error?: Error;
   addToolResult: ({
+    tool,
     toolCallId,
-    result,
+    output,
   }: {
+    tool: keyof Tools;
     toolCallId: string;
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    result: any;
+    output: any;
   }) => void;
-  append: (message: Message | CreateMessage) => void;
 }) {
   // Some tools are not meant to be displayed in the chat, like the "setUserLanguage" tool
-  if (hiddenTools.includes(toolInvocation.toolName)) {
+  if (hiddenTools.includes(toolPart.type)) {
     return null;
   }
   // If there is an error, don't show pending tool invocations
   if (error) {
     return null;
   }
-  if (toolInvocation.toolName === "askUserChoice") {
-    const args = toolInvocation.args as {
-      choices: string[];
-      question?: string;
-      allowMultiple?: boolean;
-    };
+  if (toolPart.type === "tool-askUserChoice" && toolPart.state !== "input-streaming") {
     return (
-      <Suspense key={toolInvocation.toolCallId}>
+      <Suspense key={toolPart.toolCallId}>
         <AnimatePresence initial={false}>
-          {toolInvocation.state !== "result" ? (
+          {toolPart.state === "input-available" ? (
             <motion.div
               className="choices"
               initial={{ opacity: 0, height: 0 }}
@@ -663,20 +632,21 @@ function ToolRenderer({
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.4 }}
             >
-              {args.question && (
+              {toolPart.input.question && (
                 <div className="basis-full">
-                  <Markdown content={args.question} />
+                  <Markdown content={toolPart.input.question} />
                 </div>
               )}
-              {args.choices.map((choice, i) => {
+              {toolPart.input.choices.map((choice, i) => {
                 return (
                   <button
                     key={i}
                     type="button"
                     onClick={() => {
                       addToolResult({
-                        toolCallId: toolInvocation.toolCallId,
-                        result: choice,
+                        tool: "askUserChoice",
+                        toolCallId: toolPart.toolCallId,
+                        output: choice,
                       });
                     }}
                   >
@@ -693,23 +663,23 @@ function ToolRenderer({
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.4 }}
             >
-              {args.question && (
+              {toolPart.input?.question && (
                 <div className="basis-full">
-                  <Markdown content={args.question} />
+                  <Markdown content={toolPart.input.question} />
                 </div>
               )}
-              <div className="basis-full text-right italic text-gray-800">{toolInvocation.result}</div>
+              <div className="basis-full text-right italic text-gray-800">{toolPart.output}</div>
             </motion.div>
           )}
         </AnimatePresence>
       </Suspense>
     );
   }
-  const waitLabel = getToolWaitingLabel(toolInvocation);
-  if (waitLabel) {
+
+  if (toolPart.type !== "tool-askUserChoice" && "waitingMessage" in (toolPart.input ?? {})) {
     return (
       <AnimatePresence initial={false}>
-        {toolInvocation.state !== "result" ? (
+        {toolPart.state === "input-available" ? (
           <motion.div
             className="flex items-center gap-1.5"
             initial={{ opacity: 0, height: 0 }}
@@ -717,9 +687,9 @@ function ToolRenderer({
             exit={{ opacity: 0, height: 0 }}
           >
             <Spinner size="1" className="w-4 mx-0.5" />
-            <span>{waitLabel}</span>
+            <span>{toolPart.input.waitingMessage}</span>
           </motion.div>
-        ) : (
+        ) : toolPart.state === "output-available" ? (
           <motion.div
             className="flex items-center gap-1.5"
             initial={{ opacity: 0, height: 0 }}
@@ -727,15 +697,25 @@ function ToolRenderer({
             exit={{ opacity: 0, height: 0 }}
           >
             <MdDone className="w-4 h-4 text-green-600" />
-            <span>{waitLabel}</span>
+            <span>{toolPart.input.waitingMessage}</span>
           </motion.div>
-        )}
+        ) : toolPart.state === "output-error" ? (
+          <motion.div
+            className="flex items-center gap-1.5"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+          >
+            <MdDone className="w-4 h-4 text-red-600" />
+            <span>Error in tool {toolPart.type.substring(0, 5)}</span>
+          </motion.div>
+        ) : null}
       </AnimatePresence>
     );
   }
 
-  if (toolInvocation.args.message) {
-    return <Markdown content={toolInvocation.args.message} />;
-  }
+  // if (toolPart.input?.message) {
+  //   return <Markdown content={toolPart.args.message} />;
+  // }
   return null;
 }
