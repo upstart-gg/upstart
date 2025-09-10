@@ -15,12 +15,6 @@
       "types": "./dist/shared/*.d.ts",
       "import": "./dist/shared/*.js"
     },
-    "./builder/*": {
-      "import": "./dist/node/builder/*.js"
-    },
-    "./cli/*": {
-      "import": "./dist/node/cli/*.js"
-    },
     "./*": {
       "types": "./dist/shared/*.d.ts",
       "import": "./dist/shared/*.js"
@@ -72,13 +66,13 @@
     "concurrently": "8.2.2",
     "express": "^4.21.2",
     "rimraf": "6.0.1",
-    "tsup": "^8.5.0"
+    "tsdown": "^0.15.0"
   },
   "scripts": {
-    "build": "tsup",
-    "build:watch": "tsup --watch",
+    "build": "tsdown",
+    "build:watch": "tsdown --watch",
     "build:types": "tsc --extendedDiagnostics --emitDeclarationOnly --declaration --declarationMap",
-    "dev": "NODE_OPTIONS='--max-old-space-size=12384' tsup --watch",
+    "dev": "NODE_OPTIONS='--max-old-space-size=12384' tsdown --watch",
     "sizetest": "pnpm build && du -sh dist",
     "lint": "biome check --write . && tsc --noEmit",
     "ci:lint": "tsc --noEmit",

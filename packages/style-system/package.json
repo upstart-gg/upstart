@@ -4,8 +4,8 @@
   "description": "Base tailwindcss setup with some extra plugins as well as colors and editor styles",
   "type": "module",
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch"
+    "build": "tsdown",
+    "dev": "tsdown --watch"
   },
   "exports": {
     "./*.css": {
@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@types/node": "22",
-    "tsup": "^8.5.0"
+    "tsdown": "^0.15.0"
   },
   "publishConfig": {
     "access": "public"

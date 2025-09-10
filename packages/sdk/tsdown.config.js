@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { execSync } from "node:child_process";
-import { defineConfig } from "tsup";
+import { defineConfig } from "tsdown";
 
 const bannerText = readFileSync("../../banner.txt", "utf-8");
 const banner = {
@@ -27,11 +27,10 @@ const ignored = ["!**/*.md", "!**/tests/**/*", "!**/*.test.ts", "!**/sample.ts"]
 export default defineConfig((options) => {
   return [
     {
-      entry: ["src/shared", ...ignored],
+      entry: ["src/shared/**/*.ts", ...ignored],
       outDir: "dist/shared",
       target: "es2022",
       format: ["esm"],
-      dts: false,
       metafile: !!process.env.ANALYZE_BUNDLE,
       clean: !options.watch,
       minify: !options.watch,
@@ -40,18 +39,18 @@ export default defineConfig((options) => {
       esbuildOptions(input) {
         input.banner = banner;
       },
-      onSuccess: async () => {
-        console.time("Types build time");
-        execSync("pnpm build:types", {
-          stdio: "inherit",
-          // @ts-ignore
-          cwd: import.meta.dirname,
-        });
-        console.timeEnd("Types build time");
-      },
-      loader: {
-        ".html": "copy",
-      },
+      // onSuccess: async () => {
+      //   console.time("Types build time");
+      //   execSync("pnpm build:types", {
+      //     stdio: "inherit",
+      //     // @ts-ignore
+      //     cwd: import.meta.dirname,
+      //   });
+      //   console.timeEnd("Types build time");
+      // },
+      // loader: {
+      //   ".html": "copy",
+      // },
       removeNodeProtocol: false,
     },
   ];
