@@ -19,7 +19,7 @@ env:
 jobs:
   release:
     name: Release
-    runs-on: ubuntu-latest-m
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Checkout Repo
