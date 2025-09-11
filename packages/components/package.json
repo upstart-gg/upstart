@@ -112,18 +112,21 @@
     "cross-env": "^10.0.0",
     "cssnano": "7.0.7",
     "express": "^4.21.2",
-    "lodash-es": "^4.17.21",
     "postcss": "^8.5.4",
     "postcss-import": "^16.1.0",
     "postcss-preset-env": "^10.0.1",
-    "posthog-js": "^1.242.1",
-    "react": "18.3.0-canary-3d9b20132-20240124",
-    "react-dom": "18.3.0-canary-3d9b20132-20240124",
-    "react-icons": "5.5.0",
     "typescript": "^5.9.2",
     "vite": "^7.1.5",
     "vite-plugin-devtools-json": "^1.0.0",
     "vite-plugin-dts": "^4.5.4"
+  },
+  "peerDependencies": {
+    "@emotion/is-prop-valid": "^1.4.0",
+    "react": "18.3.0-canary-3d9b20132-20240124",
+    "react-dom": "18.3.0-canary-3d9b20132-20240124",
+    "posthog-js": "^1.242.1",
+    "react-icons": "^5.5.0",
+    "lodash-es": "^4.17.21"
   },
   "publishConfig": {
     "access": "public"

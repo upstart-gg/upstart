@@ -127,12 +127,19 @@ export default function Chat() {
       transport: new DefaultChatTransport({
         api: "/editor/chat",
         credentials: "include",
-        prepareSendMessagesRequest({ body, ...rest }) {
+        prepareSendMessagesRequest: ({ id, messages }) => {
+          const callContext = {
+            site,
+            sitemap,
+            page,
+            generationState,
+            userLanguage,
+          } satisfies CallContextProps;
           return {
-            ...rest,
             body: {
-              ...body,
-              ...({ site, sitemap, page, generationState, userLanguage } satisfies CallContextProps),
+              id,
+              messages,
+              callContext,
             },
           };
         },
@@ -151,7 +158,7 @@ export default function Chat() {
                   },
                 ],
               },
-            ] as UpstartUIMessage[])
+            ] satisfies UpstartUIMessage[])
           : ([
               {
                 id: "init-edit",
@@ -167,7 +174,7 @@ What should we work on together? 🤖`,
                   },
                 ],
               },
-            ] as UpstartUIMessage[]),
+            ] satisfies UpstartUIMessage[]),
 
       generateId: createIdGenerator({
         prefix: "ups",

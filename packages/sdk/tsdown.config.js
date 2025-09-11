@@ -30,7 +30,6 @@ export default defineConfig((options) => {
       outDir: "dist/shared",
       logLevel: "warn",
       target: "es2022",
-      format: ["esm"],
       metafile: !!process.env.ANALYZE_BUNDLE,
       clean: !options.watch,
       minify: !options.watch,
@@ -39,7 +38,6 @@ export default defineConfig((options) => {
       esbuildOptions(input) {
         input.banner = banner;
       },
-      removeNodeProtocol: false,
     },
   ];
 });

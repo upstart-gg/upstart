@@ -4,8 +4,8 @@
   "description": "Base tailwindcss setup with some extra plugins as well as colors and editor styles",
   "type": "module",
   "scripts": {
-    "build": "tsdown --silent",
-    "dev": "tsdown --silent --watch"
+    "build": "tsdown",
+    "dev": "tsdown --watch"
   },
   "exports": {
     "./*.css": {
