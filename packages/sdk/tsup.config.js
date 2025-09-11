@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
-import { defineConfig } from "tsdown";
+import { defineConfig } from "tsup";
+import { execSync } from "node:child_process";
 
 const bannerText = readFileSync("../../banner.txt", "utf-8");
 const banner = {
@@ -17,7 +18,6 @@ const external = [
   "react-resizable",
   "fsevents",
   "lightningcss",
-  "virtual:enpage-page-config.json",
   "__STATIC_CONTENT_MANIFEST",
 ];
 
@@ -28,13 +28,22 @@ export default defineConfig((options) => {
     {
       entry: ["src/shared/**/*.ts", ...ignored],
       outDir: "dist/shared",
-      logLevel: "warn",
       target: "es2022",
+      dts: false,
+      format: "esm",
+      removeNodeProtocol: false,
       metafile: !!process.env.ANALYZE_BUNDLE,
       clean: !options.watch,
       minify: !options.watch,
       sourcemap: options.watch ? "inline" : false,
       external,
+      onSuccess: async () => {
+        execSync("pnpm build:types", {
+          stdio: "inherit",
+          // @ts-ignore
+          cwd: import.meta.dirname,
+        });
+      },
       esbuildOptions(input) {
         input.banner = banner;
       },

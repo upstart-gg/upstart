@@ -3,7 +3,8 @@
   "version": "0.0.130",
   "type": "module",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "sideEffects": true,
   "exports": {
@@ -66,15 +67,15 @@
     "concurrently": "8.2.2",
     "express": "^4.21.2",
     "rimraf": "6.0.1",
-    "tsdown": "^0.15.0",
+    "tsup": "^8.5.0",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "lodash-es": "^4.17.21"
   },
   "scripts": {
-    "build": "NODE_OPTIONS='--max-old-space-size=12384' tsdown",
+    "build": "NODE_OPTIONS='--max-old-space-size=12384' tsup",
     "build:types": "tsc --extendedDiagnostics --emitDeclarationOnly --declaration --declarationMap",
-    "dev": "NODE_OPTIONS='--max-old-space-size=12384' tsdown --watch",
+    "dev": "NODE_OPTIONS='--max-old-space-size=12384' tsup --watch",
     "sizetest": "pnpm build && du -sh dist",
     "lint": "biome check --write . && tsc --noEmit",
     "ci:lint": "tsc --noEmit",
