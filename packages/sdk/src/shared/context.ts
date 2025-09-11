@@ -1,12 +1,10 @@
 import type { VersionedPage } from "./page";
 import type { Site } from "./site";
-import type { Sitemap } from "./sitemap";
 
 export type GenerationState = {
   isReady: boolean;
   hasSitemap: boolean;
   hasThemesGenerated: boolean;
-  sitemap: Sitemap;
 };
 
 export type CallContextProps = {
@@ -14,10 +12,6 @@ export type CallContextProps = {
    * The site object
    */
   site: Site;
-  /**
-   * Sitemap
-   */
-  sitemap: Sitemap;
   /**
    * Current page. Undefined if flow is "setup" and no page has been created yet.
    */

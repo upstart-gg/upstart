@@ -6,7 +6,6 @@ import type { Datarecord } from "@upstart.gg/sdk/shared/datarecords/types";
 import type { VersionedPage } from "@upstart.gg/sdk/shared/page";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
 import type { Site } from "@upstart.gg/sdk/shared/site";
-import type { SitemapPageEntry } from "@upstart.gg/sdk/shared/sitemap";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
@@ -290,6 +289,7 @@ export const createDraftStore = (
           addSection: (section) =>
             set((state) => {
               state.page.sections.push(section);
+              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           updateSection: (id, sectionData) =>
@@ -1039,7 +1039,6 @@ export const useGenerationState = () => {
     return {
       hasSitemap,
       hasThemesGenerated,
-      sitemap: state.site.sitemap,
       isReady: !isSetup || isReady,
     } satisfies GenerationState;
   });

@@ -7,7 +7,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig(({ mode }) => ({
   envPrefix: ["PUBLIC_"],
   base: "./",
-  logLevel: "warn",
+  // logLevel: "warn",
   plugins: [
     tsconfigPaths() as PluginOption,
     devtoolsJson(),
@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => ({
     server: {
       watch: {
         // Ignore node_modules and build outputs from other packages
-        ignored: ["**/node_modules/**", "**/dist/**", "**/build/**"],
+        // ignored: ["**/node_modules/**", "**/dist/**", "**/build/**"],
       },
     },
     proxy: {

@@ -9,12 +9,6 @@ import { cloneDeep } from "lodash-es";
  * Also removes properties that have "ai:hidden" set to true
  */
 export function toLLMSchema<T extends TSchema = TObject>(schema: T): T {
-  //
-  // const compiledSchema = ajv.getSchema(schema.$id as string);
-  // if (!compiledSchema) {
-  //   throw new Error(`toLLMSchema Error: Schema not found ${schema.$id}`);
-  // }
-  // return cleanSchemaRecursive(resolveSchema(schema)) as T;
   return cleanSchemaRecursive(inlineSchemaRefs(schema)) as T;
 }
 

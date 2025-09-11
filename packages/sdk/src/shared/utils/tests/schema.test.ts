@@ -317,20 +317,32 @@ describe("toLLMSchema tests suite", () => {
   });
 
   test("should preserve standard JSON schema properties", () => {
-    const schema = Type.Object({
-      name: Type.String({
-        minLength: 1,
-        maxLength: 50,
-        description: "User's name",
-      }),
-      age: Type.Number({
-        minimum: 0,
-        maximum: 120,
-      }),
-      email: Type.String({
-        format: "email",
-      }),
-    });
+    const schema = Type.Object(
+      {
+        name: Type.String({
+          minLength: 1,
+          maxLength: 50,
+          description: "User's name",
+        }),
+        age: Type.Number({
+          minimum: 0,
+          maximum: 120,
+        }),
+        email: Type.String({
+          format: "email",
+        }),
+      },
+      {
+        examples: [
+          { name: "John Doe", age: 30, email: "john.doe@example.com" },
+          {
+            name: "Jane Smith",
+            age: 25,
+            email: "jane.smith@example.com",
+          },
+        ],
+      },
+    );
 
     const result = toLLMSchema(schema);
 
@@ -342,6 +354,7 @@ describe("toLLMSchema tests suite", () => {
     expect(result.properties.age.minimum).toBe(0);
     expect(result.properties.age.maximum).toBe(120);
     expect(result.properties.email.format).toBe("email");
+    expect(result.examples).toBeDefined();
   });
 
   test("should handle nested objects recursively", () => {

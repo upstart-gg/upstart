@@ -40,5 +40,5 @@ export type ImagesMap = Static<typeof imagesMapSchema>;
 export type ImageSearchResultsType = Static<typeof imageResultsSchema>;
 export type SimpleImageMetadata = Pick<
   ImageSearchResultsType[number],
-  "description" | "blurHash" | "user" | "url"
+  "description" | "blurHash" | "user" | "url" | "provider"
 >;

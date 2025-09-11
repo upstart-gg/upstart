@@ -5,6 +5,7 @@ import {
   ChatOnFinishCallback,
   DefaultChatTransport,
   lastAssistantMessageIsCompleteWithToolCalls,
+  type PrepareSendMessagesRequest,
   type ToolUIPart,
 } from "ai";
 
@@ -107,10 +108,11 @@ export default function Chat() {
   const generationState = useGenerationState();
   const site = useSite();
   const page = usePage();
-  const sitemap = useSitemap();
   const siteThemes = useThemes();
   const [userLanguage, setUserLanguage] = useState<string>();
   const [input, setInput] = useState("");
+
+  // console.log({ site, page });
 
   const listPlaceholderRef = useRef<HTMLDivElement>(null);
   const handledToolResults = useRef(new Set<string>());
@@ -122,27 +124,32 @@ export default function Chat() {
       : "bg-white/80 dark:bg-dark-800 text-fluid-sm",
   );
 
+  const siteRef = useRef(site);
+  const pageRef = useRef(page);
+  const generationStateRef = useRef(generationState);
+  const userLanguageRef = useRef(userLanguage);
+
+  useEffect(() => {
+    siteRef.current = site;
+    pageRef.current = page;
+    generationStateRef.current = generationState;
+    userLanguageRef.current = userLanguage;
+  }, [site, page, generationState, userLanguage]);
+
   const { messages, sendMessage, error, status, regenerate, stop, addToolResult } = useChat<UpstartUIMessage>(
     {
+      // resume: generationState.isReady === false,
       transport: new DefaultChatTransport({
         api: "/editor/chat",
         credentials: "include",
-        prepareSendMessagesRequest: ({ id, messages }) => {
-          const callContext = {
-            site,
-            sitemap,
-            page,
-            generationState,
-            userLanguage,
-          } satisfies CallContextProps;
-          return {
-            body: {
-              id,
-              messages,
-              callContext,
-            },
-          };
-        },
+        body: () => ({
+          callContext: {
+            site: siteRef.current,
+            page: pageRef.current,
+            generationState: generationStateRef.current,
+            userLanguage: userLanguageRef.current,
+          },
+        }),
       }),
       sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
       messages:
@@ -222,13 +229,18 @@ What should we work on together? 🤖`,
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(debouncedScroll, [status, messages]);
 
-  // useDeepCompareEffect(() => {
-  //   data?.forEach((item) => {
-  //     if (typeof item === "object" && !Array.isArray(item) && item?.userLanguage) {
-  //       setUserLanguage(item.userLanguage as string);
-  //     }
-  //   });
-  // }, [data]);
+  useEffect(() => {
+    if (userLanguage) return;
+    for (const msg of messages) {
+      if (msg.metadata?.userLanguage) {
+        console.log("Setting user language to", msg.metadata.userLanguage);
+        setUserLanguage(msg.metadata.userLanguage);
+        break;
+      }
+    }
+  }, [messages, userLanguage]);
+
+  // console.log({ messages });
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -261,8 +273,6 @@ What should we work on together? 🤖`,
     return results.length > 0;
   }, [messages]);
 
-  const messagingDisabled = status === "streaming" || status === "submitted" || hasRunningTools;
-
   useDeepCompareEffect(() => {
     for (const toolInvocation of toolInvocations.filter((t) => t.state === "output-available")) {
       if (handledToolResults.current.has(toolInvocation.toolCallId)) {
@@ -286,7 +296,17 @@ What should we work on together? 🤖`,
         // }
 
         case "tool-createNavbar":
-          console.log("Generated navbar", toolInvocation);
+          console.log("Generated navbar", toolInvocation.output);
+          draftHelpers.updateSiteAttributes({
+            navbar: toolInvocation.output,
+          });
+          break;
+
+        case "tool-createFooter":
+          console.log("Generated footer", toolInvocation.output);
+          draftHelpers.updateSiteAttributes({
+            footer: toolInvocation.output,
+          });
           break;
 
         case "tool-createThemes": {
@@ -321,6 +341,13 @@ What should we work on together? 🤖`,
           const siteAttributes = toolInvocation.output;
           console.log("Generated site attributes", siteAttributes);
           draftHelpers.updateSiteAttributes(siteAttributes);
+          break;
+        }
+
+        case "tool-createSection": {
+          const section = toolInvocation.output;
+          console.log("Generated section", section);
+          draftHelpers.addSection(section);
           break;
         }
 
@@ -576,23 +603,45 @@ What should we work on together? 🤖`,
 
 function ImagesPreview({ query, images }: { query: string; images: SimpleImageMetadata[] }) {
   return (
-    <div className="flex flex-col gap-2 my-3" key={query}>
-      <span>I found those images on the web for query: "{query}"</span>
-      <div className="grid grid-cols-3 gap-1 max-h-60 overflow-y-auto">
+    <div className="basis-full flex flex-col gap-2 mt-1 mb-3 text-sm ml-6 font-normal" key={query}>
+      <div className="grid grid-cols-3 gap-1 max-h-60">
         {images.map((image, index) => (
-          <img
+          <div
             key={image.url}
-            src={image.url}
-            alt={image.description}
-            className={tx(
-              "rounded-md h-auto !object-cover object-center w-full aspect-video",
-              css({
-                // animation delay
-                animationDelay: `${index * 100}ms`,
-              }),
+            className="rounded-md relative  z-10 hover:(scale-110 z-50) transition-transform duration-150"
+          >
+            <img
+              key={image.url}
+              src={image.url}
+              alt={image.description}
+              className={tx(
+                "rounded-md h-auto !object-cover object-center w-full aspect-video",
+                css({
+                  // animation delay
+                  animationDelay: `${index * 100}ms`,
+                }),
+              )}
+              loading="lazy"
+            />
+            {image.user?.name && (
+              <div className="absolute px-1.5 bottom-0 left-0 right-0 bg-black/50 text-white text-[0.6rem] p-0.5 rounded-b-md truncate capitalize">
+                By{" "}
+                {image.user.profile_url ? (
+                  <a
+                    href={image.user.profile_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline hover:text-upstart-300"
+                  >
+                    {image.user.name}
+                  </a>
+                ) : (
+                  image.user.name
+                )}{" "}
+                / {image.provider}
+              </div>
             )}
-            loading="lazy"
-          />
+          </div>
         ))}
       </div>
     </div>
@@ -650,6 +699,7 @@ function ToolRenderer({
                     key={i}
                     type="button"
                     onClick={() => {
+                      console.log("addtoolresult to part", toolPart);
                       addToolResult({
                         tool: "askUserChoice",
                         toolCallId: toolPart.toolCallId,
@@ -688,7 +738,7 @@ function ToolRenderer({
       <AnimatePresence initial={false}>
         {toolPart.state === "input-available" ? (
           <motion.div
-            className="flex items-center gap-1.5"
+            className="flex items-center gap-1.5 font-medium"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
@@ -698,23 +748,32 @@ function ToolRenderer({
           </motion.div>
         ) : toolPart.state === "output-available" ? (
           <motion.div
-            className="flex items-center gap-1.5"
+            className="flex items-center gap-1.5 flex-wrap font-medium"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
           >
             <MdDone className="w-4 h-4 text-green-600" />
             <span>{toolPart.input.waitingMessage}</span>
+            {toolPart.type === "tool-searchImages" && (
+              <ImagesPreview
+                key={toolPart.toolCallId}
+                query={toolPart.input.query}
+                images={toolPart.output}
+              />
+            )}
           </motion.div>
         ) : toolPart.state === "output-error" ? (
           <motion.div
-            className="flex items-center gap-1.5"
+            className="flex items-center gap-1.5 font-medium"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
           >
             <MdDone className="w-4 h-4 text-red-600" />
-            <span>Error in tool {toolPart.type.substring(0, 5)}</span>
+            <span>
+              Error in tool <i>{toolPart.type.substring(5)}</i>
+            </span>
           </motion.div>
         ) : null}
       </AnimatePresence>

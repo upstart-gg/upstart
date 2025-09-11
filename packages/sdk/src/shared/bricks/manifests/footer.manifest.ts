@@ -1,4 +1,4 @@
-import { Type } from "@sinclair/typebox";
+import { type Static, Type } from "@sinclair/typebox";
 import { VscLayoutPanelOff } from "react-icons/vsc";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { array, defineProps } from "../props/helpers";
@@ -8,6 +8,7 @@ import { colorPresetRef } from "../props/color-preset";
 import { string, urlOrPageIdRef } from "../props/string";
 import { fontSizeRef } from "../props/text";
 import type { BrickProps } from "../props/types";
+import { toLLMSchema } from "~/shared/utils/llm";
 
 export const manifest = defineBrickManifest({
   type: "footer",
@@ -81,6 +82,8 @@ export const manifest = defineBrickManifest({
 });
 
 export type Manifest = typeof manifest;
+export const footerSchemaLLM = toLLMSchema(manifest.props);
+export type FooterProps = Static<Manifest["props"]>;
 
 export const examples: {
   description: string;

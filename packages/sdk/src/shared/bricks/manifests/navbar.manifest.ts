@@ -10,6 +10,7 @@ import { VscLayoutPanelOff } from "react-icons/vsc";
 import type { BrickProps } from "../props/types";
 import { colorPresetRef } from "../props/color-preset";
 import { tagsRef } from "../props/tags";
+import { toLLMSchema } from "~/shared/utils/llm";
 
 export const manifest = defineBrickManifest({
   type: "navbar",
@@ -111,6 +112,9 @@ export const manifest = defineBrickManifest({
 });
 
 export type Manifest = typeof manifest;
+
+export const navbarSchemaLLM = toLLMSchema(manifest.props);
+export type NavbarProps = Static<Manifest["props"]>;
 
 export const examples: {
   description: string;

@@ -113,12 +113,13 @@ const OverrideEscape = Extension.create({
 
 const dynFieldClass = tx("dynamic-field");
 
-function formatInitialContent(content: string | undefined) {
-  return (
-    content?.replace(/{{(\S+)}}/g, (match, p1) => {
-      return `<span data-type="mention" data-id="${p1.trim()}" data-label="${p1.trim()}" class="${dynFieldClass}">${p1.trim()}</span>`;
-    }) || ""
-  );
+function formatInitialContent(content: string | undefined | null) {
+  if (typeof content !== "string") {
+    return "";
+  }
+  return content.replace(/{{(\S+)}}/g, (match, p1) => {
+    return `<span data-type="mention" data-id="${p1.trim()}" data-label="${p1.trim()}" class="${dynFieldClass}">${p1.trim()}</span>`;
+  });
 }
 
 const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(

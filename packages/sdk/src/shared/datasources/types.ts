@@ -1,10 +1,7 @@
 import { Type, type Static } from "@sinclair/typebox";
-import { youtubeListOptions } from "./external/youtube/list/options";
 import { httpJsonOptions } from "./external/http-json/options";
-import { rssOptions } from "./external/rss/options";
 import { StringEnum } from "../utils/string-enum";
 import { toLLMSchema } from "../utils/llm";
-import { examples } from "../bricks/manifests/accordion.manifest";
 
 export const providersSchema = Type.Union([
   // Type.Literal("facebook-posts"),
@@ -30,222 +27,216 @@ export const providersSchema = Type.Union([
 
 export type DatasourceProvider = Static<typeof providersSchema>;
 
-const datasourceBaseFields = Type.Object({
-  id: Type.String({
-    title: "ID",
-    description:
-      "Unique identifier of the datasource. Used to reference the datasource in the system. Use a url-safe string like a slug.",
-  }),
-  label: Type.String({ title: "Label", description: "Label of the datasource displayed in the UI" }),
-});
+// const datasourceProviderManifest = Type.Composite([
+//   Type.Object({
+//     id: Type.String({
+//       title: "ID",
+//       description:
+//         "Unique identifier of the datasource. Used to reference the datasource in the system. Use a url-safe string like a slug.",
+//     }),
+//     label: Type.String({ title: "Label", description: "Label of the datasource displayed in the UI" }),
+//     schema: Type.Null({
+//       description: "Always null for provider datasources. The schema is defined by the provider.",
+//     }),
+//     ttlMinutes: Type.Optional(
+//       Type.Number({
+//         title: "Time to live",
+//         description:
+//           "Time to live in minutes. If set to -1, it never expires and has to be manually refreshed. If set to 0, the datasource is always fetched live. If > 0, then the datasource is feteched every N minutes.",
+//       }),
+//     ),
+//     refresh: Type.Optional(
+//       Type.Object(
+//         {
+//           method: Type.Union([Type.Literal("interval"), Type.Literal("manual"), Type.Literal("live")]),
+//           interval: Type.Optional(Type.Number()),
+//         },
+//         {
+//           title: "Refresh options",
+//           description: "Options to refresh the datasource",
+//         },
+//       ),
+//     ),
+//   }),
+// ]);
 
-const datasourceProviderManifest = Type.Composite([
-  datasourceBaseFields,
-  Type.Object({
-    schema: Type.Null({
-      description: "Always null for provider datasources. The schema is defined by the provider.",
+// export type DatasourceProviderManifest = Static<typeof datasourceProviderManifest>;
+
+const datasourceInternalManifest = Type.Object(
+  {
+    id: Type.String({
+      title: "ID",
+      description:
+        "Unique identifier of the datasource. Used to reference the datasource in the system. Use a url-safe string like a slug.",
     }),
-    ttlMinutes: Type.Optional(
-      Type.Number({
-        title: "Time to live",
-        description:
-          "Time to live in minutes. If set to -1, it never expires and has to be manually refreshed. If set to 0, the datasource is always fetched live. If > 0, then the datasource is feteched every N minutes.",
-      }),
-    ),
-    refresh: Type.Optional(
-      Type.Object(
-        {
-          method: Type.Union([Type.Literal("interval"), Type.Literal("manual"), Type.Literal("live")]),
-          interval: Type.Optional(Type.Number()),
-        },
-        {
-          title: "Refresh options",
-          description: "Options to refresh the datasource",
-        },
-      ),
-    ),
-  }),
-]);
-
-export type DatasourceProviderManifest = Static<typeof datasourceProviderManifest>;
-
-const datasourceInternalManifest = Type.Composite([
-  datasourceBaseFields,
-  Type.Object(
-    {
-      provider: Type.Literal("internal", {
-        title: "Internal",
-        description: "Internal datasource saved locally in Upstart.",
-      }),
-      schema: Type.Any({
-        title: "Schema",
-        description: "JSON Schema of datasource. MUST Always an array of objects.",
-      }),
-      indexes: Type.Optional(
-        Type.Array(
-          Type.Object({
-            name: Type.String({ title: "Index name" }),
-            fields: Type.Array(Type.String(), { title: "Fields to index" }),
-            unique: Type.Optional(Type.Boolean({ title: "Unique index", default: false })),
-          }),
-          {
-            title: "Indexes",
-            description:
-              "IMPORTANT: Indexes to create on the datasource. use it to enforce uniqueness or improve query performance.",
-          },
-        ),
-      ),
-    },
-    {
-      examples: [
-        {
-          id: "customers",
-          label: "Customers",
-          provider: "internal",
-          schema: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                name: { type: "string", title: "Name" },
-                email: { type: "string", title: "Email", format: "email" },
-              },
-              required: ["name", "email"],
-              title: "Customer",
-              examples: [
-                { name: "John Doe", email: "john.doe@example.com" },
-                {
-                  name: "Jane Smith",
-                  email: "jane.smith@example.com",
-                },
-                {
-                  name: "Alice Johnson",
-                  email: "alice.johnson@example.com",
-                },
-                {
-                  name: "Bob Brown",
-                  email: "bob.brown@example.com",
-                },
-                {
-                  name: "Charlie Davis",
-                  email: "charlie.davis@example.com",
-                },
-              ],
-            },
-          },
-          indexes: [
-            {
-              name: "idx_customers_email",
-              fields: ["email"],
-              unique: true,
-            },
-          ],
-        },
-        {
-          id: "blog_posts",
-          label: "Blog Posts",
-          provider: "internal",
-          schema: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                title: { type: "string", title: "Title" },
-                content: { type: "string", title: "Content" },
-                author: { type: "string", title: "Author" },
-              },
-              required: ["title", "content", "author"],
-              title: "Blog Post",
-              examples: [
-                {
-                  title: "My First Blog Post",
-                  content: "This is the content of my first blog post.",
-                  author: "John Doe",
-                },
-                {
-                  title: "Exploring the Cosmos",
-                  content: "A journey through the stars and galaxies.",
-                  author: "Jane Smith",
-                },
-                {
-                  title: "The Art of Cooking",
-                  content: "Delicious recipes and cooking tips.",
-                  author: "Alice Johnson",
-                },
-                {
-                  title: "Traveling the World",
-                  content: "My adventures in different countries.",
-                  author: "Bob Brown",
-                },
-                {
-                  title: "Technology Trends",
-                  content: "The latest trends in technology.",
-                  author: "Charlie Davis",
-                },
-              ],
-            },
-          },
-          indexes: [
-            {
-              name: "idx_blog_posts_title",
-              fields: ["title"],
-              unique: true,
-            },
-          ],
-        },
-      ],
-    },
-  ),
-]);
-
-export type InternalDatasource = Static<typeof datasourceInternalManifest>;
-
-const datasourceJsonManifest = Type.Composite([
-  datasourceBaseFields,
-  Type.Object({
-    provider: Type.Literal("http-json", {
-      title: "JSON Array",
-      description: "JSON array datasource.",
+    label: Type.String({ title: "Label", description: "Label of the datasource displayed in the UI" }),
+    provider: Type.Literal("internal", {
+      title: "Internal",
+      description: "Internal datasource saved locally in Upstart.",
     }),
-    options: httpJsonOptions,
     schema: Type.Any({
       title: "Schema",
-      description: "JSON Schema of datasource. Always an array of objects.",
-      examples: [
+      description: "JSON Schema of datasource. MUST Always an array of objects.",
+    }),
+    indexes: Type.Optional(
+      Type.Array(
+        Type.Object({
+          name: Type.String({ title: "Index name" }),
+          fields: Type.Array(Type.String(), { title: "Fields to index" }),
+          unique: Type.Optional(Type.Boolean({ title: "Unique index", default: false })),
+        }),
         {
+          title: "Indexes",
+          description:
+            "IMPORTANT: Indexes to create on the datasource. use it to enforce uniqueness or improve query performance.",
+        },
+      ),
+    ),
+  },
+  {
+    examples: [
+      {
+        id: "customers",
+        label: "Customers",
+        provider: "internal",
+        schema: {
           type: "array",
           items: {
             type: "object",
             properties: {
-              id: { type: "string", title: "ID" },
-              title: { type: "string", title: "Title" },
-              firstname: { type: "string", title: "Firstname" },
-              lastname: { type: "string", title: "Lastname" },
-              createdAt: { type: "string", format: "date-time", title: "Created at" },
-              email: { type: "string", format: "email", title: "Email" },
+              name: { type: "string", title: "Name" },
+              email: { type: "string", title: "Email", format: "email" },
             },
-            required: ["id", "title", "firstname", "lastname", "email", "createdAt"],
-            title: "Employee",
+            required: ["name", "email"],
+            title: "Customer",
+            examples: [
+              { name: "John Doe", email: "john.doe@example.com" },
+              {
+                name: "Jane Smith",
+                email: "jane.smith@example.com",
+              },
+              {
+                name: "Alice Johnson",
+                email: "alice.johnson@example.com",
+              },
+              {
+                name: "Bob Brown",
+                email: "bob.brown@example.com",
+              },
+              {
+                name: "Charlie Davis",
+                email: "charlie.davis@example.com",
+              },
+            ],
           },
-          title: "Employees",
-          description: "Employees list",
         },
-      ],
-    }),
-  }),
-]);
+        indexes: [
+          {
+            name: "idx_customers_email",
+            fields: ["email"],
+            unique: true,
+          },
+        ],
+      },
+      {
+        id: "blog_posts",
+        label: "Blog Posts",
+        provider: "internal",
+        schema: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              title: { type: "string", title: "Title" },
+              content: { type: "string", title: "Content" },
+              author: { type: "string", title: "Author" },
+            },
+            required: ["title", "content", "author"],
+            title: "Blog Post",
+            examples: [
+              {
+                title: "My First Blog Post",
+                content: "This is the content of my first blog post.",
+                author: "John Doe",
+              },
+              {
+                title: "Exploring the Cosmos",
+                content: "A journey through the stars and galaxies.",
+                author: "Jane Smith",
+              },
+              {
+                title: "The Art of Cooking",
+                content: "Delicious recipes and cooking tips.",
+                author: "Alice Johnson",
+              },
+              {
+                title: "Traveling the World",
+                content: "My adventures in different countries.",
+                author: "Bob Brown",
+              },
+              {
+                title: "Technology Trends",
+                content: "The latest trends in technology.",
+                author: "Charlie Davis",
+              },
+            ],
+          },
+        },
+        indexes: [
+          {
+            name: "idx_blog_posts_title",
+            fields: ["title"],
+            unique: true,
+          },
+        ],
+      },
+    ],
+  },
+);
 
-export type DatasourceJsonArrayManifest = Static<typeof datasourceJsonManifest>;
+export type InternalDatasource = Static<typeof datasourceInternalManifest>;
+
+// const datasourceJsonManifest = Type.Composite([
+//   datasourceBaseFields,
+//   Type.Object({
+//     provider: Type.Literal("http-json", {
+//       title: "JSON Array",
+//       description: "JSON array datasource.",
+//     }),
+//     options: httpJsonOptions,
+//     schema: Type.Any({
+//       title: "Schema",
+//       description: "JSON Schema of datasource. Always an array of objects.",
+//       examples: [
+//         {
+//           type: "array",
+//           items: {
+//             type: "object",
+//             properties: {
+//               id: { type: "string", title: "ID" },
+//               title: { type: "string", title: "Title" },
+//               firstname: { type: "string", title: "Firstname" },
+//               lastname: { type: "string", title: "Lastname" },
+//               createdAt: { type: "string", format: "date-time", title: "Created at" },
+//               email: { type: "string", format: "email", title: "Email" },
+//             },
+//             required: ["id", "title", "firstname", "lastname", "email", "createdAt"],
+//             title: "Employee",
+//           },
+//           title: "Employees",
+//           description: "Employees list",
+//         },
+//       ],
+//     }),
+//   }),
+// ]);
+
+// type DatasourceJsonArrayManifest = Static<typeof datasourceJsonManifest>;
 
 // Fow now, let support only custom (internal) datasource
 // export const datasourceManifest = datasourceCustomManifest;
-export const datasourceManifest = Type.Union([
-  datasourceInternalManifest,
-  // datasourceJsonManifest,
-  // datasourceProviderManifest,
-]);
-
-export const datasourceInternalForLLM = toLLMSchema(datasourceInternalManifest);
+export const datasourceManifest = datasourceInternalManifest;
+export const datasourceManifestLLM = toLLMSchema(datasourceInternalManifest);
 
 export type Datasource = Static<typeof datasourceManifest>;
 export const datasourcesList = Type.Array(datasourceManifest);
