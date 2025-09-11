@@ -7,6 +7,7 @@ export default defineConfig((options) => {
     format: "esm",
     logLevel: "warn",
     dts: true,
+    silent: true,
     target: "es2022",
     metafile: !!(process.env.CI || process.env.ANALYZE_BUNDLE),
     clean: !options.watch,

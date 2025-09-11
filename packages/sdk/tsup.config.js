@@ -31,6 +31,7 @@ export default defineConfig((options) => {
       target: "es2022",
       dts: false,
       format: "esm",
+      silent: true,
       removeNodeProtocol: false,
       metafile: !!process.env.ANALYZE_BUNDLE,
       clean: !options.watch,
@@ -39,7 +40,7 @@ export default defineConfig((options) => {
       external,
       onSuccess: async () => {
         execSync("pnpm build:types", {
-          stdio: "inherit",
+          stdio: ["ignore", "inherit"],
           // @ts-ignore
           cwd: import.meta.dirname,
         });

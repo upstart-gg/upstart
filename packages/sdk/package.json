@@ -73,9 +73,9 @@
     "lodash-es": "^4.17.21"
   },
   "scripts": {
-    "build": "NODE_OPTIONS='--max-old-space-size=12384' tsup",
-    "build:types": "tsc --extendedDiagnostics --emitDeclarationOnly --declaration --declarationMap",
-    "dev": "NODE_OPTIONS='--max-old-space-size=12384' tsup --watch",
+    "build": "tsup",
+    "build:types": "tsc --emitDeclarationOnly --declaration --declarationMap",
+    "dev": "tsup --watch",
     "sizetest": "pnpm build && du -sh dist",
     "lint": "biome check --write . && tsc --noEmit",
     "ci:lint": "tsc --noEmit",

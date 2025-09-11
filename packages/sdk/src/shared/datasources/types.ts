@@ -13,11 +13,11 @@ export const providersSchema = Type.Union([
   // Type.Literal("mastodon-status"),
   // Type.Literal("mastodon-status-list"),
   Type.Literal("internal"),
-  Type.Literal("rss"),
-  // Type.Literal("threads-media"),
-  // Type.Literal("tiktok-video"),
-  Type.Literal("youtube-list"),
-  Type.Literal("http-json"),
+  // Type.Literal("rss"),
+  // // Type.Literal("threads-media"),
+  // // Type.Literal("tiktok-video"),
+  // Type.Literal("youtube-list"),
+  // Type.Literal("http-json"),
   // Type.Literal("internal-blog"),
   // Type.Literal("internal-changelog"),
   // // Type.Literal("internal-contact-info"),
@@ -30,95 +30,6 @@ export const providersSchema = Type.Union([
 
 export type DatasourceProvider = Static<typeof providersSchema>;
 
-const providersChoices = Type.Union([
-  Type.Object({
-    provider: Type.Literal("youtube-list"),
-    options: youtubeListOptions,
-    // schema: Type.Optional(schemasMap["youtube-list"]),
-  }),
-  // Type.Object({
-  //   provider: Type.Literal("facebook-posts"),
-  //   options: metaOptions,
-  //   schema: Type.Optional(schemasMap["facebook-posts"]),
-  // }),
-  // Type.Object({
-  //   provider: Type.Literal("instagram-feed"),
-  //   options: metaOptions,
-  //   schema: Type.Optional(schemasMap["instagram-feed"]),
-  // }),
-  // Type.Object({
-  //   provider: Type.Literal("threads-media"),
-  //   options: metaOptions,
-  //   schema: Type.Optional(schemasMap["threads-media"]),
-  // }),
-  // Type.Object({
-  //   provider: Type.Literal("mastodon-account"),
-  //   options: mastodonCommonOptions,
-  //   schema: Type.Optional(schemasMap["mastodon-account"]),
-  // }),
-  // Type.Object({
-  //   provider: Type.Literal("mastodon-status"),
-  //   options: mastodonCommonOptions,
-  //   schema: Type.Optional(schemasMap["mastodon-status"]),
-  // }),
-  // Type.Object({
-  //   provider: Type.Literal("mastodon-status-list"),
-  //   options: mastodonCommonOptions,
-  //   schema: Type.Optional(schemasMap["mastodon-status-list"]),
-  // }),
-  Type.Object({
-    provider: Type.Literal("rss"),
-    options: rssOptions,
-    // schema: Type.Optional(schemasMap.rss),
-  }),
-  // Type.Object({
-  //   provider: Type.Literal("tiktok-video"),
-  //   options: tiktokVideoOptions,
-  //   schema: Type.Optional(schemasMap["tiktok-video"]),
-  // }),
-  Type.Object({
-    provider: Type.Literal("internal-blog"),
-    options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-    // schema: Type.Optional(schemasMap["internal-blog"]),
-  }),
-  Type.Object({
-    provider: Type.Literal("internal-changelog"),
-    options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-    // schema: Type.Optional(schemasMap["internal-changelog"]),
-  }),
-  // Type.Object({
-  //   provider: Type.Literal("internal-contact-info"),
-  //   options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-  //   schema: Type.Optional(schemasMap["internal-contact-info"]),
-  // }),
-  Type.Object({
-    provider: Type.Literal("internal-faq"),
-    options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-    // schema: Type.Optional(schemasMap["internal-faq"]),
-  }),
-  Type.Object({
-    provider: Type.Literal("internal-links"),
-    options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-    // schema: Type.Optional(schemasMap["internal-links"]),
-  }),
-  Type.Object({
-    provider: Type.Literal("internal-recipes"),
-    options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-
-    // schema: Type.Optional(schemasMap["internal-recipes"]),
-  }),
-  // Type.Object({
-  //   provider: Type.Literal("internal-restaurant"),
-  //   options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-  //   schema: Type.Optional(schemasMap["internal-restaurant"]),
-  // }),
-  // Type.Object({
-  //   provider: Type.Literal("internal-cv"),
-  //   options: Type.Optional(Type.Object({}, { additionalProperties: true })),
-  //   schema: Type.Optional(schemasMap["internal-cv"]),
-  // }),
-]);
-
 const datasourceBaseFields = Type.Object({
   id: Type.String({
     title: "ID",
@@ -129,7 +40,6 @@ const datasourceBaseFields = Type.Object({
 });
 
 const datasourceProviderManifest = Type.Composite([
-  providersChoices,
   datasourceBaseFields,
   Type.Object({
     schema: Type.Null({
@@ -331,8 +241,8 @@ export type DatasourceJsonArrayManifest = Static<typeof datasourceJsonManifest>;
 // export const datasourceManifest = datasourceCustomManifest;
 export const datasourceManifest = Type.Union([
   datasourceInternalManifest,
-  datasourceJsonManifest,
-  datasourceProviderManifest,
+  // datasourceJsonManifest,
+  // datasourceProviderManifest,
 ]);
 
 export const datasourceInternalForLLM = toLLMSchema(datasourceInternalManifest);
