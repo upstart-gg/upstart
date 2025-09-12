@@ -643,7 +643,7 @@ function QueryEditor({
           </Button>
         )}
         <Button disabled={validateQuery() === false} onClick={handleSubmit} size="2">
-          {initialQuery ? "Save query" : "Add quer"}
+          {initialQuery ? "Save query" : "Add query"}
         </Button>
       </div>
     </div>
