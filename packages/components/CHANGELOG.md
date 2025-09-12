@@ -1,5 +1,15 @@
 # @upstart.gg/components
 
+## 0.0.131
+
+### Patch Changes
+
+- [#431](https://github.com/upstart-gg/upstart/pull/431) [`b0f4f80`](https://github.com/upstart-gg/upstart/commit/b0f4f80faa6331da06040b6d4f091dc9c83f70ec) Thanks [@benjamindarnault](https://github.com/benjamindarnault)! - fix typo
+
+- Updated dependencies [[`8802abf`](https://github.com/upstart-gg/upstart/commit/8802abf38e3892c5341918eb12b5c544a55552cd), [`d88048b`](https://github.com/upstart-gg/upstart/commit/d88048b4066ad86c55b2742658517841b0b657fd), [`3c0797a`](https://github.com/upstart-gg/upstart/commit/3c0797a18fc52c5e8b00fd5af9b17990c741a17b)]:
+  - @upstart.gg/sdk@0.0.131
+  - @upstart.gg/style-system@0.0.131
+
 ## 0.0.130
 
 ### Patch Changes
