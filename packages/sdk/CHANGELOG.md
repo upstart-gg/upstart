@@ -1,5 +1,18 @@
 # @upstart.gg/sdk
 
+## 0.0.131
+
+### Patch Changes
+
+- [#428](https://github.com/upstart-gg/upstart/pull/428) [`8802abf`](https://github.com/upstart-gg/upstart/commit/8802abf38e3892c5341918eb12b5c544a55552cd) Thanks [@benjamindarnault](https://github.com/benjamindarnault)! - add notion function to check if url is a valid page for application:x
+
+- [#429](https://github.com/upstart-gg/upstart/pull/429) [`d88048b`](https://github.com/upstart-gg/upstart/commit/d88048b4066ad86c55b2742658517841b0b657fd) Thanks [@benjamindarnault](https://github.com/benjamindarnault)! - fix notion page selection
+
+- [#426](https://github.com/upstart-gg/upstart/pull/426) [`3c0797a`](https://github.com/upstart-gg/upstart/commit/3c0797a18fc52c5e8b00fd5af9b17990c741a17b) Thanks [@benjamindarnault](https://github.com/benjamindarnault)! - new changeset
+
+- Updated dependencies []:
+  - @upstart.gg/style-system@0.0.131
+
 ## 0.0.130
 
 ### Patch Changes
