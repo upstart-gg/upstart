@@ -1,4 +1,5 @@
 import { type SchemaOptions, Type, type Static, type ObjectOptions } from "@sinclair/typebox";
+import { StringEnum } from "~/shared/utils/string-enum";
 import { typedRef } from "~/shared/utils/typed-ref";
 
 type PropImageOptions = {
@@ -24,37 +25,40 @@ export function image(title = "Image", options: PropImageOptions = {}) {
         }),
       ),
       fit: Type.Optional(
-        Type.Union(
-          [
-            Type.Literal("object-none", { title: "None" }),
-            Type.Literal("object-contain", { title: "Contain" }),
-            Type.Literal("object-cover", { title: "Cover" }),
-            Type.Literal("object-fill", { title: "Fill" }),
-            Type.Literal("object-scale-down", { title: "Scale down" }),
-          ],
-          {
-            title: "Fit",
-            description: "How the image should be resized to fit its container",
-            default: "object-cover",
-            "ui:field": "enum",
-            "ui:styleId": "styles:objectFit",
-          },
-        ),
+        StringEnum(["object-none", "object-contain", "object-cover", "object-fill", "object-scale-down"], {
+          enumNames: ["None", "Contain", "Cover", "Fill", "Scale down"],
+          title: "Fit",
+          description: "How the image should be resized to fit its container",
+          default: "object-cover",
+          "ui:field": "enum",
+          "ui:styleId": "styles:objectFit",
+        }),
       ),
       position: Type.Optional(
-        Type.Union(
+        StringEnum(
           [
-            Type.Literal("object-top", { title: "Top" }),
-            Type.Literal("object-center", { title: "Center" }),
-            Type.Literal("object-bottom", { title: "Bottom" }),
-            Type.Literal("object-left", { title: "Left" }),
-            Type.Literal("object-right", { title: "Right" }),
-            Type.Literal("object-top-left", { title: "Top left" }),
-            Type.Literal("object-top-right", { title: "Top right" }),
-            Type.Literal("object-bottom-left", { title: "Bottom left" }),
-            Type.Literal("object-bottom-right", { title: "Bottom right" }),
+            "object-top",
+            "object-center",
+            "object-bottom",
+            "object-left",
+            "object-right",
+            "object-top-left",
+            "object-top-right",
+            "object-bottom-left",
+            "object-bottom-right",
           ],
           {
+            enumNames: [
+              "Top",
+              "Center",
+              "Bottom",
+              "Left",
+              "Right",
+              "Top left",
+              "Top right",
+              "Bottom left",
+              "Bottom right",
+            ],
             "ui:styleId": "styles:objectPosition",
             title: "Position",
             description: "The position of the image inside its container",
@@ -64,7 +68,7 @@ export function image(title = "Image", options: PropImageOptions = {}) {
       ),
     },
     {
-      $id: "assets:image",
+      // $id: "assets:image",
       title,
       "ui:field": "image",
       "ui:accept": "image/*",

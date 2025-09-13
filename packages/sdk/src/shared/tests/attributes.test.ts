@@ -11,7 +11,6 @@ describe("Attributes test suite", () => {
     it("should resolve attributes with default values", () => {
       const attributes = {};
       expect(resolvePageAttributes(attributes)).toMatchObject<PageAttributes>({
-        colorPreset: { color: "bg-base-100" },
         robotsIndexing: true,
         path: "/",
         title: "Untitled",
@@ -25,6 +24,7 @@ describe("Attributes test suite", () => {
       const attributes = {};
       expect(resolveSiteAttributes(attributes)).toMatchObject<SiteAttributes>({
         language: "en",
+        navbar: {},
       });
     });
   });

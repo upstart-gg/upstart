@@ -262,7 +262,7 @@ function ThemeList() {
 
   return (
     <>
-      <div className="flex gap-2 items-center mt-2 mx-w-full">
+      <div className="flex gap-2 items-center mt-3 mx-w-full">
         <span className="text-sm font-medium">Style</span>
         <Select.Root value={colorScheme} onValueChange={setColorScheme}>
           <Select.Trigger className="!flex-grow !capitalize" radius="large" variant="surface" />

@@ -3,6 +3,7 @@ import { Select } from "@upstart.gg/style-system/system";
 import { fieldLabel } from "../form-class";
 import { FieldTitle } from "../field-factory";
 import type { FC } from "react";
+import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
 
 export type TempPadding = {
   horizontal: string;
@@ -28,8 +29,7 @@ export const PagePaddingField: FC<FieldProps<TempPadding>> = (props) => {
             <Select.Trigger radius="large" variant="ghost" />
             <Select.Content position="popper">
               <Select.Group>
-                {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
-                {schema.properties.horizontal.anyOf.map((item: any) => (
+                {normalizeSchemaEnum(schema.properties.horizontal).map((item) => (
                   <Select.Item key={item.const} value={item.const}>
                     {item.title}
                   </Select.Item>

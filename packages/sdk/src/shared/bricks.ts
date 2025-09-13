@@ -1,6 +1,6 @@
 import { Type, type Static, type TObject } from "@sinclair/typebox";
 import { customAlphabet } from "nanoid";
-import { defaultProps } from "./bricks/manifests/all-manifests";
+import { brickTypesEnumForLLM, defaultProps } from "./bricks/manifests/all-manifests";
 import { cssLengthRef } from "./bricks/props/css-length";
 import { enumProp } from "./bricks/props/enum";
 import { colorPresetRef } from "./bricks/props/color-preset";
@@ -11,6 +11,9 @@ import { alignItemsRef, justifyContentRef } from "./bricks/props/align";
 import { paddingRef } from "./bricks/props/padding";
 import type { CommonBrickProps } from "./bricks/props/common";
 import { directionRef } from "./bricks/props/direction";
+import type { PageAttributes, SiteAttributes } from "./attributes";
+import { toLLMSchema } from "./utils/llm";
+import { BrickManifest } from "./brick-manifest";
 
 /**
  * Generates a unique identifier for bricks.
@@ -91,32 +94,26 @@ export const brickSchema = Type.Object(
         description: "The overriden props for mobile, merged with desktop props.",
       }),
     ),
-    propsMapping: Type.Optional(
-      Type.Object(
-        {},
-        {
-          description:
-            "Dynamic props mapping for the brick. Used to map dynamic content to the brick's props. " +
-            "Can only be used if the brick is a child of a 'dynamic' brick. " +
-            "One can only reference the fields from the database that is specified in the dynamic brick.",
-          "ui:field": "hidden",
-          examples: [
-            {
-              // Paths to the props and the fields are JSONPath, e.g. "$.name" or "$.address.street"
-              "$.property1": "$.databaseField1",
-              "$.property2": "$.databaseField2.subField1",
-              // You can also map nested properties
-              "$.property3.subProp1": "$.databaseField3",
-              "$.property3.subProp3": "$.databaseField4.subField2",
-            },
-          ],
-          additionalProperties: true,
-        },
-      ),
-    ),
   },
-  { $id: "brick", additionalProperties: true },
+  { additionalProperties: true },
 );
+
+export function makeFullBrickSchemaForLLM(props: TObject) {
+  return toLLMSchema(
+    Type.Object(
+      {
+        id: Type.String({
+          title: "ID",
+          description: "A unique identifier for the brick.",
+        }),
+        type: brickTypesEnumForLLM,
+        props,
+        mobileProps: Type.Optional(Type.Partial(props)),
+      },
+      { additionalProperties: false },
+    ),
+  );
+}
 
 export type Brick = Omit<Static<typeof brickSchema>, "props" | "mobileProps"> & {
   props: CommonBrickProps & Record<string, unknown>;
@@ -152,6 +149,7 @@ export const sectionProps = Type.Object(
         description: "Used for custom styling and layout.",
         enumNames: ["Navbar", "Footer", "Sidebar"],
         "ui:field": "hidden",
+        "ai:hidden": true,
       }),
     ),
     maxWidth: Type.Optional(
@@ -179,6 +177,8 @@ export const sectionProps = Type.Object(
           },
         ],
         description: "The maximum width of the section. Desktop only",
+        "ai:instructions":
+          "Choose the most appropriate max width for the section. You will likely use the same max width for all sections in a page.",
         displayAs: "button-group",
         "ui:responsive": "desktop",
       }),
@@ -191,7 +191,6 @@ export const sectionProps = Type.Object(
     alignItems: Type.Optional(
       alignItemsRef({
         default: "items-center",
-        description: "The vertical alignment of bricks within the section.",
       }),
     ),
     padding: Type.Optional(
@@ -210,6 +209,13 @@ export const sectionProps = Type.Object(
         "ui:styleId": "styles:gap",
       }),
     ),
+    wrap: Type.Optional(
+      Type.Boolean({
+        title: "Wrap",
+        description: "Wrap bricks if they overflow the section.",
+        default: true,
+      }),
+    ),
     lastTouched: Type.Optional(
       Type.Number({
         description: "Do not use this field. It is used internally by the editor.",
@@ -219,8 +225,7 @@ export const sectionProps = Type.Object(
     ),
   },
   {
-    additionalProperties: true,
-    "ai:instructions": "Do not use the border prop",
+    additionalProperties: false,
   },
 );
 
@@ -228,10 +233,12 @@ export const sectionSchema = Type.Object(
   {
     id: Type.String({
       description: "The unique ID of the section. Use a human readable url-safe slug",
+      examples: ["content-section", "contact-section"],
     }),
     label: Type.Optional(
       Type.String({
-        description: "The label (name) of the section. Used for editor purposes only.",
+        description: "The label of the section. Used for editor purposes only.",
+        examples: ["Content", "Contact"],
       }),
     ),
     order: Type.Number({
@@ -242,37 +249,89 @@ export const sectionSchema = Type.Object(
     bricks: Type.Array(brickSchema),
   },
   {
-    $id: "section",
-    description:
-      "Sections are direct children of the page that are stacked vertically, but they always align their children horizontally (flex-row).",
+    description: "Sections are direct children of the page that are stacked vertically.",
   },
 );
+
+const sectionSchemaNoBricks = Type.Omit(sectionSchema, ["bricks"]);
+
+export const sectionSchemaNoBricksLLM = toLLMSchema(sectionSchemaNoBricks);
+export const sectionSchemaLLM = toLLMSchema(sectionSchema);
 
 const sectionDefaultprops = getSchemaDefaults(sectionSchema.properties.props, "desktop");
 const sectionMobileDefaultprops = getSchemaDefaults(sectionSchema.properties.mobileProps, "mobile");
 
 export type Section = Static<typeof sectionSchema>;
 
-export function processSections(sections: Section[]) {
-  return sections.map((section) => {
+export function processSections(
+  sections: Section[],
+  siteAttributes: SiteAttributes,
+  pageAttributes: PageAttributes,
+) {
+  const processSection = (section: Section) => {
     return {
       ...section,
       props: mergeIgnoringArrays({}, sectionDefaultprops, section.props),
       mobileProps: mergeIgnoringArrays({}, sectionMobileDefaultprops, section.mobileProps || {}),
       bricks: section.bricks.map(processBrick).filter(Boolean) as Brick[],
     } as const;
-  });
+  };
+
+  const finalSections = sections.map(processSection);
+
+  if (siteAttributes.navbar && !pageAttributes.noNavbar) {
+    finalSections.unshift(
+      processSection({
+        order: -1,
+        id: "navbar-section",
+        label: "Navbar section",
+        props: {
+          variant: "navbar",
+        },
+        mobileProps: {},
+        bricks: [
+          {
+            id: "navbar",
+            type: "navbar",
+            props: siteAttributes.navbar,
+          },
+        ],
+      }),
+    );
+  }
+  if (siteAttributes.footer && !pageAttributes.noFooter) {
+    finalSections.push(
+      processSection({
+        order: 1000,
+        id: "footer-section",
+        label: "Footer section",
+        props: {
+          variant: "footer",
+        },
+        mobileProps: {},
+        bricks: [
+          {
+            id: "footer",
+            type: "footer",
+            props: siteAttributes.footer,
+          },
+        ],
+      }),
+    );
+  }
+
+  return finalSections;
 }
 
 /**
  *  process a brick and add default props
  */
-export function processBrick<T extends Brick>(brick: T): T | false {
+export function processBrick<T extends Brick>(brick: T): T {
   const defProps = defaultProps[brick.type];
-  if (!defProps) {
-    console.warn(`No default props found for brick type: ${brick.type}`);
-    return false; // or throw an error if you prefer
-  }
+  // if (!defProps) {
+  //   console.warn(`No default props found for brick type: ${brick.type}`);
+  //   return false; // or throw an error if you prefer
+  // }
   const result = {
     ...brick,
     props: mergeIgnoringArrays({} as Brick["props"], defProps.props, {

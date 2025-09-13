@@ -23,11 +23,24 @@ export function border(opts: ObjectOptions = {}) {
     },
     {
       title: "Border",
-      $id: "styles:border",
       "ui:styleId": "styles:border",
       description: "Set the border width and color.",
       "ui:field": "border",
       "ui:responsive": true,
+      examples: [
+        {
+          width: "border-2",
+          color: "border-primary-200",
+        },
+        {
+          width: "border-4",
+          color: "border-accent-400",
+        },
+        {
+          width: "border",
+          color: "border-neutral-100",
+        },
+      ],
       ...opts,
     },
   );
@@ -57,7 +70,7 @@ export function rounding(opts: StringOptions = {}) {
       {
         title: "Corner rounding",
         enumNames: ["Auto", "None", "Small", "Medium", "Large", "Extra large", "2xl", "Full"],
-        $id: "styles:rounding",
+        // $id: "styles:rounding",
         "ui:styleId": "styles:rounding",
         "ui:responsive": "desktop",
         ...opts,

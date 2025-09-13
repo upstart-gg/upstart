@@ -1,6 +1,7 @@
 import { typedRef } from "~/shared/utils/typed-ref";
 import { type ObjectOptions, Type, type Static } from "@sinclair/typebox";
 import { queryFilter } from "~/shared/datasources/types";
+import { over } from "lodash-es";
 
 export function queryUse() {
   return Type.Object(
@@ -39,7 +40,7 @@ export function queryUse() {
       title: "Query",
       description:
         "When set, this brick will loop through the results of the query and render the content for each item.",
-      $id: "content:queryUse",
+      // $id: "content:queryUse",
       "ui:field": "query",
       metadata: {
         category: "content",
@@ -73,13 +74,27 @@ export function loop(options: ObjectOptions = {}) {
       ),
     },
     {
-      $id: "content:loop",
+      // $id: "content:loop",
       title: "Repeat over",
+      description: "Repeat this brick for each item in the specified query results.",
       "ui:field": "loop",
       "ui:hidden-if": "no-page-queries",
       metadata: {
         category: "content",
       },
+      examples: [
+        {
+          over: "latestBlogPosts",
+          overrideLimit: 5,
+        },
+        {
+          over: "featuredProducts",
+          overrideLimit: 3,
+        },
+        {
+          over: "popularProducts",
+        },
+      ],
       ...options,
     },
   );

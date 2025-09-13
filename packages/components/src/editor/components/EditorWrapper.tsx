@@ -85,6 +85,7 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
           ? undefined
           : ((urlParams.get("selectedSectionId") as EditorState["selectedSectionId"]) ?? undefined),
         modal: (urlParams.get("modal") as EditorState["modal"]) ?? undefined,
+        attributesTab: (urlParams.get("attributesTab") as EditorState["attributesTab"]) ?? undefined,
         panelPosition: (urlParams.get("panelPosition") as EditorState["panelPosition"]) ?? undefined,
       }),
     ).current;

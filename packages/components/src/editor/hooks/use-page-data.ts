@@ -6,12 +6,11 @@ import type { Datarecord } from "@upstart.gg/sdk/shared/datarecords/types";
 import type { VersionedPage } from "@upstart.gg/sdk/shared/page";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
 import type { Site } from "@upstart.gg/sdk/shared/site";
-import type { SitemapPageEntry } from "@upstart.gg/sdk/shared/sitemap";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
 import { enableMapSet } from "immer";
-import { debounce, isEqual, merge } from "lodash-es";
+import { debounce, isEqual, merge, unset } from "lodash-es";
 import { createContext, useContext, useEffect } from "react";
 import { temporal } from "zundo";
 import { createStore, useStore } from "zustand";
@@ -63,9 +62,8 @@ export interface DraftState extends DraftStateProps {
   moveBrickToSection: (id: string, sectionId: string | null, index?: number) => void;
   detachBrickFromContainer: (id: string) => void;
   upsertQuery: (query: Query) => void;
-  addBrick: (brick: Brick, sectiondId: string, index: number, parentContainerId: Brick["id"] | null) => void;
+  addBrick: (brick: Brick, sectiondId: string, index: number, parentContainerId?: Brick["id"] | null) => void;
   updateBrickProps: (id: string, props: Record<string, unknown>, isMobileProps?: boolean) => void;
-  updatePropsMapping: (id: string, mapping: Record<string, string>) => void;
   toggleBrickVisibility: (id: string, resolution: Resolution) => void;
   setPreviewTheme: (theme: Theme) => void;
   setTheme: (theme: Theme) => void;
@@ -74,7 +72,9 @@ export interface DraftState extends DraftStateProps {
   validatePreviewTheme: (accept: boolean) => void;
   cancelPreviewTheme: () => void;
   updatePageAttributes: (attr: Partial<PageAttributes>) => void;
+  deletePageAttribute: (key: string) => void;
   updateSiteAttributes: (attr: Partial<SiteAttributes>) => void;
+  deleteSiteAttribute: (key: string) => void;
   setLastSaved: (date: Date) => void;
   setDirty: (dirty: boolean) => void;
   setVersion(version: string): void;
@@ -197,12 +197,13 @@ export const createDraftStore = (
             set((state) => {
               //  Overwrite the default page if it exists
               state.page = page;
-
               // Add to sitemap if not already present
               const existing = state.site.sitemap.find((p) => p.id === page.id);
               if (!existing) {
                 state.site.sitemap.push(page);
               }
+
+              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           isFirstSection: (sectionId) => {
@@ -229,7 +230,13 @@ export const createDraftStore = (
 
           setThemes: (themes) =>
             set((state) => {
+              const hasAlreadyThemes = state.site.themes.length > 0;
               state.site.themes = themes;
+
+              // Set default theme if it is the first time setting themes
+              if (!hasAlreadyThemes) {
+                state.site.theme = themes[0];
+              }
             }),
 
           setSitemap: (sitemap) =>
@@ -244,7 +251,10 @@ export const createDraftStore = (
               ...state.page,
               id: `page-${generateId()}`,
               label: `${state.page.label} (page ${pageCount})`,
-              path: `${state.page.path}-${pageCount}`,
+              attributes: {
+                ...state.page.attributes,
+                path: `${state.page.attributes.path}-${pageCount}`,
+              },
             } satisfies VersionedPage;
             return newPage;
           },
@@ -279,6 +289,7 @@ export const createDraftStore = (
           addSection: (section) =>
             set((state) => {
               state.page.sections.push(section);
+              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           updateSection: (id, sectionData) =>
@@ -488,18 +499,18 @@ export const createDraftStore = (
               const newBrick = deepCloneBrick(original.brick);
 
               // Update the brick map with the new brick and its children
-              const updateBrickMap = (brick: Brick, sectionId: string, parentId: string | null) => {
-                state.brickMap.set(brick.id, {
-                  brick,
-                  sectionId,
-                  parentId,
-                });
+              // const updateBrickMap = (brick: Brick, sectionId: string, parentId: string | null) => {
+              //   state.brickMap.set(brick.id, {
+              //     brick,
+              //     sectionId,
+              //     parentId,
+              //   });
 
-                if (brick.props.$children) {
-                  const children = brick.props.$children as Brick[];
-                  children.forEach((child) => updateBrickMap(child, sectionId, brick.id));
-                }
-              };
+              //   if (brick.props.$children) {
+              //     const children = brick.props.$children as Brick[];
+              //     children.forEach((child) => updateBrickMap(child, sectionId, brick.id));
+              //   }
+              // };
 
               // Add the duplicated brick to the appropriate location
               const { sectionId, parentId } = original;
@@ -524,24 +535,7 @@ export const createDraftStore = (
               }
 
               // Update the brickMap with the new brick and all its children
-              updateBrickMap(newBrick, sectionId, parentId);
-            }),
-
-          updatePropsMapping: (id, mapping) =>
-            set((state) => {
-              // Update the brick in the brickMap
-              const brick = getBrickFromDraft(id, state);
-              if (brick) {
-                brick.propsMapping = merge({}, brick.propsMapping, mapping);
-                brick.props.lastTouched = Date.now();
-                // rebuild map
-                state.brickMap = buildBrickMap(state.page.sections);
-              } else {
-                console.error(
-                  "Cannot update props mapping for brick %s, it does not exist in the brick map",
-                  id,
-                );
-              }
+              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           updateBrickProps: (id, props, isMobileProps) =>
@@ -673,6 +667,8 @@ export const createDraftStore = (
                   section.bricks.splice(toIndex, 0, movedBrick);
                 }
               }
+
+              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           moveBrickToContainerBrick: (id, parentId, index) =>
@@ -717,33 +713,7 @@ export const createDraftStore = (
               (parent.props.$children as Brick[]).splice(index, 0, brick);
 
               // 3. Update the brickMap reference
-              const targetMapping = state.brickMap.get(parentId);
-              if (targetMapping) {
-                // Update the mapping for this brick
-                state.brickMap.set(id, {
-                  brick,
-                  sectionId: targetMapping.sectionId,
-                  parentId,
-                });
-
-                // Also update mappings for all children recursively
-                const updateChildMappings = (brickId: string, newSectionId: string) => {
-                  const mapping = state.brickMap.get(brickId);
-                  if (mapping?.brick.props?.$children) {
-                    const children = mapping.brick.props.$children as Brick[];
-                    children.forEach((child) => {
-                      state.brickMap.set(child.id, {
-                        brick: child,
-                        sectionId: newSectionId,
-                        parentId: brickId,
-                      });
-                      updateChildMappings(child.id, newSectionId);
-                    });
-                  }
-                };
-
-                updateChildMappings(id, targetMapping.sectionId);
-              }
+              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           moveBrickToSection: (id, sectionId, index) =>
@@ -936,7 +906,7 @@ export const createDraftStore = (
               state.brickMap.set(brick.id, {
                 brick,
                 sectionId,
-                parentId: parentContainerId,
+                parentId: parentContainerId ?? null,
               });
 
               // If this is a container brick with children, recursively add those to the brick map
@@ -961,12 +931,22 @@ export const createDraftStore = (
 
           updatePageAttributes: (attr) =>
             set((state) => {
-              state.page.attributes = { ..._get().page.attributes, ...attr };
+              state.page.attributes = merge({}, _get().page.attributes, attr);
+            }),
+
+          deletePageAttribute: (key) =>
+            set((state) => {
+              unset(state.page.attributes, key);
             }),
 
           updateSiteAttributes: (attr) =>
             set((state) => {
-              state.site.attributes = { ..._get().site.attributes, ...attr };
+              state.site.attributes = merge({}, _get().site.attributes, attr);
+            }),
+
+          deleteSiteAttribute: (key) =>
+            set((state) => {
+              unset(state.site.attributes, key);
             }),
 
           setVersion: (version) =>
@@ -1029,13 +1009,14 @@ export const useGenerationState = () => {
   return useStore(draft, (state) => {
     const hasSitemap = state.site.sitemap.length > 0;
     const hasThemesGenerated = state.site.themes.length > 0;
-    const isReady = hasSitemap && hasThemesGenerated && state.site.sitemap.length > 0;
-    const isGenerating = new URL(window.location.href).searchParams.get("action") === "generate";
+    const hasPages = state.page.id !== "_default_";
+    const isReady = hasSitemap && hasThemesGenerated && hasPages;
+    const isSetup = new URL(window.location.href).searchParams.get("action") === "setup";
     return {
       hasSitemap,
       hasThemesGenerated,
-      sitemap: state.site.sitemap,
-      isReady: !isGenerating || isReady,
+      isSetup,
+      isReady: !isSetup || isReady,
     } satisfies GenerationState;
   });
 };
@@ -1079,7 +1060,9 @@ export function useLastSaved() {
 export const useSections = () => {
   const ctx = usePageContext();
   const sections = useStore(ctx, (state) => state.page.sections);
-  return processSections(sections);
+  const siteAttributes = useSiteAttributes();
+  const pageAttributes = usePageAttributes();
+  return processSections(sections, siteAttributes, pageAttributes);
 };
 
 export const useSection = (sectionId?: string) => {
@@ -1172,7 +1155,7 @@ export const usePageQueries = () => {
         ?.map((pageQuery) => {
           const queryInfo = state.site.attributes.queries?.find((q) => q.id === pageQuery.queryId);
           if (!queryInfo) {
-            console.warn(`Query with id ${pageQuery.queryId} not found in the store`);
+            console.log(`WARN: Query with id ${pageQuery.queryId} not found in the store`);
             return null;
           }
           // get datasource
@@ -1198,6 +1181,7 @@ export const useDraftHelpers = () => {
   return useStore(ctx, (state) => ({
     deleteBrick: state.deleteBrick,
     detachBrickFromContainer: state.detachBrickFromContainer,
+    updateSiteAttributes: state.updateSiteAttributes,
     upsertQuery: state.upsertQuery,
     setSections: state.setSections,
     setThemes: state.setThemes,
@@ -1215,7 +1199,6 @@ export const useDraftHelpers = () => {
     toggleBrickVisibilityPerBreakpoint: state.toggleBrickVisibility,
     getParentBrick: state.getParentBrick,
     updateBrickProps: state.updateBrickProps,
-    updatePropsMapping: state.updatePropsMapping,
     moveBrick: state.moveBrick,
     reorderBrickWithin: state.reorderBrickWithin,
     getPositionWithinParent: state.getPositionWithinParent,
@@ -1303,14 +1286,6 @@ export const usePagePathParams = () => {
     const matches = Array.from(path.matchAll(regex));
     return matches.map((match) => match[0]);
   });
-};
-
-export const usePagePathSubscribe = (callback: (path: DraftState["page"]["path"]) => void) => {
-  const ctx = usePageContext();
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    return ctx.subscribe((state) => state.page.path, callback);
-  }, []);
 };
 
 function getBrickFromMap(id: string, state: DraftState) {

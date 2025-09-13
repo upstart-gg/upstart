@@ -96,6 +96,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
         // If the click was handled by a child element, do not propagate
         return;
       }
+
       // console.debug("Section clicked", section.id, target, e);
       setSelectedSectionId(section.id);
       setSelectedBrickId();
@@ -108,7 +109,9 @@ export default function EditableSection({ section, index }: EditableSectionProps
   return (
     <EditableSectionContextMenu section={section}>
       <section id={id} ref={sectionRef} data-element-kind="section" onClick={onClick} className={className}>
-        {!editingBrick && !draggingBrickType && <EditableSectionButtons section={section} />}
+        {!editingBrick && !draggingBrickType && !isSpecialSection && (
+          <EditableSectionButtons section={section} />
+        )}
         {bricks
           .filter((b) => !b.props.hidden?.[previewMode])
           .map((brick, brickIndex) => {

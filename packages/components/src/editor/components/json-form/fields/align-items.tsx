@@ -16,7 +16,7 @@ export default function AlignItemsField(props: FieldProps<AlignItemsSettings>) {
 
   const customSchema = {
     ...schema,
-    title: flexOrientation === "column" ? "Horizontal Alignment" : `Vertical Alignment`,
+    title: flexOrientation === "column" ? "Horizontal alignment" : `Vertical alignment`,
     "ui:display": "icon-group",
     description:
       flexOrientation === "column"

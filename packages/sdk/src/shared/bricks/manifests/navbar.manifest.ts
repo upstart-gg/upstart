@@ -10,6 +10,7 @@ import { VscLayoutPanelOff } from "react-icons/vsc";
 import type { BrickProps } from "../props/types";
 import { colorPresetRef } from "../props/color-preset";
 import { tagsRef } from "../props/tags";
+import { toLLMSchema } from "~/shared/utils/llm";
 
 export const manifest = defineBrickManifest({
   type: "navbar",
@@ -17,9 +18,11 @@ export const manifest = defineBrickManifest({
   category: "layout",
   description: "A navigation bar with logo and navigation",
   aiInstructions: "This brick should be used on most sites/pages. It must be placed on its own section.",
+  isGlobalBrick: true,
   duplicatable: false,
   resizable: false,
   movable: false,
+  hideInLibrary: true,
   staticClasses: "flex-grow",
   defaultWidth: { mobile: "100%" },
   defaultHeight: { mobile: "60px", desktop: "60px" },
@@ -31,6 +34,7 @@ export const manifest = defineBrickManifest({
         colorPresetRef({
           title: "Color",
           default: { color: "primary-500" },
+          examples: [{ color: "primary-500" }, { color: "neutral-900" }, { color: "secondary-200" }],
         }),
       ),
       brand: Type.Optional(
@@ -38,9 +42,12 @@ export const manifest = defineBrickManifest({
           title: "Brand name",
           default: "Acme Inc.",
           disableSizing: true,
+          "ai:instructions":
+            "The brand name of the website, for example the company name. Please provide it even if optional.",
           metadata: {
             category: "content",
           },
+          examples: ["Acme Inc.", "TechCorp Solutions", "ShopEasy", "Bella Vista"],
         }),
       ),
       logo: Type.Optional(
@@ -53,25 +60,18 @@ export const manifest = defineBrickManifest({
           metadata: {
             category: "content",
           },
+          "ai:hidden": true, // Hide from AI as it should always be provided if available
         }),
       ),
       hideBrand: Type.Optional(
         boolean("Hide brand name", undefined, {
+          "ai:hidden": true,
           metadata: {
             filter: (manifestProps: TObject, formData: Static<Manifest["props"]>) => {
               return !!formData.logo; // Enable this field only if logo is set
             },
           },
         }),
-      ),
-      shadow: Type.Optional(shadowRef()),
-      linksPosition: Type.Union(
-        [
-          Type.Literal("left", { title: "Left" }),
-          Type.Literal("center", { title: "Center" }),
-          Type.Literal("right", { title: "Right" }),
-        ],
-        { title: "Links position", default: "right", "ui:responsive": "desktop" },
       ),
       linksTagsFilter: Type.Optional(
         tagsRef({
@@ -81,6 +81,7 @@ export const manifest = defineBrickManifest({
           metadata: {
             category: "content",
           },
+          examples: [["navbar", "main"], ["top-menu"], ["important-link", "navbar"]],
         }),
       ),
       staticNavItems: Type.Optional(
@@ -92,19 +93,41 @@ export const manifest = defineBrickManifest({
           {
             title: "Static links",
             description: "Additional static navigation links to show in the navbar",
+            "ai:instructions": "Don't include pages already included by the tags filter.",
             default: [],
             metadata: {
               category: "content",
             },
+            examples: [
+              [
+                { urlOrPageId: "http://example.com/", label: "Other site" },
+                { urlOrPageId: "https://docs.example.com/", label: "External docs" },
+              ],
+              [{ urlOrPageId: "https://www.amazon.com/our-brand", label: "Buy our brand on Amazon" }],
+            ],
           },
         ),
       ),
+      linksPosition: Type.Optional(
+        Type.Union(
+          [
+            Type.Literal("left", { title: "Left" }),
+            Type.Literal("center", { title: "Center" }),
+            Type.Literal("right", { title: "Right" }),
+          ],
+          { title: "Links position", default: "right", "ui:responsive": "desktop" },
+        ),
+      ),
+      shadow: Type.Optional(shadowRef()),
     },
-    { noAlignSelf: true },
+    { noAlignSelf: true, noGrow: true },
   ),
 });
 
 export type Manifest = typeof manifest;
+
+export const navbarSchemaLLM = toLLMSchema(manifest.props);
+export type NavbarProps = Static<Manifest["props"]>;
 
 export const examples: {
   description: string;
@@ -115,7 +138,6 @@ export const examples: {
     description: "Corporate navbar with logo and right-aligned navigation",
     type: "navbar",
     props: {
-      brand: "TechCorp Solutions",
       logo: {
         src: "https://via.placeholder.com/120x40.png?text=TechCorp",
         alt: "TechCorp Solutions logo",
@@ -130,14 +152,10 @@ export const examples: {
     },
   },
   {
-    description: "Dark theme navbar with centered navigation",
+    description: "Dark theme navbar with a brand text and centered navigation, no logo",
     type: "navbar",
     props: {
       brand: "TechCorp Solutions",
-      logo: {
-        src: "https://via.placeholder.com/100x35.png?text=Studio",
-        alt: "Creative Studio logo",
-      },
       linksPosition: "center",
       staticNavItems: [
         { urlOrPageId: "/work" },
@@ -148,14 +166,10 @@ export const examples: {
     },
   },
   {
-    description: "SaaS platform navbar with fixed positioning",
+    description: "SaaS platform navbar with fixed positioning and brand text",
     type: "navbar",
     props: {
       brand: "TechCorp Solutions",
-      logo: {
-        src: "https://via.placeholder.com/110x38.png?text=CloudFlow",
-        alt: "CloudFlow platform logo",
-      },
       linksPosition: "right",
       staticNavItems: [
         { urlOrPageId: "/features" },
@@ -166,10 +180,9 @@ export const examples: {
     },
   },
   {
-    description: "E-commerce navbar",
+    description: "E-commerce navbar with logo and shopping links",
     type: "navbar",
     props: {
-      brand: "TechCorp Solutions",
       logo: {
         src: "https://via.placeholder.com/130x45.png?text=ShopEasy",
         alt: "ShopEasy store logo",
@@ -188,12 +201,10 @@ export const examples: {
     description: "Agency navbar with logo-only brand",
     type: "navbar",
     props: {
-      brand: "TechCorp Solutions",
       logo: {
         src: "https://via.placeholder.com/140x50.png?text=Agency+Logo",
         alt: "Digital agency logo",
       },
-      hideBrand: true,
       linksPosition: "right",
       staticNavItems: [
         { urlOrPageId: "/projects" },

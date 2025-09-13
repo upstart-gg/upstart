@@ -3,25 +3,28 @@ import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { getStyleProperties } from "../styles/style-props";
-import { usePageAttributes } from "~/editor/hooks/use-page-data";
+import { usePageAttributes, useSiteAttributes } from "~/editor/hooks/use-page-data";
 import get from "lodash-es/get";
 import { extractStylePath, pageStylesHelpersMap } from "../styles/helpers";
+import { useFontWatcher } from "~/editor/hooks/use-font-watcher";
 
 type UsePageStyleProps = {
-  attributes: PageAttributes;
+  // attributes: PageAttributes;
   editable?: boolean;
-  previewMode?: Resolution;
-  typography: Theme["typography"];
+  // previewMode?: Resolution;
+  // typography: Theme["typography"];
   showIntro?: boolean;
 };
 
-export function usePageStyle({ attributes, editable, typography, showIntro }: UsePageStyleProps) {
+export function usePageStyle({ editable, showIntro }: UsePageStyleProps = {}) {
   const stylesProps = getStyleProperties(pageAttributesSchema);
   const classes = useClassesFromStyleProps(stylesProps);
+  const typography = useFontWatcher();
+
   return tx(
     "flex flex-col group/page mx-auto relative max-w-full w-full p-0 antialiased",
     editable && "overflow-hidden min-h-[100cqh]",
-    attributes.colorPreset.color,
+    // pageAttributes.colorPreset?.color ?? siteAttributes.colorPreset?.color,
     Object.values(classes),
     getTypographyStyles(typography),
     // Animate all bricks when the page is loading
@@ -30,6 +33,7 @@ export function usePageStyle({ attributes, editable, typography, showIntro }: Us
 }
 
 function useClassesFromStyleProps(stylesProps: Record<string, string>) {
+  const siteAttributes = useSiteAttributes();
   const pageAttributes = usePageAttributes();
 
   const classes = Object.entries(stylesProps).reduce(
@@ -41,7 +45,8 @@ function useClassesFromStyleProps(stylesProps: Record<string, string>) {
       const part = extractStylePath(path);
       acc[part] = acc[part] ?? [];
 
-      const resolvedProps = get(pageAttributes, path);
+      // If we can't find the attribute in the page, fall back to the site attributes
+      const resolvedProps = get(pageAttributes, path) ?? get(siteAttributes, path);
       const schema = get(pageAttributesSchema.properties, path);
 
       acc[part].push(tx(helper?.(resolvedProps, undefined, schema)));

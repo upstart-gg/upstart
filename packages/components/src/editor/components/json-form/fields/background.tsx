@@ -13,31 +13,24 @@ import { fieldLabel } from "../form-class";
 import { FieldTitle } from "../field-factory";
 import { useIsPremiumPlan } from "~/editor/hooks/use-editor";
 import { tx } from "@upstart.gg/style-system/twind";
+import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
 
-const BackgroundField: FC<FieldProps<BackgroundSettings>> = (props) => {
-  const { schema, formData, onChange, title, description, currentValue = {} } = props;
+const BackgroundField: FC<FieldProps<BackgroundSettings | null>> = (props) => {
+  const { schema, formData, onChange, title, description, currentValue } = props;
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);
   const { onImageUpload } = useUploader();
-  const onPropsChange = (newVal: Partial<BackgroundSettings>) => onChange({ ...currentValue, ...newVal });
+  const onPropsChange = (newVal: Partial<BackgroundSettings>) =>
+    onChange({ ...(currentValue ?? {}), ...newVal } as BackgroundSettings);
   const isPremium = useIsPremiumPlan();
 
   return (
-    <div className="flex-1 flex flex-col gap-1 relative">
+    <div className="flex-1 flex flex-col gap-2.5 relative">
       <div className={tx("background-field flex items-center justify-between flex-wrap gap-1 flex-1")}>
         <div className="flex items-center">
-          <FieldTitle title={title ?? "Color / image"} description={description} />
+          <FieldTitle title={title ?? "Background image"} description={description} />
         </div>
         <div className="flex justify-end gap-1.5">
-          <ColorField
-            {...props}
-            currentValue={currentValue.color}
-            title={undefined}
-            onChange={(color) => {
-              onChange({ ...currentValue, color: color as string });
-            }}
-            hideColorLabel={true}
-          />
           <div className="flex gap-1 items-center">
             <input
               id={id}
@@ -63,7 +56,7 @@ const BackgroundField: FC<FieldProps<BackgroundSettings>> = (props) => {
                 className="!leading-[inherit] !mb-0 !font-medium !text-inherit cursor-[inherit]"
                 htmlFor={id}
               >
-                {currentValue.image ? "Upload new" : "Upload image"}
+                {currentValue?.image ? "Upload new" : "Upload image"}
               </label>
             </Button>
 
@@ -84,7 +77,7 @@ const BackgroundField: FC<FieldProps<BackgroundSettings>> = (props) => {
           </Text>
         </div>
       )}
-      {currentValue.image && (
+      {currentValue?.image && (
         <>
           <div className="flex justify-between items-center">
             <div className="flex flex-col flex-1 gap-1">
@@ -101,7 +94,7 @@ const BackgroundField: FC<FieldProps<BackgroundSettings>> = (props) => {
                   <Select.Content position="popper">
                     <Select.Group>
                       {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
-                      {schema.properties.size.anyOf.map((item: any) => (
+                      {normalizeSchemaEnum(schema.properties.size).map((item: any) => (
                         <Select.Item key={item.const} value={item.const}>
                           {item.title}
                         </Select.Item>
@@ -131,8 +124,7 @@ const BackgroundField: FC<FieldProps<BackgroundSettings>> = (props) => {
                   <Select.Trigger radius="large" variant="ghost" />
                   <Select.Content position="popper">
                     <Select.Group>
-                      {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
-                      {schema.properties.repeat.anyOf.map((item: any) => (
+                      {normalizeSchemaEnum(schema.properties.repeat).map((item) => (
                         <Select.Item key={item.const} value={item.const}>
                           {item.title}
                         </Select.Item>
@@ -144,14 +136,14 @@ const BackgroundField: FC<FieldProps<BackgroundSettings>> = (props) => {
               </div>
             </div>
           </div>
-          <div className="basis-full w-0 h-2" />
+          <div className="basis-full h-0" />
           {/* image preview */}
           <div className="border border-upstart-200 p-1.5 self-end relative">
             <img src={currentValue.image} alt={id} className="max-w-full h-auto" />
             <IconButton
               onClick={(e) => {
                 e.stopPropagation();
-                onChange({ ...currentValue, image: undefined });
+                onChange(null);
               }}
               title="Close"
               size="1"

@@ -11,6 +11,7 @@ import { FieldTitle } from "../field-factory";
 import { useUploader } from "../../UploaderContext";
 import { useDynamicTextEditor } from "~/editor/hooks/use-editable-text";
 import { usePageQueries } from "~/editor/hooks/use-page-data";
+import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
 
 const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
   const { schema, formData, onChange, title, description, currentValue, brickId, noDynamic } = props;
@@ -124,7 +125,7 @@ const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
                   <Select.Content position="popper">
                     <Select.Group>
                       {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
-                      {schema.properties.fit.anyOf.map((item: any) => (
+                      {normalizeSchemaEnum(schema.properties.fit).map((item: any) => (
                         <Select.Item key={item.const} value={item.const}>
                           {item.title}
                         </Select.Item>
@@ -143,8 +144,7 @@ const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
                   <Select.Trigger radius="large" variant="ghost" placeholder="Not specified" />
                   <Select.Content position="popper">
                     <Select.Group>
-                      {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
-                      {schema.properties.position.anyOf.map((item: any) => (
+                      {normalizeSchemaEnum(schema.properties.position).map((item) => (
                         <Select.Item key={item.const} value={item.const}>
                           {item.title}
                         </Select.Item>

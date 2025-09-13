@@ -3,7 +3,7 @@
 // as the key and the $id as the value. Paths should be dot-separated.
 
 import type { TSchema } from "@sinclair/typebox";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
+import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
 import get from "lodash-es/get";
 
 export type PropertyPath = string;

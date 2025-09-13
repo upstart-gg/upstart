@@ -7,7 +7,7 @@ import {
   type DropResult,
 } from "@hello-pangea/dnd";
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
+import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
 import { Button, IconButton, SegmentedControl, TextField } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useState, useRef, useEffect } from "react";
@@ -54,8 +54,6 @@ export default function ArrayField({
   const pageQueries = usePageQueries();
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-  console.log("ArrayField, currentValue:", currentValue, "itemSchema:", itemSchema, "fieldName:", fieldName);
 
   const mode = (formData.loop as LoopSettings | null)?.over ? "dynamic" : "static";
 
@@ -409,7 +407,11 @@ export default function ArrayField({
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId={`array-${id}`} direction="vertical">
             {(provided, snapshot) => (
-              <div {...provided.droppableProps} ref={provided.innerRef} className={`space-y-1 rounded`}>
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className={`space-y-1 rounded empty:hidden`}
+              >
                 {currentValue.map((item, index) => {
                   // Create stable key for drag and drop
                   const stableKey = `item-${index}`;

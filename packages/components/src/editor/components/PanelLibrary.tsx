@@ -11,12 +11,12 @@ import { createEmptyBrick } from "@upstart.gg/sdk/shared/bricks";
 import { useSortable } from "@dnd-kit/react/sortable";
 import { useSections } from "../hooks/use-page-data";
 
-const brickCategories: Record<BrickCategory, string> = {
+const brickCategories: Partial<Record<BrickCategory, string>> = {
   basic: "Basic elements",
   widgets: "Widgets",
   media: "Media",
   container: "Containers & utilities",
-  layout: "Layout",
+  // layout: "Layout",
 };
 
 export default function PanelLibrary() {

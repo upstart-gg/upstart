@@ -41,7 +41,7 @@ export default function Panel({ className, ...props }: PanelProps) {
       className={tx(
         `z-[9999] fixed top-0 bottom-0 flex shadow-2xl overscroll-none \
         min-w-[360px] w-[360px] opacity-100
-        bg-white dark:bg-dark-900 border-upstart-200 dark:border-dark-700 overflow-visible`,
+        bg-white dark:bg-dark-900 border-upstart-300 dark:border-dark-700 overflow-visible`,
         {
           // "transition-transform duration-150": !!panel,
           "transition-all duration-100": !panel,

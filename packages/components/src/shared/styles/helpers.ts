@@ -4,7 +4,6 @@ import type {
 } from "@upstart.gg/sdk/shared/bricks/props/background";
 import type { ColorSettings } from "@upstart.gg/sdk/shared/bricks/props/color";
 import type { OpacitySettings } from "@upstart.gg/sdk/shared/bricks/props/effects";
-import type { GapBasicSettings } from "@upstart.gg/sdk/shared/bricks/props/gap";
 import { colorPresets } from "@upstart.gg/sdk/shared/bricks/props/color-preset";
 import type { FixedPositionedSettings } from "@upstart.gg/sdk/shared/bricks/props/position";
 import { propToClass, propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
@@ -12,17 +11,15 @@ import { css } from "@upstart.gg/style-system/twind";
 import type { TSchema } from "@sinclair/typebox";
 
 export function getBackgroundStyles(props?: BackgroundSettings) {
-  if (!props) {
+  if (!props?.image) {
     return null;
   }
   return [
-    props.color && propToStyle(props.color, "backgroundColor"),
-    props.image &&
-      css({
-        backgroundImage: `url(${props.image})`,
-        backgroundSize: props.size ?? "auto",
-        backgroundRepeat: props.repeat ?? "no-repeat",
-      }),
+    css({
+      backgroundImage: `url(${props.image})`,
+      backgroundSize: props.size ?? "auto",
+      backgroundRepeat: props.repeat ?? "no-repeat",
+    }),
   ];
 }
 
@@ -91,10 +88,6 @@ function getFixedPositionedStyles(value: FixedPositionedSettings) {
   return "sticky top-0 left-0 right-0 self-start w-fill z-[99999] isolate";
 }
 
-export function getBasicGapStyles(props?: GapBasicSettings, mobileProps?: GapBasicSettings) {
-  return props;
-}
-
 // function getContainerLayoutStyles(props?: ContainerLayoutSettings, mobileProps?: ContainerLayoutSettings) {
 //   return props?.type === "grid" ? getGridStyles(props, mobileProps) : getFlexStyles(props, mobileProps);
 // }
@@ -137,7 +130,6 @@ export const pageStylesHelpersMap = {
 
 export const brickStylesHelpersMap = {
   "styles:color": getColorStyles,
-  "styles:basicGap": getBasicGapStyles,
   "styles:textShadow": simpleClassHandler,
   "styles:opacity": getOpacityStyles,
   "styles:objectFit": simpleClassHandler,

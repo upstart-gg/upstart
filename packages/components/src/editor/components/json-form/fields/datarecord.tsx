@@ -20,9 +20,11 @@ export const DatarecordField: FC<FieldProps<DatarecordSettings | undefined>> = (
   return (
     <div className="layout-field basis-full">
       <div className="flex items-start text-center justify-between flex-wrap gap-x-4 gap-y-1 pr-1">
-        {datarecords.length > 0 && (
-          <div className="flex justify-between gap-1 flex-1">
-            <label className={fieldLabel}>Database</label>
+        <div className="flex justify-between gap-1 flex-1 items-center">
+          <label className={fieldLabel}>Schema</label>
+          {datarecords.length === 0 ? (
+            <span className="text-sm text-gray-500">No forms schema found</span>
+          ) : (
             <Select.Root
               defaultValue={currentValue}
               size="2"
@@ -43,8 +45,8 @@ export const DatarecordField: FC<FieldProps<DatarecordSettings | undefined>> = (
                 </Select.Group>
               </Select.Content>
             </Select.Root>
-          </div>
-        )}
+          )}
+        </div>
         <IconButton
           type="button"
           onClick={() => {

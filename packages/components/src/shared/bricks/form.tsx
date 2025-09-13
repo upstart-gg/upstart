@@ -1,7 +1,7 @@
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
 import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/form.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
+import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
 import { toast } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import get from "lodash-es/get";

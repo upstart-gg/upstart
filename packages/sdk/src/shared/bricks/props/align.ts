@@ -7,11 +7,12 @@ export function justifyContent(options: StringOptions = {}) {
     ["justify-start", "justify-center", "justify-end", "justify-between", "justify-around", "justify-evenly"],
     {
       enumNames: ["Start", "Center", "End", "Between", "Around", "Evenly"],
-      $id: "styles:justifyContent",
+      // $id: "styles:justifyContent",
       title: "Justify bricks",
       "ui:field": "justify-content",
       "ui:responsive": true,
       "ui:styleId": "styles:justifyContent",
+      examples: ["justify-center", "justify-evenly"],
       ...options,
     },
   );
@@ -26,11 +27,12 @@ export function justifyContentRef(options: StringOptions = {}) {
 export function alignItems(options: StringOptions = {}) {
   return StringEnum(["items-start", "items-center", "items-end", "items-stretch"], {
     enumNames: ["Start", "Center", "End", "Stretch"],
-    $id: "styles:alignItems",
+    // $id: "styles:alignItems",
     title: "Align bricks",
     "ui:field": "align-items",
     "ui:responsive": true,
     "ui:styleId": "styles:alignItems",
+    examples: ["items-center", "items-stretch"],
     ...options,
   });
 }
@@ -45,7 +47,7 @@ export function alignSelf(options: StringOptions = {}) {
   return StringEnum(["self-auto", "self-start", "self-center", "self-end", "self-stretch"], {
     enumNames: ["Auto", "Start", "Center", "End", "Stretch"],
     default: "self-auto",
-    $id: "styles:alignSelf",
+    // $id: "styles:alignSelf",
     title: "Align self",
     "ui:field": "align-self",
     "ui:responsive": true,

@@ -44,6 +44,8 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
   };
   props: TObject<BProps>;
   hideInLibrary?: boolean;
+
+  isGlobalBrick?: boolean;
   /**
    * If true, the brick can consume multiple rows of data from a data source.
    * This is useful for bricks that display lists or collections of items.
@@ -69,6 +71,7 @@ export function defineBrickManifest<BProps extends TProperties, DSSchema extends
   category = "widgets",
   isContainer = false,
   hideInLibrary = false,
+  isGlobalBrick = false,
   deletable = true,
   movable = true,
   resizable = true,
@@ -89,6 +92,7 @@ export function defineBrickManifest<BProps extends TProperties, DSSchema extends
     resizable,
     duplicatable,
     isContainer,
+    isGlobalBrick,
     defaultWidth: { mobile: defaultWidth?.mobile ?? "auto", desktop: defaultWidth?.desktop ?? "auto" },
     defaultHeight: {
       mobile: defaultHeight?.mobile ?? "auto",

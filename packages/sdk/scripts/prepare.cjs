@@ -11,6 +11,6 @@ if (!fs.existsSync(cliFile) && !process.env.CI) {
   // run build script in the package directory packages/sdk
   require("node:child_process").execSync(`${manager} run build`, {
     cwd: resolve(__dirname, ".."),
-    stdio: "inherit",
+    stdio: ["ignore", "inherit"],
   });
 }

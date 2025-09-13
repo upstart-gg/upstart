@@ -28,7 +28,7 @@ Optionally either use an avatar or a social icon but not both at the same time.`
       colorPreset: Type.Optional(
         colorPresetRef({
           title: "Color",
-          default: "bg-base-100 text-base-100-content",
+          default: "base-100",
         }),
       ),
       border: Type.Optional(

@@ -2,7 +2,6 @@ import { type Static, Type } from "@sinclair/typebox";
 import { FaWpforms } from "react-icons/fa6";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { justifyContentRef } from "../props/align";
 import { borderRef, roundingRef } from "../props/border";
 import { datarecord } from "../props/datarecord";
 import { defineProps, group } from "../props/helpers";
@@ -60,18 +59,11 @@ There is no need to define the form fields manually and the form does not accept
       title: "Button",
       children: {
         color: Type.Optional(
-          Type.Union(
-            [
-              Type.Literal("btn-neutral", { title: "Neutral" }),
-              Type.Literal("btn-primary", { title: "Primary" }),
-              Type.Literal("btn-secondary", { title: "Secondary" }),
-              Type.Literal("btn-accent", { title: "Accent" }),
-            ],
-            {
-              title: "Color",
-              default: "btn-primary",
-            },
-          ),
+          StringEnum(["btn-neutral", "btn-primary", "btn-secondary", "btn-accent"], {
+            enumNames: ["Neutral", "Primary", "Secondary", "Accent"],
+            title: "Color",
+            default: "btn-primary",
+          }),
         ),
         size: Type.Optional(
           StringEnum(["block", "wide"], {
@@ -149,6 +141,7 @@ There is no need to define the form fields manually and the form does not accept
 });
 
 export type Manifest = typeof manifest;
+
 export const examples: {
   description: string;
   type: string;
