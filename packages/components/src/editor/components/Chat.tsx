@@ -1,26 +1,18 @@
 import { tx, css } from "@upstart.gg/style-system/twind";
-import { Button, TextArea, Text, Switch } from "@upstart.gg/style-system/system";
+import { Button, Text, Switch } from "@upstart.gg/style-system/system";
 import { motion, AnimatePresence } from "motion/react";
-import {
-  ChatOnFinishCallback,
-  DefaultChatTransport,
-  lastAssistantMessageIsCompleteWithToolCalls,
-  type PrepareSendMessagesRequest,
-  type ToolUIPart,
-} from "ai";
+import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls, type ToolUIPart } from "ai";
 
 import { TbSend2 } from "react-icons/tb";
 import { IoIosAttach } from "react-icons/io";
-import { applyPatch, type Operation } from "fast-json-patch";
-import { type CreateUIMessage, type UIMessage, useChat, type UseChatOptions } from "@ai-sdk/react";
-import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
-import { createIdGenerator, type ToolCallPart, type FilePart } from "ai";
+import { useChat } from "@ai-sdk/react";
+import { type FormEvent, useEffect, useMemo, useRef, useState, Suspense } from "react";
+import { createIdGenerator } from "ai";
 import {
   useDraftHelpers,
   useGenerationState,
   usePage,
   useSite,
-  useSitemap,
   useSitePrompt,
   useThemes,
 } from "../hooks/use-page-data";
@@ -28,22 +20,15 @@ import { MdDone } from "react-icons/md";
 import { useDebounceCallback } from "usehooks-ts";
 import { Spinner } from "@upstart.gg/style-system/system";
 import { BiStopCircle } from "react-icons/bi";
-import { type Theme, processTheme } from "@upstart.gg/sdk/shared/theme";
-import type { CallContextProps } from "@upstart.gg/sdk/shared/context";
 import { defineDataRecord } from "@upstart.gg/sdk/shared/datarecords";
 import { useDeepCompareEffect } from "use-deep-compare";
-import type { ImageSearchResultsType, SimpleImageMetadata } from "@upstart.gg/sdk/shared/images";
-import type { Page } from "@upstart.gg/sdk/shared/page";
-import type { Sitemap } from "@upstart.gg/sdk/shared/sitemap";
-import { useEditorHelpers } from "../hooks/use-editor";
+import type { SimpleImageMetadata } from "@upstart.gg/sdk/shared/images";
+import { useDebugMode, useEditorHelpers } from "../hooks/use-editor";
 import { defineDatasource } from "@upstart.gg/sdk/shared/datasources";
-import type { SiteAttributes } from "@upstart.gg/sdk/shared/attributes";
-import type { Tools, UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/ui-message";
+import type { Tools, UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
+import Markdown from "./Markdown";
 
 const WEB_SEARCH_ENABLED = false;
-
-// Lazy import "Markdown"
-const Markdown = lazy(() => import("./Markdown"));
 
 const msgCommon = tx(
   "rounded-lg px-2.5 py-2 text-pretty transition-all duration-300 flex flex-col gap-1.5",
@@ -111,6 +96,7 @@ export default function Chat() {
   const siteThemes = useThemes();
   const [userLanguage, setUserLanguage] = useState<string>();
   const [input, setInput] = useState("");
+  const debug = useDebugMode();
 
   // console.log({ site, page });
 
@@ -136,6 +122,40 @@ export default function Chat() {
     userLanguageRef.current = userLanguage;
   }, [site, page, generationState, userLanguage]);
 
+  const initialMessages = useMemo(() => {
+    if (generationState.isSetup) {
+      return [
+        {
+          id: "init-setup",
+          role: "user",
+          parts: [
+            {
+              type: "text",
+              text: `Create a website based on this prompt:\n${sitePrompt}`,
+            },
+          ],
+        },
+      ] satisfies UpstartUIMessage[];
+    } else {
+      return [
+        {
+          id: "init-edit",
+          role: "assistant",
+          parts: [
+            {
+              type: "text",
+              text: `Hey! 👋\n\nReady to keep building? You can:
+- Chat with me to make changes
+- Use the visual editor for direct editing
+
+What should we work on together? 🤖`,
+            },
+          ],
+        },
+      ] satisfies UpstartUIMessage[];
+    }
+  }, [generationState.isSetup, sitePrompt]);
+
   const { messages, sendMessage, error, status, regenerate, stop, addToolResult } = useChat<UpstartUIMessage>(
     {
       // resume: generationState.isReady === false,
@@ -152,37 +172,7 @@ export default function Chat() {
         }),
       }),
       sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
-      messages:
-        generationState.isReady === false
-          ? ([
-              {
-                id: "init-generate",
-                role: "user",
-                parts: [
-                  {
-                    type: "text",
-                    text: `Create a website based on this prompt:\n${sitePrompt}`,
-                  },
-                ],
-              },
-            ] satisfies UpstartUIMessage[])
-          : ([
-              {
-                id: "init-edit",
-                role: "assistant",
-                parts: [
-                  {
-                    type: "text",
-                    text: `Hey! 👋\n\nReady to keep building? You can:
-- Chat with me to make changes
-- Use the visual editor for direct editing
-
-What should we work on together? 🤖`,
-                  },
-                ],
-              },
-            ] satisfies UpstartUIMessage[]),
-
+      messages: initialMessages,
       generateId: createIdGenerator({
         prefix: "ups",
         separator: "_",
@@ -191,8 +181,7 @@ What should we work on together? 🤖`,
       onError: (error) => {
         console.error("ERROR", error);
       },
-      id: `chat-${site.id}`,
-
+      // id: `chat-${site.id}`,
       /**
        * For tools that should be called client-side
        */
@@ -351,6 +340,14 @@ What should we work on together? 🤖`,
           break;
         }
 
+        case "tool-createBrick": {
+          const brick = toolInvocation.output;
+          console.log("Generated brick", brick);
+          const { sectionId, index, parentBrickId } = toolInvocation.input;
+          draftHelpers.addBrick(brick, sectionId, index, parentBrickId);
+          break;
+        }
+
         case "tool-searchImages": {
           const images = toolInvocation.output;
           console.log("Generated images", images);
@@ -366,7 +363,7 @@ What should we work on together? 🤖`,
   }, [toolInvocations, draftHelpers, siteThemes]);
 
   // filter out the "init" messages
-  const displayedMessages = messages.filter((msg) => msg.id !== "init-generate" && msg.parts.length > 0);
+  const displayedMessages = messages.filter((msg) => msg.id !== "init-setup" && msg.parts.length > 0);
 
   return (
     <div
@@ -412,6 +409,7 @@ What should we work on together? 🤖`,
         {displayedMessages.map((msg, index) => (
           <div
             key={msg.id}
+            data-message-id={msg.id}
             className={tx(msg.role === "assistant" ? aiMsgClass : userMsgClass, msgCommon, "empty:hidden")}
           >
             {msg.parts.map((part, i) => {
@@ -450,38 +448,39 @@ What should we work on together? 🤖`,
                 //   return <p key={i}>{JSON.stringify(part)}</p>;
 
                 case "reasoning":
-                  if (index !== messages.length - 1 || msg.parts.length - 1 !== i) {
-                    // If the last message is not the current one, we don't show the reasoning
+                  if (!debug) {
+                    // Only show reasoning in debug mode
                     return null;
                   }
                   return (
-                    <p key={i} className="flex items-center gap-1.5">
-                      <Spinner size="1" className="mr-1" />
-                      <Text as="p" size="1" className="text-black/60">
-                        <details>
-                          <summary className="cursor-pointer list-none flex gap-1 items-center">
-                            <svg
-                              className="-rotate-90 transform opacity-60 transition-all duration-300"
-                              fill="none"
-                              height="14"
-                              width="14"
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              viewBox="0 0 24 24"
-                            >
-                              <title>Arrow</title>
-                              <polyline points="6 9 12 15 18 9" />
-                            </svg>
-                            <span className="text-xs font-normal">Thinking...</span>
-                          </summary>
-                          <Text size="2" className="text-gray-500">
-                            {part.text}
-                          </Text>
-                        </details>
-                      </Text>
-                    </p>
+                    <div key={i} className="flex items-center gap-1.5">
+                      <details>
+                        <summary className="cursor-pointer list-none flex gap-1 items-center">
+                          <svg
+                            className="-rotate-90 transform opacity-60 transition-all duration-300"
+                            fill="none"
+                            height="14"
+                            width="14"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                          >
+                            <title>Arrow</title>
+                            <polyline points="6 9 12 15 18 9" />
+                          </svg>
+                          <span className="text-xs font-normal">Thinking...</span>
+                        </summary>
+                        <Text
+                          as="div"
+                          size="2"
+                          className="text-gray-500 mt-2 ml-2 border-l-2 border-gray-300 pl-3"
+                        >
+                          <Markdown content={part.text} />
+                        </Text>
+                      </details>
+                    </div>
                   );
 
                 // case "file":
@@ -738,7 +737,7 @@ function ToolRenderer({
       <AnimatePresence initial={false}>
         {toolPart.state === "input-available" ? (
           <motion.div
-            className="flex items-center gap-1.5 font-medium"
+            className="flex items-center gap-1.5 font-medium flex-wrap"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}

@@ -3,6 +3,7 @@ import type { Site } from "./site";
 
 export type GenerationState = {
   isReady: boolean;
+  isSetup: boolean;
   hasSitemap: boolean;
   hasThemesGenerated: boolean;
 };

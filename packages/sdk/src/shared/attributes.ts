@@ -298,7 +298,6 @@ export const siteAttributesSchema = Type.Object(
         ],
       }),
     ),
-
     navbar: Type.Optional(
       Type.Composite([navbarManifest.props], {
         title: "Navbar",
@@ -312,7 +311,6 @@ export const siteAttributesSchema = Type.Object(
         // "ui:hidden": true, // Hidden in attributes panel. Users will have to click the brick to configure it, even if the configuration applies globally, so they have the same editing experience
       }),
     ),
-
     ogImage: Type.Optional(
       imageRef({
         title: "Social share image",
@@ -374,7 +372,7 @@ export const siteAttributesSchema = Type.Object(
   },
 );
 
-export const siteAttributesSchemaLLM = toLLMSchema(Type.Omit(siteAttributesSchema, ["navbar", "footer"]));
+export const siteAttributesSchemaLLM = toLLMSchema(siteAttributesSchema);
 export const pageAttributesSchemaLLM = toLLMSchema(pageAttributesSchema);
 
 export type PageAttributes = Static<typeof pageAttributesSchema>;

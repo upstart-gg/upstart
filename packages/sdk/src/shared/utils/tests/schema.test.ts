@@ -723,5 +723,8 @@ describe("toLLMSchema tests suite", () => {
   test("test with existing Upstart schema", () => {
     const transformed = toLLMSchema(sitemapSchema);
     expect(transformed.items.properties.id.type).toEqual(sitemapSchema.items.properties.id.type);
+
+    expect(siteAttributesSchemaLLM).toHaveProperty("type", "object");
+    console.dir(siteAttributesSchemaLLM, { depth: null });
   });
 });

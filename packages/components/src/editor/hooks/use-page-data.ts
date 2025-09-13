@@ -62,7 +62,7 @@ export interface DraftState extends DraftStateProps {
   moveBrickToSection: (id: string, sectionId: string | null, index?: number) => void;
   detachBrickFromContainer: (id: string) => void;
   upsertQuery: (query: Query) => void;
-  addBrick: (brick: Brick, sectiondId: string, index: number, parentContainerId: Brick["id"] | null) => void;
+  addBrick: (brick: Brick, sectiondId: string, index: number, parentContainerId?: Brick["id"] | null) => void;
   updateBrickProps: (id: string, props: Record<string, unknown>, isMobileProps?: boolean) => void;
   toggleBrickVisibility: (id: string, resolution: Resolution) => void;
   setPreviewTheme: (theme: Theme) => void;
@@ -499,18 +499,18 @@ export const createDraftStore = (
               const newBrick = deepCloneBrick(original.brick);
 
               // Update the brick map with the new brick and its children
-              const updateBrickMap = (brick: Brick, sectionId: string, parentId: string | null) => {
-                state.brickMap.set(brick.id, {
-                  brick,
-                  sectionId,
-                  parentId,
-                });
+              // const updateBrickMap = (brick: Brick, sectionId: string, parentId: string | null) => {
+              //   state.brickMap.set(brick.id, {
+              //     brick,
+              //     sectionId,
+              //     parentId,
+              //   });
 
-                if (brick.props.$children) {
-                  const children = brick.props.$children as Brick[];
-                  children.forEach((child) => updateBrickMap(child, sectionId, brick.id));
-                }
-              };
+              //   if (brick.props.$children) {
+              //     const children = brick.props.$children as Brick[];
+              //     children.forEach((child) => updateBrickMap(child, sectionId, brick.id));
+              //   }
+              // };
 
               // Add the duplicated brick to the appropriate location
               const { sectionId, parentId } = original;
@@ -535,7 +535,7 @@ export const createDraftStore = (
               }
 
               // Update the brickMap with the new brick and all its children
-              updateBrickMap(newBrick, sectionId, parentId);
+              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           updateBrickProps: (id, props, isMobileProps) =>
@@ -667,6 +667,8 @@ export const createDraftStore = (
                   section.bricks.splice(toIndex, 0, movedBrick);
                 }
               }
+
+              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           moveBrickToContainerBrick: (id, parentId, index) =>
@@ -711,33 +713,7 @@ export const createDraftStore = (
               (parent.props.$children as Brick[]).splice(index, 0, brick);
 
               // 3. Update the brickMap reference
-              const targetMapping = state.brickMap.get(parentId);
-              if (targetMapping) {
-                // Update the mapping for this brick
-                state.brickMap.set(id, {
-                  brick,
-                  sectionId: targetMapping.sectionId,
-                  parentId,
-                });
-
-                // Also update mappings for all children recursively
-                const updateChildMappings = (brickId: string, newSectionId: string) => {
-                  const mapping = state.brickMap.get(brickId);
-                  if (mapping?.brick.props?.$children) {
-                    const children = mapping.brick.props.$children as Brick[];
-                    children.forEach((child) => {
-                      state.brickMap.set(child.id, {
-                        brick: child,
-                        sectionId: newSectionId,
-                        parentId: brickId,
-                      });
-                      updateChildMappings(child.id, newSectionId);
-                    });
-                  }
-                };
-
-                updateChildMappings(id, targetMapping.sectionId);
-              }
+              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           moveBrickToSection: (id, sectionId, index) =>
@@ -930,7 +906,7 @@ export const createDraftStore = (
               state.brickMap.set(brick.id, {
                 brick,
                 sectionId,
-                parentId: parentContainerId,
+                parentId: parentContainerId ?? null,
               });
 
               // If this is a container brick with children, recursively add those to the brick map
@@ -1039,6 +1015,7 @@ export const useGenerationState = () => {
     return {
       hasSitemap,
       hasThemesGenerated,
+      isSetup,
       isReady: !isSetup || isReady,
     } satisfies GenerationState;
   });

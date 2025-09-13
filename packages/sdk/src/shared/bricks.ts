@@ -1,6 +1,6 @@
 import { Type, type Static, type TObject } from "@sinclair/typebox";
 import { customAlphabet } from "nanoid";
-import { defaultProps } from "./bricks/manifests/all-manifests";
+import { brickTypesEnumForLLM, defaultProps } from "./bricks/manifests/all-manifests";
 import { cssLengthRef } from "./bricks/props/css-length";
 import { enumProp } from "./bricks/props/enum";
 import { colorPresetRef } from "./bricks/props/color-preset";
@@ -13,6 +13,7 @@ import type { CommonBrickProps } from "./bricks/props/common";
 import { directionRef } from "./bricks/props/direction";
 import type { PageAttributes, SiteAttributes } from "./attributes";
 import { toLLMSchema } from "./utils/llm";
+import { BrickManifest } from "./brick-manifest";
 
 /**
  * Generates a unique identifier for bricks.
@@ -97,6 +98,23 @@ export const brickSchema = Type.Object(
   { additionalProperties: true },
 );
 
+export function makeFullBrickSchemaForLLM(props: TObject) {
+  return toLLMSchema(
+    Type.Object(
+      {
+        id: Type.String({
+          title: "ID",
+          description: "A unique identifier for the brick.",
+        }),
+        type: brickTypesEnumForLLM,
+        props,
+        mobileProps: Type.Optional(Type.Partial(props)),
+      },
+      { additionalProperties: false },
+    ),
+  );
+}
+
 export type Brick = Omit<Static<typeof brickSchema>, "props" | "mobileProps"> & {
   props: CommonBrickProps & Record<string, unknown>;
   mobileProps?: CommonBrickProps & Record<string, unknown>;
@@ -131,6 +149,7 @@ export const sectionProps = Type.Object(
         description: "Used for custom styling and layout.",
         enumNames: ["Navbar", "Footer", "Sidebar"],
         "ui:field": "hidden",
+        "ai:hidden": true,
       }),
     ),
     maxWidth: Type.Optional(
@@ -158,6 +177,8 @@ export const sectionProps = Type.Object(
           },
         ],
         description: "The maximum width of the section. Desktop only",
+        "ai:instructions":
+          "Choose the most appropriate max width for the section. You will likely use the same max width for all sections in a page.",
         displayAs: "button-group",
         "ui:responsive": "desktop",
       }),
@@ -170,7 +191,6 @@ export const sectionProps = Type.Object(
     alignItems: Type.Optional(
       alignItemsRef({
         default: "items-center",
-        description: "The vertical alignment of bricks within the section.",
       }),
     ),
     padding: Type.Optional(
@@ -206,7 +226,6 @@ export const sectionProps = Type.Object(
   },
   {
     additionalProperties: false,
-    "ai:instructions": "Do not use the border prop",
   },
 );
 
@@ -214,10 +233,12 @@ export const sectionSchema = Type.Object(
   {
     id: Type.String({
       description: "The unique ID of the section. Use a human readable url-safe slug",
+      examples: ["content-section", "contact-section"],
     }),
     label: Type.Optional(
       Type.String({
-        description: "The label (name) of the section. Used for editor purposes only.",
+        description: "The label of the section. Used for editor purposes only.",
+        examples: ["Content", "Contact"],
       }),
     ),
     order: Type.Number({
@@ -232,6 +253,9 @@ export const sectionSchema = Type.Object(
   },
 );
 
+const sectionSchemaNoBricks = Type.Omit(sectionSchema, ["bricks"]);
+
+export const sectionSchemaNoBricksLLM = toLLMSchema(sectionSchemaNoBricks);
 export const sectionSchemaLLM = toLLMSchema(sectionSchema);
 
 const sectionDefaultprops = getSchemaDefaults(sectionSchema.properties.props, "desktop");

@@ -24,7 +24,7 @@ export default function Text(_props: BrickProps<Manifest>) {
     >
       <TextContent
         propPath="content"
-        className={tx("text-pretty grow")}
+        className={tx("text-pretty grow prose")}
         brickId={brick.id}
         content={props.content}
         rawContent={brick.props.content}

@@ -1,22 +1,24 @@
-import type { PageContext } from "@upstart.gg/sdk/shared/page";
 import { usePageStyle } from "~/shared/hooks/use-page-style";
 import Section from "./Section";
-import type { Site } from "@upstart.gg/sdk/shared/site";
+import { usePageAttributes, useSections, useSiteAttributes } from "~/editor/hooks/use-page-data";
 
-export default function Page({ page, site }: { page: PageContext; site: Site }) {
+export default function Page() {
   const pageClassName = usePageStyle();
+  const sections = useSections();
+  const siteAttributes = useSiteAttributes();
+  const pageAttributes = usePageAttributes();
   return (
     <div className={pageClassName}>
-      {page.sections.map((section) => (
+      {sections.map((section) => (
         <Section key={section.id} section={section} />
       ))}
-      {site.attributes.bodyTags && (
+      {siteAttributes.bodyTags && (
         // biome-ignore lint/security/noDangerouslySetInnerHtml: Enable raw HTML
-        <div dangerouslySetInnerHTML={{ __html: site.attributes.bodyTags }} />
+        <div dangerouslySetInnerHTML={{ __html: siteAttributes.bodyTags }} />
       )}
-      {page.attributes.additionalTags?.bodyTags && (
+      {pageAttributes.additionalTags?.bodyTags && (
         // biome-ignore lint/security/noDangerouslySetInnerHtml: Enable raw HTML
-        <div dangerouslySetInnerHTML={{ __html: page.attributes.additionalTags.bodyTags }} />
+        <div dangerouslySetInnerHTML={{ __html: pageAttributes.additionalTags.bodyTags }} />
       )}
     </div>
   );

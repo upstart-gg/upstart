@@ -44,8 +44,13 @@ export default defineConfig(({ mode }) => ({
         changeOrigin: true, // Ensure the request appears to come from the frontend server
         secure: false,
         configure: (proxy, _options) => {
-          proxy.on("error", (err, _req, _res) => {
-            console.log("proxy error", err);
+          // console.log("listeners", proxy.listeners("error"));
+          proxy.on("error", (err, _req, res) => {
+            // don't crash the dev server on proxy errors
+            // this could easily happen of the monorepo is not running
+            if (!res.writableEnded) {
+              // res.end();
+            }
           });
           proxy.on("proxyRes", (proxyRes, req, _res) => {
             if (proxyRes.statusCode && proxyRes.statusCode >= 400) {

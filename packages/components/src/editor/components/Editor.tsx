@@ -72,16 +72,6 @@ export default function Editor(props: EditorProps) {
     }
   }, [draft.previewTheme, draft.site.theme]);
 
-  if (!editorEnabled) {
-    return (
-      <div className="@container">
-        <Suspense>
-          <Page page={draft.page} site={draft.site} />
-        </Suspense>
-      </div>
-    );
-  }
-
   return (
     <DragDropProvider
       onDragStart={(event, manager) => {
@@ -283,6 +273,8 @@ export default function Editor(props: EditorProps) {
           {generationState.isReady && (
             <Suspense>
               <DeviceFrame>
+                {/* FOR NOW LETS KEEP THE PAGE EDITABLE FOR DEV CONVENIENCE */}
+                {/* {!editorEnabled || generationState.isSetup ? <Page /> : <EditablePage />} */}
                 <EditablePage />
                 {draft.previewTheme && <ThemePreviewConfirmButton />}
               </DeviceFrame>

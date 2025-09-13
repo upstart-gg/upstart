@@ -34,6 +34,7 @@ export const manifest = defineBrickManifest({
         colorPresetRef({
           title: "Color",
           default: { color: "primary-500" },
+          examples: [{ color: "primary-500" }, { color: "neutral-900" }, { color: "secondary-200" }],
         }),
       ),
       brand: Type.Optional(
@@ -41,9 +42,12 @@ export const manifest = defineBrickManifest({
           title: "Brand name",
           default: "Acme Inc.",
           disableSizing: true,
+          "ai:instructions":
+            "The brand name of the website, for example the company name. Please provide it even if optional.",
           metadata: {
             category: "content",
           },
+          examples: ["Acme Inc.", "TechCorp Solutions", "ShopEasy", "Bella Vista"],
         }),
       ),
       logo: Type.Optional(
@@ -56,6 +60,7 @@ export const manifest = defineBrickManifest({
           metadata: {
             category: "content",
           },
+          "ai:hidden": true, // Hide from AI as it should always be provided if available
         }),
       ),
       hideBrand: Type.Optional(
@@ -68,7 +73,6 @@ export const manifest = defineBrickManifest({
           },
         }),
       ),
-
       linksTagsFilter: Type.Optional(
         tagsRef({
           title: "Pages tags",
@@ -77,6 +81,7 @@ export const manifest = defineBrickManifest({
           metadata: {
             category: "content",
           },
+          examples: [["navbar", "main"], ["top-menu"], ["important-link", "navbar"]],
         }),
       ),
       staticNavItems: Type.Optional(
@@ -88,10 +93,18 @@ export const manifest = defineBrickManifest({
           {
             title: "Static links",
             description: "Additional static navigation links to show in the navbar",
+            "ai:instructions": "Don't include pages already included by the tags filter.",
             default: [],
             metadata: {
               category: "content",
             },
+            examples: [
+              [
+                { urlOrPageId: "http://example.com/", label: "Other site" },
+                { urlOrPageId: "https://docs.example.com/", label: "External docs" },
+              ],
+              [{ urlOrPageId: "https://www.amazon.com/our-brand", label: "Buy our brand on Amazon" }],
+            ],
           },
         ),
       ),

@@ -18,20 +18,23 @@ export type ImageSearchParams = Static<typeof imageSearchSchema>;
 export const imageResultsSchema = Type.Array(
   Type.Object(
     {
-      provider: Type.String(),
-      description: Type.String(),
-      url: Type.String(),
-      blurHash: Type.String(),
+      provider: Type.String({ description: "The image provider (e.g. unsplash, pexels)" }),
+      description: Type.String({ description: "A brief description of the image" }),
+      url: Type.String({ description: "The URL of the image" }),
+      blurHash: Type.String({ description: "The blur hash of the image" }),
       user: Type.Object(
         {
-          name: Type.String(),
-          profile_url: Type.String(),
+          name: Type.String({ description: "The name of the user who uploaded the image" }),
+          profile_url: Type.String({ description: "The profile URL of the user who uploaded the image" }),
         },
         { additionalProperties: false },
       ),
     },
     { additionalProperties: false },
   ),
+  {
+    title: "Array of image search results",
+  },
 );
 
 export const imagesMapSchema = Type.Record(Type.String({ title: "Page id" }), imageResultsSchema);

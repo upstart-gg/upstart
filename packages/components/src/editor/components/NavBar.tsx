@@ -13,6 +13,7 @@ import { RiArrowDownSLine } from "react-icons/ri";
 import { RxRocket } from "react-icons/rx";
 import {
   useChatVisible,
+  useDebugMode,
   useEditorHelpers,
   useLogoLink,
   useModal,
@@ -45,6 +46,7 @@ export default function NavBar() {
   const pages = useSitemap();
   const site = useSite();
   const page = usePage();
+  const debug = useDebugMode();
   const { panel } = usePanel();
   const modal = useModal();
   const { canZoomIn, canZoomOut, zoomIn, zoomOut, zoom, resetZoom } = useZoom();
@@ -133,7 +135,7 @@ export default function NavBar() {
         </picture>
       </button>
 
-      <div className={tx("flex items-center gap-1 flex-1", !generationState.isReady && "hidden")}>
+      <div className={tx("flex items-center gap-1 flex-1", generationState.isSetup && !debug && "hidden")}>
         <TopbarMenu
           id="switch-page-menu-btn"
           items={[

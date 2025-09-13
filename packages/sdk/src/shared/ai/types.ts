@@ -46,6 +46,10 @@ export type Tools = {
     input: WaitingMessageSchema; // Just type the waiting message for now
     output: FooterProps;
   };
+  createBrick: {
+    input: WaitingMessageSchema & { sectionId: string; parentBrickId?: string; index: number }; // Just type the waiting message for now
+    output: Brick;
+  };
   createSiteAttributes: {
     input: WaitingMessageSchema; // Just type the waiting message for now
     output: SiteAttributes;

@@ -85,7 +85,7 @@ export function useBrickWrapperStyle<T extends BrickManifest>(_props: BrickProps
   const styleIds = Object.values(stylesProps);
   const classes = useClassesFromStyleProps(stylesProps, brick, "wrapper");
   const isContainer = !!manifest.isContainer;
-  const { isReady } = useGenerationState();
+  const { isSetup } = useGenerationState();
 
   return tx(
     manifest.staticClasses,
@@ -131,7 +131,7 @@ export function useBrickWrapperStyle<T extends BrickManifest>(_props: BrickProps
     // When a brick is hidden on mobile, hide the wrapper as well
     "@mobile:[&:has([data-mobile-hidden])]:hidden @desktop:[&:has([data-mobile-hidden])]:flex",
 
-    editable && !isReady && "animate animate-elastic-pop",
+    isSetup && "animate animate-elastic-pop",
 
     getBrickWrapperEditorStyles(_props),
 

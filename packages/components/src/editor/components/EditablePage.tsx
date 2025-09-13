@@ -12,7 +12,7 @@ import {
 import { useFontWatcher } from "../hooks/use-font-watcher";
 import { useGridObserver } from "../hooks/use-grid-observer";
 import { useResizable } from "../hooks/use-resizable";
-import Section from "./EditableSection";
+import EditableSection from "./EditableSection";
 import {
   useDraftHelpers,
   useSections,
@@ -35,9 +35,10 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const sections = useSections();
   const selectedBrickId = useSelectedBrickId();
   const selectedSectionId = useSelectedSectionId();
+  const { isSetup } = useGenerationState();
 
   const pageClassName = usePageStyle({
-    editable: true,
+    editable: !isSetup,
     showIntro,
   });
 
@@ -209,7 +210,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     >
       {/* If the navbar is enabled, set it statically */}
       {sections.map((section, index) => (
-        <Section key={section.id} section={section} index={index} />
+        <EditableSection key={section.id} section={section} index={index} />
       ))}
     </div>
   );

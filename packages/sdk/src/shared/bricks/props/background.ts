@@ -21,7 +21,7 @@ export function background(opts: BackgroundOptions = {}) {
         title: "Image",
         description: "The background image. Can be a URL or a data URI",
         format: "image",
-        examples: ["https://example.com/image.png", "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA..."],
+        examples: ["https://example.com/image.png"],
       }),
       size: Type.Optional(
         StringEnum(["auto", "cover", "contain"], {

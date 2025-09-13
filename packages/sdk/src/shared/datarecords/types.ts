@@ -22,7 +22,7 @@ const internalDatarecord = Type.Object(
     schema: Type.Any({
       title: "Schema",
       description:
-        "JSON Schema of the datarecord. Always of type 'object' and representing a row that will be saved.",
+        "JSON Schema of the datarecord. Always of type 'object' and representing a row that will be saved in the database.",
       examples: [
         {
           type: "object",
@@ -37,11 +37,26 @@ const internalDatarecord = Type.Object(
       ],
     }),
     indexes: Type.Array(
-      Type.Object({
-        name: Type.String({ title: "Index name" }),
-        fields: Type.Array(Type.String(), { title: "Fields to index" }),
-        unique: Type.Optional(Type.Boolean({ title: "Unique index", default: false })),
-      }),
+      Type.Object(
+        {
+          name: Type.String({ title: "Index name" }),
+          fields: Type.Array(Type.String(), { title: "Fields to index" }),
+          unique: Type.Optional(Type.Boolean({ title: "Unique index", default: false })),
+        },
+        {
+          examples: [
+            {
+              name: "unique_email_index",
+              fields: ["email"],
+              unique: true,
+            },
+            {
+              name: "lastname_index",
+              fields: ["lastname"],
+            },
+          ],
+        },
+      ),
       {
         title: "Indexes",
         description:

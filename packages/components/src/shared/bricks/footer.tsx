@@ -27,7 +27,7 @@ export default function Footer({ brick, editable }: BrickProps<Manifest>) {
         classes,
       )}
     >
-      {props.logo && (
+      {props.logo?.src && (
         <div
           className={tx(
             "items-center @desktop:(mr-10 col-span-1) @mobile:(flex col-start-1 col-span-2 justify-center)",
