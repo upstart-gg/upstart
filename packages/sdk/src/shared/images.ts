@@ -37,9 +37,6 @@ export const imageResultsSchema = Type.Array(
   },
 );
 
-export const imagesMapSchema = Type.Record(Type.String({ title: "Page id" }), imageResultsSchema);
-export type ImagesMap = Static<typeof imagesMapSchema>;
-
 export type ImageSearchResultsType = Static<typeof imageResultsSchema>;
 export type SimpleImageMetadata = Pick<
   ImageSearchResultsType[number],

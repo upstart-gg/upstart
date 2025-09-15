@@ -351,52 +351,137 @@ const filterExpression = Type.Recursive(
   },
 );
 
-export const querySchema = Type.Object({
-  id: Type.String({
-    title: "Query ID",
-    description:
-      "Unique identifier for the query. Used to reference the query in the system. URL-safe string like a slug.",
-  }),
-  label: Type.String({
-    title: "Label",
-    maxLength: 100,
-    description: "Label of the query displayed in the UI",
-  }),
-  datasourceId: Type.String({
-    title: "Database",
-    description: "ID of the datasource to query",
-  }),
-  limit: Type.Number({
-    title: "Limit",
-    description: "Limit the number of records to fetch from the datasource.",
-    minimum: 1,
-    default: 10,
-  }),
-  sortDirection: Type.Optional(
-    StringEnum(["asc", "desc"], {
-      title: "Sort",
-      enumNames: ["Ascending", "Descending"],
-      description: "Direction to sort the records by",
-      default: "desc",
-    }),
-  ),
-  sortField: Type.Optional(
-    Type.String({
-      title: "Sort Field",
-      description: "Field to sort by (must be an indexed field)",
-      default: "$publicationDate",
-    }),
-  ),
-  filters: Type.Optional(filterExpression),
-  parameters: Type.Optional(
-    Type.Array(Type.String(), {
-      title: "Parameters",
+export const querySchema = Type.Object(
+  {
+    id: Type.String({
+      title: "Query ID",
       description:
-        "Field names that will be used as parameters when using the query in pages. Only indexed fields can be used as parameters.",
-      default: [],
-      examples: [["$slug"], ["$id"], ["category", "tags"]],
+        "Unique identifier for the query. Used to reference the query in the system. URL-safe string like a slug.",
     }),
-  ),
-});
+    label: Type.String({
+      title: "Label",
+      maxLength: 100,
+      description: "Label of the query displayed in the UI",
+    }),
+    datasourceId: Type.String({
+      title: "Database",
+      description: "ID of the datasource to query",
+    }),
+    limit: Type.Number({
+      title: "Limit",
+      description: "Limit the number of records to fetch from the datasource.",
+      minimum: 1,
+      default: 10,
+    }),
+    sortDirection: Type.Optional(
+      StringEnum(["asc", "desc"], {
+        title: "Sort",
+        enumNames: ["Ascending", "Descending"],
+        description: "Direction to sort the records by",
+        default: "desc",
+      }),
+    ),
+    sortField: Type.Optional(
+      Type.String({
+        title: "Sort Field",
+        description: "Field to sort by (must be an indexed field)",
+        default: "$publicationDate",
+      }),
+    ),
+    filters: Type.Optional(filterExpression),
+    parameters: Type.Optional(
+      Type.Array(
+        Type.Object({
+          field: Type.String({ title: "Field", description: "Field name to use as parameter" }),
+          op: Type.Union(
+            [
+              Type.Literal("eq"),
+              Type.Literal("ne"),
+              Type.Literal("contains"),
+              Type.Literal("notContains"),
+              Type.Literal("startsWith"),
+              Type.Literal("notStartsWith"),
+              Type.Literal("endsWith"),
+              Type.Literal("notEndsWith"),
+              Type.Literal("lt"),
+              Type.Literal("lte"),
+              Type.Literal("gt"),
+              Type.Literal("gte"),
+              Type.Literal("before"),
+              Type.Literal("after"),
+              Type.Literal("beforeNow"),
+              Type.Literal("afterNow"),
+              Type.Literal("containsAll"),
+              Type.Literal("containsAny"),
+              Type.Literal("notContainsAny"),
+            ],
+            { title: "Operator", description: "Operator to use for the parameter" },
+          ),
+        }),
+        {
+          title: "Parameters",
+          description:
+            "Field name and operator that will be used as parameters when using the query in pages. Only indexed fields can be used as parameters.",
+          default: [],
+          examples: [
+            [{ field: "$slug", op: "eq" }],
+            [{ field: "category", op: "eq" }],
+            [{ field: "tags", op: "containsAny" }],
+            [{ field: "author", op: "eq" }],
+            [{ field: "title", op: "contains" }],
+          ],
+        },
+      ),
+    ),
+  },
+  {
+    examples: [
+      {
+        id: "latest-posts",
+        label: "Latest posts",
+        datasourceId: "blog_posts",
+        limit: 5,
+        sortDirection: "desc",
+        sortField: "$publicationDate",
+      },
+      {
+        id: "posts-by-category",
+        label: "Posts by category",
+        datasourceId: "blog_posts",
+        limit: 10,
+        sortDirection: "desc",
+        sortField: "$publicationDate",
+        parameters: [{ field: "category", op: "eq" }],
+      },
+      {
+        id: "posts-by-tag",
+        label: "Posts by tag",
+        datasourceId: "blog_posts",
+        limit: 10,
+        sortDirection: "desc",
+        sortField: "$publicationDate",
+        parameters: [{ field: "tags", op: "containsAny" }],
+      },
+      {
+        id: "author-posts",
+        label: "Author posts",
+        datasourceId: "blog_posts",
+        limit: 10,
+        sortDirection: "desc",
+        sortField: "$publicationDate",
+        parameters: [{ field: "author", op: "eq" }],
+      },
+      {
+        id: "search-posts",
+        label: "Search posts",
+        datasourceId: "blog_posts",
+        limit: 10,
+        sortDirection: "desc",
+        sortField: "$publicationDate",
+        parameters: [{ field: "title", op: "contains" }],
+      },
+    ],
+  },
+);
 
 export type Query = Static<typeof querySchema>;

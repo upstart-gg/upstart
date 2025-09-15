@@ -12,7 +12,6 @@ import {
 import {
   useDraggingBrickType,
   useEditorHelpers,
-  useIsMouseOverPanel,
   usePanel,
   usePreviewMode,
   useSelectedBrickId,
@@ -106,7 +105,6 @@ export function EditableBrickWrapperSimple({
   const [isMenuBarVisible, setMenuBarVisible] = useState(false);
   const allowedPlacements = useBarPlacements(brick);
   const draggingBrickType = useDraggingBrickType();
-  const isMouseOverPanel = useIsMouseOverPanel();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const isContainerChild = !!parentBrick;
   const cmdKeyPressed = useCmdOrCtrlPressed();
@@ -115,7 +113,6 @@ export function EditableBrickWrapperSimple({
 
   const isDragDisabled =
     !!isDynamicPreview ||
-    isMouseOverPanel ||
     !manifest.movable ||
     isContainerChild ||
     !!brick.props.ghost ||

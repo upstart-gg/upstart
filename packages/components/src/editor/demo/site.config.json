@@ -543,7 +543,7 @@
                     "id": "knLJyAM",
                     "type": "text",
                     "props": {
-                      "content": "Hello this is the first text in the dynamic box.<br />I'm on a new line explicitly.<br />I'm the third line and I'm the longest of them all! Yeah!"
+                      "content": "<h2>I'm an h2 heading!</h2>Hello this is the first text in the dynamic box.<br />I'm on a new line explicitly.<br />I'm the third line and I'm the longest of them all! Yeah!"
                     }
                   },
                   {

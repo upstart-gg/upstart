@@ -13,7 +13,7 @@ export default function ImagesGallery(props_: BrickProps<Manifest>) {
   const styles = useBrickStyle<Manifest>(brick);
 
   const images = (brickProps.images || []).filter(
-    ({ image }) => typeof image.src === "string" && image.src !== "",
+    ({ image }) => image && typeof image.src === "string" && image.src !== "",
   );
 
   // State for managing the selected image in the popover

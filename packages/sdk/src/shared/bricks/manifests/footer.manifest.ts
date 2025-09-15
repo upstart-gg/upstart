@@ -3,18 +3,18 @@ import { VscLayoutPanelOff } from "react-icons/vsc";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { array, defineProps } from "../props/helpers";
 import { imageRef } from "../props/image";
-import { paddingRef } from "../props/padding";
 import { colorPresetRef } from "../props/color-preset";
 import { string, urlOrPageIdRef } from "../props/string";
 import { fontSizeRef } from "../props/text";
 import type { BrickProps } from "../props/types";
 import { toLLMSchema } from "~/shared/utils/llm";
+import { cssLengthRef } from "../props/css-length";
 
 export const manifest = defineBrickManifest({
   type: "footer",
   name: "Footer",
   category: "layout",
-  description: "A footer with links and an optional logo",
+  description: "A footer with links and an optional logo.",
   aiInstructions: "This brick should be used on most sites/pages. It must be placed on its own section.",
   icon: VscLayoutPanelOff,
   staticClasses: "flex-1",
@@ -34,7 +34,16 @@ export const manifest = defineBrickManifest({
           default: { color: "neutral-600" },
         }),
       ),
-      padding: Type.Optional(paddingRef({ default: "p-10" })),
+      padding: Type.Optional(
+        cssLengthRef({
+          default: "4rem",
+          description: "Padding inside the footer.",
+          title: "Padding",
+          "ui:responsive": true,
+          "ui:placeholder": "Not specified",
+          "ui:styleId": "styles:padding",
+        }),
+      ),
       logo: Type.Optional(imageRef({ title: "Logo", "ui:no-object-options": true, "ui:no-alt-text": true })),
       fontSize: Type.Optional(fontSizeRef({ default: "text-sm", "ui:no-extra-large-sizes": true })),
       // rows:Type.Optional(number("Rows", { default: 1, "ui:field": "slider", minimum: 1, maximum: 5 })),

@@ -91,9 +91,9 @@
     "tippy.js": "6.3.7",
     "use-deep-compare": "1.3.0",
     "usehooks-ts": "3.1.1",
+    "zod": "4.1.5",
     "zundo": "2.3.0",
-    "zustand": "4.5.5",
-    "zod": "4.1.5"
+    "zustand": "4.5.5"
   },
   "devDependencies": {
     "@iconify/types": "2.0.0",
@@ -109,6 +109,7 @@
     "@upstart.gg/sdk": "workspace:*",
     "@upstart.gg/style-system": "workspace:*",
     "@vitejs/plugin-react": "^5.0.1",
+    "@vitejs/plugin-react-swc": "4.0.1",
     "cross-env": "^10.0.0",
     "cssnano": "7.0.7",
     "express": "^4.21.2",
@@ -122,11 +123,11 @@
   },
   "peerDependencies": {
     "@emotion/is-prop-valid": "^1.4.0",
+    "lodash-es": "^4.17.21",
+    "posthog-js": "^1.242.1",
     "react": "18.3.0-canary-3d9b20132-20240124",
     "react-dom": "18.3.0-canary-3d9b20132-20240124",
-    "posthog-js": "^1.242.1",
-    "react-icons": "^5.5.0",
-    "lodash-es": "^4.17.21"
+    "react-icons": "^5.5.0"
   },
   "publishConfig": {
     "access": "public"

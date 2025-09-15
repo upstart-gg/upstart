@@ -69,27 +69,32 @@ export const defaultProps: Record<keyof typeof manifests, BrickDefaults> = {
 };
 
 // Do not include footer, navbar and sidebar
-export const brickTypesEnumForLLM = StringEnum<(keyof typeof manifests)[]>([
-  textManifest.type,
-  heroManifest.type,
-  imageManifest.type,
-  videoManifest.type,
-  cardManifest.type,
-  mapManifest.type,
-  formManifest.type,
-  imagesWallManifest.type,
-  carouselManifest.type,
-  buttonManifest.type,
-  iconManifest.type,
-  socialLinksManifest.type,
-  boxManifest.type,
-  spacerManifest.type,
-  testimonialsManifest.type,
-  accordionManifest.type,
-  htmlManifest.type,
-]);
+export const brickTypes = StringEnum<(keyof typeof manifests)[]>(
+  [
+    textManifest.type,
+    heroManifest.type,
+    imageManifest.type,
+    videoManifest.type,
+    cardManifest.type,
+    mapManifest.type,
+    formManifest.type,
+    imagesWallManifest.type,
+    carouselManifest.type,
+    buttonManifest.type,
+    iconManifest.type,
+    socialLinksManifest.type,
+    boxManifest.type,
+    spacerManifest.type,
+    testimonialsManifest.type,
+    accordionManifest.type,
+    htmlManifest.type,
+  ],
+  {
+    title: "Brick type",
+  },
+);
 
-export type BrickTypeForLLM = Static<typeof brickTypesEnumForLLM>;
+export type BrickType = Static<typeof brickTypes>;
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export const examples: Record<string, { description: string; type: string; props: any }[]> = {

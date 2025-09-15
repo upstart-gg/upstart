@@ -6,7 +6,7 @@ import type { BrickProps } from "../props/types";
 import { borderRef, roundingRef } from "../props/border";
 import { shadowRef } from "../props/effects";
 import { Type } from "@sinclair/typebox";
-import { paddingRef } from "../props/padding";
+import { cssLengthRef } from "../props/css-length";
 
 export const manifest = defineBrickManifest({
   type: "video",
@@ -40,7 +40,16 @@ export const manifest = defineBrickManifest({
         "ui:responsive": "desktop",
       },
     }),
-    padding: Type.Optional(paddingRef({})),
+    padding: Type.Optional(
+      cssLengthRef({
+        description: "Padding inside the video player.",
+        "ai:instructions": "Use only a single value like '1rem' or '10px'",
+        title: "Padding",
+        "ui:responsive": true,
+        "ui:placeholder": "Not specified",
+        "ui:styleId": "styles:padding",
+      }),
+    ),
     rounding: Type.Optional(
       roundingRef({
         default: "rounded-md",

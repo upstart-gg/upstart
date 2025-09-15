@@ -5,17 +5,17 @@ import { StringEnum } from "~/shared/utils/string-enum";
 import { borderRef, roundingRef } from "../props/border";
 import { datarecord } from "../props/datarecord";
 import { defineProps, group } from "../props/helpers";
-import { paddingRef } from "../props/padding";
 import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { fontSizeRef } from "../props/text";
 import { colorPresetRef } from "../props/color-preset";
 import { directionRef } from "../props/direction";
+import { cssLengthRef } from "../props/css-length";
 
 export const manifest = defineBrickManifest({
   type: "form",
   name: "Form",
-  description: "A form element",
+  description: "A form element.",
   aiInstructions: `The form brick automatically renders form fields based on the datarecord id provided in the props.
 There is no need to define the form fields manually and the form does not accept any children`,
   isContainer: false,
@@ -44,8 +44,13 @@ There is no need to define the form fields manually and the form does not accept
       }),
     ),
     padding: Type.Optional(
-      paddingRef({
-        default: "p-4",
+      cssLengthRef({
+        default: "2rem",
+        description: "Padding inside the form.",
+        title: "Padding",
+        "ui:responsive": true,
+        "ui:placeholder": "Not specified",
+        "ui:styleId": "styles:padding",
       }),
     ),
     rounding: Type.Optional(
@@ -176,13 +181,14 @@ export const examples: {
     },
   },
   {
-    description: "Newsletter subscription form (horizontal)",
+    description: "Newsletter subscription form (horizontal) with large padding",
     type: "form",
     props: {
       title: "Stay Updated",
       intro: "Subscribe to our newsletter for the latest updates and exclusive content.",
       direction: "flex-col",
       datarecordId: "newsletter-subscription",
+      padding: "3rem",
       buttonLabel: "Subscribe",
       button: {
         size: "block",

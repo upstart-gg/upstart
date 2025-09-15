@@ -131,7 +131,7 @@ export function useBrickWrapperStyle<T extends BrickManifest>(_props: BrickProps
     // When a brick is hidden on mobile, hide the wrapper as well
     "@mobile:[&:has([data-mobile-hidden])]:hidden @desktop:[&:has([data-mobile-hidden])]:flex",
 
-    isSetup && "animate animate-elastic-pop",
+    isSetup && "animate animate-reveal-brick",
 
     getBrickWrapperEditorStyles(_props),
 

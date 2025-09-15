@@ -12,7 +12,7 @@ export const manifest = defineBrickManifest({
   type: "icon",
   name: "Icon",
   category: "basic",
-  description: "An icon",
+  description: "An icon.",
   aiInstructions: "Uses iconify references",
   resizable: false,
   staticClasses: "grow-0",

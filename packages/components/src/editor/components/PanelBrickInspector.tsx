@@ -14,7 +14,7 @@ import { filterSchemaProperties } from "@upstart.gg/sdk/shared/utils/schema";
 import { useSectionByBrickId, useDraftHelpers, usePageQueries } from "../hooks/use-page-data";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
 
-type TabType = "preset" | "settings" | "content";
+type TabType = "preset" | "settings" | "content" | "debug";
 
 export default function PanelBrickInspector({ brick }: { brick: Brick }) {
   const previewMode = usePreviewMode();
@@ -42,16 +42,20 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
   const showTabsList = hasContentProperties || debugMode;
   const selectedTab = tabsMapping[brick.type] ?? (hasContentProperties ? "content" : "settings");
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    if (!hasContentProperties && selectedTab === "content") {
+    if ((!hasContentProperties && selectedTab === "content") || (selectedTab === "debug" && !debugMode)) {
       setTabsMapping((prev) => ({ ...prev, [brick.type]: "settings" }));
     }
-  }, [setTabsMapping, brick.type, selectedTab, hasContentProperties]);
+  }, [brick.type, selectedTab, hasContentProperties]);
 
   if (!section) {
     console.warn(`No section found for brick: ${brick.id}`);
+    console.log({ brick });
     return null;
   }
+
+  console.dir({ brick, section, tabsMapping });
 
   return (
     <div key={`brick-inspector-${brick.id}`} className="flex flex-col flex-grow h-full">

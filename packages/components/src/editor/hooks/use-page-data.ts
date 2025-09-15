@@ -17,6 +17,7 @@ import { createStore, useStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import type { PageAttributes, SiteAttributes } from "@upstart.gg/sdk/shared/attributes";
+import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
 export type { Immer } from "immer";
 
 enableMapSet();
@@ -47,6 +48,8 @@ export interface DraftStateProps {
    * Map of brick IDs to their metadata - temporary structure to facilitate dealing with the nested structure
    */
   brickMap: Map<string, { brick: Brick; sectionId: string; parentId: string | null }>;
+
+  additionalAssets: ImageSearchResultsType;
 }
 
 export interface DraftState extends DraftStateProps {
@@ -82,6 +85,7 @@ export interface DraftState extends DraftStateProps {
   addPage: (page: VersionedPage) => void;
   addDatasource: (datasource: Datasource) => void;
   addDatarecord: (datarecord: Datarecord) => void;
+  addAdditionalAssets: (assets: ImageSearchResultsType) => void;
 
   setSitemap(sitemap: Site["sitemap"]): void;
 
@@ -114,6 +118,7 @@ export const createDraftStore = (
 ) => {
   const DEFAULT_PROPS = {
     data: {},
+    additionalAssets: [],
     brickMap: buildBrickMap(initProps.page.sections),
   } satisfies Partial<DraftStateProps>;
   return createStore<DraftState>()(
@@ -122,6 +127,11 @@ export const createDraftStore = (
         immer((set, _get) => ({
           ...DEFAULT_PROPS,
           ...initProps,
+
+          addAdditionalAssets: (assets) =>
+            set((state) => {
+              state.additionalAssets.push(...assets);
+            }),
 
           upsertQuery: (query: Query) =>
             set((state) => {
@@ -181,7 +191,9 @@ export const createDraftStore = (
                 order: nextOrder,
                 label: `Section ${count + 1}`,
                 bricks: [],
-                props: {},
+                props: {
+                  direction: "flex-row",
+                },
               };
               // Update all section that have an order greater than or equal to nextOrder
               state.page.sections.forEach((s) => {
@@ -301,6 +313,7 @@ export const createDraftStore = (
                   ...sectionData,
                 };
               }
+              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           duplicateSection: (id) =>
@@ -367,6 +380,8 @@ export const createDraftStore = (
               const temp = section.order;
               section.order = previous.order;
               previous.order = temp;
+
+              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           moveSectionDown: (sectionId) =>
@@ -390,6 +405,8 @@ export const createDraftStore = (
 
               state.page.sections[sectionIndex].order = nextOrder;
               state.page.sections[nextIndex].order = currentOrder;
+
+              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           reorderSections: (orderedIds) =>
@@ -461,11 +478,8 @@ export const createDraftStore = (
                 section.bricks = section.bricks.filter((b) => b.id !== id);
               }
 
-              // 3. delete brick and children ids in brickMap
-              state.brickMap.delete(id);
-              childrenIds.forEach((childId) => {
-                state.brickMap.delete(childId);
-              });
+              // 3. rebuild the brickMap without the deleted brick and its children
+              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           duplicateBrick: (id) =>
@@ -570,8 +584,9 @@ export const createDraftStore = (
                 } else {
                   section.props = mergeIgnoringArrays({}, section.props, props, {
                     lastTouched: Date.now(),
-                  });
+                  }) as Section["props"];
                 }
+                state.brickMap = buildBrickMap(state.page.sections);
               } else {
                 console.warn("Cannot update section %s, it does not exist", id);
               }
@@ -716,6 +731,9 @@ export const createDraftStore = (
               state.brickMap = buildBrickMap(state.page.sections);
             }),
 
+          /**
+           * @todo check bricksmap update
+           */
           moveBrickToSection: (id, sectionId, index) =>
             set((state) => {
               const brick = state.getBrick(id);
@@ -1010,7 +1028,12 @@ export const useGenerationState = () => {
     const hasSitemap = state.site.sitemap.length > 0;
     const hasThemesGenerated = state.site.themes.length > 0;
     const hasPages = state.page.id !== "_default_";
-    const isReady = hasSitemap && hasThemesGenerated && hasPages;
+    const isReady =
+      hasSitemap &&
+      hasThemesGenerated &&
+      hasPages &&
+      state.page.sections.length > 0 &&
+      state.page.sections.some((s) => s.bricks.length > 0);
     const isSetup = new URL(window.location.href).searchParams.get("action") === "setup";
     return {
       hasSitemap,
@@ -1179,6 +1202,7 @@ export const usePageQueries = () => {
 export const useDraftHelpers = () => {
   const ctx = usePageContext();
   return useStore(ctx, (state) => ({
+    addAdditionalAssets: state.addAdditionalAssets,
     deleteBrick: state.deleteBrick,
     detachBrickFromContainer: state.detachBrickFromContainer,
     updateSiteAttributes: state.updateSiteAttributes,
@@ -1286,6 +1310,11 @@ export const usePagePathParams = () => {
     const matches = Array.from(path.matchAll(regex));
     return matches.map((match) => match[0]);
   });
+};
+
+export const useAdditionalAssets = () => {
+  const ctx = usePageContext();
+  return useStore(ctx, (state) => state.additionalAssets);
 };
 
 function getBrickFromMap(id: string, state: DraftState) {

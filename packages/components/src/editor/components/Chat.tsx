@@ -1,14 +1,21 @@
 import { tx, css } from "@upstart.gg/style-system/twind";
-import { Button, Text, Switch } from "@upstart.gg/style-system/system";
+import { Button, Text, Switch, toast } from "@upstart.gg/style-system/system";
 import { motion, AnimatePresence } from "motion/react";
-import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls, type ToolUIPart } from "ai";
+import {
+  DefaultChatTransport,
+  type DynamicToolUIPart,
+  lastAssistantMessageIsCompleteWithToolCalls,
+  tool,
+  type ToolUIPart,
+} from "ai";
 
 import { TbSend2 } from "react-icons/tb";
 import { IoIosAttach } from "react-icons/io";
-import { useChat } from "@ai-sdk/react";
+import { useChat, type UseChatHelpers } from "@ai-sdk/react";
 import { type FormEvent, useEffect, useMemo, useRef, useState, Suspense } from "react";
 import { createIdGenerator } from "ai";
 import {
+  useAdditionalAssets,
   useDraftHelpers,
   useGenerationState,
   usePage,
@@ -27,11 +34,12 @@ import { useDebugMode, useEditorHelpers } from "../hooks/use-editor";
 import { defineDatasource } from "@upstart.gg/sdk/shared/datasources";
 import type { Tools, UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
 import Markdown from "./Markdown";
+import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
 
 const WEB_SEARCH_ENABLED = false;
 
 const msgCommon = tx(
-  "rounded-lg px-2.5 py-2 text-pretty transition-all duration-300 flex flex-col gap-1.5",
+  "rounded-lg p-6 text-pretty transition-all duration-300 flex flex-col gap-1.5",
   css({
     // whiteSpace: "pre-line",
     "& p": {
@@ -89,7 +97,7 @@ export default function Chat() {
   const sitePrompt = useSitePrompt();
   const setupRef = useRef(false);
   const draftHelpers = useDraftHelpers();
-  const { setImagesSearchResults } = useEditorHelpers();
+  const additionalAssets = useAdditionalAssets();
   const generationState = useGenerationState();
   const site = useSite();
   const page = usePage();
@@ -97,6 +105,15 @@ export default function Chat() {
   const [userLanguage, setUserLanguage] = useState<string>();
   const [input, setInput] = useState("");
   const debug = useDebugMode();
+  const [showToastWorking, setShowToastWorking] = useState(generationState.isSetup);
+
+  useEffect(() => {
+    if (showToastWorking) {
+      toast.loading("Setting up your site...", { duration: Infinity, id: "chat-setup" });
+    } else {
+      toast.dismiss("chat-setup");
+    }
+  }, [showToastWorking]);
 
   // console.log({ site, page });
 
@@ -107,7 +124,7 @@ export default function Chat() {
     "text-black/80 dark:text-upstart-200",
     generationState.isReady
       ? "bg-gradient-to-tr from-upstart-200/80 to-upstart-100 text-sm"
-      : "bg-white/80 dark:bg-dark-800 text-fluid-sm",
+      : "bg-white/80 dark:bg-dark-800 text-fluid-sm backdrop-blur-md",
   );
 
   const siteRef = useRef(site);
@@ -173,11 +190,11 @@ What should we work on together? 🤖`,
       }),
       sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
       messages: initialMessages,
-      generateId: createIdGenerator({
-        prefix: "ups",
-        separator: "_",
-        size: 16,
-      }),
+      // generateId: createIdGenerator({
+      //   prefix: "ups",
+      //   separator: "_",
+      //   size: 16,
+      // }),
       onError: (error) => {
         console.error("ERROR", error);
       },
@@ -185,15 +202,152 @@ What should we work on together? 🤖`,
       /**
        * For tools that should be called client-side
        */
-      // onToolCall: ({ toolCall }) => {
-      //   console.log("Tool call: %s: ", toolCall.toolName, toolCall);
-      //   // The "done" tool is a special case that indicates the server has finished processing the request.
-      //   // We need to handle it client-side and return the "result" for the tool call.
-      //   // here, we just return true to indicate that we handled the tool call
-      //   if (toolCall.toolName === "done") {
-      //     return true;
-      //   }
-      // },
+      onToolCall: ({ toolCall }) => {
+        console.log("Tool call: %s: ", toolCall.toolName, toolCall);
+        // The "done" tool is a special case that indicates the server has finished processing the request.
+        // We need to handle it client-side and return the "result" for the tool call.
+        // here, we just return true to indicate that we handled the tool call
+        const toolResult = { tool: toolCall.toolName as keyof Tools, toolCallId: toolCall.toolCallId };
+
+        switch (toolCall.toolName) {
+          case "listThemes": {
+            console.debug("Cient tool call %s", toolCall.toolName, " replying with themes", siteThemes);
+            addToolResult({
+              ...toolResult,
+              output: site.themes,
+            });
+            break;
+          }
+          case "getCurrentTheme": {
+            console.debug(
+              "Client tool call %s",
+              toolCall.toolName,
+              " replying with current theme ",
+              site.theme,
+            );
+            addToolResult({
+              ...toolResult,
+              output: site.theme,
+            });
+            break;
+          }
+          case "listAssets": {
+            console.debug(
+              "Client tool call %s",
+              toolCall.toolName,
+              " replying with assets ",
+              additionalAssets,
+            );
+            addToolResult({
+              ...toolResult,
+              output: additionalAssets ?? [],
+            });
+            break;
+          }
+          case "getSitemap": {
+            console.debug("Client tool call %s", toolCall.toolName, " replying with sitemap ", site.sitemap);
+            addToolResult({
+              ...toolResult,
+              output: site.sitemap,
+            });
+            break;
+          }
+          case "getSiteAttributes": {
+            console.debug(
+              "Client tool call %s",
+              toolCall.toolName,
+              " replying with site attributes ",
+              site.attributes,
+            );
+            addToolResult({
+              ...toolResult,
+              output: site.attributes,
+            });
+            break;
+          }
+          case "listDatasources": {
+            console.debug(
+              "Client tool call %s",
+              toolCall.toolName,
+              " replying with datasources ",
+              site.datasources,
+            );
+            addToolResult({
+              ...toolResult,
+              output: site.datasources,
+            });
+            break;
+          }
+          case "listDatarecords": {
+            console.debug(
+              "Client tool call %s",
+              toolCall.toolName,
+              " replying with datarecords ",
+              site.datarecords,
+            );
+            addToolResult({
+              ...toolResult,
+              output: site.datarecords,
+            });
+            break;
+          }
+          case "listSiteQueries": {
+            console.debug(
+              "Client tool call %s",
+              toolCall.toolName,
+              " replying with site queries ",
+              site.attributes.queries,
+            );
+            addToolResult({
+              ...toolResult,
+              output: site.attributes.queries || [],
+            });
+            break;
+          }
+          case "getCurrentPage": {
+            console.debug("Client tool call %s", toolCall.toolName, " replying with current page ", page);
+            addToolResult({
+              ...toolResult,
+              output: page,
+            });
+            break;
+          }
+          case "getSection": {
+            const input = toolCall.input as Tools["getSection"]["input"];
+            console.debug(
+              "Client tool call %s",
+              toolCall.toolName,
+              " replying with section ",
+              input.id,
+              page.sections,
+            );
+            addToolResult({
+              ...toolResult,
+              output:
+                page.sections.find((s) => s.id === input.id) ?? `Section with id '${input.id}' not found`,
+            });
+            break;
+          }
+          case "listSections": {
+            console.debug(
+              "Client tool call %s",
+              toolCall.toolName,
+              " replying with sections ",
+              page.sections,
+            );
+            addToolResult({
+              ...toolResult,
+              output: page.sections,
+            });
+            break;
+          }
+
+          default:
+            if (toolCall.toolName.startsWith("get") || toolCall.toolName.startsWith("list")) {
+              console.log("UNHANDLED TOOL CALL client-side", toolCall.toolName);
+            }
+        }
+      },
     },
   );
   const promptRef = useRef<HTMLTextAreaElement>(null);
@@ -246,7 +400,6 @@ What should we work on together? 🤖`,
       .filter((msg) => msg.role === "assistant")
       .flatMap((msg) => msg.parts as ToolUIPart<Tools>[])
       .filter((part) => part.type.startsWith("tool-"))
-      // .map((part) => part.toolInvocation)
       .filter(
         (part) => part.state === "output-available" && !handledToolResults.current.has(part.toolCallId),
       );
@@ -281,6 +434,20 @@ What should we work on together? 🤖`,
         //   const pageClone = structuredClone(page);
         //   console.log("Editing page, result", result);
         //   applyPatch(pageClone, result.patches);
+        //   break;
+        // }
+
+        // case "dynamic-tool": {
+        //   console.log("Dynamic tool part", toolInvocation.output);
+        //   if (toolInvocation.toolName === "createBrick") {
+        //     const { sectionId, index, parentBrickId, brick } = toolInvocation.output as {
+        //       brick: Brick;
+        //       sectionId: string;
+        //       index: number;
+        //       parentBrickId?: string;
+        //     };
+        //     draftHelpers.addBrick(brick, sectionId, index, parentBrickId);
+        //   }
         //   break;
         // }
 
@@ -333,25 +500,43 @@ What should we work on together? 🤖`,
           break;
         }
 
+        case "tool-createSiteQueries": {
+          const queries = toolInvocation.output;
+          console.log("Generated site queries", queries);
+          draftHelpers.updateSiteAttributes({
+            queries: [...(site.attributes.queries ?? []), ...queries],
+          });
+          break;
+        }
+
+        case "tool-editSiteQueries": {
+          const queries = toolInvocation.output;
+          console.log("Edited site queries", queries);
+          draftHelpers.updateSiteAttributes({
+            queries: [...(site.attributes.queries ?? []), ...queries],
+          });
+          break;
+        }
+
         case "tool-createSection": {
           const section = toolInvocation.output;
           console.log("Generated section", section);
-          draftHelpers.addSection(section);
+          draftHelpers.addSection({ ...section, bricks: [] });
           break;
         }
 
         case "tool-createBrick": {
           const brick = toolInvocation.output;
           console.log("Generated brick", brick);
-          const { sectionId, index, parentBrickId } = toolInvocation.input;
-          draftHelpers.addBrick(brick, sectionId, index, parentBrickId);
+          const { sectionId, index } = toolInvocation.input;
+          draftHelpers.addBrick(brick, sectionId, index);
           break;
         }
 
         case "tool-searchImages": {
           const images = toolInvocation.output;
           console.log("Generated images", images);
-          setImagesSearchResults(images);
+          draftHelpers.addAdditionalAssets(images);
           break;
         }
 
@@ -363,44 +548,42 @@ What should we work on together? 🤖`,
   }, [toolInvocations, draftHelpers, siteThemes]);
 
   // filter out the "init" messages
-  const displayedMessages = messages.filter((msg) => msg.id !== "init-setup" && msg.parts.length > 0);
+  const displayedMessages = messages.filter((msg) => msg.id !== "init-setup" /*&& msg.parts.length > 0*/);
 
   return (
     <div
       className={tx(
         "flex flex-col mx-auto w-full",
         {
-          "rounded-xl animate-border h-[calc(100%-6rem)] max-h-[calc(100%-6rem)] my-[3rem]":
+          "rounded-xl h-[calc(100%-6rem)] max-h-[calc(100%-6rem)] my-[3rem] ":
             generationState.isReady === false,
           "rounded-tr-xl bg-gray-50 max-h-[inherit]": generationState.isReady === true,
         },
         css({
           gridArea: "chat",
-          maxWidth: generationState.isReady ? "none" : "clamp(500px, 40dvw, 640px)",
+          maxWidth: generationState.isReady ? "none" : "clamp(500px, 60dvw, 740px)",
         }),
         generationState.isReady === false &&
           css({
-            scrollbarColor: "var(--violet-4) var(--violet-2)",
-            border: "2px solid transparent",
-            boxShadow: "rgba(100, 100, 111, 0.3) 0px 0px 36px 0px",
+            // boxShadow: "rgba(100, 100, 111, 0.3) 0px 0px 36px 0px",
             // padding: "12px",
-            background: `linear-gradient(#ffffff, #ffffff) padding-box, linear-gradient(var(--border-angle), transparent 15%, #9291e7, #7270c6, #c050c2, #ef50a2, #ff6285, #ff806b, #ffa25a, #ffc358, transparent 85%) border-box`,
           }),
       )}
     >
       <div
         ref={messagesListRef}
         className={tx(
-          // h-full max-h-[calc(100cqh-250px)]
           ` overflow-y-auto h-[calc(100cqh-250px-6rem)]
-            flex flex-col gap-y-2.5 flex-grow scroll-smooth scrollbar-thin relative`,
+            flex flex-col gap-y-2.5 flex-grow scroll-smooth relative`,
           {
             "rounded-tr-xl shadow-inner": generationState.isReady === true,
+            "rounded-xl": generationState.isReady === false,
             "p-2": generationState.isReady === true,
-            "p-6 pb-12": generationState.isReady === false,
+            "p-0": generationState.isReady === false,
           },
           css({
-            scrollbarColor: "var(--violet-a8) var(--violet-a2)",
+            scrollbarWidth: "none",
+            // scrollbarColor: "var(--violet-a8) var(--violet-a2)",
             // scrollbarColor: "var(--violet-4) var(--violet-2)",
             // scrollbarGutter: "stable",
           }),
@@ -419,12 +602,17 @@ What should we work on together? 🤖`,
                     key={i}
                     toolPart={part as ToolUIPart<Tools>}
                     addToolResult={addToolResult}
+                    sendMessage={sendMessage}
                     error={error}
                   />
                 );
               }
 
               switch (part.type) {
+                case "dynamic-tool": {
+                  // console.log("Dynamic tool part", part);
+                  return null;
+                }
                 case "text":
                   return (
                     <Suspense key={i}>
@@ -496,7 +684,9 @@ What should we work on together? 🤖`,
               animate={{ opacity: 1, height: "1.5rem" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.2 }}
-              className={tx("px-2 my-4 text-fluid-sm text-gray-600 flex items-center justify-center gap-1.5")}
+              className={tx(
+                "p-4 my-4 text-fluid-sm text-gray-600 flex items-center justify-center gap-1.5 backdrop-blur-md bg-white/80 max-w-fit mx-auto rounded-lg",
+              )}
             >
               <Spinner size="2" /> Please wait...
             </motion.div>
@@ -523,10 +713,10 @@ What should we work on together? 🤖`,
       <form
         onSubmit={onSubmit}
         className={tx(
-          "flex flex-col flex-1 min-h-[150px] max-h-[150px] gap-1.5 p-2 justify-center ",
+          "flex flex-col flex-1 min-h-[150px] max-h-[150px] gap-1.5 p-2 justify-center mt-2",
           "bg-upstart-100 border-t border-upstart-300 relative",
           // generationState.isReady === false && "hidden",
-          generationState.isReady === false && "rounded-b-xl",
+          generationState.isReady === false && "rounded-lg",
           // "[&:has(textarea:focus)]:(ring-2 ring-upstart-700)",
         )}
       >
@@ -602,12 +792,14 @@ What should we work on together? 🤖`,
 
 function ImagesPreview({ query, images }: { query: string; images: SimpleImageMetadata[] }) {
   return (
-    <div className="basis-full flex flex-col gap-2 mt-1 mb-3 text-sm ml-6 font-normal" key={query}>
-      <div className="grid grid-cols-3 gap-1 max-h-60">
+    <div className="basis-full flex flex-col gap-2 mt-1 mb-6 text-sm ml-6 font-normal">
+      <div className="grid grid-cols-3 gap-1 min-h-60 max-h-60">
         {images.map((image, index) => (
           <div
             key={image.url}
-            className="rounded-md relative  z-10 hover:(scale-110 z-50) transition-transform duration-150"
+            className={tx(
+              "rounded-md relative z-10 hover:z-50 hover:(scale-110 shadow-2xl) transition-transform duration-150",
+            )}
           >
             <img
               key={image.url}
@@ -651,22 +843,16 @@ const hiddenTools = ["setUserLanguage", "getUserLanguage"];
 
 function ToolRenderer({
   toolPart,
+  sendMessage,
   addToolResult,
   error,
 }: {
   toolPart: ToolUIPart<Tools>;
   error?: Error;
-  addToolResult: ({
-    tool,
-    toolCallId,
-    output,
-  }: {
-    tool: keyof Tools;
-    toolCallId: string;
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    output: any;
-  }) => void;
+  addToolResult: UseChatHelpers<UpstartUIMessage>["addToolResult"];
+  sendMessage: UseChatHelpers<UpstartUIMessage>["sendMessage"];
 }) {
+  const debug = useDebugMode();
   // Some tools are not meant to be displayed in the chat, like the "setUserLanguage" tool
   if (hiddenTools.includes(toolPart.type)) {
     return null;
@@ -704,6 +890,9 @@ function ToolRenderer({
                         toolCallId: toolPart.toolCallId,
                         output: choice,
                       });
+                      // sendMessage({
+                      //   text: choice,
+                      // });
                     }}
                   >
                     {choice}
@@ -732,7 +921,7 @@ function ToolRenderer({
     );
   }
 
-  if (toolPart.type !== "tool-askUserChoice" && "waitingMessage" in (toolPart.input ?? {})) {
+  if (toolPart.type !== "tool-askUserChoice" && toolPart.input && "waitingMessage" in toolPart.input) {
     return (
       <AnimatePresence initial={false}>
         {toolPart.state === "input-available" ? (
@@ -754,13 +943,13 @@ function ToolRenderer({
           >
             <MdDone className="w-4 h-4 text-green-600" />
             <span>{toolPart.input.waitingMessage}</span>
-            {toolPart.type === "tool-searchImages" && (
+            {/* {toolPart.type === "tool-searchImages" && (
               <ImagesPreview
                 key={toolPart.toolCallId}
                 query={toolPart.input.query}
                 images={toolPart.output}
               />
-            )}
+            )} */}
           </motion.div>
         ) : toolPart.state === "output-error" ? (
           <motion.div
@@ -771,11 +960,48 @@ function ToolRenderer({
           >
             <MdDone className="w-4 h-4 text-red-600" />
             <span>
-              Error in tool <i>{toolPart.type.substring(5)}</i>
+              {toolPart.input.waitingMessage} (Error: {toolPart.errorText})
             </span>
           </motion.div>
         ) : null}
       </AnimatePresence>
+    );
+  }
+
+  if (debug) {
+    const codeClassName = tx(
+      css({
+        display: "block",
+        fontFamily: "monospace",
+        fontSize: "0.7rem",
+        lineHeight: "1.3",
+        wordWrap: "break-word",
+        whiteSpace: "pre-wrap",
+      }),
+    );
+    return (
+      <details>
+        <summary className="cursor-pointer list-none flex gap-1 items-center">
+          <svg
+            className="-rotate-90 transform opacity-60 transition-all duration-300"
+            fill="none"
+            height="14"
+            width="14"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <title>Arrow</title>
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+          <span className="text-xs font-normal">
+            Tool: {toolPart.type} ({toolPart.state})
+          </span>
+        </summary>
+        <pre className={codeClassName}>{JSON.stringify(toolPart, null, 2)}</pre>
+      </details>
     );
   }
 

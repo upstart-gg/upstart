@@ -1,7 +1,6 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { textContentRef } from "../props/text";
 import { defineProps } from "../props/helpers";
-import { paddingRef } from "../props/padding";
 import { borderRef, roundingRef } from "../props/border";
 import { RxTextAlignLeft } from "react-icons/rx";
 import type { BrickProps } from "../props/types";
@@ -10,15 +9,16 @@ import { alignItemsRef } from "../props/align";
 import { shadowRef } from "../props/effects";
 import { colorPresetRef } from "../props/color-preset";
 import { loopRef } from "../props/dynamic";
+import { cssLengthRef } from "../props/css-length";
 
 export const manifest = defineBrickManifest({
   type: "text",
   category: "basic",
   name: "Text",
   description: "Text with formatting options",
-  aiInstructions: `Text "content" can contain minimal HTML tags like <strong>, <em>, <br> and <a> as well as <p> and <span> and lists.
+  aiInstructions: `Text "content" can contain minimal HTML tags like <strong>, <em>, <br> and <a> as well as <h1>, <h2>, <h3>, <h4>, <p> and <span> and lists.
 Only 'align' is supported as an inline style, so don't use other inline styles like 'font-size' or 'color' in the content prop.
-You may simply omit the colorPreset property so that the brick will inherit the default color from its parent container.
+You may simply omit the "colorPreset" property so that the brick will inherit the default color from its parent container.
 `,
   defaultWidth: {
     mobile: "100%",
@@ -36,6 +36,7 @@ You may simply omit the colorPreset property so that the brick will inherit the 
       }),
     ),
     content: textContentRef({
+      title: "Content",
       // metadata: {
       //   category: "content",
       // },
@@ -46,7 +47,17 @@ You may simply omit the colorPreset property so that the brick will inherit the 
         title: "Align",
       }),
     ),
-    padding: Type.Optional(paddingRef({ default: "p-4" })),
+    padding: Type.Optional(
+      cssLengthRef({
+        default: "2rem",
+        description: "Padding inside the text.",
+        "ai:instructions": "Use only a single value like '1rem' or '10px'",
+        title: "Padding",
+        "ui:responsive": true,
+        "ui:placeholder": "Not specified",
+        "ui:styleId": "styles:padding",
+      }),
+    ),
     rounding: Type.Optional(
       roundingRef({
         default: "rounded-md",
@@ -71,7 +82,7 @@ export const examples: {
     props: {
       content:
         "Welcome to our platform! We're <strong>excited</strong> to have you here. Our mission is to <em>transform</em> the way you work with cutting-edge technology and <a href='/features'>innovative features</a>.",
-      padding: "p-16",
+      padding: "2rem",
     },
   },
   {
@@ -80,7 +91,7 @@ export const examples: {
     props: {
       content:
         "<h3>Key Features</h3><ul><li><strong>Advanced Analytics</strong> - Real-time data insights</li><li><strong>Cloud Integration</strong> - Seamless connectivity</li><li><strong>24/7 Support</strong> - Always here to help</li></ul>",
-      padding: "p-8",
+      padding: "1rem",
     },
   },
   {
@@ -89,7 +100,7 @@ export const examples: {
     props: {
       content:
         "<p style='text-align: center'><em>\"Innovation distinguishes between a leader and a follower.\"</em><br><strong>- Steve Jobs</strong></p>",
-      padding: "p-8",
+      padding: "3rem",
     },
   },
   {
@@ -109,7 +120,7 @@ export const examples: {
     props: {
       content:
         "<p style='text-align: center'><strong>Meet Our Team</strong></p><p>Our diverse team of experts brings together decades of experience in technology, design, and business strategy. We're passionate about <em>creating solutions</em> that make a real difference.</p><p><a href='/team'>Learn more about our team</a> and the values that drive us forward.</p>",
-      padding: "p-8",
+      padding: "2rem",
     },
   },
   {
@@ -118,10 +129,18 @@ export const examples: {
     props: {
       content:
         "<p>Scheduled maintenance will occur on <em>Sunday, March 15th</em> from 2:00 AM to 6:00 AM UTC.</p><p>During this time, some features may be temporarily unavailable. We apologize for any inconvenience.</p>",
-      padding: "p-8",
+      padding: "1rem",
       colorPreset: {
         color: "neutral-700",
       },
+    },
+  },
+  {
+    description: "Minimal text with no padding or background",
+    type: "text",
+    props: {
+      content: "This is some minimal text.",
+      padding: "0rem",
     },
   },
 ];

@@ -13,6 +13,8 @@ export const manifest = defineBrickManifest({
   name: "Button",
   category: "basic",
   description: "A button",
+  aiInstructions:
+    "A clickable button that can link to a URL or a page within the site. It can be styled with different colors, font sizes, and border radii. Don't use it in forms since forms have their own submit button.",
   resizable: "horizontal",
   icon: RxButton,
   minWidth: {
@@ -22,38 +24,41 @@ export const manifest = defineBrickManifest({
   defaultWidth: {
     mobile: "100%",
   },
-  props: defineProps({
-    colorPreset: Type.Optional(
-      colorPresetRef({
-        default: { color: "primary-500" },
-        title: "Color",
-        "ui:default-gradient-direction": "bg-gradient-to-b",
-      }),
-    ),
-    label: string("Label", { default: "My button", metadata: { category: "content" } }),
-    fontSize: Type.Optional(
-      fontSizeRef({
-        title: "Font size",
-        description: "The font size of the button text.",
-        default: "text-base",
-        "ui:responsive": "desktop",
-        "ui:no-extra-large-sizes": true,
-      }),
-    ),
-    rounding: Type.Optional(
-      roundingRef({
-        default: "rounded-md",
-      }),
-    ),
-    border: Type.Optional(borderRef({ default: { width: "border-0" }, "ui:responsive": "desktop" })),
-    linkToUrlOrPageId: Type.Optional(
-      urlOrPageIdRef({
-        title: "Link",
-        "ui:placeholder": "https://example.com",
-        metadata: { category: "content" },
-      }),
-    ),
-  }),
+  props: defineProps(
+    {
+      colorPreset: Type.Optional(
+        colorPresetRef({
+          default: { color: "primary-500" },
+          title: "Color",
+          "ui:default-gradient-direction": "bg-gradient-to-b",
+        }),
+      ),
+      label: string("Label", { default: "My button", metadata: { category: "content" } }),
+      fontSize: Type.Optional(
+        fontSizeRef({
+          title: "Font size",
+          description: "The font size of the button text.",
+          default: "text-base",
+          "ui:responsive": "desktop",
+          "ui:no-extra-large-sizes": true,
+        }),
+      ),
+      rounding: Type.Optional(
+        roundingRef({
+          default: "rounded-md",
+        }),
+      ),
+      border: Type.Optional(borderRef({ default: { width: "border-0" }, "ui:responsive": "desktop" })),
+      linkToUrlOrPageId: Type.Optional(
+        urlOrPageIdRef({
+          title: "Link",
+          "ui:placeholder": "https://example.com",
+          metadata: { category: "content" },
+        }),
+      ),
+    },
+    { noGrow: true },
+  ),
 });
 
 export type Manifest = typeof manifest;
@@ -69,6 +74,7 @@ export const examples: {
     props: {
       label: "Click me",
       linkToUrlOrPageId: "https://example.com",
+      colorPreset: { color: "primary-500" },
     },
   },
   {
@@ -77,6 +83,17 @@ export const examples: {
     props: {
       label: "Go to page",
       linkToUrlOrPageId: "page-id-123",
+      colorPreset: { color: "secondary-500" },
+    },
+  },
+  {
+    description: "Neutral colored button with large text and rounded corners",
+    type: "button",
+    props: {
+      label: "Submit",
+      fontSize: "text-lg",
+      rounding: "rounded-full",
+      colorPreset: { color: "neutral-500" },
     },
   },
 ];

@@ -2,7 +2,6 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
 import { imageRef } from "../props/image";
 import { shadowRef } from "../props/effects";
-import { paddingRef } from "../props/padding";
 import { RxImage } from "react-icons/rx";
 import { string } from "../props/string";
 import { Type } from "@sinclair/typebox";
@@ -10,12 +9,16 @@ import type { BrickProps } from "../props/types";
 import { backgroundColorRef } from "../props/background";
 import { borderRef, roundingRef } from "../props/border";
 import { loopRef } from "../props/dynamic";
+import { colorPresetRef } from "../props/color-preset";
+import { cssLengthRef } from "../props/css-length";
 
 export const manifest = defineBrickManifest({
   type: "image",
   name: "Image",
   category: "media",
   description: "An image brick",
+  aiInstructions:
+    "An image brick that can display an image with optional styling such as padding, border radius, and shadow. It supports giving credit to the image author and specifying the image provider.",
   defaultWidth: { desktop: "auto", mobile: "100%" },
   icon: RxImage,
   props: defineProps({
@@ -24,8 +27,17 @@ export const manifest = defineBrickManifest({
         category: "content",
       },
     }),
-    backgroundColor: Type.Optional(backgroundColorRef()),
-    padding: Type.Optional(paddingRef({})),
+    colorPreset: Type.Optional(colorPresetRef()),
+    padding: Type.Optional(
+      cssLengthRef({
+        description: "Padding inside the image.",
+        title: "Padding",
+        "ai:instructions": "Use only a single value like '1rem' or '10px'",
+        "ui:responsive": true,
+        "ui:placeholder": "Not specified",
+        "ui:styleId": "styles:padding",
+      }),
+    ),
     rounding: Type.Optional(
       roundingRef({
         default: "rounded-md",
@@ -147,9 +159,10 @@ export const examples: {
     },
   },
   {
-    description: "Event banner image",
+    description: "Event banner image with neutral-500 background",
     type: "image",
     props: {
+      colorPreset: { color: "neutral-500" },
       image: {
         src: "https://via.placeholder.com/800x200.png?text=Event+Banner",
         alt: "Annual conference event banner",

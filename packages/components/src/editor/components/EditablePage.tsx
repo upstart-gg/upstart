@@ -9,17 +9,10 @@ import {
   useSelectedSectionId,
   useZoom,
 } from "../hooks/use-editor";
-import { useFontWatcher } from "../hooks/use-font-watcher";
 import { useGridObserver } from "../hooks/use-grid-observer";
 import { useResizable } from "../hooks/use-resizable";
 import EditableSection from "./EditableSection";
-import {
-  useDraftHelpers,
-  useSections,
-  useGenerationState,
-  usePageAttributes,
-  useSiteAttributes,
-} from "../hooks/use-page-data";
+import { useDraftHelpers, useSections, useGenerationState } from "../hooks/use-page-data";
 
 type EditablePageProps = {
   showIntro?: boolean;

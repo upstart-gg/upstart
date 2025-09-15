@@ -13,5 +13,5 @@ export function useDatasources() {
 
 export function useDatasourceSamples(id?: string | null): Record<string, unknown>[] | undefined {
   const datasource = useDatasource(id);
-  return datasource?.schema?.examples;
+  return datasource?.schema?.items?.examples;
 }

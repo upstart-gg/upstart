@@ -8,6 +8,8 @@ import { PanelBlockTitle } from "./PanelBlockTitle";
 import { usePageAttributes, useSiteAttributes } from "../hooks/use-page-data";
 import { useAttributesGroup, useAttributesTab, useDebugMode, useEditorHelpers } from "../hooks/use-editor";
 import { useLocalStorage } from "usehooks-ts";
+import { useDatasources } from "../hooks/use-datasource";
+import { useDatarecords } from "../hooks/use-datarecord";
 
 export default function SettingsForm() {
   // const [currentTab, setCurrentTab] = useState("page-settings");
@@ -92,8 +94,11 @@ function DebugTab() {
   );
   const siteAttributes = useSiteAttributes();
   const pageAttributes = usePageAttributes();
+  const datasources = useDatasources();
+  const datarecords = useDatarecords();
+
   return (
-    <div className="flex flex-col h-full overflow-y-auto scrollbar-thin">
+    <div className="flex flex-col h-[calc(100dvh-70px)] overflow-y-auto scrollbar-thin">
       <PanelBlockTitle>Page Attributes</PanelBlockTitle>
       <div className="flex-1 ">
         <pre className="p-1">
@@ -104,6 +109,24 @@ function DebugTab() {
       <div className="flex-1 ">
         <pre className="p-1">
           <code className={codeClassName}>{JSON.stringify(siteAttributes, null, 2)}</code>
+        </pre>
+      </div>
+      <PanelBlockTitle>Datasources ({datasources.length})</PanelBlockTitle>
+      <div className="flex-1 ">
+        <pre className="p-1">
+          <code className={codeClassName}>{JSON.stringify(datasources, null, 2)}</code>
+        </pre>
+      </div>
+      <PanelBlockTitle>Datarecords ({datarecords.length})</PanelBlockTitle>
+      <div className="flex-1 ">
+        <pre className="p-1">
+          <code className={codeClassName}>{JSON.stringify(datarecords, null, 2)}</code>
+        </pre>
+      </div>
+      <PanelBlockTitle>Site queries ({siteAttributes.queries?.length ?? 0})</PanelBlockTitle>
+      <div className="flex-1 ">
+        <pre className="p-1">
+          <code className={codeClassName}>{JSON.stringify(siteAttributes.queries, null, 2)}</code>
         </pre>
       </div>
     </div>

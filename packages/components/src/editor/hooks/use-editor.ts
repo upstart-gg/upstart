@@ -82,7 +82,6 @@ export interface EditorStateProps {
   chatVisible: boolean;
   logoLink: string;
   themesLibrary: Theme[];
-  imagesSearchResults?: ImageSearchResultsType;
   contextMenuVisible: boolean;
   draggingBrickType?: Brick["type"];
   isMouseOverPanel?: boolean;
@@ -115,7 +114,6 @@ export interface EditorState extends EditorStateProps {
   setSelectedBrickId: (brickId?: Brick["id"]) => void;
   setSelectedSectionId: (sectionId?: string) => void;
   deselectBrick: (brickId?: Brick["id"]) => void;
-  setImagesSearchResults: (images: EditorStateProps["imagesSearchResults"]) => void;
   togglePanelPosition: () => void;
   toggleDebugMode: () => void;
   showModal: (modal: EditorStateProps["modal"]) => void;
@@ -261,10 +259,6 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
           toggleDebugMode: () =>
             set((state) => {
               state.debugMode = !state.debugMode;
-            }),
-          setImagesSearchResults: (images) =>
-            set((state) => {
-              state.imagesSearchResults = images;
             }),
 
           setPreviewMode: (mode) =>
@@ -493,11 +487,6 @@ export const useThemesLibrary = () => {
   return useStore(ctx, (state) => state.themesLibrary);
 };
 
-export const useImagesSearchResults = () => {
-  const ctx = useEditorStoreContext();
-  return useStore(ctx, (state) => state.imagesSearchResults);
-};
-
 export const useZoom = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => ({
@@ -535,11 +524,6 @@ export const useContextMenuVisible = () => {
   return useStore(ctx, (state) => state.contextMenuVisible);
 };
 
-export const useIsMouseOverPanel = () => {
-  const ctx = useEditorStoreContext();
-  return useStore(ctx, (state) => state.isMouseOverPanel);
-};
-
 export const useEditorHelpers = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => ({
@@ -555,7 +539,6 @@ export const useEditorHelpers = () => {
     setGridConfig: state.setGridConfig,
     toggleSettings: state.toggleSettings,
     setIsEditingText: state.setIsEditingText,
-    setImagesSearchResults: state.setImagesSearchResults,
     setPanel: state.setPanel,
     togglePanel: state.togglePanel,
     toggleModal: state.toggleModal,

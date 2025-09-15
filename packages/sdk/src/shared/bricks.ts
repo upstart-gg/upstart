@@ -1,6 +1,6 @@
 import { Type, type Static, type TObject } from "@sinclair/typebox";
 import { customAlphabet } from "nanoid";
-import { brickTypesEnumForLLM, defaultProps } from "./bricks/manifests/all-manifests";
+import { brickTypes, defaultProps } from "./bricks/manifests/all-manifests";
 import { cssLengthRef } from "./bricks/props/css-length";
 import { enumProp } from "./bricks/props/enum";
 import { colorPresetRef } from "./bricks/props/color-preset";
@@ -8,12 +8,10 @@ import { mergeIgnoringArrays } from "./utils/merge";
 import { getSchemaDefaults } from "./utils/schema";
 import { StringEnum } from "./utils/string-enum";
 import { alignItemsRef, justifyContentRef } from "./bricks/props/align";
-import { paddingRef } from "./bricks/props/padding";
 import type { CommonBrickProps } from "./bricks/props/common";
 import { directionRef } from "./bricks/props/direction";
 import type { PageAttributes, SiteAttributes } from "./attributes";
 import { toLLMSchema } from "./utils/llm";
-import { BrickManifest } from "./brick-manifest";
 
 /**
  * Generates a unique identifier for bricks.
@@ -106,7 +104,7 @@ export function makeFullBrickSchemaForLLM(props: TObject) {
           title: "ID",
           description: "A unique identifier for the brick.",
         }),
-        type: brickTypesEnumForLLM,
+        type: brickTypes,
         props,
         mobileProps: Type.Optional(Type.Partial(props)),
       },
@@ -127,14 +125,12 @@ export const sectionProps = Type.Object(
         title: "Color",
       }),
     ),
-    direction: Type.Optional(
-      directionRef({
-        default: "flex-row",
-        title: "Direction",
-        description: "The direction of the section. Only apply to desktop. On mobile, it is always vertical.",
-        "ui:responsive": "desktop",
-      }),
-    ),
+    direction: directionRef({
+      default: "flex-row",
+      title: "Direction",
+      description: "The direction of the section. Only apply to desktop. On mobile, it is always vertical.",
+      "ui:responsive": "desktop",
+    }),
     minHeight: Type.Optional(
       cssLengthRef({
         title: "Min height",
@@ -194,11 +190,13 @@ export const sectionProps = Type.Object(
       }),
     ),
     padding: Type.Optional(
-      paddingRef({
-        default: "p-4",
-        description: "The padding of the section.",
+      cssLengthRef({
+        default: "2rem",
+        description: "Padding inside the section.",
+        title: "Padding",
         "ui:responsive": true,
-        "default:mobile": "p-3",
+        "ui:placeholder": "Not specified",
+        "ui:styleId": "styles:padding",
       }),
     ),
     gap: Type.Optional(
@@ -253,13 +251,16 @@ export const sectionSchema = Type.Object(
   },
 );
 
-const sectionSchemaNoBricks = Type.Omit(sectionSchema, ["bricks"]);
+export const sectionSchemaNoBricks = Type.Omit(sectionSchema, ["bricks"]);
 
 export const sectionSchemaNoBricksLLM = toLLMSchema(sectionSchemaNoBricks);
 export const sectionSchemaLLM = toLLMSchema(sectionSchema);
 
-const sectionDefaultprops = getSchemaDefaults(sectionSchema.properties.props, "desktop");
-const sectionMobileDefaultprops = getSchemaDefaults(sectionSchema.properties.mobileProps, "mobile");
+const sectionDefaultprops = getSchemaDefaults(sectionSchema.properties.props, "desktop") as Section["props"];
+const sectionMobileDefaultprops = getSchemaDefaults(
+  sectionSchema.properties.mobileProps,
+  "mobile",
+) as Section["mobileProps"];
 
 export type Section = Static<typeof sectionSchema>;
 
@@ -267,11 +268,11 @@ export function processSections(
   sections: Section[],
   siteAttributes: SiteAttributes,
   pageAttributes: PageAttributes,
-) {
+): Section[] {
   const processSection = (section: Section) => {
     return {
       ...section,
-      props: mergeIgnoringArrays({}, sectionDefaultprops, section.props),
+      props: mergeIgnoringArrays({} as Section["props"], sectionDefaultprops, section.props),
       mobileProps: mergeIgnoringArrays({}, sectionMobileDefaultprops, section.mobileProps || {}),
       bricks: section.bricks.map(processBrick).filter(Boolean) as Brick[],
     } as const;
@@ -287,6 +288,7 @@ export function processSections(
         label: "Navbar section",
         props: {
           variant: "navbar",
+          direction: "flex-row",
         },
         mobileProps: {},
         bricks: [
@@ -307,6 +309,7 @@ export function processSections(
         label: "Footer section",
         props: {
           variant: "footer",
+          direction: "flex-row",
         },
         mobileProps: {},
         bricks: [
@@ -320,7 +323,7 @@ export function processSections(
     );
   }
 
-  return finalSections;
+  return finalSections satisfies Section[];
 }
 
 /**

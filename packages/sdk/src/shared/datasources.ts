@@ -1,5 +1,4 @@
-import type { DatasourceProvider, Datasource } from "./datasources/types";
-import { schemasMap } from "./datasources/schemas";
+import type { Datasource } from "./datasources/types";
 import type { TArray } from "@sinclair/typebox";
 
 /**
@@ -15,10 +14,6 @@ export function defineDatasource<D extends Datasource>(datasource: D) {
       datasource.schema,
     ),
   };
-}
-
-function getSchemaByProvider(provider: Exclude<DatasourceProvider, "internal">) {
-  return schemasMap[provider];
 }
 
 /**

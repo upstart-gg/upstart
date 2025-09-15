@@ -14,7 +14,9 @@ import { StringEnum } from "~/shared/utils/string-enum";
 export const manifest = defineBrickManifest({
   type: "card",
   name: "Card",
-  description: "A card that can have a title, image, and content",
+  description: "A card that can have a title, image, and content.",
+  aiInstructions:
+    "Use this brick to create cards that contain an image, title, and text content. Cards are useful for displaying information in a concise and visually appealing way.",
   icon: BsCardText,
   defaultWidth: { desktop: "400px", mobile: "100%" },
   minWidth: { desktop: 300 },
@@ -93,18 +95,6 @@ export const examples: {
     props: {
       title: "Card Title",
       text: "This is the body of the card.",
-    },
-  },
-  {
-    description: "Card with image and overlay text",
-    type: "card",
-    props: {
-      cardImage: {
-        src: "https://via.placeholder.com/400x300",
-        alt: "Placeholder image",
-      },
-      title: "Overlay Title",
-      text: "Beautiful overlay content with semi-transparent background.",
     },
   },
   {

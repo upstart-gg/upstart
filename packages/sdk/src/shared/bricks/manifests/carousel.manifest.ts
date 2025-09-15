@@ -7,13 +7,16 @@ import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { roundingRef } from "../props/border";
 import { colorPresetRef } from "../props/color-preset";
-import { paddingRef } from "../props/padding";
 import { loopRef } from "../props/dynamic";
+import { cssLengthRef } from "../props/css-length";
 
 export const manifest = defineBrickManifest({
   type: "carousel",
   name: "Carousel",
   description: "An image carousel with navigation arrows and dots or numbers indicator",
+  aiInstructions:
+    "Use this brick to create an image carousel or slideshow. It can display multiple images that users can navigate through using arrows or dots. Each image can have an optional legend or caption. This brick is ideal for showcasing portfolios, product images, or any visual content in an engaging way.",
+  category: "media",
   defaultInspectorTab: "content",
   minHeight: {
     desktop: 200,
@@ -29,8 +32,14 @@ export const manifest = defineBrickManifest({
       }),
     ),
     padding: Type.Optional(
-      paddingRef({
-        default: "p-px",
+      cssLengthRef({
+        default: "1rem",
+        description: "Padding inside the carousel.",
+        "ai:instructions": "Use only a single value like '1rem' or '10px'",
+        title: "Padding",
+        "ui:responsive": true,
+        "ui:placeholder": "Not specified",
+        "ui:styleId": "styles:padding",
       }),
     ),
     images: Type.Optional(

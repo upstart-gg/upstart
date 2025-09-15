@@ -278,24 +278,7 @@ export const siteAttributesSchema = Type.Object(
         "ui:field": "site-queries",
         description: "List of all queries available in this site. These can be used in any page.",
         "ai:instructions":
-          "This is where queries are first defined. They are then referenced in pages attributes to use them.",
-        examples: [
-          [
-            {
-              id: "latest-blog-posts",
-              description: "Get the latest blog posts",
-              sortField: "$publicationDate",
-              sortDirection: "desc",
-              limit: 20,
-            },
-            {
-              id: "get-blog-post",
-              description: "Get a single blog post",
-              parameters: ["$slug"],
-              limit: 1,
-            },
-          ],
-        ],
+          "This is where queries are first defined. They are then referenced in pages attributes (in the 'queries' field) to use them.",
       }),
     ),
     navbar: Type.Optional(
@@ -372,8 +355,10 @@ export const siteAttributesSchema = Type.Object(
   },
 );
 
-export const siteAttributesSchemaLLM = toLLMSchema(siteAttributesSchema);
-export const pageAttributesSchemaLLM = toLLMSchema(pageAttributesSchema);
+export const siteAttributesSchemaLLM = toLLMSchema(Type.Omit(siteAttributesSchema, ["queries"]));
+export const pageAttributesSchemaLLM = toLLMSchema(Type.Omit(pageAttributesSchema, ["queries"]));
+
+export const siteQueriesSchemaLLM = toLLMSchema(Type.Array(querySchema));
 
 export type PageAttributes = Static<typeof pageAttributesSchema>;
 export type SiteAttributes = Static<typeof siteAttributesSchema>;

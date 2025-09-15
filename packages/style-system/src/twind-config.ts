@@ -41,7 +41,7 @@ export default defineConfig({
     ],
     [
       "btn",
-      "text-nowrap font-medium min-h-fit max-h-fit flex items-center text-center justify-center flex-wrap text-ellipsis py-[0.55em] px-[1em]",
+      "text-nowrap font-semibold min-h-fit max-h-fit flex items-center text-center justify-center flex-wrap text-ellipsis py-[0.55em] px-[1em]",
     ],
     [
       "btn-",
@@ -366,6 +366,7 @@ export default defineConfig({
       animation: {
         "fade-in": "fade-in 0.5s",
         "elastic-pop": "elastic-pop 1s cubic-bezier(0.22, 1, 0.36, 1) forwards",
+        "reveal-brick": "reveal-brick 1.5s ease forwards",
         "slide-in": "slide-in 0.15s ease-out",
         "slide-back": "slide-back 0.15s ease-out",
         border: "border 4s linear infinite",
@@ -389,6 +390,11 @@ export default defineConfig({
           "50%": { transform: "scale(1.1)", opacity: "0.8" },
           "70%": { transform: "scale(0.98)", opacity: "1" },
           "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        "reveal-brick": {
+          "0%": { transform: "scale(0)", opacity: "0", filter: "blur(20px)" },
+          "50%": { transform: "scale(1)", opacity: "0.7", filter: "blur(10px)" },
+          "100%": { transform: "scale(1)", opacity: "1", filter: "blur(0)" },
         },
         "fade-in": {
           from: { opacity: "0" },

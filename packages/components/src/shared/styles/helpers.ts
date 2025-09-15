@@ -9,6 +9,7 @@ import type { FixedPositionedSettings } from "@upstart.gg/sdk/shared/bricks/prop
 import { propToClass, propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
 import { css } from "@upstart.gg/style-system/twind";
 import type { TSchema } from "@sinclair/typebox";
+import { CSSProperties } from "react";
 
 export function getBackgroundStyles(props?: BackgroundSettings) {
   if (!props?.image) {
@@ -21,6 +22,22 @@ export function getBackgroundStyles(props?: BackgroundSettings) {
       backgroundRepeat: props.repeat ?? "no-repeat",
     }),
   ];
+}
+
+function simplePropertyHandler(cssProp: string) {
+  return function (value: string, mobileValue?: string) {
+    if (!value) {
+      return null;
+    }
+    if (!mobileValue) {
+      // @ts-ignore
+      return css({
+        [cssProp]: value,
+      });
+    }
+    // @ts-ignore
+    return `@desktop:(${css({ [cssProp]: value })}) @mobile:(${css({ [cssProp]: mobileValue })})`;
+  };
 }
 
 export function getGapStyles(value: string, mobileValue?: string) {
@@ -136,7 +153,7 @@ export const brickStylesHelpersMap = {
   "styles:objectPosition": simpleClassHandler,
   "styles:heroSize": simpleClassHandler,
   "styles:fontSize": simpleClassHandler,
-  "styles:padding": simpleClassHandler, // test
+  "styles:padding": simplePropertyHandler("padding"), // test
   "styles:gap": getGapStyles,
 
   "styles:gradientDirection": simpleClassHandler,

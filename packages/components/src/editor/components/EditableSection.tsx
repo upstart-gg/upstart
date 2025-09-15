@@ -1,9 +1,8 @@
-import type { Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
+import type { Section } from "@upstart.gg/sdk/shared/bricks";
 import {
   useDraggingBrickType,
   useEditingTextForBrickId,
   useEditorHelpers,
-  useIsMouseOverPanel,
   usePreviewMode,
   useSelectedSectionId,
 } from "../hooks/use-editor";
@@ -24,7 +23,7 @@ import EditableSectionButtons from "./EditableSectionButtons";
 import { useResizableSection } from "../hooks/use-resizable-section";
 
 type EditableSectionProps = {
-  section: SectionType;
+  section: Section;
   index: number;
 };
 
@@ -36,7 +35,6 @@ export default function EditableSection({ section, index }: EditableSectionProps
   const selectedSectionId = useSelectedSectionId();
   const editingBrick = useEditingTextForBrickId();
   const draggingBrickType = useDraggingBrickType();
-  // const isMouseOverPanel = useIsMouseOverPanel();
   const { isDesktop } = useDeviceInfo();
   const isSpecialSection = typeof section.props.variant !== "undefined";
   const dropDisabled =

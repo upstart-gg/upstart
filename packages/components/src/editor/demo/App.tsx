@@ -35,12 +35,16 @@ function InnerEditor(
   const onPublish = () => {
     console.debug("onPublish: Out of the demo, the 'publish' modal should be displayed at this time.");
   };
-  const onSavePage = async () => {
-    console.debug("onSavePage: Out of the demo, the 'save' modal should be displayed at this time.");
+  const onSavePage: EditorWrapperProps["onSavePage"] = async (data) => {
+    console.debug("onSavePage: Out of the demo, the 'save' modal should be displayed at this time.", {
+      data,
+    });
     return { pageVersionId: "latest" };
   };
-  const onSaveSite = async () => {
-    console.debug("onSaveSite: Out of the demo, the 'save' modal should be displayed at this time.");
+  const onSaveSite: EditorWrapperProps["onSaveSite"] = async (data) => {
+    console.debug("onSaveSite: Out of the demo, the 'save' modal should be displayed at this time.", {
+      data,
+    });
   };
   const onShowPopup = (popupId: string | false) => {
     console.debug(

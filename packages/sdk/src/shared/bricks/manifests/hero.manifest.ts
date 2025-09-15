@@ -1,7 +1,6 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
 import { textContentRef } from "../props/text";
-import { paddingRef } from "../props/padding";
 import { BsAlphabetUppercase } from "react-icons/bs";
 import type { BrickProps } from "../props/types";
 import { Type } from "@sinclair/typebox";
@@ -9,13 +8,15 @@ import { shadowRef, textShadowRef } from "../props/effects";
 import { borderRef, roundingRef } from "../props/border";
 import { colorPresetRef } from "../props/color-preset";
 import { alignItemsRef, justifyContentRef } from "../props/align";
+import { cssLengthRef } from "../props/css-length";
 
 export const manifest = defineBrickManifest({
   type: "hero",
   category: "basic",
   name: "Hero",
-  description: "A big textual element for home pages",
-  aiInstructions: `Displays a large text element that can be used to display a title and an optional tagline. Typically used on home pages to grab the user's attention.`,
+  description: "A big textual element for home pages.",
+  aiInstructions: `Displays a large text element that can be used to display a title and an optional tagline.
+Typically used on home pages to grab the user's attention. It's usually better NOT to provide the colorPreset prop so that it inherits the background of its parent box or section.`,
   icon: BsAlphabetUppercase,
 
   defaultWidth: { desktop: "60dvw", mobile: "auto" },
@@ -46,8 +47,14 @@ export const manifest = defineBrickManifest({
       }),
     ),
     padding: Type.Optional(
-      paddingRef({
-        default: "p-8",
+      cssLengthRef({
+        default: "6rem",
+        description: "Padding inside the hero.",
+        "ai:instructions": "Use only a single value like '1rem' or '10px'",
+        title: "Padding",
+        "ui:responsive": true,
+        "ui:placeholder": "Not specified",
+        "ui:styleId": "styles:padding",
       }),
     ),
     rounding: Type.Optional(
@@ -78,21 +85,28 @@ export const examples: {
   props: BrickProps<Manifest>["brick"]["props"];
 }[] = [
   {
-    description: "Simple welcome hero with blue background",
+    description: "Simple welcome hero with primary background",
     type: "hero",
     props: {
       content: "Welcome to Our Platform",
       tagline: "The future of productivity starts here",
-      padding: "p-8",
+      padding: "3rem",
+      colorPreset: {
+        color: "primary-400",
+      },
     },
   },
   {
-    description: "Startup hero with gradient background",
+    description: "Startup hero with primary gradient background to bottom-right",
     type: "hero",
     props: {
       content: "Build Something Amazing",
       tagline: "Turn your ideas into reality with our cutting-edge tools",
-      padding: "p-16",
+      padding: "3rem",
+      colorPreset: {
+        color: "primary-500",
+        gradientDirection: "bg-gradient-to-br",
+      },
     },
   },
   {
@@ -101,7 +115,7 @@ export const examples: {
     props: {
       content: "Building Tomorrow Today",
       tagline: "Quality construction services for residential and commercial projects",
-      padding: "p-16",
+      padding: "3rem",
     },
   },
   {
@@ -110,7 +124,7 @@ export const examples: {
     props: {
       content: "Express Your Style",
       tagline: "Contemporary fashion that speaks to your individuality",
-      padding: "p-16",
+      padding: "6rem",
     },
   },
   {
@@ -119,7 +133,10 @@ export const examples: {
     props: {
       content: "Justice You Can Trust",
       tagline: "Experienced legal representation for individuals and businesses",
-      padding: "p-8",
+      padding: "6rem",
+      colorPreset: {
+        color: "neutral-800",
+      },
     },
   },
   {

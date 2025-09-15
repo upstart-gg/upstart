@@ -56,6 +56,7 @@ export const commonProps = {
       description: "If set, the brick will grow to fill the available space of its parent section or box.",
       "ui:styleId": "styles:grow",
       "ui:responsive": true,
+      default: true,
     }),
   ),
   alignSelf: Type.Optional(alignSelfRef()),

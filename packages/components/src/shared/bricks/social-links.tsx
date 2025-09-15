@@ -44,7 +44,7 @@ export default function SocialLinks({ brick, editable }: BrickProps<Manifest>) {
             title={link.label || link.href}
           >
             {link.icon && <InlineIcon icon={link.icon} className="text-[100%]" />}
-            {!props.icononly && link.label && <span className="ml-1 text-nowrap">{link.label}</span>}
+            {!props.iconOnly && link.label && <span className="ml-1 text-nowrap">{link.label}</span>}
           </a>
         );
       })}
