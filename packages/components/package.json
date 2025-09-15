@@ -45,7 +45,7 @@
   ],
   "dependencies": {
     "@ai-sdk/react": "1.2.12",
-    "@date-fns/utc": "1.2.0",
+    "@date-fns/utc": "2.1.1",
     "@dnd-kit/abstract": "0.1.21",
     "@dnd-kit/collision": "0.1.21",
     "@dnd-kit/dom": "0.1.21",
