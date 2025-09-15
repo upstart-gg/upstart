@@ -27,7 +27,7 @@
     }
   },
   "dependencies": {
-    "@date-fns/utc": "1.2.0",
+    "@date-fns/utc": "2.1.1",
     "@notionhq/client": "4.0.2",
     "@radix-ui/themes": "3.2.1",
     "@rowanmanning/feed-parser": "2.1.0",
