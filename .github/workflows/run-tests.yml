@@ -76,6 +76,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ vars.TURBO_TEAM}}
 
       - name: build
         run: pnpm build
