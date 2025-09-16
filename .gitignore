@@ -141,6 +141,8 @@ packages/testing
 .nx/cache
 .nx/workspace-data
 
+.turbo
+
 docs/.vitepress/dist
 docs/.vitepress/cache
 docs.pdf

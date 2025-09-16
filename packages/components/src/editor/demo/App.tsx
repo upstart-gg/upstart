@@ -8,17 +8,15 @@ import {
 import { ClientOnly } from "~/shared/utils/client-only";
 // import "@upstart.gg/style-system/default-theme.css";
 // import "@upstart.gg/components/dist/assets/style.css";
-import { createEmptyConfig, type SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
+import type { SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
 
-export default function App({ path, config }: { path: string; config?: SiteAndPagesConfig }) {
-  const siteConfig = config ?? createEmptyConfig("a site about coffee and tea");
-  console.log("Site ID: %s", siteConfig.site.id);
+export default function App({ path, config }: { path: string; config: SiteAndPagesConfig }) {
   const searchParams = new URL(`http://localhost${path}`).searchParams;
   const p = searchParams.get("p");
-  const pageId = (siteConfig.pages.find((page) => page.id === p) ?? siteConfig.pages[0]).id;
+  const pageId = (config.pages.find((page) => page.id === p) ?? config.pages[0]).id;
   return (
     <ClientOnly>
-      <InnerEditor config={siteConfig} pageId={pageId} pageVersion="dummy-version">
+      <InnerEditor config={config} pageId={pageId} pageVersion="dummy-version">
         <Editor />
       </InnerEditor>
     </ClientOnly>
@@ -37,12 +35,16 @@ function InnerEditor(
   const onPublish = () => {
     console.debug("onPublish: Out of the demo, the 'publish' modal should be displayed at this time.");
   };
-  const onSavePage = async () => {
-    console.debug("onSavePage: Out of the demo, the 'save' modal should be displayed at this time.");
+  const onSavePage: EditorWrapperProps["onSavePage"] = async (data) => {
+    console.debug("onSavePage: Out of the demo, the 'save' modal should be displayed at this time.", {
+      data,
+    });
     return { pageVersionId: "latest" };
   };
-  const onSaveSite = async () => {
-    console.debug("onSaveSite: Out of the demo, the 'save' modal should be displayed at this time.");
+  const onSaveSite: EditorWrapperProps["onSaveSite"] = async (data) => {
+    console.debug("onSaveSite: Out of the demo, the 'save' modal should be displayed at this time.", {
+      data,
+    });
   };
   const onShowPopup = (popupId: string | false) => {
     console.debug(

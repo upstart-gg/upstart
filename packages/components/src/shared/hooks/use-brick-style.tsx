@@ -5,10 +5,10 @@ import { get, merge } from "lodash-es";
 import { useBrickManifest } from "./use-brick-manifest";
 import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { tx, css } from "@upstart.gg/style-system/twind";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema-resolver";
+import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
 import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
 import { getStyleProperties } from "../styles/style-props";
-import { usePageAttributes } from "~/editor/hooks/use-page-data";
+import { useGenerationState, usePageAttributes } from "~/editor/hooks/use-page-data";
 
 function useClassesFromStyleProps<T extends BrickManifest>(
   stylesProps: Record<string, string>,
@@ -85,6 +85,7 @@ export function useBrickWrapperStyle<T extends BrickManifest>(_props: BrickProps
   const styleIds = Object.values(stylesProps);
   const classes = useClassesFromStyleProps(stylesProps, brick, "wrapper");
   const isContainer = !!manifest.isContainer;
+  const { isSetup } = useGenerationState();
 
   return tx(
     manifest.staticClasses,
@@ -129,6 +130,8 @@ export function useBrickWrapperStyle<T extends BrickManifest>(_props: BrickProps
 
     // When a brick is hidden on mobile, hide the wrapper as well
     "@mobile:[&:has([data-mobile-hidden])]:hidden @desktop:[&:has([data-mobile-hidden])]:flex",
+
+    isSetup && "animate animate-reveal-brick",
 
     getBrickWrapperEditorStyles(_props),
 

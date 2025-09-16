@@ -6,12 +6,6 @@
 version: 2
 updates:
   - package-ecosystem: "npm" # See documentation for possible values
-    directories:
-      - "/"
-      - "/packages/create-enpage"
-      - "/packages/editor"
-      - "/packages/components"
-      - "/packages/style-system"
-      - "/packages/template-example"
+    directory: "/"
     schedule:
       interval: "weekly"

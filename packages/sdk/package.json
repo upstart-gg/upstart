@@ -3,7 +3,8 @@
   "version": "0.0.130",
   "type": "module",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "sideEffects": true,
   "exports": {
@@ -15,26 +16,19 @@
       "types": "./dist/shared/*.d.ts",
       "import": "./dist/shared/*.js"
     },
-    "./builder/*": {
-      "import": "./dist/node/builder/*.js"
-    },
-    "./cli/*": {
-      "import": "./dist/node/cli/*.js"
-    },
     "./*": {
       "types": "./dist/shared/*.d.ts",
       "import": "./dist/shared/*.js"
     }
   },
   "dependencies": {
+    "@apidevtools/json-schema-ref-parser": "14.2.0",
     "@date-fns/utc": "1.2.0",
     "@notionhq/client": "4.0.2",
     "@radix-ui/themes": "3.2.1",
     "@rowanmanning/feed-parser": "2.1.0",
-    "@sinclair/typebox": "0.33.7",
+    "@sinclair/typebox": "0.34.41",
     "@upstart.gg/style-system": "workspace:*",
-    "ajv": "8.17.1",
-    "ajv-formats": "3.0.1",
     "chroma-js": "3.1.2",
     "date-fns": "3.6.0",
     "debug": "4.3.6",
@@ -42,10 +36,8 @@
     "get-port": "7.1.0",
     "http-errors-enhanced": "2.0.8",
     "immer": "10.1.1",
-    "lodash-es": "4.17.21",
     "nanoid": "5.1.5",
     "react-hotkeys-hook": "4.5.1",
-    "react-icons": "5.5.0",
     "react-selecto": "1.26.3",
     "usehooks-ts": "3.1.0",
     "zundo": "2.3.0",
@@ -54,7 +46,12 @@
   "peerDependencies": {
     "@headlessui/react": "^2.2.1",
     "react": "18.3.0-canary-3d9b20132-20240124",
-    "react-dom": "18.3.0-canary-3d9b20132-20240124"
+    "react-dom": "18.3.0-canary-3d9b20132-20240124",
+    "ai": "^5.0.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "lodash-es": "^4.17.21",
+    "react-icons": "^5.5.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "4.20240806.0",
@@ -70,13 +67,15 @@
     "concurrently": "8.2.2",
     "express": "^4.21.2",
     "rimraf": "6.0.1",
-    "tsup": "^8.5.0"
+    "tsup": "^8.5.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "lodash-es": "^4.17.21"
   },
   "scripts": {
     "build": "tsup",
-    "build:watch": "tsup --watch",
-    "build:types": "tsc --extendedDiagnostics --emitDeclarationOnly --declaration --declarationMap",
-    "dev": "NODE_OPTIONS='--max-old-space-size=12384' tsup --watch",
+    "build:types": "tsc --emitDeclarationOnly --declaration --declarationMap",
+    "dev": "tsup --watch",
     "sizetest": "pnpm build && du -sh dist",
     "lint": "biome check --write . && tsc --noEmit",
     "ci:lint": "tsc --noEmit",

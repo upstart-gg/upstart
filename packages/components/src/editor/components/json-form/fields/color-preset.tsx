@@ -6,7 +6,7 @@ import { useCallback, useState, type FC } from "react";
 import { RxCross2 } from "react-icons/rx";
 import type { ColorPresetSettings } from "@upstart.gg/sdk/shared/bricks/props/color-preset";
 
-const ColorPresetField: FC<FieldProps<ColorPresetSettings>> = (props) => {
+const ColorPresetField: FC<FieldProps<ColorPresetSettings | null>> = (props) => {
   const { schema, currentValue, onChange, title, description } = props;
   const [gradientDir, setGradientDir] = useState<string>(
     currentValue?.gradientDirection ?? schema["ui:default-gradient-direction"] ?? "bg-gradient-to-tr",
@@ -36,7 +36,7 @@ const ColorPresetField: FC<FieldProps<ColorPresetSettings>> = (props) => {
 
   return (
     <div className="flex justify-between flex-1 gap-2 flex-wrap">
-      <FieldTitle title={title} description={description} />
+      <FieldTitle withIcon title={title} description={description} />
       <div>
         <Popover.Root>
           <Popover.Trigger>
@@ -73,10 +73,14 @@ const ColorPresetField: FC<FieldProps<ColorPresetSettings>> = (props) => {
                         key={index}
                         onClick={(e) => {
                           e.preventDefault();
-                          onChange({
-                            ...currentValue,
-                            color: key,
-                          });
+                          if (key === "none") {
+                            onChange(null);
+                          } else {
+                            onChange({
+                              ...currentValue,
+                              color: key,
+                            });
+                          }
                           // onChange(className);
                         }}
                         type="button"
@@ -84,7 +88,7 @@ const ColorPresetField: FC<FieldProps<ColorPresetSettings>> = (props) => {
                           className,
 
                           "h-7 w-7 rounded-full outline outline-2 relative inline-flex items-center justify-center shadow-sm shadow-upstart-300",
-                          currentValue?.color === key
+                          currentValue?.color === key || (!currentValue?.color && key === "none")
                             ? "outline-upstart-600"
                             : "outline-transparent hover:scale-105",
                         )}
@@ -120,10 +124,16 @@ const ColorPresetField: FC<FieldProps<ColorPresetSettings>> = (props) => {
                           key={index}
                           onClick={(e) => {
                             e.preventDefault();
-                            onChange({
-                              gradientDirection: gradientDir as ColorPresetSettings["gradientDirection"],
-                              color: key,
-                            });
+
+                            if (key === "none") {
+                              onChange(null);
+                            } else {
+                              onChange({
+                                gradientDirection: gradientDir as ColorPresetSettings["gradientDirection"],
+                                color: key,
+                              });
+                            }
+
                             // onChange(classNameWidthDir);
                           }}
                           type="button"
@@ -131,7 +141,7 @@ const ColorPresetField: FC<FieldProps<ColorPresetSettings>> = (props) => {
                             className,
                             gradientDir,
                             "h-7 w-7 rounded-full outline outline-2 relative inline-flex items-center justify-center shadow-sm shadow-upstart-300",
-                            currentValue?.color === key
+                            currentValue?.color === key || (!currentValue?.color && key === "none")
                               ? "outline-upstart-600"
                               : "outline-transparent hover:scale-105",
                           )}

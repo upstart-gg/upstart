@@ -5,10 +5,10 @@ import { defineProps } from "../props/helpers";
 import { iconRef, string } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { fontSizeRef } from "../props/text";
-import { paddingRef } from "../props/padding";
 import { directionRef } from "../props/direction";
 import { colorPresetRef } from "../props/color-preset";
 import { borderRef, roundingRef } from "../props/border";
+import { cssLengthRef } from "../props/css-length";
 
 export const manifest = defineBrickManifest({
   type: "social-links",
@@ -73,8 +73,14 @@ export const manifest = defineBrickManifest({
     ),
     fontSize: Type.Optional(fontSizeRef()),
     padding: Type.Optional(
-      paddingRef({
-        default: "p-2",
+      cssLengthRef({
+        default: "2rem",
+        description: "Padding.",
+        "ai:instructions": "Use only a single value like '1rem' or '10px'",
+        title: "Padding",
+        "ui:responsive": true,
+        "ui:placeholder": "Not specified",
+        "ui:styleId": "styles:padding",
       }),
     ),
     rounding: Type.Optional(
@@ -83,7 +89,7 @@ export const manifest = defineBrickManifest({
       }),
     ),
     border: Type.Optional(borderRef()),
-    icononly: Type.Optional(
+    iconOnly: Type.Optional(
       Type.Boolean({
         title: "Only icons",
         description: "If set, the brick will only display the icons without labels.",
@@ -103,7 +109,7 @@ export const examples: {
     description: "Social icons displayed horizontally, without labels",
     type: "social-links",
     props: {
-      icononly: true,
+      iconOnly: true,
       links: [
         {
           href: "https://facebook.com/company",
@@ -127,7 +133,7 @@ export const examples: {
     description: "Social icons displayed vertically, without labels",
     type: "social-links",
     props: {
-      icononly: true,
+      iconOnly: true,
       direction: "flex-col",
       links: [
         {
@@ -152,7 +158,7 @@ export const examples: {
     description: "Social icons displayed horizontally, with labels",
     type: "social-links",
     props: {
-      icononly: false,
+      iconOnly: false,
       links: [
         {
           href: "https://facebook.com/company",
@@ -181,7 +187,7 @@ export const examples: {
     description: "Social icons displayed vertically, with labels",
     type: "social-links",
     props: {
-      icononly: false,
+      iconOnly: false,
       direction: "flex-col",
       links: [
         {
@@ -211,7 +217,7 @@ export const examples: {
     description: "Professional social links with labels",
     type: "social-links",
     props: {
-      icononly: false,
+      iconOnly: false,
       links: [
         {
           href: "https://linkedin.com/in/johndoe",
@@ -240,7 +246,7 @@ export const examples: {
     description: "Creative portfolio social links (icon-only inline)",
     type: "social-links",
     props: {
-      icononly: true,
+      iconOnly: true,
       links: [
         {
           href: "https://dribbble.com/designer",
@@ -274,7 +280,7 @@ export const examples: {
     description: "Developer/tech social links with labels",
     type: "social-links",
     props: {
-      icononly: false,
+      iconOnly: false,
       direction: "flex-col",
       links: [
         {
@@ -304,7 +310,7 @@ export const examples: {
     description: "Music artist social platforms (block layout)",
     type: "social-links",
     props: {
-      icononly: true,
+      iconOnly: true,
       direction: "flex-col",
       links: [
         {
@@ -339,7 +345,7 @@ export const examples: {
     description: "Business contact icons only",
     type: "social-links",
     props: {
-      icononly: true,
+      iconOnly: true,
       links: [
         {
           href: "tel:+1234567890",
@@ -368,7 +374,7 @@ export const examples: {
     description: "Gaming content creator links (inline with labels)",
     type: "social-links",
     props: {
-      icononly: false,
+      iconOnly: false,
       links: [
         {
           href: "https://twitch.tv/gamer",
@@ -397,7 +403,7 @@ export const examples: {
     description: "Restaurant social presence (block layout)",
     type: "social-links",
     props: {
-      icononly: false,
+      iconOnly: false,
       direction: "flex-col",
       links: [
         {
@@ -432,7 +438,7 @@ export const examples: {
     description: "Minimal footer social icons",
     type: "social-links",
     props: {
-      icononly: true,
+      iconOnly: true,
       direction: "flex-row",
       links: [
         {
@@ -457,7 +463,7 @@ export const examples: {
     description: "E-commerce store social channels (inline with labels)",
     type: "social-links",
     props: {
-      icononly: false,
+      iconOnly: false,
       direction: "flex-row",
       links: [
         {

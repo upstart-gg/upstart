@@ -1,22 +1,22 @@
 import { Type } from "@sinclair/typebox";
 import { IoGridOutline } from "react-icons/io5";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { basicGapRef } from "../props/gap";
 import { defineProps } from "../props/helpers";
 import { imageRef } from "../props/image";
-import { paddingRef } from "../props/padding";
 import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { colorPresetRef } from "../props/color-preset";
 import { borderRef, roundingRef } from "../props/border";
 import { loopRef } from "../props/dynamic";
+import { cssLengthRef } from "../props/css-length";
 
 export const manifest = defineBrickManifest({
   type: "images-gallery",
   name: "Gallery",
   category: "media",
-  description: "An image collection",
-  aiInstructions: "This brick should mostly be used for image galleries and collections.",
+  description: "Displays an images collection.",
+  aiInstructions:
+    "This brick should mostly be used for image galleries. Prefer using card bricks for product showcases, articles lists with images, or other collections.",
   consumesMultipleQueryRows: true,
   defaultInspectorTab: "content",
   isContainer: false,
@@ -35,7 +35,6 @@ export const manifest = defineBrickManifest({
     colorPreset: Type.Optional(
       colorPresetRef({
         title: "Color",
-        default: { color: "bg-base-100 text-base-100-content" },
       }),
     ),
     loop: Type.Optional(loopRef()),
@@ -57,6 +56,20 @@ export const manifest = defineBrickManifest({
           category: "content",
           consumeQuery: true,
         },
+        examples: [
+          {
+            image: { src: "https://via.placeholder.com/300x200.png?text=Image+1" },
+            legend: "Image 1",
+          },
+          {
+            image: { src: "https://via.placeholder.com/300x200.png?text=Image+2" },
+            legend: "Image 2",
+          },
+          {
+            image: { src: "https://via.placeholder.com/300x200.png?text=Image+3" },
+            legend: "Image 3",
+          },
+        ],
       },
     ),
     columns: Type.Optional(
@@ -72,13 +85,22 @@ export const manifest = defineBrickManifest({
       }),
     ),
     gap: Type.Optional(
-      basicGapRef({
-        default: "gap-4",
+      cssLengthRef({
+        title: "Gap",
+        description: "The gap between the images.",
+        default: "1rem",
+        "ui:styleId": "styles:gap",
       }),
     ),
     padding: Type.Optional(
-      paddingRef({
-        default: "p-4",
+      cssLengthRef({
+        default: "3rem",
+        description: "Padding inside the gallery.",
+        "ai:instructions": "Use only a single value like '1rem' or '10px'",
+        title: "Padding",
+        "ui:responsive": true,
+        "ui:placeholder": "Not specified",
+        "ui:styleId": "styles:padding",
       }),
     ),
     rounding: Type.Optional(roundingRef()),
@@ -98,7 +120,7 @@ export const examples: {
     type: "images-gallery",
     props: {
       columns: 3,
-      gap: "gap-4",
+      gap: "2.5rem",
       padding: "p-4",
       images: [
         {
@@ -129,11 +151,11 @@ export const examples: {
     },
   },
   {
-    description: "Team photos gallery (4-column grid)",
+    description: "Team photos gallery (4-column grid), light neutral background",
     type: "images-gallery",
     props: {
       columns: 4,
-      gap: "gap-6",
+      gap: "1rem",
       padding: "p-6",
       images: [
         {
@@ -185,6 +207,9 @@ export const examples: {
           legend: "Jennifer Adams - HR Specialist",
         },
       ],
+      colorPreset: {
+        color: "neutral-100",
+      },
     },
   },
   {
@@ -192,7 +217,7 @@ export const examples: {
     type: "images-gallery",
     props: {
       columns: 2,
-      gap: "gap-6",
+      gap: "1rem",
       padding: "p-6",
       images: [
         {
@@ -227,7 +252,7 @@ export const examples: {
     type: "images-gallery",
     props: {
       columns: 4,
-      gap: "gap-6",
+      gap: "1rem",
       padding: "p-6",
       images: [
         {

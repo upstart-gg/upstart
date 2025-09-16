@@ -1,10 +1,8 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
-import { makeContainerProps } from "../props/container";
 import { Type } from "@sinclair/typebox";
 import { borderRef, roundingRef } from "../props/border";
 import { shadowRef } from "../props/effects";
-import { paddingRef } from "../props/padding";
 import type { BrickProps } from "../props/types";
 import { cssLengthRef } from "../props/css-length";
 import { directionRef } from "../props/direction";
@@ -18,7 +16,9 @@ export const manifest = defineBrickManifest({
   type: "box",
   category: "container",
   name: "Box",
-  description: "A box for stacking bricks horizontally or vertically",
+  description: "A box for stacking bricks horizontally or vertically.",
+  aiInstructions:
+    "This is the only brick type that can contain other bricks. Don't nest boxes inside boxes, only include simple bricks as children.",
   isContainer: true,
   defaultWidth: {
     desktop: "auto",
@@ -52,8 +52,8 @@ export const manifest = defineBrickManifest({
     gap: Type.Optional(
       cssLengthRef({
         title: "Gap",
-        default: "10px",
-        description: "Space between bricks.",
+        default: "1rem",
+        description: "Gap between children bricks.",
         "ai:instructions":
           "Can be a tailwind gap class like 'gap-1' or 'gap-2', or a custom value like '10px'",
         "ui:placeholder": "Not specified",
@@ -61,8 +61,13 @@ export const manifest = defineBrickManifest({
       }),
     ),
     padding: Type.Optional(
-      paddingRef({
-        default: "p-2",
+      cssLengthRef({
+        default: "1rem",
+        description: "Padding inside the box.",
+        "ai:instructions": "Use only a single value like '1rem' or '10px'",
+        title: "Padding",
+        "ui:placeholder": "Not specified",
+        "ui:styleId": "styles:padding",
       }),
     ),
     rounding: Type.Optional(
@@ -73,7 +78,28 @@ export const manifest = defineBrickManifest({
     border: Type.Optional(borderRef()),
     shadow: Type.Optional(shadowRef()),
     loop: Type.Optional(loopRef()),
-    ...makeContainerProps(),
+    $children: Type.Array(Type.Any(), {
+      "ui:field": "hidden",
+      description: "List of nested bricks",
+      default: [],
+      examples: [
+        [
+          {
+            type: "text",
+            props: {
+              content: "Hello World",
+            },
+          },
+          {
+            type: "image",
+            props: {
+              src: "https://via.placeholder.com/150",
+              alt: "Placeholder Image",
+            },
+          },
+        ],
+      ],
+    }),
   }),
 });
 
@@ -83,4 +109,94 @@ export const examples: {
   description: string;
   type: string;
   props: BrickProps<Manifest>["brick"]["props"];
-}[] = [];
+}[] = [
+  {
+    description: "A simple box with 2 text bricks aligned vertically",
+    type: "box",
+    props: {
+      direction: "flex-col",
+      gap: "1rem",
+      $children: [
+        {
+          type: "text",
+          props: {
+            $children: [
+              {
+                type: "text",
+                props: {
+                  content: "Hello World",
+                },
+              },
+              {
+                type: "text",
+                props: {
+                  content: "Hello World",
+                },
+              },
+            ],
+          },
+        },
+      ],
+    },
+  },
+  {
+    description: "A horizontal box with 3 images",
+    type: "box",
+    props: {
+      direction: "flex-row",
+      gap: "1rem",
+      $children: [
+        {
+          type: "image",
+          props: {
+            src: "https://via.placeholder.com/150",
+            alt: "Placeholder Image",
+          },
+        },
+        {
+          type: "image",
+          props: {
+            src: "https://via.placeholder.com/150",
+            alt: "Placeholder Image",
+          },
+        },
+        {
+          type: "image",
+          props: {
+            src: "https://via.placeholder.com/150",
+            alt: "Placeholder Image",
+          },
+        },
+      ],
+    },
+  },
+  {
+    description: "A vertical box with 2 text bricks and 1 image",
+    type: "box",
+    props: {
+      direction: "flex-col",
+      gap: "1rem",
+      $children: [
+        {
+          type: "text",
+          props: {
+            content: "Hello World",
+          },
+        },
+        {
+          type: "image",
+          props: {
+            src: "https://via.placeholder.com/150",
+            alt: "Placeholder Image",
+          },
+        },
+        {
+          type: "text",
+          props: {
+            content: "Hello World",
+          },
+        },
+      ],
+    },
+  },
+];

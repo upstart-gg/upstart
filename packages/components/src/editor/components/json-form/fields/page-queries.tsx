@@ -93,22 +93,16 @@ const QueryField: FC<FieldProps<QueryUseSettings[] | undefined>> = (props) => {
       <div className="field field-query basis-full">
         <FieldTitle title={title} description={description} />
         <div className="text-sm text-gray-500">
-          No datasources available. Create a datasource first so you can create queries.
+          No database available. Create a database first so you can create queries.
         </div>
       </div>
     );
   }
 
   return (
-    <>
-      <QueryModal
-        onChange={onChange}
-        queries={currentValue}
-        open={showModal}
-        onClose={() => setShowModal(false)}
-      />
+    <div className="flex flex-col flex-1 gap-2">
       <div className="query-field flex items-center justify-between flex-1">
-        <FieldTitle title={title} description={description} />
+        <FieldTitle withIcon title={title} description={description} />
         {availableQueries.length > 0 && (
           <Button
             variant="soft"
@@ -130,7 +124,7 @@ const QueryField: FC<FieldProps<QueryUseSettings[] | undefined>> = (props) => {
           </div>
         )}
         {currentValue.length > 0 && (
-          <ul className="list-none p-0 m-0 mt-2">
+          <ul className="list-none p-0 m-0 mt-2 ml-3 font-normal">
             {currentValue.map((query, index) => (
               <li key={index} className="flex items-center gap-1.5 mb-2">
                 <BsDatabaseAdd />
@@ -141,7 +135,13 @@ const QueryField: FC<FieldProps<QueryUseSettings[] | undefined>> = (props) => {
           </ul>
         )}
       </div>
-    </>
+      <QueryModal
+        onChange={onChange}
+        queries={currentValue}
+        open={showModal}
+        onClose={() => setShowModal(false)}
+      />
+    </div>
   );
 };
 
@@ -303,9 +303,9 @@ function QueryEditor({
 
   const validateParams = () => {
     for (const p of params) {
-      const schema = datasource?.schema?.items?.properties?.[p];
+      const schema = datasource?.schema?.items?.properties?.[p.field];
       if (schema) {
-        const value = query.params?.find((f) => f.field === p)?.value;
+        const value = query.params?.find((f) => f.field === p.field)?.value;
         // Validate the parameter against the schema
         const valid = ajv.validate(schema, value);
         console.log(`Validating param ${p}:`, { valid, value, schema });
@@ -447,8 +447,8 @@ function QueryEditor({
                         availableQueries
                           .find((q) => q.id === value)
                           ?.parameters?.map((p) => ({
-                            field: p,
-                            op: getFieldOp(p),
+                            field: p.field,
+                            op: p.op,
                           })) ?? [],
                     }) as QueryUseSettings,
                 )
@@ -512,15 +512,17 @@ function QueryEditor({
                     <Fragment key={index}>
                       <div className="flex gap-x-3 gap-y-0.5 items-center">
                         {/* Field Selector */}
-                        <div className="w-[200px] flex items-center gap-3 pr-1">{getFieldName(param)}</div>
+                        <div className="w-[200px] flex items-center gap-3 pr-1">
+                          {getFieldName(param.field)}
+                        </div>
 
                         {/* Operator Selector */}
                         <div className={tx("flex gap-2 items-center w-[120px]")}>
                           <Select.Root
                             key={`operator-${index}-${param}`} // Force re-render when field changes
-                            defaultValue={getFieldOp(param)}
+                            defaultValue={getFieldOp(param.field)}
                             size="2"
-                            onValueChange={(value: string) => updateParam(param, "op", value)}
+                            onValueChange={(value: string) => updateParam(param.field, "op", value)}
                           >
                             <Select.Trigger
                               radius="medium"
@@ -530,7 +532,7 @@ function QueryEditor({
                             />
                             <Select.Content position="popper">
                               <Select.Group>
-                                {getOperatorOptionsForField(param).map((option) => (
+                                {getOperatorOptionsForField(param.field).map((option) => (
                                   <Select.Item key={option.value} value={option.value}>
                                     {option.label}
                                   </Select.Item>
@@ -541,17 +543,17 @@ function QueryEditor({
                         </div>
 
                         {/* Value Input - for relative dates, use two columns, otherwise span both */}
-                        {getFieldType(param) === "date" || getFieldType(param) === "datetime" ? (
-                          (getFieldOp(param) === "before" ||
-                            getFieldOp(param) === "after" ||
-                            getFieldOp(param) === "eq") && (
+                        {getFieldType(param.field) === "date" || getFieldType(param.field) === "datetime" ? (
+                          (getFieldOp(param.field) === "before" ||
+                            getFieldOp(param.field) === "after" ||
+                            getFieldOp(param.field) === "eq") && (
                             // Absolute date: span both columns
                             <div className={tx("grow flex justify-end")}>
                               <TextField.Root
                                 size="2"
-                                type={getFieldType(param) === "datetime" ? "datetime-local" : "date"}
-                                defaultValue={String(getFieldValue(param))}
-                                onChange={(e) => updateParam(param, "value", e.target.value)}
+                                type={getFieldType(param.field) === "datetime" ? "datetime-local" : "date"}
+                                defaultValue={String(getFieldValue(param.field))}
+                                onChange={(e) => updateParam(param.field, "value", e.target.value)}
                                 className="!w-full"
                               />
                             </div>
@@ -559,47 +561,41 @@ function QueryEditor({
                         ) : (
                           // Non-date fields: span both columns
                           <div className={tx("grow flex justify-end")}>
-                            {getFieldType(param) === "number" || getFieldType(param) === "integer" ? (
+                            {getFieldType(param.field) === "number" ||
+                            getFieldType(param.field) === "integer" ? (
                               <TextField.Root
                                 type="number"
                                 size="2"
-                                defaultValue={String(getFieldValue(param))}
-                                onChange={(e) => updateParam(param, "value", Number(e.target.value))}
+                                defaultValue={String(getFieldValue(param.field))}
+                                onChange={(e) => updateParam(param.field, "value", Number(e.target.value))}
                                 placeholder="Value"
                                 min="1"
                                 className="!w-full"
                               />
-                            ) : getFieldType(param) === "boolean" ? (
+                            ) : getFieldType(param.field) === "boolean" ? (
                               <SegmentedControl.Root
                                 size="1"
-                                defaultValue={String(getFieldValue(param) || "true")}
-                                onValueChange={(value) => updateParam(param, "value", value === "true")}
+                                defaultValue={String(getFieldValue(param.field) || "true")}
+                                onValueChange={(value) => updateParam(param.field, "value", value === "true")}
                                 className={tx("!mt-0.5 [&_.rt-SegmentedControlItemLabel]:(px-3)")}
                               >
                                 <SegmentedControl.Item value="true">True</SegmentedControl.Item>
                                 <SegmentedControl.Item value="false">False</SegmentedControl.Item>
                               </SegmentedControl.Root>
-                            ) : getFieldType(param) === "array" ? (
+                            ) : getFieldType(param.field) === "array" ? (
                               <TagsInput
-                                initialValue={getFieldValue(param, []) as string[]}
-                                onChange={(value) => updateParam(param, "value", value)}
+                                initialValue={getFieldValue(param.field, []) as string[]}
+                                onChange={(value) => updateParam(param.field, "value", value)}
                                 className="!w-full"
                                 placeholder="Add tags"
                               />
                             ) : (
-                              // <TextField.Root
-                              //   defaultValue={String(getFieldValue(param))}
-                              //   onChange={debounce((e) => updateParam(index, "value", e.target.value), 400)}
-                              //   placeholder="Value"
-                              //   size="2"
-                              //   className="!w-full max-w-full"
-                              // />
                               <TagsSelect
                                 isMulti={false}
                                 creatable
                                 clearable
-                                initialValue={getFieldValue(param, []) as string[]}
-                                onChange={(value) => updateParam(param, "value", value)}
+                                initialValue={getFieldValue(param.field, []) as string[]}
+                                onChange={(value) => updateParam(param.field, "value", value)}
                                 className="!w-full"
                                 placeholder="Value or variable"
                                 options={pageParams.map((p) => ({

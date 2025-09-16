@@ -7,44 +7,6 @@ type ColorPresetOptions = ObjectOptions & {
   "ui:default-gradient-direction"?: string;
 };
 
-export function gradientDirection(options: StringOptions = {}) {
-  return StringEnum(
-    [
-      "bg-gradient-to-t",
-      "bg-gradient-to-r",
-      "bg-gradient-to-b",
-      "bg-gradient-to-l",
-      "bg-gradient-to-tl",
-      "bg-gradient-to-tr",
-      "bg-gradient-to-br",
-      "bg-gradient-to-bl",
-    ],
-    {
-      title: "Gradient direction",
-      description: "The direction of the gradient. Only applies when color preset is a gradient.",
-      enumNames: ["Top", "Right", "Bottom", "Left", "Top left", "Top right", "Bottom right", "Bottom left"],
-      default: "bg-gradient-to-br",
-      "ui:responsive": "desktop",
-      "ui:styleId": "styles:gradientDirection",
-      // metadata: {
-      //   filter: (manifestProps: TObject, formData: Static<BrickManifest["props"]>) => {
-      //     return (formData[colorPropKey] as string)?.includes("gradient") === true;
-      //   },
-      // },
-      ...options,
-    },
-  );
-}
-
-export type GradientDirectionSettings = Static<ReturnType<typeof gradientDirection>>;
-
-export function gradientDirectionRef(options: StringOptions = {}) {
-  return typedRef("styles:gradientDirection", {
-    ...options,
-    "ui:styleId": "styles:gradientDirection",
-  });
-}
-
 export const colorPresets: NonNullable<ColorPresetOptions["ui:presets"]> = {
   "primary-50": {
     className: "bg-primary-50 text-primary-50-content",
@@ -372,13 +334,19 @@ export function colorPreset(options: ColorPresetOptions = {}) {
         "ui:responsive": true,
         default: options.default?.color,
       }),
-      gradientDirection: Type.Optional(gradientDirectionRef(options)),
+      gradientDirection: Type.Optional(gradientDirection(options)),
     },
     {
       "ui:field": "color-preset",
-      $id: "presets:color",
+      // $id: "presets:color",
+      title: "Color preset",
       "ui:presets": colorPresets,
       default: options.default,
+      examples: [
+        { color: "primary-500" },
+        { color: "secondary-500" },
+        { color: "accent-800", gradientDirection: "bg-gradient-to-t" },
+      ],
       "ui:default-gradient-direction": options["ui:default-gradient-direction"] ?? "bg-gradient-to-br",
     },
   );
@@ -386,6 +354,37 @@ export function colorPreset(options: ColorPresetOptions = {}) {
 
 export type ColorPresetSettings = Static<ReturnType<typeof colorPreset>>;
 
-export function colorPresetRef(options: ColorPresetOptions) {
+export function colorPresetRef(options: ColorPresetOptions = {}) {
   return typedRef("presets:color", options);
 }
+
+function gradientDirection(options: StringOptions = {}) {
+  return StringEnum(
+    [
+      "bg-gradient-to-t",
+      "bg-gradient-to-r",
+      "bg-gradient-to-b",
+      "bg-gradient-to-l",
+      "bg-gradient-to-tl",
+      "bg-gradient-to-tr",
+      "bg-gradient-to-br",
+      "bg-gradient-to-bl",
+    ],
+    {
+      title: "Gradient direction",
+      description: "The direction of the gradient. Only applies when color preset is a gradient.",
+      enumNames: ["Top", "Right", "Bottom", "Left", "Top left", "Top right", "Bottom right", "Bottom left"],
+      default: "bg-gradient-to-br",
+      "ui:responsive": "desktop",
+      "ui:styleId": "styles:gradientDirection",
+      // metadata: {
+      //   filter: (manifestProps: TObject, formData: Static<BrickManifest["props"]>) => {
+      //     return (formData[colorPropKey] as string)?.includes("gradient") === true;
+      //   },
+      // },
+      ...options,
+    },
+  );
+}
+
+export type GradientDirectionSettings = Static<ReturnType<typeof gradientDirection>>;

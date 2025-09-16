@@ -31,6 +31,7 @@ import { move } from "@dnd-kit/helpers";
 import Modal from "./Modal";
 import useBeforeUnload from "../hooks/use-beforeunload";
 import { isEqual } from "lodash-es";
+import { useUserConfig } from "../hooks/use-user-config";
 
 const Tour = lazy(() => import("./Tour"));
 const NavBar = lazy(() => import("./NavBar"));
@@ -57,6 +58,7 @@ export default function Editor(props: EditorProps) {
   const selectedSectionId = useSelectedSectionId();
   const islocalDev = useIsLocalDev();
   const debug = useDebugMode();
+  const userConfig = useUserConfig();
   const tmpAddedBrick = useRef<string | null>(null);
 
   usePageAutoSave();
@@ -69,16 +71,6 @@ export default function Editor(props: EditorProps) {
       tw(css(getThemeCss(themeUsed)));
     }
   }, [draft.previewTheme, draft.site.theme]);
-
-  if (!editorEnabled) {
-    return (
-      <div className="@container">
-        <Suspense>
-          <Page page={draft.page} site={draft.site} />
-        </Suspense>
-      </div>
-    );
-  }
 
   return (
     <DragDropProvider
@@ -209,7 +201,7 @@ export default function Editor(props: EditorProps) {
         className={tx(
           "grid relative transition-all mx-auto w-full",
           getEditorCss(generationState, chatVisible),
-          "min-h-[100dvh] max-h-[100dvh]",
+          "h-[100dvh] min-h-[100dvh] max-h-[100dvh]",
           generationState.isReady === false &&
             css({
               background: `linear-gradient(120deg,
@@ -244,6 +236,23 @@ export default function Editor(props: EditorProps) {
         <Suspense>
           <Modal />
           <Panel />
+          {!generationState.isReady && debug === true && (
+            <div className="fixed flex flex-col gap-3 w-[23dvw] top-[60px] right-0 bottom-0 bg-gray-100 dark:bg-dark-800 border-gray-300 dark:border-gray-700 p-5 overflow-y-auto">
+              <h2 className="text-xl font-bold">Debug Information</h2>
+              <h4 className="text-lg font-semibold">Site</h4>
+              <pre className="whitespace-pre-wrap break-words text-[75%]">
+                {JSON.stringify(draft.site, null, 2)}
+              </pre>
+              <h4 className="text-lg font-semibold">Page</h4>
+              <pre className="whitespace-pre-wrap break-words text-[75%]">
+                {JSON.stringify(draft.page, null, 2)}
+              </pre>
+              <h4 className="text-lg font-semibold">User config</h4>
+              <pre className="whitespace-pre-wrap break-words text-[75%]">
+                {JSON.stringify(userConfig, null, 2)}
+              </pre>
+            </div>
+          )}
         </Suspense>
         <main
           className={tx(
@@ -264,6 +273,8 @@ export default function Editor(props: EditorProps) {
           {generationState.isReady && (
             <Suspense>
               <DeviceFrame>
+                {/* FOR NOW LETS KEEP THE PAGE EDITABLE FOR DEV CONVENIENCE */}
+                {/* {!editorEnabled || generationState.isSetup ? <Page /> : <EditablePage />} */}
                 <EditablePage />
                 {draft.previewTheme && <ThemePreviewConfirmButton />}
               </DeviceFrame>
@@ -279,6 +290,7 @@ export default function Editor(props: EditorProps) {
                 <BlankWaitPage />
               </DeviceFrame>
             ))}
+
           <Toaster
             toastOptions={{
               position: "bottom-center",

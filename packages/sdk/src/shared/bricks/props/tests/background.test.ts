@@ -4,13 +4,12 @@ import { background, backgroundRef, backgroundColor } from "../background";
 describe("Background prop test suite", () => {
   describe("background", () => {
     it("should have the correct title", () => {
-      expect(background().title).toBe("Background");
+      expect(background().title).toBe("Background image");
     });
 
     it("should have correct schema structure", () => {
       const schema = background();
       expect(schema.type).toBe("object");
-      expect(schema).toHaveProperty("properties.color");
       expect(schema).toHaveProperty("properties.image");
       expect(schema).toHaveProperty("properties.size");
       expect(schema).toHaveProperty("properties.repeat");
@@ -19,36 +18,26 @@ describe("Background prop test suite", () => {
     it("should have correct UI metadata", () => {
       const schema = background();
       expect(schema["ui:field"]).toBe("background");
-      expect(schema["ui:group"]).toBe("background");
-      expect(schema["ui:group:title"]).toBe("Background");
     });
 
     it("should accept custom default values", () => {
       const customBg = background({
         default: {
-          color: "#000000",
           size: "cover",
           repeat: "repeat",
+          image: "https://example.com/image.jpg",
         },
       });
       expect(customBg.default).toEqual({
-        color: "#000000",
         size: "cover",
         repeat: "repeat",
+        image: "https://example.com/image.jpg",
       });
     });
 
     it("should accept custom title", () => {
       const customBg = background({ title: "Custom Title" });
       expect(customBg.title).toBe("Custom Title");
-    });
-
-    describe("color property", () => {
-      it("should have correct metadata", () => {
-        const colorProp = background().properties.color;
-        expect(colorProp.title).toBe("Color");
-        expect(colorProp.type).toBe("string");
-      });
     });
 
     describe("image property", () => {

@@ -9,17 +9,10 @@ import {
   useSelectedSectionId,
   useZoom,
 } from "../hooks/use-editor";
-import { useFontWatcher } from "../hooks/use-font-watcher";
 import { useGridObserver } from "../hooks/use-grid-observer";
 import { useResizable } from "../hooks/use-resizable";
-import Section from "./EditableSection";
-import {
-  useDraftHelpers,
-  useSections,
-  useGenerationState,
-  usePageAttributes,
-  useSiteAttributes,
-} from "../hooks/use-page-data";
+import EditableSection from "./EditableSection";
+import { useDraftHelpers, useSections, useGenerationState } from "../hooks/use-page-data";
 
 type EditablePageProps = {
   showIntro?: boolean;
@@ -32,17 +25,13 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
   const { zoom } = useZoom();
   const pageRef = useRef<HTMLDivElement>(null);
   const gridConfig = useGridConfig();
-  const pageAttributes = usePageAttributes();
   const sections = useSections();
-  const typography = useFontWatcher();
   const selectedBrickId = useSelectedBrickId();
   const selectedSectionId = useSelectedSectionId();
+  const { isSetup } = useGenerationState();
 
   const pageClassName = usePageStyle({
-    attributes: pageAttributes,
-    typography,
-    editable: true,
-    previewMode,
+    editable: !isSetup,
     showIntro,
   });
 
@@ -214,7 +203,7 @@ export default function EditablePage({ showIntro }: EditablePageProps) {
     >
       {/* If the navbar is enabled, set it statically */}
       {sections.map((section, index) => (
-        <Section key={section.id} section={section} index={index} />
+        <EditableSection key={section.id} section={section} index={index} />
       ))}
     </div>
   );

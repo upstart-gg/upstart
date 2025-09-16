@@ -1,5 +1,6 @@
 import { defineConfig, type PluginOption } from "vite";
-import react from "@vitejs/plugin-react";
+// import react from "@vitejs/plugin-react";
+import react from "@vitejs/plugin-react-swc";
 import dts from "vite-plugin-dts";
 import devtoolsJson from "vite-plugin-devtools-json";
 import tsconfigPaths from "vite-tsconfig-paths";
@@ -7,6 +8,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig(({ mode }) => ({
   envPrefix: ["PUBLIC_"],
   base: "./",
+  // logLevel: "warn",
   plugins: [
     tsconfigPaths() as PluginOption,
     devtoolsJson(),
@@ -21,15 +23,20 @@ export default defineConfig(({ mode }) => ({
         "src/shared/utils/get-theme-css.ts",
       ],
       outDir: "dist/types",
+      afterDiagnostic: (diagnostics) => {
+        if (diagnostics.length) {
+          console.error("Error while building types in @upstart/components. Please check error(s) above.\n");
+          process.exit(1);
+        }
+      },
     }),
   ],
-  optimizeDeps: {},
   server: {
     port: +(process.env.PORT ?? 3008),
     server: {
       watch: {
         // Ignore node_modules and build outputs from other packages
-        ignored: ["**/node_modules/**", "**/dist/**", "**/build/**"],
+        // ignored: ["**/node_modules/**", "**/dist/**", "**/build/**"],
       },
     },
     proxy: {
@@ -38,14 +45,18 @@ export default defineConfig(({ mode }) => ({
         changeOrigin: true, // Ensure the request appears to come from the frontend server
         secure: false,
         configure: (proxy, _options) => {
-          proxy.on("error", (err, _req, _res) => {
-            console.log("proxy error", err);
-          });
-          proxy.on("proxyReq", (proxyReq, req, _res) => {
-            console.log("Sending Request to the Target:", req.method, req.url);
+          // console.log("listeners", proxy.listeners("error"));
+          proxy.on("error", (err, _req, res) => {
+            // don't crash the dev server on proxy errors
+            // this could easily happen of the monorepo is not running
+            if (!res.writableEnded) {
+              // res.end();
+            }
           });
           proxy.on("proxyRes", (proxyRes, req, _res) => {
-            console.log("Received Response from the Target:", proxyRes.statusCode, req.url);
+            if (proxyRes.statusCode && proxyRes.statusCode >= 400) {
+              console.log("Received Error Response from the Target:", proxyRes.statusCode, req.url);
+            }
           });
         },
       },
@@ -59,6 +70,7 @@ export default defineConfig(({ mode }) => ({
   build: {
     copyPublicDir: false,
     sourcemap: true,
+    reportCompressedSize: false,
     lib: {
       entry: {
         Editor: "src/editor/components/Editor.tsx",

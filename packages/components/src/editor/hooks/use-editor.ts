@@ -10,7 +10,7 @@ import { isEqual, isNil } from "lodash-es";
 import { createContext, useContext } from "react";
 import { temporal } from "zundo";
 import { createStore, useStore } from "zustand";
-import { persist, subscribeWithSelector } from "zustand/middleware";
+import { subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { type DraftState, usePageContext } from "./use-page-data";
 import type { Page } from "@upstart.gg/sdk/shared/page";
@@ -70,6 +70,9 @@ export interface EditorStateProps {
   selectedGroup?: Brick["id"][];
   selectedSectionId?: string;
 
+  attributesTab?: "site" | "page";
+  attributesGroup?: string;
+
   resizing?: boolean;
 
   isEditingTextForBrickId?: string;
@@ -79,7 +82,6 @@ export interface EditorStateProps {
   chatVisible: boolean;
   logoLink: string;
   themesLibrary: Theme[];
-  imagesSearchResults?: ImageSearchResultsType;
   contextMenuVisible: boolean;
   draggingBrickType?: Brick["type"];
   isMouseOverPanel?: boolean;
@@ -112,7 +114,6 @@ export interface EditorState extends EditorStateProps {
   setSelectedBrickId: (brickId?: Brick["id"]) => void;
   setSelectedSectionId: (sectionId?: string) => void;
   deselectBrick: (brickId?: Brick["id"]) => void;
-  setImagesSearchResults: (images: EditorStateProps["imagesSearchResults"]) => void;
   togglePanelPosition: () => void;
   toggleDebugMode: () => void;
   showModal: (modal: EditorStateProps["modal"]) => void;
@@ -125,6 +126,8 @@ export interface EditorState extends EditorStateProps {
   setDraggingBrickType: (type: Brick["type"] | null) => void;
   setMouseOverPanel: (over: boolean) => void;
   updateHistory(): void;
+  setAttributesTab: (tab: "site" | "page") => void;
+  setAttributesGroup: (group: string | undefined) => void;
 }
 
 export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
@@ -182,203 +185,199 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
 
   return createStore<EditorState>()(
     subscribeWithSelector(
-      persist(
-        temporal(
-          immer((set, _get) => ({
-            ...DEFAULT_PROPS,
-            ...initProps,
-            updateHistory: () => {
-              setTimeout(() => {
-                const currentState = _get();
-                const state = {
-                  panel: currentState.panel,
-                  selectedBrickId: currentState.selectedBrickId,
-                  selectedSectionId: currentState.selectedBrickId
-                    ? undefined
-                    : currentState.selectedSectionId,
-                  panelPosition: currentState.panelPosition,
-                  modal: currentState.modal,
-                  debug: import.meta.env.DEV ? currentState.debugMode : undefined,
-                };
-                const newUrl = new URL(window.location.href);
-                Object.entries(state).forEach(([key, value]) => {
-                  if (!isNil(value) && value.toString().trim() !== "") {
-                    newUrl.searchParams.set(key, value.toString());
-                  } else {
-                    newUrl.searchParams.delete(key);
-                  }
-                });
-                window.history.pushState(state, "", newUrl.toString());
-              }, 100);
-            },
-            setIsResizing: (resizing) =>
-              set((state) => {
-                state.resizing = resizing;
-              }),
-
-            setMouseOverPanel: (over) =>
-              set((state) => {
-                state.isMouseOverPanel = over;
-              }),
-            setContextMenuVisible: (open) =>
-              set((state) => {
-                state.contextMenuVisible = open;
-              }),
-            setDraggingBrickType: (type) =>
-              set((state) => {
-                state.draggingBrickType = type ?? undefined;
-              }),
-            setGridConfig: (config) =>
-              set((state) => {
-                state.gridConfig = config;
-              }),
-            toggleEditorEnabled: () =>
-              set((state) => {
-                state.disabled = !state.disabled;
-              }),
-            toggleChat: () =>
-              set((state) => {
-                state.chatVisible = !state.chatVisible;
-                if (state.chatVisible) {
-                  state.panel = undefined;
-                  state.panelPosition = "right";
+      temporal(
+        immer((set, _get) => ({
+          ...DEFAULT_PROPS,
+          ...initProps,
+          updateHistory: () => {
+            setTimeout(() => {
+              const currentState = _get();
+              const state = {
+                panel: currentState.panel,
+                selectedBrickId: currentState.selectedBrickId,
+                selectedSectionId: currentState.selectedBrickId ? undefined : currentState.selectedSectionId,
+                panelPosition: currentState.panelPosition,
+                attributesTab: currentState.attributesTab,
+                modal: currentState.modal,
+                debug: import.meta.env.DEV ? currentState.debugMode : undefined,
+              };
+              const newUrl = new URL(window.location.href);
+              Object.entries(state).forEach(([key, value]) => {
+                if (!isNil(value) && value.toString().trim() !== "") {
+                  newUrl.searchParams.set(key, value.toString());
+                } else {
+                  newUrl.searchParams.delete(key);
                 }
-                state.updateHistory();
-              }),
-            toggleDebugMode: () =>
-              set((state) => {
-                state.debugMode = !state.debugMode;
-              }),
-            setImagesSearchResults: (images) =>
-              set((state) => {
-                state.imagesSearchResults = images;
-              }),
-
-            setPreviewMode: (mode) =>
-              set((state) => {
-                state.previewMode = mode;
-              }),
-
-            setSettingsVisible: (visible) =>
-              set((state) => {
-                state.settingsVisible = visible;
-                state.updateHistory();
-              }),
-
-            toggleSettings: () =>
-              set((state) => {
-                state.settingsVisible = !state.settingsVisible;
-                state.updateHistory();
-              }),
-
-            setIsEditingText: (forBrickId: string | false) =>
-              set((state) => {
-                state.isEditingTextForBrickId = forBrickId || undefined;
-              }),
-
-            setPanel: (panel) =>
-              set((state) => {
-                state.panel = panel;
-                state.updateHistory();
-              }),
-
-            togglePanel: (panel) =>
-              set((state) => {
-                state.panel = panel && state.panel === panel ? undefined : panel;
-                state.updateHistory();
-              }),
-
-            hidePanel: (panel) =>
-              set((state) => {
-                if (!panel || state.panel === panel) {
-                  state.panel = undefined;
-                }
-                state.updateHistory();
-              }),
-
-            toggleModal: (modal) =>
-              set((state) => {
-                state.modal = modal && state.modal === modal ? undefined : modal;
-                state.updateHistory();
-              }),
-
-            zoomIn: () =>
-              set((state) => {
-                state.zoom = Math.min(state.zoom + 0.1, 2);
-              }),
-
-            zoomOut: () =>
-              set((state) => {
-                state.zoom = Math.max(state.zoom - 0.1, 0.5);
-              }),
-
-            resetZoom: () =>
-              set((state) => {
-                state.zoom = 1;
-              }),
-
-            setSelectedGroup: (group) =>
-              set((state) => {
-                state.selectedGroup = group;
-              }),
-
-            setSelectedBrickId: (brickId) =>
-              set((state) => {
-                state.selectedBrickId = brickId;
-                if (brickId) {
-                  state.selectedSectionId = undefined;
-                }
-                state.updateHistory();
-              }),
-
-            setSelectedSectionId: (sectionId) =>
-              set((state) => {
-                state.selectedSectionId = sectionId;
-                if (sectionId) {
-                  state.selectedBrickId = undefined;
-                  state.selectedGroup = undefined;
-                }
-                state.updateHistory();
-              }),
-
-            deselectBrick: (brickId) =>
-              set((state) => {
-                if (state.selectedBrickId && (!brickId || state.selectedBrickId === brickId)) {
-                  state.selectedBrickId = undefined;
-                }
-                state.updateHistory();
-              }),
-
-            togglePanelPosition: () =>
-              set((state) => {
-                state.panelPosition = state.panelPosition === "left" ? "right" : "left";
-                state.updateHistory();
-              }),
-
-            showModal: (modal) =>
-              set((state) => {
-                state.modal = modal;
-                state.updateHistory();
-              }),
-
-            hideModal: () =>
-              set((state) => {
-                state.modal = undefined;
-                state.updateHistory();
-              }),
-          })),
-          // limit undo history to 100
-          {
-            limit: 100,
-            equality: (pastState, currentState) => isEqual(pastState, currentState),
+              });
+              window.history.pushState(state, "", newUrl.toString());
+            }, 100);
           },
-        ),
+
+          setAttributesGroup: (group) =>
+            set((state) => {
+              state.attributesGroup = group;
+            }),
+
+          setAttributesTab: (tab) =>
+            set((state) => {
+              state.attributesTab = tab;
+            }),
+          setIsResizing: (resizing) =>
+            set((state) => {
+              state.resizing = resizing;
+            }),
+
+          setMouseOverPanel: (over) =>
+            set((state) => {
+              state.isMouseOverPanel = over;
+            }),
+          setContextMenuVisible: (open) =>
+            set((state) => {
+              state.contextMenuVisible = open;
+            }),
+          setDraggingBrickType: (type) =>
+            set((state) => {
+              state.draggingBrickType = type ?? undefined;
+            }),
+          setGridConfig: (config) =>
+            set((state) => {
+              state.gridConfig = config;
+            }),
+          toggleEditorEnabled: () =>
+            set((state) => {
+              state.disabled = !state.disabled;
+            }),
+          toggleChat: () =>
+            set((state) => {
+              state.chatVisible = !state.chatVisible;
+              if (state.chatVisible) {
+                state.panel = undefined;
+                state.panelPosition = "right";
+              }
+              state.updateHistory();
+            }),
+          toggleDebugMode: () =>
+            set((state) => {
+              state.debugMode = !state.debugMode;
+            }),
+
+          setPreviewMode: (mode) =>
+            set((state) => {
+              state.previewMode = mode;
+            }),
+
+          setSettingsVisible: (visible) =>
+            set((state) => {
+              state.settingsVisible = visible;
+              state.updateHistory();
+            }),
+
+          toggleSettings: () =>
+            set((state) => {
+              state.settingsVisible = !state.settingsVisible;
+              state.updateHistory();
+            }),
+
+          setIsEditingText: (forBrickId: string | false) =>
+            set((state) => {
+              state.isEditingTextForBrickId = forBrickId || undefined;
+            }),
+
+          setPanel: (panel) =>
+            set((state) => {
+              state.panel = panel;
+              state.updateHistory();
+            }),
+
+          togglePanel: (panel) =>
+            set((state) => {
+              state.panel = panel && state.panel === panel ? undefined : panel;
+              state.updateHistory();
+            }),
+
+          hidePanel: (panel) =>
+            set((state) => {
+              if (!panel || state.panel === panel) {
+                state.panel = undefined;
+              }
+              state.updateHistory();
+            }),
+
+          toggleModal: (modal) =>
+            set((state) => {
+              state.modal = modal && state.modal === modal ? undefined : modal;
+              state.updateHistory();
+            }),
+
+          zoomIn: () =>
+            set((state) => {
+              state.zoom = Math.min(state.zoom + 0.1, 2);
+            }),
+
+          zoomOut: () =>
+            set((state) => {
+              state.zoom = Math.max(state.zoom - 0.1, 0.5);
+            }),
+
+          resetZoom: () =>
+            set((state) => {
+              state.zoom = 1;
+            }),
+
+          setSelectedGroup: (group) =>
+            set((state) => {
+              state.selectedGroup = group;
+            }),
+
+          setSelectedBrickId: (brickId) =>
+            set((state) => {
+              state.selectedBrickId = brickId;
+              if (brickId) {
+                state.selectedSectionId = undefined;
+              }
+              state.updateHistory();
+            }),
+
+          setSelectedSectionId: (sectionId) =>
+            set((state) => {
+              state.selectedSectionId = sectionId;
+              if (sectionId) {
+                state.selectedBrickId = undefined;
+                state.selectedGroup = undefined;
+              }
+              state.updateHistory();
+            }),
+
+          deselectBrick: (brickId) =>
+            set((state) => {
+              if (state.selectedBrickId && (!brickId || state.selectedBrickId === brickId)) {
+                state.selectedBrickId = undefined;
+              }
+              state.updateHistory();
+            }),
+
+          togglePanelPosition: () =>
+            set((state) => {
+              state.panelPosition = state.panelPosition === "left" ? "right" : "left";
+              state.updateHistory();
+            }),
+
+          showModal: (modal) =>
+            set((state) => {
+              state.modal = modal;
+              state.updateHistory();
+            }),
+
+          hideModal: () =>
+            set((state) => {
+              state.modal = undefined;
+              state.updateHistory();
+            }),
+        })),
+        // limit undo history to 100
         {
-          name: "editor-state",
-          partialize: (state) =>
-            Object.fromEntries(
-              Object.entries(state).filter(([key]) => ["chatVisible", "previewMode"].includes(key)),
-            ),
+          limit: 100,
+          equality: (pastState, currentState) => isEqual(pastState, currentState),
         },
       ),
     ),
@@ -426,6 +425,16 @@ export const useSelectedGroup = () => {
 export const useSelectedBrickId = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => state.selectedBrickId);
+};
+
+export const useAttributesTab = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.attributesTab ?? "page");
+};
+
+export const useAttributesGroup = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.attributesGroup);
 };
 
 export function useSelectedSectionId() {
@@ -478,11 +487,6 @@ export const useThemesLibrary = () => {
   return useStore(ctx, (state) => state.themesLibrary);
 };
 
-export const useImagesSearchResults = () => {
-  const ctx = useEditorStoreContext();
-  return useStore(ctx, (state) => state.imagesSearchResults);
-};
-
 export const useZoom = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => ({
@@ -520,14 +524,11 @@ export const useContextMenuVisible = () => {
   return useStore(ctx, (state) => state.contextMenuVisible);
 };
 
-export const useIsMouseOverPanel = () => {
-  const ctx = useEditorStoreContext();
-  return useStore(ctx, (state) => state.isMouseOverPanel);
-};
-
 export const useEditorHelpers = () => {
   const ctx = useEditorStoreContext();
   return useStore(ctx, (state) => ({
+    setAttributesGroup: state.setAttributesGroup,
+    setAttributesTab: state.setAttributesTab,
     setIsResizing: state.setIsResizing,
     setMouseOverPanel: state.setMouseOverPanel,
     toggleDebugMode: state.toggleDebugMode,
@@ -538,7 +539,6 @@ export const useEditorHelpers = () => {
     setGridConfig: state.setGridConfig,
     toggleSettings: state.toggleSettings,
     setIsEditingText: state.setIsEditingText,
-    setImagesSearchResults: state.setImagesSearchResults,
     setPanel: state.setPanel,
     togglePanel: state.togglePanel,
     toggleModal: state.toggleModal,

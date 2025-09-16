@@ -1,0 +1,15 @@
+{
+  "remoteCache": {
+    "apiUrl": "https://turborepo-remote-cache-746116063884.europe-west9.run.app"
+  },
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "build/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

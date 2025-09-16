@@ -4,7 +4,7 @@ import { typedRef } from "~/shared/utils/typed-ref";
 export function color(defaultValue?: string, title = "Text color") {
   return Type.String({
     title,
-    $id: "styles:color",
+    // $id: "styles:color",
     "ai:instructions":
       "hex/rgb/rgba color or classes like `text-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900",
     default: defaultValue,
@@ -23,7 +23,7 @@ export function colorRef(options: SchemaOptions = {}) {
 export function borderColor(defaultValue?: string, title = "Border color") {
   return Type.String({
     title,
-    $id: "styles:borderColor",
+    // $id: "styles:borderColor",
     "ai:instructions":
       "hex/rgb/rgba color or classes like `border-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900",
     default: defaultValue,

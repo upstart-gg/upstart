@@ -2,7 +2,6 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
 import { imageRef } from "../props/image";
 import { shadowRef } from "../props/effects";
-import { paddingRef } from "../props/padding";
 import { RxImage } from "react-icons/rx";
 import { string } from "../props/string";
 import { Type } from "@sinclair/typebox";
@@ -10,12 +9,16 @@ import type { BrickProps } from "../props/types";
 import { backgroundColorRef } from "../props/background";
 import { borderRef, roundingRef } from "../props/border";
 import { loopRef } from "../props/dynamic";
+import { colorPresetRef } from "../props/color-preset";
+import { cssLengthRef } from "../props/css-length";
 
 export const manifest = defineBrickManifest({
   type: "image",
   name: "Image",
   category: "media",
   description: "An image brick",
+  aiInstructions:
+    "An image brick that can display an image with optional styling such as padding, border radius, and shadow. It supports giving credit to the image author and specifying the image provider.",
   defaultWidth: { desktop: "auto", mobile: "100%" },
   icon: RxImage,
   props: defineProps({
@@ -24,8 +27,17 @@ export const manifest = defineBrickManifest({
         category: "content",
       },
     }),
-    backgroundColor: Type.Optional(backgroundColorRef()),
-    padding: Type.Optional(paddingRef({})),
+    colorPreset: Type.Optional(colorPresetRef()),
+    padding: Type.Optional(
+      cssLengthRef({
+        description: "Padding inside the image.",
+        title: "Padding",
+        "ai:instructions": "Use only a single value like '1rem' or '10px'",
+        "ui:responsive": true,
+        "ui:placeholder": "Not specified",
+        "ui:styleId": "styles:padding",
+      }),
+    ),
     rounding: Type.Optional(
       roundingRef({
         default: "rounded-md",
@@ -72,7 +84,7 @@ export const examples: {
   props: BrickProps<Manifest>["brick"]["props"];
 }[] = [
   {
-    description: "Hero landscape image with shadow",
+    description: "Hero landscape image with large shadow",
     type: "image",
     props: {
       image: {
@@ -83,7 +95,7 @@ export const examples: {
     },
   },
   {
-    description: "Team member profile photo",
+    description: "Team member profile photo, full rounded",
     type: "image",
     props: {
       image: {
@@ -91,6 +103,7 @@ export const examples: {
         alt: "Team member profile photo",
       },
       shadow: "shadow-md",
+      rounding: "rounded-full",
     },
   },
   {
@@ -105,7 +118,7 @@ export const examples: {
     },
   },
   {
-    description: "Blog article featured image",
+    description: "Blog article featured image with medium shadow and full author info",
     type: "image",
     props: {
       image: {
@@ -120,20 +133,9 @@ export const examples: {
       shadow: "shadow-md",
     },
   },
-  {
-    description: "Gallery thumbnail with hover effect",
-    type: "image",
-    props: {
-      image: {
-        src: "https://via.placeholder.com/250x250.png?text=Gallery+Thumb",
-        alt: "Gallery thumbnail image",
-      },
 
-      shadow: "shadow-md",
-    },
-  },
   {
-    description: "Logo image with padding",
+    description: "Logo image with padding and small shadow",
     type: "image",
     props: {
       image: {
@@ -145,7 +147,7 @@ export const examples: {
     },
   },
   {
-    description: "Testimonial customer photo",
+    description: "Testimonial customer photo with large shadow and small padding",
     type: "image",
     props: {
       image: {
@@ -157,9 +159,10 @@ export const examples: {
     },
   },
   {
-    description: "Event banner image",
+    description: "Event banner image with neutral-500 background",
     type: "image",
     props: {
+      colorPreset: { color: "neutral-500" },
       image: {
         src: "https://via.placeholder.com/800x200.png?text=Event+Banner",
         alt: "Annual conference event banner",
@@ -173,7 +176,7 @@ export const examples: {
     },
   },
   {
-    description: "Illustration with background",
+    description: "Illustration with background and padding",
     type: "image",
     props: {
       image: {

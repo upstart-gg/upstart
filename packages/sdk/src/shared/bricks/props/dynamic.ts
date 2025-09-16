@@ -1,12 +1,13 @@
 import { typedRef } from "~/shared/utils/typed-ref";
 import { type ObjectOptions, Type, type Static } from "@sinclair/typebox";
 import { queryFilter } from "~/shared/datasources/types";
+import { over } from "lodash-es";
 
 export function queryUse() {
   return Type.Object(
     {
       queryId: Type.String({
-        description: "The Query ID to use for dynamic content.",
+        description: "The Site Query ID to use.",
       }),
       alias: Type.String({
         title: "Alias",
@@ -26,24 +27,29 @@ export function queryUse() {
           default: [],
         }),
       ),
-      // limit: Type.Optional(
-      //   Type.Number({
-      //     description:
-      //       "Number of items from the query to loop through. If not set, it will loop through all items. If set to 1, it will not loop and will render only the first item.",
-      //     minimum: 1,
-      //     maximum: 100,
-      //   }),
-      // ),
     },
     {
       title: "Query",
       description:
         "When set, this brick will loop through the results of the query and render the content for each item.",
-      $id: "content:queryUse",
+      // $id: "content:queryUse",
       "ui:field": "query",
       metadata: {
         category: "content",
       },
+      examples: [
+        { queryId: "get-latest-posts", alias: "latestPosts" },
+        {
+          queryId: "get-user-profile",
+          alias: "userProfile",
+          params: [{ field: "userId", op: "eq", value: ":slug" }],
+        },
+        {
+          queryId: "get-posts-by-category",
+          alias: "postsByCategory",
+          params: [{ field: "category", op: "eq", value: ":slug" }],
+        },
+      ],
     },
   );
 }
@@ -73,13 +79,27 @@ export function loop(options: ObjectOptions = {}) {
       ),
     },
     {
-      $id: "content:loop",
+      // $id: "content:loop",
       title: "Repeat over",
+      description: "Repeat this brick for each item in the specified query results.",
       "ui:field": "loop",
       "ui:hidden-if": "no-page-queries",
       metadata: {
         category: "content",
       },
+      examples: [
+        {
+          over: "latestBlogPosts",
+          overrideLimit: 5,
+        },
+        {
+          over: "featuredProducts",
+          overrideLimit: 3,
+        },
+        {
+          over: "popularProducts",
+        },
+      ],
       ...options,
     },
   );

@@ -1,9 +1,8 @@
-import type { Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
+import type { Section } from "@upstart.gg/sdk/shared/bricks";
 import {
   useDraggingBrickType,
   useEditingTextForBrickId,
   useEditorHelpers,
-  useIsMouseOverPanel,
   usePreviewMode,
   useSelectedSectionId,
 } from "../hooks/use-editor";
@@ -24,7 +23,7 @@ import EditableSectionButtons from "./EditableSectionButtons";
 import { useResizableSection } from "../hooks/use-resizable-section";
 
 type EditableSectionProps = {
-  section: SectionType;
+  section: Section;
   index: number;
 };
 
@@ -36,7 +35,6 @@ export default function EditableSection({ section, index }: EditableSectionProps
   const selectedSectionId = useSelectedSectionId();
   const editingBrick = useEditingTextForBrickId();
   const draggingBrickType = useDraggingBrickType();
-  // const isMouseOverPanel = useIsMouseOverPanel();
   const { isDesktop } = useDeviceInfo();
   const isSpecialSection = typeof section.props.variant !== "undefined";
   const dropDisabled =
@@ -96,6 +94,7 @@ export default function EditableSection({ section, index }: EditableSectionProps
         // If the click was handled by a child element, do not propagate
         return;
       }
+
       // console.debug("Section clicked", section.id, target, e);
       setSelectedSectionId(section.id);
       setSelectedBrickId();
@@ -108,7 +107,9 @@ export default function EditableSection({ section, index }: EditableSectionProps
   return (
     <EditableSectionContextMenu section={section}>
       <section id={id} ref={sectionRef} data-element-kind="section" onClick={onClick} className={className}>
-        {!editingBrick && !draggingBrickType && <EditableSectionButtons section={section} />}
+        {!editingBrick && !draggingBrickType && !isSpecialSection && (
+          <EditableSectionButtons section={section} />
+        )}
         {bricks
           .filter((b) => !b.props.hidden?.[previewMode])
           .map((brick, brickIndex) => {

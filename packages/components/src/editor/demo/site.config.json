@@ -3,7 +3,7 @@
     "id": "4289a8c6-681c-4c03-bf22-83f39076b957",
     "label": "New site",
     "hostname": "example.com",
-    "sitePrompt": "a site about coffee and tea",
+    "sitePrompt": "A blog named 'Coffee and Beans' about various kinds of coffee and also coffee recipes",
     "theme": {
       "id": "_default_",
       "name": "default",
@@ -37,7 +37,8 @@
           "colorPreset": { "color": "base-100" },
           "path": "/",
           "description": "The main landing page",
-          "keywords": "home,landing,welcome"
+          "keywords": "home,landing,welcome",
+          "tags": ["navbar", "home"]
         }
       },
       {
@@ -49,12 +50,48 @@
           "colorPreset": { "color": "base-100" },
           "path": "/secondPage",
           "description": "The second page",
-          "keywords": "second,page"
+          "keywords": "second,page",
+          "tags": ["navbar"]
         }
       }
     ],
     "attributes": {
       "language": "en",
+      "navbar": {
+        "brand": "My Site",
+        "navigation": { "staticItems": [{ "urlOrPageId": "/about" }, { "urlOrPageId": "/contact" }] }
+      },
+      "footer": {
+        "linksSections": [
+          {
+            "sectionTitle": "Links",
+            "links": [
+              { "title": "About", "url": "/about" },
+              { "title": "Contact", "url": "/contact" },
+              { "title": "Privacy Policy", "url": "/privacy" }
+            ]
+          },
+          {
+            "sectionTitle": "Social",
+            "links": [
+              { "title": "Twitter", "url": "https://twitter.com" },
+              { "title": "Facebook", "url": "https://facebook.com" },
+              { "title": "Instagram", "url": "https://instagram.com" }
+            ]
+          },
+          {
+            "sectionTitle": "Legal",
+            "links": [
+              { "title": "Terms of Service", "url": "/terms" },
+              { "title": "Cookie Policy", "url": "/cookies" }
+            ]
+          },
+          {
+            "sectionTitle": "Contact",
+            "links": [{ "title": "Email Us", "url": "mailto:" }, { "title": "Support", "url": "/support" }]
+          }
+        ]
+      },
       "queries": [
         { "id": "get-employees", "label": "Get all employees", "datasourceId": "employees", "limit": 50 },
         {
@@ -169,7 +206,7 @@
       {
         "id": "employees",
         "label": "Company employees",
-        "provider": "custom",
+        "provider": "internal",
         "schema": {
           "type": "array",
           "items": {
@@ -294,7 +331,7 @@
       {
         "id": "employees2",
         "label": "Company employees 2",
-        "provider": "custom",
+        "provider": "internal",
         "schema": {
           "type": "array",
           "items": {
@@ -327,7 +364,7 @@
       {
         "id": "testimonials",
         "label": "Testimonials",
-        "provider": "custom",
+        "provider": "internal",
         "schema": {
           "type": "array",
           "items": {
@@ -426,24 +463,7 @@
     {
       "id": "_default_",
       "label": "First page with really really long name that should be truncated",
-      "path": "/blog/:slug",
       "sections": [
-        {
-          "id": "s_mDrsvye",
-          "label": "Top",
-          "order": 1,
-          "props": { "variant": "navbar" },
-          "bricks": [
-            {
-              "id": "bVVtvDk",
-              "type": "navbar",
-              "props": {
-                "brand": "My Site",
-                "navigation": { "staticItems": [{ "urlOrPageId": "/about" }, { "urlOrPageId": "/contact" }] }
-              }
-            }
-          ]
-        },
         {
           "id": "s_hero",
           "label": "Hero",
@@ -454,7 +474,7 @@
               "id": "b_zzZYqOu",
               "type": "hero",
               "props": {
-                "content": "<h1 class='hero-size-1' style='text-align:center'><b>Leading Businesses<br />Choose Upstart</b></h1>"
+                "content": "<h1 class='hero-size-1' style='text-align:center'>Leading Businesses<br />Choose Upstart</h1>"
               }
             }
           ]
@@ -471,7 +491,7 @@
               "props": {
                 "loop": { "over": "allTestimonials" },
                 "title": "{{allTestimonials.author}}",
-                "text": "{{allTestimonials.text}}"
+                "text": "{{allTestimonials.text}} <a href=\"example.com\">my link</a> and <a href=\"https://example.com\" class=\"not-prose\">another link</a>"
               }
             }
           ]
@@ -523,7 +543,7 @@
                     "id": "knLJyAM",
                     "type": "text",
                     "props": {
-                      "content": "Hello this is the first text in the dynamic box.<br />I'm on a new line explicitly.<br />I'm the third line and I'm the longest of them all! Yeah!"
+                      "content": "<h2>I'm an h2 heading!</h2>Hello this is the first text in the dynamic box.<br />I'm on a new line explicitly.<br />I'm the third line and I'm the longest of them all! Yeah!"
                     }
                   },
                   {
@@ -711,57 +731,11 @@
               }
             }
           ]
-        },
-        {
-          "id": "s_content-BopUbnQ",
-          "label": "Bottom",
-          "order": 11,
-          "props": {},
-          "bricks": [
-            {
-              "id": "b_zcgsoYj",
-              "type": "footer",
-              "props": {
-                "linksSections": [
-                  {
-                    "sectionTitle": "Links",
-                    "links": [
-                      { "title": "About", "url": "/about" },
-                      { "title": "Contact", "url": "/contact" },
-                      { "title": "Privacy Policy", "url": "/privacy" }
-                    ]
-                  },
-                  {
-                    "sectionTitle": "Social",
-                    "links": [
-                      { "title": "Twitter", "url": "https://twitter.com" },
-                      { "title": "Facebook", "url": "https://facebook.com" },
-                      { "title": "Instagram", "url": "https://instagram.com" }
-                    ]
-                  },
-                  {
-                    "sectionTitle": "Legal",
-                    "links": [
-                      { "title": "Terms of Service", "url": "/terms" },
-                      { "title": "Cookie Policy", "url": "/cookies" }
-                    ]
-                  },
-                  {
-                    "sectionTitle": "Contact",
-                    "links": [
-                      { "title": "Email Us", "url": "mailto:" },
-                      { "title": "Support", "url": "/support" }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
         }
       ],
       "tags": [],
       "attributes": {
-        "colorPreset": { "color": "bg-base-100" },
+        "colorPreset": { "color": "base-100" },
         "robotsIndexing": true,
         "path": "/blog/:slug",
         "title": "Untitled",
@@ -781,7 +755,6 @@
     {
       "id": "_page_2",
       "label": "Second page with really really long name that should be truncated",
-      "path": "/secondPage",
       "sections": [
         {
           "id": "s_kTYhPDw",
@@ -959,7 +932,7 @@
       ],
       "tags": [],
       "attributes": {
-        "colorPreset": { "color": "bg-base-100" },
+        "colorPreset": { "color": "base-100" },
         "robotsIndexing": true,
         "path": "/",
         "title": "Untitled",

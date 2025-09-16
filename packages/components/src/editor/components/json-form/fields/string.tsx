@@ -31,7 +31,7 @@ export const StringField: FC<FieldProps<string>> = (props) => {
         <TextArea
           defaultValue={currentValue}
           onChange={(e) => onChangeDebounced(e.target.value)}
-          className={tx("!mt-1.5 scrollbar-thin", schema["ui:textarea-class"] ?? "min-h-24")}
+          className={tx("!mt-1.5 scrollbar-thin p-1", schema["ui:textarea-class"] ?? "min-h-24")}
           placeholder={placeholder}
           size={schema["ui:textarea-font-size"] ?? "2"}
           spellCheck={!!schema["ui:spellcheck"]}
@@ -59,11 +59,11 @@ export const PathField: FC<FieldProps<string>> = (props) => {
 
   return (
     <div className="field field-path basis-full">
-      <FieldTitle title={title} description={description} />
+      <FieldTitle withIcon title={title} description={description} />
       <TextField.Root
         defaultValue={path}
         onChange={(e) => onChangeDebounced(e.target.value)}
-        className="!mt-1.5"
+        className="!mt-1"
         placeholder={placeholder}
       >
         <TextField.Slot>

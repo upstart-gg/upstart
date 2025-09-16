@@ -2,21 +2,20 @@ import { type Static, Type } from "@sinclair/typebox";
 import { FaWpforms } from "react-icons/fa6";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { justifyContentRef } from "../props/align";
 import { borderRef, roundingRef } from "../props/border";
 import { datarecord } from "../props/datarecord";
 import { defineProps, group } from "../props/helpers";
-import { paddingRef } from "../props/padding";
 import { string } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { fontSizeRef } from "../props/text";
 import { colorPresetRef } from "../props/color-preset";
 import { directionRef } from "../props/direction";
+import { cssLengthRef } from "../props/css-length";
 
 export const manifest = defineBrickManifest({
   type: "form",
   name: "Form",
-  description: "A form element",
+  description: "A form element.",
   aiInstructions: `The form brick automatically renders form fields based on the datarecord id provided in the props.
 There is no need to define the form fields manually and the form does not accept any children`,
   isContainer: false,
@@ -45,8 +44,13 @@ There is no need to define the form fields manually and the form does not accept
       }),
     ),
     padding: Type.Optional(
-      paddingRef({
-        default: "p-4",
+      cssLengthRef({
+        default: "2rem",
+        description: "Padding inside the form.",
+        title: "Padding",
+        "ui:responsive": true,
+        "ui:placeholder": "Not specified",
+        "ui:styleId": "styles:padding",
       }),
     ),
     rounding: Type.Optional(
@@ -60,18 +64,11 @@ There is no need to define the form fields manually and the form does not accept
       title: "Button",
       children: {
         color: Type.Optional(
-          Type.Union(
-            [
-              Type.Literal("btn-neutral", { title: "Neutral" }),
-              Type.Literal("btn-primary", { title: "Primary" }),
-              Type.Literal("btn-secondary", { title: "Secondary" }),
-              Type.Literal("btn-accent", { title: "Accent" }),
-            ],
-            {
-              title: "Color",
-              default: "btn-primary",
-            },
-          ),
+          StringEnum(["btn-neutral", "btn-primary", "btn-secondary", "btn-accent"], {
+            enumNames: ["Neutral", "Primary", "Secondary", "Accent"],
+            title: "Color",
+            default: "btn-primary",
+          }),
         ),
         size: Type.Optional(
           StringEnum(["block", "wide"], {
@@ -149,6 +146,7 @@ There is no need to define the form fields manually and the form does not accept
 });
 
 export type Manifest = typeof manifest;
+
 export const examples: {
   description: string;
   type: string;
@@ -183,13 +181,14 @@ export const examples: {
     },
   },
   {
-    description: "Newsletter subscription form (horizontal)",
+    description: "Newsletter subscription form (horizontal) with large padding",
     type: "form",
     props: {
       title: "Stay Updated",
       intro: "Subscribe to our newsletter for the latest updates and exclusive content.",
       direction: "flex-col",
       datarecordId: "newsletter-subscription",
+      padding: "3rem",
       buttonLabel: "Subscribe",
       button: {
         size: "block",

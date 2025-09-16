@@ -6,13 +6,13 @@ import type { BrickProps } from "../props/types";
 import { borderRef, roundingRef } from "../props/border";
 import { shadowRef } from "../props/effects";
 import { Type } from "@sinclair/typebox";
-import { paddingRef } from "../props/padding";
+import { cssLengthRef } from "../props/css-length";
 
 export const manifest = defineBrickManifest({
   type: "video",
   name: "Video",
   category: "media",
-  description: "Youtube video",
+  description: "An embedded video player for YouTube / Vimeo / Wistia links",
   icon: RxVideo,
   defaultWidth: {
     mobile: "auto",
@@ -32,14 +32,24 @@ export const manifest = defineBrickManifest({
   },
   props: defineProps({
     url: string("Video URL", {
-      description: "URL of the video to embed. It can be a YouTube link or an embed link.",
+      description:
+        "URL of the video to embed. It can be a YouTube link or an embed link. It also supports Vimeo and Wistia links.",
       default: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       metadata: {
         category: "content",
         "ui:responsive": "desktop",
       },
     }),
-    padding: Type.Optional(paddingRef({})),
+    padding: Type.Optional(
+      cssLengthRef({
+        description: "Padding inside the video player.",
+        "ai:instructions": "Use only a single value like '1rem' or '10px'",
+        title: "Padding",
+        "ui:responsive": true,
+        "ui:placeholder": "Not specified",
+        "ui:styleId": "styles:padding",
+      }),
+    ),
     rounding: Type.Optional(
       roundingRef({
         default: "rounded-md",

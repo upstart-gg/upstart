@@ -12,7 +12,6 @@ import {
 import {
   useDraggingBrickType,
   useEditorHelpers,
-  useIsMouseOverPanel,
   usePanel,
   usePreviewMode,
   useSelectedBrickId,
@@ -106,7 +105,6 @@ export function EditableBrickWrapperSimple({
   const [isMenuBarVisible, setMenuBarVisible] = useState(false);
   const allowedPlacements = useBarPlacements(brick);
   const draggingBrickType = useDraggingBrickType();
-  const isMouseOverPanel = useIsMouseOverPanel();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const isContainerChild = !!parentBrick;
   const cmdKeyPressed = useCmdOrCtrlPressed();
@@ -115,7 +113,6 @@ export function EditableBrickWrapperSimple({
 
   const isDragDisabled =
     !!isDynamicPreview ||
-    isMouseOverPanel ||
     !manifest.movable ||
     isContainerChild ||
     !!brick.props.ghost ||
@@ -221,7 +218,6 @@ export function EditableBrickWrapperSimple({
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const onBrickWrapperClick = useCallback(
     (e: MouseEvent<HTMLElement>) => {
-      console.debug("EditableBrickWrapper: Click on brick", e, brick);
       const originalTarget = e.target as HTMLElement;
       const brickTarget = e.currentTarget as HTMLElement | null;
 
@@ -238,6 +234,15 @@ export function EditableBrickWrapperSimple({
         );
         return;
       }
+
+      if (manifest.isGlobalBrick) {
+        editorHelpers.setPanel("settings");
+        editorHelpers.setAttributesGroup(manifest.type);
+        editorHelpers.setAttributesTab("site");
+        editorHelpers.setSelectedBrickId(brick.id);
+        return;
+      }
+
       let selectedElement: Brick | Section = brick;
       let elementType: "brick" | "section" = "brick";
       // If has shift key pressed, then we try to select the upper container
@@ -277,16 +282,6 @@ export function EditableBrickWrapperSimple({
       e.stopPropagation();
     },
     [panelPosition],
-  );
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  const onDoubleClick = useCallback(
-    (e: MouseEvent<HTMLElement>) => {
-      console.log("EditableBrickWrapper: Double click on brick");
-      e.stopPropagation();
-      updateBrickProps(brick.id, { lastTouched: Date.now(), grow: !brick.props.grow });
-    },
-    [brick.props],
   );
 
   const { ref: hoverRef, isHovered } = useIsHovered({ tolerance: 6, deepCheck: true });
@@ -333,7 +328,6 @@ export function EditableBrickWrapperSimple({
           !!brick.props.ghost && "opacity-50 pointer-events-none grayscale bg-white",
         )}
         onClick={onBrickWrapperClick}
-        onDoubleClickCapture={onDoubleClick}
       >
         <BrickComponent
           brick={brick}

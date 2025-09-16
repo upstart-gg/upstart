@@ -1,17 +1,26 @@
 import { tx, css } from "@upstart.gg/style-system/twind";
-import { Button, TextArea, Text, Switch } from "@upstart.gg/style-system/system";
+import { Button, Text, Switch, toast } from "@upstart.gg/style-system/system";
 import { motion, AnimatePresence } from "motion/react";
+import {
+  type ChatOnToolCallCallback,
+  DefaultChatTransport,
+  type DynamicToolUIPart,
+  lastAssistantMessageIsCompleteWithToolCalls,
+  tool,
+  type ToolUIPart,
+} from "ai";
+
 import { TbSend2 } from "react-icons/tb";
 import { IoIosAttach } from "react-icons/io";
-import { type CreateMessage, type Message, useChat } from "@ai-sdk/react";
-import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
-import { createIdGenerator, type ToolInvocation } from "ai";
+import { useChat, type UseChatHelpers } from "@ai-sdk/react";
+import { type FormEvent, useEffect, useMemo, useRef, useState, Suspense } from "react";
+import { createIdGenerator } from "ai";
 import {
+  useAdditionalAssets,
   useDraftHelpers,
   useGenerationState,
   usePage,
   useSite,
-  useSitemap,
   useSitePrompt,
   useThemes,
 } from "../hooks/use-page-data";
@@ -19,27 +28,24 @@ import { MdDone } from "react-icons/md";
 import { useDebounceCallback } from "usehooks-ts";
 import { Spinner } from "@upstart.gg/style-system/system";
 import { BiStopCircle } from "react-icons/bi";
-import { type Theme, processTheme } from "@upstart.gg/sdk/shared/theme";
-import type { CallContextProps } from "@upstart.gg/sdk/shared/context";
+import { defineDataRecord } from "@upstart.gg/sdk/shared/datarecords";
 import { useDeepCompareEffect } from "use-deep-compare";
-import type { ImageSearchResultsType, SimpleImageMetadata } from "@upstart.gg/sdk/shared/images";
-import type { Page } from "@upstart.gg/sdk/shared/page";
-import type { Sitemap } from "@upstart.gg/sdk/shared/sitemap";
-import { useEditorHelpers } from "../hooks/use-editor";
+import type { SimpleImageMetadata } from "@upstart.gg/sdk/shared/images";
+import { useDebugMode, useEditorHelpers } from "../hooks/use-editor";
+import { defineDatasource } from "@upstart.gg/sdk/shared/datasources";
+import type { Tools, UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
+import Markdown from "./Markdown";
+import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
 
 const WEB_SEARCH_ENABLED = false;
 
-// Lazy import "Markdown"
-// import Markdown from "./Markdown";
-const Markdown = lazy(() => import("./Markdown"));
-
 const msgCommon = tx(
-  "rounded-lg px-2.5 py-2 text-pretty transition-all duration-300 flex flex-col gap-1.5",
+  "rounded-lg p-6 text-pretty transition-all duration-300 flex flex-col gap-1.5",
   css({
     // whiteSpace: "pre-line",
     "& p": {
-      marginTop: ".5rem",
-      // marginBottom: ".5rem",
+      marginBlock: ".5rem",
+      lineHeight: "1.625",
     },
     "& p:first-child": {
       marginTop: "0",
@@ -53,31 +59,28 @@ const msgCommon = tx(
     "& ul, ol": {
       listStyle: "outside",
       listStyleType: "square",
-      paddingLeft: "1rem",
-      // marginTop: "0.25rem",
+      paddingLeft: "1.6rem",
+      marginTop: "0.5rem",
       marginBottom: "0.2rem",
     },
     "& li": {
       marginBottom: "0.25rem",
+      paddingLeft: ".3rem",
     },
     "& div.choices": {
       display: "flex",
       flexWrap: "wrap",
       justifyContent: "space-between",
       gap: ".5rem",
-      marginTop: "1rem",
-      // "&:not(:last-child)": {
-      //   marginBottom: "1rem",
-      // },
-
+      marginBlock: "1rem",
       "& > button": {
         backgroundColor: "var(--violet-10)",
         color: "#fff",
         flexGrow: "1",
-        padding: "0.3rem 0.7rem",
+        padding: "0.4rem 0.7rem",
         borderRadius: "0.5rem",
         border: "none",
-        fontSize: "0.8rem",
+        fontSize: ".95em",
         fontWeight: "500",
         "&:hover": {
           backgroundColor: "var(--violet-9)",
@@ -95,215 +98,311 @@ export default function Chat() {
   const sitePrompt = useSitePrompt();
   const setupRef = useRef(false);
   const draftHelpers = useDraftHelpers();
-  const { setImagesSearchResults } = useEditorHelpers();
+  const additionalAssets = useAdditionalAssets();
   const generationState = useGenerationState();
   const site = useSite();
   const page = usePage();
-  const sitemap = useSitemap();
   const siteThemes = useThemes();
   const [userLanguage, setUserLanguage] = useState<string>();
-  const [flow, setFlow] = useState<CallContextProps["flow"]>(
-    new URL(window.location.href).searchParams.get("action") === "generate" ? "setup" : "edit",
-  );
+  const [input, setInput] = useState("");
+  const debug = useDebugMode();
+  const [showToastWorking, setShowToastWorking] = useState(generationState.isSetup);
+  const [hasScrolledUp, setHasScrolledUp] = useState(false);
+
+  // If user has scrolled up, we want to update the hasScrolledUp state
+
+  // listen for scroll events on the window to detect if user has scrolled up
+  useEffect(() => {
+    const onScroll = (e: Event) => {
+      const target = e.target as HTMLDivElement;
+      if (target && messagesListRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = messagesListRef.current;
+        // Consider user "at bottom" if within 100px of the bottom
+        const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100;
+        setHasScrolledUp(!isNearBottom);
+      }
+    };
+
+    const messagesContainer = messagesListRef.current;
+    if (messagesContainer) {
+      messagesContainer.addEventListener("scroll", onScroll);
+      return () => {
+        messagesContainer.removeEventListener("scroll", onScroll);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    if (showToastWorking) {
+      toast.loading("Setting up your site...", { duration: Infinity, id: "chat-setup" });
+    } else {
+      toast.dismiss("chat-setup");
+    }
+  }, [showToastWorking]);
+
+  // console.log({ site, page });
 
   const listPlaceholderRef = useRef<HTMLDivElement>(null);
   const handledToolResults = useRef(new Set<string>());
 
   const aiMsgClass = tx(
-    " text-sm text-black/80 dark:text-upstart-200",
+    "text-black/80 dark:text-upstart-200",
     generationState.isReady
-      ? "bg-gradient-to-tr from-upstart-200/80 to-upstart-100"
-      : "bg-white/80 dark:bg-dark-800",
+      ? "bg-gradient-to-tr from-upstart-200/80 to-upstart-100 text-sm"
+      : "bg-white/80 dark:bg-dark-800 text-fluid-sm backdrop-blur-md",
   );
 
-  const onFinish = useCallback(
-    (message: Message, options: unknown) => {
-      console.log("message finished", message, options);
-      console.log("Generation state after message finish", generationState);
-    },
-    [generationState],
-  );
+  const siteRef = useRef(site);
+  const pageRef = useRef(page);
+  const generationStateRef = useRef(generationState);
+  const userLanguageRef = useRef(userLanguage);
+  const assetsRef = useRef(additionalAssets);
 
-  const {
-    messages,
-    handleInputChange,
-    handleSubmit,
-    error,
-    status,
-    reload,
-    append,
-    stop,
-    data,
-    setData,
-    addToolResult,
-    id,
-    metadata,
-    experimental_resume,
-  } = useChat({
-    api: "/editor/chat",
-    // sendExtraMessageFields: true,
-    // maxSteps: 30,
-    initialMessages:
-      flow === "setup"
-        ? import.meta.env.DEV
-          ? ([
-              {
-                id: "fake-1",
-                role: "assistant",
-                content: `Welcome to Upsie! This is a fake message to test the chat component in dev mode. You can ignore it.`,
-              },
-              {
-                id: "fake-1-2",
-                role: "user",
-                content: `Hey Upsie, can you help me create a website?`,
-              },
-              {
-                id: "fake-2",
-                role: "assistant",
-                content: `Sure! I can help you create a website. What kind of website do you want to create?`,
-              },
-              {
-                id: "fake-3",
-                role: "user",
-                content: `I want to create a website about my favorite hobby.`,
-              },
-              {
-                id: "fake-4",
-                role: "assistant",
-                content: `Great! What is your favorite hobby?`,
-              },
-              {
-                id: "fake-5",
-                role: "user",
-                content: `My favorite hobby is photography. I love taking pictures of nature and landscapes.
-I also enjoy editing my photos to make them look even better.
-I would like to create a website to showcase my photography work and share my passion with others.
+  useEffect(() => {
+    siteRef.current = site;
+    pageRef.current = page;
+    generationStateRef.current = generationState;
+    userLanguageRef.current = userLanguage;
+    assetsRef.current = additionalAssets;
+  }, [site, page, generationState, userLanguage, additionalAssets]);
 
-I want the website to have a clean and modern design, with a gallery to display my photos,
-a blog section to share my thoughts and experiences, and a contact page for people to reach out to me.
-
-I would also like to have a section where I can share tips and tutorials on photography techniques and editing software.
-I want the website to be easy to navigate and visually appealing, with a focus on showcasing my photography work.
-                `,
-              },
-              {
-                id: "fake-6",
-                role: "assistant",
-                content: `That sounds like a great idea! I can help you create a website that showcases your photography work and shares your passion with others.
-Let's start by generating some color themes for your website. This will help us create a cohesive design that reflects your style and personality.`,
-              },
-              {
-                id: "fake-7",
-                role: "user",
-                content: `Super! I can't wait to see the color themes you come up with. Let's do it!`,
-              },
-              {
-                id: "fake-8",
-                role: "assistant",
-                content: `Great! Let's get started on generating some color themes for your website. I'll start by analyzing your preferences and the type of photography you do.`,
-              },
-            ] satisfies Message[])
-          : [
-              {
-                id: "init-generate",
-                role: "user",
-                content: `Create a website based on this prompt:\n${sitePrompt}`,
-              },
-            ]
-        : [
+  const initialMessages = useMemo(() => {
+    if (generationState.isSetup) {
+      return [
+        {
+          id: "init-setup",
+          role: "user",
+          parts: [
             {
-              id: "init-edit",
-              role: "assistant",
-              content: `Hey! 👋\n\nReady to keep building? You can:
+              type: "text",
+              text: `Create a website based on this prompt:\n${sitePrompt}`,
+            },
+          ],
+        },
+      ] satisfies UpstartUIMessage[];
+    } else {
+      return [
+        {
+          id: "init-edit",
+          role: "assistant",
+          parts: [
+            {
+              type: "text",
+              text: `Hey! 👋\n\nReady to keep building? You can:
 - Chat with me to make changes
 - Use the visual editor for direct editing
 
 What should we work on together? 🤖`,
             },
           ],
-    credentials: "include",
-    experimental_prepareRequestBody({ requestData, ...rest }) {
-      return {
-        ...rest,
-        requestData: { site, sitemap, page, flow, generationState, userLanguage } satisfies CallContextProps,
-      };
-    },
-    generateId: createIdGenerator({
-      prefix: "ups",
-      separator: "_",
-      size: 16,
-    }),
-    onFinish,
-    onError: (error) => {
-      console.error("ERROR", error);
-    },
-    key: `chat-${flow}-${site.id}`,
+        },
+      ] satisfies UpstartUIMessage[];
+    }
+  }, [generationState.isSetup, sitePrompt]);
 
-    /**
-     * For tools that should be called client-side
-     */
-    onToolCall: ({ toolCall }) => {
-      console.log("Tool call: %s: ", toolCall.toolName, toolCall);
-      // The "done" tool is a special case that indicates the server has finished processing the request.
-      // We need to handle it client-side and return the "result" for the tool call.
-      // here, we just return true to indicate that we handled the tool call
-      if (toolCall.toolName === "done") {
-        return true;
+  const onToolCall: ChatOnToolCallCallback<UpstartUIMessage> = ({ toolCall }) => {
+    console.log("Tool call: %s: ", toolCall.toolName, toolCall);
+    // The "done" tool is a special case that indicates the server has finished processing the request.
+    // We need to handle it client-side and return the "result" for the tool call.
+    // here, we just return true to indicate that we handled the tool call
+    const toolResult = { tool: toolCall.toolName as keyof Tools, toolCallId: toolCall.toolCallId };
+
+    switch (toolCall.toolName) {
+      case "listThemes": {
+        console.debug(
+          "Cient tool call %s",
+          toolCall.toolName,
+          " replying with themes",
+          siteRef.current.themes,
+        );
+        addToolResult({
+          ...toolResult,
+          output: siteRef.current.themes,
+        });
+        break;
       }
+      case "getCurrentTheme": {
+        console.debug(
+          "Client tool call %s",
+          toolCall.toolName,
+          " replying with current theme ",
+          siteRef.current.theme,
+        );
+        addToolResult({
+          ...toolResult,
+          output: siteRef.current.theme,
+        });
+        break;
+      }
+      case "listImages": {
+        console.debug("Client tool call %s", toolCall.toolName, " replying with images ", assetsRef.current);
+        addToolResult({
+          ...toolResult,
+          output: assetsRef.current ?? [],
+        });
+        break;
+      }
+      case "getSitemap": {
+        console.debug(
+          "Client tool call %s",
+          toolCall.toolName,
+          " replying with sitemap ",
+          siteRef.current.sitemap,
+        );
+        addToolResult({
+          ...toolResult,
+          output: siteRef.current.sitemap,
+        });
+        break;
+      }
+      case "getSiteAttributes": {
+        console.debug(
+          "Client tool call %s",
+          toolCall.toolName,
+          " replying with site attributes ",
+          siteRef.current.attributes,
+        );
+        addToolResult({
+          ...toolResult,
+          output: siteRef.current.attributes,
+        });
+        break;
+      }
+
+      case "getSection": {
+        const input = toolCall.input as Tools["getSection"]["input"];
+        console.debug(
+          "Client tool call %s",
+          toolCall.toolName,
+          " replying with section ",
+          input.id,
+          pageRef.current.sections,
+        );
+        addToolResult({
+          ...toolResult,
+          output:
+            pageRef.current.sections.find((s) => s.id === input.id) ??
+            `Section with id '${input.id}' not found`,
+        });
+        break;
+      }
+      case "listSections": {
+        console.debug(
+          "Client tool call %s",
+          toolCall.toolName,
+          " replying with sections ",
+          pageRef.current.sections,
+        );
+        addToolResult({
+          ...toolResult,
+          output: pageRef.current.sections,
+        });
+        break;
+      }
+
+      case "deleteBrick": {
+        const input = toolCall.input as Tools["deleteBrick"]["input"];
+        draftHelpers.deleteBrick(input.id);
+        addToolResult({
+          ...toolResult,
+          output: true,
+        });
+        break;
+      }
+
+      default:
+        if (toolCall.toolName.startsWith("get") || toolCall.toolName.startsWith("list")) {
+          console.log("UNHANDLED TOOL CALL client-side", toolCall.toolName);
+        }
+    }
+  };
+
+  const { messages, sendMessage, error, status, regenerate, stop, addToolResult } = useChat<UpstartUIMessage>(
+    {
+      // resume: generationState.isReady === false,
+      transport: new DefaultChatTransport({
+        api: "/editor/chat",
+        credentials: "include",
+        body: () => ({
+          callContext: {
+            site: siteRef.current,
+            page: pageRef.current,
+            generationState: generationStateRef.current,
+            userLanguage: userLanguageRef.current,
+            assets: assetsRef.current,
+          },
+        }),
+      }),
+      sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
+      messages: initialMessages,
+      // generateId: createIdGenerator({
+      //   prefix: "ups",
+      //   separator: "_",
+      //   size: 16,
+      // }),
+      onError: (error) => {
+        console.error("ERROR", error);
+      },
+      // id: `chat-${site.id}`,
+      /**
+       * For tools that should be called client-side
+       */
+      onToolCall,
     },
-  });
+  );
   const promptRef = useRef<HTMLTextAreaElement>(null);
   const messagesListRef = useRef<HTMLDivElement>(null);
 
-  const onSubmit = useCallback(
-    (e: Event | FormEvent) => {
-      e.preventDefault();
-      handleSubmit();
-      if (promptRef?.current) {
-        promptRef.current.value = "";
-        promptRef.current.focus();
-      }
-    },
-    [handleSubmit],
-  );
+  const onSubmit = (e: Event | FormEvent) => {
+    e.preventDefault();
+    sendMessage({ text: input });
+    setInput("");
+    if (promptRef?.current) {
+      promptRef.current.focus();
+    }
+  };
 
   const debouncedScroll = useDebounceCallback(() => {
     // when messages change, scroll to the bottom
-    if (listPlaceholderRef.current) {
-      listPlaceholderRef.current.scrollIntoView({ behavior: "smooth" });
+    if (listPlaceholderRef.current && !hasScrolledUp) {
+      // Only autoscroll if user hasn't scrolled up or is already near the bottom
+      listPlaceholderRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, 200);
+  }, 300);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(debouncedScroll, [status, data, messages]);
+  useEffect(debouncedScroll, [status, messages, hasScrolledUp]);
 
-  useDeepCompareEffect(() => {
-    data?.forEach((item) => {
-      if (typeof item === "object" && !Array.isArray(item) && item?.userLanguage) {
-        setUserLanguage(item.userLanguage as string);
+  useEffect(() => {
+    if (userLanguage) return;
+    for (const msg of messages) {
+      if (msg.metadata?.userLanguage) {
+        console.log("Setting user language to", msg.metadata.userLanguage);
+        setUserLanguage(msg.metadata.userLanguage);
+        break;
       }
-    });
-  }, [data]);
+    }
+  }, [messages, userLanguage]);
+
+  // console.log({ messages });
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (setupRef.current) return;
     setupRef.current = true;
-    if (flow === "setup") {
-      console.log("Chat initialized");
-      reload();
+    if (generationState.isReady === false) {
+      console.log("Chat initialized", { sitePrompt });
+      regenerate();
     }
   }, []);
 
   const toolInvocations = useMemo(() => {
     const results = messages
       .filter((msg) => msg.role === "assistant")
-      .flatMap((msg) => msg.parts)
-      .filter((part) => part.type === "tool-invocation")
-      .map((part) => part.toolInvocation)
+      .flatMap((msg) => msg.parts as ToolUIPart<Tools>[])
+      .filter((part) => part.type.startsWith("tool-"))
       .filter(
-        (toolInvocation) =>
-          toolInvocation.state === "result" && !handledToolResults.current.has(toolInvocation.toolCallId),
+        (part) => part.state === "output-available" && !handledToolResults.current.has(part.toolCallId),
       );
     return results;
   }, [messages]);
@@ -311,201 +410,278 @@ What should we work on together? 🤖`,
   const hasRunningTools = useMemo(() => {
     const results = messages
       .filter((msg) => msg.role === "assistant")
-      .flatMap((msg) => msg.parts)
-      .filter((part) => part.type === "tool-invocation")
-      .map((part) => part.toolInvocation)
-      .filter((toolInvocation) => toolInvocation.state !== "result");
+      .flatMap((msg) => msg.parts as ToolUIPart<Tools>[])
+      .filter((part) => part.type.startsWith("tool-"))
+      .filter((part) => part.state !== "output-available" && part.state !== "output-error");
     return results.length > 0;
   }, [messages]);
 
-  const messagingDisabled = status === "streaming" || status === "submitted" || hasRunningTools;
-
   useDeepCompareEffect(() => {
-    for (const toolInvocation of toolInvocations.filter((t) => t.state === "result")) {
+    for (const toolInvocation of toolInvocations.filter((t) => t.state === "output-available")) {
       if (handledToolResults.current.has(toolInvocation.toolCallId)) {
         continue;
       }
       handledToolResults.current.add(toolInvocation.toolCallId);
-      switch (toolInvocation.toolName) {
-        case "generatePage": {
-          const result = toolInvocation.result as { page: Page } | { error: string };
-          if ("error" in result) {
-            console.error("Error generating page:", result.error);
-            return;
-          }
-          console.log("Generated page", result.page);
-          draftHelpers.addPage({ ...result.page, version: crypto.randomUUID() });
+      switch (toolInvocation.type) {
+        case "tool-createPage": {
+          const page = toolInvocation.output;
+          console.log("Generated page", page);
+          draftHelpers.addPage({ ...page, version: crypto.randomUUID(), sections: [] });
           break;
         }
 
-        case "generateThemes": {
-          const themes = toolInvocation.result as Theme[];
-          const themesProcessed = themes.map(processTheme);
-          console.log("Generated themes", themesProcessed);
-          draftHelpers.setThemes(themesProcessed);
+        case "tool-createNavbar":
+          console.log("Generated navbar", toolInvocation.output);
+          draftHelpers.updateSiteAttributes({
+            navbar: toolInvocation.output,
+          });
+          break;
+
+        case "tool-createFooter":
+          console.log("Generated footer", toolInvocation.output);
+          draftHelpers.updateSiteAttributes({
+            footer: toolInvocation.output,
+          });
+          break;
+
+        case "tool-createThemes": {
+          const themes = toolInvocation.output;
+          console.log("Generated themes", themes);
+          draftHelpers.setThemes(themes);
           break;
         }
 
-        case "generateDatasource": {
-          const datasource = toolInvocation.result as Parameters<typeof draftHelpers.addDatasource>[0];
+        case "tool-createDatasource": {
+          const datasource = toolInvocation.output;
           console.log("Generated datasource", datasource);
-          draftHelpers.addDatasource(datasource);
+          draftHelpers.addDatasource(defineDatasource(datasource));
           break;
         }
 
-        case "generateDatarecord": {
-          const datarecord = toolInvocation.result as Parameters<typeof draftHelpers.addDatarecord>[0];
+        case "tool-createDatarecord": {
+          const datarecord = toolInvocation.output;
           console.log("Generated data record", datarecord);
-          draftHelpers.addDatarecord(datarecord);
+          draftHelpers.addDatarecord(defineDataRecord(datarecord));
           break;
         }
 
-        case "generateSitemap": {
-          const sitemap = toolInvocation.result as Sitemap;
+        case "tool-createSitemap": {
+          const sitemap = toolInvocation.output;
           console.log("Generated sitemap", sitemap);
           draftHelpers.setSitemap(sitemap);
           break;
         }
 
-        case "searchImages": {
-          const images = toolInvocation.result as ImageSearchResultsType;
+        case "tool-createSiteAttributes": {
+          const siteAttributes = toolInvocation.output;
+          console.log("Generated site attributes", siteAttributes);
+          draftHelpers.updateSiteAttributes(siteAttributes);
+          break;
+        }
+
+        case "tool-createSiteQueries": {
+          const queries = toolInvocation.output;
+          console.log("Generated site queries", queries);
+          draftHelpers.updateSiteAttributes({
+            queries: [...(site.attributes.queries ?? []), ...queries],
+          });
+          break;
+        }
+
+        case "tool-editSiteQueries": {
+          const queries = toolInvocation.output;
+          console.log("Edited site queries", queries);
+          draftHelpers.updateSiteAttributes({
+            queries: [...(site.attributes.queries ?? []), ...queries],
+          });
+          break;
+        }
+
+        case "tool-createSection": {
+          const section = toolInvocation.output;
+          console.log("Generated section", section);
+          // @ts-expect-error Bricks overwrite
+          draftHelpers.addSection({ bricks: [], ...section });
+          break;
+        }
+
+        case "tool-createBrick": {
+          const brick = toolInvocation.output;
+          console.log("Generated brick", brick);
+          const { sectionId, index } = toolInvocation.input;
+          draftHelpers.addBrick(brick, sectionId, index);
+          break;
+        }
+
+        case "tool-searchImages": {
+          const images = toolInvocation.output;
           console.log("Generated images", images);
-          setImagesSearchResults(images);
+          draftHelpers.addAdditionalAssets(images);
           break;
         }
 
         default:
-          console.log("Default tool invocation", toolInvocation.toolName, toolInvocation);
+          console.log("Default tool invocation", toolInvocation.type, toolInvocation);
           break;
       }
     }
   }, [toolInvocations, draftHelpers, siteThemes]);
+
+  // filter out the "init" messages
+  const displayedMessages = messages.filter((msg) => msg.id !== "init-setup" /*&& msg.parts.length > 0*/);
 
   return (
     <div
       className={tx(
         "flex flex-col mx-auto w-full",
         {
-          "rounded-xl animate-border my-auto h-full max-h-[calc(100dvh-100px)]":
+          "rounded-xl h-[calc(100%-6rem)] max-h-[calc(100%-6rem)] my-[3rem] ":
             generationState.isReady === false,
           "rounded-tr-xl bg-gray-50 max-h-[inherit]": generationState.isReady === true,
         },
         css({
           gridArea: "chat",
-          maxWidth: generationState.isReady ? "none" : "clamp(500px, 40dvw, 650px)",
+          maxWidth: generationState.isReady ? "none" : "clamp(500px, 60dvw, 740px)",
         }),
         generationState.isReady === false &&
           css({
-            scrollbarColor: "var(--violet-4) var(--violet-2)",
-            border: "2px solid transparent",
-            boxShadow: "rgba(100, 100, 111, 0.3) 0px 0px 36px 0px",
+            // boxShadow: "rgba(100, 100, 111, 0.3) 0px 0px 36px 0px",
             // padding: "12px",
-            background: `linear-gradient(#ffffff, #ffffff) padding-box, linear-gradient(var(--border-angle), transparent 15%, #9291e7, #7270c6, #c050c2, #ef50a2, #ff6285, #ff806b, #ffa25a, #ffc358, transparent 85%) border-box`,
           }),
       )}
     >
       <div
         ref={messagesListRef}
         className={tx(
-          // h-full max-h-[calc(100cqh-250px)]
-          ` overflow-y-auto h-full max-h-[inherit] p-2
-            flex flex-col gap-y-2.5 flex-grow scroll-smooth scrollbar-thin relative`,
+          ` overflow-y-auto h-[calc(100cqh-250px-6rem)]
+            flex flex-col gap-y-2.5 flex-grow scroll-smooth relative transition-all duration-300`,
           {
             "rounded-tr-xl shadow-inner": generationState.isReady === true,
+            "rounded-xl": generationState.isReady === false,
+            "p-2": generationState.isReady === true,
+            "p-0": generationState.isReady === false,
           },
           css({
-            scrollbarColor: "var(--violet-a8) var(--violet-a2)",
+            scrollbarWidth: "none",
+            // scrollbarColor: "var(--violet-a8) var(--violet-a2)",
             // scrollbarColor: "var(--violet-4) var(--violet-2)",
             // scrollbarGutter: "stable",
           }),
         )}
       >
-        {messages
-          // filter out the "init" messages
-          .filter((msg) => msg.id !== "init-generate" && msg.parts.length > 0)
-          .map((msg, index) => (
-            <div key={msg.id} className={tx(msg.role === "assistant" ? aiMsgClass : userMsgClass, msgCommon)}>
-              {msg.parts.map((part, i) => {
-                switch (part.type) {
-                  case "text":
-                    return (
-                      <Suspense key={i}>
-                        <Markdown content={part.text} key={i} />
-                      </Suspense>
-                    );
+        {displayedMessages.map((msg, index) => (
+          <div
+            key={msg.id}
+            data-message-id={msg.id}
+            className={tx(msg.role === "assistant" ? aiMsgClass : userMsgClass, msgCommon, "empty:hidden")}
+          >
+            {msg.parts.map((part, i) => {
+              if (part.type.startsWith("tool-")) {
+                return (
+                  <ToolRenderer
+                    key={i}
+                    toolPart={part as ToolUIPart<Tools>}
+                    addToolResult={addToolResult}
+                    sendMessage={sendMessage}
+                    error={error}
+                  />
+                );
+              }
 
-                  case "source":
-                    // @ts-ignore
-                    if (part.source.sourceType === "images") {
-                      // @ts-ignore
-                      return <ImagesPreview key={i} images={part.source.images as SimpleImageMetadata[]} />;
-                    }
-                    return <p key={i}>{JSON.stringify(part)}</p>;
-                  case "reasoning":
-                    if (index !== messages.length - 1 || msg.parts.length - 1 !== i) {
-                      // If the last message is not the current one, we don't show the reasoning
-                      return null;
-                    }
-                    return (
-                      <p key={i} className="flex items-center gap-1.5">
-                        <Spinner size="1" />
-                        <Text as="p" size="1" className="text-black/60">
-                          <details>
-                            <summary className="cursor-pointer list-none flex gap-1 items-center">
-                              <svg
-                                className="-rotate-90 transform opacity-60 transition-all duration-300"
-                                fill="none"
-                                height="14"
-                                width="14"
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                viewBox="0 0 24 24"
-                              >
-                                <title>Arrow</title>
-                                <polyline points="6 9 12 15 18 9" />
-                              </svg>
-                              <span className="text-xs font-normal">Thinking...</span>
-                            </summary>
-                            <Text size="2" className="text-gray-500">
-                              {part.reasoning}
-                            </Text>
-                          </details>
-                        </Text>
-                      </p>
-                    );
-                  case "tool-invocation":
-                    return (
-                      <ToolRenderer
-                        key={i}
-                        toolInvocation={part.toolInvocation}
-                        addToolResult={addToolResult}
-                        append={append}
-                        error={error}
-                      />
-                    );
-                  case "file":
-                    return <img key={i} alt="" src={`data:${part.mimeType};base64,${part.data}`} />;
+              switch (part.type) {
+                case "dynamic-tool": {
+                  // console.log("Dynamic tool part", part);
+                  return null;
                 }
-              })}
-            </div>
-          ))}
-        {!hasRunningTools && (status === "submitted" || status === "streaming") && (
-          <div className={tx("h-6 px-2 text-sm text-gray-600 flex items-center justify-center gap-1.5")}>
-            <Spinner size="2" /> Please wait...
+                case "text":
+                  return (
+                    <Suspense key={i}>
+                      <Markdown content={part.text} key={i} />
+                    </Suspense>
+                  );
+
+                // case "source":
+                //   // @ts-ignore
+                //   if (part.sourceType === "images") {
+                //     return (
+                //       <ImagesPreview
+                //         key={i}
+                //         // @ts-ignore
+                //         query={part.source.query as string}
+                //         // @ts-ignore
+                //         images={part.source.images as SimpleImageMetadata[]}
+                //       />
+                //     );
+                //   }
+                //   return <p key={i}>{JSON.stringify(part)}</p>;
+
+                case "reasoning":
+                  if (!debug) {
+                    // Only show reasoning in debug mode
+                    return null;
+                  }
+                  return (
+                    <div key={i} className="flex items-center gap-1.5">
+                      <details>
+                        <summary className="cursor-pointer list-none flex gap-1 items-center">
+                          <svg
+                            className="-rotate-90 transform opacity-60 transition-all duration-300"
+                            fill="none"
+                            height="14"
+                            width="14"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                          >
+                            <title>Arrow</title>
+                            <polyline points="6 9 12 15 18 9" />
+                          </svg>
+                          <span className="text-xs font-normal">Thinking...</span>
+                        </summary>
+                        <Text
+                          as="div"
+                          size="2"
+                          className="text-gray-500 mt-2 ml-2 border-l-2 border-gray-300 pl-3"
+                        >
+                          <Markdown content={part.text} />
+                        </Text>
+                      </details>
+                    </div>
+                  );
+
+                // case "file":
+                //   return <img key={i} alt="" src={`data:${part.mediaType};base64,${part.url}`} />;
+              }
+            })}
           </div>
-        )}
+        ))}
+        <AnimatePresence initial={false}>
+          {!hasRunningTools && (status === "submitted" || status === "streaming") && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "1.5rem" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className={tx(
+                "p-4 my-4 text-fluid-sm text-gray-600 flex items-center justify-center gap-1.5 backdrop-blur-md bg-white/80 max-w-fit mx-auto rounded-lg",
+              )}
+            >
+              <Spinner size="2" /> Please wait...
+            </motion.div>
+          )}
+        </AnimatePresence>
         {error && (
           <div className={tx(msgCommon, "bg-red-200 text-red-800 text-sm")}>
-            <p>An error occured: {error.message}</p>
+            <p>An error occured. {error.message ?? "Please retry."}</p>
             <button
               type="button"
               className={tx(
                 "rounded bg-red-700 text-white border border-red-600 hover:opacity-90 block w-full text-center font-semibold py-1 px-2",
               )}
               onClick={() => {
-                reload();
+                regenerate();
               }}
             >
               Retry
@@ -517,22 +693,24 @@ What should we work on together? 🤖`,
       <form
         onSubmit={onSubmit}
         className={tx(
-          "flex flex-col flex-1 min-h-[150px] max-h-[150px] gap-1.5 p-2 justify-center ",
+          "flex flex-col flex-1 min-h-[150px] max-h-[150px] gap-1.5 p-2 justify-center mt-2",
           "bg-upstart-100 border-t border-upstart-300 relative",
           // generationState.isReady === false && "hidden",
-          generationState.isReady === false && "rounded-b-xl",
+          generationState.isReady === false && "rounded-lg",
           // "[&:has(textarea:focus)]:(ring-2 ring-upstart-700)",
         )}
       >
-        <TextArea
+        <textarea
+          onChange={(e) => setInput(e.target.value)}
           ref={promptRef}
+          value={input}
+          // biome-ignore lint/a11y/noAutofocus: <explanation>
           autoFocus
-          onChange={handleInputChange}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) onSubmit(e);
           }}
           name="prompt"
-          disabled={messagingDisabled}
+          // disabled={messagingDisabled}
           spellCheck={false}
           autoComplete="off"
           autoCorrect="off"
@@ -541,15 +719,15 @@ What should we work on together? 🤖`,
               ? undefined
               : "Add a section just below the navbar containing a paragraph with a short description of the site."
           }
-          size="2"
           className={tx(
-            "h-full w-full scrollbar-thin p-2 !bg-white !pb-9 !border-0 !outline-0 !box-shadow-none [&>textarea]:focus:(!outline-0 !shadow-none !ring-0 !border-0)",
+            "form-textarea ",
+            generationState.isReady === false ? "!text-fluid-sm" : "text-sm",
+            "h-full w-full rounded scrollbar-thin p-2 !bg-white !pb-9 border-upstart-300 shadow-inner focus:(!outline-0 !ring-upstart-500 !border-upstart-500)",
           )}
         />
         <div
           className={tx(
-            "flex justify-between items-center h-9 text-gray-500 absolute left-[9px] right-[9px] rounded bottom-2.5 px-2 z-50",
-            { "bg-white": !messagingDisabled, "bg-transparent": messagingDisabled },
+            "flex justify-between items-center h-9 text-gray-500 absolute left-[9px] right-[9px] rounded bottom-2.5 px-2 z-50 bg-white",
           )}
         >
           <button type="button" className={tx("hover:bg-upstart-200 p-1 rounded inline-flex text-sm gap-1")}>
@@ -592,44 +770,51 @@ What should we work on together? 🤖`,
   );
 }
 
-const toolsWorkingLabels: Record<string, string> = {
-  generateThemes: "Generating color themes",
-  generateSitemap: "Generating site map",
-  generateImages: "Generating images",
-  setTheme: "Applying theme",
-  searchImages: "Searching images",
-};
-
-function getToolWaitingLabel(toolInvocation: ToolInvocation) {
-  if (toolInvocation.args?.waitingMessage) {
-    return toolInvocation.args.waitingMessage;
-  }
-  switch (toolInvocation.toolName) {
-    case "generatePage":
-      return `Generating page '${toolInvocation.args.pageLabel}', this can take a while`;
-    default:
-      return toolsWorkingLabels[toolInvocation.toolName];
-  }
-}
-
-function ImagesPreview({ images }: { images: SimpleImageMetadata[] }) {
+function ImagesPreview({ query, images }: { query: string; images: SimpleImageMetadata[] }) {
   return (
-    <div className="grid grid-cols-3 gap-1 max-h-60 overflow-y-auto">
-      {images.map((image, index) => (
-        <img
-          key={image.url}
-          src={image.url}
-          alt={image.description}
-          className={tx(
-            "rounded-md h-auto !object-cover object-center w-full aspect-video animate-fade-in",
-            css({
-              // animation delay
-              animationDelay: `${index * 100}ms`,
-            }),
-          )}
-          loading="lazy"
-        />
-      ))}
+    <div className="basis-full flex flex-col gap-2 mt-1 mb-6 text-sm ml-6 font-normal">
+      <div className="grid grid-cols-3 gap-1 min-h-60 max-h-60">
+        {images.map((image, index) => (
+          <div
+            key={image.url}
+            className={tx(
+              "rounded-md relative z-10 hover:z-50 hover:(scale-110 shadow-2xl) transition-transform duration-150",
+            )}
+          >
+            <img
+              key={image.url}
+              src={image.url}
+              alt={image.description}
+              className={tx(
+                "rounded-md h-auto !object-cover object-center w-full aspect-video",
+                css({
+                  // animation delay
+                  animationDelay: `${index * 100}ms`,
+                }),
+              )}
+              loading="lazy"
+            />
+            {image.user?.name && (
+              <div className="absolute px-1.5 bottom-0 left-0 right-0 bg-black/50 text-white text-[0.6rem] p-0.5 rounded-b-md truncate capitalize">
+                By{" "}
+                {image.user.profile_url ? (
+                  <a
+                    href={image.user.profile_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline hover:text-upstart-300"
+                  >
+                    {image.user.name}
+                  </a>
+                ) : (
+                  image.user.name
+                )}{" "}
+                / {image.provider}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -637,41 +822,30 @@ function ImagesPreview({ images }: { images: SimpleImageMetadata[] }) {
 const hiddenTools = ["setUserLanguage", "getUserLanguage"];
 
 function ToolRenderer({
-  toolInvocation,
+  toolPart,
+  sendMessage,
   addToolResult,
   error,
-  append,
 }: {
-  toolInvocation: ToolInvocation;
+  toolPart: ToolUIPart<Tools>;
   error?: Error;
-  addToolResult: ({
-    toolCallId,
-    result,
-  }: {
-    toolCallId: string;
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    result: any;
-  }) => void;
-  append: (message: Message | CreateMessage) => void;
+  addToolResult: UseChatHelpers<UpstartUIMessage>["addToolResult"];
+  sendMessage: UseChatHelpers<UpstartUIMessage>["sendMessage"];
 }) {
+  const debug = useDebugMode();
   // Some tools are not meant to be displayed in the chat, like the "setUserLanguage" tool
-  if (hiddenTools.includes(toolInvocation.toolName)) {
+  if (hiddenTools.includes(toolPart.type)) {
     return null;
   }
   // If there is an error, don't show pending tool invocations
   if (error) {
     return null;
   }
-  if (toolInvocation.toolName === "askUserChoice") {
-    const args = toolInvocation.args as {
-      choices: string[];
-      question?: string;
-      allowMultiple: boolean;
-    };
+  if (toolPart.type === "tool-askUserChoice" && toolPart.state !== "input-streaming") {
     return (
-      <Suspense key={toolInvocation.toolCallId}>
+      <Suspense key={toolPart.toolCallId}>
         <AnimatePresence initial={false}>
-          {toolInvocation.state !== "result" ? (
+          {toolPart.state === "input-available" ? (
             <motion.div
               className="choices"
               initial={{ opacity: 0, height: 0 }}
@@ -679,21 +853,26 @@ function ToolRenderer({
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.4 }}
             >
-              {args.question && (
+              {toolPart.input.question && (
                 <div className="basis-full">
-                  <Markdown content={args.question} />
+                  <Markdown content={toolPart.input.question} />
                 </div>
               )}
-              {args.choices.map((choice, i) => {
+              {toolPart.input.choices.map((choice, i) => {
                 return (
                   <button
                     key={i}
                     type="button"
                     onClick={() => {
+                      console.log("addtoolresult to part", toolPart);
                       addToolResult({
-                        toolCallId: toolInvocation.toolCallId,
-                        result: choice,
+                        tool: "askUserChoice",
+                        toolCallId: toolPart.toolCallId,
+                        output: choice,
                       });
+                      // sendMessage({
+                      //   text: choice,
+                      // });
                     }}
                   >
                     {choice}
@@ -709,49 +888,127 @@ function ToolRenderer({
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.4 }}
             >
-              {args.question && (
+              {toolPart.input?.question && (
                 <div className="basis-full">
-                  <Markdown content={args.question} />
+                  <Markdown content={toolPart.input.question} />
                 </div>
               )}
-              <div className="basis-full text-right italic text-gray-800">{toolInvocation.result}</div>
+              <div className="basis-full text-right italic text-gray-800">{toolPart.output}</div>
             </motion.div>
           )}
         </AnimatePresence>
       </Suspense>
     );
   }
-  const waitLabel = getToolWaitingLabel(toolInvocation);
-  if (waitLabel) {
+
+  if (toolPart.type !== "tool-askUserChoice" && toolPart.input && "waitingMessage" in toolPart.input) {
     return (
       <AnimatePresence initial={false}>
-        {toolInvocation.state !== "result" ? (
+        {toolPart.state === "input-available" ? (
           <motion.div
-            className="flex items-center gap-1.5"
+            className="flex items-center gap-1.5 font-medium flex-wrap"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
           >
-            <Spinner size="1" className="w-4" />
-            <Text size="2">{waitLabel}</Text>
+            <Spinner size="1" className="w-4 mx-0.5" />
+            <span>{toolPart.input.waitingMessage}</span>
           </motion.div>
-        ) : (
+        ) : toolPart.state === "output-available" ? (
           <motion.div
-            className="flex items-center gap-1.5"
+            className="flex items-center gap-1.5 flex-wrap font-medium"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
           >
             <MdDone className="w-4 h-4 text-green-600" />
-            <Text size="2">{waitLabel}</Text>
+            <span>{toolPart.input.waitingMessage}</span>
+            <details className="cursor-pointer basis-full">
+              <summary className="cursor-pointer list-none flex gap-1 items-center">
+                <svg
+                  className="-rotate-90 transform opacity-60 transition-all duration-300"
+                  fill="none"
+                  height="14"
+                  width="14"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <title>Arrow</title>
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+                <span className="text-xs font-normal">View tool call</span>
+              </summary>
+              <pre className="whitespace-pre-wrap text-xs">
+                {JSON.stringify({ input: toolPart.input, output: toolPart.output }, null, 2)}
+              </pre>
+            </details>
+            {/* {toolPart.type === "tool-searchImages" && (
+              <ImagesPreview
+                key={toolPart.toolCallId}
+                query={toolPart.input.query}
+                images={toolPart.output}
+              />
+            )} */}
           </motion.div>
-        )}
+        ) : toolPart.state === "output-error" ? (
+          <motion.div
+            className="flex items-center gap-1.5 font-medium"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+          >
+            <MdDone className="w-4 h-4 text-red-600" />
+            <span>
+              {toolPart.input.waitingMessage} (Error: {toolPart.errorText})
+            </span>
+          </motion.div>
+        ) : null}
       </AnimatePresence>
     );
   }
 
-  if (toolInvocation.args.message) {
-    return <Markdown content={toolInvocation.args.message} />;
+  if (debug) {
+    const codeClassName = tx(
+      css({
+        display: "block",
+        fontFamily: "monospace",
+        fontSize: "0.7rem",
+        lineHeight: "1.3",
+        wordWrap: "break-word",
+        whiteSpace: "pre-wrap",
+      }),
+    );
+    return (
+      <details>
+        <summary className="cursor-pointer list-none flex gap-1 items-center">
+          <svg
+            className="-rotate-90 transform opacity-60 transition-all duration-300"
+            fill="none"
+            height="14"
+            width="14"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <title>Arrow</title>
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+          <span className="text-xs font-normal">
+            Tool: {toolPart.type} ({toolPart.state})
+          </span>
+        </summary>
+        <pre className={codeClassName}>{JSON.stringify(toolPart, null, 2)}</pre>
+      </details>
+    );
   }
+
+  // if (toolPart.input?.message) {
+  //   return <Markdown content={toolPart.args.message} />;
+  // }
   return null;
 }

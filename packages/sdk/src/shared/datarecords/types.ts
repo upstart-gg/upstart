@@ -8,7 +8,7 @@ export const connectorSchema = Type.Union([
   Type.Literal("airtable"),
   Type.Literal("google-sheets"),
   Type.Literal("notion"),
-  Type.Literal("generic-webhook"),
+  // Type.Literal("generic-webhook"),
   // saved to Upstart platform
   Type.Literal("internal"),
 ]);
@@ -22,7 +22,7 @@ const internalDatarecord = Type.Object(
     schema: Type.Any({
       title: "Schema",
       description:
-        "JSON Schema of the datarecord. Always of type 'object' and representing a row that will be saved.",
+        "JSON Schema of the datarecord. Always of type 'object' and representing a row that will be saved in the database.",
       examples: [
         {
           type: "object",
@@ -37,11 +37,26 @@ const internalDatarecord = Type.Object(
       ],
     }),
     indexes: Type.Array(
-      Type.Object({
-        name: Type.String({ title: "Index name" }),
-        fields: Type.Array(Type.String(), { title: "Fields to index" }),
-        unique: Type.Optional(Type.Boolean({ title: "Unique index", default: false })),
-      }),
+      Type.Object(
+        {
+          name: Type.String({ title: "Index name" }),
+          fields: Type.Array(Type.String(), { title: "Fields to index" }),
+          unique: Type.Optional(Type.Boolean({ title: "Unique index", default: false })),
+        },
+        {
+          examples: [
+            {
+              name: "unique_email_index",
+              fields: ["email"],
+              unique: true,
+            },
+            {
+              name: "lastname_index",
+              fields: ["lastname"],
+            },
+          ],
+        },
+      ),
       {
         title: "Indexes",
         description:
@@ -118,13 +133,13 @@ export const datarecordsConnectors = Type.Union([
     }),
     commonDatarecordSchema,
   ]),
-  Type.Composite([
-    Type.Object({
-      provider: Type.Literal("generic-webhook"),
-      options: genericWebhookOptions,
-    }),
-    commonDatarecordSchema,
-  ]),
+  // Type.Composite([
+  //   Type.Object({
+  //     provider: Type.Literal("generic-webhook"),
+  //     options: genericWebhookOptions,
+  //   }),
+  //   commonDatarecordSchema,
+  // ]),
   internalDatarecord,
 ]);
 
@@ -143,6 +158,7 @@ const datarecordMetadata = Type.Object({
 const datarecordManifest = Type.Composite([datarecordsConnectors, datarecordMetadata]);
 
 export const internalDatarecordManifest = Type.Composite([datarecordMetadata, internalDatarecord]);
+export type InternalDatarecord = Static<typeof internalDatarecordManifest>;
 export type Datarecord = Static<typeof datarecordManifest>;
 
 export const datarecordsList = Type.Array(datarecordManifest);

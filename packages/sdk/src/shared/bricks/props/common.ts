@@ -6,11 +6,11 @@ import { alignSelfRef } from "./align";
 export function hidden() {
   return Type.Object(
     {
-      desktop: Type.Boolean(),
-      mobile: Type.Boolean(),
+      desktop: Type.Optional(Type.Boolean()),
+      mobile: Type.Optional(Type.Boolean()),
     },
     {
-      $id: "styles:hidden",
+      // $id: "styles:hidden",
       title: "Hidden",
       description: "Used to hide the brick on desktop or mobile.",
       "ui:field": "hidden",
@@ -41,7 +41,6 @@ export const commonProps = {
       "ui:field": "hidden",
     }) as TString,
   ),
-
   height: Type.Optional(
     cssLengthRef({
       title: "Fixed height",

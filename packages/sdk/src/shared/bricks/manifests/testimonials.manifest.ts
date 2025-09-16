@@ -3,7 +3,6 @@ import { HiOutlineChatBubbleBottomCenter } from "react-icons/hi2";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
 import { imageRef } from "../props/image";
-import { paddingRef } from "../props/padding";
 import { iconRef, string } from "../props/string";
 import type { BrickProps } from "../props/types";
 import { fontSizeRef } from "../props/text";
@@ -28,7 +27,7 @@ Optionally either use an avatar or a social icon but not both at the same time.`
       colorPreset: Type.Optional(
         colorPresetRef({
           title: "Color",
-          default: "bg-base-100 text-base-100-content",
+          default: "base-100",
         }),
       ),
       border: Type.Optional(
@@ -46,7 +45,17 @@ Optionally either use an avatar or a social icon but not both at the same time.`
           "ui:no-extra-large-sizes": true,
         }),
       ),
-      padding: Type.Optional(paddingRef()),
+      padding: Type.Optional(
+        cssLengthRef({
+          default: "1rem",
+          description: "Padding inside the main container.",
+          "ai:instructions": "Use only a single value like '1rem' or '10px'",
+          title: "Padding",
+          "ui:responsive": true,
+          "ui:placeholder": "Not specified",
+          "ui:styleId": "styles:padding",
+        }),
+      ),
       gap: Type.Optional(
         cssLengthRef({
           title: "Gap",

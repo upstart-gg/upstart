@@ -31,18 +31,18 @@ export const schemasMap = {
   // "threads-media": threadsMediaSchema,
   // "tiktok-video": tiktokVideoListSchema,
   "youtube-list": youtubeListSchema,
-  "internal-blog": blogSchema,
-  "internal-changelog": changelogSchema,
+  // "internal-blog": blogSchema,
+  // "internal-changelog": changelogSchema,
   // "internal-contact-info": contactInfoSchema,
-  "internal-faq": faqSchema,
-  "internal-links": linksSchema,
-  "internal-recipes": recipesSchema,
+  // "internal-faq": faqSchema,
+  // "internal-links": linksSchema,
+  // "internal-recipes": recipesSchema,
   // "internal-restaurant": restaurantSchema,
   // "internal-cv": cvSchema,
   "http-json": {
     description: "JSON array retrieved from an HTTP endpoint",
   },
 } as const satisfies Record<
-  Exclude<DatasourceProvider, "custom">,
+  Exclude<DatasourceProvider, "internal">,
   TArray | TArray[] | { description: string }
 >;

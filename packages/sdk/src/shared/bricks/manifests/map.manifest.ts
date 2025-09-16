@@ -92,6 +92,8 @@ export const examples: {
       address: "San Francisco, CA",
       tooltip: "San Francisco, CA",
       shadow: "shadow-md",
+      width: "40%",
+      height: "250px",
     },
   },
   {
@@ -103,6 +105,8 @@ export const examples: {
       address: "New York, NY",
       tooltip: "New York, NY",
       shadow: "shadow-lg",
+      width: "100%",
+      height: "400px",
     },
   },
 ];

@@ -7,6 +7,7 @@ import { tx } from "@upstart.gg/style-system/twind";
 import BrickRoot from "../components/BrickRoot";
 import { useSitemap } from "~/editor/hooks/use-page-data";
 import intersection from "lodash-es/intersection";
+import uniqBy from "lodash-es/uniqBy";
 
 export default function Navbar({ brick, editable }: BrickProps<Manifest>) {
   const classes = useBrickStyle<Manifest>(brick);
@@ -20,13 +21,16 @@ export default function Navbar({ brick, editable }: BrickProps<Manifest>) {
         label: p.label,
       })) ?? [];
 
-  const allItems = [...navItems, ...(props.staticNavItems ?? [])].map((item) => {
-    const href = pages.find((p) => p.id === item.urlOrPageId)?.path ?? item.urlOrPageId;
-    return {
-      href,
-      label: item.label as string,
-    };
-  });
+  const allItems = uniqBy(
+    [...navItems, ...(props.staticNavItems ?? [])].map((item) => {
+      const href = pages.find((p) => p.id === item.urlOrPageId)?.attributes.path ?? item.urlOrPageId;
+      return {
+        href,
+        label: item.label as string,
+      };
+    }),
+    (item) => item.href,
+  );
 
   const onClickNav = (e: React.MouseEvent) => {
     if (editable) {

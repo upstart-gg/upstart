@@ -13,10 +13,14 @@ export const manifest = defineBrickManifest({
   type: "sidebar",
   category: "layout",
   name: "Sidebar",
-  description: "A sidebard element",
+  description: "A sidebar element",
   inlineDragDisabled: true,
+  isGlobalBrick: true,
+  duplicatable: false,
+  resizable: false,
+  movable: false,
   aiInstructions: `
-    This brick should be used on most sites/pages for navigation. By deault, it will display links
+    This brick should be used on most sites/pages for navigation. By default, it will display links
     to the main pages of the site. You can customize the links by using the 'navigation.navItems' prop.
   `.trim(),
   icon: VscLayoutSidebarLeftOff,
