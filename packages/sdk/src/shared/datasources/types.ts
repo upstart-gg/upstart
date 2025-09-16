@@ -236,7 +236,10 @@ export type InternalDatasource = Static<typeof datasourceInternalManifest>;
 // Fow now, let support only custom (internal) datasource
 // export const datasourceManifest = datasourceCustomManifest;
 export const datasourceManifest = datasourceInternalManifest;
-export const datasourceManifestLLM = toLLMSchema(datasourceInternalManifest);
+
+export function getDatasourceManifestForLLM() {
+  return toLLMSchema(datasourceManifest);
+}
 
 export type Datasource = Static<typeof datasourceManifest>;
 export const datasourcesList = Type.Array(datasourceManifest);

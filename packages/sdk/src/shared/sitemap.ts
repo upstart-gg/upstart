@@ -79,16 +79,20 @@ export const sitemapEntry = Type.Composite(
 export const sitemapSchema = Type.Array(sitemapEntry);
 export type Sitemap = Static<typeof sitemapSchema>;
 
-export const sitemapSchemaLLM = toLLMSchema(
-  Type.Array(
-    Type.Composite([
-      sitemapEntry,
-      Type.Object({
-        // Sections plan helps agents to the structure and content of the page
-        sectionsPlan: sectionsPlanSchema,
-      }),
-    ]),
-  ),
-);
+export function getSitemapSchemaForLLM() {
+  return toLLMSchema(
+    Type.Array(
+      Type.Composite([
+        sitemapEntry,
+        Type.Object({
+          // Sections plan helps agents to the structure and content of the page
+          sectionsPlan: sectionsPlanSchema,
+        }),
+      ]),
+    ),
+  );
+}
 
-export const sitemapSchemaNoPlansLLM = toLLMSchema(sitemapSchema);
+export function getSitemapSchemaNoPlansForLLM() {
+  return toLLMSchema(sitemapSchema);
+}

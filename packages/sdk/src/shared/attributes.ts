@@ -207,18 +207,20 @@ export const pageAttributesSchema = Type.Object(
   },
 );
 
-export const pageQueriesSchemaLLM = toLLMSchema(
-  Type.Array(queryUseRef(), {
-    examples: [
-      { queryId: "get-latest-posts", alias: "latestPosts" },
-      {
-        queryId: "get-user-profile",
-        alias: "userProfile",
-        params: [{ field: "userId", op: "eq", value: ":slug" }],
-      },
-    ] satisfies QueryUseSettings[],
-  }),
-);
+export function getPageQueriesSchemaForLLM() {
+  return toLLMSchema(
+    Type.Array(queryUseRef(), {
+      examples: [
+        { queryId: "get-latest-posts", alias: "latestPosts" },
+        {
+          queryId: "get-user-profile",
+          alias: "userProfile",
+          params: [{ field: "userId", op: "eq", value: ":slug" }],
+        },
+      ] satisfies QueryUseSettings[],
+    }),
+  );
+}
 
 export const siteAttributesSchema = Type.Object(
   {
@@ -368,10 +370,17 @@ export const siteAttributesSchema = Type.Object(
   },
 );
 
-export const siteAttributesSchemaLLM = toLLMSchema(Type.Omit(siteAttributesSchema, ["queries"]));
-export const pageAttributesSchemaLLM = toLLMSchema(Type.Omit(pageAttributesSchema, ["queries"]));
+export function getSiteAttributeschemaForLLM() {
+  return toLLMSchema(Type.Omit(siteAttributesSchema, ["queries"]));
+}
 
-export const siteQueriesSchemaLLM = toLLMSchema(Type.Array(querySchema));
+export function getPageAttributeschemaForLLM() {
+  return toLLMSchema(Type.Omit(pageAttributesSchema, ["queries"]));
+}
+
+export function getSiteQueriesSchemaForLLM() {
+  return toLLMSchema(Type.Array(querySchema));
+}
 
 export type PageAttributes = Static<typeof pageAttributesSchema>;
 export type SiteAttributes = Static<typeof siteAttributesSchema>;

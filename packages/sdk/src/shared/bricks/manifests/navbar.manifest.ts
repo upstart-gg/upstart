@@ -125,9 +125,11 @@ export const manifest = defineBrickManifest({
 });
 
 export type Manifest = typeof manifest;
-
-export const navbarSchemaLLM = toLLMSchema(manifest.props);
 export type NavbarProps = Static<Manifest["props"]>;
+
+export function getNavbarSchemaForLLM() {
+  return toLLMSchema(manifest.props);
+}
 
 export const examples: {
   description: string;
