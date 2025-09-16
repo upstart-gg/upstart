@@ -577,14 +577,15 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
                 withIcon
                 description="Optional fields that will be used as parameters when using the query. Only indexed fields can be used as parameters. Usually only one parameter is needed, but you can add multiple parameters if necessary. When specifying parameters, you will need to set a value for each parameter every time you use it."
               />
-              <TagsSelect
+              <div>TODO/ IMPLEMENT</div>
+              {/* <TagsSelect
                 options={indexedFields.map((field) => ({ value: field.value, label: field.title }))}
                 initialValue={query?.parameters ?? []}
                 isMulti
                 onChange={(value) => setQuery((prev) => ({ ...prev, parameters: value as string[] }))}
                 className="!w-full min-w-fit max-w-[340px]"
                 placeholder="Add parameters (e.g. Slug, Id)"
-              />
+              /> */}
             </div>
           </div>
         )}

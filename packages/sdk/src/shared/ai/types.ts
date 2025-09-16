@@ -24,7 +24,7 @@ export type Tools = {
   };
   createSection: {
     input: WaitingMessageSchema; // Just type the waiting message for now
-    output: Omit<Section, "bricks">;
+    output: Section;
   };
   getSection: {
     input: { id: string }; // Just type the waiting message for now
@@ -74,7 +74,7 @@ export type Tools = {
     input: WaitingMessageSchema & { sectionId: string; index: number }; // Just type the waiting message for now
     output: Brick;
   };
-  listAssets: {
+  listImages: {
     input: null; // Just type the waiting message for now
     output: ImageSearchResultsType;
   };
@@ -117,6 +117,10 @@ export type Tools = {
   searchImages: {
     input: WaitingMessageSchema & { query: string }; // Just type the waiting message for now
     output: ImageSearchResultsType;
+  };
+  deleteBrick: {
+    input: { id: string; waitingMessage: string }; // Just type the waiting message for now
+    output: boolean | string; // true if deleted, error message if failed
   };
 };
 

@@ -16,11 +16,11 @@ export default function Button({ brick, editable }: BrickProps<Manifest>) {
       e.preventDefault();
       return;
     }
-    if (props.linkToUrlOrPageId) {
-      if (props.linkToUrlOrPageId.startsWith("http")) {
-        window.open(props.linkToUrlOrPageId, "_blank");
+    if (props.link) {
+      if (props.link.startsWith("http")) {
+        window.open(props.link, "_blank");
       } else {
-        const page = sitemap.find((p) => p.id === props.linkToUrlOrPageId);
+        const page = sitemap.find((p) => p.id === props.link);
         if (page) {
           window.location.href = page.attributes.path; // Navigate to the page URL if it exists
         }

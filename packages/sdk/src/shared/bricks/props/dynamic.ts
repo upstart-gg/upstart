@@ -7,7 +7,7 @@ export function queryUse() {
   return Type.Object(
     {
       queryId: Type.String({
-        description: "The Query ID to use for dynamic content.",
+        description: "The Site Query ID to use.",
       }),
       alias: Type.String({
         title: "Alias",
@@ -27,14 +27,6 @@ export function queryUse() {
           default: [],
         }),
       ),
-      // limit: Type.Optional(
-      //   Type.Number({
-      //     description:
-      //       "Number of items from the query to loop through. If not set, it will loop through all items. If set to 1, it will not loop and will render only the first item.",
-      //     minimum: 1,
-      //     maximum: 100,
-      //   }),
-      // ),
     },
     {
       title: "Query",
@@ -45,6 +37,19 @@ export function queryUse() {
       metadata: {
         category: "content",
       },
+      examples: [
+        { queryId: "get-latest-posts", alias: "latestPosts" },
+        {
+          queryId: "get-user-profile",
+          alias: "userProfile",
+          params: [{ field: "userId", op: "eq", value: ":slug" }],
+        },
+        {
+          queryId: "get-posts-by-category",
+          alias: "postsByCategory",
+          params: [{ field: "category", op: "eq", value: ":slug" }],
+        },
+      ],
     },
   );
 }

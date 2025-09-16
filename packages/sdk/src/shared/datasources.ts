@@ -24,6 +24,7 @@ export function mapDatasourceSchemaWithInternalProperties(schema: TArray): Datas
   return {
     ...rest,
     items: {
+      ...items,
       type: "object",
       properties: {
         ...items.properties,

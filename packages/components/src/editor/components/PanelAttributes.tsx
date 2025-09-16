@@ -129,6 +129,12 @@ function DebugTab() {
           <code className={codeClassName}>{JSON.stringify(siteAttributes.queries, null, 2)}</code>
         </pre>
       </div>
+      <PanelBlockTitle>Page queries ({pageAttributes.queries?.length ?? 0})</PanelBlockTitle>
+      <div className="flex-1 ">
+        <pre className="p-1">
+          <code className={codeClassName}>{JSON.stringify(pageAttributes.queries, null, 2)}</code>
+        </pre>
+      </div>
     </div>
   );
 }

@@ -16,7 +16,7 @@ export const manifest = defineBrickManifest({
   name: "Hero",
   description: "A big textual element for home pages.",
   aiInstructions: `Displays a large text element that can be used to display a title and an optional tagline.
-Typically used on home pages to grab the user's attention. It's usually better NOT to provide the colorPreset prop so that it inherits the background of its parent box or section.`,
+Typically used on home pages to grab the user's attention. It's better NOT to provide the colorPreset prop so that the Hero inherits the background of its parent box or section.`,
   icon: BsAlphabetUppercase,
 
   defaultWidth: { desktop: "60dvw", mobile: "auto" },
@@ -27,7 +27,7 @@ Typically used on home pages to grab the user's attention. It's usually better N
   props: defineProps({
     content: textContentRef({
       title: "Hero title",
-      default: "<h1 class='hero-size-1' style='text-align:center'>Lorem Ipsum<br />dolor sit amet</h1>",
+      default: "<h1 style='text-align:center'>Lorem Ipsum<br />dolor sit amet</h1>",
     }),
     tagline: Type.Optional(
       textContentRef({
@@ -145,6 +145,105 @@ export const examples: {
     props: {
       content: "Capturing Life's Moments",
       tagline: "Professional photography services for weddings, portraits, and events",
+    },
+  },
+  {
+    description: "Restaurant hero with warm colors and rounded design",
+    type: "hero",
+    props: {
+      content: "Authentic Italian Cuisine",
+      tagline: "Fresh ingredients, traditional recipes, unforgettable flavors",
+      padding: "4rem",
+      colorPreset: {
+        color: "orange-600",
+      },
+      rounding: "rounded-xl",
+      shadow: "shadow-lg",
+    },
+  },
+  {
+    description: "Tech company hero with success gradient and modern styling",
+    type: "hero",
+    props: {
+      content: "Innovation Redefined",
+      tagline: "Pushing the boundaries of what's possible with AI technology",
+      padding: "5rem",
+      colorPreset: {
+        color: "success-500",
+        gradientDirection: "bg-gradient-to-r",
+      },
+      textShadow: "text-shadow-lg",
+      border: {
+        width: "border-2",
+        color: "border-success-300",
+      },
+    },
+  },
+  {
+    description: "Medical practice hero with trust-inspiring design",
+    type: "hero",
+    props: {
+      content: "Your Health, Our Priority",
+      tagline: "Comprehensive healthcare services with compassionate care",
+      padding: "4rem",
+      colorPreset: {
+        color: "blue-500",
+      },
+      rounding: "rounded-lg",
+      justifyContent: "justify-start",
+      alignItems: "items-start",
+    },
+  },
+  {
+    description: "Creative agency hero with warning accent and diagonal gradient",
+    type: "hero",
+    props: {
+      content: "Creative Solutions",
+      tagline: "Bold designs that make your brand unforgettable",
+      padding: "3rem",
+      colorPreset: {
+        color: "warning-400",
+        gradientDirection: "bg-gradient-to-tl",
+      },
+      shadow: "shadow-xl",
+      border: {
+        width: "border",
+        color: "border-warning-200",
+      },
+    },
+  },
+  {
+    description: "Fitness studio hero with danger color and strong presence",
+    type: "hero",
+    props: {
+      content: "Transform Your Body",
+      tagline: "High-intensity training programs that deliver real results",
+      padding: "5rem",
+      colorPreset: {
+        color: "danger-600",
+      },
+      textShadow: "text-shadow-md",
+      rounding: "rounded-2xl",
+      justifyContent: "justify-center",
+      alignItems: "items-center",
+    },
+  },
+  {
+    description: "Minimalist hero with neutral tones and subtle effects",
+    type: "hero",
+    props: {
+      content: "Simplicity Perfected",
+      tagline: "Clean design solutions for modern businesses",
+      padding: "8rem",
+      colorPreset: {
+        color: "neutral-100",
+      },
+      shadow: "shadow-sm",
+      border: {
+        width: "border",
+        color: "border-neutral-300",
+      },
+      rounding: "rounded-md",
     },
   },
 ];

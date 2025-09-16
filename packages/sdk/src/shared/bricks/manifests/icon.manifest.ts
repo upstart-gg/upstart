@@ -53,11 +53,10 @@ export const examples: {
   props: BrickProps<Manifest>["brick"]["props"];
 }[] = [
   {
-    description: "Large heart icon",
+    description: "Large heart icon with inherited color and size",
     type: "icon",
     props: {
       icon: "mdi:heart",
-      size: "2em",
     },
   },
   {
@@ -69,73 +68,97 @@ export const examples: {
     },
   },
   {
-    description: "Email/message icon",
-    type: "icon",
-    props: {
-      icon: "mdi:email",
-      size: "1.1em",
-      link: "mailto:john.doe@example.com",
-    },
-  },
-  {
-    description: "Phone contact icon",
-    type: "icon",
-    props: {
-      icon: "mdi:phone",
-      size: "1em",
-      link: "tel:+1234567890",
-    },
-  },
-  {
-    description: "Large download icon",
-    type: "icon",
-    props: {
-      icon: "mdi:download",
-      size: "2.5em",
-      link: "https://example.com/file.zip",
-    },
-  },
-  {
-    description: "Menu hamburger icon",
-    type: "icon",
-    props: {
-      icon: "mdi:menu",
-      size: "1.4em",
-    },
-  },
-  {
-    description: "Close/X icon",
-    type: "icon",
-    props: {
-      icon: "mdi:close",
-      size: "1.2em",
-    },
-  },
-  {
-    description: "Social media Facebook icon",
+    description: "Social media icon with blue color and link",
     type: "icon",
     props: {
       icon: "mdi:facebook",
-      size: "1.4em",
-      link: "https://www.facebook.com/yourprofile",
+      size: "1.5em",
+      color: "#1877f2",
+      link: "https://facebook.com/yourpage",
     },
   },
   {
-    description: "Social media Twitter icon",
+    description: "Warning icon with orange color for alerts",
+    type: "icon",
+    props: {
+      icon: "mdi:alert-triangle",
+      size: "1.8em",
+      color: "#f59e0b",
+    },
+  },
+  {
+    description: "Email contact icon with link",
+    type: "icon",
+    props: {
+      icon: "mdi:email",
+      size: "1.3em",
+      color: "#4f46e5",
+      link: "mailto:contact@example.com",
+    },
+  },
+  {
+    description: "Phone icon with green color",
+    type: "icon",
+    props: {
+      icon: "mdi:phone",
+      size: "1.4em",
+      color: "#10b981",
+    },
+  },
+  {
+    description: "Location pin icon with red color",
+    type: "icon",
+    props: {
+      icon: "mdi:map-marker",
+      size: "2.2em",
+      color: "#ef4444",
+    },
+  },
+  {
+    description: "Twitter/X icon with custom color and link",
     type: "icon",
     props: {
       icon: "mdi:twitter",
-      size: "1.4em",
-      link: "https://twitter.com/yourprofile",
+      size: "1.6em",
+      color: "#000000",
+      link: "https://x.com/yourhandle",
     },
   },
   {
-    description: "Social media Instagram icon",
+    description: "Star rating icon with gold color",
     type: "icon",
     props: {
-      icon: "mdi:instagram",
-      size: "1.4em",
-      link: "https://www.instagram.com/yourprofile",
+      icon: "mdi:star",
+      size: "1.2em",
+      color: "#fbbf24",
+    },
+  },
+  {
+    description: "Download icon with link and purple color",
+    type: "icon",
+    props: {
+      icon: "mdi:download",
+      size: "1.5em",
+      color: "#8b5cf6",
+      link: "/files/brochure.pdf",
+    },
+  },
+  {
+    description: "Menu hamburger icon for navigation",
+    type: "icon",
+    props: {
+      icon: "mdi:menu",
+      size: "1.8em",
+      color: "#374151",
+    },
+  },
+  {
+    description: "Search icon with dark color",
+    type: "icon",
+    props: {
+      icon: "mdi:magnify",
+      size: "1.1em",
+      color: "#1f2937",
     },
   },
 ];

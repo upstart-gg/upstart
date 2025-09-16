@@ -49,7 +49,7 @@ export const manifest = defineBrickManifest({
         }),
       ),
       border: Type.Optional(borderRef({ default: { width: "border-0" }, "ui:responsive": "desktop" })),
-      linkToUrlOrPageId: Type.Optional(
+      link: Type.Optional(
         urlOrPageIdRef({
           title: "Link",
           "ui:placeholder": "https://example.com",
@@ -73,7 +73,7 @@ export const examples: {
     type: "button",
     props: {
       label: "Click me",
-      linkToUrlOrPageId: "https://example.com",
+      link: "https://example.com",
       colorPreset: { color: "primary-500" },
     },
   },
@@ -82,7 +82,7 @@ export const examples: {
     type: "button",
     props: {
       label: "Go to page",
-      linkToUrlOrPageId: "page-id-123",
+      link: "page-id-123",
       colorPreset: { color: "secondary-500" },
     },
   },

@@ -17,7 +17,8 @@ export const manifest = defineBrickManifest({
   category: "container",
   name: "Box",
   description: "A box for stacking bricks horizontally or vertically.",
-  aiInstructions: "This is the only brick type that can contain other bricks.",
+  aiInstructions:
+    "This is the only brick type that can contain other bricks. Don't nest boxes inside boxes, only include simple bricks as children.",
   isContainer: true,
   defaultWidth: {
     desktop: "auto",

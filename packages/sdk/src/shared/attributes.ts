@@ -8,7 +8,7 @@ import { boolean } from "./bricks/props/boolean";
 import { datetime } from "./bricks/props/date";
 import { imageRef } from "./bricks/props/image";
 import { colorPresetRef } from "./bricks/props/color-preset";
-import { queryUseRef } from "./bricks/props/dynamic";
+import { queryUseRef, type QueryUseSettings } from "./bricks/props/dynamic";
 import { querySchema } from "./datasources/types";
 import { StringEnum } from "./utils/string-enum";
 import { backgroundRef } from "./bricks/props/background";
@@ -205,6 +205,19 @@ export const pageAttributesSchema = Type.Object(
       layout: "Layout",
     },
   },
+);
+
+export const pageQueriesSchemaLLM = toLLMSchema(
+  Type.Array(queryUseRef(), {
+    examples: [
+      { queryId: "get-latest-posts", alias: "latestPosts" },
+      {
+        queryId: "get-user-profile",
+        alias: "userProfile",
+        params: [{ field: "userId", op: "eq", value: ":slug" }],
+      },
+    ] satisfies QueryUseSettings[],
+  }),
 );
 
 export const siteAttributesSchema = Type.Object(

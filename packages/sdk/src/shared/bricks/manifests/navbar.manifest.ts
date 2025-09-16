@@ -30,7 +30,7 @@ export const manifest = defineBrickManifest({
   iconClassName: "rotate-180",
   props: defineProps(
     {
-      color: Type.Optional(
+      colorPreset: Type.Optional(
         colorPresetRef({
           title: "Color",
           default: { color: "primary-500" },
@@ -135,7 +135,8 @@ export const examples: {
   props: BrickProps<Manifest>["brick"]["props"];
 }[] = [
   {
-    description: "Corporate navbar with logo and right-aligned navigation",
+    description:
+      "Corporate technology company navbar featuring company logo with right-aligned navigation links filtered by navbar and featured tags",
     type: "navbar",
     props: {
       logo: {
@@ -143,106 +144,215 @@ export const examples: {
         alt: "TechCorp Solutions logo",
       },
       linksPosition: "right",
-      staticNavItems: [
-        { urlOrPageId: "/services" },
-        { urlOrPageId: "/about" },
-        { urlOrPageId: "/portfolio" },
-        { urlOrPageId: "/contact" },
-      ],
+      linksTagsFilter: ["navbar", "featured"],
     },
   },
   {
-    description: "Dark theme navbar with a brand text and centered navigation, no logo",
+    description:
+      "Dark-themed professional navbar with centered brand text and navigation, including external site link for service companies",
     type: "navbar",
     props: {
       brand: "TechCorp Solutions",
       linksPosition: "center",
-      staticNavItems: [
-        { urlOrPageId: "/work" },
-        { urlOrPageId: "/services" },
-        { urlOrPageId: "/team" },
-        { urlOrPageId: "/blog" },
-      ],
+      linksTagsFilter: ["navbar", "featured"],
+      staticNavItems: [{ urlOrPageId: "http://example.com/", label: "Other site" }],
     },
   },
   {
-    description: "SaaS platform navbar with fixed positioning and brand text",
+    description:
+      "E-commerce store navbar with primary blue branding, medium shadow effect, and right-aligned cart/account links for online shopping sites",
     type: "navbar",
     props: {
-      brand: "TechCorp Solutions",
+      brand: "ShopEasy",
+      colorPreset: {
+        color: "primary-500",
+      },
       linksPosition: "right",
+      linksTagsFilter: ["main", "shop"],
+      shadow: "shadow-md",
       staticNavItems: [
-        { urlOrPageId: "/features" },
-        { urlOrPageId: "/pricing" },
-        { urlOrPageId: "/docs" },
-        { urlOrPageId: "/login" },
+        { urlOrPageId: "cart", label: "Cart" },
+        { urlOrPageId: "account", label: "Account" },
       ],
     },
   },
   {
-    description: "E-commerce navbar with logo and shopping links",
+    description:
+      "Restaurant navbar with logo and hidden brand text, featuring secondary color scheme and left-aligned navigation with reservation booking and phone contact",
     type: "navbar",
     props: {
       logo: {
-        src: "https://via.placeholder.com/130x45.png?text=ShopEasy",
-        alt: "ShopEasy store logo",
+        src: "https://via.placeholder.com/100x50.png?text=Bella+Vista",
+        alt: "Bella Vista Restaurant logo",
       },
-      linksPosition: "right",
-      staticNavItems: [
-        { urlOrPageId: "/products" },
-        { urlOrPageId: "/categories" },
-        { urlOrPageId: "/deals" },
-        { urlOrPageId: "/account" },
-        { urlOrPageId: "/cart" },
-      ],
-    },
-  },
-  {
-    description: "Agency navbar with logo-only brand",
-    type: "navbar",
-    props: {
-      logo: {
-        src: "https://via.placeholder.com/140x50.png?text=Agency+Logo",
-        alt: "Digital agency logo",
-      },
-      linksPosition: "right",
-      staticNavItems: [
-        { urlOrPageId: "/projects" },
-        { urlOrPageId: "/capabilities" },
-        { urlOrPageId: "/insights" },
-        { urlOrPageId: "/contact" },
-      ],
-    },
-  },
-  {
-    description: "Restaurant navbar with warm styling",
-    type: "navbar",
-    props: {
-      brand: "TechCorp Solutions",
-      logo: {
-        src: "https://via.placeholder.com/80x50.png?text=BV",
-        alt: "Bella Vista restaurant logo",
-      },
-      linksPosition: "center",
-      staticNavItems: [
-        { urlOrPageId: "/menu" },
-        { urlOrPageId: "/reservations" },
-        { urlOrPageId: "/events" },
-        { urlOrPageId: "/location" },
-      ],
-    },
-  },
-  {
-    description: "Portfolio navbar with left-aligned navigation",
-    type: "navbar",
-    props: {
-      brand: "TechCorp Solutions",
+      brand: "Bella Vista",
+      hideBrand: true,
       linksPosition: "left",
+      linksTagsFilter: ["navbar"],
+      colorPreset: {
+        color: "secondary-200",
+      },
       staticNavItems: [
-        { urlOrPageId: "/work" },
-        { urlOrPageId: "/about" },
-        { urlOrPageId: "/experience" },
-        { urlOrPageId: "/contact" },
+        { urlOrPageId: "reservations", label: "Reservations" },
+        { urlOrPageId: "tel:+1234567890", label: "Call Us" },
+      ],
+    },
+  },
+  {
+    description:
+      "Clean minimalist design navbar with neutral light background, centered navigation links, and subtle shadow for creative agencies and design studios",
+    type: "navbar",
+    props: {
+      brand: "Minimal Studio",
+      colorPreset: {
+        color: "neutral-100",
+      },
+      linksPosition: "center",
+      linksTagsFilter: ["main"],
+      shadow: "shadow-sm",
+    },
+  },
+  {
+    description:
+      "Creative portfolio navbar with dark neutral background, compact logo, and external social media links to showcase professional work and attract clients",
+    type: "navbar",
+    props: {
+      logo: {
+        src: "https://via.placeholder.com/80x40.png?text=Portfolio",
+        alt: "Creative Portfolio logo",
+      },
+      brand: "Creative Portfolio",
+      colorPreset: {
+        color: "neutral-900",
+      },
+      linksPosition: "right",
+      linksTagsFilter: ["portfolio", "main"],
+      staticNavItems: [
+        { urlOrPageId: "https://dribbble.com/mywork", label: "Dribbble" },
+        { urlOrPageId: "https://behance.net/mywork", label: "Behance" },
+        { urlOrPageId: "contact", label: "Hire Me" },
+      ],
+    },
+  },
+  {
+    description:
+      "Digital marketing agency navbar with horizontal gradient background, large shadow, and external consultation booking integration for lead generation",
+    type: "navbar",
+    props: {
+      brand: "Digital Agency",
+      colorPreset: {
+        color: "primary-600",
+        gradientDirection: "bg-gradient-to-r",
+      },
+      linksPosition: "right",
+      linksTagsFilter: ["services", "navbar"],
+      shadow: "shadow-lg",
+      staticNavItems: [
+        { urlOrPageId: "https://calendar.com/book", label: "Book Consultation" },
+        { urlOrPageId: "case-studies", label: "Case Studies" },
+      ],
+    },
+  },
+  {
+    description:
+      "SaaS application navbar with accent green color scheme, company logo, and essential user authentication links for software platforms",
+    type: "navbar",
+    props: {
+      logo: {
+        src: "https://via.placeholder.com/120x35.png?text=CloudApp",
+        alt: "CloudApp SaaS logo",
+      },
+      brand: "CloudApp",
+      colorPreset: {
+        color: "accent-500",
+      },
+      linksPosition: "right",
+      linksTagsFilter: ["features", "navbar"],
+      staticNavItems: [
+        { urlOrPageId: "pricing", label: "Pricing" },
+        { urlOrPageId: "login", label: "Login" },
+        { urlOrPageId: "signup", label: "Sign Up" },
+      ],
+    },
+  },
+  {
+    description:
+      "Nonprofit organization navbar with warm accent orange color, centered navigation, and donation call-to-action links for charitable foundations",
+    type: "navbar",
+    props: {
+      brand: "Hope Foundation",
+      colorPreset: {
+        color: "accent-400",
+      },
+      linksPosition: "center",
+      linksTagsFilter: ["about", "programs"],
+      shadow: "shadow-md",
+      staticNavItems: [
+        { urlOrPageId: "donate", label: "Donate Now" },
+        { urlOrPageId: "volunteer", label: "Volunteer" },
+      ],
+    },
+  },
+  {
+    description:
+      "Professional law firm navbar with dark authoritative styling, professional logo, and client consultation contact information for legal services",
+    type: "navbar",
+    props: {
+      logo: {
+        src: "https://via.placeholder.com/110x45.png?text=LawFirm",
+        alt: "Professional Law Firm logo",
+      },
+      brand: "Smith & Associates",
+      colorPreset: {
+        color: "neutral-800",
+      },
+      linksPosition: "right",
+      linksTagsFilter: ["practice-areas", "navbar"],
+      staticNavItems: [
+        { urlOrPageId: "consultation", label: "Free Consultation" },
+        { urlOrPageId: "tel:+1234567890", label: "(123) 456-7890" },
+      ],
+    },
+  },
+  {
+    description:
+      "Event management company navbar with bold primary red gradient background, left-aligned navigation, and ticket purchasing links for entertainment venues",
+    type: "navbar",
+    props: {
+      brand: "Event Masters",
+      colorPreset: {
+        color: "primary-500",
+        gradientDirection: "bg-gradient-to-br",
+      },
+      linksPosition: "left",
+      linksTagsFilter: ["events", "upcoming"],
+      shadow: "shadow-xl",
+      staticNavItems: [
+        { urlOrPageId: "tickets", label: "Buy Tickets" },
+        { urlOrPageId: "venues", label: "Venues" },
+      ],
+    },
+  },
+  {
+    description:
+      "Fitness studio navbar with secondary purple color scheme, visible brand name alongside logo, and centered class booking navigation for health and wellness businesses",
+    type: "navbar",
+    props: {
+      logo: {
+        src: "https://via.placeholder.com/90x50.png?text=FitStudio",
+        alt: "Fitness Studio logo",
+      },
+      brand: "Peak Fitness",
+      hideBrand: false,
+      colorPreset: {
+        color: "secondary-600",
+      },
+      linksPosition: "center",
+      linksTagsFilter: ["classes", "membership"],
+      staticNavItems: [
+        { urlOrPageId: "book-class", label: "Book Class" },
+        { urlOrPageId: "membership", label: "Join Now" },
+        { urlOrPageId: "trainers", label: "Personal Training" },
       ],
     },
   },

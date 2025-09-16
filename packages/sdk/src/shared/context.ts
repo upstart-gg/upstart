@@ -1,3 +1,4 @@
+import type { ImageSearchResultsType } from "./images";
 import type { VersionedPage } from "./page";
 import type { Site } from "./site";
 
@@ -26,4 +27,6 @@ export type CallContextProps = {
    * The user language guessed from the sitePrompt, if available.
    */
   userLanguage?: string;
+
+  assets: ImageSearchResultsType;
 };

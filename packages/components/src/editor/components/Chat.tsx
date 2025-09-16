@@ -2,6 +2,7 @@ import { tx, css } from "@upstart.gg/style-system/twind";
 import { Button, Text, Switch, toast } from "@upstart.gg/style-system/system";
 import { motion, AnimatePresence } from "motion/react";
 import {
+  type ChatOnToolCallCallback,
   DefaultChatTransport,
   type DynamicToolUIPart,
   lastAssistantMessageIsCompleteWithToolCalls,
@@ -106,6 +107,30 @@ export default function Chat() {
   const [input, setInput] = useState("");
   const debug = useDebugMode();
   const [showToastWorking, setShowToastWorking] = useState(generationState.isSetup);
+  const [hasScrolledUp, setHasScrolledUp] = useState(false);
+
+  // If user has scrolled up, we want to update the hasScrolledUp state
+
+  // listen for scroll events on the window to detect if user has scrolled up
+  useEffect(() => {
+    const onScroll = (e: Event) => {
+      const target = e.target as HTMLDivElement;
+      if (target && messagesListRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = messagesListRef.current;
+        // Consider user "at bottom" if within 100px of the bottom
+        const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100;
+        setHasScrolledUp(!isNearBottom);
+      }
+    };
+
+    const messagesContainer = messagesListRef.current;
+    if (messagesContainer) {
+      messagesContainer.addEventListener("scroll", onScroll);
+      return () => {
+        messagesContainer.removeEventListener("scroll", onScroll);
+      };
+    }
+  }, []);
 
   useEffect(() => {
     if (showToastWorking) {
@@ -131,13 +156,15 @@ export default function Chat() {
   const pageRef = useRef(page);
   const generationStateRef = useRef(generationState);
   const userLanguageRef = useRef(userLanguage);
+  const assetsRef = useRef(additionalAssets);
 
   useEffect(() => {
     siteRef.current = site;
     pageRef.current = page;
     generationStateRef.current = generationState;
     userLanguageRef.current = userLanguage;
-  }, [site, page, generationState, userLanguage]);
+    assetsRef.current = additionalAssets;
+  }, [site, page, generationState, userLanguage, additionalAssets]);
 
   const initialMessages = useMemo(() => {
     if (generationState.isSetup) {
@@ -173,6 +200,123 @@ What should we work on together? 🤖`,
     }
   }, [generationState.isSetup, sitePrompt]);
 
+  const onToolCall: ChatOnToolCallCallback<UpstartUIMessage> = ({ toolCall }) => {
+    console.log("Tool call: %s: ", toolCall.toolName, toolCall);
+    // The "done" tool is a special case that indicates the server has finished processing the request.
+    // We need to handle it client-side and return the "result" for the tool call.
+    // here, we just return true to indicate that we handled the tool call
+    const toolResult = { tool: toolCall.toolName as keyof Tools, toolCallId: toolCall.toolCallId };
+
+    switch (toolCall.toolName) {
+      case "listThemes": {
+        console.debug(
+          "Cient tool call %s",
+          toolCall.toolName,
+          " replying with themes",
+          siteRef.current.themes,
+        );
+        addToolResult({
+          ...toolResult,
+          output: siteRef.current.themes,
+        });
+        break;
+      }
+      case "getCurrentTheme": {
+        console.debug(
+          "Client tool call %s",
+          toolCall.toolName,
+          " replying with current theme ",
+          siteRef.current.theme,
+        );
+        addToolResult({
+          ...toolResult,
+          output: siteRef.current.theme,
+        });
+        break;
+      }
+      case "listImages": {
+        console.debug("Client tool call %s", toolCall.toolName, " replying with images ", assetsRef.current);
+        addToolResult({
+          ...toolResult,
+          output: assetsRef.current ?? [],
+        });
+        break;
+      }
+      case "getSitemap": {
+        console.debug(
+          "Client tool call %s",
+          toolCall.toolName,
+          " replying with sitemap ",
+          siteRef.current.sitemap,
+        );
+        addToolResult({
+          ...toolResult,
+          output: siteRef.current.sitemap,
+        });
+        break;
+      }
+      case "getSiteAttributes": {
+        console.debug(
+          "Client tool call %s",
+          toolCall.toolName,
+          " replying with site attributes ",
+          siteRef.current.attributes,
+        );
+        addToolResult({
+          ...toolResult,
+          output: siteRef.current.attributes,
+        });
+        break;
+      }
+
+      case "getSection": {
+        const input = toolCall.input as Tools["getSection"]["input"];
+        console.debug(
+          "Client tool call %s",
+          toolCall.toolName,
+          " replying with section ",
+          input.id,
+          pageRef.current.sections,
+        );
+        addToolResult({
+          ...toolResult,
+          output:
+            pageRef.current.sections.find((s) => s.id === input.id) ??
+            `Section with id '${input.id}' not found`,
+        });
+        break;
+      }
+      case "listSections": {
+        console.debug(
+          "Client tool call %s",
+          toolCall.toolName,
+          " replying with sections ",
+          pageRef.current.sections,
+        );
+        addToolResult({
+          ...toolResult,
+          output: pageRef.current.sections,
+        });
+        break;
+      }
+
+      case "deleteBrick": {
+        const input = toolCall.input as Tools["deleteBrick"]["input"];
+        draftHelpers.deleteBrick(input.id);
+        addToolResult({
+          ...toolResult,
+          output: true,
+        });
+        break;
+      }
+
+      default:
+        if (toolCall.toolName.startsWith("get") || toolCall.toolName.startsWith("list")) {
+          console.log("UNHANDLED TOOL CALL client-side", toolCall.toolName);
+        }
+    }
+  };
+
   const { messages, sendMessage, error, status, regenerate, stop, addToolResult } = useChat<UpstartUIMessage>(
     {
       // resume: generationState.isReady === false,
@@ -185,6 +329,7 @@ What should we work on together? 🤖`,
             page: pageRef.current,
             generationState: generationStateRef.current,
             userLanguage: userLanguageRef.current,
+            assets: assetsRef.current,
           },
         }),
       }),
@@ -202,152 +347,7 @@ What should we work on together? 🤖`,
       /**
        * For tools that should be called client-side
        */
-      onToolCall: ({ toolCall }) => {
-        console.log("Tool call: %s: ", toolCall.toolName, toolCall);
-        // The "done" tool is a special case that indicates the server has finished processing the request.
-        // We need to handle it client-side and return the "result" for the tool call.
-        // here, we just return true to indicate that we handled the tool call
-        const toolResult = { tool: toolCall.toolName as keyof Tools, toolCallId: toolCall.toolCallId };
-
-        switch (toolCall.toolName) {
-          case "listThemes": {
-            console.debug("Cient tool call %s", toolCall.toolName, " replying with themes", siteThemes);
-            addToolResult({
-              ...toolResult,
-              output: site.themes,
-            });
-            break;
-          }
-          case "getCurrentTheme": {
-            console.debug(
-              "Client tool call %s",
-              toolCall.toolName,
-              " replying with current theme ",
-              site.theme,
-            );
-            addToolResult({
-              ...toolResult,
-              output: site.theme,
-            });
-            break;
-          }
-          case "listAssets": {
-            console.debug(
-              "Client tool call %s",
-              toolCall.toolName,
-              " replying with assets ",
-              additionalAssets,
-            );
-            addToolResult({
-              ...toolResult,
-              output: additionalAssets ?? [],
-            });
-            break;
-          }
-          case "getSitemap": {
-            console.debug("Client tool call %s", toolCall.toolName, " replying with sitemap ", site.sitemap);
-            addToolResult({
-              ...toolResult,
-              output: site.sitemap,
-            });
-            break;
-          }
-          case "getSiteAttributes": {
-            console.debug(
-              "Client tool call %s",
-              toolCall.toolName,
-              " replying with site attributes ",
-              site.attributes,
-            );
-            addToolResult({
-              ...toolResult,
-              output: site.attributes,
-            });
-            break;
-          }
-          case "listDatasources": {
-            console.debug(
-              "Client tool call %s",
-              toolCall.toolName,
-              " replying with datasources ",
-              site.datasources,
-            );
-            addToolResult({
-              ...toolResult,
-              output: site.datasources,
-            });
-            break;
-          }
-          case "listDatarecords": {
-            console.debug(
-              "Client tool call %s",
-              toolCall.toolName,
-              " replying with datarecords ",
-              site.datarecords,
-            );
-            addToolResult({
-              ...toolResult,
-              output: site.datarecords,
-            });
-            break;
-          }
-          case "listSiteQueries": {
-            console.debug(
-              "Client tool call %s",
-              toolCall.toolName,
-              " replying with site queries ",
-              site.attributes.queries,
-            );
-            addToolResult({
-              ...toolResult,
-              output: site.attributes.queries || [],
-            });
-            break;
-          }
-          case "getCurrentPage": {
-            console.debug("Client tool call %s", toolCall.toolName, " replying with current page ", page);
-            addToolResult({
-              ...toolResult,
-              output: page,
-            });
-            break;
-          }
-          case "getSection": {
-            const input = toolCall.input as Tools["getSection"]["input"];
-            console.debug(
-              "Client tool call %s",
-              toolCall.toolName,
-              " replying with section ",
-              input.id,
-              page.sections,
-            );
-            addToolResult({
-              ...toolResult,
-              output:
-                page.sections.find((s) => s.id === input.id) ?? `Section with id '${input.id}' not found`,
-            });
-            break;
-          }
-          case "listSections": {
-            console.debug(
-              "Client tool call %s",
-              toolCall.toolName,
-              " replying with sections ",
-              page.sections,
-            );
-            addToolResult({
-              ...toolResult,
-              output: page.sections,
-            });
-            break;
-          }
-
-          default:
-            if (toolCall.toolName.startsWith("get") || toolCall.toolName.startsWith("list")) {
-              console.log("UNHANDLED TOOL CALL client-side", toolCall.toolName);
-            }
-        }
-      },
+      onToolCall,
     },
   );
   const promptRef = useRef<HTMLTextAreaElement>(null);
@@ -364,13 +364,14 @@ What should we work on together? 🤖`,
 
   const debouncedScroll = useDebounceCallback(() => {
     // when messages change, scroll to the bottom
-    if (listPlaceholderRef.current) {
+    if (listPlaceholderRef.current && !hasScrolledUp) {
+      // Only autoscroll if user hasn't scrolled up or is already near the bottom
       listPlaceholderRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, 300);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(debouncedScroll, [status, messages]);
+  useEffect(debouncedScroll, [status, messages, hasScrolledUp]);
 
   useEffect(() => {
     if (userLanguage) return;
@@ -428,28 +429,6 @@ What should we work on together? 🤖`,
           draftHelpers.addPage({ ...page, version: crypto.randomUUID(), sections: [] });
           break;
         }
-
-        // case "tool-editPage": {
-        //   const result = toolInvocation.result as { patches: Array<Operation> };
-        //   const pageClone = structuredClone(page);
-        //   console.log("Editing page, result", result);
-        //   applyPatch(pageClone, result.patches);
-        //   break;
-        // }
-
-        // case "dynamic-tool": {
-        //   console.log("Dynamic tool part", toolInvocation.output);
-        //   if (toolInvocation.toolName === "createBrick") {
-        //     const { sectionId, index, parentBrickId, brick } = toolInvocation.output as {
-        //       brick: Brick;
-        //       sectionId: string;
-        //       index: number;
-        //       parentBrickId?: string;
-        //     };
-        //     draftHelpers.addBrick(brick, sectionId, index, parentBrickId);
-        //   }
-        //   break;
-        // }
 
         case "tool-createNavbar":
           console.log("Generated navbar", toolInvocation.output);
@@ -521,7 +500,8 @@ What should we work on together? 🤖`,
         case "tool-createSection": {
           const section = toolInvocation.output;
           console.log("Generated section", section);
-          draftHelpers.addSection({ ...section, bricks: [] });
+          // @ts-expect-error Bricks overwrite
+          draftHelpers.addSection({ bricks: [], ...section });
           break;
         }
 
@@ -574,7 +554,7 @@ What should we work on together? 🤖`,
         ref={messagesListRef}
         className={tx(
           ` overflow-y-auto h-[calc(100cqh-250px-6rem)]
-            flex flex-col gap-y-2.5 flex-grow scroll-smooth relative`,
+            flex flex-col gap-y-2.5 flex-grow scroll-smooth relative transition-all duration-300`,
           {
             "rounded-tr-xl shadow-inner": generationState.isReady === true,
             "rounded-xl": generationState.isReady === false,
@@ -943,6 +923,28 @@ function ToolRenderer({
           >
             <MdDone className="w-4 h-4 text-green-600" />
             <span>{toolPart.input.waitingMessage}</span>
+            <details className="cursor-pointer basis-full">
+              <summary className="cursor-pointer list-none flex gap-1 items-center">
+                <svg
+                  className="-rotate-90 transform opacity-60 transition-all duration-300"
+                  fill="none"
+                  height="14"
+                  width="14"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <title>Arrow</title>
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+                <span className="text-xs font-normal">View tool call</span>
+              </summary>
+              <pre className="whitespace-pre-wrap text-xs">
+                {JSON.stringify({ input: toolPart.input, output: toolPart.output }, null, 2)}
+              </pre>
+            </details>
             {/* {toolPart.type === "tool-searchImages" && (
               <ImagesPreview
                 key={toolPart.toolCallId}
