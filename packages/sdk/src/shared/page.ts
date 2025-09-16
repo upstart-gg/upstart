@@ -18,8 +18,9 @@ export const pageSchema = Type.Object({
   attributes: pageAttributesSchema,
 });
 
-export const pageSchemaLLM = toLLMSchema(pageSchema);
-export const pageOutputObjectLLM = toLLMSchema(Type.Object({ type: Type.Literal("page"), page: pageSchema }));
+export function getPageSchemaForLLM() {
+  return toLLMSchema(pageSchema);
+}
 
 export type Page = Static<typeof pageSchema>;
 export type VersionedPage = Page & { version: string };

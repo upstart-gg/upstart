@@ -261,8 +261,13 @@ export const sectionSchema = Type.Object(
 
 export const sectionSchemaNoBricks = Type.Omit(sectionSchema, ["bricks"]);
 
-export const sectionSchemaNoBricksLLM = toLLMSchema(sectionSchemaNoBricks);
-export const sectionSchemaLLM = toLLMSchema(sectionSchema);
+export function getSectionSchemaNoBrickForLLM() {
+  return toLLMSchema(sectionSchemaNoBricks);
+}
+
+export function getSectionSchemaForLLM() {
+  return toLLMSchema(sectionSchema);
+}
 
 const sectionDefaultprops = getSchemaDefaults(sectionSchema.properties.props, "desktop") as Section["props"];
 const sectionMobileDefaultprops = getSchemaDefaults(

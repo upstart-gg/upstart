@@ -3,10 +3,7 @@ import { Type } from "@sinclair/typebox";
 import { resolveSchema } from "../schema";
 import { toLLMSchema } from "../llm";
 import { ajv } from "../../ajv";
-import { sitemapSchema, sitemapSchemaLLM } from "~/shared/sitemap";
-import { pageSchema, pageOutputObjectLLM } from "~/shared/page";
-import { colorPresetRef } from "~/shared/bricks/props/color-preset";
-import { pageAttributesSchemaLLM, siteAttributesSchemaLLM } from "~/shared/attributes";
+import { sitemapSchema } from "~/shared/sitemap";
 
 describe("resolveSchema tests suite", () => {
   beforeEach(() => {
@@ -723,8 +720,5 @@ describe("toLLMSchema tests suite", () => {
   test("test with existing Upstart schema", () => {
     const transformed = toLLMSchema(sitemapSchema);
     expect(transformed.items.properties.id.type).toEqual(sitemapSchema.items.properties.id.type);
-
-    expect(siteAttributesSchemaLLM).toHaveProperty("type", "object");
-    console.dir(siteAttributesSchemaLLM, { depth: null });
   });
 });

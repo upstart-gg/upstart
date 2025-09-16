@@ -91,7 +91,11 @@ export const manifest = defineBrickManifest({
 });
 
 export type Manifest = typeof manifest;
-export const footerSchemaLLM = toLLMSchema(manifest.props);
+
+export function getFooterSchemaForLLM() {
+  return toLLMSchema(manifest.props);
+}
+
 export type FooterProps = Static<Manifest["props"]>;
 
 export const examples: {
