@@ -38,7 +38,7 @@ export default function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
           boxZoom: false, // Disable box zoom for static maps
           keyboard: false, // Disable keyboard controls for static maps
           trackResize: editable, // Enable resize tracking
-        }).setView([lat, lng], props.zoom ?? DEFAULTS.zoom);
+        }).setView([parseFloat(lat), parseFloat(lng)], props.zoom ?? DEFAULTS.zoom);
 
         // Add tile layer
         new TileLayer("https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png", {
@@ -46,7 +46,7 @@ export default function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
         }).addTo(map);
 
         // Add marker with tooltip
-        const marker = new Marker([lat, lng]).addTo(map);
+        const marker = new Marker([parseFloat(lat), parseFloat(lng)]).addTo(map);
 
         if (props.tooltip) {
           marker
@@ -83,7 +83,7 @@ export default function WidgetMap({ brick, editable }: BrickProps<Manifest>) {
   // Update map when location changes
   useEffect(() => {
     if (mapInstanceRef.current && markerRef.current) {
-      const newLatLng = new LatLng(lat, lng);
+      const newLatLng = new LatLng(parseFloat(lat), parseFloat(lng));
       // Update map center
       mapInstanceRef.current.setView(newLatLng, props.zoom ?? DEFAULTS.zoom);
       // Update marker position
