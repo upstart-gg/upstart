@@ -88,4 +88,28 @@ export const examples: {
       url: "https://vimeo.com/123456789",
     },
   },
+  {
+    description: "Dynamic course video using course query",
+    type: "video",
+    props: {
+      url: "{{course.videoUrl}}",
+      padding: "1rem",
+      rounding: "rounded-lg",
+      shadow: "shadow-md",
+    },
+  },
+  {
+    description: "Dynamic product demo video using product query",
+    type: "video",
+    props: {
+      url: "{{product.demoVideoUrl}}",
+      padding: "0.5rem",
+      rounding: "rounded-xl",
+      shadow: "shadow-lg",
+      border: {
+        width: "border-2",
+        color: "border-primary-300",
+      },
+    },
+  },
 ];

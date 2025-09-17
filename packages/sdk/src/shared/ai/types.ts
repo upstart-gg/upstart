@@ -90,6 +90,14 @@ export type Tools = {
     input: WaitingMessageSchema & { instructions: string }; // Just type the waiting message for now
     output: NonNullable<SiteAttributes["queries"]>;
   };
+  createPageQueries: {
+    input: WaitingMessageSchema & { instructions: string }; // Just type the waiting message for now
+    output: NonNullable<PageAttributes["queries"]>;
+  };
+  editPageQueries: {
+    input: WaitingMessageSchema & { instructions: string }; // Just type the waiting message for now
+    output: NonNullable<PageAttributes["queries"]>;
+  };
   createSiteAttributes: {
     input: WaitingMessageSchema; // Just type the waiting message for now
     output: SiteAttributes;

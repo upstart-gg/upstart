@@ -110,7 +110,7 @@ export const examples: {
       content:
         "<h2>About Our Company</h2><p>We've been serving customers since 2010, building trust through quality products and exceptional service.</p>",
       colorPreset: {
-        color: "base-100",
+        color: "primary-100",
       },
     },
   },
@@ -124,7 +124,7 @@ export const examples: {
     },
   },
   {
-    description: "Paragraph with an emoji, neutral background",
+    description: "Maintenance notice with neutral background and border",
     type: "text",
     props: {
       content:
@@ -133,6 +133,11 @@ export const examples: {
       colorPreset: {
         color: "neutral-700",
       },
+      border: {
+        width: "border",
+        color: "border-neutral-400",
+      },
+      rounding: "rounded-lg",
     },
   },
   {
@@ -141,6 +146,100 @@ export const examples: {
     props: {
       content: "This is some minimal text.",
       padding: "0rem",
+    },
+  },
+  {
+    description: "Call-to-action text with secondary background and shadow",
+    type: "text",
+    props: {
+      content:
+        "<h3 style='text-align: center'>Ready to Get Started?</h3><p style='text-align: center'>Join thousands of satisfied customers who trust our platform. <strong>Sign up today</strong> and experience the difference!</p><p style='text-align: center'><a href='/signup'>Create Your Free Account</a></p>",
+      colorPreset: {
+        color: "secondary-200",
+      },
+      padding: "2.5rem",
+      rounding: "rounded-xl",
+      shadow: "shadow-md",
+      verticalAlign: "items-center",
+    },
+  },
+  {
+    description: "Technical documentation with accent colors and code-like formatting",
+    type: "text",
+    props: {
+      content:
+        "<h4>API Authentication</h4><p>To authenticate your requests, include your API key in the header:</p><p><strong>Authorization: Bearer YOUR_API_KEY</strong></p><p>All API endpoints require authentication. You can find your API key in the <a href='/dashboard'>dashboard settings</a>.</p>",
+      colorPreset: {
+        color: "accent-100",
+      },
+      padding: "1.5rem",
+      rounding: "rounded-md",
+      border: {
+        width: "border-4",
+        color: "border-accent-500",
+      },
+    },
+  },
+  {
+    description: "Success message with primary background and top alignment",
+    type: "text",
+    props: {
+      content:
+        "<h3>✅ Payment Successful!</h3><p>Thank you for your purchase. Your order <strong>#12345</strong> has been confirmed.</p><p>You will receive an email confirmation shortly at your registered email address.</p>",
+      colorPreset: {
+        color: "primary-200",
+      },
+      padding: "2rem",
+      rounding: "rounded-lg",
+      shadow: "shadow-sm",
+      verticalAlign: "items-start",
+    },
+  },
+  {
+    description: "Footer information with neutral dark theme and multiple links",
+    type: "text",
+    props: {
+      content:
+        "<p style='text-align: center'>© 2024 Company Name. All rights reserved.</p><p style='text-align: center'><a href='/privacy'>Privacy Policy</a> | <a href='/terms'>Terms of Service</a> | <a href='/contact'>Contact Us</a></p><p style='text-align: center'><em>Follow us on social media for the latest updates</em></p>",
+      colorPreset: {
+        color: "neutral-800",
+      },
+      padding: "1.5rem",
+      verticalAlign: "items-end",
+    },
+  },
+  {
+    description: "Product description with large padding and rounded corners",
+    type: "text",
+    props: {
+      content:
+        "<h2>Premium Wireless Headphones</h2><p>Experience <strong>crystal-clear audio</strong> with our latest wireless headphones featuring:</p><ul><li>Active noise cancellation</li><li>30-hour battery life</li><li>Premium leather comfort</li><li>Hi-res audio certification</li></ul><p>Perfect for <em>music lovers</em> and <em>professionals</em> alike.</p>",
+      padding: "3rem",
+      rounding: "rounded-2xl",
+      shadow: "shadow-lg",
+      border: {
+        width: "border",
+        color: "border-neutral-300",
+      },
+    },
+  },
+  {
+    description: "Emergency alert with accent background and extra bold formatting",
+    type: "text",
+    props: {
+      content:
+        "<h3 style='text-align: center'>⚠️ URGENT NOTICE</h3><p style='text-align: center'><strong>System maintenance is currently in progress.</strong></p><p style='text-align: center'>Some services may be <em>temporarily unavailable</em>. We expect full restoration by 4:00 PM EST.</p><p style='text-align: center'>For urgent support, please <a href='/emergency-contact'>contact our emergency line</a>.</p>",
+      colorPreset: {
+        color: "accent-400",
+      },
+      padding: "2rem",
+      rounding: "rounded-md",
+      border: {
+        width: "border-2",
+        color: "border-accent-600",
+      },
+      shadow: "shadow-xl",
+      verticalAlign: "items-center",
     },
   },
 ];

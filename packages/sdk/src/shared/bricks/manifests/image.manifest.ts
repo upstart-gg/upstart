@@ -199,4 +199,180 @@ export const examples: {
       blurHash: "L6PZfSi_.AyE_3t7t7R**0o#DgR4",
     },
   },
+  {
+    description: "Dynamic employee photo using employee query",
+    type: "image",
+    props: {
+      image: {
+        src: "{{employee.photo}}",
+        alt: "Photo of {{employee.fullName}}",
+      },
+      rounding: "rounded-full",
+      shadow: "shadow-lg",
+      padding: "1rem",
+    },
+  },
+  {
+    description: "Dynamic product image using product query with author attribution",
+    type: "image",
+    props: {
+      image: {
+        src: "{{product.featuredImage}}",
+        alt: "{{product.name}} - {{product.category}}",
+      },
+      author: {
+        name: "{{product.photographer}}",
+        url: "{{product.photographerUrl}}",
+      },
+      provider: "company-assets",
+      shadow: "shadow-md",
+      rounding: "rounded-lg",
+    },
+  },
+  {
+    description: "Dynamic company logo using company query",
+    type: "image",
+    props: {
+      image: {
+        src: "{{company.logo}}",
+        alt: "{{company.name}} logo",
+      },
+      padding: "2rem",
+      shadow: "shadow-sm",
+      colorPreset: { color: "neutral-100" },
+    },
+  },
+  {
+    description: "Dynamic event banner using event query",
+    type: "image",
+    props: {
+      image: {
+        src: "{{event.bannerImage}}",
+        alt: "{{event.title}} event banner",
+      },
+      shadow: "shadow-xl",
+      rounding: "rounded-xl",
+      author: {
+        name: "{{event.photographer}}",
+        url: "{{event.photographerProfile}}",
+      },
+      provider: "event-photography",
+    },
+  },
+  {
+    description: "Dynamic article featured image using article query",
+    type: "image",
+    props: {
+      image: {
+        src: "{{article.featuredImage}}",
+        alt: "Featured image for {{article.title}}",
+      },
+      author: {
+        name: "{{article.imageCredit}}",
+        url: "{{article.imageCreditUrl}}",
+      },
+      provider: "{{article.imageProvider}}",
+      shadow: "shadow-md",
+      rounding: "rounded-lg",
+    },
+  },
+  {
+    description: "Dynamic property photo using property query",
+    type: "image",
+    props: {
+      image: {
+        src: "{{property.mainPhoto}}",
+        alt: "{{property.address}} - {{property.propertyType}}",
+      },
+      shadow: "shadow-lg",
+      rounding: "rounded-xl",
+      colorPreset: { color: "primary-50" },
+      padding: "1rem",
+    },
+  },
+  {
+    description: "Dynamic portfolio piece using portfolio query",
+    type: "image",
+    props: {
+      image: {
+        src: "{{portfolio.imageUrl}}",
+        alt: "{{portfolio.projectName}} for {{portfolio.clientName}}",
+      },
+      author: {
+        name: "{{portfolio.photographer}}",
+        url: "{{portfolio.photographerWebsite}}",
+      },
+      provider: "portfolio-assets",
+      shadow: "shadow-md",
+      rounding: "rounded-lg",
+      padding: "0.5rem",
+    },
+  },
+  {
+    description: "Dynamic service illustration using service query",
+    type: "image",
+    props: {
+      image: {
+        src: "{{service.illustration}}",
+        alt: "{{service.name}} service illustration",
+      },
+      colorPreset: { color: "secondary-100" },
+      padding: "2rem",
+      shadow: "shadow-sm",
+      rounding: "rounded-full",
+    },
+  },
+  {
+    description: "Dynamic testimonial customer photo using testimonial query",
+    type: "image",
+    props: {
+      image: {
+        src: "{{testimonial.customerPhoto}}",
+        alt: "{{testimonial.customerName}} from {{testimonial.company}}",
+      },
+      rounding: "rounded-full",
+      shadow: "shadow-lg",
+      padding: "0.25rem",
+      colorPreset: { color: "accent-50" },
+    },
+  },
+  {
+    description: "Product gallery using products query with loop",
+    type: "image",
+    props: {
+      image: {
+        src: "{{products.mainImage}}",
+        alt: "{{products.name}} - {{products.category}}",
+      },
+      author: {
+        name: "{{products.photographer}}",
+        url: "{{products.photographerUrl}}",
+      },
+      provider: "product-catalog",
+      shadow: "shadow-md",
+      rounding: "rounded-lg",
+      padding: "0.5rem",
+      colorPreset: { color: "primary-50" },
+      loop: {
+        over: "products",
+      },
+    },
+  },
+  {
+    description: "Team member photos using teamMembers query with loop",
+    type: "image",
+    props: {
+      image: {
+        src: "{{teamMembers.profilePhoto}}",
+        alt: "{{teamMembers.fullName}} - {{teamMembers.position}}",
+      },
+      rounding: "rounded-full",
+      shadow: "shadow-lg",
+      padding: "0.75rem",
+      colorPreset: { color: "secondary-100" },
+      loop: {
+        over: "teamMembers",
+      },
+    },
+  },
 ];

@@ -181,4 +181,140 @@ export const examples: {
       text: "Transform your workflow with our powerful tools. Sign up now and get 30 days free!",
     },
   },
+  {
+    description: "Dynamic product card using products query with pricing and details",
+    type: "card",
+    props: {
+      cardImage: {
+        src: "{{products.image}}",
+        alt: "{{products.name}}",
+      },
+      title: "{{products.name}}",
+      text: "{{products.description}}<br><strong>Price: ${{products.price}}</strong><br>Category: {{products.category}}",
+      colorPreset: { color: "primary-50" },
+      border: { width: "border", color: "border-primary-200" },
+      rounding: "rounded-lg",
+      shadow: "shadow-md",
+      loop: {
+        over: "products",
+      },
+    },
+  },
+  {
+    description: "Employee profile card using teamMembers query with contact information",
+    type: "card",
+    props: {
+      cardImage: {
+        src: "{{teamMembers.photo}}",
+        alt: "Photo of {{teamMembers.fullName}}",
+      },
+      imagePosition: "top",
+      title: "{{teamMembers.fullName}}",
+      text: "<strong>{{teamMembers.position}}</strong><br>{{teamMembers.department}}<br>Email: {{teamMembers.email}}<br>Phone: {{teamMembers.phone}}",
+      colorPreset: { color: "neutral-100" },
+      rounding: "rounded-xl",
+      shadow: "shadow-lg",
+      loop: {
+        over: "teamMembers",
+      },
+    },
+  },
+  {
+    description: "Blog post card using blogPosts query with author and date",
+    type: "card",
+    props: {
+      cardImage: {
+        src: "{{blogPosts.featuredImage}}",
+        alt: "{{blogPosts.title}}",
+      },
+      imagePosition: "top",
+      title: "{{blogPosts.title}}",
+      text: "{{blogPosts.excerpt}}<br><br><em>By {{blogPosts.author}} • {{blogPosts.publishDate}}</em><br>Tags: {{blogPosts.tags}}",
+      colorPreset: { color: "secondary-50" },
+      border: { width: "border", color: "border-secondary-300" },
+      rounding: "rounded-md",
+      shadow: "shadow-sm",
+      loop: {
+        over: "blogPosts",
+      },
+    },
+  },
+  {
+    description: "Event listing card using upcomingEvents query with venue details",
+    type: "card",
+    props: {
+      cardImage: {
+        src: "{{upcomingEvents.banner}}",
+        alt: "{{upcomingEvents.title}}",
+      },
+      imagePosition: "top",
+      title: "{{upcomingEvents.title}}",
+      text: "<strong>{{upcomingEvents.date}} at {{upcomingEvents.time}}</strong><br>{{upcomingEvents.venue}}, {{upcomingEvents.city}}<br><br>{{upcomingEvents.description}}<br><br>Tickets: ${{upcomingEvents.price}}",
+      colorPreset: { color: "accent-100" },
+      border: { width: "border-2", color: "border-accent-400" },
+      rounding: "rounded-lg",
+      shadow: "shadow-md",
+      loop: {
+        over: "upcomingEvents",
+      },
+    },
+  },
+  {
+    description: "Testimonial card using customerReviews query with ratings",
+    type: "card",
+    props: {
+      cardImage: {
+        src: "{{customerReviews.customerPhoto}}",
+        alt: "{{customerReviews.customerName}}",
+      },
+      imagePosition: "left",
+      title: "{{customerReviews.customerName}}",
+      text: '"{{customerReviews.review}}"<br><br><strong>Rating: {{customerReviews.rating}}/5 stars</strong><br>{{customerReviews.company}} • {{customerReviews.position}}',
+      colorPreset: { color: "neutral-50" },
+      rounding: "rounded-xl",
+      shadow: "shadow-lg",
+      loop: {
+        over: "customerReviews",
+      },
+    },
+  },
+  {
+    description: "Service offering card using companyServices query with pricing tiers",
+    type: "card",
+    props: {
+      cardImage: {
+        src: "{{companyServices.icon}}",
+        alt: "{{companyServices.serviceName}}",
+      },
+      imagePosition: "top",
+      title: "{{companyServices.serviceName}}",
+      text: "{{companyServices.description}}<br><br><strong>Starting at ${{companyServices.startingPrice}}</strong><br>Duration: {{companyServices.duration}}<br>Includes: {{companyServices.features}}",
+      colorPreset: { color: "primary-100" },
+      border: { width: "border", color: "border-primary-300" },
+      rounding: "rounded-lg",
+      shadow: "shadow-md",
+      loop: {
+        over: "companyServices",
+      },
+    },
+  },
+  {
+    description: "Portfolio project card using portfolioWork query with project details",
+    type: "card",
+    props: {
+      cardImage: {
+        src: "{{portfolioWork.thumbnail}}",
+        alt: "{{portfolioWork.projectName}}",
+      },
+      imagePosition: "top",
+      title: "{{portfolioWork.projectName}}",
+      text: "<strong>Client:</strong> {{portfolioWork.clientName}}<br><strong>Year:</strong> {{portfolioWork.year}}<br><strong>Category:</strong> {{portfolioWork.category}}<br><br>{{portfolioWork.description}}",
+      colorPreset: { color: "secondary-100" },
+      rounding: "rounded-md",
+      shadow: "shadow-sm",
+      loop: {
+        over: "portfolioWork",
+      },
+    },
+  },
 ];

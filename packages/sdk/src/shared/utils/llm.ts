@@ -1,6 +1,7 @@
 import type { TObject, TSchema } from "@sinclair/typebox";
-import { ajv } from "../ajv";
+import { createAJVInstance } from "../ajv";
 import { cloneDeep } from "lodash-es";
+import type Ajv from "ajv";
 
 /**
  * Clean all properties from custom metadata recursively. Custom metadata are key that:
@@ -8,8 +9,8 @@ import { cloneDeep } from "lodash-es";
  * - Or starting with "ui:"
  * Also removes properties that have "ai:hidden" set to true
  */
-export function toLLMSchema<T extends TSchema = TObject>(schema: T): T {
-  return cleanSchemaRecursive(inlineSchemaRefs(schema)) as T;
+export function toLLMSchema<T extends TSchema = TObject>(schema: T, ajv?: Ajv): T {
+  return cleanSchemaRecursive(inlineSchemaRefs(schema, ajv ?? createAJVInstance())) as T;
 }
 
 /**
@@ -106,7 +107,7 @@ interface SchemaWithDefs extends TSchema {
  * @param ajv - The AJV instance containing the referenced schemas
  * @returns A new schema with references inlined in $defs
  */
-export function inlineSchemaRefs<T extends TSchema>(schema: T) {
+export function inlineSchemaRefs<T extends TSchema>(schema: T, ajv: Ajv) {
   //
   const inlinedSchema = cloneDeep(schema) as T & SchemaWithDefs;
   // const inlinedSchema = JSON.parse(JSON.stringify(schema)) as T & SchemaWithDefs;

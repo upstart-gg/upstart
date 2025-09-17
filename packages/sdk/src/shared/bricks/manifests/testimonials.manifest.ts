@@ -394,4 +394,87 @@ export const examples: {
       ],
     },
   },
+  {
+    description: "Dynamic customer testimonials using customerReviews query",
+    type: "testimonials",
+    props: {
+      testimonials: [
+        {
+          author: "{{customerReviews.customerName}}",
+          company: "{{customerReviews.company}}",
+          text: "{{customerReviews.reviewText}}",
+          avatar: {
+            src: "{{customerReviews.customerPhoto}}",
+            alt: "{{customerReviews.customerName}} photo",
+          },
+          socialIcon: "{{customerReviews.socialPlatform}}",
+        },
+      ],
+      loop: {
+        over: "customerReviews",
+      },
+    },
+  },
+  {
+    description: "Dynamic client testimonials using clientFeedback query",
+    type: "testimonials",
+    props: {
+      testimonials: [
+        {
+          author: "{{clientFeedback.clientName}}",
+          company: "{{clientFeedback.companyName}} - {{clientFeedback.position}}",
+          text: "{{clientFeedback.testimonial}}",
+          avatar: {
+            src: "{{clientFeedback.headshot}}",
+            alt: "{{clientFeedback.clientName}} headshot",
+          },
+          socialIcon: "{{clientFeedback.preferredIcon}}",
+        },
+      ],
+      loop: {
+        over: "clientFeedback",
+      },
+    },
+  },
+  {
+    description: "Dynamic product reviews using productReviews query",
+    type: "testimonials",
+    props: {
+      testimonials: [
+        {
+          author: "{{productReviews.reviewerName}}",
+          text: "{{productReviews.review}} - {{productReviews.rating}}/5 stars",
+          avatar: {
+            src: "{{productReviews.userAvatar}}",
+            alt: "{{productReviews.reviewerName}} profile",
+          },
+          socialIcon: "mdi:star",
+        },
+      ],
+      loop: {
+        over: "productReviews",
+      },
+    },
+  },
+  {
+    description: "Dynamic employee testimonials using teamTestimonials query",
+    type: "testimonials",
+    props: {
+      testimonials: [
+        {
+          author: "{{teamTestimonials.employeeName}}",
+          company: "{{teamTestimonials.department}} - {{teamTestimonials.jobTitle}}",
+          text: "{{teamTestimonials.testimonial}}",
+          avatar: {
+            src: "{{teamTestimonials.profilePhoto}}",
+            alt: "{{teamTestimonials.employeeName}} profile photo",
+          },
+          socialIcon: "{{teamTestimonials.socialIcon}}",
+        },
+      ],
+      loop: {
+        over: "teamTestimonials",
+      },
+    },
+  },
 ];

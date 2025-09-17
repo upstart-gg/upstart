@@ -497,6 +497,26 @@ What should we work on together? 🤖`,
           break;
         }
 
+        case "tool-createPageQueries": {
+          const queries = toolInvocation.output;
+          console.log("Generated page queries", queries);
+          draftHelpers.updatePageAttributes({
+            ...page.attributes,
+            queries: [...(page.attributes.queries ?? []), ...queries],
+          });
+          break;
+        }
+
+        case "tool-editPageQueries": {
+          const queries = toolInvocation.output;
+          console.log("Edited page queries", queries);
+          draftHelpers.updatePageAttributes({
+            ...page.attributes,
+            queries: [...(page.attributes.queries ?? []), ...queries],
+          });
+          break;
+        }
+
         case "tool-createSection": {
           const section = toolInvocation.output;
           console.log("Generated section", section);

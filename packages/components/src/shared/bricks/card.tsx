@@ -5,12 +5,14 @@ import { tx, css } from "@upstart.gg/style-system/twind";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import BrickRoot from "../components/BrickRoot";
 import { useBrickProps } from "../hooks/use-brick-props";
+import { useState } from "react";
 
 export default function Card(props: BrickProps<Manifest>) {
   const { brick, editable } = props;
   const brickProps = useBrickProps(props);
   const styles = useBrickStyle<Manifest>(brick);
   const classes = Object.values(styles);
+  const [showImage, setShowImage] = useState(true);
   return (
     <BrickRoot
       brick={brick}
@@ -58,8 +60,9 @@ export default function Card(props: BrickProps<Manifest>) {
           </div>
         )}
       </div>
-      {brickProps.cardImage?.src && (
+      {brickProps.cardImage?.src && showImage && (
         <img
+          onError={() => setShowImage(false)}
           className={tx(
             " select-none pointer-events-none bg-transparent",
             brickProps.cardImage.position ?? "object-center",

@@ -248,7 +248,7 @@ export const examples: {
     },
   },
   {
-    description: "Event photos",
+    description: "Event photos gallery with tight spacing and minimal padding",
     type: "images-gallery",
     props: {
       columns: 4,
@@ -292,6 +292,531 @@ export const examples: {
           legend: "Awards ceremony",
         },
       ],
+    },
+  },
+  {
+    description: "Photography portfolio with single column layout and primary background",
+    type: "images-gallery",
+    props: {
+      columns: 1,
+      gap: "3rem",
+      padding: "4rem",
+      colorPreset: {
+        color: "primary-50",
+      },
+      rounding: "rounded-lg",
+      images: [
+        {
+          image: {
+            src: "https://via.placeholder.com/800x600.png?text=Landscape+1",
+          },
+          legend: "Mountain sunrise landscape photography",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/800x600.png?text=Portrait+1",
+          },
+          legend: "Professional business portrait session",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/800x600.png?text=Architecture+1",
+          },
+          legend: "Modern architectural photography",
+        },
+      ],
+    },
+  },
+  {
+    description: "Real estate property gallery with secondary colors and borders",
+    type: "images-gallery",
+    props: {
+      columns: 3,
+      gap: "1.5rem",
+      padding: "2rem",
+      colorPreset: {
+        color: "secondary-100",
+      },
+      border: {
+        width: "border",
+        color: "border-secondary-300",
+      },
+      rounding: "rounded-xl",
+      images: [
+        {
+          image: {
+            src: "https://via.placeholder.com/400x300.png?text=Living+Room",
+          },
+          legend: "Spacious living room with natural light",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/400x300.png?text=Kitchen",
+          },
+          legend: "Modern kitchen with granite countertops",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/400x300.png?text=Master+Bedroom",
+          },
+          legend: "Master bedroom with walk-in closet",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/400x300.png?text=Bathroom",
+          },
+          legend: "Luxury bathroom with marble finishes",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/400x300.png?text=Backyard",
+          },
+          legend: "Private backyard with pool",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/400x300.png?text=Garage",
+          },
+          legend: "Two-car garage with storage",
+        },
+      ],
+    },
+  },
+  {
+    description: "Restaurant food gallery with 5-column grid and accent colors",
+    type: "images-gallery",
+    props: {
+      columns: 5,
+      gap: "0.75rem",
+      padding: "1.5rem",
+      colorPreset: {
+        color: "accent-200",
+      },
+      rounding: "rounded-md",
+      images: [
+        {
+          image: {
+            src: "https://via.placeholder.com/300x300.png?text=Appetizer",
+          },
+          legend: "Bruschetta with fresh tomatoes",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/300x300.png?text=Soup",
+          },
+          legend: "Creamy mushroom bisque",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/300x300.png?text=Salad",
+          },
+          legend: "Mediterranean quinoa salad",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/300x300.png?text=Main+Course",
+          },
+          legend: "Grilled salmon with herbs",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/300x300.png?text=Dessert",
+          },
+          legend: "Chocolate lava cake",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/300x300.png?text=Beverage",
+          },
+          legend: "Artisan coffee selection",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/300x300.png?text=Pasta",
+          },
+          legend: "Homemade fettuccine alfredo",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/300x300.png?text=Pizza",
+          },
+          legend: "Wood-fired margherita pizza",
+        },
+      ],
+    },
+  },
+  {
+    description: "Art gallery exhibition with 6-column grid and minimal styling",
+    type: "images-gallery",
+    props: {
+      columns: 6,
+      gap: "0.5rem",
+      padding: "1rem",
+      images: [
+        {
+          image: {
+            src: "https://via.placeholder.com/200x250.png?text=Abstract+1",
+          },
+          legend: "Abstract composition #1",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/200x250.png?text=Portrait+Art",
+          },
+          legend: "Contemporary portrait",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/200x250.png?text=Landscape+Art",
+          },
+          legend: "Impressionist landscape",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/200x250.png?text=Still+Life",
+          },
+          legend: "Modern still life",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/200x250.png?text=Sculpture",
+          },
+          legend: "Bronze sculpture piece",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/200x250.png?text=Digital+Art",
+          },
+          legend: "Digital artwork collection",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/200x250.png?text=Mixed+Media",
+          },
+          legend: "Mixed media installation",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/200x250.png?text=Photography",
+          },
+          legend: "Fine art photography",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/200x250.png?text=Watercolor",
+          },
+          legend: "Watercolor painting",
+        },
+      ],
+    },
+  },
+  {
+    description: "Fashion lookbook with 2-column layout and neutral dark theme",
+    type: "images-gallery",
+    props: {
+      columns: 2,
+      gap: "2rem",
+      padding: "3rem",
+      colorPreset: {
+        color: "neutral-800",
+      },
+      border: {
+        width: "border-2",
+        color: "border-neutral-600",
+      },
+      rounding: "rounded-2xl",
+      images: [
+        {
+          image: {
+            src: "https://via.placeholder.com/400x600.png?text=Spring+Look",
+          },
+          legend: "Spring casual collection 2024",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/400x600.png?text=Summer+Look",
+          },
+          legend: "Summer evening wear",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/400x600.png?text=Business+Look",
+          },
+          legend: "Professional business attire",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/400x600.png?text=Weekend+Look",
+          },
+          legend: "Weekend comfort style",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/400x600.png?text=Formal+Look",
+          },
+          legend: "Formal evening collection",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/400x600.png?text=Street+Style",
+          },
+          legend: "Urban street fashion",
+        },
+      ],
+    },
+  },
+  {
+    description: "Travel destinations gallery with 3-column grid and no legends",
+    type: "images-gallery",
+    props: {
+      columns: 3,
+      gap: "1.25rem",
+      padding: "2.5rem",
+      colorPreset: {
+        color: "primary-100",
+      },
+      rounding: "rounded-lg",
+      border: {
+        width: "border",
+        color: "border-primary-200",
+      },
+      images: [
+        {
+          image: {
+            src: "https://via.placeholder.com/350x250.png?text=Paris",
+          },
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/350x250.png?text=Tokyo",
+          },
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/350x250.png?text=New+York",
+          },
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/350x250.png?text=London",
+          },
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/350x250.png?text=Rome",
+          },
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/350x250.png?text=Barcelona",
+          },
+        },
+      ],
+    },
+  },
+  {
+    description: "Technical equipment gallery with 4-column grid and accent styling",
+    type: "images-gallery",
+    props: {
+      columns: 4,
+      gap: "1rem",
+      padding: "2rem",
+      colorPreset: {
+        color: "accent-100",
+      },
+      border: {
+        width: "border-4",
+        color: "border-accent-400",
+      },
+      rounding: "rounded-xl",
+      images: [
+        {
+          image: {
+            src: "https://via.placeholder.com/300x300.png?text=Camera",
+          },
+          legend: "Professional DSLR camera",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/300x300.png?text=Laptop",
+          },
+          legend: "High-performance laptop",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/300x300.png?text=Microphone",
+          },
+          legend: "Studio recording microphone",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/300x300.png?text=Monitor",
+          },
+          legend: "4K professional monitor",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/300x300.png?text=Tablet",
+          },
+          legend: "Digital drawing tablet",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/300x300.png?text=Speakers",
+          },
+          legend: "Studio monitor speakers",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/300x300.png?text=Keyboard",
+          },
+          legend: "Mechanical keyboard",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/300x300.png?text=Mouse",
+          },
+          legend: "Precision gaming mouse",
+        },
+      ],
+    },
+  },
+  {
+    description: "Minimal product showcase with large gaps and no padding",
+    type: "images-gallery",
+    props: {
+      columns: 3,
+      gap: "4rem",
+      padding: "0rem",
+      images: [
+        {
+          image: {
+            src: "https://via.placeholder.com/400x400.png?text=Watch",
+          },
+          legend: "Luxury Swiss timepiece",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/400x400.png?text=Jewelry",
+          },
+          legend: "Handcrafted gold necklace",
+        },
+        {
+          image: {
+            src: "https://via.placeholder.com/400x400.png?text=Sunglasses",
+          },
+          legend: "Designer sunglasses collection",
+        },
+      ],
+    },
+  },
+  {
+    description: "Dynamic product gallery using products query with loop",
+    type: "images-gallery",
+    props: {
+      columns: 4,
+      gap: "1.5rem",
+      padding: "2rem",
+      colorPreset: {
+        color: "primary-50",
+      },
+      rounding: "rounded-lg",
+      border: {
+        width: "border",
+        color: "border-primary-200",
+      },
+      images: [
+        {
+          image: {
+            src: "{{products.image}}",
+          },
+          legend: "{{products.name}} - ${{products.price}}",
+        },
+      ],
+      loop: {
+        over: "products",
+      },
+    },
+  },
+  {
+    description: "Portfolio showcase using portfolioProjects query with loop",
+    type: "images-gallery",
+    props: {
+      columns: 3,
+      gap: "2rem",
+      padding: "3rem",
+      colorPreset: {
+        color: "secondary-100",
+      },
+      rounding: "rounded-xl",
+      images: [
+        {
+          image: {
+            src: "{{portfolioProjects.thumbnail}}",
+          },
+          legend:
+            "{{portfolioProjects.projectName}} - {{portfolioProjects.clientName}} ({{portfolioProjects.year}})",
+        },
+      ],
+      loop: {
+        over: "portfolioProjects",
+      },
+    },
+  },
+  {
+    description: "Event photo gallery using eventPhotos query with loop",
+    type: "images-gallery",
+    props: {
+      columns: 5,
+      gap: "1rem",
+      padding: "1.5rem",
+      colorPreset: {
+        color: "accent-50",
+      },
+      border: {
+        width: "border-2",
+        color: "border-accent-300",
+      },
+      rounding: "rounded-md",
+      images: [
+        {
+          image: {
+            src: "{{eventPhotos.imageUrl}}",
+          },
+          legend: "{{eventPhotos.caption}} - {{eventPhotos.eventDate}}",
+        },
+      ],
+      loop: {
+        over: "eventPhotos",
+      },
+    },
+  },
+  {
+    description: "Team member gallery using teamMembers query with loop",
+    type: "images-gallery",
+    props: {
+      columns: 6,
+      gap: "0.75rem",
+      padding: "2.5rem",
+      colorPreset: {
+        color: "neutral-100",
+      },
+      rounding: "rounded-lg",
+      border: {
+        width: "border",
+        color: "border-neutral-300",
+      },
+      images: [
+        {
+          image: {
+            src: "{{teamMembers.profilePhoto}}",
+          },
+          legend: "{{teamMembers.fullName}} - {{teamMembers.position}}",
+        },
+      ],
+      loop: {
+        over: "teamMembers",
+      },
     },
   },
 ];

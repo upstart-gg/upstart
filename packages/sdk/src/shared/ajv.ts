@@ -17,89 +17,94 @@ import { tags } from "./bricks/props/tags";
 
 export type { AnySchemaObject, JSONSchemaType, JSONType, SchemaObject } from "ajv";
 
-export const ajv = new Ajv({
-  useDefaults: true,
-  strictSchema: false,
-  validateSchema: false,
-  coerceTypes: true,
-  allErrors: true,
-  inlineRefs: true,
-});
-
-ajv.addSchema(background(), "styles:background");
-ajv.addSchema(backgroundColor(), "styles:backgroundColor");
-ajv.addSchema(justifyContent(), "styles:justifyContent");
-ajv.addSchema(alignItems(), "styles:alignItems");
-ajv.addSchema(alignSelf(), "styles:alignSelf");
-ajv.addSchema(rounding(), "styles:rounding");
-ajv.addSchema(fontSize(), "styles:fontSize");
-ajv.addSchema(hidden(), "styles:hidden");
-ajv.addSchema(direction(), "styles:direction");
-ajv.addSchema(border(), "styles:border");
-ajv.addSchema(color(), "styles:color");
-ajv.addSchema(borderColor(), "styles:borderColor");
-ajv.addSchema(shadow(), "styles:shadow");
-ajv.addSchema(textShadow(), "styles:textShadow");
-ajv.addSchema(cssLength(), "styles:cssLength");
-ajv.addSchema(image(), "assets:image");
-ajv.addSchema(icon(), "assets:icon");
-ajv.addSchema(textContent(), "content:text");
-ajv.addSchema(urlOrPageId(), "content:urlOrPageId");
-ajv.addSchema(loop(), "content:loop");
-ajv.addSchema(queryUse(), "content:queryUse");
-ajv.addSchema(colorPreset(), "presets:color");
-ajv.addSchema(tags(), "content:tags");
-
 export const jsonStringsSupportedFormats = ["date-time", "date", "email", "url"] as const;
 
-// Add formats to Ajv
-addFormats(ajv, [...jsonStringsSupportedFormats]);
+export function createAJVInstance() {
+  const ajv = new Ajv({
+    useDefaults: true,
+    strictSchema: false,
+    validateSchema: false,
+    coerceTypes: true,
+    allErrors: true,
+    inlineRefs: true,
+  });
 
-ajv.addFormat("slug", {
-  validate: (data: string) => typeof data === "string",
-  async: false,
-  type: "string",
-});
-ajv.addFormat("image", {
-  validate: (data: string) => typeof data === "string",
-  async: false,
-  type: "string",
-});
-ajv.addFormat("file", {
-  validate: (data: string) => typeof data === "string",
-  async: false,
-  type: "string",
-});
+  ajv.addSchema(background(), "styles:background");
+  ajv.addSchema(backgroundColor(), "styles:backgroundColor");
+  ajv.addSchema(justifyContent(), "styles:justifyContent");
+  ajv.addSchema(alignItems(), "styles:alignItems");
+  ajv.addSchema(alignSelf(), "styles:alignSelf");
+  ajv.addSchema(rounding(), "styles:rounding");
+  ajv.addSchema(fontSize(), "styles:fontSize");
+  ajv.addSchema(hidden(), "styles:hidden");
+  ajv.addSchema(direction(), "styles:direction");
+  ajv.addSchema(border(), "styles:border");
+  ajv.addSchema(color(), "styles:color");
+  ajv.addSchema(borderColor(), "styles:borderColor");
+  ajv.addSchema(shadow(), "styles:shadow");
+  ajv.addSchema(textShadow(), "styles:textShadow");
+  ajv.addSchema(cssLength(), "styles:cssLength");
+  ajv.addSchema(image(), "assets:image");
+  ajv.addSchema(icon(), "assets:icon");
+  ajv.addSchema(textContent(), "content:text");
+  ajv.addSchema(urlOrPageId(), "content:urlOrPageId");
+  ajv.addSchema(loop(), "content:loop");
+  ajv.addSchema(queryUse(), "content:queryUse");
+  ajv.addSchema(colorPreset(), "presets:color");
+  ajv.addSchema(tags(), "content:tags");
 
-ajv.addFormat("nanoid", {
-  validate: (data: string) => typeof data === "string",
-  async: false,
-  type: "string",
-});
+  // Add formats to Ajv
+  addFormats(ajv, [...jsonStringsSupportedFormats]);
 
-ajv.addFormat("richtext", {
-  validate: (data: string) => typeof data === "string",
-  async: false,
-  type: "string",
-});
+  ajv.addFormat("slug", {
+    validate: (data: string) => typeof data === "string",
+    async: false,
+    type: "string",
+  });
+  ajv.addFormat("image", {
+    validate: (data: string) => typeof data === "string",
+    async: false,
+    type: "string",
+  });
+  ajv.addFormat("file", {
+    validate: (data: string) => typeof data === "string",
+    async: false,
+    type: "string",
+  });
 
-ajv.addFormat("markdown", {
-  validate: (data: string) => typeof data === "string",
-  async: false,
-  type: "string",
-});
+  ajv.addFormat("nanoid", {
+    validate: (data: string) => typeof data === "string",
+    async: false,
+    type: "string",
+  });
 
-ajv.addFormat("multiline", {
-  validate: (data: string) => typeof data === "string",
-  async: false,
-  type: "string",
-});
+  ajv.addFormat("richtext", {
+    validate: (data: string) => typeof data === "string",
+    async: false,
+    type: "string",
+  });
 
-ajv.addFormat("password", {
-  validate: (data: string) => typeof data === "string",
-  async: false,
-  type: "string",
-});
+  ajv.addFormat("markdown", {
+    validate: (data: string) => typeof data === "string",
+    async: false,
+    type: "string",
+  });
+
+  ajv.addFormat("multiline", {
+    validate: (data: string) => typeof data === "string",
+    async: false,
+    type: "string",
+  });
+
+  ajv.addFormat("password", {
+    validate: (data: string) => typeof data === "string",
+    async: false,
+    type: "string",
+  });
+  return ajv;
+}
+
+export const ajv = createAJVInstance();
 
 export function serializeAjvErrors(errors: ErrorObject[] | null | undefined): string {
   if (!errors || errors.length === 0) {
