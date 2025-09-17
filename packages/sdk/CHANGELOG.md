@@ -1,5 +1,22 @@
 # @upstart.gg/sdk
 
+## 0.0.131
+
+### Patch Changes
+
+- [#441](https://github.com/upstart-gg/upstart/pull/441) [`2d2010b`](https://github.com/upstart-gg/upstart/commit/2d2010b4bf1b7a4a96f07f0a3a5d5823c6b80dfb) Thanks [@mattallty](https://github.com/mattallty)! - refactor: convert LLM schema exports to functions to prevent failing on Cloudflare
+
+- [#428](https://github.com/upstart-gg/upstart/pull/428) [`8802abf`](https://github.com/upstart-gg/upstart/commit/8802abf38e3892c5341918eb12b5c544a55552cd) Thanks [@benjamindarnault](https://github.com/benjamindarnault)! - add notion function to check if url is a valid page for application:x
+
+- [#429](https://github.com/upstart-gg/upstart/pull/429) [`d88048b`](https://github.com/upstart-gg/upstart/commit/d88048b4066ad86c55b2742658517841b0b657fd) Thanks [@benjamindarnault](https://github.com/benjamindarnault)! - fix notion page selection
+
+- [#425](https://github.com/upstart-gg/upstart/pull/425) [`5a06a1e`](https://github.com/upstart-gg/upstart/commit/5a06a1ee26c006950d2b10f52091d46c2ceda5f5) Thanks [@mattallty](https://github.com/mattallty)! - More structural changes for the beta
+
+- [#426](https://github.com/upstart-gg/upstart/pull/426) [`3c0797a`](https://github.com/upstart-gg/upstart/commit/3c0797a18fc52c5e8b00fd5af9b17990c741a17b) Thanks [@benjamindarnault](https://github.com/benjamindarnault)! - new changeset
+
+- Updated dependencies [[`5a06a1e`](https://github.com/upstart-gg/upstart/commit/5a06a1ee26c006950d2b10f52091d46c2ceda5f5)]:
+  - @upstart.gg/style-system@0.0.131
+
 ## 0.0.130
 
 ### Patch Changes

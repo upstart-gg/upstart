@@ -1,5 +1,11 @@
 # @upstart.gg/style-system
 
+## 0.0.131
+
+### Patch Changes
+
+- [#425](https://github.com/upstart-gg/upstart/pull/425) [`5a06a1e`](https://github.com/upstart-gg/upstart/commit/5a06a1ee26c006950d2b10f52091d46c2ceda5f5) Thanks [@mattallty](https://github.com/mattallty)! - More structural changes for the beta
+
 ## 0.0.130
 
 ## 0.0.129
