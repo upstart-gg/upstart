@@ -124,6 +124,21 @@ function getGrowStyles(props?: boolean, mobileProps?: boolean, schema?: TSchema)
   }
 }
 
+function getWrapStyles(value: boolean, mobileValue?: boolean, schema?: TSchema) {
+  if (schema?.["ui:desktop-only"]) {
+    return `@desktop:(${value ? "flex-wrap" : "flex-nowrap"})`;
+  }
+  if (!mobileValue) {
+    return value ? "flex-wrap" : "flex-nowrap";
+  }
+  if (value && mobileValue) {
+    return `@desktop:(flex-wrap) @mobile:(flex-wrap)`;
+  }
+  if (mobileValue) {
+    return `@mobile:(flex-wrap) @desktop:(flex-nowrap)`;
+  }
+}
+
 function getColorPresetStyles(value: string, mobileValue?: string, schema?: TSchema) {
   const presets = (schema?.["ui:presets"] ?? colorPresets) as typeof colorPresets;
   if (schema?.["ui:desktop-only"]) {
@@ -153,6 +168,7 @@ export const brickStylesHelpersMap = {
   "styles:objectPosition": simpleClassHandler,
   "styles:heroSize": simpleClassHandler,
   "styles:fontSize": simpleClassHandler,
+  "styles:wrap": getWrapStyles,
   "styles:padding": simplePropertyHandler("padding"), // test
   "styles:gap": getGapStyles,
 

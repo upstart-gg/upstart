@@ -44,4 +44,11 @@ export const examples: {
       width: "20px",
     },
   },
+  {
+    description: "Transparent spacer set in % (percentage)",
+    type: "spacer",
+    props: {
+      width: "20%",
+    },
+  },
 ];

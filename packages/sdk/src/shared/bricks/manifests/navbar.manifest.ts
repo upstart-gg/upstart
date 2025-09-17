@@ -257,7 +257,7 @@ export const examples: {
   },
   {
     description:
-      "SaaS application navbar with accent green color scheme, company logo, and essential user authentication links for software platforms",
+      "SaaS application navbar with accent color scheme, company logo, and essential user authentication links for software platforms",
     type: "navbar",
     props: {
       logo: {
@@ -279,7 +279,7 @@ export const examples: {
   },
   {
     description:
-      "Nonprofit organization navbar with warm accent orange color, centered navigation, and donation call-to-action links for charitable foundations",
+      "Nonprofit organization navbar with warm accent color, centered navigation, and donation call-to-action links for charitable foundations",
     type: "navbar",
     props: {
       brand: "Hope Foundation",

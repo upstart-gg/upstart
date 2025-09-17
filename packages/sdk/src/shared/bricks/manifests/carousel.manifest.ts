@@ -18,6 +18,7 @@ export const manifest = defineBrickManifest({
     "Use this brick to create an image carousel or slideshow. It can display multiple images that users can navigate through using arrows or dots. Each image can have an optional legend or caption. This brick is ideal for showcasing portfolios, product images, or any visual content in an engaging way.",
   category: "media",
   defaultInspectorTab: "content",
+  consumesMultipleQueryRows: true,
   minHeight: {
     desktop: 200,
   },
@@ -532,6 +533,176 @@ export const examples: {
       colorPreset: { color: "indigo-50" },
       borderRadius: "rounded-2xl",
       padding: "4rem",
+    },
+  },
+  {
+    description: "Dynamic product gallery using products query with pricing and details",
+    type: "carousel",
+    props: {
+      images: [
+        {
+          src: {
+            src: "{{products.image}}",
+            alt: "{{products.name}}",
+          },
+          legend: "{{products.name}} - ${{products.price}}",
+        },
+      ],
+      colorPreset: { color: "primary-50" },
+      borderRadius: "rounded-lg",
+      padding: "1.5rem",
+      loop: {
+        over: "products",
+      },
+    },
+  },
+  {
+    description: "Team member carousel using teamMembers query with roles and departments",
+    type: "carousel",
+    props: {
+      images: [
+        {
+          src: {
+            src: "{{teamMembers.photo}}",
+            alt: "{{teamMembers.fullName}}",
+          },
+          legend: "{{teamMembers.fullName}} - {{teamMembers.position}}, {{teamMembers.department}}",
+        },
+      ],
+      colorPreset: { color: "secondary-100" },
+      borderRadius: "rounded-xl",
+      padding: "2rem",
+      loop: {
+        over: "teamMembers",
+      },
+    },
+  },
+  {
+    description: "Portfolio showcase using portfolioProjects query with client information",
+    type: "carousel",
+    props: {
+      images: [
+        {
+          src: {
+            src: "{{portfolioProjects.featuredImage}}",
+            alt: "{{portfolioProjects.projectName}}",
+          },
+          legend:
+            "{{portfolioProjects.projectName}} - {{portfolioProjects.clientName}} ({{portfolioProjects.year}})",
+        },
+      ],
+      colorPreset: { color: "neutral-100" },
+      borderRadius: "rounded-md",
+      padding: "1rem",
+      loop: {
+        over: "portfolioProjects",
+      },
+    },
+  },
+  {
+    description: "Event photo gallery using eventPhotos query with captions and dates",
+    type: "carousel",
+    props: {
+      images: [
+        {
+          src: {
+            src: "{{eventPhotos.imageUrl}}",
+            alt: "{{eventPhotos.caption}}",
+          },
+          legend: "{{eventPhotos.caption}} - {{eventPhotos.eventDate}}",
+        },
+      ],
+      colorPreset: { color: "accent-50" },
+      borderRadius: "rounded-lg",
+      padding: "2rem",
+      loop: {
+        over: "eventPhotos",
+      },
+    },
+  },
+  {
+    description: "Property listings carousel using realEstateProperties query with pricing",
+    type: "carousel",
+    props: {
+      images: [
+        {
+          src: {
+            src: "{{realEstateProperties.mainPhoto}}",
+            alt: "{{realEstateProperties.address}}",
+          },
+          legend:
+            "{{realEstateProperties.address}} - ${{realEstateProperties.price}} • {{realEstateProperties.bedrooms}}BR/{{realEstateProperties.bathrooms}}BA",
+        },
+      ],
+      colorPreset: { color: "primary-100" },
+      borderRadius: "rounded-xl",
+      padding: "1.5rem",
+      loop: {
+        over: "realEstateProperties",
+      },
+    },
+  },
+  {
+    description: "Restaurant menu carousel using menuItems query with categories and prices",
+    type: "carousel",
+    props: {
+      images: [
+        {
+          src: {
+            src: "{{menuItems.photo}}",
+            alt: "{{menuItems.dishName}}",
+          },
+          legend: "{{menuItems.dishName}} - {{menuItems.category}} • ${{menuItems.price}}",
+        },
+      ],
+      colorPreset: { color: "neutral-50" },
+      borderRadius: "rounded-lg",
+      padding: "1rem",
+      loop: {
+        over: "menuItems",
+      },
+    },
+  },
+  {
+    description: "Travel destinations carousel using destinations query with country information",
+    type: "carousel",
+    props: {
+      images: [
+        {
+          src: {
+            src: "{{destinations.heroImage}}",
+            alt: "{{destinations.cityName}}",
+          },
+          legend: "{{destinations.cityName}}, {{destinations.country}} - {{destinations.bestTimeToVisit}}",
+        },
+      ],
+      colorPreset: { color: "secondary-50" },
+      borderRadius: "rounded-2xl",
+      padding: "2.5rem",
+      loop: {
+        over: "destinations",
+      },
+    },
+  },
+  {
+    description: "Art collection carousel using artworks query with artist and year information",
+    type: "carousel",
+    props: {
+      images: [
+        {
+          src: {
+            src: "{{artworks.imageUrl}}",
+            alt: "{{artworks.title}}",
+          },
+          legend: "{{artworks.title}} by {{artworks.artist}} ({{artworks.year}}) - {{artworks.medium}}",
+        },
+      ],
+      colorPreset: { color: "accent-100" },
+      borderRadius: "rounded-sm",
+      padding: "3rem",
+      loop: {
+        over: "artworks",
+      },
     },
   },
 ];

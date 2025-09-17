@@ -1132,12 +1132,14 @@ export const useData = (editable?: boolean) => {
   const pageQueries = usePageQueries();
   return useStore(ctx, (state) => {
     if (!editable) {
+      console.log("useData: returning production data");
       return state.data;
     }
+
     // Reduce page queries to build an abject that is a Record<alias, examples>
     const data: Record<string, Record<string, unknown>[]> = {};
     for (const query of pageQueries) {
-      const examples = query.datasource.schema.examples;
+      const examples = query.datasource.schema.items.examples;
       if (examples) {
         data[query.alias] = examples;
       }
@@ -1206,6 +1208,7 @@ export const useDraftHelpers = () => {
     deleteBrick: state.deleteBrick,
     detachBrickFromContainer: state.detachBrickFromContainer,
     updateSiteAttributes: state.updateSiteAttributes,
+    updatePageAttributes: state.updatePageAttributes,
     upsertQuery: state.upsertQuery,
     setSections: state.setSections,
     setThemes: state.setThemes,

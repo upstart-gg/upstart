@@ -220,6 +220,7 @@ export const sectionProps = Type.Object(
         title: "Wrap",
         description: "Wrap bricks if they overflow the section.",
         default: true,
+        "ui:styleId": "styles:wrap",
       }),
     ),
     lastTouched: Type.Optional(

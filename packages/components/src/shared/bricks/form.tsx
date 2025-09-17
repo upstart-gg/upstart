@@ -289,6 +289,7 @@ const WidgetForm = forwardRef<HTMLDivElement, BrickProps<Manifest>>((props, ref)
       as="form"
       onSubmit={handleSubmit}
       className={tx("flex flex-col gap-4", Object.values(rest))}
+      noValidate
     >
       {title && <h2 className="text-[110%] font-semibold">{title}</h2>}
       {intro && <p>{intro}</p>}

@@ -47,6 +47,15 @@ export function useBrickProps<T extends BrickManifest>({
     if (typeof template === "string") {
       return (template as string).replace(/{{(.*?)}}/g, (_, key) => {
         const [dataset, variable] = key.trim().split(".");
+        if (!dataset || !variable) {
+          console.warn("Invalid placeholder:", key);
+          return "";
+        }
+        if (!allData[dataset]) {
+          console.warn("No data for dataset:", dataset);
+          console.log("Available datasets:", allData);
+          return "";
+        }
         const data = allData[dataset][iterationIndex] ?? {};
         // console.log("Getting value for key:", variable, "from data:", data);
         return get(data, variable, "") as string;

@@ -49,13 +49,11 @@ export const manifest = defineBrickManifest({
         }),
       ),
       border: Type.Optional(borderRef({ default: { width: "border-0" }, "ui:responsive": "desktop" })),
-      link: Type.Optional(
-        urlOrPageIdRef({
-          title: "Link",
-          "ui:placeholder": "https://example.com",
-          metadata: { category: "content" },
-        }),
-      ),
+      link: urlOrPageIdRef({
+        title: "Link",
+        "ui:placeholder": "https://example.com",
+        metadata: { category: "content" },
+      }),
     },
     { noGrow: true },
   ),
@@ -69,7 +67,7 @@ export const examples: {
   props: BrickProps<Manifest>["brick"]["props"];
 }[] = [
   {
-    description: "Primary button, full width, linking to a URL",
+    description: "Primary button, full width, linking to an external URL",
     type: "button",
     props: {
       label: "Click me",
@@ -78,7 +76,7 @@ export const examples: {
     },
   },
   {
-    description: "Secondary button, block width, linking to a page",
+    description: "Secondary button, block width, linking to a page id",
     type: "button",
     props: {
       label: "Go to page",
@@ -87,13 +85,124 @@ export const examples: {
     },
   },
   {
-    description: "Neutral colored button with large text and rounded corners",
+    description: "Neutral colored button with large text and rounded corners and external link",
     type: "button",
     props: {
       label: "Submit",
       fontSize: "text-lg",
       rounding: "rounded-full",
+      link: "https://example.com",
       colorPreset: { color: "neutral-500" },
+    },
+  },
+  {
+    description: "Dynamic label from a page query alias named 'employee'",
+    type: "button",
+    props: {
+      label: "Go to profile of {{employee.name}}",
+      link: "/employees/{{employee.$slug}}",
+      fontSize: "text-lg",
+      rounding: "rounded-full",
+      colorPreset: { color: "neutral-500" },
+    },
+  },
+  {
+    description: "Accent colored call-to-action button with medium text and subtle border",
+    type: "button",
+    props: {
+      label: "Get Started",
+      link: "/signup",
+      fontSize: "text-base",
+      rounding: "rounded-lg",
+      colorPreset: { color: "accent-600" },
+      border: { width: "border", color: "border-accent-700" },
+    },
+  },
+  {
+    description: "Small text button with sharp corners for minimal design",
+    type: "button",
+    props: {
+      label: "Learn More",
+      link: "/about",
+      fontSize: "text-sm",
+      rounding: "rounded-none",
+      colorPreset: { color: "primary-400" },
+    },
+  },
+  {
+    description: "Large download button with thick border and rounded corners",
+    type: "button",
+    props: {
+      label: "Download Now",
+      link: "https://download.example.com/file.zip",
+      fontSize: "text-xl",
+      rounding: "rounded-xl",
+      colorPreset: { color: "secondary-600" },
+      border: { width: "border-2", color: "border-secondary-800" },
+    },
+  },
+  {
+    description: "Contact button with neutral colors and medium border radius",
+    type: "button",
+    props: {
+      label: "Contact Us",
+      link: "/contact",
+      fontSize: "text-base",
+      rounding: "rounded-md",
+      colorPreset: { color: "neutral-600" },
+      border: { width: "border", color: "border-neutral-400" },
+    },
+  },
+  {
+    description: "Newsletter signup button with gradient background and full rounding",
+    type: "button",
+    props: {
+      label: "Subscribe to Newsletter",
+      link: "/newsletter",
+      fontSize: "text-lg",
+      rounding: "rounded-full",
+      colorPreset: {
+        color: "primary-500",
+        gradientDirection: "bg-gradient-to-r",
+      },
+    },
+  },
+  {
+    description: "Shop now button with accent colors and extra large text",
+    type: "button",
+    props: {
+      label: "Shop Now",
+      link: "/shop",
+      fontSize: "text-xl",
+      rounding: "rounded-lg",
+      colorPreset: { color: "accent-500" },
+    },
+  },
+  {
+    description: "Dynamic product button using product query data",
+    type: "button",
+    props: {
+      label: "Buy {{product.name}} - ${{product.price}}",
+      link: "/products/{{product.id}}/purchase",
+      fontSize: "text-base",
+      rounding: "rounded-md",
+      colorPreset: { color: "primary-600" },
+      border: { width: "border", color: "border-primary-800" },
+    },
+  },
+  {
+    description: "Event registration button with secondary gradient and medium text",
+    type: "button",
+    props: {
+      label: "Register for Event",
+      link: "/events/register",
+      fontSize: "text-base",
+      rounding: "rounded-lg",
+      colorPreset: {
+        color: "secondary-500",
+        gradientDirection: "bg-gradient-to-br",
+      },
+      border: { width: "border", color: "border-secondary-300" },
     },
   },
 ];

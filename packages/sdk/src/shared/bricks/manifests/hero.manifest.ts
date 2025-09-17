@@ -246,4 +246,120 @@ export const examples: {
       rounding: "rounded-md",
     },
   },
+  {
+    description: "Dynamic company hero using business query data",
+    type: "hero",
+    props: {
+      content: "Welcome to {{company.name}}",
+      tagline: "{{company.tagline}} - Serving {{company.location}} since {{company.foundedYear}}",
+      padding: "4rem",
+      colorPreset: {
+        color: "primary-500",
+      },
+    },
+  },
+  {
+    description: "Dynamic employee spotlight using employee query",
+    type: "hero",
+    props: {
+      content: "Meet {{employee.fullName}}",
+      tagline:
+        "{{employee.position}} at {{employee.department}} - {{employee.yearsExperience}} years of experience",
+      padding: "3rem",
+      colorPreset: {
+        color: "secondary-400",
+        gradientDirection: "bg-gradient-to-r",
+      },
+    },
+  },
+  {
+    description: "Dynamic product launch hero using product query",
+    type: "hero",
+    props: {
+      content: "Introducing {{product.name}}",
+      tagline: "{{product.description}} - Starting at ${{product.price}}",
+      padding: "5rem",
+      colorPreset: {
+        color: "accent-600",
+      },
+      shadow: "shadow-lg",
+      rounding: "rounded-xl",
+    },
+  },
+  {
+    description: "Dynamic event announcement using event query",
+    type: "hero",
+    props: {
+      content: "{{event.title}}",
+      tagline: "Join us on {{event.date}} at {{event.venue}} - {{event.city}}",
+      padding: "4rem",
+      colorPreset: {
+        color: "primary-400",
+        gradientDirection: "bg-gradient-to-br",
+      },
+      textShadow: "text-shadow-md",
+    },
+  },
+  {
+    description: "Dynamic blog post hero using article query",
+    type: "hero",
+    props: {
+      content: "{{article.title}}",
+      tagline: "By {{article.author}} • Published {{article.publishDate}} • {{article.readTime}} min read",
+      padding: "3rem",
+      colorPreset: {
+        color: "neutral-700",
+      },
+      justifyContent: "justify-start",
+      alignItems: "items-start",
+    },
+  },
+  {
+    description: "Dynamic service promotion using service query",
+    type: "hero",
+    props: {
+      content: "{{service.name}}",
+      tagline: "{{service.description}} - {{service.duration}} • Starting at ${{service.price}}",
+      padding: "6rem",
+      colorPreset: {
+        color: "secondary-500",
+        gradientDirection: "bg-gradient-to-tl",
+      },
+      border: {
+        width: "border-2",
+        color: "border-secondary-300",
+      },
+    },
+  },
+  {
+    description: "Dynamic property showcase using property query",
+    type: "hero",
+    props: {
+      content: "{{property.address}}",
+      tagline:
+        "${{property.price}} • {{property.bedrooms}} bed, {{property.bathrooms}} bath • {{property.squareFootage}} sq ft",
+      padding: "4rem",
+      colorPreset: {
+        color: "accent-500",
+      },
+      rounding: "rounded-lg",
+      shadow: "shadow-md",
+    },
+  },
+  {
+    description: "Dynamic course announcement using course query",
+    type: "hero",
+    props: {
+      content: "{{course.title}}",
+      tagline:
+        "Learn {{course.subject}} with {{course.instructor}} • {{course.duration}} • {{course.skillLevel}} level",
+      padding: "5rem",
+      colorPreset: {
+        color: "primary-600",
+      },
+      textShadow: "text-shadow-lg",
+      justifyContent: "justify-center",
+      alignItems: "items-center",
+    },
+  },
 ];
