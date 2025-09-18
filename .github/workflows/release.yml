@@ -52,6 +52,9 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
       - name: 📣 Create Release Pull Request or Publish to npm
         id: changesets
