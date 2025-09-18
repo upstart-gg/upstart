@@ -36,7 +36,7 @@ export default defineConfig((options) => {
       metafile: !!process.env.ANALYZE_BUNDLE,
       clean: !options.watch,
       minify: !options.watch,
-      sourcemap: options.watch ? "inline" : false,
+      sourcemap: options.watch ? "inline" : true,
       external,
       onSuccess: async () => {
         execSync("pnpm build:types", {
