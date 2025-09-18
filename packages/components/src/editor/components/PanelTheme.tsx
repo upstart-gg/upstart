@@ -3,9 +3,9 @@ import { type Theme, themeSchema, type FontType } from "@upstart.gg/sdk/shared/t
 import { useDraft, usePreviewTheme, useTheme, useThemes } from "~/editor/hooks/use-page-data";
 import { ColorFieldRow } from "./json-form/fields/color";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
+import chroma from "chroma-js";
 import {
   getContrastingTextColor,
-  chroma,
   type ColorType,
   generateColorsVars,
 } from "@upstart.gg/sdk/shared/themes/color-system";

@@ -1,6 +1,6 @@
 import { type FC, useState, type PropsWithChildren } from "react";
+import chroma from "chroma-js";
 import {
-  chroma,
   type ColorType,
   type ElementColorType,
   type ElementColor,
