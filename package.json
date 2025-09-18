@@ -5,10 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "vitest",
-    "dev": "turbo dev",
-    "build": "turbo build",
-    "build:watch": "nx run-many --no-cloud -t build:watch --maxParallel=3 --output-style stream",
-    "build:docker": "pnpm --dir packages/style-system run build && pnpm --dir packages/sdk run build && pnpm --dir packages/components run build",
+    "dev": "turbo dev --env-mode=loose",
+    "build": "turbo build --env-mode=loose",
     "lint": "pnpm --parallel --recursive lint",
     "ci:lint": "biome ci --changed --no-errors-on-unmatched --since=head --reporter=github --colors=off packages && pnpm --parallel --recursive ci:lint",
     "changeset": "changeset",
