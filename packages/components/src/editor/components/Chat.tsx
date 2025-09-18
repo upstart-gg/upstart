@@ -559,7 +559,7 @@ What should we work on together? 🤖`,
   }, [toolInvocations, draftHelpers, siteThemes]);
 
   // filter out the "init" messages
-  const displayedMessages = messages.filter((msg) => msg.id !== "init-setup" /*&& msg.parts.length > 0*/);
+  const displayedMessages = messages.filter((msg) => msg.id !== "init-setup" && msg.parts.length > 0);
 
   return (
     <div
