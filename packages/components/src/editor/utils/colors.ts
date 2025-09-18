@@ -1,4 +1,4 @@
-import { chroma } from "@upstart.gg/sdk/themes/color-system";
+import chroma from "chroma-js";
 
 export type RelationshipType = "same-hue" | "analogous" | "temperature" | "complementary";
 

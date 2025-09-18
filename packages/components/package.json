@@ -73,6 +73,7 @@
     "@upstart.gg/sdk": "workspace:*",
     "@upstart.gg/style-system": "workspace:*",
     "ai": "5.0.39",
+    "chroma-js": "3.1.2",
     "date-fns": "3.6.0",
     "fast-json-patch": "3.1.1",
     "immer": "10.1.1",
@@ -98,6 +99,7 @@
   "devDependencies": {
     "@iconify/types": "2.0.0",
     "@interactjs/types": "1.10.27",
+    "@types/chroma-js": "3.1.1",
     "@types/debug": "4.1.12",
     "@types/express": "^4.17.21",
     "@types/json-schema-merge-allof": "0.6.5",
