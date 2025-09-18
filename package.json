@@ -7,8 +7,8 @@
     "test": "vitest",
     "dev": "turbo dev --env-mode=loose",
     "build": "turbo build --env-mode=loose",
-    "lint": "pnpm --parallel --recursive lint",
-    "ci:lint": "biome ci --changed --no-errors-on-unmatched --since=head --reporter=github --colors=off packages && pnpm --parallel --recursive ci:lint",
+    "lint": "turbo run lint",
+    "ci:lint": "turbo run lint --affected",
     "changeset": "changeset",
     "clean": "pnpm -r exec -- rimraf node_modules && rm -rf node_modules && pnpm install",
     "publish:packages": "changeset publish",
@@ -33,7 +33,6 @@
     "@vitest/ui": "^3.2.4",
     "autoprefixer": "10.4.20",
     "dotenv": "16.4.7",
-    "nx": "19.7.2",
     "postcss": "8.5.3",
     "rimraf": "6.0.1",
     "tsx": "^4.20.4",
@@ -61,7 +60,6 @@
       "@swc/core",
       "core-js",
       "esbuild",
-      "nx",
       "tsup"
     ]
   }
