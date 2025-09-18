@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { generateColorsVars } from "../color-system";
-import type { Theme } from "~/shared/theme";
+import { defaultTheme, type Theme } from "~/shared/theme";
 
 const lightTheme: Theme = {
   id: "light",
@@ -165,6 +165,10 @@ describe("Color system test suite", () => {
       expect(colors["color-base-100"], "color-base-100 contains none").not.toContain("none");
       expect(colors["color-base-200"], "color-base-200 contains none").not.toContain("none");
       expect(colors["color-base-300"], "color-base-300 contains none").not.toContain("none");
+    });
+    it("should generate color vars for defaultTheme", () => {
+      const colors = generateColorsVars(defaultTheme);
+      expect(colors["color-primary"]).toBe("#FF6F20");
     });
   });
 });
