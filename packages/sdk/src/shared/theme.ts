@@ -174,12 +174,12 @@ export const defaultTheme: Theme = {
   browserColorScheme: "light",
   colors: {
     base100: "#FFF", // Warm white background
-    base200: "oklch(0.99 0.008 92)", // Soft cream
-    base300: "oklch(0.97 0.01 85)", // Light warm gray
-    primary: "oklch(0.55 0.241 354.308)",
-    secondary: "oklch(0.65 0.22 185)",
-    accent: "oklch(0.82 0.18 85)",
-    neutral: "oklch(0.38 0.08 280)",
+    base200: "#F5F0E1", // Soft cream in hex
+    base300: "#F0E3D2", // Light warm gray in hex
+    primary: "#FF6F20", // A vibrant orange in hex
+    secondary: "#00BFFF", // A bright cyan in hex
+    accent: "#A4D65E", // A lively lime green in hex
+    neutral: "#B0B0B0", // A balanced gray in hex
   },
   typography: {
     base: 16,
