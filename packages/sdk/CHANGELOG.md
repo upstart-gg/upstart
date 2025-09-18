@@ -1,5 +1,14 @@
 # @upstart.gg/sdk
 
+## 0.0.132
+
+### Patch Changes
+
+- [#443](https://github.com/upstart-gg/upstart/pull/443) [`8dbcd8d`](https://github.com/upstart-gg/upstart/commit/8dbcd8da66850646f41681e2c35e255030d9520f) Thanks [@mattallty](https://github.com/mattallty)! - feat: add edit and delete brick tools; update theme color formats
+
+- Updated dependencies []:
+  - @upstart.gg/style-system@0.0.132
+
 ## 0.0.131
 
 ### Patch Changes
