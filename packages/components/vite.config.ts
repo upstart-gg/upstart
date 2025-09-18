@@ -84,7 +84,7 @@ export default defineConfig(({ mode }) => ({
       cssFileName: "upstart-components",
       formats: ["es"],
     },
-    minify: process.env.NODE_ENV === "production" && process.env.NOMINIFY !== "1",
+    minify: false,
     rollupOptions: {
       preserveEntrySignatures: "strict",
       external: [
@@ -96,6 +96,7 @@ export default defineConfig(({ mode }) => ({
         "@upstart.gg/sdk",
         "lodash-es",
         "lodash",
+        "chroma-js",
       ],
       output: {
         preserveModules: true,
