@@ -1,5 +1,15 @@
 # @upstart.gg/components
 
+## 0.0.133
+
+### Patch Changes
+
+- [#447](https://github.com/upstart-gg/upstart/pull/447) [`d0e9bc9`](https://github.com/upstart-gg/upstart/commit/d0e9bc997b4bf5a61a9467f6f15158d86ccf8775) Thanks [@mattallty](https://github.com/mattallty)! - fix: update dev and build scripts to use loose environment mode
+
+- Updated dependencies [[`04e8743`](https://github.com/upstart-gg/upstart/commit/04e8743ed1c48e8266d0bf00e2370a3422da5848), [`d0e9bc9`](https://github.com/upstart-gg/upstart/commit/d0e9bc997b4bf5a61a9467f6f15158d86ccf8775), [`a576b34`](https://github.com/upstart-gg/upstart/commit/a576b34f33fc459101f040c9343ae5f1d4820361)]:
+  - @upstart.gg/style-system@0.0.133
+  - @upstart.gg/sdk@0.0.133
+
 ## 0.0.132
 
 ### Patch Changes
