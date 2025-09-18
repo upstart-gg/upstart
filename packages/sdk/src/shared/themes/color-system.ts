@@ -1,6 +1,5 @@
 import chroma from "chroma-js";
 import type { Theme } from "../theme";
-export { default as chroma } from "chroma-js";
 import { kebabCase } from "lodash-es";
 import { css } from "@upstart.gg/style-system/twind";
 
