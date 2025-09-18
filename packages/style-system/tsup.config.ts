@@ -13,7 +13,6 @@ export default defineConfig((options) => {
     clean: !options.watch,
     minify: !options.watch,
     sourcemap: options.watch ? "inline" : true,
-    // splitting: false,
     external: ["react", "react-dom"],
     removeNodeProtocol: false,
   };
