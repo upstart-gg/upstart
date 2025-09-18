@@ -60,7 +60,6 @@
       "@swc/core",
       "core-js",
       "esbuild",
-      "nx",
       "tsup"
     ]
   }
