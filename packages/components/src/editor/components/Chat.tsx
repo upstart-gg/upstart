@@ -533,6 +533,17 @@ What should we work on together? 🤖`,
           break;
         }
 
+        case "tool-editBrick": {
+          draftHelpers.updateBrickProps(toolInvocation.input.id, toolInvocation.output.props);
+          break;
+        }
+
+        case "tool-deleteBrick": {
+          const { id } = toolInvocation.input;
+          draftHelpers.deleteBrick(id);
+          break;
+        }
+
         case "tool-searchImages": {
           const images = toolInvocation.output;
           console.log("Generated images", images);

@@ -74,6 +74,10 @@ export type Tools = {
     input: WaitingMessageSchema & { sectionId: string; index: number }; // Just type the waiting message for now
     output: Brick;
   };
+  editBrick: {
+    input: WaitingMessageSchema & { id: string }; // Just type the waiting message for now
+    output: Brick;
+  };
   listImages: {
     input: null; // Just type the waiting message for now
     output: ImageSearchResultsType;

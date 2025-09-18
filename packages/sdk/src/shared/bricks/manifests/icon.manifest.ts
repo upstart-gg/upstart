@@ -15,7 +15,7 @@ export const manifest = defineBrickManifest({
   description: "An icon.",
   aiInstructions: "Uses iconify references",
   resizable: false,
-  staticClasses: "grow-0",
+  staticClasses: "!grow-0",
   icon: PiConfetti,
   props: defineProps(
     {
