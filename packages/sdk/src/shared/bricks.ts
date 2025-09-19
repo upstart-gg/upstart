@@ -358,6 +358,11 @@ export function processBrick<T extends Brick>(brick: T): T {
         : {}),
     }),
   };
+
+  if (!result.props.width) {
+    result.props.grow = true;
+  }
+
   return result;
 }
 
