@@ -11,7 +11,11 @@
       "cache": false,
       "persistent": true
     },
-    "lint": {},
-    "ci:lint": {}
+    "lint": {
+      "cache": false
+    },
+    "ci:lint": {
+      "cache": false
+    }
   }
 }
