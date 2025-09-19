@@ -1,5 +1,23 @@
 # @upstart.gg/components
 
+## 0.0.134
+
+### Patch Changes
+
+- [#455](https://github.com/upstart-gg/upstart/pull/455) [`55df15f`](https://github.com/upstart-gg/upstart/commit/55df15f3a8601a7ee0ca1fcad8a07ff0d75fe37b) Thanks [@mattallty](https://github.com/mattallty)! - Upgrade react to version 19
+
+- [#449](https://github.com/upstart-gg/upstart/pull/449) [`d984d62`](https://github.com/upstart-gg/upstart/commit/d984d62d6a910e23405de2805b29a025e0ee5585) Thanks [@mattallty](https://github.com/mattallty)! - feat: add chroma-js dependency and update imports in ColorPicker, PanelTheme, and colors utility
+
+- [#451](https://github.com/upstart-gg/upstart/pull/451) [`04e3c15`](https://github.com/upstart-gg/upstart/commit/04e3c15aa2488d192ce43bde9510c11a17b433ed) Thanks [@mattallty](https://github.com/mattallty)! - Clean
+
+- [#452](https://github.com/upstart-gg/upstart/pull/452) [`ec9c36e`](https://github.com/upstart-gg/upstart/commit/ec9c36e0a1a6b0a1cce3b46cfc508f2befed6c3a) Thanks [@mattallty](https://github.com/mattallty)! - fix: restore chroma-js dependency in package.json
+
+- [#454](https://github.com/upstart-gg/upstart/pull/454) [`c68ee09`](https://github.com/upstart-gg/upstart/commit/c68ee09778834bfd51b4202b66b7ba88fb9ff79b) Thanks [@mattallty](https://github.com/mattallty)! - More improvements
+
+- Updated dependencies [[`55df15f`](https://github.com/upstart-gg/upstart/commit/55df15f3a8601a7ee0ca1fcad8a07ff0d75fe37b), [`d984d62`](https://github.com/upstart-gg/upstart/commit/d984d62d6a910e23405de2805b29a025e0ee5585), [`04e3c15`](https://github.com/upstart-gg/upstart/commit/04e3c15aa2488d192ce43bde9510c11a17b433ed)]:
+  - @upstart.gg/sdk@0.0.134
+  - @upstart.gg/style-system@0.0.134
+
 ## 0.0.133
 
 ### Patch Changes
