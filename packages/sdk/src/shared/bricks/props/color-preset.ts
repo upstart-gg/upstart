@@ -329,7 +329,9 @@ export function colorPreset(options: ColorPresetOptions = {}) {
         title: "Color preset",
         description: "Color preset to apply to background and text",
         enumNames: Object.keys(colorPresets).map((key) => colorPresets[key].label),
-        "ai:instructions": `Presets are predefined color combinations of background and text colors that can be applied to elements. They include various shades of primary, secondary, accent, and neutral colors, as well as gradients. You can also select 'none' to remove any preset.`,
+        "ai:instructions": `Presets are predefined color combinations of background and text colors that can be applied to elements.
+The possible semantic colors are primary, secondary, accent, neutral, and base, each declined in various shades from 50 to 900. (except base which has only 100, 200, and 300).
+You can use gradients using color gradient variations (e.g. primary-gradient-100, secondary-gradient-200, etc.). In this case, you will also need to set the gradient direction.`,
         "ui:styleId": "presets:color",
         "ui:responsive": true,
         default: options.default?.color,

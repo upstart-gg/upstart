@@ -41,6 +41,7 @@ export const pageAttributesSchema = Type.Object(
     path: string("URL path", {
       default: "/",
       description: "The URL path of the page. Use placeholders like :id or :slug for dynamic paths.",
+      "ai:instructions": "Never put language codes in the path.",
       "ui:field": "path",
       pattern: "^/[a-z0-9-:/]*$",
       examples: ["/", "/about", "/products/:id"],

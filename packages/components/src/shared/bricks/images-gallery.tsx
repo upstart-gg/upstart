@@ -125,8 +125,8 @@ export default function ImagesGallery(props_: BrickProps<Manifest>) {
       {selectedImageIndex !== null && images[selectedImageIndex] && (
         <div
           className={tx(
-            "fixed top-0 left-0 w-screen h-screen",
-            "bg-black/80",
+            "fixed top-0 left-0 w-dvw h-dvh",
+            "bg-black/70",
             "flex items-center justify-center",
             "z-[99999]",
           )}
@@ -139,14 +139,12 @@ export default function ImagesGallery(props_: BrickProps<Manifest>) {
           }}
         >
           <div
-            className={tx(
-              "relative group @mobile:w-[80dvw] @desktop:w-[60dvw] h-[60vh] overflow-y-hidden overflow-x-visible bg-black rounded-xl",
-            )}
+            className={tx("relative group @mobile:w-[80dvw] @desktop:w-[60dvw] h-[60vh] bg-black rounded-xl")}
           >
             <img
               src={images[selectedImageIndex].image.src}
               alt={images[selectedImageIndex].image.alt}
-              className={"w-full h-full  object-contain"}
+              className={"w-full h-full object-contain"}
             />
             {images[selectedImageIndex].legend && (
               <div className="absolute left-0 right-0 bottom-0 bg-black/60 text-white text-sm p-2 translate-y-full group-hover:translate-y-0 transition-transform">

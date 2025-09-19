@@ -143,7 +143,8 @@ export const sectionProps = Type.Object(
       cssLengthRef({
         title: "Min height",
         default: "fit-content",
-        description: "The min height of the section",
+        description:
+          "The min height of the section. default is 'fit-content'. You can also use  the keyword 'full' to make it full viewport height. Lastly, you can use any valid CSS length unit.",
         "ui:field": "hidden",
       }),
     ),
@@ -182,9 +183,18 @@ export const sectionProps = Type.Object(
         ],
         description: "The maximum width of the section. Desktop only",
         "ai:instructions":
-          "Choose the most appropriate max width for the section. You will likely use the same max width for all sections in a page.",
+          "Choose the most appropriate max width for the section. The value 'max-w-screen-2xl' is a safe bet for most cases. You will likely use the same max width for all sections in a page.",
         displayAs: "button-group",
         "ui:responsive": "desktop",
+      }),
+    ),
+    verticalMargin: Type.Optional(
+      cssLengthRef({
+        title: "Vertical Margin",
+        description:
+          "The vertical margin of the section. By default, all sections touch each other with no space in between. If you want to add space between sections, set this value to e.g. '2rem' or '32px'. Adding a vertical margin will reveal the background color of the page.",
+        default: "0",
+        "ui:styleId": "styles:verticalMargin",
       }),
     ),
     justifyContent: Type.Optional(

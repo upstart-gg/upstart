@@ -686,23 +686,27 @@ What should we work on together? 🤖`,
                 //   return <img key={i} alt="" src={`data:${part.mediaType};base64,${part.url}`} />;
               }
             })}
+
+            <AnimatePresence initial={false}>
+              {index === displayedMessages.length - 1 &&
+                !hasRunningTools &&
+                (status === "submitted" || status === "streaming") && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "1.5rem" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className={tx(
+                      "p-4 my-4 text-fluid-sm text-gray-600 flex items-center justify-center gap-1.5 backdrop-blur-md bg-white/80 max-w-fit mx-auto rounded-lg",
+                    )}
+                  >
+                    <Spinner size="2" /> Please wait...
+                  </motion.div>
+                )}
+            </AnimatePresence>
           </div>
         ))}
-        <AnimatePresence initial={false}>
-          {!hasRunningTools && (status === "submitted" || status === "streaming") && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "1.5rem" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-              className={tx(
-                "p-4 my-4 text-fluid-sm text-gray-600 flex items-center justify-center gap-1.5 backdrop-blur-md bg-white/80 max-w-fit mx-auto rounded-lg",
-              )}
-            >
-              <Spinner size="2" /> Please wait...
-            </motion.div>
-          )}
-        </AnimatePresence>
+
         {error && (
           <div className={tx(msgCommon, "bg-red-200 text-red-800 text-sm")}>
             <p>An error occured. {error.message ?? "Please retry."}</p>

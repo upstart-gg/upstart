@@ -50,7 +50,7 @@ const NavList: FC<{ items: NavItem[] }> = ({ items }) => {
               justify-between border-b last:border-b-0 border-gray-100
             dark:border-dark-800 transition-colors duration-200 flex-wrap`,
               // if empty, hide
-              "[&:not(:has(*))]:hidden",
+              "[&:not(:has(*))]:!hidden",
               item.children && "cursor-pointer hover:bg-upstart-50 dark:hover:bg-dark-600 font-medium",
             )}
             onClick={() => {
