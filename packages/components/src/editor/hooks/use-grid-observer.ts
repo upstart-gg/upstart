@@ -3,7 +3,7 @@ import { type RefObject, useEffect, useState } from "react";
 import { useEditorHelpers, usePreviewMode } from "~/editor/hooks/use-editor";
 import { debounce } from "lodash-es";
 
-export function useGridObserver(elementRef: RefObject<HTMLElement>) {
+export function useGridObserver(elementRef: RefObject<HTMLElement | null>) {
   const [colWidth, setColWidth] = useState(0);
   const previewMode = usePreviewMode();
   const { setGridConfig } = useEditorHelpers();

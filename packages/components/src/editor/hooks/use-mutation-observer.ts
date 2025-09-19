@@ -1,7 +1,7 @@
 import { useEffect, type RefObject } from "react";
 
 export const useMutationObserver = (
-  ref: RefObject<Element> | string,
+  ref: RefObject<Element | null> | string,
   callback: MutationCallback,
   opts: MutationObserverInit = {},
 ) => {

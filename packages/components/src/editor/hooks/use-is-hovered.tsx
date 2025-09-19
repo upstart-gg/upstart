@@ -6,7 +6,7 @@ interface UseIsHoveredOptions {
 }
 
 interface UseIsHoveredReturn<T extends HTMLElement> {
-  ref: React.RefObject<T>;
+  ref: React.RefObject<T | null>;
   isHovered: boolean;
 }
 
