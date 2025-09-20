@@ -1,6 +1,6 @@
 import { type TArray, type TObject, type TSchema, Kind } from "@sinclair/typebox";
 import type { PageAttributes } from "../attributes";
-import { ajv } from "../ajv";
+import { schemaRegistry } from "./schema-registry";
 
 export function normalizeSchemaEnum(schema: TSchema): Array<{ const: string; title: string }> {
   if (!("enum" in schema)) {
@@ -149,7 +149,7 @@ function resolveSchemaRecursive(schema: TSchema, visited: Set<string>): TSchema 
       return schema; // Return original schema to avoid infinite loop
     }
 
-    const resolved = ajv.getSchema(schema.$ref)?.schema as TSchema;
+    const resolved = schemaRegistry.get(schema.$ref);
     if (!resolved) {
       console.error("Schema not found for reference:", schema);
       return schema;

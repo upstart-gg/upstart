@@ -1,5 +1,4 @@
 import { Type, type Static } from "@sinclair/typebox";
-import { httpJsonOptions } from "./external/http-json/options";
 import { StringEnum } from "../utils/string-enum";
 import { toLLMSchema } from "../utils/llm";
 

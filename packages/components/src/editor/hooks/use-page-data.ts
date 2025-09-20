@@ -1276,6 +1276,36 @@ export const useSectionsSubscribe = (callback: (sections: DraftState["page"]["se
   }, []);
 };
 
+export const usePageLabelSubscribe = (callback: (label: DraftState["page"]["label"]) => void) => {
+  const ctx = usePageContext();
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    return ctx.subscribe((state) => state.page.label, callback, {
+      equalityFn: isEqual,
+    });
+  }, []);
+};
+
+export function useDatasourcesSubscribe(callback: (datasources: DraftState["site"]["datasources"]) => void) {
+  const ctx = usePageContext();
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    return ctx.subscribe((state) => state.site.datasources, callback, {
+      equalityFn: isEqual,
+    });
+  }, []);
+}
+
+export function useDatarecordsSubscribe(callback: (datarecords: DraftState["site"]["datarecords"]) => void) {
+  const ctx = usePageContext();
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    return ctx.subscribe((state) => state.site.datarecords, callback, {
+      equalityFn: isEqual,
+    });
+  }, []);
+}
+
 export const usePageAttributesSubscribe = (callback: (attr: DraftState["page"]["attributes"]) => void) => {
   const ctx = usePageContext();
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>

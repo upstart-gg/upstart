@@ -22,7 +22,7 @@
   "dependencies": {
     "@floating-ui/react": "0.27.5",
     "@formkit/auto-animate": "0.8.2",
-    "@radix-ui/react-context-menu": "2.2.2",
+    "@radix-ui/react-context-menu": "2.2.16",
     "@radix-ui/react-toggle-group": "1.1.0",
     "@radix-ui/themes": "3.2.1",
     "@twind/core": "1.1.3",

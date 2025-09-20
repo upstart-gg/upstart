@@ -8,6 +8,9 @@ import {
   useSiteAttributesSubscribe,
   useThemeSubscribe,
   useSite,
+  usePageLabelSubscribe,
+  useDatasourcesSubscribe,
+  useDatarecordsSubscribe,
 } from "./use-page-data";
 
 const AUTO_SAVE_MIN_INTERVAL = 1000; // Auto save every N seconds
@@ -40,6 +43,18 @@ export function usePageAutoSave() {
     console.debug("Sections have changed, updating page version", sections);
     savePage({ sections });
   });
+  usePageLabelSubscribe((label) => {
+    console.debug("Page label has changed:", label);
+    savePage({ label });
+  });
+  useDatasourcesSubscribe((datasources) => {
+    console.debug("Datasources have changed:", datasources);
+    saveSite({ datasources });
+  });
+  useDatarecordsSubscribe((datarecords) => {
+    console.debug("Datarecords have changed:", datarecords);
+    saveSite({ datarecords });
+  });
   usePageAttributesSubscribe((attributes) => {
     console.debug("Page attributes have changed:", attributes);
     savePage({ attributes });
@@ -48,7 +63,6 @@ export function usePageAutoSave() {
     console.debug("Site attributes have changed:", attributes);
     saveSite({ attributes });
   });
-
   useThemeSubscribe((theme) => {
     console.debug("theme has changed, updating page version");
     saveSite({ theme });

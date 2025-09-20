@@ -9,7 +9,6 @@ import type { FixedPositionedSettings } from "@upstart.gg/sdk/shared/bricks/prop
 import { propToClass, propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
 import { css } from "@upstart.gg/style-system/twind";
 import type { TSchema } from "@sinclair/typebox";
-import { CSSProperties } from "react";
 
 export function getBackgroundStyles(props?: BackgroundSettings) {
   if (!props?.image) {
@@ -170,6 +169,7 @@ export const brickStylesHelpersMap = {
   "styles:fontSize": simpleClassHandler,
   "styles:wrap": getWrapStyles,
   "styles:padding": simplePropertyHandler("padding"), // test
+  "styles:verticalMargin": simplePropertyHandler("margin-block"), // test
   "styles:gap": getGapStyles,
 
   "styles:gradientDirection": simpleClassHandler,

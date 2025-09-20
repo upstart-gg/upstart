@@ -559,7 +559,13 @@ What should we work on together? 🤖`,
   }, [toolInvocations, draftHelpers, siteThemes]);
 
   // filter out the "init" messages
-  const displayedMessages = messages.filter((msg) => msg.id !== "init-setup" && msg.parts.length > 0);
+  const displayedMessages = messages.filter(
+    (msg) =>
+      msg.id !== "init-setup" &&
+      msg.parts.some(
+        (part) => part.type === "text" || part.type === "reasoning" || part.type.startsWith("tool-"),
+      ),
+  );
 
   return (
     <div
@@ -688,6 +694,7 @@ What should we work on together? 🤖`,
             })}
           </div>
         ))}
+
         <AnimatePresence initial={false}>
           {!hasRunningTools && (status === "submitted" || status === "streaming") && (
             <motion.div
@@ -703,6 +710,7 @@ What should we work on together? 🤖`,
             </motion.div>
           )}
         </AnimatePresence>
+
         {error && (
           <div className={tx(msgCommon, "bg-red-200 text-red-800 text-sm")}>
             <p>An error occured. {error.message ?? "Please retry."}</p>
@@ -944,6 +952,30 @@ function ToolRenderer({
           >
             <Spinner size="1" className="w-4 mx-0.5" />
             <span>{toolPart.input.waitingMessage}</span>
+            {debug && (
+              <details className="cursor-pointer basis-full">
+                <summary className="cursor-pointer list-none flex gap-1 items-center">
+                  <svg
+                    className="-rotate-90 transform opacity-60 transition-all duration-300"
+                    fill="none"
+                    height="14"
+                    width="14"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <title>Arrow</title>
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                  <span className="text-xs font-normal">[{toolPart.type}] View tool call</span>
+                </summary>
+                <pre className="whitespace-pre-wrap text-xs">
+                  {JSON.stringify({ type: toolPart.type, input: toolPart.input }, null, 2)}
+                </pre>
+              </details>
+            )}
           </motion.div>
         ) : toolPart.state === "output-available" ? (
           <motion.div
@@ -954,28 +986,35 @@ function ToolRenderer({
           >
             <MdDone className="w-4 h-4 text-green-600" />
             <span>{toolPart.input.waitingMessage}</span>
-            <details className="cursor-pointer basis-full">
-              <summary className="cursor-pointer list-none flex gap-1 items-center">
-                <svg
-                  className="-rotate-90 transform opacity-60 transition-all duration-300"
-                  fill="none"
-                  height="14"
-                  width="14"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <title>Arrow</title>
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-                <span className="text-xs font-normal">View tool call</span>
-              </summary>
-              <pre className="whitespace-pre-wrap text-xs">
-                {JSON.stringify({ input: toolPart.input, output: toolPart.output }, null, 2)}
-              </pre>
-            </details>
+            {debug && (
+              <details className="cursor-pointer basis-full">
+                <summary className="cursor-pointer list-none flex gap-1 items-center">
+                  <svg
+                    className="-rotate-90 transform opacity-60 transition-all duration-300"
+                    fill="none"
+                    height="14"
+                    width="14"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <title>Arrow</title>
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                  <span className="text-xs font-normal">[{toolPart.type}] View tool call</span>
+                </summary>
+                <pre className="whitespace-pre-wrap text-xs">
+                  {JSON.stringify(
+                    { type: toolPart.type, input: toolPart.input, output: toolPart.output },
+                    null,
+                    2,
+                  )}
+                </pre>
+              </details>
+            )}
+
             {/* {toolPart.type === "tool-searchImages" && (
               <ImagesPreview
                 key={toolPart.toolCallId}

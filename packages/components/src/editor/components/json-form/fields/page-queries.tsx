@@ -18,7 +18,7 @@ import { FiEdit } from "react-icons/fi";
 import { tx } from "@upstart.gg/style-system/twind";
 import { LuPlus } from "react-icons/lu";
 import type { TSchema } from "@sinclair/typebox";
-import { ajv } from "@upstart.gg/sdk/shared/ajv";
+import { Cabidela } from "@cloudflare/cabidela";
 import TagsInput, { TagsSelect } from "../../TagsInput";
 
 const baseOperators = [
@@ -298,7 +298,17 @@ function QueryEditor({
   const pageParams = usePagePathParams();
 
   const validateQuery = () => {
-    return ajv.validate(queryUseSchema, query) && validateParams();
+    try {
+      const validator = new Cabidela(queryUseSchema, {
+        applyDefaults: true,
+        fullErrors: true,
+      });
+      validator.validate(query);
+      return validateParams();
+    } catch (error) {
+      console.error("Query validation failed:", error);
+      return false;
+    }
   };
 
   const validateParams = () => {
@@ -306,10 +316,14 @@ function QueryEditor({
       const schema = datasource?.schema?.items?.properties?.[p.field];
       if (schema) {
         const value = query.params?.find((f) => f.field === p.field)?.value;
+        const validator = new Cabidela(schema, {
+          applyDefaults: true,
+          fullErrors: true,
+        });
         // Validate the parameter against the schema
-        const valid = ajv.validate(schema, value);
-        console.log(`Validating param ${p}:`, { valid, value, schema });
-        if (!valid) {
+        try {
+          validator.validate(value);
+        } catch (e) {
           return false;
         }
       }
@@ -420,8 +434,6 @@ function QueryEditor({
       // upsertQuery(query as Query);
       onChange(query as QueryUseSettings);
       onClose?.();
-    } else {
-      console.error("Query validation failed:", ajv.errors, query);
     }
   }, [query]);
 
