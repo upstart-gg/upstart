@@ -83,6 +83,12 @@ export const brickSchema = Type.Object(
       description: "A unique identifier for the brick.",
     }),
     type: brickTypeSchema,
+    label: Type.Optional(
+      Type.String({
+        title: "Label",
+        description: "A human-readable label for the brick. Used for organization and identification.",
+      }),
+    ),
     props: Type.Any({
       title: "Props",
       description: "The static props of the brick. The available props depends on the brick type.",
@@ -90,7 +96,8 @@ export const brickSchema = Type.Object(
     mobileProps: Type.Optional(
       Type.Any({
         title: "Props",
-        description: "The overriden props for mobile, merged with desktop props.",
+        description:
+          "The overriden props for mobile, merged with desktop props. Same type as props but partial.",
       }),
     ),
   },
@@ -252,12 +259,10 @@ export const sectionSchema = Type.Object(
       description: "The unique ID of the section. Use a human readable url-safe slug",
       examples: ["content-section", "contact-section"],
     }),
-    label: Type.Optional(
-      Type.String({
-        description: "The label of the section. Used for editor purposes only.",
-        examples: ["Content", "Contact"],
-      }),
-    ),
+    label: Type.String({
+      description: "The label of the section. Shown only to the website owner, not public.",
+      examples: ["Content", "Contact"],
+    }),
     order: Type.Number({
       description: "Determines section order in the page (lower numbers appear first). 0-based",
     }),
@@ -271,6 +276,7 @@ export const sectionSchema = Type.Object(
 );
 
 export const sectionSchemaNoBricks = Type.Omit(sectionSchema, ["bricks"]);
+export const sectionSchemaNoBricksForLLM = toLLMSchema(sectionSchemaNoBricks);
 
 export function getSectionSchemaNoBrickForLLM() {
   return toLLMSchema(sectionSchemaNoBricks);
@@ -309,7 +315,7 @@ export function processSections(
       processSection({
         order: -1,
         id: "navbar-section",
-        label: "Navbar section",
+        label: "Navbar",
         props: {
           variant: "navbar",
           direction: "flex-row",
@@ -330,7 +336,7 @@ export function processSections(
       processSection({
         order: 1000,
         id: "footer-section",
-        label: "Footer section",
+        label: "Footer",
         props: {
           variant: "footer",
           direction: "flex-row",
@@ -396,6 +402,7 @@ Bricks are stacked vertically using the "direction" set to "flex-col".
 `,
     example: {
       id: "hero-section",
+      label: "Hero",
       order: 0,
       props: {
         colorPreset: { color: "primary-100" },
@@ -409,6 +416,7 @@ Bricks are stacked vertically using the "direction" set to "flex-col".
         {
           id: "hero",
           type: "hero",
+          label: "Main hero title",
           props: {
             content: "<h1 style='text-align:center'>Welcome to my SaaS</h1>",
             tagline: "The future of productivity starts here",
@@ -417,6 +425,7 @@ Bricks are stacked vertically using the "direction" set to "flex-col".
         {
           id: "cta-button",
           type: "button",
+          label: "Call to action button",
           props: {
             label: "Get Started",
             href: "/signup",
@@ -434,6 +443,7 @@ Bricks are stacked vertically using the "direction" set to "flex-col".
 `,
     example: {
       id: "contact-section",
+      label: "Contact",
       order: 1,
       props: {
         colorPreset: { color: "gray-100" },
@@ -473,6 +483,7 @@ The box brick is the only container type that can hold $children (other bricks).
 This demonstrates nested brick structure where the box contains multiple feature bricks.`,
     example: {
       id: "features-section",
+      label: "Features",
       order: 2,
       props: {
         direction: "flex-col",
@@ -535,6 +546,7 @@ Demonstrates how direction "flex-row" arranges bricks horizontally.
 The section uses responsive mobile overrides to stack vertically on mobile.`,
     example: {
       id: "about-section",
+      label: "About",
       order: 3,
       props: {
         direction: "flex-row",
@@ -576,6 +588,7 @@ Demonstrates how box bricks can contain other box bricks, creating sophisticated
 Shows responsive design with different mobile arrangements.`,
     example: {
       id: "complex-layout-section",
+      label: "Complex layout",
       order: 4,
       props: {
         direction: "flex-col",
@@ -664,6 +677,7 @@ Uses the footer variant for special styling and contains multiple text bricks ar
 Shows how to create multi-column layouts using direction and gap properties.`,
     example: {
       id: "info-footer-section",
+      label: "Info footer",
       order: 5,
       props: {
         variant: "footer",
@@ -712,6 +726,7 @@ Shows how to use video bricks for multimedia content.
 The section uses a light background to make the video stand out.`,
     example: {
       id: "video-showcase-section",
+      label: "Video showcase",
       order: 6,
       props: {
         direction: "flex-col",
@@ -755,6 +770,7 @@ Demonstrates how to use carousel bricks for displaying multiple images.
 Perfect for portfolios, product showcases, or photo galleries.`,
     example: {
       id: "gallery-section",
+      label: "Gallery",
       order: 7,
       props: {
         direction: "flex-col",
@@ -793,6 +809,7 @@ Shows how to create forms with various field types and validation.
 Uses a card-like appearance with rounded corners and shadow.`,
     example: {
       id: "signup-form-section",
+      label: "Signup form",
       order: 8,
       props: {
         direction: "flex-col",
@@ -841,6 +858,7 @@ Shows how to structure testimonials with avatars, company information, and socia
 Perfect for building trust and credibility with potential customers.`,
     example: {
       id: "testimonials-section",
+      label: "Testimonials",
       order: 9,
       props: {
         direction: "flex-col",
@@ -909,6 +927,7 @@ Shows how to combine map bricks with text and contact information.
 Perfect for businesses with physical locations.`,
     example: {
       id: "location-section",
+      label: "Location",
       order: 10,
       props: {
         direction: "flex-row",
@@ -983,6 +1002,7 @@ Demonstrates how to create compelling data visualizations.
 Uses horizontal layout with consistent spacing and visual hierarchy.`,
     example: {
       id: "stats-section",
+      label: "Stats",
       order: 11,
       props: {
         direction: "flex-col",
@@ -1108,6 +1128,7 @@ Shows how to use social-links bricks and forms together.
 Creates a cohesive call-to-action for community building.`,
     example: {
       id: "community-section",
+      label: "Community",
       order: 12,
       props: {
         direction: "flex-col",
@@ -1172,6 +1193,7 @@ Demonstrates how to structure pricing tiers with different features.
 Uses consistent styling with highlighted premium option.`,
     example: {
       id: "pricing-section",
+      label: "Pricing",
       order: 13,
       props: {
         direction: "flex-col",
