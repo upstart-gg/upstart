@@ -48,30 +48,41 @@ export const manifest = defineBrickManifest({
       fontSize: Type.Optional(fontSizeRef({ default: "text-sm", "ui:no-extra-large-sizes": true })),
       // rows:Type.Optional(number("Rows", { default: 1, "ui:field": "slider", minimum: 1, maximum: 5 })),
       linksSections: array(
-        Type.Object({
-          sectionTitle: string("Title"),
-          links: array(
-            Type.Object({
-              title: string("Title"),
-              url: urlOrPageIdRef(),
-            }),
-            {
-              title: "Links",
-            },
-          ),
-        }),
+        Type.Object(
+          {
+            sectionTitle: string("Title"),
+            links: array(
+              Type.Object({
+                title: string("Title"),
+                url: urlOrPageIdRef(),
+              }),
+              {
+                title: "Links",
+              },
+            ),
+          },
+          {
+            examples: [
+              {
+                sectionTitle: "Quick Links",
+                links: [
+                  { title: "Home", url: "/" },
+                  { title: "About", url: "page-id-of-about-page" },
+                  { title: "Our Services", url: "page-id-of-services-page" },
+                ],
+              },
+              {
+                sectionTitle: "Legal",
+                links: [
+                  { title: "Privacy Policy", url: "page-id-of-privacy-policy" },
+                  { title: "Terms of Service", url: "page-id-of-terms" },
+                  { title: "Our law firm", url: "https://my.external.lawfirm.com" },
+                ],
+              },
+            ],
+          },
+        ),
         {
-          default: [
-            {
-              sectionTitle: "Links",
-              links: [
-                {
-                  title: "Link",
-                  url: "/",
-                },
-              ],
-            },
-          ],
           title: "Links",
           "ui:displayField": "sectionTitle",
           "ui:options": {
@@ -79,7 +90,7 @@ export const manifest = defineBrickManifest({
             removable: true, // Enable delete button
             addable: true, // Enable add button
           },
-          description: "List of Links Sections",
+          description: "List of Links Sections. Each section contains a title and a list of links.",
           metadata: {
             category: "content",
           },
@@ -92,9 +103,7 @@ export const manifest = defineBrickManifest({
 
 export type Manifest = typeof manifest;
 
-export function getFooterSchemaForLLM() {
-  return toLLMSchema(manifest.props);
-}
+export const footerSchemaPropsLLM = toLLMSchema(manifest.props);
 
 export type FooterProps = Static<Manifest["props"]>;
 

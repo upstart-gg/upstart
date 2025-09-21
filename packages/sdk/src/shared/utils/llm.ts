@@ -175,7 +175,7 @@ export function inlineSchemaRefs<T extends TSchema>(schema: T) {
     const referencedSchema = schemaRegistry.get(refId);
 
     if (!referencedSchema) {
-      console.error(`Schema with ID "${refId}" not found in schema registry`, { referencedSchema });
+      // console.error(`Schema with ID "${refId}" not found in schema registry`, { referencedSchema });
       // throw new Error(`Schema with ID "${refId}" not found in schema registry`);
       continue;
     }

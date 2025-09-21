@@ -1,20 +1,9 @@
 import { tx, css } from "@upstart.gg/style-system/twind";
-import { Button, Text, Switch, toast } from "@upstart.gg/style-system/system";
+import { toast } from "@upstart.gg/style-system/system";
 import { motion, AnimatePresence } from "motion/react";
-import {
-  type ChatOnToolCallCallback,
-  DefaultChatTransport,
-  type DynamicToolUIPart,
-  lastAssistantMessageIsCompleteWithToolCalls,
-  tool,
-  type ToolUIPart,
-} from "ai";
-
-import { TbSend2 } from "react-icons/tb";
-import { IoIosAttach } from "react-icons/io";
-import { useChat, type UseChatHelpers } from "@ai-sdk/react";
+import { type ChatOnToolCallCallback, DefaultChatTransport, type ToolUIPart } from "ai";
+import { useChat } from "@ai-sdk/react";
 import { type FormEvent, useEffect, useMemo, useRef, useState, Suspense } from "react";
-import { createIdGenerator } from "ai";
 import {
   useAdditionalAssets,
   useDraftHelpers,
@@ -23,19 +12,18 @@ import {
   useSite,
   useSitePrompt,
   useThemes,
-} from "../hooks/use-page-data";
-import { MdDone } from "react-icons/md";
+} from "../../hooks/use-page-data";
 import { useDebounceCallback } from "usehooks-ts";
 import { Spinner } from "@upstart.gg/style-system/system";
-import { BiStopCircle } from "react-icons/bi";
 import { defineDataRecord } from "@upstart.gg/sdk/shared/datarecords";
 import { useDeepCompareEffect } from "use-deep-compare";
-import type { SimpleImageMetadata } from "@upstart.gg/sdk/shared/images";
-import { useDebugMode, useEditorHelpers } from "../hooks/use-editor";
+import { useDebugMode } from "../../hooks/use-editor";
 import { defineDatasource } from "@upstart.gg/sdk/shared/datasources";
 import type { Tools, UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
-import Markdown from "./Markdown";
-import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
+import Markdown from "../Markdown";
+import ChatBox from "./ChatBox";
+import ChatReasoningPart from "./ChatReasoningPart";
+import ToolRenderer from "./ChatToolRenderer";
 
 const WEB_SEARCH_ENABLED = false;
 
@@ -333,7 +321,7 @@ What should we work on together? 🤖`,
           },
         }),
       }),
-      sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
+      // sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
       messages: initialMessages,
       // generateId: createIdGenerator({
       //   prefix: "ups",
@@ -350,16 +338,12 @@ What should we work on together? 🤖`,
       onToolCall,
     },
   );
-  const promptRef = useRef<HTMLTextAreaElement>(null);
   const messagesListRef = useRef<HTMLDivElement>(null);
 
   const onSubmit = (e: Event | FormEvent) => {
     e.preventDefault();
     sendMessage({ text: input });
     setInput("");
-    if (promptRef?.current) {
-      promptRef.current.focus();
-    }
   };
 
   const debouncedScroll = useDebounceCallback(() => {
@@ -600,9 +584,6 @@ What should we work on together? 🤖`,
           },
           css({
             scrollbarWidth: "none",
-            // scrollbarColor: "var(--violet-a8) var(--violet-a2)",
-            // scrollbarColor: "var(--violet-4) var(--violet-2)",
-            // scrollbarGutter: "stable",
           }),
         )}
       >
@@ -626,10 +607,6 @@ What should we work on together? 🤖`,
               }
 
               switch (part.type) {
-                case "dynamic-tool": {
-                  // console.log("Dynamic tool part", part);
-                  return null;
-                }
                 case "text":
                   return (
                     <Suspense key={i}>
@@ -637,59 +614,8 @@ What should we work on together? 🤖`,
                     </Suspense>
                   );
 
-                // case "source":
-                //   // @ts-ignore
-                //   if (part.sourceType === "images") {
-                //     return (
-                //       <ImagesPreview
-                //         key={i}
-                //         // @ts-ignore
-                //         query={part.source.query as string}
-                //         // @ts-ignore
-                //         images={part.source.images as SimpleImageMetadata[]}
-                //       />
-                //     );
-                //   }
-                //   return <p key={i}>{JSON.stringify(part)}</p>;
-
                 case "reasoning":
-                  if (!debug) {
-                    // Only show reasoning in debug mode
-                    return null;
-                  }
-                  return (
-                    <div key={i} className="flex items-center gap-1.5">
-                      <details>
-                        <summary className="cursor-pointer list-none flex gap-1 items-center">
-                          <svg
-                            className="-rotate-90 transform opacity-60 transition-all duration-300"
-                            fill="none"
-                            height="14"
-                            width="14"
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            viewBox="0 0 24 24"
-                          >
-                            <title>Arrow</title>
-                            <polyline points="6 9 12 15 18 9" />
-                          </svg>
-                          <span className="text-xs font-normal">Thinking...</span>
-                        </summary>
-                        <Text
-                          as="div"
-                          size="2"
-                          className="text-gray-500 mt-2 ml-2 border-l-2 border-gray-300 pl-3"
-                        >
-                          <Markdown content={part.text} />
-                        </Text>
-                      </details>
-                    </div>
-                  );
-
-                // case "file":
-                //   return <img key={i} alt="" src={`data:${part.mediaType};base64,${part.url}`} />;
+                  return debug ? <ChatReasoningPart key={i} part={part} /> : null;
               }
             })}
           </div>
@@ -703,7 +629,7 @@ What should we work on together? 🤖`,
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.2 }}
               className={tx(
-                "p-4 my-4 text-fluid-sm text-gray-600 flex items-center justify-center gap-1.5 backdrop-blur-md bg-white/80 max-w-fit mx-auto rounded-lg",
+                "p-4 my-4 text-fluid-sm text-gray-700 flex items-center justify-center gap-1.5 backdrop-blur-md bg-white/70 max-w-fit mx-auto rounded-md",
               )}
             >
               <Spinner size="2" /> Please wait...
@@ -729,356 +655,15 @@ What should we work on together? 🤖`,
         )}
         <div ref={listPlaceholderRef} className={tx("h-2")} aria-label="separator" aria-hidden />
       </div>
-      <form
+      <ChatBox
+        input={input}
+        setInput={setInput}
         onSubmit={onSubmit}
-        className={tx(
-          "flex flex-col flex-1 min-h-[150px] max-h-[150px] gap-1.5 p-2 justify-center mt-2",
-          "bg-upstart-100 border-t border-upstart-300 relative",
-          // generationState.isReady === false && "hidden",
-          generationState.isReady === false && "rounded-lg",
-          // "[&:has(textarea:focus)]:(ring-2 ring-upstart-700)",
-        )}
-      >
-        <textarea
-          onChange={(e) => setInput(e.target.value)}
-          ref={promptRef}
-          value={input}
-          // biome-ignore lint/a11y/noAutofocus: <explanation>
-          autoFocus
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) onSubmit(e);
-          }}
-          name="prompt"
-          // disabled={messagingDisabled}
-          spellCheck={false}
-          autoComplete="off"
-          autoCorrect="off"
-          placeholder={
-            messages.some((m) => m.role === "user")
-              ? undefined
-              : "Add a section just below the navbar containing a paragraph with a short description of the site."
-          }
-          className={tx(
-            "form-textarea ",
-            generationState.isReady === false ? "!text-fluid-sm" : "text-sm",
-            "h-full w-full rounded scrollbar-thin p-2 !bg-white !pb-9 border-upstart-300 shadow-inner focus:(!outline-0 !ring-upstart-500 !border-upstart-500)",
-          )}
-        />
-        <div
-          className={tx(
-            "flex justify-between items-center h-9 text-gray-500 absolute left-[9px] right-[9px] rounded bottom-2.5 px-2 z-50 bg-white",
-          )}
-        >
-          <button type="button" className={tx("hover:bg-upstart-200 p-1 rounded inline-flex text-sm gap-1")}>
-            <IoIosAttach className="h-5 w-5" />
-          </button>
-          {generationState.isReady && WEB_SEARCH_ENABLED && (
-            <label className={tx("inline-flex items-center gap-1 text-[80%] select-none")}>
-              <Switch
-                name="allow_web_search"
-                size={"1"}
-                onCheckedChange={() => {
-                  promptRef.current?.focus();
-                }}
-              />{" "}
-              Allow web search
-            </label>
-          )}
-          {status === "submitted" || status === "streaming" ? (
-            <Button
-              type="button"
-              size={"1"}
-              className={tx("flex items-center justify-center gap-0.5")}
-              onClick={stop}
-            >
-              <BiStopCircle className="text-lg" />
-            </Button>
-          ) : (
-            <Button
-              type="submit"
-              size={"1"}
-              className={tx("flex items-center gap-0.5")}
-              disabled={hasRunningTools}
-            >
-              <TbSend2 className="text-lg" />
-            </Button>
-          )}
-        </div>
-      </form>
+        status={status}
+        hasRunningTools={hasRunningTools}
+        stop={stop}
+        messages={messages}
+      />
     </div>
   );
-}
-
-function ImagesPreview({ query, images }: { query: string; images: SimpleImageMetadata[] }) {
-  return (
-    <div className="basis-full flex flex-col gap-2 mt-1 mb-6 text-sm ml-6 font-normal">
-      <div className="grid grid-cols-3 gap-1 min-h-60 max-h-60">
-        {images.map((image, index) => (
-          <div
-            key={image.url}
-            className={tx(
-              "rounded-md relative z-10 hover:z-50 hover:(scale-110 shadow-2xl) transition-transform duration-150",
-            )}
-          >
-            <img
-              key={image.url}
-              src={image.url}
-              alt={image.description}
-              className={tx(
-                "rounded-md h-auto !object-cover object-center w-full aspect-video",
-                css({
-                  // animation delay
-                  animationDelay: `${index * 100}ms`,
-                }),
-              )}
-              loading="lazy"
-            />
-            {image.user?.name && (
-              <div className="absolute px-1.5 bottom-0 left-0 right-0 bg-black/50 text-white text-[0.6rem] p-0.5 rounded-b-md truncate capitalize">
-                By{" "}
-                {image.user.profile_url ? (
-                  <a
-                    href={image.user.profile_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="underline hover:text-upstart-300"
-                  >
-                    {image.user.name}
-                  </a>
-                ) : (
-                  image.user.name
-                )}{" "}
-                / {image.provider}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-const hiddenTools = ["setUserLanguage", "getUserLanguage"];
-
-function ToolRenderer({
-  toolPart,
-  sendMessage,
-  addToolResult,
-  error,
-}: {
-  toolPart: ToolUIPart<Tools>;
-  error?: Error;
-  addToolResult: UseChatHelpers<UpstartUIMessage>["addToolResult"];
-  sendMessage: UseChatHelpers<UpstartUIMessage>["sendMessage"];
-}) {
-  const debug = useDebugMode();
-  // Some tools are not meant to be displayed in the chat, like the "setUserLanguage" tool
-  if (hiddenTools.includes(toolPart.type)) {
-    return null;
-  }
-  // If there is an error, don't show pending tool invocations
-  if (error) {
-    return null;
-  }
-  if (toolPart.type === "tool-askUserChoice" && toolPart.state !== "input-streaming") {
-    return (
-      <Suspense key={toolPart.toolCallId}>
-        <AnimatePresence initial={false}>
-          {toolPart.state === "input-available" ? (
-            <motion.div
-              className="choices"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.4 }}
-            >
-              {toolPart.input.question && (
-                <div className="basis-full">
-                  <Markdown content={toolPart.input.question} />
-                </div>
-              )}
-              {toolPart.input.choices.map((choice, i) => {
-                return (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => {
-                      console.log("addtoolresult to part", toolPart);
-                      addToolResult({
-                        tool: "askUserChoice",
-                        toolCallId: toolPart.toolCallId,
-                        output: choice,
-                      });
-                      // sendMessage({
-                      //   text: choice,
-                      // });
-                    }}
-                  >
-                    {choice}
-                  </button>
-                );
-              })}
-            </motion.div>
-          ) : (
-            <motion.div
-              className="choices"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.4 }}
-            >
-              {toolPart.input?.question && (
-                <div className="basis-full">
-                  <Markdown content={toolPart.input.question} />
-                </div>
-              )}
-              <div className="basis-full text-right italic text-gray-800">{toolPart.output}</div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </Suspense>
-    );
-  }
-
-  if (toolPart.type !== "tool-askUserChoice" && toolPart.input && "waitingMessage" in toolPart.input) {
-    return (
-      <AnimatePresence initial={false}>
-        {toolPart.state === "input-available" ? (
-          <motion.div
-            className="flex items-center gap-1.5 font-medium flex-wrap"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-          >
-            <Spinner size="1" className="w-4 mx-0.5" />
-            <span>{toolPart.input.waitingMessage}</span>
-            {debug && (
-              <details className="cursor-pointer basis-full">
-                <summary className="cursor-pointer list-none flex gap-1 items-center">
-                  <svg
-                    className="-rotate-90 transform opacity-60 transition-all duration-300"
-                    fill="none"
-                    height="14"
-                    width="14"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <title>Arrow</title>
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                  <span className="text-xs font-normal">[{toolPart.type}] View tool call</span>
-                </summary>
-                <pre className="whitespace-pre-wrap text-xs">
-                  {JSON.stringify({ type: toolPart.type, input: toolPart.input }, null, 2)}
-                </pre>
-              </details>
-            )}
-          </motion.div>
-        ) : toolPart.state === "output-available" ? (
-          <motion.div
-            className="flex items-center gap-1.5 flex-wrap font-medium"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-          >
-            <MdDone className="w-4 h-4 text-green-600" />
-            <span>{toolPart.input.waitingMessage}</span>
-            {debug && (
-              <details className="cursor-pointer basis-full">
-                <summary className="cursor-pointer list-none flex gap-1 items-center">
-                  <svg
-                    className="-rotate-90 transform opacity-60 transition-all duration-300"
-                    fill="none"
-                    height="14"
-                    width="14"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <title>Arrow</title>
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                  <span className="text-xs font-normal">[{toolPart.type}] View tool call</span>
-                </summary>
-                <pre className="whitespace-pre-wrap text-xs">
-                  {JSON.stringify(
-                    { type: toolPart.type, input: toolPart.input, output: toolPart.output },
-                    null,
-                    2,
-                  )}
-                </pre>
-              </details>
-            )}
-
-            {/* {toolPart.type === "tool-searchImages" && (
-              <ImagesPreview
-                key={toolPart.toolCallId}
-                query={toolPart.input.query}
-                images={toolPart.output}
-              />
-            )} */}
-          </motion.div>
-        ) : toolPart.state === "output-error" ? (
-          <motion.div
-            className="flex items-center gap-1.5 font-medium"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-          >
-            <MdDone className="w-4 h-4 text-red-600" />
-            <span>
-              {toolPart.input.waitingMessage} (Error: {toolPart.errorText})
-            </span>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
-    );
-  }
-
-  if (debug) {
-    const codeClassName = tx(
-      css({
-        display: "block",
-        fontFamily: "monospace",
-        fontSize: "0.7rem",
-        lineHeight: "1.3",
-        wordWrap: "break-word",
-        whiteSpace: "pre-wrap",
-      }),
-    );
-    return (
-      <details>
-        <summary className="cursor-pointer list-none flex gap-1 items-center">
-          <svg
-            className="-rotate-90 transform opacity-60 transition-all duration-300"
-            fill="none"
-            height="14"
-            width="14"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <title>Arrow</title>
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-          <span className="text-xs font-normal">
-            Tool: {toolPart.type} ({toolPart.state})
-          </span>
-        </summary>
-        <pre className={codeClassName}>{JSON.stringify(toolPart, null, 2)}</pre>
-      </details>
-    );
-  }
-
-  // if (toolPart.input?.message) {
-  //   return <Markdown content={toolPart.args.message} />;
-  // }
-  return null;
 }

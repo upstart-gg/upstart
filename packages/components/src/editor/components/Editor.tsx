@@ -35,7 +35,7 @@ import { useUserConfig } from "../hooks/use-user-config";
 
 const Tour = lazy(() => import("./Tour"));
 const NavBar = lazy(() => import("./NavBar"));
-const Chat = lazy(() => import("./Chat"));
+const Chat = lazy(() => import("./Chat/ChatComponent"));
 const EditablePage = lazy(() => import("./EditablePage"));
 const Page = lazy(() => import("~/shared/components/Page"));
 const DeviceFrame = lazy(() => import("./DeviceFrame"));
