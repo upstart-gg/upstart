@@ -10,7 +10,7 @@ export default defineConfig((options) => {
     target: "es2022",
     metafile: !!(process.env.CI || process.env.ANALYZE_BUNDLE),
     clean: !options.watch,
-    minify: !options.watch,
+    minify: false,
     sourcemap: true,
     external: ["react", "react-dom"],
     removeNodeProtocol: false,

@@ -35,7 +35,7 @@ export default defineConfig((options) => {
       removeNodeProtocol: false,
       metafile: !!process.env.ANALYZE_BUNDLE,
       clean: !options.watch,
-      minify: !options.watch,
+      minify: false,
       sourcemap: options.watch ? "inline" : true,
       external,
       onSuccess: async () => {

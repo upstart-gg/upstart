@@ -99,7 +99,7 @@ export default defineConfig(({ mode }) => ({
         "chroma-js",
       ],
       output: {
-        preserveModules: true,
+        // preserveModules: true,
         exports: "named",
         chunkFileNames: "chunks/[name].[hash].js",
         assetFileNames: "assets/[name][extname]",

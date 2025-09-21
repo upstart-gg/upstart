@@ -264,20 +264,20 @@ function ImagesPreview({ query, images }: { query: string; images: SimpleImageMe
               )}
               loading="lazy"
             />
-            {image.user?.name && (
+            {image.author?.name && (
               <div className="absolute px-1.5 bottom-0 left-0 right-0 bg-black/50 text-white text-[0.6rem] p-0.5 rounded-b-md truncate capitalize">
                 By{" "}
-                {image.user.profile_url ? (
+                {image.author.profile_url ? (
                   <a
-                    href={image.user.profile_url}
+                    href={image.author.profile_url}
                     target="_blank"
                     rel="noreferrer"
                     className="underline hover:text-upstart-300"
                   >
-                    {image.user.name}
+                    {image.author.name}
                   </a>
                 ) : (
-                  image.user.name
+                  image.author.name
                 )}{" "}
                 / {image.provider}
               </div>

@@ -37,7 +37,6 @@ const Tour = lazy(() => import("./Tour"));
 const NavBar = lazy(() => import("./NavBar"));
 const Chat = lazy(() => import("./Chat/ChatComponent"));
 const EditablePage = lazy(() => import("./EditablePage"));
-const Page = lazy(() => import("~/shared/components/Page"));
 const DeviceFrame = lazy(() => import("./DeviceFrame"));
 const Panel = lazy(() => import("./Panel"));
 
@@ -46,7 +45,6 @@ type EditorProps = ComponentProps<"div">;
 export default function Editor(props: EditorProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const draft = useDraft();
-  const editorEnabled = useEditorEnabled();
   const chatVisible = useChatVisible();
   const sections = useSections();
   const { panelPosition } = usePanel();
