@@ -14,11 +14,17 @@ export const askUserChoiceInput = Type.Object({
     description:
       "The question to ask the user, in the user language. Example: 'Do you want a blog page?' or 'Do you want me to generate some images?'",
   }),
-  choices: Type.Array(Type.String(), {
-    description: "The list of choices to present to the user. Can be a maximum of 6 choices.",
-    maxItems: 6,
-    minItems: 2,
-  }),
+  choices: Type.Array(
+    Type.String({
+      minLength: 2,
+      maxLength: 60,
+    }),
+    {
+      description: "The list of choices to present to the user. Minimum 2 choices, max 6.",
+      maxItems: 6,
+      minItems: 2,
+    },
+  ),
   allowMultiple: Type.Optional(
     Type.Boolean({
       description: "Whether to allow multiple choices to be selected by the user. Default to false.",

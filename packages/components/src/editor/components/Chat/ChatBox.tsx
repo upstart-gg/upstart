@@ -17,6 +17,7 @@ interface ChatBoxProps {
   messages: UpstartUIMessage[];
   showWebSearch?: boolean;
   onWebSearchToggle?: () => void;
+  ref: React.Ref<HTMLTextAreaElement>;
 }
 
 export default function ChatBox({
@@ -29,8 +30,8 @@ export default function ChatBox({
   messages,
   showWebSearch = false,
   onWebSearchToggle,
+  ref,
 }: ChatBoxProps) {
-  const promptRef = useRef<HTMLTextAreaElement>(null);
   const generationState = useGenerationState();
 
   const WEB_SEARCH_ENABLED = false;
@@ -45,8 +46,8 @@ export default function ChatBox({
       )}
     >
       <textarea
+        ref={ref}
         onChange={(e) => setInput(e.target.value)}
-        ref={promptRef}
         value={input}
         // biome-ignore lint/a11y/noAutofocus: <explanation>
         autoFocus
@@ -89,7 +90,8 @@ export default function ChatBox({
               name="allow_web_search"
               size={"1"}
               onCheckedChange={() => {
-                promptRef.current?.focus();
+                // focus the textarea again after toggling the switch
+                ref && "current" in ref && ref.current && ref.current.focus();
                 onWebSearchToggle?.();
               }}
             />{" "}
