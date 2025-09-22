@@ -6,7 +6,6 @@ export default function JustifyContentField(props: FieldProps<JustifyContentSett
   const { brickId, onChange, schema } = props;
   const htmlElement = document.getElementById(brickId);
   const flexOrientation = htmlElement ? getComputedStyle(htmlElement).flexDirection : "row";
-
   const customSchema = {
     ...schema,
     title: flexOrientation === "row" ? "Horizontal align." : `Vertical align.`,

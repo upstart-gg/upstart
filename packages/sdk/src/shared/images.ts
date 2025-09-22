@@ -21,13 +21,15 @@ export const imageResultsSchema = Type.Array(
       provider: Type.String({ description: "The image provider (e.g. unsplash, pexels)" }),
       description: Type.String({ description: "A brief description of the image" }),
       url: Type.String({ description: "The URL of the image" }),
-      blurHash: Type.String({ description: "The blur hash of the image" }),
-      user: Type.Object(
-        {
-          name: Type.String({ description: "The name of the user who uploaded the image" }),
-          profile_url: Type.String({ description: "The profile URL of the user who uploaded the image" }),
-        },
-        { additionalProperties: false },
+      blurHash: Type.Optional(Type.String({ description: "The blur hash of the image" })),
+      author: Type.Optional(
+        Type.Object(
+          {
+            name: Type.String({ description: "The name of the user who uploaded the image" }),
+            profile_url: Type.String({ description: "The profile URL of the user who uploaded the image" }),
+          },
+          { additionalProperties: false },
+        ),
       ),
     },
     { additionalProperties: false },
@@ -40,5 +42,5 @@ export const imageResultsSchema = Type.Array(
 export type ImageSearchResultsType = Static<typeof imageResultsSchema>;
 export type SimpleImageMetadata = Pick<
   ImageSearchResultsType[number],
-  "description" | "blurHash" | "user" | "url" | "provider"
+  "description" | "blurHash" | "author" | "url" | "provider"
 >;

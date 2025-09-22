@@ -10,22 +10,18 @@ export const waitingMessageSchema = Type.Object({
 export type WaitingMessageSchema = Static<typeof waitingMessageSchema>;
 
 export const askUserChoiceInput = Type.Object({
-  context: Type.String({
+  question: Type.String({
     description:
-      "The context of the choice. Should be a lowercased word or slug. For example, if the choice is regarding a question about the Sitemap simple, then use 'sitemap'. ",
+      "The question to ask the user, in the user language. Example: 'Do you want a blog page?' or 'Do you want me to generate some images?'",
   }),
-  question: Type.Optional(
-    Type.String({
-      description: "The question to present to the user if not already sent to the user.",
-    }),
-  ),
   choices: Type.Array(Type.String(), {
     description: "The list of choices to present to the user. Can be a maximum of 6 choices.",
     maxItems: 6,
+    minItems: 2,
   }),
   allowMultiple: Type.Optional(
     Type.Boolean({
-      description: "Whether to allow multiple choices to be selected",
+      description: "Whether to allow multiple choices to be selected by the user. Default to false.",
     }),
   ),
 });

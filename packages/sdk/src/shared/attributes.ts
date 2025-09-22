@@ -41,6 +41,7 @@ export const pageAttributesSchema = Type.Object(
     path: string("URL path", {
       default: "/",
       description: "The URL path of the page. Use placeholders like :id or :slug for dynamic paths.",
+      "ai:instructions": "Never put language codes in the path.",
       "ui:field": "path",
       pattern: "^/[a-z0-9-:/]*$",
       examples: ["/", "/about", "/products/:id"],
@@ -207,20 +208,28 @@ export const pageAttributesSchema = Type.Object(
   },
 );
 
-export function getPageQueriesSchemaForLLM() {
-  return toLLMSchema(
-    Type.Array(queryUseRef(), {
-      examples: [
-        { queryId: "get-latest-posts", alias: "latestPosts" },
-        {
-          queryId: "get-user-profile",
-          alias: "userProfile",
-          params: [{ field: "userId", op: "eq", value: ":slug" }],
-        },
-      ] satisfies QueryUseSettings[],
-    }),
-  );
-}
+export const pageQueriesSchema = Type.Array(queryUseRef(), {
+  title: "Page Queries",
+  description: `List of page queries in use in this page. All listed queries will be executed when the page loads. Aliases must be unique and camelCase'd.
+The queryId must reference an existing site query ID.`,
+  examples: [
+    { queryId: "get-latest-posts", alias: "latestPosts" },
+    {
+      queryId: "get-user-profile",
+      alias: "userProfile",
+      params: [{ field: "userId", op: "eq", value: ":slug" }],
+    },
+    {
+      queryId: "list-featured-products",
+      alias: "featuredProducts",
+    },
+    {
+      queryId: "get-event-by-slug",
+      alias: "eventBySlug",
+      params: [{ field: "$slug", op: "eq", value: ":slug" }],
+    },
+  ] satisfies QueryUseSettings[],
+});
 
 export const siteAttributesSchema = Type.Object(
   {
@@ -370,17 +379,10 @@ export const siteAttributesSchema = Type.Object(
   },
 );
 
-export function getSiteAttributeschemaForLLM() {
-  return toLLMSchema(Type.Omit(siteAttributesSchema, ["queries"]));
-}
-
-export function getPageAttributeschemaForLLM() {
-  return toLLMSchema(Type.Omit(pageAttributesSchema, ["queries"]));
-}
-
-export function getSiteQueriesSchemaForLLM() {
-  return toLLMSchema(Type.Array(querySchema));
-}
+export const siteAttributesNowQueriesSchema = Type.Omit(siteAttributesSchema, ["queries"]);
+export const pageAttributesNoQueriesSchema = Type.Omit(pageAttributesSchema, ["queries"]);
+export const siteQueriesSchema = Type.Array(querySchema);
+export const siteQueriesSchemaLLM = toLLMSchema(siteQueriesSchema);
 
 export type PageAttributes = Static<typeof pageAttributesSchema>;
 export type SiteAttributes = Static<typeof siteAttributesSchema>;

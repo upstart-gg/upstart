@@ -10,7 +10,10 @@ import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
 import { enableMapSet } from "immer";
-import { debounce, isEqual, merge, unset } from "lodash-es";
+import debounce from "lodash-es/debounce";
+import isEqual from "lodash-es/isEqual";
+import merge from "lodash-es/merge";
+import unset from "lodash-es/unset";
 import { createContext, useContext, useEffect } from "react";
 import { temporal } from "zundo";
 import { createStore, useStore } from "zustand";
@@ -119,7 +122,7 @@ export const createDraftStore = (
   const DEFAULT_PROPS = {
     data: {},
     additionalAssets: [],
-    brickMap: buildBrickMap(initProps.page.sections),
+    brickMap: buildBrickMap(initProps.page.sections ?? []),
   } satisfies Partial<DraftStateProps>;
   return createStore<DraftState>()(
     subscribeWithSelector(
@@ -1082,7 +1085,7 @@ export function useLastSaved() {
 
 export const useSections = () => {
   const ctx = usePageContext();
-  const sections = useStore(ctx, (state) => state.page.sections);
+  const sections = useStore(ctx, (state) => state.page.sections ?? []);
   const siteAttributes = useSiteAttributes();
   const pageAttributes = usePageAttributes();
   return processSections(sections, siteAttributes, pageAttributes);
@@ -1275,6 +1278,36 @@ export const useSectionsSubscribe = (callback: (sections: DraftState["page"]["se
     });
   }, []);
 };
+
+export const usePageLabelSubscribe = (callback: (label: DraftState["page"]["label"]) => void) => {
+  const ctx = usePageContext();
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    return ctx.subscribe((state) => state.page.label, callback, {
+      equalityFn: isEqual,
+    });
+  }, []);
+};
+
+export function useDatasourcesSubscribe(callback: (datasources: DraftState["site"]["datasources"]) => void) {
+  const ctx = usePageContext();
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    return ctx.subscribe((state) => state.site.datasources, callback, {
+      equalityFn: isEqual,
+    });
+  }, []);
+}
+
+export function useDatarecordsSubscribe(callback: (datarecords: DraftState["site"]["datarecords"]) => void) {
+  const ctx = usePageContext();
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    return ctx.subscribe((state) => state.site.datarecords, callback, {
+      equalityFn: isEqual,
+    });
+  }, []);
+}
 
 export const usePageAttributesSubscribe = (callback: (attr: DraftState["page"]["attributes"]) => void) => {
   const ctx = usePageContext();

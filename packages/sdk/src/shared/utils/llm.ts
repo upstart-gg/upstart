@@ -1,7 +1,7 @@
 import type { TObject, TSchema } from "@sinclair/typebox";
 import { createAJVInstance } from "../ajv";
 import { cloneDeep } from "lodash-es";
-import type Ajv from "ajv";
+import { schemaRegistry } from "./schema-registry";
 
 /**
  * Clean all properties from custom metadata recursively. Custom metadata are key that:
@@ -9,8 +9,8 @@ import type Ajv from "ajv";
  * - Or starting with "ui:"
  * Also removes properties that have "ai:hidden" set to true
  */
-export function toLLMSchema<T extends TSchema = TObject>(schema: T, ajv?: Ajv): T {
-  return cleanSchemaRecursive(inlineSchemaRefs(schema, ajv ?? createAJVInstance())) as T;
+export function toLLMSchema<T extends TSchema = TObject>(schema: T): T {
+  return cleanSchemaRecursive(inlineSchemaRefs(schema)) as T;
 }
 
 /**
@@ -107,7 +107,7 @@ interface SchemaWithDefs extends TSchema {
  * @param ajv - The AJV instance containing the referenced schemas
  * @returns A new schema with references inlined in $defs
  */
-export function inlineSchemaRefs<T extends TSchema>(schema: T, ajv: Ajv) {
+export function inlineSchemaRefs<T extends TSchema>(schema: T) {
   //
   const inlinedSchema = cloneDeep(schema) as T & SchemaWithDefs;
   // const inlinedSchema = JSON.parse(JSON.stringify(schema)) as T & SchemaWithDefs;
@@ -171,11 +171,12 @@ export function inlineSchemaRefs<T extends TSchema>(schema: T, ajv: Ajv) {
 
   // Process each collected reference
   for (const refId of collectedRefs) {
-    // Get the schema from AJV
-    const referencedSchema = ajv.getSchema(refId);
+    // Get the schema from the registry
+    const referencedSchema = schemaRegistry.get(refId);
 
-    if (!referencedSchema?.schema) {
-      //   console.log(`Schema with ID "${refId}" not found in AJV instance`, { referencedSchema });
+    if (!referencedSchema) {
+      // console.error(`Schema with ID "${refId}" not found in schema registry`, { referencedSchema });
+      // throw new Error(`Schema with ID "${refId}" not found in schema registry`);
       continue;
     }
 
@@ -197,7 +198,7 @@ export function inlineSchemaRefs<T extends TSchema>(schema: T, ajv: Ajv) {
     }
 
     // Add to $defs
-    const { $id, ...schemaWithoutId } = referencedSchema.schema as TSchema;
+    const { $id, ...schemaWithoutId } = referencedSchema;
     inlinedSchema.$defs![uniqueDefKey] = schemaWithoutId;
 
     // Map original reference to local reference
@@ -253,8 +254,8 @@ export function inlineSchemaRefs<T extends TSchema>(schema: T, ajv: Ajv) {
 
       // Add all newly found references to $defs
       for (const refId of newRefsFound) {
-        const referencedSchema = ajv.getSchema(refId);
-        if (referencedSchema?.schema) {
+        const referencedSchema = schemaRegistry.get(refId);
+        if (referencedSchema) {
           const newDefKey =
             refId.replace(/[^a-zA-Z0-9_-]/g, "_").replace(/^_+|_+$/g, "") ||
             `ref_${Object.keys(finalSchema.$defs).length}`;
@@ -266,7 +267,7 @@ export function inlineSchemaRefs<T extends TSchema>(schema: T, ajv: Ajv) {
             counter++;
           }
 
-          finalSchema.$defs[uniqueNewDefKey] = referencedSchema.schema as TSchema;
+          finalSchema.$defs[uniqueNewDefKey] = referencedSchema;
           refToLocalMap.set(refId, `#/$defs/${uniqueNewDefKey}`);
         }
       }

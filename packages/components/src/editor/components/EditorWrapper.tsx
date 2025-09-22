@@ -69,6 +69,7 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
   ) => {
     const { site, pages } = config;
     const urlParams = new URL(self.location.href).searchParams;
+    const setup = urlParams.has("setup");
     const debugMode = urlParams.has("debug") && urlParams.get("debug") !== "false";
 
     const editorStore = useRef(
@@ -94,10 +95,30 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
 
     const draftStore = useRef(
       createDraftStore({
-        site,
+        site: {
+          ...site,
+          ...(setup
+            ? {
+                attributes: {} as SiteAndPagesConfig["site"]["attributes"],
+                datarecords: [],
+                datasources: [],
+                sitemap: [],
+                themes: [],
+              }
+            : {}),
+        },
         page: {
           ...page,
           version: pageVersion,
+          ...(setup
+            ? {
+                attributes: {
+                  path: "/",
+                } as SiteAndPagesConfig["pages"][0]["attributes"],
+                sections: [],
+                label: "Home",
+              }
+            : {}),
         },
       }),
     ).current;

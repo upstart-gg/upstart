@@ -18,6 +18,9 @@ import { examples as testimonialsExamples, manifest as testimonialsManifest } fr
 import { examples as textExamples, manifest as textManifest } from "./text.manifest";
 import { examples as videoExamples, manifest as videoManifest } from "./video.manifest";
 import { examples as htmlExamples, manifest as htmlManifest } from "./html.manifest";
+import { examples as tableExamples, manifest as tableManifest } from "./table.manifest";
+import { examples as tabsExamples, manifest as tabsManifest } from "./tabs.manifest";
+import { examples as timelineExamples, manifest as timelineManifest } from "./timeline.manifest";
 import { getBrickManifestDefaults, type BrickDefaults, type BrickManifest } from "../../brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
 import type { Static } from "@sinclair/typebox";
@@ -43,6 +46,9 @@ export const manifests: Record<string, BrickManifest> = {
   [testimonialsManifest.type]: testimonialsManifest,
   [accordionManifest.type]: accordionManifest,
   [htmlManifest.type]: htmlManifest,
+  [tableManifest.type]: tableManifest,
+  [tabsManifest.type]: tabsManifest,
+  [timelineManifest.type]: timelineManifest,
 };
 
 export const defaultProps: Record<keyof typeof manifests, BrickDefaults> = {
@@ -66,6 +72,9 @@ export const defaultProps: Record<keyof typeof manifests, BrickDefaults> = {
   [testimonialsManifest.type]: getBrickManifestDefaults(testimonialsManifest),
   [accordionManifest.type]: getBrickManifestDefaults(accordionManifest),
   [htmlManifest.type]: getBrickManifestDefaults(htmlManifest),
+  [tableManifest.type]: getBrickManifestDefaults(tableManifest),
+  [tabsManifest.type]: getBrickManifestDefaults(tabsManifest),
+  [timelineManifest.type]: getBrickManifestDefaults(timelineManifest),
 };
 
 // Do not include footer, navbar and sidebar
@@ -88,6 +97,9 @@ export const brickTypes = StringEnum<(keyof typeof manifests)[]>(
     testimonialsManifest.type,
     accordionManifest.type,
     htmlManifest.type,
+    tableManifest.type,
+    tabsManifest.type,
+    timelineManifest.type,
   ],
   {
     title: "Brick type",
@@ -118,4 +130,7 @@ export const examples: Record<string, { description: string; type: string; props
   [testimonialsManifest.type]: testimonialsExamples,
   [accordionManifest.type]: accordionExamples,
   [htmlManifest.type]: htmlExamples,
+  [tableManifest.type]: tableExamples,
+  [tabsManifest.type]: tabsExamples,
+  [timelineManifest.type]: timelineExamples,
 };

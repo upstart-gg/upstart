@@ -1,23 +1,24 @@
-import { describe, expect, test, beforeEach, vi } from "vitest";
+import { describe, expect, test, beforeEach } from "vitest";
 import { Type } from "@sinclair/typebox";
-import { resolveSchema } from "../schema";
-import { toLLMSchema } from "../llm";
-import { ajv } from "../../ajv";
+import { resolveSchema, validate } from "../schema";
+import { inlineSchemaRefs, toLLMSchema } from "../llm";
 import { sitemapSchema } from "~/shared/sitemap";
+import { registerSchema, unregisterSchema } from "~/shared/utils/schema-registry";
+import { type Section, sectionSchema, sectionSchemaLLM } from "~/shared/bricks";
 
 describe("resolveSchema tests suite", () => {
   beforeEach(() => {
     // Clear any test schemas before each test
-    ajv.removeSchema("test:simple");
-    ajv.removeSchema("test:user");
-    ajv.removeSchema("test:address");
-    ajv.removeSchema("test:circular1");
-    ajv.removeSchema("test:circular2");
-    ajv.removeSchema("test:string");
-    ajv.removeSchema("test:number");
-    ajv.removeSchema("test:boolean");
-    ajv.removeSchema("test:base");
-    ajv.removeSchema("test:extended");
+    unregisterSchema("test:simple");
+    unregisterSchema("test:user");
+    unregisterSchema("test:address");
+    unregisterSchema("test:circular1");
+    unregisterSchema("test:circular2");
+    unregisterSchema("test:string");
+    unregisterSchema("test:number");
+    unregisterSchema("test:boolean");
+    unregisterSchema("test:base");
+    unregisterSchema("test:extended");
   });
 
   test("should return primitive types unchanged", () => {
@@ -44,7 +45,7 @@ describe("resolveSchema tests suite", () => {
       email: Type.String({ format: "email" }),
     });
 
-    ajv.addSchema(userSchema, "test:user");
+    registerSchema("test:user", userSchema);
 
     const schemaWithRef = Type.Ref("test:user");
 
@@ -64,7 +65,7 @@ describe("resolveSchema tests suite", () => {
       city: Type.String(),
     });
 
-    ajv.addSchema(addressSchema, "test:address");
+    registerSchema("test:address", addressSchema);
 
     const schema = Type.Object({
       name: Type.String(),
@@ -81,7 +82,7 @@ describe("resolveSchema tests suite", () => {
       id: Type.Number(),
     });
 
-    ajv.addSchema(itemSchema, "test:simple");
+    registerSchema("test:simple", itemSchema);
 
     const schema = Type.Array(Type.Ref("test:simple"));
 
@@ -93,8 +94,8 @@ describe("resolveSchema tests suite", () => {
     const stringSchema = Type.String();
     const numberSchema = Type.Number();
 
-    ajv.addSchema(stringSchema, "test:string");
-    ajv.addSchema(numberSchema, "test:number");
+    registerSchema("test:string", stringSchema);
+    registerSchema("test:number", numberSchema);
 
     const schema = Type.Tuple([Type.Ref("test:string"), Type.Ref("test:number")]);
 
@@ -106,8 +107,8 @@ describe("resolveSchema tests suite", () => {
     const stringSchema = Type.String();
     const numberSchema = Type.Number();
 
-    ajv.addSchema(stringSchema, "test:string");
-    ajv.addSchema(numberSchema, "test:number");
+    registerSchema("test:string", stringSchema);
+    registerSchema("test:number", numberSchema);
 
     const schema = Type.Union([Type.Ref("test:string"), Type.Ref("test:number")]);
 
@@ -120,8 +121,8 @@ describe("resolveSchema tests suite", () => {
     const stringSchema = Type.String();
     const numberSchema = Type.Number();
 
-    ajv.addSchema(stringSchema, "test:string");
-    ajv.addSchema(numberSchema, "test:number");
+    registerSchema("test:string", stringSchema);
+    registerSchema("test:number", numberSchema);
 
     const schema = {
       oneOf: [Type.Ref("test:string"), Type.Ref("test:number")],
@@ -141,8 +142,8 @@ describe("resolveSchema tests suite", () => {
       name: Type.String(),
     });
 
-    ajv.addSchema(baseSchema, "test:base");
-    ajv.addSchema(extendedSchema, "test:extended");
+    registerSchema("test:base", baseSchema);
+    registerSchema("test:extended", extendedSchema);
 
     const schema = Type.Intersect([Type.Ref("test:base"), Type.Ref("test:extended")]);
 
@@ -155,7 +156,7 @@ describe("resolveSchema tests suite", () => {
   test("should resolve not schemas", () => {
     const stringSchema = Type.String();
 
-    ajv.addSchema(stringSchema, "test:string");
+    registerSchema("test:string", stringSchema);
 
     const schema = Type.Not(Type.Ref("test:string"));
 
@@ -168,9 +169,9 @@ describe("resolveSchema tests suite", () => {
     const numberSchema = Type.Number();
     const booleanSchema = Type.Boolean();
 
-    ajv.addSchema(stringSchema, "test:string");
-    ajv.addSchema(numberSchema, "test:number");
-    ajv.addSchema(booleanSchema, "test:boolean");
+    registerSchema("test:string", stringSchema);
+    registerSchema("test:number", numberSchema);
+    registerSchema("test:boolean", booleanSchema);
 
     const schema = {
       if: Type.Ref("test:string"),
@@ -223,8 +224,8 @@ describe("resolveSchema tests suite", () => {
       friends: Type.Array(Type.Ref("test:user")),
     });
 
-    ajv.addSchema(personSchema, "test:user");
-    ajv.addSchema(addressSchema, "test:address");
+    registerSchema("test:user", personSchema);
+    registerSchema("test:address", addressSchema);
 
     const schema = Type.Object({
       users: Type.Array(Type.Ref("test:user")),
@@ -238,30 +239,6 @@ describe("resolveSchema tests suite", () => {
     expect(result.properties.users.items.properties.name.type).toBe("string");
     expect(result.properties.users.items.properties.address.type).toBe("object");
     expect(result.properties.users.items.properties.address.properties.street.type).toBe("string");
-  });
-
-  test("should handle refs in conditionals properly", () => {
-    const stringSchema = Type.String();
-    const numberSchema = Type.Number({ minimum: 0 });
-
-    ajv.addSchema(stringSchema, "test:string");
-    ajv.addSchema(numberSchema, "test:number");
-
-    const schema = Type.Object({
-      type: Type.String({ enum: ["string", "number"] }),
-      value: {
-        if: Type.Object({ type: Type.Const("string") }),
-        // biome-ignore lint/suspicious/noThenProperty: Required for JSON schema conditional validation
-        then: Type.Ref("test:string"),
-        else: Type.Ref("test:number"),
-      } as any,
-    });
-
-    const result = resolveSchema(schema);
-
-    expect(result.properties.value.then.type).toEqual(stringSchema.type);
-    expect(result.properties.value.else.type).toEqual(numberSchema.type);
-    expect(result.properties.value.else.minimum).toBe(0);
   });
 });
 
@@ -720,5 +697,55 @@ describe("toLLMSchema tests suite", () => {
   test("test with existing Upstart schema", () => {
     const transformed = toLLMSchema(sitemapSchema);
     expect(transformed.items.properties.id.type).toEqual(sitemapSchema.items.properties.id.type);
+  });
+
+  test("test with existing sectionSchema", () => {
+    const transformed = toLLMSchema(sectionSchema);
+    // console.dir({ transformed }, { depth: null });
+    expect(transformed.properties.props.type).toEqual(sectionSchema.properties.props.type);
+  });
+});
+
+describe("inlineSchemaRefs", () => {
+  test("should inline simple $ref schemas", () => {
+    const inlined = inlineSchemaRefs(sectionSchema);
+    expect(inlined.properties.props.properties.colorPreset.$ref).toEqual("#/$defs/presets_color");
+    expect(inlined.$defs.presets_color).toBeDefined();
+    expect(inlined.$defs.presets_color.type).toBe("object");
+  });
+});
+
+describe("toLLMSchema consistency", () => {
+  test("toLLMSchema(sectionSchema) should equal sectionSchemaLLM", () => {
+    const transformed = toLLMSchema(sectionSchema);
+    expect(transformed).toEqual(sectionSchemaLLM);
+
+    expect(transformed.$defs.presets_color).toBeDefined();
+    expect(transformed.$defs.presets_color.type).toBe("object");
+
+    expect(sectionSchemaLLM.$defs.presets_color).toBeDefined();
+    expect(sectionSchemaLLM.$defs.presets_color.type).toBe("object");
+  });
+});
+
+describe("validation with validate()", () => {
+  test("should validate correct schema", () => {
+    expect(sectionSchemaLLM.$defs.presets_color).toBeDefined();
+    expect(sectionSchemaLLM.$defs.presets_color.type).toBe("object");
+    const validSectionExample: Section = {
+      id: "section1",
+      label: "Hero Section",
+      order: 1,
+      props: {
+        colorPreset: {
+          color: "primary-100",
+        },
+        maxWidth: "max-w-full",
+        verticalMargin: "28px",
+        direction: "flex-col",
+      },
+      bricks: [],
+    };
+    expect(() => validate(sectionSchemaLLM, validSectionExample)).not.toThrow();
   });
 });

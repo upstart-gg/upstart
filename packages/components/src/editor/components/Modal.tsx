@@ -1,23 +1,20 @@
 import {
   Button,
-  Callout,
   Dialog,
   IconButton,
-  Inset,
   SegmentedControl,
   Select,
   TextField,
   Tooltip,
 } from "@upstart.gg/style-system/system";
 import { PiListNumbersLight } from "react-icons/pi";
-
 import { useEditorHelpers, useModal } from "~/editor/hooks/use-editor";
 import { BsDatabaseDown, BsDatabase, BsAt, BsCrosshair } from "react-icons/bs";
+import { validate } from "@upstart.gg/sdk/shared/utils/schema";
 import type { TSchema } from "@sinclair/typebox";
-import { type Datasource, type Query, querySchema } from "@upstart.gg/sdk/shared/datasources/types";
+import { type Query, querySchema } from "@upstart.gg/sdk/shared/datasources/types";
 import { getDatasourceIndexedFieldsWithTitles } from "@upstart.gg/sdk/shared/datasources";
-import { ajv } from "@upstart.gg/sdk/shared/ajv";
-import { Fragment, startTransition, useCallback, useState } from "react";
+import { Fragment, useCallback, useState } from "react";
 import { useDraftHelpers, useSiteQueries } from "../hooks/use-page-data";
 import { useDatasource, useDatasources } from "../hooks/use-datasource";
 import { FieldTitle } from "./json-form/field-factory";
@@ -27,7 +24,7 @@ import { tx } from "@upstart.gg/style-system/twind";
 import debounce from "lodash-es/debounce";
 import { nanoid } from "nanoid";
 import { LuPlus } from "react-icons/lu";
-import TagsInput, { TagsSelect } from "./TagsInput";
+import TagsInput from "./TagsInput";
 import { FiEdit } from "react-icons/fi";
 
 export default function Modal() {
@@ -340,15 +337,25 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
       e.preventDefault();
       e.stopPropagation();
       console.log("Submitting query:", query);
-      if (ajv.validate(querySchema, query)) {
+      try {
+        validate(querySchema, query);
         upsertQuery(query as Query);
         onClose?.();
-      } else {
-        console.error("Query validation failed:", ajv.errors, query);
+      } catch (error) {
+        console.error("Query validation failed:", error);
       }
     },
     [query],
   );
+
+  function validateQuery(querySchema: TSchema, query: unknown): boolean {
+    try {
+      validate(querySchema, query);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
 
   return (
     <form
@@ -689,7 +696,7 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
         >
           Cancel
         </Button>
-        <Button disabled={ajv.validate(querySchema, query) === false} type="submit" size="2">
+        <Button disabled={!validateQuery(querySchema, query)} type="submit" size="2">
           Save query
         </Button>
       </div>

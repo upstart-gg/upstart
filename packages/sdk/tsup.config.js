@@ -11,6 +11,7 @@ const banner = {
 const external = [
   "vite",
   "@vitejs/plugin-react",
+  "lodash-es",
   "react",
   "react-dom",
   "react-icons",
@@ -31,11 +32,10 @@ export default defineConfig((options) => {
       target: "es2022",
       dts: false,
       format: "esm",
-      silent: true,
       removeNodeProtocol: false,
       metafile: !!process.env.ANALYZE_BUNDLE,
       clean: !options.watch,
-      minify: !options.watch,
+      minify: false,
       sourcemap: options.watch ? "inline" : true,
       external,
       onSuccess: async () => {

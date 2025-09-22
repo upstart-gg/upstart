@@ -158,10 +158,7 @@ export const themeSchema = Type.Object(
 
 export type Theme = Static<typeof themeSchema>;
 export const themesArray = Type.Array(themeSchema);
-
-export function getThemesArrayForLLM() {
-  return toLLMSchema(themesArray);
-}
+export const themesArrayLLM = toLLMSchema(themesArray);
 
 export type ThemesArray = Static<typeof themesArray>;
 export type FontType = Theme["typography"]["body"];

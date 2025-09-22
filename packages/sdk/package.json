@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "14.2.0",
+    "@cloudflare/cabidela": "0.2.4",
     "@date-fns/utc": "1.2.0",
     "@notionhq/client": "4.0.2",
     "@radix-ui/themes": "3.2.1",
@@ -45,12 +46,10 @@
   },
   "peerDependencies": {
     "@headlessui/react": "^2.2.1",
-    "react": "19.1.1",
-    "react-dom": "19.1.1",
     "ai": "^5.0.0",
-    "ajv": "^8.17.1",
-    "ajv-formats": "^3.0.1",
     "lodash-es": "^4.17.21",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
     "react-icons": "^5.5.0"
   },
   "devDependencies": {
@@ -64,16 +63,16 @@
     "@types/react": "19.1.13",
     "@types/react-dom": "^19.1.9",
     "@types/sortablejs": "1.15.8",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
     "concurrently": "8.2.2",
     "express": "^4.21.2",
     "rimraf": "6.0.1",
-    "tsup": "^8.5.0",
-    "ajv": "^8.17.1",
-    "ajv-formats": "^3.0.1",
-    "lodash-es": "^4.17.21"
+    "tsup": "^8.5.0"
   },
   "scripts": {
     "build": "tsup",
+    "build:analyze": "tsup --metafile",
     "build:types": "tsc --emitDeclarationOnly --declaration --declarationMap",
     "dev": "tsup --watch",
     "sizetest": "pnpm build && du -sh dist",

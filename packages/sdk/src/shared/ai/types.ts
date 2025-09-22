@@ -16,7 +16,11 @@ import type { FooterProps } from "../bricks/manifests/footer.manifest";
 export type Tools = {
   askUserChoice: {
     input: AskUserChoiceInput;
-    output: string | string[]; // The user's choice(s
+    output: string | string[] | null; // The user's choice(s
+  };
+  generateImages: {
+    input: { prompt: string; count: number; aspectRatio: string };
+    output: ImageSearchResultsType;
   };
   listThemes: {
     input: null; // Just type the waiting message for now
@@ -24,6 +28,10 @@ export type Tools = {
   };
   createSection: {
     input: WaitingMessageSchema; // Just type the waiting message for now
+    output: Section;
+  };
+  editSection: {
+    input: { id: string } & WaitingMessageSchema; // Just type the waiting message for now
     output: Section;
   };
   getSection: {

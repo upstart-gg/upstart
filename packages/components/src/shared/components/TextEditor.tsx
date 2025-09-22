@@ -12,7 +12,7 @@ import TextStyle from "@tiptap/extension-text-style";
 import StarterKit from "@tiptap/starter-kit"; // define your extension array
 import TextAlign from "@tiptap/extension-text-align";
 import Heading from "@tiptap/extension-heading";
-import { Callout, Popover, DropdownMenu, Select, ToggleGroup, Portal } from "@upstart.gg/style-system/system";
+import { Callout, DropdownMenu, Select, ToggleGroup, Portal } from "@upstart.gg/style-system/system";
 import {
   useState,
   useEffect,
@@ -45,8 +45,8 @@ import { menuBarBtnActiveCls, menuBarBtnCls, menuBarBtnCommonCls } from "../styl
 import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useDatasource, useDatasources } from "~/editor/hooks/use-datasource";
-import { getEditorNodeFromField, insertInEditor } from "../utils/editor-utils";
 import { useBrick, useLoopAlias, usePageQueries } from "~/editor/hooks/use-page-data";
+import { DatasourceItemButton } from "./DatasourceItemButton";
 
 const HeroHeading = Heading.extend({
   addAttributes() {
@@ -392,79 +392,6 @@ function TextAlignButtonGroup({ editor }: { editor: Editor }) {
         <RiArrowDownSLine className={tx(arrowClass)} />
       </button>
     </DropMenu>
-  );
-}
-
-type DatasourceFieldPickerModalProps = {
-  onFieldSelect: (field: string) => void;
-  brickId: string;
-  onlyAlias?: string | null;
-};
-
-function DatasourceFieldPickerModal({ brickId, onlyAlias, onFieldSelect }: DatasourceFieldPickerModalProps) {
-  const pageQueries = usePageQueries();
-  if (!pageQueries.length) {
-    return (
-      <div className="bg-white min-w-52 min-h-80 flex flex-col gap-4">
-        No database selected in the dynamic parent brick.
-      </div>
-    );
-  }
-  return (
-    <div className="bg-white flex flex-col gap-3">
-      <h3 className="text-base font-medium">Insert fields from your queries</h3>
-      <Callout.Root className="-mx-4 !py-2 !px-3 !rounded-none">
-        <Callout.Text size="1" className={tx("text-pretty")}>
-          Click on a field to insert it into the text box. Fields are inserted as dynamic placeholders, which
-          will be replaced with their actual values when the document is rendered.
-        </Callout.Text>
-      </Callout.Root>
-      <div className="flex flex-col gap-1 pb-2 max-h-[300px] overflow-y-auto scrollbar-thin">
-        {pageQueries
-          .filter((q) => q.alias === onlyAlias || (!onlyAlias && q.queryInfo.limit === 1))
-          .map((query) => (
-            <div key={query.alias} className="flex flex-col gap-1">
-              <h4 className="text-sm font-semibold">
-                {query.alias} - {query.queryInfo?.label}
-              </h4>
-              <JSONSchemaView
-                key={query.alias}
-                prefix={query.alias}
-                schema={query.datasource.schema}
-                onFieldSelect={onFieldSelect}
-              />
-            </div>
-          ))}
-      </div>
-    </div>
-  );
-}
-
-export function DatasourceItemButton({
-  editor,
-  brickId,
-  children,
-  onFieldClick,
-}: PropsWithChildren<{ editor?: Editor | null; brickId: string; onFieldClick?: (field: string) => void }>) {
-  const queryAlias = useLoopAlias(brickId);
-  const onFieldSelect = (field: string) => {
-    onFieldClick?.(field);
-
-    if (!editor) {
-      return;
-    }
-
-    const content = getEditorNodeFromField(field);
-    insertInEditor(editor, content);
-  };
-
-  return (
-    <Popover.Root>
-      <Popover.Trigger>{children}</Popover.Trigger>
-      <Popover.Content minWidth="260px" side="top" align="start" size="2" maxHeight="70dvh" sideOffset={10}>
-        <DatasourceFieldPickerModal onFieldSelect={onFieldSelect} brickId={brickId} onlyAlias={queryAlias} />
-      </Popover.Content>
-    </Popover.Root>
   );
 }
 

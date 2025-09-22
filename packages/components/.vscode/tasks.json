@@ -1,0 +1,11 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Analyze bundle with visualizer",
+			"type": "shell",
+			"command": "cd /Users/matt/dev/upstart/packages/components && pnpm bundle-analyze",
+			"group": "build"
+		}
+	]
+}
