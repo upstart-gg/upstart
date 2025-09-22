@@ -478,7 +478,7 @@ What should we work on together? 🤖`,
     }
   }, [toolInvocations, draftHelpers, siteThemes]);
 
-  // filter out the "init" messages
+  // Only show messages that have text or tool parts
   const displayedMessages = messages.filter(
     (msg) =>
       msg.id !== "init-setup" &&
