@@ -91,6 +91,7 @@ export default function Chat() {
   const debug = useDebugMode();
   const [showToastWorking, setShowToastWorking] = useState(generationState.isSetup);
   const [hasScrolledUp, setHasScrolledUp] = useState(false);
+  const chatboxRef = useRef<HTMLTextAreaElement>(null);
 
   // If user has scrolled up, we want to update the hasScrolledUp state
 
@@ -491,16 +492,16 @@ What should we work on together? 🤖`,
         const newMsg = { id: generateId(), role: "user" as const, parts: [{ type: "text" as const, text }] };
         return [...msgs, newMsg];
       });
-      const itv = setInterval(() => {
-        if (lastAssistantMessageIsCompleteWithToolCalls({ messages })) {
-          clearInterval(itv);
-          regenerate();
-        }
-      }, 400);
-      await regenerate();
+      regenerate();
     },
-    [setMessages, regenerate, messages],
+    [setMessages, regenerate],
   );
+
+  useEffect(() => {
+    if (sendingEnabled) {
+      chatboxRef.current?.focus();
+    }
+  }, [sendingEnabled]);
 
   return (
     <div
@@ -616,6 +617,7 @@ What should we work on together? 🤖`,
       </div>
       <Suspense fallback={null}>
         <ChatBox
+          ref={chatboxRef}
           input={input}
           setInput={setInput}
           onSubmit={onSubmit}
