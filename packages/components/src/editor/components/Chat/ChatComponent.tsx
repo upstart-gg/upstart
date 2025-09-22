@@ -41,7 +41,7 @@ const msgCommon = tx(
   css({
     // whiteSpace: "pre-line",
     "& p": {
-      marginBlock: ".5rem",
+      marginBlock: ".35rem",
       lineHeight: "1.625",
     },
     "& p:first-child": {
@@ -324,147 +324,147 @@ What should we work on together? 🤖`,
 
   const sendingEnabled = shouldShowTools && !hasRunningTools && status === "ready";
 
-  // useDeepCompareEffect(() => {
-  //   for (const toolInvocation of toolInvocations.filter((t) => t.state === "output-available")) {
-  //     if (handledToolResults.current.has(toolInvocation.toolCallId)) {
-  //       continue;
-  //     }
-  //     handledToolResults.current.add(toolInvocation.toolCallId);
-  //     // switch (toolInvocation.type) {
-  //     //   case "tool-createPage": {
-  //     //     const page = toolInvocation.output;
-  //     //     console.log("Generated page", page);
-  //     //     draftHelpers.addPage({ ...page, version: crypto.randomUUID(), sections: [] });
-  //     //     break;
-  //     //   }
+  useDeepCompareEffect(() => {
+    for (const toolInvocation of toolInvocations.filter((t) => t.state === "output-available")) {
+      if (handledToolResults.current.has(toolInvocation.toolCallId)) {
+        continue;
+      }
+      handledToolResults.current.add(toolInvocation.toolCallId);
+      switch (toolInvocation.type) {
+        case "tool-createPage": {
+          const page = toolInvocation.output;
+          console.log("Generated page", page);
+          draftHelpers.addPage({ ...page, version: crypto.randomUUID(), sections: [] });
+          break;
+        }
 
-  //     //   case "tool-createNavbar":
-  //     //     console.log("Generated navbar", toolInvocation.output);
-  //     //     draftHelpers.updateSiteAttributes({
-  //     //       navbar: toolInvocation.output,
-  //     //     });
-  //     //     break;
+        case "tool-createNavbar":
+          console.log("Generated navbar", toolInvocation.output);
+          draftHelpers.updateSiteAttributes({
+            navbar: toolInvocation.output,
+          });
+          break;
 
-  //     //   case "tool-createFooter":
-  //     //     console.log("Generated footer", toolInvocation.output);
-  //     //     draftHelpers.updateSiteAttributes({
-  //     //       footer: toolInvocation.output,
-  //     //     });
-  //     //     break;
+        case "tool-createFooter":
+          console.log("Generated footer", toolInvocation.output);
+          draftHelpers.updateSiteAttributes({
+            footer: toolInvocation.output,
+          });
+          break;
 
-  //     //   case "tool-createThemes": {
-  //     //     const themes = toolInvocation.output;
-  //     //     console.log("Generated themes", themes);
-  //     //     draftHelpers.setThemes(themes);
-  //     //     break;
-  //     //   }
+        case "tool-createThemes": {
+          const themes = toolInvocation.output;
+          console.log("Generated themes", themes);
+          draftHelpers.setThemes(themes);
+          break;
+        }
 
-  //     //   case "tool-createDatasource": {
-  //     //     const datasource = toolInvocation.output;
-  //     //     console.log("Generated datasource", datasource);
-  //     //     draftHelpers.addDatasource(defineDatasource(datasource));
-  //     //     break;
-  //     //   }
+        case "tool-createDatasource": {
+          const datasource = toolInvocation.output;
+          console.log("Generated datasource", datasource);
+          draftHelpers.addDatasource(defineDatasource(datasource));
+          break;
+        }
 
-  //     //   case "tool-createDatarecord": {
-  //     //     const datarecord = toolInvocation.output;
-  //     //     console.log("Generated data record", datarecord);
-  //     //     draftHelpers.addDatarecord(defineDataRecord(datarecord));
-  //     //     break;
-  //     //   }
+        case "tool-createDatarecord": {
+          const datarecord = toolInvocation.output;
+          console.log("Generated data record", datarecord);
+          draftHelpers.addDatarecord(defineDataRecord(datarecord));
+          break;
+        }
 
-  //     //   case "tool-createSitemap": {
-  //     //     const sitemap = toolInvocation.output;
-  //     //     console.log("Generated sitemap", sitemap);
-  //     //     draftHelpers.setSitemap(sitemap);
-  //     //     break;
-  //     //   }
+        case "tool-createSitemap": {
+          const sitemap = toolInvocation.output;
+          console.log("Generated sitemap", sitemap);
+          draftHelpers.setSitemap(sitemap);
+          break;
+        }
 
-  //     //   case "tool-createSiteAttributes": {
-  //     //     const siteAttributes = toolInvocation.output;
-  //     //     console.log("Generated site attributes", siteAttributes);
-  //     //     draftHelpers.updateSiteAttributes(siteAttributes);
-  //     //     break;
-  //     //   }
+        case "tool-createSiteAttributes": {
+          const siteAttributes = toolInvocation.output;
+          console.log("Generated site attributes", siteAttributes);
+          draftHelpers.updateSiteAttributes(siteAttributes);
+          break;
+        }
 
-  //     //   case "tool-createSiteQueries": {
-  //     //     const queries = toolInvocation.output;
-  //     //     console.log("Generated site queries", queries);
-  //     //     draftHelpers.updateSiteAttributes({
-  //     //       queries: [...(site.attributes.queries ?? []), ...queries],
-  //     //     });
-  //     //     break;
-  //     //   }
+        case "tool-createSiteQueries": {
+          const queries = toolInvocation.output;
+          console.log("Generated site queries", queries);
+          draftHelpers.updateSiteAttributes({
+            queries: [...(site.attributes.queries ?? []), ...queries],
+          });
+          break;
+        }
 
-  //     //   case "tool-editSiteQueries": {
-  //     //     const queries = toolInvocation.output;
-  //     //     console.log("Edited site queries", queries);
-  //     //     draftHelpers.updateSiteAttributes({
-  //     //       queries: [...(site.attributes.queries ?? []), ...queries],
-  //     //     });
-  //     //     break;
-  //     //   }
+        case "tool-editSiteQueries": {
+          const queries = toolInvocation.output;
+          console.log("Edited site queries", queries);
+          draftHelpers.updateSiteAttributes({
+            queries: [...(site.attributes.queries ?? []), ...queries],
+          });
+          break;
+        }
 
-  //     //   case "tool-createPageQueries": {
-  //     //     const queries = toolInvocation.output;
-  //     //     console.log("Generated page queries", queries);
-  //     //     draftHelpers.updatePageAttributes({
-  //     //       ...page.attributes,
-  //     //       queries: [...(page.attributes.queries ?? []), ...queries],
-  //     //     });
-  //     //     break;
-  //     //   }
+        case "tool-createPageQueries": {
+          const queries = toolInvocation.output;
+          console.log("Generated page queries", queries);
+          draftHelpers.updatePageAttributes({
+            ...page.attributes,
+            queries: [...(page.attributes.queries ?? []), ...queries],
+          });
+          break;
+        }
 
-  //     //   case "tool-editPageQueries": {
-  //     //     const queries = toolInvocation.output;
-  //     //     console.log("Edited page queries", queries);
-  //     //     draftHelpers.updatePageAttributes({
-  //     //       ...page.attributes,
-  //     //       queries: [...(page.attributes.queries ?? []), ...queries],
-  //     //     });
-  //     //     break;
-  //     //   }
+        case "tool-editPageQueries": {
+          const queries = toolInvocation.output;
+          console.log("Edited page queries", queries);
+          draftHelpers.updatePageAttributes({
+            ...page.attributes,
+            queries: [...(page.attributes.queries ?? []), ...queries],
+          });
+          break;
+        }
 
-  //     //   case "tool-createSection": {
-  //     //     const section = toolInvocation.output;
-  //     //     console.log("Generated section", section);
-  //     //     // @ts-expect-error Bricks overwrite
-  //     //     draftHelpers.addSection({ bricks: [], ...section });
-  //     //     break;
-  //     //   }
+        case "tool-createSection": {
+          const section = toolInvocation.output;
+          console.log("Generated section", section);
+          // @ts-expect-error Bricks overwrite
+          draftHelpers.addSection({ bricks: [], ...section });
+          break;
+        }
 
-  //     //   case "tool-createBrick": {
-  //     //     const brick = toolInvocation.output;
-  //     //     console.log("Generated brick", brick);
-  //     //     const { sectionId, index } = toolInvocation.input;
-  //     //     draftHelpers.addBrick(brick, sectionId, index);
-  //     //     break;
-  //     //   }
+        case "tool-createBrick": {
+          const brick = toolInvocation.output;
+          console.log("Generated brick", brick);
+          const { sectionId, index } = toolInvocation.input;
+          draftHelpers.addBrick(brick, sectionId, index);
+          break;
+        }
 
-  //     //   case "tool-editBrick": {
-  //     //     draftHelpers.updateBrickProps(toolInvocation.input.id, toolInvocation.output.props);
-  //     //     break;
-  //     //   }
+        case "tool-editBrick": {
+          draftHelpers.updateBrickProps(toolInvocation.input.id, toolInvocation.output.props);
+          break;
+        }
 
-  //     //   case "tool-deleteBrick": {
-  //     //     const { id } = toolInvocation.input;
-  //     //     draftHelpers.deleteBrick(id);
-  //     //     break;
-  //     //   }
+        case "tool-deleteBrick": {
+          const { id } = toolInvocation.input;
+          draftHelpers.deleteBrick(id);
+          break;
+        }
 
-  //     //   case "tool-searchImages": {
-  //     //     const images = toolInvocation.output;
-  //     //     console.log("Generated images", images);
-  //     //     draftHelpers.addAdditionalAssets(images);
-  //     //     break;
-  //     //   }
+        case "tool-searchImages": {
+          const images = toolInvocation.output;
+          console.log("Generated images", images);
+          draftHelpers.addAdditionalAssets(images);
+          break;
+        }
 
-  //     //   default:
-  //     //     console.log("Default tool invocation", toolInvocation.type, toolInvocation);
-  //     //     break;
-  //     // }
-  //   }
-  // }, [toolInvocations, draftHelpers, siteThemes]);
+        default:
+          console.log("Default tool invocation", toolInvocation.type, toolInvocation);
+          break;
+      }
+    }
+  }, [toolInvocations, draftHelpers, siteThemes]);
 
   // filter out the "init" messages
   const displayedMessages = messages.filter(

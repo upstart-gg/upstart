@@ -17,6 +17,7 @@ export const askUserChoiceInput = Type.Object({
   choices: Type.Array(Type.String(), {
     description: "The list of choices to present to the user. Can be a maximum of 6 choices.",
     maxItems: 6,
+    minItems: 2,
   }),
   allowMultiple: Type.Optional(
     Type.Boolean({
