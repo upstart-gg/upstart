@@ -2,7 +2,7 @@ import { type TArray, type TObject, type TSchema, Kind, type Static } from "@sin
 import type { PageAttributes } from "../attributes";
 import { schemaRegistry } from "./schema-registry";
 import { Cabidela } from "@cloudflare/cabidela";
-import applyDefaultsDeep from "lodash-es/defaultsDeep";
+import { defaultsDeep as applyDefaultsDeep } from "lodash-es";
 
 export function normalizeSchemaEnum(schema: TSchema): Array<{ const: string; title: string }> {
   if (!("enum" in schema)) {
