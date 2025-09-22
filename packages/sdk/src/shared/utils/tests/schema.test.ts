@@ -1,10 +1,10 @@
-import { describe, expect, test, beforeEach, vi } from "vitest";
+import { describe, expect, test, beforeEach } from "vitest";
 import { Type } from "@sinclair/typebox";
-import { resolveSchema } from "../schema";
+import { resolveSchema, validate } from "../schema";
 import { inlineSchemaRefs, toLLMSchema } from "../llm";
 import { sitemapSchema } from "~/shared/sitemap";
-import { registerSchema, schemaRegistry, unregisterSchema } from "~/shared/utils/schema-registry";
-import { sectionSchema } from "~/shared/bricks";
+import { registerSchema, unregisterSchema } from "~/shared/utils/schema-registry";
+import { type Section, sectionSchema, sectionSchemaLLM } from "~/shared/bricks";
 
 describe("resolveSchema tests suite", () => {
   beforeEach(() => {
@@ -712,5 +712,40 @@ describe("inlineSchemaRefs", () => {
     expect(inlined.properties.props.properties.colorPreset.$ref).toEqual("#/$defs/presets_color");
     expect(inlined.$defs.presets_color).toBeDefined();
     expect(inlined.$defs.presets_color.type).toBe("object");
+  });
+});
+
+describe("toLLMSchema consistency", () => {
+  test("toLLMSchema(sectionSchema) should equal sectionSchemaLLM", () => {
+    const transformed = toLLMSchema(sectionSchema);
+    expect(transformed).toEqual(sectionSchemaLLM);
+
+    expect(transformed.$defs.presets_color).toBeDefined();
+    expect(transformed.$defs.presets_color.type).toBe("object");
+
+    expect(sectionSchemaLLM.$defs.presets_color).toBeDefined();
+    expect(sectionSchemaLLM.$defs.presets_color.type).toBe("object");
+  });
+});
+
+describe("validation with validate()", () => {
+  test("should validate correct schema", () => {
+    expect(sectionSchemaLLM.$defs.presets_color).toBeDefined();
+    expect(sectionSchemaLLM.$defs.presets_color.type).toBe("object");
+    const validSectionExample: Section = {
+      id: "section1",
+      label: "Hero Section",
+      order: 1,
+      props: {
+        colorPreset: {
+          color: "primary-100",
+        },
+        maxWidth: "max-w-full",
+        verticalMargin: "28px",
+        direction: "flex-col",
+      },
+      bricks: [],
+    };
+    expect(() => validate(sectionSchemaLLM, validSectionExample)).not.toThrow();
   });
 });

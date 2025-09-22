@@ -1,6 +1,8 @@
-import { type TArray, type TObject, type TSchema, Kind } from "@sinclair/typebox";
+import { type TArray, type TObject, type TSchema, Kind, type Static } from "@sinclair/typebox";
 import type { PageAttributes } from "../attributes";
 import { schemaRegistry } from "./schema-registry";
+import { Cabidela } from "@cloudflare/cabidela";
+import applyDefaultsDeep from "lodash-es/defaultsDeep";
 
 export function normalizeSchemaEnum(schema: TSchema): Array<{ const: string; title: string }> {
   if (!("enum" in schema)) {
@@ -356,4 +358,17 @@ function resolveSchemaRecursive(schema: TSchema, visited: Set<string>): TSchema 
   }
 
   return resolvedSchema as TSchema;
+}
+
+export function validate<T extends TSchema>(schema: TSchema, data: unknown): data is Static<T> {
+  const validator = new Cabidela(schema, {
+    fullErrors: true,
+  });
+  validator.validate(data);
+
+  // Mutate data with defaults
+  const defaults = getSchemaDefaults(schema as TObject | TArray);
+  applyDefaultsDeep(data, defaults);
+
+  return true;
 }

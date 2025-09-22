@@ -12,7 +12,7 @@ interface ChatBoxProps {
   setInput: (value: string) => void;
   onSubmit: (e: Event | FormEvent) => void;
   status: string;
-  hasRunningTools: boolean;
+  disabled: boolean;
   stop: () => void;
   messages: UpstartUIMessage[];
   showWebSearch?: boolean;
@@ -24,7 +24,7 @@ export default function ChatBox({
   setInput,
   onSubmit,
   status,
-  hasRunningTools,
+  disabled,
   stop,
   messages,
   showWebSearch = false,
@@ -103,7 +103,7 @@ export default function ChatBox({
             type="submit"
             size={"1"}
             className={tx("flex items-center gap-0.5")}
-            disabled={hasRunningTools}
+            disabled={disabled || input.trim().length === 0}
           >
             <TbSend2 className="text-lg" />
           </Button>

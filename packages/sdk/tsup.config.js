@@ -31,7 +31,6 @@ export default defineConfig((options) => {
       target: "es2022",
       dts: false,
       format: "esm",
-      silent: true,
       removeNodeProtocol: false,
       metafile: !!process.env.ANALYZE_BUNDLE,
       clean: !options.watch,

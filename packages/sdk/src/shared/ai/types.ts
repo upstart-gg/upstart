@@ -18,6 +18,10 @@ export type Tools = {
     input: AskUserChoiceInput;
     output: string | string[] | null; // The user's choice(s
   };
+  generateImages: {
+    input: { prompt: string; count: number; aspectRatio: string };
+    output: ImageSearchResultsType;
+  };
   listThemes: {
     input: null; // Just type the waiting message for now
     output: Theme[];

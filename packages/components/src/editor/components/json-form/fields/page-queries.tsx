@@ -18,8 +18,8 @@ import { FiEdit } from "react-icons/fi";
 import { tx } from "@upstart.gg/style-system/twind";
 import { LuPlus } from "react-icons/lu";
 import type { TSchema } from "@sinclair/typebox";
-import { Cabidela } from "@cloudflare/cabidela";
 import TagsInput, { TagsSelect } from "../../TagsInput";
+import { validate } from "@upstart.gg/sdk/shared/utils/schema";
 
 const baseOperators = [
   { value: "eq", label: "Equals" },
@@ -299,11 +299,7 @@ function QueryEditor({
 
   const validateQuery = () => {
     try {
-      const validator = new Cabidela(queryUseSchema, {
-        applyDefaults: true,
-        fullErrors: true,
-      });
-      validator.validate(query);
+      validate(queryUseSchema, query);
       return validateParams();
     } catch (error) {
       console.error("Query validation failed:", error);
@@ -316,13 +312,9 @@ function QueryEditor({
       const schema = datasource?.schema?.items?.properties?.[p.field];
       if (schema) {
         const value = query.params?.find((f) => f.field === p.field)?.value;
-        const validator = new Cabidela(schema, {
-          applyDefaults: true,
-          fullErrors: true,
-        });
         // Validate the parameter against the schema
         try {
-          validator.validate(value);
+          validate(schema, value);
         } catch (e) {
           return false;
         }

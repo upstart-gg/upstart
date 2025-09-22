@@ -7,40 +7,51 @@ import { Spinner } from "@upstart.gg/style-system/system";
 import type { SimpleImageMetadata } from "@upstart.gg/sdk/shared/images";
 import { useDebugMode } from "../../hooks/use-editor";
 import type { Tools, UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
+import { useState } from "react";
 
 export default function ToolRenderer({
   toolPart,
-  sendMessage,
+  addToolResultMessage,
   addToolResult,
   error,
+  shouldShowTools,
 }: {
   toolPart: ToolUIPart<Tools>;
   error?: Error;
   addToolResult: UseChatHelpers<UpstartUIMessage>["addToolResult"];
-  sendMessage: UseChatHelpers<UpstartUIMessage>["sendMessage"];
+  addToolResultMessage: (text: string) => void;
+  shouldShowTools: boolean;
 }) {
   const debug = useDebugMode();
   // If there is an error, don't show pending tool invocations
   if (error) {
     return null;
   }
+  if (toolPart.type !== "tool-askUserChoice" && !shouldShowTools) {
+    return null;
+  }
   if (toolPart.type === "tool-askUserChoice") {
     return (
-      <AnimatePresence initial={false}>
-        {toolPart.state === "input-available" ? (
-          <UserChoicesButtons part={toolPart} addToolResult={addToolResult} sendMessage={sendMessage} />
-        ) : toolPart.state === "output-available" ? (
+      <AnimatePresence key={toolPart.toolCallId}>
+        {toolPart.input && (
           <motion.div
-            className="choices"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.4 }}
+            transition={{ type: "spring" }}
+            className="font-medium italic mt-3"
+            key="question"
           >
-            <div className="basis-full text-right italic text-gray-800">
-              {Array.isArray(toolPart.output) ? toolPart.output.join(", ") : toolPart.output}
-            </div>
+            {toolPart.input.question}
           </motion.div>
+        )}
+        {toolPart.state === "input-available" ? (
+          <UserChoicesButtons
+            key={toolPart.toolCallId}
+            part={toolPart}
+            addToolResult={addToolResult}
+            addToolResultMessage={addToolResultMessage}
+          />
         ) : null}
       </AnimatePresence>
     );
@@ -48,7 +59,7 @@ export default function ToolRenderer({
 
   if (toolPart.input && "waitingMessage" in toolPart.input) {
     return (
-      <AnimatePresence initial={false}>
+      <AnimatePresence key={toolPart.toolCallId}>
         {toolPart.state === "input-available" ? (
           <RunningToolDisplay part={toolPart} />
         ) : toolPart.state === "output-available" ? (
@@ -89,13 +100,13 @@ export default function ToolRenderer({
               </details>
             )}
 
-            {/* {toolPart.type === "tool-searchImages" && (
+            {(toolPart.type === "tool-searchImages" || toolPart.type === "tool-generateImages") && (
               <ImagesPreview
                 key={toolPart.toolCallId}
                 query={toolPart.input.query}
                 images={toolPart.output}
               />
-            )} */}
+            )}
           </motion.div>
         ) : toolPart.state === "output-error" ? (
           <motion.div
@@ -115,7 +126,7 @@ export default function ToolRenderer({
   }
 
   if (debug) {
-    return <ToolCallDebugInfo part={toolPart} />;
+    return <ToolCallDebugInfo key={toolPart.toolCallId} part={toolPart} />;
   }
 
   return null;
@@ -169,6 +180,7 @@ function RunningToolDisplay({ part }: { part: Extract<ToolUIPart<Tools>, { state
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
+      transition={{ type: "spring" }}
     >
       <Spinner size="1" className="w-4 mx-0.5" />
       <span>{part.input.waitingMessage as string}</span>
@@ -203,39 +215,102 @@ function RunningToolDisplay({ part }: { part: Extract<ToolUIPart<Tools>, { state
 function UserChoicesButtons({
   part,
   addToolResult,
-  sendMessage,
+  addToolResultMessage,
 }: {
   part: Extract<ToolUIPart<Tools>, { type: "tool-askUserChoice"; state: "input-available" }>;
   addToolResult: UseChatHelpers<UpstartUIMessage>["addToolResult"];
-  sendMessage: UseChatHelpers<UpstartUIMessage>["sendMessage"];
+  addToolResultMessage: (text: string) => void;
 }) {
+  const [selectedChoices, setSelectedChoices] = useState<string[]>([]);
+
+  const handleChoiceClick = (choice: string) => {
+    if (part.input.allowMultiple) {
+      setSelectedChoices((prev) =>
+        prev.includes(choice) ? prev.filter((c) => c !== choice) : [...prev, choice],
+      );
+    } else {
+      setSelectedChoices([choice]);
+    }
+  };
   return (
     <motion.div
-      className="choices"
+      className="flex flex-wrap gap-2 my-4 justify-between"
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
-      transition={{ type: "spring", stiffness: 100, damping: 20 }}
+      transition={{ type: "spring" }}
     >
-      {part.input.choices.map((choice, i) => {
-        return (
-          <button
-            key={i}
-            type="button"
-            onClick={async () => {
-              console.log("addtoolresult to part", part);
-              await addToolResult({
-                tool: "askUserChoice",
-                toolCallId: part.toolCallId,
-                output: choice,
-              });
-              sendMessage();
-            }}
-          >
-            {choice}
-          </button>
-        );
-      })}
+      {part.input.allowMultiple ? (
+        <div className="flex flex-col flex-wrap gap-1.5">
+          {part.input.choices.map((choice, i) => {
+            return (
+              <button
+                key={`multi-${i}`}
+                type="button"
+                className={tx(
+                  "inline-flex justify-center flex-1 text-[.95em] gap-3 items-center font-medium px-3 py-1.5 rounded-md",
+                  {
+                    "border border-upstart-300 text-gray-700 hover:border-upstart-300":
+                      !selectedChoices.includes(choice),
+                    "border border-transparent bg-upstart-700 text-white": selectedChoices.includes(choice),
+                  },
+                )}
+                onClick={async () => {
+                  console.log("addtoolresult to part", part);
+                  handleChoiceClick(choice);
+                }}
+              >
+                <span className={tx("text-nowrap", selectedChoices.includes(choice) ? "font-bold" : "")}>
+                  {choice}
+                </span>
+              </button>
+            );
+          })}
+          <div className="basis-full w-full flex justify-end">
+            <button
+              type="button"
+              disabled={selectedChoices.length === 0}
+              className={tx(
+                "inline-flex justify-center content-center flex-1 text-[.95em] gap-3 items-center font-medium px-3 py-1.5 rounded-md bg-upstart-700 hover:opacity-90 text-white disabled:opacity-50 disabled:cursor-not-allowed max-w-[150px]",
+              )}
+              onClick={async () => {
+                console.log("addtoolresult to part", part);
+                await addToolResult({
+                  tool: "askUserChoice",
+                  toolCallId: part.toolCallId,
+                  output: selectedChoices,
+                });
+                addToolResultMessage(selectedChoices.join(", "));
+                setSelectedChoices([]);
+              }}
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      ) : (
+        part.input.choices.map((choice, i) => {
+          return (
+            <button
+              key={`single-${i}`}
+              type="button"
+              className={tx(
+                "inline-flex text-nowrap text-center justify-center content-center flex-1 text-[.95em] gap-3 items-center font-medium px-3 py-1.5 rounded-md bg-upstart-700 hover:opacity-90 text-white",
+              )}
+              onClick={async () => {
+                await addToolResult({
+                  tool: "askUserChoice",
+                  toolCallId: part.toolCallId,
+                  output: choice,
+                });
+                addToolResultMessage(choice);
+              }}
+            >
+              {choice}
+            </button>
+          );
+        })
+      )}
     </motion.div>
   );
 }

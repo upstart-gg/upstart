@@ -1,9 +1,15 @@
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { toast } from "@upstart.gg/style-system/system";
 import { motion, AnimatePresence } from "motion/react";
-import { type ChatOnToolCallCallback, DefaultChatTransport, type ToolUIPart } from "ai";
+import {
+  type ChatOnToolCallCallback,
+  DefaultChatTransport,
+  generateId,
+  lastAssistantMessageIsCompleteWithToolCalls,
+  type ToolUIPart,
+} from "ai";
 import { useChat } from "@ai-sdk/react";
-import { type FormEvent, useEffect, useMemo, useRef, useState, Suspense } from "react";
+import { type FormEvent, useEffect, useMemo, useRef, useState, Suspense, lazy, useCallback } from "react";
 import {
   useAdditionalAssets,
   useDraftHelpers,
@@ -20,10 +26,13 @@ import { useDeepCompareEffect } from "use-deep-compare";
 import { useDebugMode } from "../../hooks/use-editor";
 import { defineDatasource } from "@upstart.gg/sdk/shared/datasources";
 import type { Tools, UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
-import Markdown from "../Markdown";
-import ChatBox from "./ChatBox";
-import ChatReasoningPart from "./ChatReasoningPart";
-import ToolRenderer from "./ChatToolRenderer";
+import { set } from "lodash-es";
+
+// Lazy load heavy components
+const Markdown = lazy(() => import("../Markdown"));
+const ChatBox = lazy(() => import("./ChatBox"));
+const ChatReasoningPart = lazy(() => import("./ChatReasoningPart"));
+const ToolRenderer = lazy(() => import("./ChatToolRenderer"));
 
 const WEB_SEARCH_ENABLED = false;
 
@@ -44,36 +53,23 @@ const msgCommon = tx(
     "& code": {
       fontSize: "88%",
     },
-    "& ul, ol": {
+    "& ul": {
       listStyle: "outside",
       listStyleType: "square",
       paddingLeft: "1.6rem",
       marginTop: "0.5rem",
       marginBottom: "0.2rem",
     },
-    "& li": {
-      marginBottom: "0.25rem",
-      paddingLeft: ".3rem",
+    "& ol": {
+      listStyle: "outside",
+      listStyleType: "decimal",
+      paddingLeft: "1.6rem",
+      marginTop: "0.5rem",
+      marginBottom: "0.2rem",
     },
-    "& div.choices": {
-      display: "flex",
-      flexWrap: "wrap",
-      justifyContent: "space-between",
-      gap: ".5rem",
-      marginBlock: "1rem",
-      "& > button": {
-        backgroundColor: "var(--violet-10)",
-        color: "#fff",
-        flexGrow: "1",
-        padding: "0.4rem 0.7rem",
-        borderRadius: "0.5rem",
-        border: "none",
-        fontSize: ".95em",
-        fontWeight: "500",
-        "&:hover": {
-          backgroundColor: "var(--violet-9)",
-        },
-      },
+    "& li": {
+      marginBottom: "0.45rem",
+      paddingLeft: ".3rem",
     },
   }),
 );
@@ -196,107 +192,13 @@ What should we work on together? 🤖`,
     const toolResult = { tool: toolCall.toolName as keyof Tools, toolCallId: toolCall.toolCallId };
 
     switch (toolCall.toolName) {
-      case "listThemes": {
-        console.debug(
-          "Cient tool call %s",
-          toolCall.toolName,
-          " replying with themes",
-          siteRef.current.themes,
-        );
-        addToolResult({
-          ...toolResult,
-          output: siteRef.current.themes,
-        });
-        break;
-      }
-      case "getCurrentTheme": {
-        console.debug(
-          "Client tool call %s",
-          toolCall.toolName,
-          " replying with current theme ",
-          siteRef.current.theme,
-        );
-        addToolResult({
-          ...toolResult,
-          output: siteRef.current.theme,
-        });
-        break;
-      }
-      case "listImages": {
-        console.debug("Client tool call %s", toolCall.toolName, " replying with images ", assetsRef.current);
-        addToolResult({
-          ...toolResult,
-          output: assetsRef.current ?? [],
-        });
-        break;
-      }
-      case "getSitemap": {
-        console.debug(
-          "Client tool call %s",
-          toolCall.toolName,
-          " replying with sitemap ",
-          siteRef.current.sitemap,
-        );
-        addToolResult({
-          ...toolResult,
-          output: siteRef.current.sitemap,
-        });
-        break;
-      }
-      case "getSiteAttributes": {
-        console.debug(
-          "Client tool call %s",
-          toolCall.toolName,
-          " replying with site attributes ",
-          siteRef.current.attributes,
-        );
-        addToolResult({
-          ...toolResult,
-          output: siteRef.current.attributes,
-        });
-        break;
-      }
-
-      case "getSection": {
-        const input = toolCall.input as Tools["getSection"]["input"];
-        console.debug(
-          "Client tool call %s",
-          toolCall.toolName,
-          " replying with section ",
-          input.id,
-          pageRef.current.sections,
-        );
-        addToolResult({
-          ...toolResult,
-          output:
-            pageRef.current.sections.find((s) => s.id === input.id) ??
-            `Section with id '${input.id}' not found`,
-        });
-        break;
-      }
-      case "listSections": {
-        console.debug(
-          "Client tool call %s",
-          toolCall.toolName,
-          " replying with sections ",
-          pageRef.current.sections,
-        );
-        addToolResult({
-          ...toolResult,
-          output: pageRef.current.sections,
-        });
-        break;
-      }
-
-      case "deleteBrick": {
-        const input = toolCall.input as Tools["deleteBrick"]["input"];
-        draftHelpers.deleteBrick(input.id);
-        addToolResult({
-          ...toolResult,
-          output: true,
-        });
-        break;
-      }
+      // case "askUserChoice": {
+      //   if (isWaitingForNChoices) {
+      //     console.warn("Already waiting for user choice, ignoring new askUserChoice tool call");
+      //     addToolResult({ ...toolResult, output: null });
+      //   }
+      //   break;
+      // }
 
       default:
         if (toolCall.toolName.startsWith("get") || toolCall.toolName.startsWith("list")) {
@@ -305,8 +207,8 @@ What should we work on together? 🤖`,
     }
   };
 
-  const { messages, sendMessage, error, status, regenerate, stop, addToolResult } = useChat<UpstartUIMessage>(
-    {
+  const { messages, sendMessage, error, status, regenerate, stop, addToolResult, setMessages } =
+    useChat<UpstartUIMessage>({
       // resume: generationState.isReady === false,
       transport: new DefaultChatTransport({
         api: "/editor/chat",
@@ -321,7 +223,6 @@ What should we work on together? 🤖`,
           },
         }),
       }),
-      // sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
       messages: initialMessages,
       // generateId: createIdGenerator({
       //   prefix: "ups",
@@ -336,8 +237,7 @@ What should we work on together? 🤖`,
        * For tools that should be called client-side
        */
       onToolCall,
-    },
-  );
+    });
   const messagesListRef = useRef<HTMLDivElement>(null);
 
   const onSubmit = (e: Event | FormEvent) => {
@@ -392,163 +292,202 @@ What should we work on together? 🤖`,
   }, [messages]);
 
   const hasRunningTools = useMemo(() => {
+    // get the last 2 messages
     const results = messages
+      .slice(-2)
       .filter((msg) => msg.role === "assistant")
       .flatMap((msg) => msg.parts as ToolUIPart<Tools>[])
-      .filter((part) => part.type.startsWith("tool-"))
+      .filter((part) => part.type.startsWith("tool-") && part.type !== "tool-askUserChoice")
       .filter((part) => part.state !== "output-available" && part.state !== "output-error");
+
     return results.length > 0;
   }, [messages]);
 
-  useDeepCompareEffect(() => {
-    for (const toolInvocation of toolInvocations.filter((t) => t.state === "output-available")) {
-      if (handledToolResults.current.has(toolInvocation.toolCallId)) {
-        continue;
-      }
-      handledToolResults.current.add(toolInvocation.toolCallId);
-      switch (toolInvocation.type) {
-        case "tool-createPage": {
-          const page = toolInvocation.output;
-          console.log("Generated page", page);
-          draftHelpers.addPage({ ...page, version: crypto.randomUUID(), sections: [] });
-          break;
-        }
+  const isWaitingForNChoices = useMemo(() => {
+    const results = messages
+      .slice(-2)
+      .filter((msg) => msg.role === "assistant")
+      .flatMap((msg) => msg.parts as ToolUIPart<Tools>[])
+      .filter((part) => part.type === "tool-askUserChoice")
+      .filter((part) => part.state.startsWith("input"));
+    return results.length;
+  }, [messages]);
 
-        case "tool-createNavbar":
-          console.log("Generated navbar", toolInvocation.output);
-          draftHelpers.updateSiteAttributes({
-            navbar: toolInvocation.output,
-          });
-          break;
+  const shouldShowTools = useMemo(() => {
+    // Return true if the parts of the last message does not include a tool-askUserChoice
+    return (
+      messages[messages.length - 1].parts.every(
+        (part) => part.type !== "tool-askUserChoice" || part.state === "output-available",
+      ) ?? true
+    );
+  }, [messages]);
 
-        case "tool-createFooter":
-          console.log("Generated footer", toolInvocation.output);
-          draftHelpers.updateSiteAttributes({
-            footer: toolInvocation.output,
-          });
-          break;
+  const sendingEnabled = shouldShowTools && !hasRunningTools && status === "ready";
 
-        case "tool-createThemes": {
-          const themes = toolInvocation.output;
-          console.log("Generated themes", themes);
-          draftHelpers.setThemes(themes);
-          break;
-        }
+  // useDeepCompareEffect(() => {
+  //   for (const toolInvocation of toolInvocations.filter((t) => t.state === "output-available")) {
+  //     if (handledToolResults.current.has(toolInvocation.toolCallId)) {
+  //       continue;
+  //     }
+  //     handledToolResults.current.add(toolInvocation.toolCallId);
+  //     // switch (toolInvocation.type) {
+  //     //   case "tool-createPage": {
+  //     //     const page = toolInvocation.output;
+  //     //     console.log("Generated page", page);
+  //     //     draftHelpers.addPage({ ...page, version: crypto.randomUUID(), sections: [] });
+  //     //     break;
+  //     //   }
 
-        case "tool-createDatasource": {
-          const datasource = toolInvocation.output;
-          console.log("Generated datasource", datasource);
-          draftHelpers.addDatasource(defineDatasource(datasource));
-          break;
-        }
+  //     //   case "tool-createNavbar":
+  //     //     console.log("Generated navbar", toolInvocation.output);
+  //     //     draftHelpers.updateSiteAttributes({
+  //     //       navbar: toolInvocation.output,
+  //     //     });
+  //     //     break;
 
-        case "tool-createDatarecord": {
-          const datarecord = toolInvocation.output;
-          console.log("Generated data record", datarecord);
-          draftHelpers.addDatarecord(defineDataRecord(datarecord));
-          break;
-        }
+  //     //   case "tool-createFooter":
+  //     //     console.log("Generated footer", toolInvocation.output);
+  //     //     draftHelpers.updateSiteAttributes({
+  //     //       footer: toolInvocation.output,
+  //     //     });
+  //     //     break;
 
-        case "tool-createSitemap": {
-          const sitemap = toolInvocation.output;
-          console.log("Generated sitemap", sitemap);
-          draftHelpers.setSitemap(sitemap);
-          break;
-        }
+  //     //   case "tool-createThemes": {
+  //     //     const themes = toolInvocation.output;
+  //     //     console.log("Generated themes", themes);
+  //     //     draftHelpers.setThemes(themes);
+  //     //     break;
+  //     //   }
 
-        case "tool-createSiteAttributes": {
-          const siteAttributes = toolInvocation.output;
-          console.log("Generated site attributes", siteAttributes);
-          draftHelpers.updateSiteAttributes(siteAttributes);
-          break;
-        }
+  //     //   case "tool-createDatasource": {
+  //     //     const datasource = toolInvocation.output;
+  //     //     console.log("Generated datasource", datasource);
+  //     //     draftHelpers.addDatasource(defineDatasource(datasource));
+  //     //     break;
+  //     //   }
 
-        case "tool-createSiteQueries": {
-          const queries = toolInvocation.output;
-          console.log("Generated site queries", queries);
-          draftHelpers.updateSiteAttributes({
-            queries: [...(site.attributes.queries ?? []), ...queries],
-          });
-          break;
-        }
+  //     //   case "tool-createDatarecord": {
+  //     //     const datarecord = toolInvocation.output;
+  //     //     console.log("Generated data record", datarecord);
+  //     //     draftHelpers.addDatarecord(defineDataRecord(datarecord));
+  //     //     break;
+  //     //   }
 
-        case "tool-editSiteQueries": {
-          const queries = toolInvocation.output;
-          console.log("Edited site queries", queries);
-          draftHelpers.updateSiteAttributes({
-            queries: [...(site.attributes.queries ?? []), ...queries],
-          });
-          break;
-        }
+  //     //   case "tool-createSitemap": {
+  //     //     const sitemap = toolInvocation.output;
+  //     //     console.log("Generated sitemap", sitemap);
+  //     //     draftHelpers.setSitemap(sitemap);
+  //     //     break;
+  //     //   }
 
-        case "tool-createPageQueries": {
-          const queries = toolInvocation.output;
-          console.log("Generated page queries", queries);
-          draftHelpers.updatePageAttributes({
-            ...page.attributes,
-            queries: [...(page.attributes.queries ?? []), ...queries],
-          });
-          break;
-        }
+  //     //   case "tool-createSiteAttributes": {
+  //     //     const siteAttributes = toolInvocation.output;
+  //     //     console.log("Generated site attributes", siteAttributes);
+  //     //     draftHelpers.updateSiteAttributes(siteAttributes);
+  //     //     break;
+  //     //   }
 
-        case "tool-editPageQueries": {
-          const queries = toolInvocation.output;
-          console.log("Edited page queries", queries);
-          draftHelpers.updatePageAttributes({
-            ...page.attributes,
-            queries: [...(page.attributes.queries ?? []), ...queries],
-          });
-          break;
-        }
+  //     //   case "tool-createSiteQueries": {
+  //     //     const queries = toolInvocation.output;
+  //     //     console.log("Generated site queries", queries);
+  //     //     draftHelpers.updateSiteAttributes({
+  //     //       queries: [...(site.attributes.queries ?? []), ...queries],
+  //     //     });
+  //     //     break;
+  //     //   }
 
-        case "tool-createSection": {
-          const section = toolInvocation.output;
-          console.log("Generated section", section);
-          // @ts-expect-error Bricks overwrite
-          draftHelpers.addSection({ bricks: [], ...section });
-          break;
-        }
+  //     //   case "tool-editSiteQueries": {
+  //     //     const queries = toolInvocation.output;
+  //     //     console.log("Edited site queries", queries);
+  //     //     draftHelpers.updateSiteAttributes({
+  //     //       queries: [...(site.attributes.queries ?? []), ...queries],
+  //     //     });
+  //     //     break;
+  //     //   }
 
-        case "tool-createBrick": {
-          const brick = toolInvocation.output;
-          console.log("Generated brick", brick);
-          const { sectionId, index } = toolInvocation.input;
-          draftHelpers.addBrick(brick, sectionId, index);
-          break;
-        }
+  //     //   case "tool-createPageQueries": {
+  //     //     const queries = toolInvocation.output;
+  //     //     console.log("Generated page queries", queries);
+  //     //     draftHelpers.updatePageAttributes({
+  //     //       ...page.attributes,
+  //     //       queries: [...(page.attributes.queries ?? []), ...queries],
+  //     //     });
+  //     //     break;
+  //     //   }
 
-        case "tool-editBrick": {
-          draftHelpers.updateBrickProps(toolInvocation.input.id, toolInvocation.output.props);
-          break;
-        }
+  //     //   case "tool-editPageQueries": {
+  //     //     const queries = toolInvocation.output;
+  //     //     console.log("Edited page queries", queries);
+  //     //     draftHelpers.updatePageAttributes({
+  //     //       ...page.attributes,
+  //     //       queries: [...(page.attributes.queries ?? []), ...queries],
+  //     //     });
+  //     //     break;
+  //     //   }
 
-        case "tool-deleteBrick": {
-          const { id } = toolInvocation.input;
-          draftHelpers.deleteBrick(id);
-          break;
-        }
+  //     //   case "tool-createSection": {
+  //     //     const section = toolInvocation.output;
+  //     //     console.log("Generated section", section);
+  //     //     // @ts-expect-error Bricks overwrite
+  //     //     draftHelpers.addSection({ bricks: [], ...section });
+  //     //     break;
+  //     //   }
 
-        case "tool-searchImages": {
-          const images = toolInvocation.output;
-          console.log("Generated images", images);
-          draftHelpers.addAdditionalAssets(images);
-          break;
-        }
+  //     //   case "tool-createBrick": {
+  //     //     const brick = toolInvocation.output;
+  //     //     console.log("Generated brick", brick);
+  //     //     const { sectionId, index } = toolInvocation.input;
+  //     //     draftHelpers.addBrick(brick, sectionId, index);
+  //     //     break;
+  //     //   }
 
-        default:
-          console.log("Default tool invocation", toolInvocation.type, toolInvocation);
-          break;
-      }
-    }
-  }, [toolInvocations, draftHelpers, siteThemes]);
+  //     //   case "tool-editBrick": {
+  //     //     draftHelpers.updateBrickProps(toolInvocation.input.id, toolInvocation.output.props);
+  //     //     break;
+  //     //   }
+
+  //     //   case "tool-deleteBrick": {
+  //     //     const { id } = toolInvocation.input;
+  //     //     draftHelpers.deleteBrick(id);
+  //     //     break;
+  //     //   }
+
+  //     //   case "tool-searchImages": {
+  //     //     const images = toolInvocation.output;
+  //     //     console.log("Generated images", images);
+  //     //     draftHelpers.addAdditionalAssets(images);
+  //     //     break;
+  //     //   }
+
+  //     //   default:
+  //     //     console.log("Default tool invocation", toolInvocation.type, toolInvocation);
+  //     //     break;
+  //     // }
+  //   }
+  // }, [toolInvocations, draftHelpers, siteThemes]);
 
   // filter out the "init" messages
   const displayedMessages = messages.filter(
     (msg) =>
       msg.id !== "init-setup" &&
-      msg.parts.some(
-        (part) => part.type === "text" || part.type === "reasoning" || part.type.startsWith("tool-"),
-      ),
+      msg.parts.some((part) => part.type === "text" || part.type.startsWith("tool-")),
+  );
+
+  const addToolResultMessageCallback = useCallback(
+    async (text: string) => {
+      setMessages((msgs) => {
+        const newMsg = { id: generateId(), role: "user" as const, parts: [{ type: "text" as const, text }] };
+        return [...msgs, newMsg];
+      });
+      const itv = setInterval(() => {
+        if (lastAssistantMessageIsCompleteWithToolCalls({ messages })) {
+          clearInterval(itv);
+          regenerate();
+        }
+      }, 400);
+      await regenerate();
+    },
+    [setMessages, regenerate, messages],
   );
 
   return (
@@ -596,43 +535,52 @@ What should we work on together? 🤖`,
             {msg.parts.map((part, i) => {
               if (part.type.startsWith("tool-")) {
                 return (
-                  <ToolRenderer
-                    key={i}
-                    toolPart={part as ToolUIPart<Tools>}
-                    addToolResult={addToolResult}
-                    sendMessage={sendMessage}
-                    error={error}
-                  />
+                  <Suspense key={i} fallback={<div>Loading tool...</div>}>
+                    <ToolRenderer
+                      key={i}
+                      // test showing tools
+                      shouldShowTools={true}
+                      // shouldShowTools={shouldShowTools}
+                      toolPart={part as ToolUIPart<Tools>}
+                      addToolResult={addToolResult}
+                      addToolResultMessage={addToolResultMessageCallback}
+                      error={error}
+                    />
+                  </Suspense>
                 );
               }
 
               switch (part.type) {
                 case "text":
                   return (
-                    <Suspense key={i}>
+                    <Suspense key={i} fallback={<div>Loading...</div>}>
                       <Markdown content={part.text} key={i} />
                     </Suspense>
                   );
 
                 case "reasoning":
-                  return debug ? <ChatReasoningPart key={i} part={part} /> : null;
+                  return debug ? (
+                    <Suspense key={i} fallback={<div>Loading...</div>}>
+                      <ChatReasoningPart key={i} part={part} />
+                    </Suspense>
+                  ) : null;
               }
             })}
           </div>
         ))}
 
         <AnimatePresence initial={false}>
-          {!hasRunningTools && (status === "submitted" || status === "streaming") && (
+          {(status === "submitted" || status === "streaming") && isWaitingForNChoices === 0 && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "1.5rem" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.2 }}
               className={tx(
-                "p-4 my-4 text-fluid-sm text-gray-700 flex items-center justify-center gap-1.5 backdrop-blur-md bg-white/70 max-w-fit mx-auto rounded-md",
+                "p-4 my-4 text-sm text-gray-800 flex items-center justify-center gap-1.5 backdrop-blur-md bg-white/50 max-w-fit mx-auto rounded-md",
               )}
             >
-              <Spinner size="2" /> Please wait...
+              <Spinner size="2" className="text-gray-700" /> Please wait...
             </motion.div>
           )}
         </AnimatePresence>
@@ -655,15 +603,17 @@ What should we work on together? 🤖`,
         )}
         <div ref={listPlaceholderRef} className={tx("h-2")} aria-label="separator" aria-hidden />
       </div>
-      <ChatBox
-        input={input}
-        setInput={setInput}
-        onSubmit={onSubmit}
-        status={status}
-        hasRunningTools={hasRunningTools}
-        stop={stop}
-        messages={messages}
-      />
+      <Suspense fallback={<div>Loading chat...</div>}>
+        <ChatBox
+          input={input}
+          setInput={setInput}
+          onSubmit={onSubmit}
+          status={status}
+          disabled={sendingEnabled === false}
+          stop={stop}
+          messages={messages}
+        />
+      </Suspense>
     </div>
   );
 }

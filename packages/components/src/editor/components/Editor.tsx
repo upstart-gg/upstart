@@ -13,8 +13,6 @@ import { Button, Switch } from "@upstart.gg/style-system/system";
 import { usePageAutoSave } from "~/editor/hooks/use-page-autosave";
 import { getThemeCss } from "~/shared/utils/get-theme-css";
 import { useEditorHotKeys } from "../hooks/use-editor-hot-keys";
-import ThemesPreviewList from "./ThemesPreviewList";
-import BlankWaitPage from "./BlankWaitPage";
 import type { GenerationState } from "@upstart.gg/sdk/shared/context";
 import { createEmptyBrick } from "@upstart.gg/sdk/shared/bricks";
 import { Toaster } from "@upstart.gg/style-system/system";
@@ -28,9 +26,8 @@ import {
 } from "../hooks/use-page-data";
 import { DragDropProvider } from "@dnd-kit/react";
 import { move } from "@dnd-kit/helpers";
-import Modal from "./Modal";
 import useBeforeUnload from "../hooks/use-beforeunload";
-import { isEqual } from "lodash-es";
+import isEqual from "lodash-es/isEqual";
 import { useUserConfig } from "../hooks/use-user-config";
 
 const Tour = lazy(() => import("./Tour"));
@@ -39,6 +36,9 @@ const Chat = lazy(() => import("./Chat/ChatComponent"));
 const EditablePage = lazy(() => import("./EditablePage"));
 const DeviceFrame = lazy(() => import("./DeviceFrame"));
 const Panel = lazy(() => import("./Panel"));
+const Modal = lazy(() => import("./Modal"));
+const ThemesPreviewList = lazy(() => import("./ThemesPreviewList"));
+const BlankWaitPage = lazy(() => import("./BlankWaitPage"));
 
 type EditorProps = ComponentProps<"div">;
 
@@ -281,11 +281,15 @@ export default function Editor(props: EditorProps) {
           {!generationState.isReady &&
             (themes.length > 0 ? (
               <DeviceFrame>
-                <ThemesPreviewList themes={themes} />
+                <Suspense>
+                  <ThemesPreviewList themes={themes} />
+                </Suspense>
               </DeviceFrame>
             ) : (
               <DeviceFrame>
-                <BlankWaitPage />
+                <Suspense>
+                  <BlankWaitPage />
+                </Suspense>
               </DeviceFrame>
             ))}
 

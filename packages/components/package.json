@@ -31,7 +31,8 @@
     }
   },
   "scripts": {
-    "dev": "node server",
+    "dev": "vite build --mode development --watch",
+    "start": "node server",
     "build:analyze": "vite build --debug transform",
     "build": "vite build",
     "bundle-analyze": "pnpx vite-bundle-visualizer",
@@ -107,8 +108,6 @@
     "@types/node": "^22.16.0",
     "@types/react": "19.1.13",
     "@types/react-dom": "^19.1.9",
-    "@upstart.gg/sdk": "workspace:*",
-    "@upstart.gg/style-system": "workspace:*",
     "@vitejs/plugin-react": "^5.0.1",
     "@vitejs/plugin-react-swc": "4.0.1",
     "cross-env": "^10.0.0",
@@ -124,6 +123,8 @@
   },
   "peerDependencies": {
     "@emotion/is-prop-valid": "^1.4.0",
+    "@upstart.gg/sdk": "workspace:*",
+    "@upstart.gg/style-system": "workspace:*",
     "chroma-js": "3.1.2",
     "lodash-es": "^4.17.21",
     "posthog-js": "^1.242.1",

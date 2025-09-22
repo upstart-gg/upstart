@@ -1,14 +1,17 @@
 import type { EditorEvents } from "@tiptap/react";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { useDraftHelpers } from "~/editor/hooks/use-page-data";
-import TextEditor, { DatasourceItemButton, type TextEditorRef } from "~/shared/components/TextEditor";
+import type { TextEditorRef } from "~/shared/components/TextEditor";
+import { DatasourceItemButton } from "~/shared/components/DatasourceItemButton";
 import type { FieldProps } from "../components/json-form/fields/types";
-import { useRef } from "react";
+import { lazy, useRef, Suspense } from "react";
 import { css, tx } from "@upstart.gg/style-system/twind";
 import { useDebounceCallback } from "usehooks-ts";
 import { IconButton } from "@upstart.gg/style-system/system";
 import { RiBracesLine } from "react-icons/ri";
 import { getEditorNodeFromField, insertInEditor } from "~/shared/utils/editor-utils";
+
+const TextEditor = lazy(() => import("~/shared/components/TextEditor"));
 
 export function useTextEditorUpdateHandler(
   brickId: Brick["id"],
@@ -60,23 +63,25 @@ export function useDynamicTextEditor({
           }),
         )}
       >
-        <TextEditor
-          content={currentValue}
-          brickId={brickId}
-          ref={textEditorRef}
-          className={tx(
-            css({ lineHeight: "1.5" }),
-            schema["ui:multiline"] && `scrollbar-thin ${schema["ui:textarea-class"] ?? "min-h-24"}`,
-          )}
-          placeholder={schema["ui:placeholder"] ?? placeholder}
-          spellCheck={!!schema["ui:spellcheck"]}
-          singleline
-          noMenuBar
-          dynamic
-          onChange={(e: EditorEvents["update"]) => {
-            onChangeDebounced(e.editor.getText());
-          }}
-        />
+        <Suspense fallback={null}>
+          <TextEditor
+            content={currentValue}
+            brickId={brickId}
+            ref={textEditorRef}
+            className={tx(
+              css({ lineHeight: "1.5" }),
+              schema["ui:multiline"] && `scrollbar-thin ${schema["ui:textarea-class"] ?? "min-h-24"}`,
+            )}
+            placeholder={schema["ui:placeholder"] ?? placeholder}
+            spellCheck={!!schema["ui:spellcheck"]}
+            singleline
+            noMenuBar
+            dynamic
+            onChange={(e: EditorEvents["update"]) => {
+              onChangeDebounced(e.editor.getText());
+            }}
+          />
+        </Suspense>
       </div>
       <DatasourceItemButton
         brickId={brickId}

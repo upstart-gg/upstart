@@ -16,6 +16,9 @@ const vite = await createServer({
   server: {
     middlewareMode: true,
     warmup: true,
+    watch: {
+      // Ignore node_modules and build outputs from other packages
+    },
   },
   appType: "custom",
   base,

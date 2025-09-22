@@ -1,5 +1,4 @@
 import type { TSchema } from "@sinclair/typebox";
-import { Cabidela } from "@cloudflare/cabidela";
 import { alignItems, alignSelf, justifyContent } from "./bricks/props/align";
 import { background, backgroundColor } from "./bricks/props/background";
 import { border, rounding } from "./bricks/props/border";

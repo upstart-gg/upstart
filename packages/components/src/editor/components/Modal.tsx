@@ -10,10 +10,10 @@ import {
 import { PiListNumbersLight } from "react-icons/pi";
 import { useEditorHelpers, useModal } from "~/editor/hooks/use-editor";
 import { BsDatabaseDown, BsDatabase, BsAt, BsCrosshair } from "react-icons/bs";
+import { validate } from "@upstart.gg/sdk/shared/utils/schema";
 import type { TSchema } from "@sinclair/typebox";
 import { type Query, querySchema } from "@upstart.gg/sdk/shared/datasources/types";
 import { getDatasourceIndexedFieldsWithTitles } from "@upstart.gg/sdk/shared/datasources";
-import { Cabidela } from "@cloudflare/cabidela";
 import { Fragment, useCallback, useState } from "react";
 import { useDraftHelpers, useSiteQueries } from "../hooks/use-page-data";
 import { useDatasource, useDatasources } from "../hooks/use-datasource";
@@ -338,11 +338,7 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
       e.stopPropagation();
       console.log("Submitting query:", query);
       try {
-        const validator = new Cabidela(querySchema, {
-          applyDefaults: true,
-          fullErrors: true,
-        });
-        validator.validate(query);
+        validate(querySchema, query);
         upsertQuery(query as Query);
         onClose?.();
       } catch (error) {
@@ -353,12 +349,8 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
   );
 
   function validateQuery(querySchema: TSchema, query: unknown): boolean {
-    const validator = new Cabidela(querySchema, {
-      applyDefaults: true,
-      fullErrors: true,
-    });
     try {
-      validator.validate(query);
+      validate(querySchema, query);
       return true;
     } catch (error) {
       return false;

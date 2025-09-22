@@ -2,7 +2,6 @@ import { Type, type Static, type TObject } from "@sinclair/typebox";
 import { customAlphabet } from "nanoid";
 import { brickTypes, defaultProps } from "./bricks/manifests/all-manifests";
 import { cssLengthRef } from "./bricks/props/css-length";
-import { enumProp } from "./bricks/props/enum";
 import { colorPresetRef } from "./bricks/props/color-preset";
 import { mergeIgnoringArrays } from "./utils/merge";
 import { getSchemaDefaults } from "./utils/schema";
@@ -165,32 +164,13 @@ export const sectionProps = Type.Object(
       }),
     ),
     maxWidth: Type.Optional(
-      enumProp("Max width", "max-w-full", {
-        options: [
-          {
-            value: "max-w-screen-lg",
-            title: "M",
-            description: "Common for text-heavy content/blog posts",
-          },
-          {
-            value: "max-w-screen-xl",
-            title: "L",
-            description: "Usefull or some landing pages",
-          },
-          {
-            value: "max-w-screen-2xl",
-            title: "XL",
-            description: "Common width",
-          },
-          {
-            value: "max-w-full",
-            title: "Full",
-            description: "Takes the entire space",
-          },
-        ],
+      StringEnum(["max-w-screen-lg", "max-w-screen-xl", "max-w-screen-2xl", "max-w-full"], {
+        title: "Max width",
+        default: "max-w-full",
+        enumNames: ["M", "L", "XL", "Full"],
         description: "The maximum width of the section. Desktop only",
         "ai:instructions":
-          "Choose the most appropriate max width for the section. The value 'max-w-screen-2xl' is a safe bet for most cases. You will likely use the same max width for all sections in a page.",
+          "Choose the most appropriate max width for the section. The value 'max-w-full' is the most common and the default. Use the same value for all sections on the same page unless there is a good reason to do otherwise.",
         displayAs: "button-group",
         "ui:responsive": "desktop",
       }),
@@ -810,7 +790,6 @@ Uses a card-like appearance with rounded corners and shadow.`,
         gap: "2rem",
         colorPreset: { color: "blue-50" },
         alignItems: "items-center",
-        maxWidth: "max-w-screen-md",
       },
       bricks: [
         {
@@ -1129,7 +1108,7 @@ Creates a cohesive call-to-action for community building.`,
         gap: "3rem",
         colorPreset: { color: "indigo-100" },
         alignItems: "items-center",
-        maxWidth: "max-w-screen-md",
+        maxWidth: "max-w-full",
       },
       bricks: [
         {

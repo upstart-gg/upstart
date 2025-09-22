@@ -75,6 +75,7 @@
   },
   "scripts": {
     "build": "tsup",
+    "build:analyze": "tsup --metafile",
     "build:types": "tsc --emitDeclarationOnly --declaration --declarationMap",
     "dev": "tsup --watch",
     "sizetest": "pnpm build && du -sh dist",
