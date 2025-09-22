@@ -41,7 +41,7 @@ export default function ToolRenderer({
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
-          transition={{ type: "spring" }}
+          transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
         >
           {toolPart.input?.question && <Markdown content={toolPart.input.question} />}
           {toolPart.state === "input-available" ? (
@@ -167,7 +167,7 @@ function RunningToolDisplay({ part }: { part: Extract<ToolUIPart<Tools>, { state
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
-      transition={{ type: "spring" }}
+      transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
     >
       <Spinner size="1" className="w-4 mx-0.5" />
       <span>{part.input.waitingMessage as string}</span>
@@ -225,7 +225,7 @@ function UserChoicesButtons({
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
-      transition={{ type: "spring" }}
+      transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
     >
       {part.input.allowMultiple ? (
         <>

@@ -586,7 +586,7 @@ What should we work on together? 🤖`,
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "1.5rem" }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
               className={tx(
                 "p-4 my-4 text-sm text-gray-800 flex items-center justify-center gap-1.5 backdrop-blur-md bg-white/50 max-w-fit mx-auto rounded-md",
               )}
@@ -614,7 +614,7 @@ What should we work on together? 🤖`,
         )}
         <div ref={listPlaceholderRef} className={tx("h-2")} aria-label="separator" aria-hidden />
       </div>
-      <Suspense fallback={<div>Loading chat...</div>}>
+      <Suspense fallback={null}>
         <ChatBox
           input={input}
           setInput={setInput}
