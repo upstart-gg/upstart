@@ -53,6 +53,7 @@ export default function ChatBox({
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) onSubmit(e);
         }}
+        disabled={disabled}
         name="prompt"
         spellCheck={false}
         autoComplete="off"
@@ -65,15 +66,21 @@ export default function ChatBox({
         className={tx(
           "form-textarea ",
           generationState.isReady === false ? "!text-fluid-sm" : "text-sm",
-          "h-full w-full rounded scrollbar-thin p-2 !bg-white !pb-9 border-upstart-300 shadow-inner focus:(!outline-0 !ring-upstart-500 !border-upstart-500)",
+          "h-full w-full rounded scrollbar-thin p-2 !pb-9 border-upstart-300 shadow-inner focus:(!outline-0 !ring-upstart-500 !border-upstart-500)",
+          disabled ? "!bg-gray-200" : "!bg-white",
         )}
       />
       <div
         className={tx(
-          "flex justify-between items-center h-9 text-gray-500 absolute left-[9px] right-[9px] rounded bottom-2.5 px-2 z-50 bg-white",
+          "flex justify-between items-center h-9 text-gray-500 absolute left-[9px] right-[9px] rounded bottom-2.5 px-2 z-50 ",
+          disabled ? "bg-gray-200" : "bg-white",
         )}
       >
-        <button type="button" className={tx("hover:bg-upstart-200 p-1 rounded inline-flex text-sm gap-1")}>
+        <button
+          disabled={disabled}
+          type="button"
+          className={tx("hover:bg-upstart-200 p-1 rounded inline-flex text-sm gap-1")}
+        >
           <IoIosAttach className="h-5 w-5" />
         </button>
         {generationState.isReady && WEB_SEARCH_ENABLED && (

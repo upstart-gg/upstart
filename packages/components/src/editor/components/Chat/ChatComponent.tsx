@@ -26,7 +26,6 @@ import { useDeepCompareEffect } from "use-deep-compare";
 import { useDebugMode } from "../../hooks/use-editor";
 import { defineDatasource } from "@upstart.gg/sdk/shared/datasources";
 import type { Tools, UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
-import { set } from "lodash-es";
 
 // Lazy load heavy components
 const Markdown = lazy(() => import("../Markdown"));
@@ -242,7 +241,7 @@ What should we work on together? 🤖`,
 
   const onSubmit = (e: Event | FormEvent) => {
     e.preventDefault();
-    sendMessage({ text: input });
+    safeSendMessage({ text: input });
     setInput("");
   };
 
@@ -313,16 +312,15 @@ What should we work on together? 🤖`,
     return results.length;
   }, [messages]);
 
-  const shouldShowTools = useMemo(() => {
-    // Return true if the parts of the last message does not include a tool-askUserChoice
-    return (
-      messages[messages.length - 1].parts.every(
-        (part) => part.type !== "tool-askUserChoice" || part.state === "output-available",
-      ) ?? true
-    );
-  }, [messages]);
+  const sendingEnabled = !hasRunningTools && status === "ready";
 
-  const sendingEnabled = shouldShowTools && !hasRunningTools && status === "ready";
+  const safeSendMessage = (...args: Parameters<typeof sendMessage>) => {
+    if (isWaitingForNChoices) {
+      toast.error("Please make a choice before sending a new message.");
+    } else {
+      sendMessage(...args);
+    }
+  };
 
   useDeepCompareEffect(() => {
     for (const toolInvocation of toolInvocations.filter((t) => t.state === "output-available")) {
@@ -433,6 +431,13 @@ What should we work on together? 🤖`,
           break;
         }
 
+        case "tool-editSection": {
+          const section = toolInvocation.output;
+          console.log("Edited section", section);
+          draftHelpers.updateSection(section.id, section);
+          break;
+        }
+
         case "tool-createBrick": {
           const brick = toolInvocation.output;
           console.log("Generated brick", brick);
@@ -453,6 +458,13 @@ What should we work on together? 🤖`,
         }
 
         case "tool-searchImages": {
+          const images = toolInvocation.output;
+          console.log("Searched images", images);
+          draftHelpers.addAdditionalAssets(images);
+          break;
+        }
+
+        case "tool-generateImages": {
           const images = toolInvocation.output;
           console.log("Generated images", images);
           draftHelpers.addAdditionalAssets(images);
@@ -539,8 +551,7 @@ What should we work on together? 🤖`,
                     <ToolRenderer
                       key={i}
                       // test showing tools
-                      shouldShowTools={true}
-                      // shouldShowTools={shouldShowTools}
+                      hasToolsRunning={hasRunningTools}
                       toolPart={part as ToolUIPart<Tools>}
                       addToolResult={addToolResult}
                       addToolResultMessage={addToolResultMessageCallback}

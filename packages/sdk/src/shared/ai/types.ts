@@ -30,6 +30,10 @@ export type Tools = {
     input: WaitingMessageSchema; // Just type the waiting message for now
     output: Section;
   };
+  editSection: {
+    input: { id: string } & WaitingMessageSchema; // Just type the waiting message for now
+    output: Section;
+  };
   getSection: {
     input: { id: string }; // Just type the waiting message for now
     output: Section | string; // Error string if not found
