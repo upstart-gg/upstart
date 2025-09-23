@@ -1,10 +1,12 @@
 import { describe, expect, test, beforeEach } from "vitest";
-import { Type } from "@sinclair/typebox";
+import { type Static, Type } from "@sinclair/typebox";
 import { resolveSchema, validate } from "../schema";
 import { inlineSchemaRefs, toLLMSchema } from "../llm";
 import { sitemapSchema } from "~/shared/sitemap";
+import type { Manifest } from "~/shared/bricks/manifests/text.manifest";
 import { registerSchema, unregisterSchema } from "~/shared/utils/schema-registry";
-import { type Section, sectionSchema, sectionSchemaLLM } from "~/shared/bricks";
+import { makeFullBrickSchemaForLLM, type Section, sectionSchema, sectionSchemaLLM } from "~/shared/bricks";
+import type { BrickProps } from "~/shared/bricks/props/types";
 
 describe("resolveSchema tests suite", () => {
   beforeEach(() => {
@@ -747,5 +749,44 @@ describe("validation with validate()", () => {
       bricks: [],
     };
     expect(() => validate(sectionSchemaLLM, validSectionExample)).not.toThrow();
+  });
+
+  test("should validate a brick without mobileProps", () => {
+    const schema = makeFullBrickSchemaForLLM("text");
+    const example: BrickProps<Manifest>["brick"] = {
+      id: "test-brick-1",
+      type: "text",
+      props: {
+        content: "Hello, world!",
+      },
+    };
+    expect(() => validate(schema, example)).not.toThrow();
+  });
+
+  test("should validate a brick with partial mobileProps", () => {
+    const schema = makeFullBrickSchemaForLLM("text");
+    const example: BrickProps<Manifest>["brick"] = {
+      id: "test-brick-1",
+      type: "text",
+      props: {
+        content: "Hello, world!",
+      },
+      mobileProps: {},
+    };
+    expect(() => validate(schema, example)).not.toThrow();
+
+    const example2: BrickProps<Manifest>["brick"] = {
+      id: "test-brick-1",
+      type: "text",
+      props: {
+        content: "Hello, world!",
+      },
+      mobileProps: {
+        colorPreset: {
+          color: "primary-100",
+        },
+      },
+    };
+    expect(() => validate(schema, example2)).not.toThrow();
   });
 });

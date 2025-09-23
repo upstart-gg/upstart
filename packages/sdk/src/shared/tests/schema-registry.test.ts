@@ -8,7 +8,5 @@ describe("Schema Registry", () => {
     expect(schemaRegistry.has("styles:justifyContent")).toBe(true);
     expect(schemaRegistry.has("assets:image")).toBe(true);
     expect(schemaRegistry.has("content:text")).toBe(true);
-
-    console.log("Registered schemas:", Array.from(schemaRegistry));
   });
 });

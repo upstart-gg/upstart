@@ -73,7 +73,7 @@ export default defineConfig(({ mode, ...rest }) => {
     },
     build: {
       copyPublicDir: false,
-      sourcemap: true,
+      sourcemap: !watchMode,
       reportCompressedSize: false,
       emptyOutDir: !watchMode,
       lib: {
@@ -83,7 +83,8 @@ export default defineConfig(({ mode, ...rest }) => {
           Page: "src/shared/components/Page.tsx",
           // Brick: "src/shared/components/Brick.tsx",
           "use-editor": "src/editor/hooks/use-editor.ts",
-          "use-page-data": "src/editor/hooks/use-page-data.ts",
+          // "use-page-data": "src/editor/hooks/use-page-data.ts",
+          "use-skip-initial-effect": "src/shared/hooks/use-skip-initial-effect.ts",
           "get-theme-css": "src/shared/utils/get-theme-css.ts",
         },
         cssFileName: "upstart-components",
