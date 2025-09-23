@@ -37,7 +37,7 @@ export default function ToolRenderer({
     return (
       <AnimatePresence key={toolPart.toolCallId}>
         <motion.div
-          className="bg-black/5 p-4 rounded-md text-[90%] mt-3"
+          className={tx("bg-black/5 p-4 rounded-md text-[90%] mt-3")}
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
@@ -69,7 +69,7 @@ export default function ToolRenderer({
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
           >
-            <MdDone className="w-4 h-4 text-green-600" />
+            <MdDone className={tx("w-4 h-4 text-green-600")} />
             <span>{toolPart.input.waitingMessage}</span>
 
             {(toolPart.type === "tool-searchImages" || toolPart.type === "tool-generateImages") && (
@@ -96,12 +96,12 @@ export default function ToolRenderer({
           </motion.div>
         ) : toolPart.state === "output-error" ? (
           <motion.div
-            className="flex items-center gap-1.5 font-medium"
+            className={tx("flex items-center gap-1.5 font-medium")}
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
           >
-            <MdDone className="w-4 h-4 text-red-600" />
+            <MdDone className={tx("w-4 h-4 text-red-600")} />
             <span>
               {toolPart.input.waitingMessage} (Error: {toolPart.errorText})
             </span>
@@ -132,9 +132,9 @@ function ToolCallDebugInfo({ part }: { part: ToolUIPart<Tools> }) {
   );
   return (
     <details>
-      <summary className="cursor-pointer list-none flex gap-1 items-center">
+      <summary className={tx("cursor-pointer list-none flex gap-1 items-center")}>
         <svg
-          className="-rotate-90 transform opacity-60 transition-all duration-300"
+          className={tx("-rotate-90 transform opacity-60 transition-all duration-300")}
           fill="none"
           height="14"
           width="14"
@@ -147,7 +147,7 @@ function ToolCallDebugInfo({ part }: { part: ToolUIPart<Tools> }) {
           <title>Arrow</title>
           <polyline points="6 9 12 15 18 9" />
         </svg>
-        <span className="text-xs font-normal">
+        <span className={tx("text-xs font-normal")}>
           Tool: {part.type} ({part.state})
         </span>
       </summary>
@@ -163,19 +163,19 @@ function RunningToolDisplay({ part }: { part: Extract<ToolUIPart<Tools>, { state
   }
   return (
     <motion.div
-      className="flex items-center gap-1.5 font-medium flex-wrap"
+      className={tx("flex items-center gap-1.5 font-medium flex-wrap")}
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
       transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
     >
-      <Spinner size="1" className="w-4 mx-0.5" />
+      <Spinner size="1" className={tx("w-4 mx-0.5")} />
       <span>{part.input.waitingMessage as string}</span>
       {debug && (
-        <details className="cursor-pointer basis-full">
-          <summary className="cursor-pointer list-none flex gap-1 items-center">
+        <details className={tx("cursor-pointer basis-full")}>
+          <summary className={tx("cursor-pointer list-none flex gap-1 items-center")}>
             <svg
-              className="-rotate-90 transform opacity-60 transition-all duration-300"
+              className={tx("-rotate-90 transform opacity-60 transition-all duration-300")}
               fill="none"
               height="14"
               width="14"
@@ -188,9 +188,9 @@ function RunningToolDisplay({ part }: { part: Extract<ToolUIPart<Tools>, { state
               <title>Arrow</title>
               <polyline points="6 9 12 15 18 9" />
             </svg>
-            <span className="text-xs font-normal">[{part.type}] View tool call</span>
+            <span className={tx("text-xs font-normal")}>[{part.type}] View tool call</span>
           </summary>
-          <pre className="whitespace-pre-wrap text-xs">
+          <pre className={tx("whitespace-pre-wrap text-xs")}>
             {JSON.stringify({ type: part.type, input: part.input }, null, 2)}
           </pre>
         </details>
@@ -229,7 +229,7 @@ function UserChoicesButtons({
     >
       {part.input.allowMultiple ? (
         <>
-          <div className="flex flex-col flex-wrap gap-1.5">
+          <div className={tx("flex flex-col flex-wrap gap-1.5")}>
             {part.input.choices.map((choice, i) => {
               return (
                 <button
@@ -256,7 +256,7 @@ function UserChoicesButtons({
               );
             })}
           </div>
-          <div className="basis-full w-full mt-6 flex justify-end">
+          <div className={tx("basis-full w-full mt-6 flex justify-end")}>
             <button
               type="button"
               disabled={selectedChoices.length === 0}
@@ -307,8 +307,8 @@ function UserChoicesButtons({
 
 function ImagesPreview({ query, images }: { query: string; images: SimpleImageMetadata[] }) {
   return (
-    <div className="basis-full flex flex-col gap-2 mt-1 mb-6 text-sm ml-6 font-normal">
-      <div className="grid grid-cols-3 gap-1 min-h-60 max-h-60">
+    <div className={tx("basis-full flex flex-col gap-2 mt-1 mb-6 text-sm ml-6 font-normal")}>
+      <div className={tx("grid grid-cols-3 gap-1 min-h-60 max-h-60")}>
         {images.map((image, index) => (
           <div
             key={image.url}
@@ -330,14 +330,18 @@ function ImagesPreview({ query, images }: { query: string; images: SimpleImageMe
               loading="lazy"
             />
             {image.author?.name && (
-              <div className="absolute px-1.5 bottom-0 left-0 right-0 bg-black/50 text-white text-[0.6rem] p-0.5 rounded-b-md truncate capitalize">
+              <div
+                className={tx(
+                  "absolute px-1.5 bottom-0 left-0 right-0 bg-black/50 text-white text-[0.6rem] p-0.5 rounded-b-md truncate capitalize",
+                )}
+              >
                 By{" "}
                 {image.author.profile_url ? (
                   <a
                     href={image.author.profile_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="underline hover:text-upstart-300"
+                    className={tx("underline hover:text-upstart-300")}
                   >
                     {image.author.name}
                   </a>

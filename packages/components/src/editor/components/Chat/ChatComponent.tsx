@@ -466,7 +466,6 @@ What should we work on together? 🤖`,
     }
   }, [sendingEnabled]);
 
-
   useEffect(() => {
     if (sendingEnabled) {
       chatboxRef.current?.focus();
@@ -562,7 +561,7 @@ What should we work on together? 🤖`,
                 "p-4 my-4 text-sm text-gray-800 flex items-center justify-center gap-1.5 backdrop-blur-md bg-white/50 max-w-fit mx-auto rounded-md",
               )}
             >
-              <Spinner size="2" className="text-gray-700" /> Please wait...
+              <Spinner size="2" className={tx("text-gray-700")} /> Please wait...
             </motion.div>
           )}
         </AnimatePresence>
