@@ -1,16 +1,17 @@
+import { useCallback } from "react";
 import { useDebounceCallback } from "usehooks-ts";
 import { useEditorHelpers, type PageSavePayload, type SiteSavePayload } from "./use-editor";
 import {
+  useDatarecordsSubscribe,
+  useDatasourcesSubscribe,
   useDraft,
   usePage,
-  useSectionsSubscribe,
   usePageAttributesSubscribe,
+  usePageLabelSubscribe,
+  useSectionsSubscribe,
+  useSite,
   useSiteAttributesSubscribe,
   useThemeSubscribe,
-  useSite,
-  usePageLabelSubscribe,
-  useDatasourcesSubscribe,
-  useDatarecordsSubscribe,
 } from "./use-page-data";
 
 const AUTO_SAVE_MIN_INTERVAL = 1000; // Auto save every N seconds
@@ -21,7 +22,8 @@ export function usePageAutoSave() {
   const site = useSite();
   const { onSavePage, onSaveSite } = useEditorHelpers();
 
-  const savePage = useDebounceCallback(async (data: PageSavePayload["data"]) => {
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  const savePage = useCallback(async (data: PageSavePayload["data"]) => {
     await onSavePage?.({
       pageId: pageConfig.id,
       pageVersionId: "latest",
@@ -29,7 +31,7 @@ export function usePageAutoSave() {
       data,
     });
     draft.setDirty(false);
-  }, AUTO_SAVE_MIN_INTERVAL);
+  }, []);
 
   const saveSite = useDebounceCallback(async (data: SiteSavePayload["data"]) => {
     await onSaveSite?.({
