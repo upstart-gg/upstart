@@ -565,7 +565,6 @@ What should we work on together? 🤖`,
             </motion.div>
           )}
         </AnimatePresence>
-
         {error && (
           <div className={tx(msgCommon, "bg-red-200 text-red-800 text-sm")}>
             <p>An error occured. {error.message ?? "Please retry."}</p>
