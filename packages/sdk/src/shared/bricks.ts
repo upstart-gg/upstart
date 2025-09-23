@@ -1,6 +1,6 @@
 import { Type, type Static, type TObject } from "@sinclair/typebox";
 import { customAlphabet } from "nanoid";
-import { brickTypes, defaultProps } from "./bricks/manifests/all-manifests";
+import { brickTypes, defaultProps, manifests } from "./bricks/manifests/all-manifests";
 import { cssLengthRef } from "./bricks/props/css-length";
 import { colorPresetRef } from "./bricks/props/color-preset";
 import { mergeIgnoringArrays } from "./utils/merge";
@@ -103,7 +103,7 @@ export const brickSchema = Type.Object(
   { additionalProperties: true },
 );
 
-export function makeFullBrickSchemaForLLM(type: string, props: TObject) {
+export function makeFullBrickSchemaForLLM(type: string) {
   return toLLMSchema(
     Type.Object(
       {
@@ -112,10 +112,11 @@ export function makeFullBrickSchemaForLLM(type: string, props: TObject) {
           description: "A unique identifier for the brick.",
         }),
         type: Type.Literal(type),
-        props,
-        mobileProps: Type.Optional(Type.Partial(props)),
+        props: manifests[type].props,
+        mobileProps: Type.Optional(Type.Partial(manifests[type].props)),
       },
-      { additionalProperties: false },
+      // IMPORTANT: DO NOT set "additionalProperties" to `false` because it would break validation with Cabidela library
+      // { additionalProperties: false },
     ),
   );
 }
