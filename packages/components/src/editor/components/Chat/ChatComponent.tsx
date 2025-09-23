@@ -466,6 +466,13 @@ What should we work on together? 🤖`,
     }
   }, [sendingEnabled]);
 
+
+  useEffect(() => {
+    if (sendingEnabled) {
+      chatboxRef.current?.focus();
+    }
+  }, [sendingEnabled]);
+
   return (
     <div
       className={tx(
