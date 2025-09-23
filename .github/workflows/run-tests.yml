@@ -47,6 +47,7 @@ permissions:
 
 env:
   FLIPPABLE_ENV: test
+  TURBO_SCM_BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
 
 jobs:
   test:
