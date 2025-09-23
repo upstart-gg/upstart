@@ -30,10 +30,6 @@ export default function Panel({ className, ...props }: PanelProps) {
   const { togglePanelPosition, hidePanel } = useEditorHelpers();
   const selectedBrick = useBrick(selectedBrickId);
 
-  if (selectedBrickId && !selectedBrick) {
-    console.warn(`[Panel] No brick found with id ${selectedBrickId}`);
-  }
-
   // Prevent blank panel when invalid brick / section id is selected
   if (!panel || (panel === "inspector" && !selectedBrick && !selectedSection)) {
     return null;
