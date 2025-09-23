@@ -2,6 +2,7 @@
   "remoteCache": {
     "apiUrl": "https://turborepo-remote-cache-746116063884.europe-west9.run.app"
   },
+  "globalEnv": ["FLIPPABLE_ENV", "USER", "TURBO_TEAM", "GITHUB_HEAD_REF"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

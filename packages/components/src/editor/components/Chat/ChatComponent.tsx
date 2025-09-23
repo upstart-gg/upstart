@@ -186,25 +186,6 @@ What should we work on together? 🤖`,
 
   const onToolCall: ChatOnToolCallCallback<UpstartUIMessage> = ({ toolCall }) => {
     console.log("Tool call: %s: ", toolCall.toolName, toolCall);
-    // The "done" tool is a special case that indicates the server has finished processing the request.
-    // We need to handle it client-side and return the "result" for the tool call.
-    // here, we just return true to indicate that we handled the tool call
-    const toolResult = { tool: toolCall.toolName as keyof Tools, toolCallId: toolCall.toolCallId };
-
-    switch (toolCall.toolName) {
-      // case "askUserChoice": {
-      //   if (isWaitingForNChoices) {
-      //     console.warn("Already waiting for user choice, ignoring new askUserChoice tool call");
-      //     addToolResult({ ...toolResult, output: null });
-      //   }
-      //   break;
-      // }
-
-      default:
-        if (toolCall.toolName.startsWith("get") || toolCall.toolName.startsWith("list")) {
-          console.log("UNHANDLED TOOL CALL client-side", toolCall.toolName);
-        }
-    }
   };
 
   const { messages, sendMessage, error, status, regenerate, stop, addToolResult, setMessages } =
@@ -232,6 +213,7 @@ What should we work on together? 🤖`,
       onError: (error) => {
         console.error("ERROR", error);
       },
+      // sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
       // id: `chat-${site.id}`,
       /**
        * For tools that should be called client-side
@@ -242,7 +224,7 @@ What should we work on together? 🤖`,
 
   const onSubmit = (e: Event | FormEvent) => {
     e.preventDefault();
-    safeSendMessage({ text: input });
+    sendMessage({ text: input });
     setInput("");
   };
 
@@ -313,15 +295,7 @@ What should we work on together? 🤖`,
     return results.length;
   }, [messages]);
 
-  const sendingEnabled = !hasRunningTools && status === "ready";
-
-  const safeSendMessage = (...args: Parameters<typeof sendMessage>) => {
-    if (isWaitingForNChoices) {
-      toast.error("Please make a choice before sending a new message.");
-    } else {
-      sendMessage(...args);
-    }
-  };
+  const sendingEnabled = !hasRunningTools && !isWaitingForNChoices && status === "ready";
 
   useDeepCompareEffect(() => {
     for (const toolInvocation of toolInvocations.filter((t) => t.state === "output-available")) {
@@ -486,16 +460,12 @@ What should we work on together? 🤖`,
       msg.parts.some((part) => part.type === "text" || part.type.startsWith("tool-")),
   );
 
-  const addToolResultMessageCallback = useCallback(
-    async (text: string) => {
-      setMessages((msgs) => {
-        const newMsg = { id: generateId(), role: "user" as const, parts: [{ type: "text" as const, text }] };
-        return [...msgs, newMsg];
-      });
-      regenerate();
-    },
-    [setMessages, regenerate],
-  );
+  useEffect(() => {
+    if (sendingEnabled) {
+      chatboxRef.current?.focus();
+    }
+  }, [sendingEnabled]);
+
 
   useEffect(() => {
     if (sendingEnabled) {
@@ -548,14 +518,14 @@ What should we work on together? 🤖`,
             {msg.parts.map((part, i) => {
               if (part.type.startsWith("tool-")) {
                 return (
-                  <Suspense key={i} fallback={<div>Loading tool...</div>}>
+                  <Suspense key={i} fallback={null}>
                     <ToolRenderer
                       key={i}
                       // test showing tools
                       hasToolsRunning={hasRunningTools}
                       toolPart={part as ToolUIPart<Tools>}
                       addToolResult={addToolResult}
-                      addToolResultMessage={addToolResultMessageCallback}
+                      addToolResultMessage={(text: string) => sendMessage({ text })}
                       error={error}
                     />
                   </Suspense>
@@ -565,14 +535,14 @@ What should we work on together? 🤖`,
               switch (part.type) {
                 case "text":
                   return (
-                    <Suspense key={i} fallback={<div>Loading...</div>}>
+                    <Suspense key={i} fallback={null}>
                       <Markdown content={part.text} key={i} />
                     </Suspense>
                   );
 
                 case "reasoning":
                   return debug ? (
-                    <Suspense key={i} fallback={<div>Loading...</div>}>
+                    <Suspense key={i} fallback={null}>
                       <ChatReasoningPart key={i} part={part} />
                     </Suspense>
                   ) : null;
