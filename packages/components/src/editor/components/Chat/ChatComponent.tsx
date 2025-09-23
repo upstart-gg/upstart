@@ -186,25 +186,6 @@ What should we work on together? 🤖`,
 
   const onToolCall: ChatOnToolCallCallback<UpstartUIMessage> = ({ toolCall }) => {
     console.log("Tool call: %s: ", toolCall.toolName, toolCall);
-    // The "done" tool is a special case that indicates the server has finished processing the request.
-    // We need to handle it client-side and return the "result" for the tool call.
-    // here, we just return true to indicate that we handled the tool call
-    const toolResult = { tool: toolCall.toolName as keyof Tools, toolCallId: toolCall.toolCallId };
-
-    switch (toolCall.toolName) {
-      // case "askUserChoice": {
-      //   if (isWaitingForNChoices) {
-      //     console.warn("Already waiting for user choice, ignoring new askUserChoice tool call");
-      //     addToolResult({ ...toolResult, output: null });
-      //   }
-      //   break;
-      // }
-
-      default:
-        if (toolCall.toolName.startsWith("get") || toolCall.toolName.startsWith("list")) {
-          console.log("UNHANDLED TOOL CALL client-side", toolCall.toolName);
-        }
-    }
   };
 
   const { messages, sendMessage, error, status, regenerate, stop, addToolResult, setMessages } =
@@ -232,6 +213,7 @@ What should we work on together? 🤖`,
       onError: (error) => {
         console.error("ERROR", error);
       },
+      sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
       // id: `chat-${site.id}`,
       /**
        * For tools that should be called client-side
