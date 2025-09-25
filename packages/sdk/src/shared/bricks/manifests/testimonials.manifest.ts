@@ -11,6 +11,7 @@ import { cssLengthRef } from "../props/css-length";
 import { loopRef } from "../props/dynamic";
 import { borderRef } from "../props/border";
 import { shadowRef } from "../props/effects";
+import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
   type: "testimonials",
@@ -134,11 +135,7 @@ Optionally either use an avatar or a social icon but not both at the same time.`
 
 export type Manifest = typeof manifest;
 
-export const examples: {
-  description: string;
-  type: string;
-  props: BrickProps<Manifest>["brick"]["props"];
-}[] = [
+export const examples: BrickExample<Manifest>[] = [
   {
     description: "SaaS platform testimonials with avatars",
     type: "testimonials",

@@ -3,23 +3,48 @@ import { textContentRef } from "../props/text";
 import { defineProps } from "../props/helpers";
 import { borderRef, roundingRef } from "../props/border";
 import { RxTextAlignLeft } from "react-icons/rx";
-import type { BrickProps } from "../props/types";
 import { Type } from "@sinclair/typebox";
 import { alignItemsRef } from "../props/align";
 import { shadowRef } from "../props/effects";
 import { colorPresetRef } from "../props/color-preset";
 import { loopRef } from "../props/dynamic";
 import { cssLengthRef } from "../props/css-length";
+import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
   type: "text",
   category: "basic",
   name: "Text",
   description: "Text with formatting options",
-  aiInstructions: `Text "content" can contain minimal HTML tags like <strong>, <em>, <br> and <a> as well as <h1>, <h2>, <h3>, <h4>, <p> and <span> and lists.
-Only 'align' is supported as an inline style, so don't use other inline styles like 'font-size' or 'color' in the content prop.
-You may simply omit the "colorPreset" property so that the brick will inherit the default color from its parent container.
-`,
+  aiInstructions: `Use the text component for rich content blocks, announcements, descriptions, and formatted text throughout your site.
+
+CONTENT FORMATTING:
+- Supports HTML tags: <h1>, <h2>, <h3>, <h4>, <p>, <span>, <strong>, <em>, <br>, <a>, <ul>, <li>, <ol>
+- Only 'text-align' style is supported (center, left, right) - avoid other inline styles
+- Use <strong> for emphasis, <em> for italics, <br> for line breaks
+- Links: <a href="/page">Internal</a> or <a href="https://external.com">External</a>
+- Lists: <ul><li>Item 1</li><li>Item 2</li></ul>
+
+STYLING OPTIONS:
+- colorPreset: Leave empty to inherit parent colors, or use "primary-100", "secondary-200", "neutral-50", "accent-100" for backgrounds
+- padding: Use CSS values like "1rem", "2rem", "24px" for internal spacing
+- rounding: "rounded-none" (sharp), "rounded-md" (standard), "rounded-lg" (friendly), "rounded-xl" (soft)
+- border: Add borders with width ("border", "border-2") and color ("border-gray-300", "border-primary-500")
+- shadow: Add depth with "shadow-sm", "shadow-md", "shadow-lg"
+
+WHEN TO USE:
+- Rich content sections (About Us, Service descriptions)
+- Announcements and notices
+- Product descriptions with formatting
+- Quotes and testimonials
+- FAQ content and detailed explanations
+- Footer information and legal text
+
+BEST PRACTICES:
+- Keep HTML minimal - complex layouts should use multiple components
+- Use semantic headings (h2, h3, h4) for proper hierarchy
+- Center-align for quotes/testimonials, left-align for body text
+- Choose background colors that provide good contrast, or no background for inline text`,
   defaultWidth: {
     mobile: "100%",
   },
@@ -71,11 +96,7 @@ You may simply omit the "colorPreset" property so that the brick will inherit th
 
 export type Manifest = typeof manifest;
 
-export const examples: {
-  description: string;
-  type: string;
-  props: BrickProps<Manifest>["brick"]["props"];
-}[] = [
+export const examples: BrickExample<Manifest>[] = [
   {
     description: "Welcome paragraph with emphasis and padding",
     type: "text",

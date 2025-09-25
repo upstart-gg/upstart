@@ -11,13 +11,49 @@ import { fontSizeRef } from "../props/text";
 import { colorPresetRef } from "../props/color-preset";
 import { directionRef } from "../props/direction";
 import { cssLengthRef } from "../props/css-length";
+import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
   type: "form",
   name: "Form",
   description: "A form element.",
-  aiInstructions: `The form brick automatically renders form fields based on the datarecord id provided in the props.
-There is no need to define the form fields manually and the form does not accept any children`,
+  aiInstructions: `PURPOSE
+Dynamic form generator. Fields are inferred from the referenced datarecord schema (datarecordId). You NEVER list fields manually and the form does not accept children.
+
+REQUIRED
+• datarecordId must reference an existing datarecord definition.
+
+COLOR & STYLE
+• Optional colorPreset sets background + text. If omitted the form inherits parent background.
+• Allowed tokens: primary-/secondary-/accent-/neutral-/base-*** (and gradient variants). Do NOT invent success, warning, danger, info, etc. Map them (success->secondary or primary; warning->accent; danger->accent/primary).
+• Use rounding + border + padding for emphasis. Keep padding modest (1–3rem) unless it's a feature form hero (max ~4rem).
+
+LAYOUT
+• direction controls stacking (flex-col vs flex-row). Wide multi-column layouts usually flex-row on desktop, stacked (flex-col) on mobile.
+• Use mobileProps to reduce padding or switch direction ONLY if necessary. (If switching direction, you must repeat required props.)
+
+BUTTON GROUP
+• Only supply button overrides you actually change (color, size, position, rounding). Unspecified values fallback to defaults.
+• If button.size = wide then hide position (handled by schema metadata automatically—don't circumvent).
+
+CONTENT STRINGS
+• title, intro, buttonLabel, successMessage, errorMessage should be concise.
+• Avoid marketing fluff inside intro beyond one short paragraph.
+
+DYNAMIC DATA
+• Do not interpolate inside datarecordId (it must be a static id).
+• You MAY interpolate page queries aliases in title/intro (e.g. "Apply for {{job.title}}") if those fields exist in surrounding dataset context.
+
+DON'TS
+✗ Don't invent props.
+✗ Don't add HTML tags except basic inline markup if absolutely needed (prefer plain text).
+✗ Don't set impossible color tokens.
+
+DO
+✓ Keep examples lean.
+✓ Use semantic color mapping guidelines.
+✓ Provide accessible, human-readable labels.
+`,
   isContainer: false,
   icon: FaWpforms,
   minWidth: {
@@ -147,11 +183,7 @@ There is no need to define the form fields manually and the form does not accept
 
 export type Manifest = typeof manifest;
 
-export const examples: {
-  description: string;
-  type: string;
-  props: BrickProps<Manifest>["brick"]["props"];
-}[] = [
+export const examples: BrickExample<Manifest>[] = [
   {
     description: "Basic contact form",
     type: "form",
@@ -181,6 +213,30 @@ export const examples: {
     },
   },
   {
+    description: "Responsive newsletter subscription: desktop horizontal -> mobile vertical",
+    type: "form",
+    props: {
+      title: "Stay Updated",
+      intro: "Subscribe for product news and occasional tips.",
+      direction: "flex-row",
+      datarecordId: "newsletter-subscription",
+      padding: "3rem",
+      buttonLabel: "Subscribe",
+      button: { size: "block" },
+      colorPreset: { color: "neutral-100" },
+    },
+    mobileProps: {
+      title: "Stay Updated",
+      intro: "Subscribe for product news and occasional tips.",
+      direction: "flex-col",
+      datarecordId: "newsletter-subscription",
+      padding: "2rem",
+      buttonLabel: "Subscribe",
+      button: { size: "block" },
+      colorPreset: { color: "neutral-100" },
+    },
+  },
+  {
     description: "Newsletter subscription form (horizontal) with large padding",
     type: "form",
     props: {
@@ -193,6 +249,51 @@ export const examples: {
       button: {
         size: "block",
       },
+    },
+  },
+  {
+    description: "Minimal inline signup form (no background colorPreset, inherits parent)",
+    type: "form",
+    props: {
+      title: "Join Beta",
+      intro: "Access early features before public launch.",
+      direction: "flex-row",
+      datarecordId: "beta-signup",
+      buttonLabel: "Request Access",
+      button: { size: "block" },
+      padding: "1.5rem",
+    },
+  },
+  {
+    description: "Dark themed form using neutral-800 background and accent button",
+    type: "form",
+    props: {
+      title: "Feedback",
+      intro: "Tell us how we can improve the product.",
+      direction: "flex-col",
+      datarecordId: "product-feedback",
+      buttonLabel: "Send Feedback",
+      colorPreset: { color: "neutral-800" },
+      padding: "2.5rem",
+      button: { color: "btn-accent" },
+      rounding: "rounded-lg",
+      border: { width: "border", color: "border-neutral-700" },
+    },
+  },
+  {
+    description: "Gradient emphasis form (primary gradient) for event signup",
+    type: "form",
+    props: {
+      title: "Conference RSVP",
+      intro: "Reserve your seat for {{event.title}}.",
+      direction: "flex-col",
+      datarecordId: "event-registration",
+      buttonLabel: "Reserve Seat",
+      colorPreset: { color: "primary-gradient-400", gradientDirection: "bg-gradient-to-br" },
+      padding: "3rem",
+      button: { color: "btn-secondary" },
+      rounding: "rounded-xl",
+      border: { width: "border-2", color: "border-primary-300" },
     },
   },
   {
@@ -221,6 +322,20 @@ export const examples: {
       button: {
         size: "block",
       },
+    },
+  },
+  {
+    description: "Dynamic job application (title interpolated) mapping dataset field",
+    type: "form",
+    props: {
+      title: "Apply for {{job.title}}",
+      intro: "Join our team in {{job.location}}.",
+      direction: "flex-col",
+      datarecordId: "job-application",
+      buttonLabel: "Apply Now",
+      colorPreset: { color: "secondary-100" },
+      button: { size: "block", color: "btn-primary" },
+      padding: "2rem",
     },
   },
 ];

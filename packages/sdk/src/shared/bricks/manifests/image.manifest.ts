@@ -17,8 +17,42 @@ export const manifest = defineBrickManifest({
   name: "Image",
   category: "media",
   description: "An image brick",
-  aiInstructions:
-    "An image brick that can display an image with optional styling such as padding, border radius, and shadow. It supports giving credit to the image author and specifying the image provider.",
+  aiInstructions: `PURPOSE
+Display a single image with optional framing (padding, rounding, border, shadow, colorPreset) and attribution (author/provider). Can also loop over a dataset showing one image per item.
+
+REQUIRED
+• 'image.src' and 'image.alt' (alt must be meaningful, not empty; may interpolate page queries fields).
+
+COLOR & BACKGROUND
+• colorPreset is optional – use when you need a frame or tone behind the image (neutral / accent / primary / secondary / base or gradient variants). Omit to keep a transparent/inherited background.
+• Only use gradientDirection when the preset is a gradient token (e.g. primary-gradient-400).
+
+STYLING
+• padding should be a single css length value (like '1rem' or '0.75rem').
+• rounding defaults to a modest radius; override for circular avatars (rounded-full) or strong accent (rounded-xl).
+• border optional: keep subtle (border / border-2) unless emphasis required.
+• Use shadow sparingly (shadow-sm / shadow-md); large (shadow-xl) for hero or banner impact.
+
+ATTRIBUTION
+• If using external photography include author { name, url } and provider (e.g. 'unsplash'). Omit provider if internal asset.
+
+DYNAMIC DATA
+• Interpolate dataset fields with {{dataset.field}} in src and alt.
+• For lists: use loop.over = "datasetName". Provide exactly one example object (this component itself) when looping (do not replicate multiple objects).
+
+RESPONSIVE
+• mobileProps may reduce padding or alter rounding only if it materially improves mobile layout. Always repeat required fields (image.src, image.alt) if providing mobileProps.
+
+DON'TS
+✗ Don't add unrelated props.
+✗ Don't fabricate color tokens (no success-, warning-, danger- etc.).
+✗ Don't use HTML markup inside alt.
+
+DO
+✓ Provide descriptive alt text (<125 chars) describing content or function.
+✓ Use semantic color presets consistently.
+✓ Add author/provider when you have them.
+`,
   defaultWidth: { desktop: "auto", mobile: "100%" },
   icon: RxImage,
   props: defineProps({
@@ -82,6 +116,7 @@ export const examples: {
   description: string;
   type: string;
   props: BrickProps<Manifest>["brick"]["props"];
+  mobileProps?: BrickProps<Manifest>["brick"]["props"];
 }[] = [
   {
     description: "Hero landscape image with large shadow",
@@ -92,6 +127,20 @@ export const examples: {
         alt: "Beautiful landscape view for hero section",
       },
       shadow: "shadow-lg",
+    },
+  },
+  {
+    description: "Framed image with accent gradient background and padding",
+    type: "image",
+    props: {
+      image: {
+        src: "https://via.placeholder.com/640x360.png?text=Showcase",
+        alt: "Showcase screenshot inside accent gradient frame",
+      },
+      colorPreset: { color: "accent-gradient-400", gradientDirection: "bg-gradient-to-br" },
+      padding: "1rem",
+      rounding: "rounded-xl",
+      shadow: "shadow-md",
     },
   },
   {
@@ -147,6 +196,21 @@ export const examples: {
     },
   },
   {
+    description: "Dark framed image with neutral-800 background and subtle border",
+    type: "image",
+    props: {
+      image: {
+        src: "https://via.placeholder.com/500x300.png?text=Dark+Mode",
+        alt: "Interface preview in dark mode",
+      },
+      colorPreset: { color: "neutral-800" },
+      padding: "1rem",
+      border: { width: "border", color: "border-neutral-700" },
+      rounding: "rounded-lg",
+      shadow: "shadow-md",
+    },
+  },
+  {
     description: "Testimonial customer photo with large shadow and small padding",
     type: "image",
     props: {
@@ -197,6 +261,29 @@ export const examples: {
       },
       shadow: "shadow-md",
       blurHash: "L6PZfSi_.AyE_3t7t7R**0o#DgR4",
+    },
+  },
+  {
+    description: "Responsive image with reduced mobile padding",
+    type: "image",
+    props: {
+      image: {
+        src: "https://via.placeholder.com/640x360.png?text=Responsive",
+        alt: "Responsive framed screenshot",
+      },
+      padding: "2rem",
+      colorPreset: { color: "primary-50" },
+      rounding: "rounded-xl",
+      shadow: "shadow-sm",
+    },
+    mobileProps: {
+      image: {
+        src: "https://via.placeholder.com/640x360.png?text=Responsive",
+        alt: "Responsive framed screenshot",
+      },
+      padding: "1rem",
+      colorPreset: { color: "primary-50" },
+      rounding: "rounded-lg",
     },
   },
   {
@@ -257,6 +344,20 @@ export const examples: {
         url: "{{event.photographerProfile}}",
       },
       provider: "event-photography",
+    },
+  },
+  {
+    description: "Loop template: product gallery (one definition, repeated by loop.over)",
+    type: "image",
+    props: {
+      image: {
+        src: "{{products.mainImage}}",
+        alt: "{{products.name}} – {{products.category}}",
+      },
+      rounding: "rounded-md",
+      padding: "0.5rem",
+      shadow: "shadow-sm",
+      loop: { over: "products" },
     },
   },
   {

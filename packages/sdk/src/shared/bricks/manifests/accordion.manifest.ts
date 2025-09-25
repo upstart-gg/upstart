@@ -9,17 +9,47 @@ import { fontSizeRef, textContentRef } from "../props/text";
 import type { BrickProps } from "../props/types";
 import { loopRef } from "../props/dynamic";
 import { cssLengthRef } from "../props/css-length";
+import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
   type: "accordion",
   name: "Accordion",
   description: "An accordion/collapse element for expandable content",
-  aiInstructions: `
-This accordion element displays content in collapsible panels.
-It is typically used for FAQ sections, organized documentation, or to save space.
-Each item has a title and expandable content area.
-Multiple panels can be open simultaneously or limited to one at a time.
-  `.trim(),
+  aiInstructions: `Use this accordion component for organizing collapsible content sections that help save space and improve content accessibility.
+
+WHEN TO USE:
+- FAQ sections with questions and detailed answers
+- Product feature lists with expandable descriptions  
+- Documentation sections with organized topics
+- Step-by-step processes or tutorials
+- Menu categories (restaurant, services, pricing tiers)
+- Legal documents with different sections
+- Course curricula with lesson breakdowns
+- Support categories with help topics
+
+STYLING GUIDELINES:
+- colorPreset: Use "primary-500" for branded sections, "secondary-400" for features, "neutral-200" for documentation, "accent-500" for highlights
+- fontSize: "text-sm" for compact content, "text-base" for standard, "text-lg" for emphasis
+- rounding: "rounded-none" for sharp/corporate, "rounded-md" for standard, "rounded-lg" for friendly, "rounded-xl"/"rounded-2xl"/"rounded-3xl" for modern
+- gap: "1px" for minimal separation, "0.5rem" for comfortable, "1rem" for spacious layouts
+- restrictOneOpen: true for FAQs/single focus, false for reference materials/feature lists
+
+CONTENT ORGANIZATION:
+- Use clear, descriptive titles that preview the content
+- Keep expandable content concise but comprehensive
+- Support HTML formatting in content (lists, links, line breaks)
+- Set defaultOpen: true for most important/frequently accessed items
+
+DYNAMIC CONTENT:
+- Support template variables in titles: "{{category.name}} - {{category.count}} items"
+- Dynamic content: "Learn about {{product.features}} and {{product.benefits}}"
+- Loop over data: Display product categories, team departments, or service areas
+
+AVOID:
+- Too many items (>10) without organization
+- Very long titles that don't fit on mobile
+- Empty or placeholder content in collapsed sections
+- Mixing different content types in the same accordion`,
   icon: TfiLayoutAccordionSeparated,
 
   defaultWidth: { desktop: "450px", mobile: "100%" },
@@ -91,16 +121,16 @@ Multiple panels can be open simultaneously or limited to one at a time.
 
 export type Manifest = typeof manifest;
 
-export const examples: {
-  description: string;
-  type: string;
-  props: BrickProps<Manifest>["brick"]["props"];
-}[] = [
+export const examples: BrickExample<Manifest>[] = [
+  // FAQ SECTIONS
   {
-    description: "FAQ section with card styling with single open",
+    description: "FAQ section with single open restriction - Classic use case for customer support",
     type: "accordion",
     props: {
       restrictOneOpen: true,
+      colorPreset: { color: "primary-500" },
+      rounding: "rounded-md",
+      gap: "0.5rem",
       items: [
         {
           title: "What is included in the basic plan?",
@@ -123,24 +153,20 @@ export const examples: {
           content:
             "We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and bank transfers for annual subscriptions. All payments are processed securely through our payment partners.",
         },
-        {
-          title: "Do you offer refunds?",
-          content:
-            "We offer a 30-day money-back guarantee for all new subscriptions. If you're not satisfied with our service, contact our support team within 30 days of your purchase for a full refund.",
-        },
       ],
     },
   },
+  
+  // PRODUCT FEATURES
   {
-    description: "Product features accordion with multiple open panels and secondary color scheme",
+    description: "Product features with multiple open panels - Good for showcasing software capabilities",
     type: "accordion",
     props: {
       restrictOneOpen: false,
-      colorPreset: {
-        color: "secondary-400",
-      },
+      colorPreset: { color: "secondary-400" },
       rounding: "rounded-lg",
       gap: "0.5rem",
+      fontSize: "text-base",
       items: [
         {
           title: "Advanced Analytics Dashboard",
@@ -149,7 +175,7 @@ export const examples: {
           defaultOpen: true,
         },
         {
-          title: "Team Collaboration Tools",
+          title: "Team Collaboration Tools", 
           content:
             "Work seamlessly with your team using built-in collaboration features including shared workspaces, real-time editing, comments, and task management. Perfect for remote and hybrid teams.",
           defaultOpen: true,
@@ -167,15 +193,15 @@ export const examples: {
       ],
     },
   },
+  
+  // DOCUMENTATION & GUIDES
   {
-    description: "Documentation sections with neutral styling and large font size",
+    description: "Documentation sections with neutral colors - Perfect for help centers and knowledge bases",
     type: "accordion",
     props: {
       restrictOneOpen: false,
-      colorPreset: {
-        color: "neutral-200",
-      },
-      fontSize: "text-lg",
+      colorPreset: { color: "neutral-200" },
+      fontSize: "text-lg", 
       rounding: "rounded-md",
       gap: "2px",
       items: [
@@ -190,21 +216,21 @@ export const examples: {
             "Complete API documentation with endpoints, parameters, response examples, and SDKs for popular programming languages including JavaScript, Python, PHP, and Ruby.",
         },
         {
-          title: "Advanced Configuration",
+          title: "Advanced Configuration", 
           content:
             "Deep dive into advanced features, custom configurations, webhooks, and enterprise-level integrations. Includes code samples and best practices.",
         },
       ],
     },
   },
+  
+  // MENU & CATALOG SECTIONS
   {
-    description: "Restaurant menu sections with accent colors and extra large rounding",
+    description: "Restaurant menu sections with accent colors - Great for organizing menu items or service categories", 
     type: "accordion",
     props: {
       restrictOneOpen: true,
-      colorPreset: {
-        color: "accent-500",
-      },
+      colorPreset: { color: "accent-500" },
       rounding: "rounded-xl",
       gap: "1rem",
       items: [
@@ -227,14 +253,14 @@ export const examples: {
       ],
     },
   },
+  
+  // COURSE & EDUCATIONAL CONTENT
   {
-    description: "Course curriculum with primary colors and minimal gap",
+    description: "Course curriculum with primary colors - Excellent for educational content and training programs",
     type: "accordion",
     props: {
       restrictOneOpen: false,
-      colorPreset: {
-        color: "primary-600",
-      },
+      colorPreset: { color: "primary-600" },
       rounding: "rounded-sm",
       gap: "1px",
       fontSize: "text-base",
@@ -245,7 +271,7 @@ export const examples: {
             "Learn the fundamentals of HTML, CSS, and basic JavaScript. Set up your development environment and create your first web page. Includes hands-on exercises and project templates.",
         },
         {
-          title: "Week 2: Responsive Design & CSS Framework",
+          title: "Week 2: Responsive Design & CSS Framework", 
           content:
             "Master responsive web design principles, CSS Grid, Flexbox, and popular frameworks like Bootstrap and Tailwind CSS. Build mobile-first designs that work on all devices.",
         },
@@ -262,104 +288,14 @@ export const examples: {
       ],
     },
   },
+  
+  // SUPPORT & HELP SECTIONS
   {
-    description: "Legal terms accordion with neutral dark theme and large gaps",
-    type: "accordion",
-    props: {
-      restrictOneOpen: true,
-      colorPreset: {
-        color: "neutral-800",
-      },
-      rounding: "rounded-lg",
-      gap: "1.5rem",
-      fontSize: "text-sm",
-      items: [
-        {
-          title: "Terms of Service",
-          content:
-            "By accessing and using this website, you accept and agree to be bound by the terms and provision of this agreement. These terms apply to all visitors, users, and others who access or use the service.",
-        },
-        {
-          title: "Privacy Policy",
-          content:
-            "We collect information you provide directly to us, such as when you create an account, make a purchase, or contact us. We use this information to provide, maintain, and improve our services.",
-        },
-        {
-          title: "Cookie Policy",
-          content:
-            "We use cookies and similar tracking technologies to track activity on our service and hold certain information. You can instruct your browser to refuse all cookies or indicate when a cookie is being sent.",
-        },
-      ],
-    },
-  },
-  {
-    description: "Event schedule with secondary colors and 2xl rounding",
+    description: "Support categories with sharp corners - Modern corporate style for help centers",
     type: "accordion",
     props: {
       restrictOneOpen: false,
-      colorPreset: {
-        color: "secondary-300",
-      },
-      rounding: "rounded-2xl",
-      gap: "0.75rem",
-      items: [
-        {
-          title: "Day 1: Opening Ceremony & Keynotes",
-          content:
-            "9:00 AM - Registration & Welcome Coffee<br/>10:00 AM - Opening Ceremony<br/>11:00 AM - Keynote: Future of Technology<br/>12:30 PM - Networking Lunch<br/>2:00 PM - Panel Discussion<br/>4:00 PM - Closing Remarks",
-          defaultOpen: true,
-        },
-        {
-          title: "Day 2: Workshops & Technical Sessions",
-          content:
-            "9:00 AM - Workshop: AI in Practice<br/>11:00 AM - Technical Deep Dive: Cloud Architecture<br/>1:00 PM - Lunch Break<br/>2:30 PM - Hands-on Lab: DevOps Tools<br/>4:30 PM - Q&A Session",
-        },
-        {
-          title: "Day 3: Networking & Demo Day",
-          content:
-            "10:00 AM - Startup Pitch Competition<br/>12:00 PM - Demo Showcase<br/>2:00 PM - Networking Session<br/>3:30 PM - Awards Ceremony<br/>5:00 PM - Closing Party",
-        },
-      ],
-    },
-  },
-  {
-    description: "Fitness program details with accent colors and 3xl rounding",
-    type: "accordion",
-    props: {
-      restrictOneOpen: true,
-      colorPreset: {
-        color: "accent-400",
-      },
-      rounding: "rounded-3xl",
-      gap: "1.25rem",
-      fontSize: "text-lg",
-      items: [
-        {
-          title: "Beginner Program (4 weeks)",
-          content:
-            "Perfect for newcomers to fitness. Includes basic bodyweight exercises, flexibility training, and cardio. 3 sessions per week, 45 minutes each. Includes nutrition guidance and progress tracking.",
-        },
-        {
-          title: "Intermediate Program (8 weeks)",
-          content:
-            "For those with some fitness experience. Combines strength training, HIIT workouts, and endurance building. 4 sessions per week, 60 minutes each. Includes meal planning and supplement recommendations.",
-        },
-        {
-          title: "Advanced Program (12 weeks)",
-          content:
-            "High-intensity program for experienced athletes. Features complex movements, periodization, and sport-specific training. 5-6 sessions per week. Includes recovery protocols and performance optimization.",
-        },
-      ],
-    },
-  },
-  {
-    description: "Support categories with primary colors and no rounding",
-    type: "accordion",
-    props: {
-      restrictOneOpen: false,
-      colorPreset: {
-        color: "primary-300",
-      },
+      colorPreset: { color: "primary-300" },
       rounding: "rounded-none",
       gap: "0px",
       fontSize: "text-base",
@@ -387,44 +323,14 @@ export const examples: {
       ],
     },
   },
+
+  // PRICING & COMPARISON
   {
-    description: "Company policies with neutral colors and small font size",
-    type: "accordion",
-    props: {
-      restrictOneOpen: true,
-      colorPreset: {
-        color: "neutral-100",
-      },
-      rounding: "rounded-md",
-      gap: "0.25rem",
-      fontSize: "text-sm",
-      items: [
-        {
-          title: "Remote Work Policy",
-          content:
-            "All employees have the flexibility to work remotely full-time or adopt a hybrid schedule. Required equipment is provided, and employees must maintain reliable internet connection and dedicated workspace.",
-        },
-        {
-          title: "Professional Development",
-          content:
-            "Annual budget of $2,000 per employee for conferences, courses, certifications, and training materials. Time off is provided for approved learning activities and skill development.",
-        },
-        {
-          title: "Time Off & Benefits",
-          content:
-            "Unlimited PTO policy with minimum 3 weeks encouraged annually. Comprehensive health insurance, dental, vision, 401k matching, and wellness stipend included.",
-        },
-      ],
-    },
-  },
-  {
-    description: "Product comparison with secondary colors and multiple defaults open",
+    description: "Product pricing comparison with multiple defaults open - Perfect for plan comparisons",
     type: "accordion",
     props: {
       restrictOneOpen: false,
-      colorPreset: {
-        color: "secondary-500",
-      },
+      colorPreset: { color: "secondary-500" },
       rounding: "rounded-lg",
       gap: "0.5rem",
       fontSize: "text-base",
@@ -449,32 +355,91 @@ export const examples: {
       ],
     },
   },
+
+  // DYNAMIC CONTENT EXAMPLES
   {
-    description: "Troubleshooting guide with accent colors and large font",
+    description: "Dynamic team member accordion using template variables - Shows data-driven content",
     type: "accordion",
     props: {
-      restrictOneOpen: false,
-      colorPreset: {
-        color: "accent-600",
-      },
-      rounding: "rounded-xl",
-      gap: "1rem",
+      restrictOneOpen: true,
+      colorPreset: { color: "accent-400" },
+      rounding: "rounded-lg",
+      gap: "0.5rem",
+      items: [
+        {
+          title: "Meet {{team.leader.name}} - {{team.leader.role}}",
+          content:
+            "{{team.leader.bio}} <br/><br/>Experience: {{team.leader.experience}} years<br/>Email: {{team.leader.email}}<br/>Location: {{team.leader.location}}",
+          defaultOpen: true,
+        },
+        {
+          title: "{{team.designer.name}} - {{team.designer.role}}",
+          content:
+            "{{team.designer.bio}} <br/><br/>Specializes in: {{team.designer.specialties}}<br/>Portfolio: <a href='{{team.designer.portfolio}}'>View Work</a>",
+        },
+        {
+          title: "{{team.developer.name}} - {{team.developer.role}}",
+          content:
+            "{{team.developer.bio}} <br/><br/>Technologies: {{team.developer.skills}}<br/>GitHub: <a href='{{team.developer.github}}'>@{{team.developer.username}}</a>",
+        },
+      ],
+    },
+  },
+
+  // SPECIAL STYLING VARIATIONS
+  {
+    description: "Legal documents with dark theme and large gaps - Professional legal content presentation",
+    type: "accordion",
+    props: {
+      restrictOneOpen: true,
+      colorPreset: { color: "neutral-800" },
+      rounding: "rounded-lg",
+      gap: "1.5rem",
+      fontSize: "text-sm",
+      items: [
+        {
+          title: "Terms of Service",
+          content:
+            "By accessing and using this website, you accept and agree to be bound by the terms and provision of this agreement. These terms apply to all visitors, users, and others who access or use the service.",
+        },
+        {
+          title: "Privacy Policy", 
+          content:
+            "We collect information you provide directly to us, such as when you create an account, make a purchase, or contact us. We use this information to provide, maintain, and improve our services.",
+        },
+        {
+          title: "Cookie Policy",
+          content:
+            "We use cookies and similar tracking technologies to track activity on our service and hold certain information. You can instruct your browser to refuse all cookies or indicate when a cookie is being sent.",
+        },
+      ],
+    },
+  },
+
+  {
+    description: "Ultra-rounded modern design with 3xl rounding - Contemporary aesthetic for creative brands",
+    type: "accordion",
+    props: {
+      restrictOneOpen: true,
+      colorPreset: { color: "accent-300" },
+      rounding: "rounded-3xl",
+      gap: "1.5rem",
       fontSize: "text-lg",
       items: [
         {
-          title: "Connection Issues",
+          title: "Design Philosophy",
           content:
-            "1. Check your internet connection<br/>2. Clear browser cache and cookies<br/>3. Disable VPN if active<br/>4. Try incognito/private browsing mode<br/>5. Contact support if issues persist",
+            "We believe in creating digital experiences that are both beautiful and functional. Our approach combines user-centered design with cutting-edge technology to deliver exceptional results.",
         },
         {
-          title: "Login Problems",
+          title: "Our Process",
           content:
-            "1. Verify your email address and password<br/>2. Use 'Forgot Password' to reset<br/>3. Check for CAPS LOCK<br/>4. Try a different browser<br/>5. Ensure account is not suspended",
+            "Discovery → Strategy → Design → Development → Testing → Launch. Each phase includes client collaboration, iterative feedback, and quality assurance to ensure optimal outcomes.",
         },
         {
-          title: "Performance Issues",
+          title: "Why Choose Us",
           content:
-            "1. Close unnecessary browser tabs<br/>2. Update your browser to latest version<br/>3. Disable browser extensions<br/>4. Check system resources (RAM/CPU)<br/>5. Try using the mobile app instead",
+            "15+ years experience, 200+ successful projects, award-winning designs, and a commitment to excellence. We're not just service providers - we're strategic partners in your success.",
         },
       ],
     },

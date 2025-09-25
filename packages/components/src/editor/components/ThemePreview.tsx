@@ -60,9 +60,10 @@ export default function ThemePreview({
 
       <h3
         className={tx(
-          `absolute  left-1/2 -translate-x-1/2 transition-all top-1/2 translate-y-full scale-75
-          -bottom-6 h-6
-          group-hover/theme-button:(-translate-y-1/2 scale-100)
+          noPreview
+            ? "-translate-y-1/2 "
+            : "translate-y-full scale-75 group-hover/theme-button:(-translate-y-1/2 scale-100)",
+          `absolute  left-1/2 -translate-x-1/2 transition-all top-1/2 -bottom-6 h-6
           py-px text-xs max-w-[86%] inline-flex items-center
           overflow-hidden text-ellipsis text-nowrap z-20 bg-black/30 px-2 font-normal text-white backdrop-blur-md rounded-full`,
         )}

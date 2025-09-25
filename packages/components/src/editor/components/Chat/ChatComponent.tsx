@@ -13,6 +13,7 @@ import { type FormEvent, useEffect, useMemo, useRef, useState, Suspense, lazy, u
 import {
   useAdditionalAssets,
   useDraftHelpers,
+  useDraftUndoManager,
   useGenerationState,
   usePage,
   useSite,
@@ -26,6 +27,8 @@ import { useDeepCompareEffect } from "use-deep-compare";
 import { useDebugMode } from "../../hooks/use-editor";
 import { defineDatasource } from "@upstart.gg/sdk/shared/datasources";
 import type { Tools, UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
+import type { CallContextProps } from "@upstart.gg/sdk/shared/context";
+import { type Brick, getDefaultPropsForBrick } from "@upstart.gg/sdk/shared/bricks";
 
 // Lazy load heavy components
 const Markdown = lazy(() => import("../Markdown"));
@@ -36,11 +39,11 @@ const ToolRenderer = lazy(() => import("./ChatToolRenderer"));
 const WEB_SEARCH_ENABLED = false;
 
 const msgCommon = tx(
-  "rounded-lg p-6 text-pretty transition-all duration-300 flex flex-col gap-1.5",
+  "rounded-lg p-4 text-pretty transition-all duration-300 flex flex-col gap-1.5",
   css({
     // whiteSpace: "pre-line",
     "& p": {
-      marginBlock: ".35rem",
+      marginBottom: ".28em",
       lineHeight: "1.625",
     },
     "& p:first-child": {
@@ -55,20 +58,20 @@ const msgCommon = tx(
     "& ul": {
       listStyle: "outside",
       listStyleType: "square",
-      paddingLeft: "1.6rem",
-      marginTop: "0.5rem",
-      marginBottom: "0.2rem",
+      paddingLeft: "1.6em",
+      marginTop: "0.5em",
+      marginBottom: "0.2em",
     },
     "& ol": {
       listStyle: "outside",
       listStyleType: "decimal",
-      paddingLeft: "1.6rem",
-      marginTop: "0.5rem",
-      marginBottom: "0.2rem",
+      paddingLeft: "1.6em",
+      marginTop: "0.5em",
+      marginBottom: "0.2em",
     },
     "& li": {
-      marginBottom: "0.45rem",
-      paddingLeft: ".3rem",
+      marginBottom: "0.35em",
+      paddingLeft: ".3em",
     },
   }),
 );
@@ -92,6 +95,7 @@ export default function Chat() {
   const [showToastWorking, setShowToastWorking] = useState(generationState.isSetup);
   const [hasScrolledUp, setHasScrolledUp] = useState(false);
   const chatboxRef = useRef<HTMLTextAreaElement>(null);
+  const { undo } = useDraftUndoManager();
 
   // If user has scrolled up, we want to update the hasScrolledUp state
 
@@ -201,7 +205,7 @@ What should we work on together? 🤖`,
             generationState: generationStateRef.current,
             userLanguage: userLanguageRef.current,
             assets: assetsRef.current,
-          },
+          } satisfies Omit<CallContextProps, "userId">,
         }),
       }),
       messages: initialMessages,
@@ -230,9 +234,9 @@ What should we work on together? 🤖`,
 
   const debouncedScroll = useDebounceCallback(() => {
     // when messages change, scroll to the bottom
-    if (listPlaceholderRef.current && !hasScrolledUp) {
+    if (messagesListRef.current && !hasScrolledUp) {
       // Only autoscroll if user hasn't scrolled up or is already near the bottom
-      listPlaceholderRef.current?.scrollIntoView({ behavior: "smooth" });
+      messagesListRef.current?.scrollTo({ behavior: "smooth", top: messagesListRef.current.scrollHeight });
     }
   }, 300);
 
@@ -311,19 +315,29 @@ What should we work on together? 🤖`,
           break;
         }
 
-        case "tool-createNavbar":
-          console.log("Generated navbar", toolInvocation.output);
-          draftHelpers.updateSiteAttributes({
-            navbar: toolInvocation.output,
+        case "tool-undo": {
+          undo(toolInvocation.input.steps ?? 1);
+          addToolResult({
+            output: true,
+            tool: "undo",
+            toolCallId: toolInvocation.toolCallId,
           });
           break;
+        }
 
-        case "tool-createFooter":
-          console.log("Generated footer", toolInvocation.output);
-          draftHelpers.updateSiteAttributes({
-            footer: toolInvocation.output,
-          });
-          break;
+        // case "tool-createNavbar":
+        //   console.log("Generated navbar", toolInvocation.output);
+        //   draftHelpers.updateSiteAttributes({
+        //     navbar: toolInvocation.output,
+        //   });
+        //   break;
+
+        // case "tool-createFooter":
+        //   console.log("Generated footer", toolInvocation.output);
+        //   draftHelpers.updateSiteAttributes({
+        //     footer: toolInvocation.output,
+        //   });
+        //   break;
 
         case "tool-createThemes": {
           const themes = toolInvocation.output;
@@ -353,12 +367,20 @@ What should we work on together? 🤖`,
           break;
         }
 
-        case "tool-createSiteAttributes": {
+        case "tool-setSiteAttributes": {
           const siteAttributes = toolInvocation.output;
           console.log("Generated site attributes", siteAttributes);
           draftHelpers.updateSiteAttributes(siteAttributes);
           break;
         }
+        // }
+
+        // case "tool-createSiteAttributes": {
+        //   const siteAttributes = toolInvocation.output;
+        //   console.log("Generated site attributes", siteAttributes);
+        //   draftHelpers.updateSiteAttributes(siteAttributes);
+        //   break;
+        // }
 
         case "tool-createSiteQueries": {
           const queries = toolInvocation.output;
@@ -369,14 +391,30 @@ What should we work on together? 🤖`,
           break;
         }
 
-        case "tool-editSiteQueries": {
-          const queries = toolInvocation.output;
-          console.log("Edited site queries", queries);
-          draftHelpers.updateSiteAttributes({
-            queries: [...(site.attributes.queries ?? []), ...queries],
-          });
+        case "tool-setSiteLabel": {
+          const { label } = toolInvocation.input;
+          console.log("Set site label", label);
+          draftHelpers.setSiteLabel(label);
           break;
         }
+
+        // case "tool-createSiteQueries": {
+        //   const queries = toolInvocation.output;
+        //   console.log("Edited site queries", queries);
+        //   draftHelpers.updateSiteAttributes({
+        //     queries: [...(site.attributes.queries ?? []), ...queries],
+        //   });
+        //   break;
+        // }
+
+        // case "tool-editSiteQueries": {
+        //   const queries = toolInvocation.output;
+        //   console.log("Edited site queries", queries);
+        //   draftHelpers.updateSiteAttributes({
+        //     queries: [...(site.attributes.queries ?? []), ...queries],
+        //   });
+        //   break;
+        // }
 
         case "tool-createPageQueries": {
           const queries = toolInvocation.output;
@@ -388,15 +426,15 @@ What should we work on together? 🤖`,
           break;
         }
 
-        case "tool-editPageQueries": {
-          const queries = toolInvocation.output;
-          console.log("Edited page queries", queries);
-          draftHelpers.updatePageAttributes({
-            ...page.attributes,
-            queries: [...(page.attributes.queries ?? []), ...queries],
-          });
-          break;
-        }
+        // case "tool-editPageQueries": {
+        //   const queries = toolInvocation.output;
+        //   console.log("Edited page queries", queries);
+        //   draftHelpers.updatePageAttributes({
+        //     ...page.attributes,
+        //     queries: [...(page.attributes.queries ?? []), ...queries],
+        //   });
+        //   break;
+        // }
 
         case "tool-createSection": {
           const section = toolInvocation.output;
@@ -416,15 +454,38 @@ What should we work on together? 🤖`,
         case "tool-createBrick": {
           const brick = toolInvocation.output;
           console.log("Generated brick", brick);
-          const { sectionId, index } = toolInvocation.input;
-          draftHelpers.addBrick(brick, sectionId, index);
+          const { sectionId, insertAt } = toolInvocation.input;
+          if (insertAt.type === "section") {
+            draftHelpers.addBrick(brick, sectionId, insertAt.index);
+          } else {
+            draftHelpers.addBrick(brick, sectionId, insertAt.index, insertAt.id);
+          }
           break;
         }
 
         case "tool-editBrick": {
-          draftHelpers.updateBrickProps(toolInvocation.input.id, toolInvocation.output.props);
+          const brick = toolInvocation.output;
+          console.log("Edit brick props", brick);
+          if (brick.props) {
+            draftHelpers.updateBrickProps(brick.id, brick.props);
+          }
+          if (brick.mobileProps) {
+            draftHelpers.updateBrickProps(brick.id, brick.mobileProps, true);
+          }
           break;
         }
+
+        case "tool-setSitePrompt": {
+          const { prompt } = toolInvocation.input;
+          console.log("Set site prompt", prompt);
+          draftHelpers.setSitePrompt(prompt);
+          break;
+        }
+
+        // case "tool-editBrick": {
+        //   draftHelpers.updateBrickProps(toolInvocation.input.id, toolInvocation.output.props);
+        //   break;
+        // }
 
         case "tool-deleteBrick": {
           const { id } = toolInvocation.input;

@@ -41,7 +41,7 @@ export function urlOrPageId(title = "URL", defaultValue?: string) {
       },
       "ui:field": "url-page-id",
       "ai:instructions":
-        "This field can be a URL or a page ID. Use the page ID when linking to a internal page, and a URL for external links.",
+        "This field can be a URL or a page ID. Use the page ID when linking to a internal page, and a URL for external links. It can also contain page queries refrences like '/products/{{ categories.$slug }}' or '/blog/{{ blogPosts.$slug }}'.",
     },
   );
 }

@@ -2,6 +2,7 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
 import type { BrickProps } from "../props/types";
 import { CgSpaceBetween } from "react-icons/cg";
+import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
   type: "spacer",
@@ -25,11 +26,7 @@ export const manifest = defineBrickManifest({
 
 export type Manifest = typeof manifest;
 
-export const examples: {
-  description: string;
-  type: string;
-  props: BrickProps<Manifest>["brick"]["props"];
-}[] = [
+export const examples: BrickExample<Manifest>[] = [
   {
     description: "Transparent spacer of 100px wide",
     type: "spacer",

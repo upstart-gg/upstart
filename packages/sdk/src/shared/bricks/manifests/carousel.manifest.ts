@@ -9,13 +9,54 @@ import { roundingRef } from "../props/border";
 import { colorPresetRef } from "../props/color-preset";
 import { loopRef } from "../props/dynamic";
 import { cssLengthRef } from "../props/css-length";
+import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
   type: "carousel",
   name: "Carousel",
   description: "An image carousel with navigation arrows and dots or numbers indicator",
-  aiInstructions:
-    "Use this brick to create an image carousel or slideshow. It can display multiple images that users can navigate through using arrows or dots. Each image can have an optional legend or caption. This brick is ideal for showcasing portfolios, product images, or any visual content in an engaging way.",
+  aiInstructions: `Use the carousel component for showcasing sequential visual content with smooth navigation between images.
+
+WHEN TO USE:
+- Product galleries with multiple angles or variations
+- Portfolio showcases with project images
+- Step-by-step tutorials or processes (recipes, instructions)
+- Before/after comparisons or transformations
+- Team member profiles with photos
+- Event photo galleries or highlights
+- Feature demonstrations or software screenshots
+- Travel destinations or location showcases
+
+CONTENT GUIDELINES:
+- Optimal range: 2-8 images for best user engagement (max 12 supported)
+- Single image allowed only as placeholder for future expansion
+- Each image needs: { src: { src, alt }, legend }
+- Alt text MUST be descriptive and never empty
+- Legend text should be concise (≤90 characters) and informative
+- Use empty string ("") for legend only when no caption is intentionally desired
+
+IMAGE CONSISTENCY:
+- Keep aspect ratios similar across slides to prevent layout jumps
+- Avoid mixing very tall portrait with very wide landscape images
+- Use consistent image quality and style throughout carousel
+- Consider loading performance with image optimization
+
+STYLING OPTIONS:
+- padding: "0" for edge-to-edge, "1rem" for standard, "2rem+" for generous spacing
+- borderRadius: "rounded-none" for sharp/modern, "rounded-md" for standard, "rounded-xl" for friendly, "rounded-full" for circular (avatars)
+- colorPreset: Use sparingly - "neutral-50"/"primary-50" for subtle framing, gradients for premium feel
+
+DYNAMIC CONTENT:
+- Use loop property with single template object for data-driven carousels
+- Template variables in src and legend: "{{product.image}}", "{{team.name}} - {{team.role}}"
+- Perfect for: product catalogs, team directories, portfolio projects, event galleries
+
+AVOID:
+- Including unrelated properties (buttons, titles outside legend)
+- Heavy background colors that distract from images
+- Inconsistent aspect ratios that cause jarring transitions
+- More than 12 images (reduces focus and performance)
+- Empty or placeholder alt text (accessibility requirement)`,
   category: "media",
   defaultInspectorTab: "content",
   consumesMultipleQueryRows: true,
@@ -74,13 +115,10 @@ export const manifest = defineBrickManifest({
 
 export type Manifest = typeof manifest;
 
-export const examples: {
-  description: string;
-  type: string;
-  props: BrickProps<Manifest>["brick"]["props"];
-}[] = [
+export const examples: BrickExample<Manifest>[] = [
+  // BASIC CAROUSEL EXAMPLES
   {
-    description: "Basic image carousel with legends",
+    description: "Basic image carousel with legends - Simple content showcase",
     type: "carousel",
     props: {
       images: [
@@ -108,8 +146,10 @@ export const examples: {
       ],
     },
   },
+  
+  // PRODUCT & COMMERCIAL
   {
-    description: "Product showcase carousel with rounded corners and padding",
+    description: "Product showcase carousel with rounded corners and padding - E-commerce gallery style",
     type: "carousel",
     props: {
       images: [
@@ -144,11 +184,13 @@ export const examples: {
       ],
       borderRadius: "rounded-xl",
       padding: "2rem",
-      colorPreset: { color: "gray-50" },
+      colorPreset: { color: "neutral-50" },
     },
   },
+  
+  // PORTFOLIO & CREATIVE
   {
-    description: "Portfolio carousel with minimal styling",
+    description: "Portfolio carousel with minimal styling - Clean professional presentation",
     type: "carousel",
     props: {
       images: [
@@ -178,8 +220,10 @@ export const examples: {
       padding: "0",
     },
   },
+  
+  // EVENTS & EXPERIENCES  
   {
-    description: "Event photos carousel with primary color theme",
+    description: "Event photos carousel with primary color theme - Conference or gathering highlights",
     type: "carousel",
     props: {
       images: [
@@ -262,8 +306,10 @@ export const examples: {
       padding: "1rem",
     },
   },
+  
+  // TEAM & PEOPLE
   {
-    description: "Team members carousel with blue color scheme",
+    description: "Team members carousel with circular images - Professional team showcase",
     type: "carousel",
     props: {
       images: [
@@ -296,13 +342,15 @@ export const examples: {
           legend: "Emily Chen - Marketing Director",
         },
       ],
-      colorPreset: { color: "blue-50" },
+      colorPreset: { color: "primary-50" },
       borderRadius: "rounded-full",
       padding: "2rem",
     },
   },
+  
+  // TUTORIALS & PROCESSES
   {
-    description: "Recipe steps carousel with detailed descriptions",
+    description: "Recipe steps carousel with detailed descriptions - Step-by-step instructional content",
     type: "carousel",
     props: {
       images: [
@@ -335,7 +383,7 @@ export const examples: {
           legend: "Step 4: Season and serve hot",
         },
       ],
-      colorPreset: { color: "orange-50" },
+      colorPreset: { color: "accent-50" },
       borderRadius: "rounded-md",
       padding: "1.5rem",
     },
@@ -374,7 +422,7 @@ export const examples: {
           legend: "Living Room - After",
         },
       ],
-      colorPreset: { color: "green-50" },
+      colorPreset: { color: "accent-100" },
       borderRadius: "rounded-lg",
       padding: "1rem",
     },
@@ -406,7 +454,7 @@ export const examples: {
           legend: "Color Study #7 - 2024",
         },
       ],
-      colorPreset: { color: "gray-900" },
+      colorPreset: { color: "neutral-900" },
       borderRadius: "rounded-sm",
       padding: "3rem",
     },
@@ -459,7 +507,7 @@ export const examples: {
           legend: "Weekend Casual - Relaxed Fit",
         },
       ],
-      colorPreset: { color: "purple-100" },
+      colorPreset: { color: "secondary-100" },
       borderRadius: "rounded-xl",
       padding: "2rem",
     },
@@ -491,7 +539,7 @@ export const examples: {
           legend: "Electric Sedan",
         },
       ],
-      colorPreset: { color: "red-50" },
+      colorPreset: { color: "accent-50" },
       borderRadius: "rounded-lg",
       padding: "0.5rem",
     },
@@ -530,13 +578,13 @@ export const examples: {
           legend: "Security - Enterprise-grade protection",
         },
       ],
-      colorPreset: { color: "indigo-50" },
+      colorPreset: { color: "primary-50" },
       borderRadius: "rounded-2xl",
       padding: "4rem",
     },
   },
   {
-    description: "Dynamic product gallery using products query with pricing and details",
+    description: "Dynamic product gallery using products query - Data-driven product showcase",
     type: "carousel",
     props: {
       images: [
@@ -554,6 +602,90 @@ export const examples: {
       loop: {
         over: "products",
       },
+    },
+  },
+  
+  // DYNAMIC CONTENT EXAMPLES
+  {
+    description: "Loop template for portfolioProjects query (one object will repeat per row)",
+    type: "carousel",
+    props: {
+      images: [
+        {
+          src: {
+            src: "{{portfolioProjects.featuredImage}}",
+            alt: "{{portfolioProjects.projectName}} featured image",
+          },
+          legend:
+            "{{portfolioProjects.projectName}} – {{portfolioProjects.clientName}} ({{portfolioProjects.year}})",
+        },
+      ],
+      colorPreset: { color: "neutral-50" },
+      borderRadius: "rounded-md",
+      padding: "1rem",
+      loop: {
+        over: "portfolioProjects",
+      },
+    },
+  },
+  
+  // SPECIAL STYLING VARIATIONS
+  {
+    description: "Showcase carousel with subtle gradient background frame",
+    type: "carousel",
+    props: {
+      images: [
+        {
+          src: { src: "https://via.placeholder.com/900x500.png?text=Showcase+1", alt: "Showcase slide 1" },
+          legend: "Launch Dashboard",
+        },
+        {
+          src: { src: "https://via.placeholder.com/900x500.png?text=Showcase+2", alt: "Showcase slide 2" },
+          legend: "Collaboration Tools",
+        },
+        {
+          src: { src: "https://via.placeholder.com/900x500.png?text=Showcase+3", alt: "Showcase slide 3" },
+          legend: "Usage Analytics",
+        },
+      ],
+      colorPreset: { color: "primary-gradient-300", gradientDirection: "bg-gradient-to-br" },
+      borderRadius: "rounded-xl",
+      padding: "2rem",
+    },
+  },
+  // MINIMAL EDGE (no padding, square corners)
+  {
+    description: "Minimal edge-to-edge carousel (no padding, no rounding)",
+    type: "carousel",
+    props: {
+      images: [
+        {
+          src: { src: "https://via.placeholder.com/800x400.png?text=Edge+1", alt: "Edge slide 1" },
+          legend: "",
+        },
+        {
+          src: { src: "https://via.placeholder.com/800x400.png?text=Edge+2", alt: "Edge slide 2" },
+          legend: "",
+        },
+      ],
+      borderRadius: "rounded-none",
+      padding: "0",
+    },
+  },
+  // SINGLE IMAGE (acts as prepared placeholder carousel)
+  {
+    description: "Single-image carousel (placeholder for future expansion)",
+    type: "carousel",
+    props: {
+      images: [
+        {
+          src: { src: "https://via.placeholder.com/1000x420.png?text=Banner", alt: "Promotional banner" },
+          legend: "Early Access Program",
+        },
+      ],
+      colorPreset: { color: "secondary-50" },
+      borderRadius: "rounded-lg",
+      padding: "1.25rem",
     },
   },
   {

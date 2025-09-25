@@ -91,4 +91,6 @@ export const sitemapSchemaLLM = toLLMSchema(
   ),
 );
 
+export type SitemapWithPlans = Static<typeof sitemapSchemaLLM>;
+
 export const sitemapSchemaNoPlansLLM = toLLMSchema(sitemapSchema);

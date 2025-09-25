@@ -10,6 +10,7 @@ import { loopRef } from "../props/dynamic";
 import { cssLengthRef } from "../props/css-length";
 import { fontSizeRef } from "../props/text";
 import { StringEnum } from "~/shared/utils/string-enum";
+import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
   type: "table",
@@ -155,11 +156,7 @@ export const manifest = defineBrickManifest({
 
 export type Manifest = typeof manifest;
 
-export const examples: {
-  description: string;
-  type: string;
-  props: BrickProps<Manifest>["brick"]["props"];
-}[] = [
+export const examples: BrickExample<Manifest>[] = [
   {
     description: "Team members table with basic information",
     type: "table",

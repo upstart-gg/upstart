@@ -8,6 +8,7 @@ import { shadowRef } from "../props/effects";
 import { BsListCheck } from "react-icons/bs";
 import { loopRef } from "../props/dynamic";
 import type { BrickProps } from "../props/types";
+import type { BrickExample } from "./_types";
 
 const timelineItemSchema = Type.Object({
   id: Type.Optional(Type.String({ title: "ID" })),
@@ -180,11 +181,7 @@ export const manifest = defineBrickManifest({
 
 export type Manifest = typeof manifest;
 
-export const examples: {
-  description: string;
-  type: string;
-  props: BrickProps<Manifest>["brick"]["props"];
-}[] = [
+export const examples: BrickExample<Manifest>[] = [
   {
     description: "Basic timeline with milestones",
     type: "timeline",

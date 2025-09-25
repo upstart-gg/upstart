@@ -111,6 +111,9 @@ export interface DraftState extends DraftStateProps {
   deleteSection: (id: string) => void;
   getSection: (id: string) => Section | undefined;
   setSections: (sections: Section[]) => void;
+
+  setSitePrompt: (prompt: string) => void;
+  setSiteLabel: (label: string) => void;
 }
 
 export const createDraftStore = (
@@ -131,9 +134,19 @@ export const createDraftStore = (
           ...DEFAULT_PROPS,
           ...initProps,
 
+          setSiteLabel: (label: string) =>
+            set((state) => {
+              state.site.label = label;
+            }),
+
           addAdditionalAssets: (assets) =>
             set((state) => {
               state.additionalAssets.push(...assets);
+            }),
+
+          setSitePrompt: (prompt) =>
+            set((state) => {
+              state.site.sitePrompt = prompt;
             }),
 
           upsertQuery: (query: Query) =>
@@ -1031,7 +1044,7 @@ export const useGenerationState = () => {
     const hasSitemap = state.site.sitemap.length > 0;
     const hasThemesGenerated = state.site.themes.length > 0;
     const hasPages = state.page.id !== "_default_";
-    const isReady = hasSitemap && hasThemesGenerated && hasPages;
+    const isReady = hasSitemap && hasThemesGenerated && hasPages && state.page.sections.length > 0;
     const isSetup = new URL(window.location.href).searchParams.get("action") === "setup";
     return {
       hasSitemap,
@@ -1240,6 +1253,8 @@ export const useDraftHelpers = () => {
     createEmptySection: state.createEmptySection,
     isFirstSection: state.isFirstSection,
     isLastSection: state.isLastSection,
+    setSitePrompt: state.setSitePrompt,
+    setSiteLabel: state.setSiteLabel,
   }));
 };
 
