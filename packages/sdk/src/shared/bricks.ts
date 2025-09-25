@@ -103,7 +103,7 @@ export const brickSchema = Type.Object(
   { additionalProperties: true },
 );
 
-export function makeFullBrickSchemaForLLM(type: string) {
+export function makeFullBrickSchemaForLLM(type: string, otherTypes?: string[]) {
   return toLLMSchema(
     Type.Object(
       {
@@ -258,6 +258,8 @@ export const sectionSchema = Type.Object(
 
 export const sectionSchemaLLM = toLLMSchema(sectionSchema);
 export const sectionSchemaNoBricks = Type.Omit(sectionSchema, ["bricks"]);
+export type SectionSchemaNoBricks = Static<typeof sectionSchemaNoBricks>;
+
 export const sectionSchemaNoBricksLLM = toLLMSchema(sectionSchemaNoBricks);
 
 const sectionDefaultprops = getSchemaDefaults(sectionSchema.properties.props, "desktop") as Section["props"];
@@ -349,11 +351,11 @@ export function processBrick<T extends Brick>(brick: T): T {
     }),
   };
 
-  if (!result.props.width) {
-    result.props.grow = true;
-  }
-
   return result;
+}
+
+export function getDefaultPropsForBrick(type: string) {
+  return defaultProps[type].props;
 }
 
 export function createEmptyBrick(type: string, ghost = false): Brick {

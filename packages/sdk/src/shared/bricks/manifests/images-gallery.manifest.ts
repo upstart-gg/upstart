@@ -9,6 +9,7 @@ import { colorPresetRef } from "../props/color-preset";
 import { borderRef, roundingRef } from "../props/border";
 import { loopRef } from "../props/dynamic";
 import { cssLengthRef } from "../props/css-length";
+import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
   type: "images-gallery",
@@ -110,11 +111,7 @@ export const manifest = defineBrickManifest({
 
 export type Manifest = typeof manifest;
 
-export const examples: {
-  description: string;
-  type: string;
-  props: BrickProps<Manifest>["brick"]["props"];
-}[] = [
+export const examples: BrickExample<Manifest>[] = [
   {
     description: "Product portfolio gallery (3-column grid)",
     type: "images-gallery",

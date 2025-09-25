@@ -10,13 +10,15 @@ import { borderRef, roundingRef } from "../props/border";
 import { colorPresetRef } from "../props/color-preset";
 import { loopRef } from "../props/dynamic";
 import { StringEnum } from "~/shared/utils/string-enum";
+import { urlOrPageIdRef } from "../props/string";
+import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
   type: "card",
   name: "Card",
   description: "A card that can have a title, image, and content.",
   aiInstructions:
-    "Use this brick to create cards that contain an image, title, and text content. Cards are useful for displaying information in a concise and visually appealing way.",
+    "Use this brick to create visually distinct content blocks (product, feature, testimonial, event, article, CTA, etc.).\n\nGuidelines:\n- Button is REQUIRED. Always provide a short action label (1–3 words) and pick a color matching semantic weight (primary/accent for primary actions, neutral/secondary for low emphasis).\n- Image is OPTIONAL. If present you may set imagePosition to top | middle | bottom. Default is top. Pick middle for vertically centered feature highlights, bottom for caption-first layouts.\n- Set noTitle: true when the card is intentionally title-less (e.g. a quote card or pure media focus). Do NOT include an empty title string alongside noTitle.\n- Use dynamic tokens (e.g. {{products.price}}) instead of duplicating literal values.\n- Prefer gradient presets for more visual emphasis (e.g. primary-gradient-400 with gradientDirection).\n- border + rounding + shadow should be cohesive: stronger borders pair well with larger rounding + moderate shadow; minimal / flat cards may use border-0 + no shadow.\n- For internal navigation you can supply a page ID (e.g. 'about') OR a relative/absolute URL (e.g. '/pricing', 'https://example.com').\n- Keep HTML inside text minimal (<strong>, <em>, <br>) — for richer structure consider multiple bricks instead.\n- Avoid mixing noTitle with large heading text embedded inside the text field — in that case keep a proper title.\n\nReturn ONLY valid properties defined in the schema; do not invent new ones.",
   icon: BsCardText,
   defaultWidth: { desktop: "400px", mobile: "100%" },
   minWidth: { desktop: 300 },
@@ -39,8 +41,8 @@ export const manifest = defineBrickManifest({
       }),
     ),
     imagePosition: Type.Optional(
-      StringEnum(["top", "middle", "bottom", "left", "right"], {
-        enumNames: ["Top", "Middle", "Bottom", "Left", "Right"],
+      StringEnum(["top", "middle", "bottom"], {
+        enumNames: ["Top", "Middle", "Bottom"],
         title: "Image Position",
         description: "Where the image should be placed in the card",
         default: "top",
@@ -79,34 +81,147 @@ export const manifest = defineBrickManifest({
       }),
     ),
     loop: Type.Optional(loopRef()),
+    button: Type.Object(
+      {
+        label: Type.String({
+          title: "Button label",
+          default: "Click me",
+          examples: ["Learn more", "Buy now", "Sign up"],
+          metadata: {
+            category: "content",
+          },
+        }),
+        url: urlOrPageIdRef({
+          title: "Button URL",
+          description: "The URL the button should link to.",
+          metadata: {
+            category: "content",
+          },
+        }),
+        color: Type.Optional(
+          StringEnum(["btn-neutral", "btn-primary", "btn-secondary", "btn-accent"], {
+            enumNames: ["Neutral", "Primary", "Secondary", "Accent"],
+            title: "Color",
+            default: "btn-primary",
+          }),
+        ),
+      },
+      { title: "Button", description: "Button displayed at the bottom of the card" },
+    ),
   }),
 });
 
 export type Manifest = typeof manifest;
 
-export const examples: {
-  description: string;
-  type: string;
-  props: BrickProps<Manifest>["brick"]["props"];
-}[] = [
+export const examples: BrickExample<Manifest>[] = [
   {
     description: "A simple card with a title and content",
     type: "card",
     props: {
       title: "Card Title",
       text: "This is the body of the card.",
+      button: {
+        label: "Learn more",
+        url: "/learn-more",
+        color: "btn-primary",
+      },
     },
   },
+  // IMAGE POSITION MIDDLE VARIANT
   {
-    description: "Product card with image on the left",
+    description: "Feature highlight card with centered image (imagePosition=middle)",
     type: "card",
     props: {
-      cardImage: {
-        src: "https://via.placeholder.com/200x200",
-        alt: "Product image",
-      },
-      title: "Premium Headphones",
-      text: "High-quality wireless headphones with noise cancellation and 30-hour battery life.",
+      cardImage: { src: "https://via.placeholder.com/420x240", alt: "Feature visual" },
+      imagePosition: "middle",
+      title: "Blazing Performance",
+      text: "Our new engine reduces processing time by 45% while maintaining reliability.",
+      colorPreset: { color: "primary-100" },
+      border: { width: "border", color: "border-primary-200" },
+      rounding: "rounded-lg",
+      shadow: "shadow-sm",
+      button: { label: "Learn More", url: "/features/performance", color: "btn-primary" },
+    },
+  },
+  // IMAGE POSITION BOTTOM VARIANT
+  {
+    description: "Case study card with image at the bottom (imagePosition=bottom)",
+    type: "card",
+    props: {
+      title: "Case Study: ScaleOps",
+      text: "How ScaleOps handled 10x growth with zero downtime using our platform.",
+      cardImage: { src: "https://via.placeholder.com/600x260", alt: "Scale graph" },
+      imagePosition: "bottom",
+      colorPreset: { color: "secondary-50" },
+      rounding: "rounded-md",
+      shadow: "shadow-sm",
+      button: { label: "Read Study", url: "/cases/scaleops", color: "btn-secondary" },
+    },
+  },
+  // NO TITLE VARIANT
+  {
+    description: "Quote / testimonial style card without a title (uses noTitle=true)",
+    type: "card",
+    props: {
+      noTitle: true,
+      text: '"This toolkit accelerated our launch by weeks — the component quality is outstanding."<br><em>— CTO, FinEdge</em>',
+      colorPreset: { color: "neutral-100" },
+      border: { width: "border", color: "border-neutral-300" },
+      rounding: "rounded-xl",
+      shadow: "shadow-sm",
+      button: { label: "See More", url: "/testimonials", color: "btn-neutral" },
+    },
+  },
+  // INTERNAL PAGE ID LINK VARIANT
+  {
+    description: "Internal navigation card using a page ID instead of a URL",
+    type: "card",
+    props: {
+      title: "About Our Mission",
+      text: "Learn how we're building an open, extensible site generation platform for modern teams.",
+      colorPreset: { color: "base-100" },
+      rounding: "rounded-md",
+      button: { label: "About Us", url: "about", color: "btn-primary" },
+    },
+  },
+  // GRADIENT & STRONG BORDER VARIANT
+  {
+    description: "High-emphasis promotional card using gradient background and thick border",
+    type: "card",
+    props: {
+      title: "Limited Time Offer",
+      text: "Upgrade now and receive a complimentary strategy session plus extended analytics access.",
+      colorPreset: { color: "primary-gradient-400", gradientDirection: "bg-gradient-to-tr" },
+      border: { width: "border-4", color: "border-primary-400" },
+      rounding: "rounded-xl",
+      shadow: "shadow-lg",
+      button: { label: "Upgrade", url: "/pricing", color: "btn-accent" },
+    },
+  },
+  // MINIMAL / FLAT VARIANT (no border, no shadow, subtle preset)
+  {
+    description: "Minimal flat information card (border-0, no shadow)",
+    type: "card",
+    props: {
+      title: "Maintenance Window",
+      text: "Scheduled maintenance on Saturday 02:00–03:00 UTC. API responses may be delayed.",
+      colorPreset: { color: "neutral-50" },
+      border: { width: "border-0", color: "border-neutral-200" },
+      button: { label: "Status Page", url: "/status", color: "btn-neutral" },
+    },
+  },
+  // DARK / INVERTED VARIANT
+  {
+    description: "Dark themed spotlight card (primary-800 background)",
+    type: "card",
+    props: {
+      title: "Night Mode Preview",
+      text: "Experience the new adaptive dark theme optimized for low ambient light environments.",
+      colorPreset: { color: "primary-800" },
+      border: { width: "border", color: "border-primary-600" },
+      rounding: "rounded-lg",
+      shadow: "shadow-md",
+      button: { label: "Preview", url: "/themes/dark", color: "btn-primary" },
     },
   },
   {
@@ -115,29 +230,31 @@ export const examples: {
     props: {
       title: "Key Feature",
       text: "This feature provides exceptional value and enhances user experience significantly.",
+      colorPreset: { color: "primary-50" },
+      border: { width: "border", color: "border-primary-200" },
+      rounding: "rounded-lg",
+      shadow: "shadow-sm",
+      button: {
+        label: "Discover More",
+        url: "/features",
+        color: "btn-primary",
+      },
     },
   },
   {
     description: "Blog post card with image at the bottom",
     type: "card",
     props: {
-      title: "The Future of Technology",
+      title: "Future of Tech",
       text: "Exploring emerging trends and innovations that will shape our digital landscape in the coming decade.",
       cardImage: {
         src: "https://via.placeholder.com/400x200",
         alt: "Technology concept",
       },
-    },
-  },
-  {
-    description: "Testimonial card with right-side image",
-    type: "card",
-    props: {
-      title: "Customer Review",
-      text: '"This product exceeded my expectations. The quality is outstanding and the customer service is top-notch!"',
-      cardImage: {
-        src: "https://via.placeholder.com/150x150",
-        alt: "Customer photo",
+      button: {
+        label: "Read More",
+        url: "/blog/{{ blogPosts.$slug }}",
+        color: "btn-primary",
       },
     },
   },
@@ -147,6 +264,11 @@ export const examples: {
     props: {
       title: "Simple Announcement",
       text: "Important updates will be posted here regularly.",
+      button: {
+        label: "View Updates",
+        url: "/updates",
+        color: "btn-neutral",
+      },
     },
   },
   {
@@ -159,6 +281,11 @@ export const examples: {
       },
       title: "Annual Conference 2025",
       text: "Join us for three days of inspiring talks, networking opportunities, and hands-on workshops.",
+      button: {
+        label: "Register Now",
+        url: "/events/conference-2025",
+        color: "btn-primary",
+      },
     },
   },
   {
@@ -171,6 +298,11 @@ export const examples: {
       },
       title: "Breaking News Update",
       text: "Latest developments in the ongoing story with expert analysis and community reactions.",
+      button: {
+        label: "Read Full Article",
+        url: "/news/breaking-update",
+        color: "btn-secondary",
+      },
     },
   },
   {
@@ -179,6 +311,11 @@ export const examples: {
     props: {
       title: "Get Started Today",
       text: "Transform your workflow with our powerful tools. Sign up now and get 30 days free!",
+      button: {
+        label: "Sign Up Now",
+        url: "/signup",
+        color: "btn-primary",
+      },
     },
   },
   {
@@ -195,6 +332,11 @@ export const examples: {
       border: { width: "border", color: "border-primary-200" },
       rounding: "rounded-lg",
       shadow: "shadow-md",
+      button: {
+        label: "Buy Now",
+        url: "{{products.purchaseUrl}}",
+        color: "btn-primary",
+      },
       loop: {
         over: "products",
       },
@@ -214,6 +356,11 @@ export const examples: {
       colorPreset: { color: "neutral-100" },
       rounding: "rounded-xl",
       shadow: "shadow-lg",
+      button: {
+        label: "Contact",
+        url: "mailto:{{teamMembers.email}}",
+        color: "btn-neutral",
+      },
       loop: {
         over: "teamMembers",
       },
@@ -234,6 +381,11 @@ export const examples: {
       border: { width: "border", color: "border-secondary-300" },
       rounding: "rounded-md",
       shadow: "shadow-sm",
+      button: {
+        label: "Read More",
+        url: "{{blogPosts.url}}",
+        color: "btn-secondary",
+      },
       loop: {
         over: "blogPosts",
       },
@@ -254,6 +406,11 @@ export const examples: {
       border: { width: "border-2", color: "border-accent-400" },
       rounding: "rounded-lg",
       shadow: "shadow-md",
+      button: {
+        label: "Book Tickets",
+        url: "{{upcomingEvents.ticketUrl}}",
+        color: "btn-accent",
+      },
       loop: {
         over: "upcomingEvents",
       },
@@ -267,12 +424,17 @@ export const examples: {
         src: "{{customerReviews.customerPhoto}}",
         alt: "{{customerReviews.customerName}}",
       },
-      imagePosition: "left",
+      imagePosition: "top",
       title: "{{customerReviews.customerName}}",
       text: '"{{customerReviews.review}}"<br><br><strong>Rating: {{customerReviews.rating}}/5 stars</strong><br>{{customerReviews.company}} • {{customerReviews.position}}',
       colorPreset: { color: "neutral-50" },
       rounding: "rounded-xl",
       shadow: "shadow-lg",
+      button: {
+        label: "See All Reviews",
+        url: "/reviews",
+        color: "btn-neutral",
+      },
       loop: {
         over: "customerReviews",
       },
@@ -293,6 +455,11 @@ export const examples: {
       border: { width: "border", color: "border-primary-300" },
       rounding: "rounded-lg",
       shadow: "shadow-md",
+      button: {
+        label: "Learn More",
+        url: "{{companyServices.detailsUrl}}",
+        color: "btn-primary",
+      },
       loop: {
         over: "companyServices",
       },
@@ -312,6 +479,11 @@ export const examples: {
       colorPreset: { color: "secondary-100" },
       rounding: "rounded-md",
       shadow: "shadow-sm",
+      button: {
+        label: "View Project",
+        url: "{{portfolioWork.projectUrl}}",
+        color: "btn-secondary",
+      },
       loop: {
         over: "portfolioWork",
       },

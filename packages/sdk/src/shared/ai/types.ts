@@ -1,146 +1,214 @@
 // Define your custom message type once
 import type { UIMessage } from "ai";
 import type { Theme } from "../theme";
-import type { Sitemap } from "../sitemap";
-import type { VersionedPage } from "../page";
-import type { PageAttributes, SiteAttributes } from "../attributes";
-import type { Brick, Section } from "../bricks";
-import type { AskUserChoiceInput, WaitingMessageSchema } from "./schemas";
+import type { Sitemap, SitemapWithPlans } from "../sitemap";
+import type { Page, VersionedPage } from "../page";
+import type {
+  PageAttributes,
+  PageAttributesNoQueries,
+  SiteAttributes,
+  SiteAttributesNoQueries,
+} from "../attributes";
+import type { Brick, Section, SectionSchemaNoBricks } from "../bricks";
+import type {
+  AskUserChoiceInput,
+  ToolInputWaitingMessageType,
+  ToolInputInstructionsType,
+  GetDocInput,
+} from "./schemas";
 import type { Datarecord, InternalDatarecord } from "../datarecords/types";
 import type { InternalDatasource } from "../datasources/types";
 import type { ImageSearchResultsType } from "../images";
 import type { NavbarProps } from "../bricks/manifests/navbar.manifest";
 import type { FooterProps } from "../bricks/manifests/footer.manifest";
+import type { Site } from "../site";
 // ... import your tool and data part types
 
 export type Tools = {
+  setSitePrompt: {
+    input: { prompt: string };
+    output: string;
+  };
+  getBrickDocs: {
+    input: { type: string };
+    output: string; // The schema documentation in markdown format
+  };
   askUserChoice: {
     input: AskUserChoiceInput;
     output: string | string[] | null; // The user's choice(s
   };
+  setSiteAttributes: {
+    input: SiteAttributesNoQueries;
+    output: SiteAttributesNoQueries;
+  };
+  setPageAttributes: {
+    input: PageAttributesNoQueries;
+    output: PageAttributesNoQueries;
+  };
   generateImages: {
-    input: { prompt: string; count: number; aspectRatio: string };
+    input: ToolInputWaitingMessageType & { prompt: string; count: number; aspectRatio: string };
     output: ImageSearchResultsType;
   };
+  getCurrentSite: {
+    input: unknown;
+    output: Site;
+  };
   listThemes: {
-    input: null; // Just type the waiting message for now
+    input: unknown;
     output: Theme[];
   };
   createSection: {
-    input: WaitingMessageSchema; // Just type the waiting message for now
+    input: SectionSchemaNoBricks;
     output: Section;
   };
   editSection: {
-    input: { id: string } & WaitingMessageSchema; // Just type the waiting message for now
+    input: { id: string; data: Partial<SectionSchemaNoBricks> };
     output: Section;
   };
+  deleteSection: {
+    input: { id: string };
+    output: { sections: Section[]; deleted: Section }; // Updated sections or error string if failed
+  };
   getSection: {
-    input: { id: string }; // Just type the waiting message for now
-    output: Section | string; // Error string if not found
+    input: { id: string };
+    output: Section; // Error string if not found
   };
   listSections: {
-    input: null; // Just type the waiting message for now
+    input: unknown;
     output: Section[];
   };
   createThemes: {
-    input: WaitingMessageSchema; // Just type the waiting message for now
+    input: ToolInputWaitingMessageType & ToolInputInstructionsType & { count: number };
     output: Theme[];
   };
   getCurrentTheme: {
-    input: null; // Just type the waiting message for now
+    input: unknown;
     output: Theme; // Theme or message if no theme applied yet
   };
   createSitemap: {
-    input: WaitingMessageSchema; // Just type the waiting message for now
-    output: Sitemap;
-  };
-  getSitemap: {
-    input: null; // Just type the waiting message for now
-    output: Sitemap;
+    input: ToolInputWaitingMessageType & ToolInputInstructionsType;
+    output: SitemapWithPlans;
   };
   createPage: {
-    input: WaitingMessageSchema; // Just type the waiting message for now
+    input: Omit<Page, "sections">;
     output: VersionedPage;
   };
-  editPage: {
-    input: WaitingMessageSchema; // Just type the waiting message for now
-    output: VersionedPage;
+  undo: {
+    input: {
+      steps?: number;
+    };
+    output: boolean;
+  };
+  setSiteLabel: {
+    input: { label: string };
+    output: string;
+  };
+  // editPage: {
+  //   input: ToolInputWaitingMessageType;
+  //   output: VersionedPage;
+  // };
+  listPages: {
+    input: unknown;
+    output: Sitemap;
   };
   getCurrentPage: {
-    input: null; // Just type the waiting message for now
+    input: unknown;
     output: VersionedPage;
   };
-  createNavbar: {
-    input: WaitingMessageSchema; // Just type the waiting message for now
-    output: NavbarProps;
-  };
-  createFooter: {
-    input: WaitingMessageSchema; // Just type the waiting message for now
-    output: FooterProps;
+  analyzeUrl: {
+    input: {
+      url: string;
+      prompt: string;
+    };
+    output: string;
   };
   createBrick: {
-    input: WaitingMessageSchema & { sectionId: string; index: number }; // Just type the waiting message for now
+    input: {
+      instructions: string;
+      otherBrickTypes: string[];
+      sectionId: string;
+      id: string;
+      type: string;
+      insertAt: { type: "section"; index: number } | { type: "brick"; id: string; index: number };
+    };
     output: Brick;
   };
   editBrick: {
-    input: WaitingMessageSchema & { id: string }; // Just type the waiting message for now
+    input: { id: string; instructions: string; otherBrickTypes: string[] };
     output: Brick;
   };
   listImages: {
-    input: null; // Just type the waiting message for now
+    input: unknown;
     output: ImageSearchResultsType;
   };
   listSiteQueries: {
-    input: null; // Just type the waiting message for now
+    input: unknown;
     output: NonNullable<SiteAttributes["queries"]>;
+  };
+  listPageQueries: {
+    input: unknown;
+    output: NonNullable<PageAttributes["queries"]>;
   };
   createSiteQueries: {
-    input: WaitingMessageSchema & { instructions: string }; // Just type the waiting message for now
+    input: ToolInputWaitingMessageType & { instructions: string };
     output: NonNullable<SiteAttributes["queries"]>;
   };
-  editSiteQueries: {
-    input: WaitingMessageSchema & { instructions: string }; // Just type the waiting message for now
-    output: NonNullable<SiteAttributes["queries"]>;
+  setTheme: {
+    input: { id: string };
+    output: Theme;
   };
+  // editSiteQueries: {
+  //   input: ToolInputWaitingMessageType & { instructions: string };
+  //   output: NonNullable<SiteAttributes["queries"]>;
+  // };
   createPageQueries: {
-    input: WaitingMessageSchema & { instructions: string }; // Just type the waiting message for now
+    input: ToolInputWaitingMessageType & { instructions: string };
     output: NonNullable<PageAttributes["queries"]>;
   };
-  editPageQueries: {
-    input: WaitingMessageSchema & { instructions: string }; // Just type the waiting message for now
-    output: NonNullable<PageAttributes["queries"]>;
-  };
-  createSiteAttributes: {
-    input: WaitingMessageSchema; // Just type the waiting message for now
-    output: SiteAttributes;
-  };
-  getSiteAttributes: {
-    input: null; // Just type the waiting message for now
-    output: SiteAttributes;
-  };
+  // editPageQueries: {
+  //   input: ToolInputWaitingMessageType & { instructions: string };
+  //   output: NonNullable<PageAttributes["queries"]>;
+  // };
+  // createSiteAttributes: {
+  //   input: ToolInputWaitingMessageType;
+  //   output: SiteAttributes;
+  // };
+  // getSiteAttributes: {
+  //   input: unknown;
+  //   output: SiteAttributes;
+  // };
+
   createDatasource: {
-    input: WaitingMessageSchema; // Just type the waiting message for now
+    input: ToolInputWaitingMessageType & ToolInputInstructionsType & { id: string };
     output: InternalDatasource;
   };
   listDatasources: {
-    input: null; // Just type the waiting message for now
+    input: unknown;
     output: InternalDatasource[];
   };
   createDatarecord: {
-    input: WaitingMessageSchema; // Just type the waiting message for now
+    input: ToolInputWaitingMessageType & ToolInputInstructionsType & { id: string };
     output: Datarecord;
   };
   listDatarecords: {
-    input: null; // Just type the waiting message for now
+    input: unknown;
     output: Datarecord[];
   };
   searchImages: {
-    input: WaitingMessageSchema & { query: string }; // Just type the waiting message for now
+    input: ToolInputWaitingMessageType & { query: string };
     output: ImageSearchResultsType;
   };
   deleteBrick: {
-    input: { id: string; waitingMessage: string }; // Just type the waiting message for now
-    output: boolean | string; // true if deleted, error message if failed
+    input: { id: string };
+    output: Brick;
+  };
+  deleteSiteQuery: {
+    input: { id: string };
+    output: NonNullable<SiteAttributes["queries"]>; // Updated queries or error message if failed
+  };
+  deletePageQuery: {
+    input: { alias: string };
+    output: NonNullable<PageAttributes["queries"]>; // Updated queries or error message if failed
   };
 };
 

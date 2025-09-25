@@ -9,6 +9,7 @@ import { HiOutlineViewColumns } from "react-icons/hi2";
 import { colorPresetRef } from "../props/color-preset";
 import { loopRef } from "../props/dynamic";
 import { StringEnum } from "~/shared/utils/string-enum";
+import type { BrickExample } from "./_types";
 
 // Tab configuration schema
 const tabRef = Type.Object({
@@ -160,11 +161,7 @@ export const manifest = defineBrickManifest({
 
 export type Manifest = typeof manifest;
 
-export const examples: {
-  description: string;
-  type: string;
-  props: BrickProps<Manifest>["brick"]["props"];
-}[] = [
+export const examples: BrickExample<Manifest>[] = [
   {
     description: "Simple tabs with basic content in each panel",
     type: "tabs",

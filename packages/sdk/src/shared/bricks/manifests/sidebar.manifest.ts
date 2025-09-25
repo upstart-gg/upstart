@@ -8,6 +8,7 @@ import { borderRef } from "../props/border";
 import { fixedPositioned } from "../props/position";
 import type { BrickProps } from "../props/types";
 import { shadowRef } from "../props/effects";
+import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
   type: "sidebar",
@@ -60,11 +61,7 @@ export const manifest = defineBrickManifest({
 
 export type Manifest = typeof manifest;
 
-export const examples: {
-  description: string;
-  type: string;
-  props: BrickProps<Manifest>["brick"]["props"];
-}[] = [
+export const examples: BrickExample<Manifest>[] = [
   {
     description: "Standard sidebar with navigation links base on site pages",
     type: "sidebar",

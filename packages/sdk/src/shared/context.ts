@@ -10,6 +10,7 @@ export type GenerationState = {
 };
 
 export type CallContextProps = {
+  userId: string;
   /**
    * The site object
    */

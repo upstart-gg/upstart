@@ -7,6 +7,7 @@ import { borderRef, roundingRef } from "../props/border";
 import { shadowRef } from "../props/effects";
 import { Type } from "@sinclair/typebox";
 import { cssLengthRef } from "../props/css-length";
+import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
   type: "video",
@@ -62,11 +63,7 @@ export const manifest = defineBrickManifest({
 
 export type Manifest = typeof manifest;
 
-export const examples: {
-  description: string;
-  type: string;
-  props: BrickProps<Manifest>["brick"]["props"];
-}[] = [
+export const examples: BrickExample<Manifest>[] = [
   {
     description: "A YouTube video",
     type: "video",
