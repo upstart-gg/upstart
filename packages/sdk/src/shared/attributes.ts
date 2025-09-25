@@ -30,12 +30,18 @@ export const pageAttributesSchema = Type.Object(
       }),
     ),
     tags: Type.Optional(
-      Type.Array(string("Tag"), {
+      Type.Array(Type.String({ description: "A tag for the page. Should be url-safe." }), {
         title: "Tags",
         description:
           "Use tags to organize, group and filter pages in navigation elements and in the dashboard. By default, the navbar element display pages having the 'navbar' tag, while the sidebar displays the pages with the tag 'sidebar'.",
         "ui:field": "tags",
-        examples: [["navbar", "navbar"], ["navbar", "sidebar"], ["sidebar"]],
+        examples: [
+          ["navbar", "important"],
+          ["navbar", "sidebar"],
+          ["sidebar"],
+          ["campaign-landing-20250610"],
+        ],
+        maxItems: 8,
       }),
     ),
     path: string("URL path", {
@@ -379,13 +385,15 @@ export const siteAttributesSchema = Type.Object(
   },
 );
 
-export const siteAttributesNowQueriesSchema = Type.Omit(siteAttributesSchema, ["queries"]);
+export const siteAttributesNoQueriesSchema = Type.Omit(siteAttributesSchema, ["queries"]);
 export const pageAttributesNoQueriesSchema = Type.Omit(pageAttributesSchema, ["queries"]);
 export const siteQueriesSchema = Type.Array(querySchema);
 export const siteQueriesSchemaLLM = toLLMSchema(siteQueriesSchema);
 
 export type PageAttributes = Static<typeof pageAttributesSchema>;
 export type SiteAttributes = Static<typeof siteAttributesSchema>;
+export type SiteAttributesNoQueries = Static<typeof siteAttributesNoQueriesSchema>;
+export type PageAttributesNoQueries = Static<typeof pageAttributesNoQueriesSchema>;
 
 export function resolvePageAttributes(data: Partial<PageAttributes> = {}) {
   const defaultAttrValues = getSchemaDefaults(pageAttributesSchema);

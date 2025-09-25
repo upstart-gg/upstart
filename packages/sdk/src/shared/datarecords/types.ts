@@ -1,6 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { airtableOptions } from "./external/airtable/types";
-import { genericWebhookOptions } from "./external/generic-webhook/options";
 import { googleSheetsOptions } from "./external/google/sheets/types";
 import { notionOptions } from "./external/notion/types";
 
@@ -8,8 +7,6 @@ export const connectorSchema = Type.Union([
   Type.Literal("airtable"),
   Type.Literal("google-sheets"),
   Type.Literal("notion"),
-  // Type.Literal("generic-webhook"),
-  // saved to Upstart platform
   Type.Literal("internal"),
 ]);
 
@@ -111,39 +108,7 @@ const commonDatarecordSchema = Type.Object({
   }),
 });
 
-export const datarecordsConnectors = Type.Union([
-  Type.Composite([
-    Type.Object({
-      provider: Type.Literal("airtable"),
-      options: airtableOptions,
-    }),
-    commonDatarecordSchema,
-  ]),
-  Type.Composite([
-    Type.Object({
-      provider: Type.Literal("google-sheets"),
-      options: googleSheetsOptions,
-    }),
-    commonDatarecordSchema,
-  ]),
-  Type.Composite([
-    Type.Object({
-      provider: Type.Literal("notion"),
-      options: notionOptions,
-    }),
-    commonDatarecordSchema,
-  ]),
-  // Type.Composite([
-  //   Type.Object({
-  //     provider: Type.Literal("generic-webhook"),
-  //     options: genericWebhookOptions,
-  //   }),
-  //   commonDatarecordSchema,
-  // ]),
-  internalDatarecord,
-]);
-
-const datarecordMetadata = Type.Object({
+const commonDatarecordMetadata = Type.Object({
   id: Type.String({
     title: "Datarecord ID",
     comment: "A unique identifier for the datarecord, e.g., 'newsletter_subscriptions'",
@@ -155,11 +120,56 @@ const datarecordMetadata = Type.Object({
   description: Type.Optional(Type.String({ title: "Description of the datarecord" })),
 });
 
-const datarecordManifest = Type.Composite([datarecordsConnectors, datarecordMetadata]);
+export const genericDatarecord = Type.Composite([
+  Type.Union([
+    Type.Object({
+      provider: Type.Literal("airtable"),
+      options: airtableOptions,
+    }),
+    Type.Object({
+      provider: Type.Literal("google-sheets"),
+      options: googleSheetsOptions,
+    }),
+    Type.Object({
+      provider: Type.Literal("notion"),
+      options: notionOptions,
+    }),
+    internalDatarecord,
+  ]),
+  commonDatarecordMetadata,
+  commonDatarecordSchema,
+]);
 
-export const internalDatarecordManifest = Type.Composite([datarecordMetadata, internalDatarecord]);
-export type InternalDatarecord = Static<typeof internalDatarecordManifest>;
-export type Datarecord = Static<typeof datarecordManifest>;
+// export const genericDatarecord = Type.Union([
+//   Type.Composite([
+//     Type.Object({
+//       provider: Type.Literal("airtable"),
+//       options: airtableOptions,
+//     }),
+//     commonDatarecordMetadata,
+//     commonDatarecordSchema,
+//   ]),
+//   Type.Composite([
+//     Type.Object({
+//       provider: Type.Literal("google-sheets"),
+//       options: googleSheetsOptions,
+//     }),
+//     commonDatarecordMetadata,
+//     commonDatarecordSchema,
+//   ]),
+//   Type.Composite([
+//     Type.Object({
+//       provider: Type.Literal("notion"),
+//       options: notionOptions,
+//     }),
+//     commonDatarecordMetadata,
+//     commonDatarecordSchema,
+//   ]),
+//   Type.Composite([internalDatarecord, commonDatarecordMetadata, commonDatarecordSchema]),
+// ]);
 
-export const datarecordsList = Type.Array(datarecordManifest);
+export type Datarecord = Static<typeof genericDatarecord>;
+export type InternalDatarecord = Extract<Datarecord, { provider: "internal" }>;
+
+export const datarecordsList = Type.Array(genericDatarecord);
 export type DatarecordsList = Static<typeof datarecordsList>;

@@ -103,6 +103,7 @@ export const brickTypes = StringEnum<(keyof typeof manifests)[]>(
   ],
   {
     title: "Brick type",
+    description: "The type of brick",
   },
 );
 

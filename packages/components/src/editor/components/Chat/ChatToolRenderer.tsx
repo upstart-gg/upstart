@@ -9,6 +9,7 @@ import { useDebugMode } from "../../hooks/use-editor";
 import type { Tools, UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
 import { useState } from "react";
 import Markdown from "../Markdown";
+import ThemePreview from "../ThemePreview";
 
 export default function ToolRenderer({
   toolPart,
@@ -36,28 +37,27 @@ export default function ToolRenderer({
   if (toolPart.type === "tool-askUserChoice") {
     return (
       <AnimatePresence key={toolPart.toolCallId}>
-        <motion.div
-          className={tx("bg-black/5 p-4 rounded-md text-[90%] mt-3")}
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          exit={{ opacity: 0, height: 0 }}
-          transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
-        >
-          {toolPart.input?.question && <Markdown content={toolPart.input.question} />}
-          {toolPart.state === "input-available" ? (
+        {toolPart.state === "input-available" && (
+          <motion.div
+            className={tx("bg-black/5 p-4 rounded-md text-[90%] mt-3")}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
+          >
             <UserChoicesButtons
               key={toolPart.toolCallId}
               part={toolPart}
               addToolResult={addToolResult}
               addToolResultMessage={addToolResultMessage}
             />
-          ) : null}
-        </motion.div>
+          </motion.div>
+        )}
       </AnimatePresence>
     );
   }
 
-  if (toolPart.input && "waitingMessage" in toolPart.input) {
+  if (typeof toolPart.input === "object" && toolPart.input !== null && "waitingMessage" in toolPart.input) {
     return (
       <AnimatePresence key={toolPart.toolCallId}>
         {toolPart.state === "input-available" ? (
@@ -70,7 +70,7 @@ export default function ToolRenderer({
             exit={{ opacity: 0, height: 0 }}
           >
             <MdDone className={tx("w-4 h-4 text-green-600")} />
-            <span>{toolPart.input.waitingMessage}</span>
+            <span>{toolPart.input.waitingMessage as string}</span>
 
             {(toolPart.type === "tool-searchImages" || toolPart.type === "tool-generateImages") && (
               <>
@@ -83,14 +83,15 @@ export default function ToolRenderer({
                 >
                   {showPreview ? "Hide" : "Show"} Preview
                 </button>
-                {showPreview && (
-                  <ImagesPreview
-                    key={toolPart.toolCallId}
-                    query={toolPart.input.query}
-                    images={toolPart.output}
-                  />
-                )}
+                {showPreview && <ImagesPreview key={toolPart.toolCallId} images={toolPart.output} />}
               </>
+            )}
+            {toolPart.type === "tool-createThemes" && (
+              <div className={tx("basis-full flex justify-evenly gap-3 mt-4 mb-2")}>
+                {toolPart.output.map((theme) => (
+                  <ThemePreview noPreview key={theme.id} selected={false} theme={theme} onClick={() => {}} />
+                ))}
+              </div>
             )}
             {debug && <ToolCallDebugInfo part={toolPart} />}
           </motion.div>
@@ -103,7 +104,7 @@ export default function ToolRenderer({
           >
             <MdDone className={tx("w-4 h-4 text-red-600")} />
             <span>
-              {toolPart.input.waitingMessage} (Error: {toolPart.errorText})
+              {toolPart.input.waitingMessage as string} (Error: {toolPart.errorText})
             </span>
             {debug && <ToolCallDebugInfo part={toolPart} />}
           </motion.div>
@@ -221,7 +222,7 @@ function UserChoicesButtons({
   };
   return (
     <motion.div
-      className={tx("flex flex-wrap gap-2 mt-4 justify-between")}
+      className={tx("flex flex-wrap gap-2 justify-between")}
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
@@ -305,7 +306,7 @@ function UserChoicesButtons({
   );
 }
 
-function ImagesPreview({ query, images }: { query: string; images: SimpleImageMetadata[] }) {
+function ImagesPreview({ images }: { images: SimpleImageMetadata[] }) {
   return (
     <div className={tx("basis-full flex flex-col gap-2 mt-1 mb-6 text-sm ml-6 font-normal")}>
       <div className={tx("grid grid-cols-3 gap-1 min-h-60 max-h-60")}>

@@ -7,6 +7,7 @@ import type { BrickProps } from "../props/types";
 import { Type } from "@sinclair/typebox";
 import { number } from "../props/number";
 import { string } from "../props/string";
+import type { BrickExample } from "./_types";
 
 export const DEFAULTS = {
   lat: 48.8566, // Default latitude (Paris)
@@ -78,11 +79,7 @@ export const manifest = defineBrickManifest({
 
 export type Manifest = typeof manifest;
 
-export const examples: {
-  description: string;
-  type: string;
-  props: BrickProps<Manifest>["brick"]["props"];
-}[] = [
+export const examples: BrickExample<Manifest>[] = [
   {
     description: "Map showing a specific location",
     type: "map",

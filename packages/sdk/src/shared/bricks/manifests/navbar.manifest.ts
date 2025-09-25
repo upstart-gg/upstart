@@ -11,6 +11,7 @@ import type { BrickProps } from "../props/types";
 import { colorPresetRef } from "../props/color-preset";
 import { tagsRef } from "../props/tags";
 import { toLLMSchema } from "~/shared/utils/llm";
+import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
   type: "navbar",
@@ -129,11 +130,7 @@ export type NavbarProps = Static<Manifest["props"]>;
 
 export const navbarSchemaPropsLLM = toLLMSchema(manifest.props);
 
-export const examples: {
-  description: string;
-  type: string;
-  props: BrickProps<Manifest>["brick"]["props"];
-}[] = [
+export const examples: BrickExample<Manifest>[] = [
   {
     description:
       "Corporate technology company navbar featuring company logo with right-aligned navigation links filtered by navbar and featured tags",

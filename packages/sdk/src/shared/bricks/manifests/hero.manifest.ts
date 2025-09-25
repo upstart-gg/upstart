@@ -9,14 +9,53 @@ import { borderRef, roundingRef } from "../props/border";
 import { colorPresetRef } from "../props/color-preset";
 import { alignItemsRef, justifyContentRef } from "../props/align";
 import { cssLengthRef } from "../props/css-length";
+import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
   type: "hero",
   category: "basic",
   name: "Hero",
   description: "A big textual element for home pages.",
-  aiInstructions: `Displays a large text element that can be used to display a title and an optional tagline.
-Typically used on home pages to grab the user's attention. It's better NOT to provide the colorPreset prop so that the Hero inherits the background of its parent box or section.`,
+  aiInstructions: `PURPOSE
+A prominent textual block (main heading + optional tagline) used to introduce a page, product, event, company, or dynamic entity.
+
+STRUCTURE
+1. Always supply 'content' (can be plain text or simple HTML like <h1>, <strong>, <br/>).
+2. 'tagline' is optional. Prefer concise value (1 short sentence). Omit if not needed.
+3. Do NOT add buttons, images, forms, lists, or unrelated HTML here (use dedicated bricks for that).
+
+COLOR & BACKGROUND
+• Prefer omitting colorPreset so the hero inherits its parent layout background.
+• When you need emphasis use semantic presets: primary-, secondary-, accent-, neutral-, base-*** or gradient variants like primary-gradient-400 (then add gradientDirection).
+• NEVER invent tokens like success-, warning-, danger-, blue-, orange- (they don't exist). Map them to semantic sets (e.g. success -> secondary, warning -> accent, danger -> accent or primary, blue -> primary, orange -> accent).
+
+LAYOUT & SPACING
+• Use padding suited to visual weight: landing hero: 5–8rem desktop; simple page intro: 2–4rem.
+• You may provide a mobile override via mobileProps (e.g. smaller padding such as 2rem).
+• Keep justifyContent + alignItems consistent (usually center/center or start/start). Avoid mixing center with start.
+
+TYPOGRAPHY
+• 'content' should typically render ONE main heading concept (avoid stacking multiple unrelated headings). Use <br/> to split lines when stylistic.
+• Avoid overly long taglines (>140 chars).
+
+DYNAMIC DATA
+• You may interpolate page queries fields fields: {{company.name}}, {{product.name}}, etc.
+• Ensure dynamic tokens exist in the referenced query context. Don't fabricate field names.
+
+RESPONSIVE
+• Use mobileProps only for necessary reductions (padding, alignment). Do not duplicate unchanged properties.
+
+DON'TS
+✗ Don't add properties that are not in the schema.
+✗ Don't wrap everything with extraneous HTML containers.
+✗ Don't use colorPreset plus a conflicting parent background rationale—choose one.
+
+DO
+✓ Keep content focused.
+✓ Use semantic colors thoughtfully.
+✓ Use gradientDirection ONLY with gradient presets.
+✓ Provide accessible plain text when not using HTML tags.
+`,
   icon: BsAlphabetUppercase,
 
   defaultWidth: { desktop: "60dvw", mobile: "auto" },
@@ -32,7 +71,7 @@ Typically used on home pages to grab the user's attention. It's better NOT to pr
     tagline: Type.Optional(
       textContentRef({
         title: "Hero tagline",
-        default: "<p style='text-align:center'>Use our platform to build your business with confidence.</p>",
+        // default: "<p style='text-align:center'>Use our platform to build your business with confidence.</p>",
       }),
     ),
     colorPreset: Type.Optional(
@@ -79,11 +118,7 @@ Typically used on home pages to grab the user's attention. It's better NOT to pr
 
 export type Manifest = typeof manifest;
 
-export const examples: {
-  description: string;
-  type: string;
-  props: BrickProps<Manifest>["brick"]["props"];
-}[] = [
+export const examples: BrickExample<Manifest>[] = [
   {
     description: "Simple welcome hero with primary background",
     type: "hero",
@@ -148,28 +183,29 @@ export const examples: {
     },
   },
   {
-    description: "Restaurant hero with warm colors and rounded design",
+    description: "Restaurant hero with warm colors and rounded design (accent mapping for former 'orange')",
     type: "hero",
     props: {
       content: "Authentic Italian Cuisine",
       tagline: "Fresh ingredients, traditional recipes, unforgettable flavors",
       padding: "4rem",
       colorPreset: {
-        color: "orange-600",
+        color: "accent-600",
       },
       rounding: "rounded-xl",
       shadow: "shadow-lg",
     },
   },
   {
-    description: "Tech company hero with success gradient and modern styling",
+    description:
+      "Tech company hero with secondary gradient (mapped from former 'success') and modern styling",
     type: "hero",
     props: {
       content: "Innovation Redefined",
       tagline: "Pushing the boundaries of what's possible with AI technology",
       padding: "5rem",
       colorPreset: {
-        color: "success-500",
+        color: "secondary-gradient-400",
         gradientDirection: "bg-gradient-to-r",
       },
       textShadow: "text-shadow-lg",
@@ -180,14 +216,14 @@ export const examples: {
     },
   },
   {
-    description: "Medical practice hero with trust-inspiring design",
+    description: "Medical practice hero with trust-inspiring design (primary mapping for former 'blue')",
     type: "hero",
     props: {
       content: "Your Health, Our Priority",
       tagline: "Comprehensive healthcare services with compassionate care",
       padding: "4rem",
       colorPreset: {
-        color: "blue-500",
+        color: "primary-500",
       },
       rounding: "rounded-lg",
       justifyContent: "justify-start",
@@ -195,14 +231,15 @@ export const examples: {
     },
   },
   {
-    description: "Creative agency hero with warning accent and diagonal gradient",
+    description:
+      "Creative agency hero with accent gradient (mapped from former 'warning') and diagonal gradient",
     type: "hero",
     props: {
       content: "Creative Solutions",
       tagline: "Bold designs that make your brand unforgettable",
       padding: "3rem",
       colorPreset: {
-        color: "warning-400",
+        color: "accent-gradient-300",
         gradientDirection: "bg-gradient-to-tl",
       },
       shadow: "shadow-xl",
@@ -213,14 +250,14 @@ export const examples: {
     },
   },
   {
-    description: "Fitness studio hero with danger color and strong presence",
+    description: "Fitness studio hero with accent strong presence (mapping former 'danger')",
     type: "hero",
     props: {
       content: "Transform Your Body",
       tagline: "High-intensity training programs that deliver real results",
       padding: "5rem",
       colorPreset: {
-        color: "danger-600",
+        color: "accent-600",
       },
       textShadow: "text-shadow-md",
       rounding: "rounded-2xl",
@@ -244,6 +281,54 @@ export const examples: {
         color: "border-neutral-300",
       },
       rounding: "rounded-md",
+    },
+  },
+  {
+    description: "Inverted dark hero using neutral-800 background and left alignment",
+    type: "hero",
+    props: {
+      content: "Experience Powerful Automation",
+      tagline: "Scale operations with intelligent workflows",
+      padding: "5rem",
+      colorPreset: { color: "neutral-800" },
+      justifyContent: "justify-start",
+      alignItems: "items-start",
+      textShadow: "text-shadow-sm",
+    },
+  },
+  {
+    description: "Compact hero without tagline (no colorPreset to inherit parent)",
+    type: "hero",
+    props: {
+      content: "Documentation",
+      padding: "2rem",
+      justifyContent: "justify-start",
+      alignItems: "items-start",
+    },
+  },
+  {
+    description: "Responsive hero with large desktop padding and reduced mobile padding",
+    type: "hero",
+    props: {
+      content: "All-In-One Platform",
+      tagline: "Design • Launch • Grow",
+      padding: "8rem",
+      colorPreset: { color: "primary-gradient-500", gradientDirection: "bg-gradient-to-br" },
+    },
+    mobileProps: {
+      content: "All-In-One Platform",
+      padding: "3rem",
+    },
+  },
+  {
+    description: "Hero using dynamic product dataset with gradient emphasis",
+    type: "hero",
+    props: {
+      content: "Introducing {{product.name}}",
+      tagline: "{{product.shortTagline}}",
+      padding: "5rem",
+      colorPreset: { color: "accent-gradient-400", gradientDirection: "bg-gradient-to-r" },
+      textShadow: "text-shadow-md",
     },
   },
   {

@@ -18,22 +18,9 @@ export default function Card(props: BrickProps<Manifest>) {
       brick={brick}
       editable={editable}
       manifest={manifest}
-      className={tx(
-        "flex relative overflow-hidden !flex-nowrap",
-        brickProps.imagePosition === "left" || brickProps.imagePosition === "right" ? "flex-row" : "flex-col",
-        classes,
-      )}
+      className={tx("flex relative overflow-hidden !flex-nowrap flex-col", classes)}
     >
-      <div
-        className={tx(
-          "card-inner-wrapper",
-          brickProps.imagePosition === "top"
-            ? "order-2"
-            : brickProps.imagePosition === "left"
-              ? "order-last"
-              : "order-1",
-        )}
-      >
+      <div className={tx("card-inner-wrapper", brickProps.imagePosition === "top" ? "order-2" : "order-1")}>
         {!brickProps.noTitle && (
           <div className={tx("text-[120%] font-semibold z-auto my-4 mx-4")}>
             <TextContent
@@ -64,17 +51,12 @@ export default function Card(props: BrickProps<Manifest>) {
         <img
           onError={() => setShowImage(false)}
           className={tx(
-            " select-none pointer-events-none bg-transparent",
+            " select-none pointer-events-none bg-transparent w-inherit h-[clamp(100px,50%,250px)]",
             brickProps.cardImage.position ?? "object-center",
             brickProps.cardImage.fit ?? "object-cover",
-            brickProps.imagePosition === "left" && "order-1",
-            brickProps.imagePosition === "right" && "order-last",
             brickProps.imagePosition === "middle" && "order-2",
             brickProps.imagePosition === "top" && "order-first",
             brickProps.imagePosition === "bottom" && "order-last mt-auto",
-            brickProps.imagePosition === "left" || brickProps.imagePosition === "right"
-              ? "h-auto w-[clamp(100px,40%,400px)]"
-              : "w-inherit h-[clamp(100px,50%,250px)]",
           )}
           src={brickProps.cardImage.src}
           alt={brickProps.cardImage.alt || "Card Image"}

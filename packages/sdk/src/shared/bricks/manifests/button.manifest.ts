@@ -7,14 +7,35 @@ import type { BrickProps } from "../props/types";
 import { borderRef, roundingRef } from "../props/border";
 import { fontSizeRef } from "../props/text";
 import { colorPresetRef } from "../props/color-preset";
+import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
   type: "button",
   name: "Button",
   category: "basic",
   description: "A button",
-  aiInstructions:
-    "A clickable button that can link to a URL or a page within the site. It can be styled with different colors, font sizes, and border radii. Don't use it in forms since forms have their own submit button.",
+  aiInstructions: `Use this button component for navigation and call-to-action elements throughout the site.
+
+WHEN TO USE:
+- Navigation links (Learn More, About Us, Contact)
+- Call-to-action buttons (Sign Up, Get Started, Buy Now)
+- External links (Download, Visit Website, Social Media)
+- Internal page navigation (Go to Services, View Portfolio)
+
+STYLING GUIDELINES:
+- colorPreset: Use "primary-500" for main CTAs, "secondary-500" for secondary actions, "neutral-500" for low-priority actions, "accent-500" for highlight actions
+- fontSize: "text-sm" for compact buttons, "text-base" for standard, "text-lg" for emphasis, "text-xl" for hero buttons
+- rounding: "rounded-none" for sharp/modern, "rounded-md" for standard, "rounded-lg" for friendly, "rounded-full" for pills
+- link: Use full URLs for external (https://example.com), relative paths for internal (/about), or page IDs for site pages (about-us)
+
+DYNAMIC CONTENT:
+- Support template variables: "Buy {{product.name}}" or "Contact {{employee.name}}"
+- Link to dynamic pages: "/products/{{product.id}}" or "/team/{{employee.slug}}"
+
+AVOID:
+- Using in forms (forms have dedicated submit buttons)
+- Empty or unclear labels (use descriptive action words)
+- Mixing multiple high-emphasis colors on same page`,
   resizable: "horizontal",
   icon: RxButton,
   minWidth: {
@@ -61,148 +82,214 @@ export const manifest = defineBrickManifest({
 
 export type Manifest = typeof manifest;
 
-export const examples: {
-  description: string;
-  type: string;
-  props: BrickProps<Manifest>["brick"]["props"];
-}[] = [
+export const examples: BrickExample<Manifest>[] = [
+  // BASIC BUTTON TYPES
   {
-    description: "Primary button, full width, linking to an external URL",
-    type: "button",
-    props: {
-      label: "Click me",
-      link: "https://example.com",
-      colorPreset: { color: "primary-500" },
-    },
-  },
-  {
-    description: "Secondary button, block width, linking to a page id",
-    type: "button",
-    props: {
-      label: "Go to page",
-      link: "page-id-123",
-      colorPreset: { color: "secondary-500" },
-    },
-  },
-  {
-    description: "Neutral colored button with large text and rounded corners and external link",
-    type: "button",
-    props: {
-      label: "Submit",
-      fontSize: "text-lg",
-      rounding: "rounded-full",
-      link: "https://example.com",
-      colorPreset: { color: "neutral-500" },
-    },
-  },
-  {
-    description: "Dynamic label from a page query alias named 'employee'",
-    type: "button",
-    props: {
-      label: "Go to profile of {{employee.name}}",
-      link: "/employees/{{employee.$slug}}",
-      fontSize: "text-lg",
-      rounding: "rounded-full",
-      colorPreset: { color: "neutral-500" },
-    },
-  },
-  {
-    description: "Accent colored call-to-action button with medium text and subtle border",
+    description: "Primary call-to-action button - Use for main actions users should take",
     type: "button",
     props: {
       label: "Get Started",
       link: "/signup",
+      colorPreset: { color: "primary-500" },
       fontSize: "text-base",
-      rounding: "rounded-lg",
-      colorPreset: { color: "accent-600" },
-      border: { width: "border", color: "border-accent-700" },
+      rounding: "rounded-md",
     },
   },
   {
-    description: "Small text button with sharp corners for minimal design",
+    description: "Secondary button - Use for supporting actions or alternatives",
     type: "button",
     props: {
       label: "Learn More",
       link: "/about",
-      fontSize: "text-sm",
-      rounding: "rounded-none",
-      colorPreset: { color: "primary-400" },
+      colorPreset: { color: "secondary-500" },
+      fontSize: "text-base",
+      rounding: "rounded-md",
     },
   },
   {
-    description: "Large download button with thick border and rounded corners",
+    description: "Neutral button - Use for low-priority actions or navigation",
     type: "button",
     props: {
-      label: "Download Now",
-      link: "https://download.example.com/file.zip",
-      fontSize: "text-xl",
-      rounding: "rounded-xl",
-      colorPreset: { color: "secondary-600" },
-      border: { width: "border-2", color: "border-secondary-800" },
+      label: "View Details",
+      link: "/details",
+      colorPreset: { color: "neutral-500" },
+      fontSize: "text-sm",
+      rounding: "rounded-md",
     },
   },
   {
-    description: "Contact button with neutral colors and medium border radius",
+    description: "Accent button - Use for special promotions or highlighted actions",
+    type: "button",
+    props: {
+      label: "Special Offer",
+      link: "/promo",
+      colorPreset: { color: "accent-500" },
+      fontSize: "text-lg",
+      rounding: "rounded-lg",
+    },
+  },
+
+  // EXTERNAL LINK EXAMPLES
+  {
+    description: "External website link - Full URL for outside navigation",
+    type: "button",
+    props: {
+      label: "Visit Our Store",
+      link: "https://store.example.com",
+      colorPreset: { color: "primary-500" },
+      fontSize: "text-base",
+      rounding: "rounded-md",
+    },
+  },
+  {
+    description: "Download button - Direct file download link",
+    type: "button",
+    props: {
+      label: "Download PDF",
+      link: "https://example.com/brochure.pdf",
+      colorPreset: { color: "secondary-600" },
+      fontSize: "text-base",
+      rounding: "rounded-lg",
+      border: { width: "border", color: "border-secondary-800" },
+    },
+  },
+
+  // INTERNAL NAVIGATION EXAMPLES
+  {
+    description: "Internal page navigation using page ID reference",
     type: "button",
     props: {
       label: "Contact Us",
-      link: "/contact",
+      link: "contact",
+      colorPreset: { color: "neutral-600" },
       fontSize: "text-base",
       rounding: "rounded-md",
-      colorPreset: { color: "neutral-600" },
-      border: { width: "border", color: "border-neutral-400" },
     },
   },
   {
-    description: "Newsletter signup button with gradient background and full rounding",
+    description: "Internal relative URL navigation",
     type: "button",
     props: {
-      label: "Subscribe to Newsletter",
-      link: "/newsletter",
-      fontSize: "text-lg",
-      rounding: "rounded-full",
-      colorPreset: {
-        color: "primary-500",
-        gradientDirection: "bg-gradient-to-r",
-      },
+      label: "Our Services",
+      link: "/services",
+      colorPreset: { color: "primary-500" },
+      fontSize: "text-base",
+      rounding: "rounded-md",
     },
   },
+
+  // DYNAMIC CONTENT EXAMPLES
   {
-    description: "Shop now button with accent colors and extra large text",
-    type: "button",
-    props: {
-      label: "Shop Now",
-      link: "/shop",
-      fontSize: "text-xl",
-      rounding: "rounded-lg",
-      colorPreset: { color: "accent-500" },
-    },
-  },
-  {
-    description: "Dynamic product button using product query data",
+    description: "Dynamic product purchase button using product query data",
     type: "button",
     props: {
       label: "Buy {{product.name}} - ${{product.price}}",
-      link: "/products/{{product.id}}/purchase",
+      link: "/checkout/{{product.id}}",
+      colorPreset: { color: "primary-600" },
       fontSize: "text-base",
       rounding: "rounded-md",
-      colorPreset: { color: "primary-600" },
       border: { width: "border", color: "border-primary-800" },
     },
   },
   {
-    description: "Event registration button with secondary gradient and medium text",
+    description: "Dynamic employee contact button using team member data",
     type: "button",
     props: {
-      label: "Register for Event",
-      link: "/events/register",
+      label: "Contact {{employee.name}}",
+      link: "mailto:{{employee.email}}",
+      colorPreset: { color: "neutral-500" },
+      fontSize: "text-sm",
+      rounding: "rounded-md",
+    },
+  },
+  {
+    description: "Dynamic event registration using event query data",
+    type: "button",
+    props: {
+      label: "Register for {{event.title}}",
+      link: "/events/{{event.slug}}/register",
+      colorPreset: { color: "accent-500" },
       fontSize: "text-base",
       rounding: "rounded-lg",
+    },
+  },
+
+  // STYLING VARIATIONS
+  {
+    description: "Small compact button - Use in tight spaces or secondary contexts",
+    type: "button",
+    props: {
+      label: "Edit",
+      link: "/edit",
+      colorPreset: { color: "neutral-400" },
+      fontSize: "text-sm",
+      rounding: "rounded-sm",
+    },
+  },
+  {
+    description: "Large hero button - Use for prominent call-to-actions",
+    type: "button",
+    props: {
+      label: "Start Free Trial",
+      link: "/trial",
+      colorPreset: { color: "primary-600" },
+      fontSize: "text-xl",
+      rounding: "rounded-xl",
+      border: { width: "border-2", color: "border-primary-800" },
+    },
+  },
+  {
+    description: "Pill-shaped button - Modern rounded design",
+    type: "button",
+    props: {
+      label: "Subscribe",
+      link: "/newsletter",
+      colorPreset: { color: "accent-500" },
+      fontSize: "text-base",
+      rounding: "rounded-full",
+    },
+  },
+  {
+    description: "Sharp modern button - Angular design with no rounding",
+    type: "button",
+    props: {
+      label: "Join Now",
+      link: "/join",
+      colorPreset: { color: "primary-500" },
+      fontSize: "text-base",
+      rounding: "rounded-none",
+      border: { width: "border-2", color: "border-primary-700" },
+    },
+  },
+
+  // GRADIENT EXAMPLES
+  {
+    description: "Gradient button - Eye-catching with color transitions",
+    type: "button",
+    props: {
+      label: "Premium Upgrade",
+      link: "/upgrade",
       colorPreset: {
-        color: "secondary-500",
+        color: "primary-500",
+        gradientDirection: "bg-gradient-to-r",
+      },
+      fontSize: "text-lg",
+      rounding: "rounded-lg",
+    },
+  },
+  {
+    description: "Diagonal gradient button - Unique visual appeal",
+    type: "button",
+    props: {
+      label: "Launch Campaign",
+      link: "/campaigns/new",
+      colorPreset: {
+        color: "accent-600",
         gradientDirection: "bg-gradient-to-br",
       },
-      border: { width: "border", color: "border-secondary-300" },
+      fontSize: "text-base",
+      rounding: "rounded-md",
+      border: { width: "border", color: "border-accent-800" },
     },
   },
 ];

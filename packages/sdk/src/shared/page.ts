@@ -1,7 +1,6 @@
 import { pageAttributesSchema } from "./attributes";
 import { sectionSchema } from "./bricks";
 import { Type, type Static } from "@sinclair/typebox";
-import { toLLMSchema } from "./utils/llm";
 
 export const pageSchema = Type.Object({
   id: Type.String({

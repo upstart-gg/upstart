@@ -55,19 +55,19 @@ function consolidateRefs() {
   function resolveRefs(schema: TSchema, visited: Set<TSchema> = new Set()) {
     if (!schema || typeof schema !== "object" || visited.has(schema)) return schema;
     visited.add(schema);
-    if ("$ref" in schema && typeof (schema as any).$ref === "string") {
-      const refSchema = schemaRegistry.get((schema as any).$ref);
+    if ("$ref" in schema && typeof (schema as TSchema).$ref === "string") {
+      const refSchema = schemaRegistry.get((schema as TSchema).$ref);
       if (refSchema) {
         // Recursively resolve refs in the referenced schema
         return resolveRefs(refSchema, visited);
       }
     }
     for (const key of Object.keys(schema)) {
-      const value = (schema as any)[key];
+      const value = (schema as TSchema)[key];
       if (Array.isArray(value)) {
-        (schema as any)[key] = value.map((item: TSchema) => resolveRefs(item, visited));
+        (schema as TSchema)[key] = value.map((item: TSchema) => resolveRefs(item, visited));
       } else if (typeof value === "object" && value !== null) {
-        (schema as any)[key] = resolveRefs(value as TSchema, visited);
+        (schema as TSchema)[key] = resolveRefs(value as TSchema, visited);
       }
     }
     return schema;

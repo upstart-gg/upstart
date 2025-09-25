@@ -9,6 +9,7 @@ import { fontSizeRef } from "../props/text";
 import type { BrickProps } from "../props/types";
 import { toLLMSchema } from "~/shared/utils/llm";
 import { cssLengthRef } from "../props/css-length";
+import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
   type: "footer",
@@ -107,11 +108,7 @@ export const footerSchemaPropsLLM = toLLMSchema(manifest.props);
 
 export type FooterProps = Static<Manifest["props"]>;
 
-export const examples: {
-  description: string;
-  type: string;
-  props: BrickProps<Manifest>["brick"]["props"];
-}[] = [
+export const examples: BrickExample<Manifest>[] = [
   {
     description: "Simple footer with logo on the left",
     type: "footer",
