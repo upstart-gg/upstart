@@ -1,5 +1,29 @@
 # @upstart.gg/components
 
+## 0.0.136
+
+### Patch Changes
+
+- [#470](https://github.com/upstart-gg/upstart/pull/470) [`a5a7031`](https://github.com/upstart-gg/upstart/commit/a5a70316551721c22caf9cf119374565d50ba8d9) Thanks [@mattallty](https://github.com/mattallty)! - More changes and fixes
+
+- [#467](https://github.com/upstart-gg/upstart/pull/467) [`b403f10`](https://github.com/upstart-gg/upstart/commit/b403f108f44dd9a661f8a7014edba99798d4765a) Thanks [@mattallty](https://github.com/mattallty)! - feat: add useSkipInitialEffect hook to skip initial effect execution
+
+- [#463](https://github.com/upstart-gg/upstart/pull/463) [`2b8ff2b`](https://github.com/upstart-gg/upstart/commit/2b8ff2bfd03e2a829cbe31e6f9f7b6c95e103dc8) Thanks [@mattallty](https://github.com/mattallty)! - fix: add ref prop to ChatBox and focus on it when sending is enabled
+
+- [#466](https://github.com/upstart-gg/upstart/pull/466) [`1356e28`](https://github.com/upstart-gg/upstart/commit/1356e2829b5e701f11be7599ae827899e4e04b19) Thanks [@mattallty](https://github.com/mattallty)! - release
+
+- [#467](https://github.com/upstart-gg/upstart/pull/467) [`b403f10`](https://github.com/upstart-gg/upstart/commit/b403f108f44dd9a661f8a7014edba99798d4765a) Thanks [@mattallty](https://github.com/mattallty)! - Various fixes and improvements
+
+- [#465](https://github.com/upstart-gg/upstart/pull/465) [`9251afb`](https://github.com/upstart-gg/upstart/commit/9251afb485aecfc95198aef506371d2bc208cc24) Thanks [@mattallty](https://github.com/mattallty)! - fix: simplify message sending logic and improve tool result handling in ChatComponent
+
+- [#468](https://github.com/upstart-gg/upstart/pull/468) [`29d9341`](https://github.com/upstart-gg/upstart/commit/29d934172749729f6a46c2a96b165dc0bcf37808) Thanks [@benjamindarnault](https://github.com/benjamindarnault)! - update page auto save
+
+- [#469](https://github.com/upstart-gg/upstart/pull/469) [`21fb809`](https://github.com/upstart-gg/upstart/commit/21fb8094be350742963adb2ad07692ddce323345) Thanks [@benjamindarnault](https://github.com/benjamindarnault)! - save site themes
+
+- Updated dependencies [[`a5a7031`](https://github.com/upstart-gg/upstart/commit/a5a70316551721c22caf9cf119374565d50ba8d9), [`2b8ff2b`](https://github.com/upstart-gg/upstart/commit/2b8ff2bfd03e2a829cbe31e6f9f7b6c95e103dc8), [`b403f10`](https://github.com/upstart-gg/upstart/commit/b403f108f44dd9a661f8a7014edba99798d4765a), [`9251afb`](https://github.com/upstart-gg/upstart/commit/9251afb485aecfc95198aef506371d2bc208cc24), [`21fb809`](https://github.com/upstart-gg/upstart/commit/21fb8094be350742963adb2ad07692ddce323345)]:
+  - @upstart.gg/style-system@0.0.136
+  - @upstart.gg/sdk@0.0.136
+
 ## 0.0.135
 
 ### Patch Changes
