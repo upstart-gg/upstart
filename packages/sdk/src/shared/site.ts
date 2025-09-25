@@ -1,11 +1,11 @@
 import { Type, type Static } from "@sinclair/typebox";
+import { resolvePageAttributes, resolveSiteAttributes, siteAttributesSchema } from "./attributes";
 import { datarecordsList } from "./datarecords/types";
 import { datasourcesList } from "./datasources/types";
 import { pageSchema } from "./page";
 import { sitePrompt } from "./prompt";
 import { sitemapSchema } from "./sitemap";
 import { defaultTheme, themeSchema } from "./theme";
-import { resolvePageAttributes, resolveSiteAttributes, siteAttributesSchema } from "./attributes";
 
 export const siteSchema = Type.Object({
   id: Type.String(),
@@ -34,7 +34,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
   return {
     site: {
       id: crypto.randomUUID(),
-      label: "My site",
+      label: `My site ${new Date().toLocaleString(undefined, { dateStyle: "short", timeStyle: "short" })}`,
       hostname: "example.com",
       sitePrompt,
       theme: defaultTheme,
@@ -48,7 +48,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
     pages: [
       {
         id: "_default_",
-        label: "First page with really really long name that should be truncated",
+        label: "First page",
         sections: [],
         attributes: resolvePageAttributes({
           path: "/",
