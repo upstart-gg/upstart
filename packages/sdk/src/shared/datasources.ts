@@ -1,5 +1,5 @@
-import type { Datasource } from "./datasources/types";
 import type { TArray } from "@sinclair/typebox";
+import type { Datasource } from "./datasources/types";
 
 /**
  * For now, defineDatasources() force the usage of a custom (internal) datasource
@@ -33,9 +33,7 @@ export function mapDatasourceSchemaWithInternalProperties(schema: TArray): Datas
         $publicationDate: { type: "string", format: "date-time", title: "Publication Date" },
         $lastModificationDate: { type: "string", format: "date-time", title: "Last Modification Date" },
       },
-      required: Array.from(
-        new Set(["$id", "$slug", "$publicationDate", "$lastModificationDate", ...items.required]),
-      ),
+      required: Array.from(new Set(["$id", "$slug", "$lastModificationDate", ...items.required])),
     },
   };
 }
