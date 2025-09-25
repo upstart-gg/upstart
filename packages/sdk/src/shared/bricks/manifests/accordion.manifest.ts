@@ -156,7 +156,7 @@ export const examples: BrickExample<Manifest>[] = [
       ],
     },
   },
-  
+
   // PRODUCT FEATURES
   {
     description: "Product features with multiple open panels - Good for showcasing software capabilities",
@@ -175,7 +175,7 @@ export const examples: BrickExample<Manifest>[] = [
           defaultOpen: true,
         },
         {
-          title: "Team Collaboration Tools", 
+          title: "Team Collaboration Tools",
           content:
             "Work seamlessly with your team using built-in collaboration features including shared workspaces, real-time editing, comments, and task management. Perfect for remote and hybrid teams.",
           defaultOpen: true,
@@ -193,7 +193,7 @@ export const examples: BrickExample<Manifest>[] = [
       ],
     },
   },
-  
+
   // DOCUMENTATION & GUIDES
   {
     description: "Documentation sections with neutral colors - Perfect for help centers and knowledge bases",
@@ -201,7 +201,7 @@ export const examples: BrickExample<Manifest>[] = [
     props: {
       restrictOneOpen: false,
       colorPreset: { color: "neutral-200" },
-      fontSize: "text-lg", 
+      fontSize: "text-lg",
       rounding: "rounded-md",
       gap: "2px",
       items: [
@@ -216,17 +216,18 @@ export const examples: BrickExample<Manifest>[] = [
             "Complete API documentation with endpoints, parameters, response examples, and SDKs for popular programming languages including JavaScript, Python, PHP, and Ruby.",
         },
         {
-          title: "Advanced Configuration", 
+          title: "Advanced Configuration",
           content:
             "Deep dive into advanced features, custom configurations, webhooks, and enterprise-level integrations. Includes code samples and best practices.",
         },
       ],
     },
   },
-  
+
   // MENU & CATALOG SECTIONS
   {
-    description: "Restaurant menu sections with accent colors - Great for organizing menu items or service categories", 
+    description:
+      "Restaurant menu sections with accent colors - Great for organizing menu items or service categories",
     type: "accordion",
     props: {
       restrictOneOpen: true,
@@ -253,10 +254,11 @@ export const examples: BrickExample<Manifest>[] = [
       ],
     },
   },
-  
+
   // COURSE & EDUCATIONAL CONTENT
   {
-    description: "Course curriculum with primary colors - Excellent for educational content and training programs",
+    description:
+      "Course curriculum with primary colors - Excellent for educational content and training programs",
     type: "accordion",
     props: {
       restrictOneOpen: false,
@@ -271,7 +273,7 @@ export const examples: BrickExample<Manifest>[] = [
             "Learn the fundamentals of HTML, CSS, and basic JavaScript. Set up your development environment and create your first web page. Includes hands-on exercises and project templates.",
         },
         {
-          title: "Week 2: Responsive Design & CSS Framework", 
+          title: "Week 2: Responsive Design & CSS Framework",
           content:
             "Master responsive web design principles, CSS Grid, Flexbox, and popular frameworks like Bootstrap and Tailwind CSS. Build mobile-first designs that work on all devices.",
         },
@@ -288,7 +290,7 @@ export const examples: BrickExample<Manifest>[] = [
       ],
     },
   },
-  
+
   // SUPPORT & HELP SECTIONS
   {
     description: "Support categories with sharp corners - Modern corporate style for help centers",
@@ -403,7 +405,7 @@ export const examples: BrickExample<Manifest>[] = [
             "By accessing and using this website, you accept and agree to be bound by the terms and provision of this agreement. These terms apply to all visitors, users, and others who access or use the service.",
         },
         {
-          title: "Privacy Policy", 
+          title: "Privacy Policy",
           content:
             "We collect information you provide directly to us, such as when you create an account, make a purchase, or contact us. We use this information to provide, maintain, and improve our services.",
         },

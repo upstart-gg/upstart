@@ -128,7 +128,7 @@ export const examples: BrickExample<Manifest>[] = [
       rounding: "rounded-lg",
     },
   },
-  
+
   // EXTERNAL LINK EXAMPLES
   {
     description: "External website link - Full URL for outside navigation",
@@ -153,8 +153,8 @@ export const examples: BrickExample<Manifest>[] = [
       border: { width: "border", color: "border-secondary-800" },
     },
   },
-  
-  // INTERNAL NAVIGATION EXAMPLES  
+
+  // INTERNAL NAVIGATION EXAMPLES
   {
     description: "Internal page navigation using page ID reference",
     type: "button",
@@ -177,7 +177,7 @@ export const examples: BrickExample<Manifest>[] = [
       rounding: "rounded-md",
     },
   },
-  
+
   // DYNAMIC CONTENT EXAMPLES
   {
     description: "Dynamic product purchase button using product query data",
@@ -213,7 +213,7 @@ export const examples: BrickExample<Manifest>[] = [
       rounding: "rounded-lg",
     },
   },
-  
+
   // STYLING VARIATIONS
   {
     description: "Small compact button - Use in tight spaces or secondary contexts",
@@ -261,7 +261,7 @@ export const examples: BrickExample<Manifest>[] = [
       border: { width: "border-2", color: "border-primary-700" },
     },
   },
-  
+
   // GRADIENT EXAMPLES
   {
     description: "Gradient button - Eye-catching with color transitions",
@@ -269,9 +269,9 @@ export const examples: BrickExample<Manifest>[] = [
     props: {
       label: "Premium Upgrade",
       link: "/upgrade",
-      colorPreset: { 
-        color: "primary-500", 
-        gradientDirection: "bg-gradient-to-r" 
+      colorPreset: {
+        color: "primary-500",
+        gradientDirection: "bg-gradient-to-r",
       },
       fontSize: "text-lg",
       rounding: "rounded-lg",
@@ -283,9 +283,9 @@ export const examples: BrickExample<Manifest>[] = [
     props: {
       label: "Launch Campaign",
       link: "/campaigns/new",
-      colorPreset: { 
-        color: "accent-600", 
-        gradientDirection: "bg-gradient-to-br" 
+      colorPreset: {
+        color: "accent-600",
+        gradientDirection: "bg-gradient-to-br",
       },
       fontSize: "text-base",
       rounding: "rounded-md",

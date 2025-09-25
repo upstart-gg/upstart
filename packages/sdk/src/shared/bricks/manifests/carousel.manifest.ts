@@ -146,7 +146,7 @@ export const examples: BrickExample<Manifest>[] = [
       ],
     },
   },
-  
+
   // PRODUCT & COMMERCIAL
   {
     description: "Product showcase carousel with rounded corners and padding - E-commerce gallery style",
@@ -187,7 +187,7 @@ export const examples: BrickExample<Manifest>[] = [
       colorPreset: { color: "neutral-50" },
     },
   },
-  
+
   // PORTFOLIO & CREATIVE
   {
     description: "Portfolio carousel with minimal styling - Clean professional presentation",
@@ -220,8 +220,8 @@ export const examples: BrickExample<Manifest>[] = [
       padding: "0",
     },
   },
-  
-  // EVENTS & EXPERIENCES  
+
+  // EVENTS & EXPERIENCES
   {
     description: "Event photos carousel with primary color theme - Conference or gathering highlights",
     type: "carousel",
@@ -306,7 +306,7 @@ export const examples: BrickExample<Manifest>[] = [
       padding: "1rem",
     },
   },
-  
+
   // TEAM & PEOPLE
   {
     description: "Team members carousel with circular images - Professional team showcase",
@@ -347,7 +347,7 @@ export const examples: BrickExample<Manifest>[] = [
       padding: "2rem",
     },
   },
-  
+
   // TUTORIALS & PROCESSES
   {
     description: "Recipe steps carousel with detailed descriptions - Step-by-step instructional content",
@@ -604,7 +604,7 @@ export const examples: BrickExample<Manifest>[] = [
       },
     },
   },
-  
+
   // DYNAMIC CONTENT EXAMPLES
   {
     description: "Loop template for portfolioProjects query (one object will repeat per row)",
@@ -628,7 +628,7 @@ export const examples: BrickExample<Manifest>[] = [
       },
     },
   },
-  
+
   // SPECIAL STYLING VARIATIONS
   {
     description: "Showcase carousel with subtle gradient background frame",
