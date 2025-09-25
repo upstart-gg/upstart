@@ -317,19 +317,12 @@ What should we work on together? 🤖`,
           break;
         }
 
-        // case "tool-createNavbar":
-        //   console.log("Generated navbar", toolInvocation.output);
-        //   draftHelpers.updateSiteAttributes({
-        //     navbar: toolInvocation.output,
-        //   });
-        //   break;
-
-        // case "tool-createFooter":
-        //   console.log("Generated footer", toolInvocation.output);
-        //   draftHelpers.updateSiteAttributes({
-        //     footer: toolInvocation.output,
-        //   });
-        //   break;
+        case "tool-setTheme": {
+          const theme = toolInvocation.output;
+          console.log("Setting theme", theme);
+          draftHelpers.setTheme(theme);
+          break;
+        }
 
         case "tool-createThemes": {
           const themes = toolInvocation.output;
