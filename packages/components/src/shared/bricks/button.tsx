@@ -28,6 +28,22 @@ export default function Button({ brick, editable }: BrickProps<Manifest>) {
     }
   };
 
+  const fillStyle =
+    props.fill === "outline"
+      ? css({
+          backgroundColor: "transparent",
+          border: "2px solid currentColor",
+          "&:hover": {
+            backgroundColor: "currentColor",
+            color: "light-dark(white, black)",
+          },
+        })
+      : css({
+          "&:hover": {
+            filter: "brightness(1.15)",
+          },
+        });
+
   return (
     <BrickRoot
       brick={brick}
@@ -35,16 +51,7 @@ export default function Button({ brick, editable }: BrickProps<Manifest>) {
       editable={editable}
       as="button"
       type="button"
-      className={tx(
-        classes,
-        "btn",
-        css({
-          "&:hover": {
-            filter: "brightness(1.15)",
-          },
-        }),
-        editable && "pointer-events-none",
-      )}
+      className={tx(classes, "btn", fillStyle, editable && "pointer-events-none")}
       data-prevented-by-editor={editable ? "true" : "false"}
       onClick={handleClick}
     >

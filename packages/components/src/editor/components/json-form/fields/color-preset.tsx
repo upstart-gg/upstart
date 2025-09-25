@@ -4,7 +4,7 @@ import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useCallback, useState, type FC } from "react";
 import { RxCross2 } from "react-icons/rx";
-import type { ColorPresetSettings } from "@upstart.gg/sdk/shared/bricks/props/color-preset";
+import type { ColorPreset, ColorPresetSettings } from "@upstart.gg/sdk/shared/bricks/props/color-preset";
 
 const ColorPresetField: FC<FieldProps<ColorPresetSettings | null>> = (props) => {
   const { schema, currentValue, onChange, title, description } = props;
@@ -78,7 +78,7 @@ const ColorPresetField: FC<FieldProps<ColorPresetSettings | null>> = (props) => 
                           } else {
                             onChange({
                               ...currentValue,
-                              color: key,
+                              color: key as ColorPreset,
                             });
                           }
                           // onChange(className);
@@ -130,7 +130,7 @@ const ColorPresetField: FC<FieldProps<ColorPresetSettings | null>> = (props) => 
                             } else {
                               onChange({
                                 gradientDirection: gradientDir as ColorPresetSettings["gradientDirection"],
-                                color: key,
+                                color: key as ColorPreset,
                               });
                             }
 

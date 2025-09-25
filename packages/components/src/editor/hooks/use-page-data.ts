@@ -105,7 +105,7 @@ export interface DraftState extends DraftStateProps {
   // New section methods
   createEmptySection: (id: string, afterSectionId?: string) => void;
   addSection: (section: Section) => void;
-  updateSection: (id: string, sectionData: Partial<Section>) => void;
+  updateSection: (id: string, sectionData: Partial<Section>, override?: boolean) => void;
   updateSectionProps: (id: string, props: Partial<Section["props"]>, isMobileProps?: boolean) => void;
   deleteSection: (id: string) => void;
   getSection: (id: string) => Section | undefined;
@@ -325,16 +325,22 @@ export const createDraftStore = (
               state.brickMap = buildBrickMap(state.page.sections);
             }),
 
-          updateSection: (id, sectionData) =>
+          updateSection: (id, sectionData, override = false) =>
             set((state) => {
               const sectionIndex = state.page.sections.findIndex((s) => s.id === id);
               if (sectionIndex !== -1) {
-                state.page.sections[sectionIndex] = {
-                  ...state.page.sections[sectionIndex],
-                  ...sectionData,
-                };
+                if (override) {
+                  state.page.sections[sectionIndex] = sectionData as Section;
+                } else {
+                  state.page.sections[sectionIndex] = merge({
+                    ...state.page.sections[sectionIndex],
+                    ...sectionData,
+                  });
+                }
+                state.brickMap = buildBrickMap(state.page.sections);
+              } else {
+                console.warn("Cannot update section %s: not found", id);
               }
-              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           duplicateSection: (id) =>

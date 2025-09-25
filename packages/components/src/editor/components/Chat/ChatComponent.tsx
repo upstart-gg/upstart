@@ -432,7 +432,7 @@ What should we work on together? 🤖`,
         case "tool-editSection": {
           const section = toolInvocation.output;
           console.log("Edited section", section);
-          draftHelpers.updateSection(section.id, section);
+          draftHelpers.updateSection(section.id, section, true); // totally override
           break;
         }
 
