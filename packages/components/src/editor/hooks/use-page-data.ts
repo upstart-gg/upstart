@@ -1293,9 +1293,15 @@ export const usePageLabelSubscribe = (callback: (label: DraftState["page"]["labe
   const ctx = usePageContext();
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    return ctx.subscribe((state) => state.page.label, callback, {
-      equalityFn: isEqual,
-    });
+    return ctx.subscribe((state) => state.page.label, callback);
+  }, []);
+};
+
+export const useSiteLabelSubscribe = (callback: (label: DraftState["site"]["label"]) => void) => {
+  const ctx = usePageContext();
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    return ctx.subscribe((state) => state.site.label, callback);
   }, []);
 };
 
