@@ -1,8 +1,10 @@
+import type { PageAttributes, SiteAttributes } from "@upstart.gg/sdk/shared/attributes";
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
 import { generateId, processSections } from "@upstart.gg/sdk/shared/bricks";
 import type { GenerationState } from "@upstart.gg/sdk/shared/context";
-import type { Datasource, Query } from "@upstart.gg/sdk/shared/datasources/types";
 import type { Datarecord } from "@upstart.gg/sdk/shared/datarecords/types";
+import type { Datasource, Query } from "@upstart.gg/sdk/shared/datasources/types";
+import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
 import type { VersionedPage } from "@upstart.gg/sdk/shared/page";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
 import type { Site } from "@upstart.gg/sdk/shared/site";
@@ -19,8 +21,6 @@ import { temporal } from "zundo";
 import { createStore, useStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import type { PageAttributes, SiteAttributes } from "@upstart.gg/sdk/shared/attributes";
-import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
 export type { Immer } from "immer";
 
 enableMapSet();
@@ -74,7 +74,7 @@ export interface DraftState extends DraftStateProps {
   setPreviewTheme: (theme: Theme) => void;
   setTheme: (theme: Theme) => void;
   pickTheme: (themeId: Theme["id"]) => void;
-  setThemes: (themes: Theme[]) => void;
+  addThemes: (themes: Theme[]) => void;
   validatePreviewTheme: (accept: boolean) => void;
   cancelPreviewTheme: () => void;
   updatePageAttributes: (attr: Partial<PageAttributes>) => void;
@@ -82,7 +82,6 @@ export interface DraftState extends DraftStateProps {
   updateSiteAttributes: (attr: Partial<SiteAttributes>) => void;
   deleteSiteAttribute: (key: string) => void;
   setLastSaved: (date: Date) => void;
-  setDirty: (dirty: boolean) => void;
   setVersion(version: string): void;
 
   addPage: (page: VersionedPage) => void;
@@ -256,11 +255,17 @@ export const createDraftStore = (
               state.site.theme = theme;
             }),
 
-          setThemes: (themes) =>
+          addThemes: (themes) =>
             set((state) => {
               const hasAlreadyThemes = state.site.themes.length > 0;
-              state.site.themes = themes;
-
+              for (const theme of themes) {
+                const existing = state.site.themes.find((t) => t.id === theme.id);
+                if (existing) {
+                  console.error("Cannot add theme %s, it already exists", theme.id);
+                  continue;
+                }
+                state.site.themes.push(theme);
+              }
               // Set default theme if it is the first time setting themes
               if (!hasAlreadyThemes) {
                 state.site.theme = themes[0];
@@ -992,11 +997,6 @@ export const createDraftStore = (
             set((state) => {
               state.lastSaved = date;
             }),
-
-          setDirty: (dirty) =>
-            set((state) => {
-              state.dirty = dirty;
-            }),
         })),
         {
           // limit undo history to 100
@@ -1222,7 +1222,7 @@ export const useDraftHelpers = () => {
     updatePageAttributes: state.updatePageAttributes,
     upsertQuery: state.upsertQuery,
     setSections: state.setSections,
-    setThemes: state.setThemes,
+    addThemes: state.addThemes,
     setTheme: state.setTheme,
     pickTheme: state.pickTheme,
     setSitemap: state.setSitemap,
@@ -1344,6 +1344,14 @@ export const useThemeSubscribe = (callback: (theme: DraftState["site"]["theme"])
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     return ctx.subscribe((state) => state.site.theme, callback);
+  }, []);
+};
+
+export const useThemesSubscribe = (callback: (themes: DraftState["site"]["themes"]) => void) => {
+  const ctx = usePageContext();
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    return ctx.subscribe((state) => state.site.themes, callback);
   }, []);
 };
 

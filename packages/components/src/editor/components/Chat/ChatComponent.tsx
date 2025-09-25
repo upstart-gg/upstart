@@ -1,15 +1,15 @@
-import { tx, css } from "@upstart.gg/style-system/twind";
-import { toast } from "@upstart.gg/style-system/system";
-import { motion, AnimatePresence } from "motion/react";
-import {
-  type ChatOnToolCallCallback,
-  DefaultChatTransport,
-  generateId,
-  lastAssistantMessageIsCompleteWithToolCalls,
-  type ToolUIPart,
-} from "ai";
 import { useChat } from "@ai-sdk/react";
-import { type FormEvent, useEffect, useMemo, useRef, useState, Suspense, lazy, useCallback } from "react";
+import type { Tools, UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
+import { defineDataRecord } from "@upstart.gg/sdk/shared/datarecords";
+import { defineDatasource } from "@upstart.gg/sdk/shared/datasources";
+import { Spinner, toast } from "@upstart.gg/style-system/system";
+import { css, tx } from "@upstart.gg/style-system/twind";
+import { type ChatOnToolCallCallback, DefaultChatTransport, type ToolUIPart } from "ai";
+import { AnimatePresence, motion } from "motion/react";
+import { type FormEvent, lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useDeepCompareEffect } from "use-deep-compare";
+import { useDebounceCallback } from "usehooks-ts";
+import { useDebugMode } from "../../hooks/use-editor";
 import {
   useAdditionalAssets,
   useDraftHelpers,
@@ -20,6 +20,7 @@ import {
   useSitePrompt,
   useThemes,
 } from "../../hooks/use-page-data";
+
 import { useDebounceCallback } from "usehooks-ts";
 import { Spinner } from "@upstart.gg/style-system/system";
 import { defineDataRecord } from "@upstart.gg/sdk/shared/datarecords";
@@ -342,7 +343,7 @@ What should we work on together? 🤖`,
         case "tool-createThemes": {
           const themes = toolInvocation.output;
           console.log("Generated themes", themes);
-          draftHelpers.setThemes(themes);
+          draftHelpers.addThemes(themes);
           break;
         }
 
