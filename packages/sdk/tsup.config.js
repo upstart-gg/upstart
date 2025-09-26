@@ -15,7 +15,6 @@ const external = [
   "react",
   "react-dom",
   "react-icons",
-  "react/jsx-runtime",
   "react-resizable",
   "fsevents",
   "lightningcss",

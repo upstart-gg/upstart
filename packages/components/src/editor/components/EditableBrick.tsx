@@ -331,6 +331,7 @@ export function EditableBrickWrapperSimple({
       >
         <BrickComponent
           brick={brick}
+          selected={selectedBrickId === brick.id}
           iterationIndex={iterationIndex}
           isDynamicPreview={isDynamicPreview}
           editable

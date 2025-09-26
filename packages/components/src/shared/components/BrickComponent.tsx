@@ -24,13 +24,14 @@ const BrickComponent = ({
   editable,
   isDynamicPreview,
   iterationIndex,
+  selected,
 }: {
   brick: Brick;
   editable?: boolean;
   isDynamicPreview?: boolean;
   iterationIndex?: number;
+  selected?: boolean;
 } & ComponentProps<"div">) => {
-  const selectedBrickId = useSelectedBrickId();
   const BrickModule = bricksMap[brick.type];
   if (!BrickModule) {
     console.warn("Brick not found", brick.type);
@@ -41,7 +42,7 @@ const BrickComponent = ({
     brick,
     editable,
     isDynamicPreview,
-    selected: brick.id === selectedBrickId,
+    selected,
     iterationIndex,
   } satisfies BrickProps<BrickManifest>;
 
