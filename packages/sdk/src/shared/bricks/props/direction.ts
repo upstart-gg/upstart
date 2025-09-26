@@ -7,6 +7,7 @@ export function direction(options: StringOptions = {}) {
     title: "Direction",
     description: "The direction of the layout",
     enumNames: ["Horizontal", "Vertical"],
+    default: "flex-row",
     // $id: "styles:direction",
     "ui:styleId": "styles:direction",
     examples: ["flex-row", "flex-col"],

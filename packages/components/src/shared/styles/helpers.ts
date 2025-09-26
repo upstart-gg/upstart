@@ -4,7 +4,7 @@ import type {
 } from "@upstart.gg/sdk/shared/bricks/props/background";
 import type { ColorSettings } from "@upstart.gg/sdk/shared/bricks/props/color";
 import type { OpacitySettings } from "@upstart.gg/sdk/shared/bricks/props/effects";
-import { colorPresets } from "@upstart.gg/sdk/shared/bricks/props/color-preset";
+import { colorPresets, type ColorPreset } from "@upstart.gg/sdk/shared/bricks/props/color-preset";
 import type { FixedPositionedSettings } from "@upstart.gg/sdk/shared/bricks/props/position";
 import { propToClass, propToStyle } from "@upstart.gg/sdk/shared/themes/color-system";
 import { css } from "@upstart.gg/style-system/twind";
@@ -138,7 +138,7 @@ function getWrapStyles(value: boolean, mobileValue?: boolean, schema?: TSchema) 
   }
 }
 
-function getColorPresetStyles(value: string, mobileValue?: string, schema?: TSchema) {
+function getColorPresetStyles(value: ColorPreset, mobileValue?: ColorPreset, schema?: TSchema) {
   const presets = (schema?.["ui:presets"] ?? colorPresets) as typeof colorPresets;
   if (schema?.["ui:desktop-only"]) {
     return `@desktop:(${presets[value]?.className})`;

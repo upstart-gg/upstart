@@ -51,14 +51,14 @@ const msgCommon = tx(
       listStyle: "outside",
       listStyleType: "square",
       paddingLeft: "1.6em",
-      marginTop: "0.5em",
+      marginTop: "0.3em",
       marginBottom: "0.2em",
     },
     "& ol": {
       listStyle: "outside",
       listStyleType: "decimal",
       paddingLeft: "1.6em",
-      marginTop: "0.5em",
+      marginTop: "0.3em",
       marginBottom: "0.2em",
     },
     "& li": {
@@ -432,7 +432,7 @@ What should we work on together? 🤖`,
         case "tool-editSection": {
           const section = toolInvocation.output;
           console.log("Edited section", section);
-          draftHelpers.updateSection(section.id, section);
+          draftHelpers.updateSection(section.id, section, true); // totally override
           break;
         }
 

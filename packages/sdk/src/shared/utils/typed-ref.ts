@@ -49,5 +49,5 @@ export function typedRef<K extends keyof SchemaTypeMap>(
   options: SchemaOptions = {},
 ): SchemaTypeMap[K] {
   // Force the type to be a TypeBox type
-  return Type.Ref(id, { ...options }) as unknown as SchemaTypeMap[K];
+  return Type.Ref(id, options) as unknown as SchemaTypeMap[K];
 }

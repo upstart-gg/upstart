@@ -3,8 +3,8 @@ import { RxButton } from "react-icons/rx";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
 import { string, urlOrPageIdRef } from "../props/string";
-import type { BrickProps } from "../props/types";
-import { borderRef, roundingRef } from "../props/border";
+import { roundingRef } from "../props/border";
+import { StringEnum } from "~/shared/utils/string-enum";
 import { fontSizeRef } from "../props/text";
 import { colorPresetRef } from "../props/color-preset";
 import type { BrickExample } from "./_types";
@@ -26,6 +26,7 @@ STYLING GUIDELINES:
 - colorPreset: Use "primary-500" for main CTAs, "secondary-500" for secondary actions, "neutral-500" for low-priority actions, "accent-500" for highlight actions
 - fontSize: "text-sm" for compact buttons, "text-base" for standard, "text-lg" for emphasis, "text-xl" for hero buttons
 - rounding: "rounded-none" for sharp/modern, "rounded-md" for standard, "rounded-lg" for friendly, "rounded-full" for pills
+- fill: Use "solid" for primary actions with background color, "outline" for secondary actions with transparent background and border
 - link: Use full URLs for external (https://example.com), relative paths for internal (/about), or page IDs for site pages (about-us)
 
 DYNAMIC CONTENT:
@@ -69,7 +70,16 @@ AVOID:
           default: "rounded-md",
         }),
       ),
-      border: Type.Optional(borderRef({ default: { width: "border-0" }, "ui:responsive": "desktop" })),
+      fill: Type.Optional(
+        StringEnum(["solid", "outline"], {
+          title: "Fill",
+          description: "Button appearance style - solid background or outlined.",
+          default: "solid",
+          enumNames: ["Solid", "Outline"],
+          "ui:field": "enum",
+          "ui:display": "select",
+        }),
+      ),
       link: urlOrPageIdRef({
         title: "Link",
         "ui:placeholder": "https://example.com",
@@ -93,6 +103,7 @@ export const examples: BrickExample<Manifest>[] = [
       colorPreset: { color: "primary-500" },
       fontSize: "text-base",
       rounding: "rounded-md",
+      fill: "solid",
     },
   },
   {
@@ -104,6 +115,7 @@ export const examples: BrickExample<Manifest>[] = [
       colorPreset: { color: "secondary-500" },
       fontSize: "text-base",
       rounding: "rounded-md",
+      fill: "outline",
     },
   },
   {
@@ -150,7 +162,7 @@ export const examples: BrickExample<Manifest>[] = [
       colorPreset: { color: "secondary-600" },
       fontSize: "text-base",
       rounding: "rounded-lg",
-      border: { width: "border", color: "border-secondary-800" },
+      fill: "outline",
     },
   },
 
@@ -188,7 +200,7 @@ export const examples: BrickExample<Manifest>[] = [
       colorPreset: { color: "primary-600" },
       fontSize: "text-base",
       rounding: "rounded-md",
-      border: { width: "border", color: "border-primary-800" },
+      fill: "outline",
     },
   },
   {
@@ -235,7 +247,7 @@ export const examples: BrickExample<Manifest>[] = [
       colorPreset: { color: "primary-600" },
       fontSize: "text-xl",
       rounding: "rounded-xl",
-      border: { width: "border-2", color: "border-primary-800" },
+      fill: "outline",
     },
   },
   {
@@ -258,7 +270,7 @@ export const examples: BrickExample<Manifest>[] = [
       colorPreset: { color: "primary-500" },
       fontSize: "text-base",
       rounding: "rounded-none",
-      border: { width: "border-2", color: "border-primary-700" },
+      fill: "outline",
     },
   },
 
@@ -289,7 +301,33 @@ export const examples: BrickExample<Manifest>[] = [
       },
       fontSize: "text-base",
       rounding: "rounded-md",
-      border: { width: "border", color: "border-accent-800" },
+      fill: "outline",
+    },
+  },
+
+  // FILL STYLE COMPARISON EXAMPLES
+  {
+    description: "Solid fill button - Traditional filled background style",
+    type: "button",
+    props: {
+      label: "Solid Button",
+      link: "/solid",
+      colorPreset: { color: "primary-500" },
+      fontSize: "text-base",
+      rounding: "rounded-md",
+      fill: "solid",
+    },
+  },
+  {
+    description: "Outline fill button - Transparent background with border",
+    type: "button",
+    props: {
+      label: "Outline Button",
+      link: "/outline",
+      colorPreset: { color: "primary-500" },
+      fontSize: "text-base",
+      rounding: "rounded-md",
+      fill: "outline",
     },
   },
 ];

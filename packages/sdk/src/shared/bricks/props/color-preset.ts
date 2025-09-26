@@ -7,7 +7,7 @@ type ColorPresetOptions = ObjectOptions & {
   "ui:default-gradient-direction"?: string;
 };
 
-export const colorPresets: NonNullable<ColorPresetOptions["ui:presets"]> = {
+export const colorPresets = {
   "primary-50": {
     className: "bg-primary-50 text-primary-50-content",
     label: "Primary 50",
@@ -320,15 +320,19 @@ export const colorPresets: NonNullable<ColorPresetOptions["ui:presets"]> = {
     className: "",
     label: "None",
   },
-};
+} as const;
+
+export type ColorPreset = keyof typeof colorPresets;
 
 export function colorPreset(options: ColorPresetOptions = {}) {
   return Type.Object(
     {
-      color: StringEnum(Object.keys(colorPresets), {
+      color: StringEnum(Object.keys(colorPresets) as Array<ColorPreset>, {
         title: "Color preset",
         description: "Color preset to apply to background and text",
-        enumNames: Object.keys(colorPresets).map((key) => colorPresets[key].label),
+        enumNames: Object.keys(colorPresets).map(
+          (key) => colorPresets[key as keyof typeof colorPresets].label,
+        ),
         "ai:instructions": `Presets are predefined color combinations of background and text colors that can be applied to elements.
 The possible semantic colors are primary, secondary, accent, neutral, and base, each declined in various shades from 50 to 900. (except base which has only 100, 200, and 300).
 You can use gradients using color gradient variations (e.g. primary-gradient-100, secondary-gradient-200, etc.). In this case, you will also need to set the gradient direction.`,
