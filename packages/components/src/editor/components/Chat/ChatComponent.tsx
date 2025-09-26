@@ -147,43 +147,6 @@ export default function Chat() {
     assetsRef.current = additionalAssets;
   }, [site, page, generationState, userLanguage, additionalAssets]);
 
-  //   const initialMessages = useMemo(() => {
-  //     if (chatSession?.messages && chatSession.messages.length > 0) {
-  //       return chatSession.messages;
-  //     }
-  //     if (generationState.isSetup) {
-  //       return [
-  //         {
-  //           id: "init-setup",
-  //           role: "user",
-  //           parts: [
-  //             {
-  //               type: "text",
-  //               text: `Create a website based on this prompt:\n${sitePrompt}`,
-  //             },
-  //           ],
-  //         },
-  //       ] satisfies UpstartUIMessage[];
-  //     } else {
-  //       return [
-  //         {
-  //           id: "init-edit",
-  //           role: "assistant",
-  //           parts: [
-  //             {
-  //               type: "text",
-  //               text: `Hey! 👋\n\nReady to keep building? You can:
-  // - Chat with me to make changes
-  // - Use the visual editor for direct editing
-
-  // What should we work on together? 🤖`,
-  //             },
-  //           ],
-  //         },
-  //       ] satisfies UpstartUIMessage[];
-  //     }
-  //   }, [generationState.isSetup, sitePrompt, chatSession]);
-
   const onToolCall: ChatOnToolCallCallback<UpstartUIMessage> = ({ toolCall }) => {
     console.log("Tool call: %s: ", toolCall.toolName, toolCall);
   };
@@ -528,7 +491,7 @@ export default function Chat() {
   // Only show messages that have text or tool parts
   const displayedMessages = messages.filter(
     (msg) =>
-      msg.id !== "init-setup" &&
+      msg.metadata?.init !== true &&
       msg.parts.some((part) => part.type === "text" || part.type.startsWith("tool-")),
   );
 

@@ -211,8 +211,9 @@ export type Tools = {
 };
 
 type Metadata = {
-  creditsUsed: number;
-  userLanguage: string; // ISO code of the user's language, e.g. "en", "fr", "es"
+  init?: boolean;
+  creditsUsed?: number;
+  userLanguage?: string; // ISO code of the user's language, e.g. "en", "fr", "es"
 };
 
 // For now, let's keep it simple

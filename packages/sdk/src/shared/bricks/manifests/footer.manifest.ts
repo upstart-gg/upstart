@@ -48,11 +48,11 @@ export const manifest = defineBrickManifest({
       logo: Type.Optional(imageRef({ title: "Logo", "ui:no-object-options": true, "ui:no-alt-text": true })),
       fontSize: Type.Optional(fontSizeRef({ default: "text-sm", "ui:no-extra-large-sizes": true })),
       // rows:Type.Optional(number("Rows", { default: 1, "ui:field": "slider", minimum: 1, maximum: 5 })),
-      linksSections: array(
+      linksSections: Type.Array(
         Type.Object(
           {
             sectionTitle: string("Title"),
-            links: array(
+            links: Type.Array(
               Type.Object({
                 title: string("Title"),
                 url: urlOrPageIdRef(),
@@ -91,6 +91,7 @@ export const manifest = defineBrickManifest({
             removable: true, // Enable delete button
             addable: true, // Enable add button
           },
+          default: [],
           description: "List of Links Sections. Each section contains a title and a list of links.",
           metadata: {
             category: "content",

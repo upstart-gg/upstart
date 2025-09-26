@@ -28,35 +28,10 @@ export interface EditorWrapperRef {
 
 export type EditorWrapperProps = Pick<
   EditorStateProps,
-  "chatSession" | "logoLink" | "onShowPopup" | "onPublish" | "onSavePage" | "onSaveSite"
+  "chatSession" | "onShowPopup" | "onPublish" | "onSavePage" | "onSaveSite"
 > &
   UploaderProviderProps &
   SiteAndPagesConfig & { pageVersion: string; pageId: string; onReady?: () => void };
-
-// export type EditorWrapperProps = {
-//   chatSession: {
-//     id: string;
-//     messages: UpstartUIMessage[];
-//   };
-//   pageVersion: string;
-//   pageId: string;
-//   config: SiteAndPagesConfig;
-//   logoLink?: string;
-//   /**
-//    * Callback when an image is uploaded through the editor.
-//    * The callback should return the URL of the uploaded image.
-//    */
-//   onImageUpload: (file: File) => Promise<string>;
-//   onReady?: () => void;
-
-//   /**
-//    * Callback when a tour is completed.
-//    */
-//   onShowPopup: EditorStateProps["onShowPopup"];
-//   onPublish: EditorStateProps["onPublish"];
-//   onSavePage?: EditorStateProps["onSavePage"];
-//   onSaveSite?: EditorStateProps["onSaveSite"];
-// };
 
 /**
  * Wrap the Editor component with the EditorStore and DraftStore contexts.
