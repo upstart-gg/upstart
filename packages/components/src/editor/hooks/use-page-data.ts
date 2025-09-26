@@ -1051,7 +1051,9 @@ export const useGenerationState = () => {
     const hasThemesGenerated = state.site.themes.length > 0;
     const hasPages = state.page.id !== "_default_";
     const isReady = hasSitemap && hasThemesGenerated && hasPages && state.page.sections.length > 0;
-    const isSetup = new URL(window.location.href).searchParams.get("action") === "setup";
+    const isSetup = globalThis.window
+      ? new URL(globalThis.window.location.href).searchParams.get("action") === "setup"
+      : false;
     return {
       hasSitemap,
       hasThemesGenerated,

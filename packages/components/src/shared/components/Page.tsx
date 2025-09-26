@@ -1,11 +1,10 @@
 import { usePageStyle } from "~/shared/hooks/use-page-style";
 import Section from "./Section";
-import { usePage, usePageAttributes, useSections, useSiteAttributes } from "~/editor/hooks/use-page-data";
+import { usePageAttributes, useSections, useSiteAttributes } from "~/editor/hooks/use-page-data";
 
 export default function Page() {
   const pageClassName = usePageStyle();
   const sections = useSections();
-  const page = usePage();
   const siteAttributes = useSiteAttributes();
   const pageAttributes = usePageAttributes();
   return (
