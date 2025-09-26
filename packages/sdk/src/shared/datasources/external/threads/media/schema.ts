@@ -1,18 +1,12 @@
 import { Type, type Static } from "@sinclair/typebox";
+import { StringEnum } from "../../../../utils/string-enum";
 
 export const threadsMediaSchema = Type.Object({
   data: Type.Array(
     Type.Object({
       id: Type.String(),
       media_product_type: Type.Literal("THREADS"),
-      media_type: Type.Union([
-        Type.Literal("TEXT_POST"),
-        Type.Literal("IMAGE"),
-        Type.Literal("VIDEO"),
-        Type.Literal("CAROUSEL_ALBUM"),
-        Type.Literal("AUDIO"),
-        Type.Literal("REPOST_FACADE"),
-      ]),
+      media_type: StringEnum(["TEXT_POST", "IMAGE", "VIDEO", "CAROUSEL_ALBUM", "AUDIO", "REPOST_FACADE"]),
       media_url: Type.String(),
       permalink: Type.String(),
       owner: Type.Object({

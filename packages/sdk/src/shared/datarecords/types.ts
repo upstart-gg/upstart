@@ -2,13 +2,9 @@ import { Type, type Static } from "@sinclair/typebox";
 import { airtableOptions } from "./external/airtable/types";
 import { googleSheetsOptions } from "./external/google/sheets/types";
 import { notionOptions } from "./external/notion/types";
+import { StringEnum } from "../utils/string-enum";
 
-export const connectorSchema = Type.Union([
-  Type.Literal("airtable"),
-  Type.Literal("google-sheets"),
-  Type.Literal("notion"),
-  Type.Literal("internal"),
-]);
+export const connectorSchema = StringEnum(["airtable", "google-sheets", "notion", "internal"]);
 
 export type DatarecordConnector = Static<typeof connectorSchema>;
 
@@ -139,34 +135,6 @@ export const genericDatarecord = Type.Composite([
   commonDatarecordMetadata,
   commonDatarecordSchema,
 ]);
-
-// export const genericDatarecord = Type.Union([
-//   Type.Composite([
-//     Type.Object({
-//       provider: Type.Literal("airtable"),
-//       options: airtableOptions,
-//     }),
-//     commonDatarecordMetadata,
-//     commonDatarecordSchema,
-//   ]),
-//   Type.Composite([
-//     Type.Object({
-//       provider: Type.Literal("google-sheets"),
-//       options: googleSheetsOptions,
-//     }),
-//     commonDatarecordMetadata,
-//     commonDatarecordSchema,
-//   ]),
-//   Type.Composite([
-//     Type.Object({
-//       provider: Type.Literal("notion"),
-//       options: notionOptions,
-//     }),
-//     commonDatarecordMetadata,
-//     commonDatarecordSchema,
-//   ]),
-//   Type.Composite([internalDatarecord, commonDatarecordMetadata, commonDatarecordSchema]),
-// ]);
 
 export type Datarecord = Static<typeof genericDatarecord>;
 export type InternalDatarecord = Extract<Datarecord, { provider: "internal" }>;

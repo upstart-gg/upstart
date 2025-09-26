@@ -1,5 +1,4 @@
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
-import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
 import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
 import type { Site, SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
@@ -14,6 +13,7 @@ import { subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { type DraftState, usePageContext } from "./use-page-data";
 import type { Page } from "@upstart.gg/sdk/shared/page";
+import type { UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
 export type { Immer } from "immer";
 
 enableMapSet();
@@ -41,6 +41,10 @@ export type SiteSavePayload = {
 };
 
 export interface EditorStateProps {
+  chatSession: {
+    id: string;
+    messages: UpstartUIMessage[];
+  };
   /**
    * When debugMode is enabled, context menu are disabled so that inspecting using devtools is easier
    */
@@ -130,7 +134,9 @@ export interface EditorState extends EditorStateProps {
   setAttributesGroup: (group: string | undefined) => void;
 }
 
-export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
+export const createEditorStore = (
+  initProps: Partial<EditorStateProps> & { chatSession: EditorStateProps["chatSession"] },
+) => {
   const DEFAULT_PROPS = {
     previewMode: "desktop" satisfies EditorStateProps["previewMode"],
     themesLibrary: [] as Theme[],
@@ -140,6 +146,7 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
     chatVisible: true,
     contextMenuVisible: false,
     planIndex: 0,
+    attributesTab: "page" as EditorStateProps["attributesTab"],
     imagesSearchResults: import.meta.env.DEV
       ? [
           {
@@ -497,6 +504,11 @@ export const useZoom = () => {
     canZoomOut: state.zoom > 0.5,
     resetZoom: state.resetZoom,
   }));
+};
+
+export const useChatSession = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.chatSession);
 };
 
 export const useChatVisible = () => {

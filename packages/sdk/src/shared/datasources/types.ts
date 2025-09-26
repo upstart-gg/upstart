@@ -2,26 +2,26 @@ import { Type, type Static } from "@sinclair/typebox";
 import { StringEnum } from "../utils/string-enum";
 import { toLLMSchema } from "../utils/llm";
 
-export const providersSchema = Type.Union([
-  // Type.Literal("facebook-posts"),
-  // Type.Literal("instagram-feed"),
-  // Type.Literal("mastodon-account"),
-  // Type.Literal("mastodon-status"),
-  // Type.Literal("mastodon-status-list"),
-  Type.Literal("internal"),
-  // Type.Literal("rss"),
-  // // Type.Literal("threads-media"),
-  // // Type.Literal("tiktok-video"),
-  // Type.Literal("youtube-list"),
-  // Type.Literal("http-json"),
-  // Type.Literal("internal-blog"),
-  // Type.Literal("internal-changelog"),
-  // // Type.Literal("internal-contact-info"),
-  // Type.Literal("internal-faq"),
-  // Type.Literal("internal-links"),
-  // Type.Literal("internal-recipes"),
-  // Type.Literal("internal-restaurant"),
-  // Type.Literal("internal-cv"),
+export const providersSchema = StringEnum([
+  // "facebook-posts",
+  // "instagram-feed",
+  // "mastodon-account",
+  // "mastodon-status",
+  // "mastodon-status-list",
+  "internal",
+  // "rss",
+  // // "threads-media",
+  // // "tiktok-video",
+  // "youtube-list",
+  // "http-json",
+  // "internal-blog",
+  // "internal-changelog",
+  // // "internal-contact-info",
+  // "internal-faq",
+  // "internal-links",
+  // "internal-recipes",
+  // "internal-restaurant",
+  // "internal-cv",
 ]);
 
 export type DatasourceProvider = Static<typeof providersSchema>;
@@ -243,53 +243,40 @@ export type DatasourcesList = Static<typeof datasourcesList>;
 
 const stringFilter = Type.Object({
   field: Type.String(),
-  op: Type.Union([
-    Type.Literal("eq"),
-    Type.Literal("ne"),
-    Type.Literal("contains"),
-    Type.Literal("notContains"),
-    Type.Literal("startsWith"),
-    Type.Literal("notStartsWith"),
-    Type.Literal("endsWith"),
-    Type.Literal("notEndsWith"),
+  op: StringEnum([
+    "eq",
+    "ne",
+    "contains",
+    "notContains",
+    "startsWith",
+    "notStartsWith",
+    "endsWith",
+    "notEndsWith",
   ]),
   value: Type.String(),
 });
 
 const numberFilter = Type.Object({
   field: Type.String(),
-  op: Type.Union([
-    Type.Literal("eq"),
-    Type.Literal("ne"),
-    Type.Literal("lt"),
-    Type.Literal("lte"),
-    Type.Literal("gt"),
-    Type.Literal("gte"),
-  ]),
+  op: StringEnum(["eq", "ne", "lt", "lte", "gt", "gte"]),
   value: Type.Number(),
 });
 
 const dateFilterAbsolute = Type.Object({
   field: Type.String(),
-  op: Type.Union([Type.Literal("before"), Type.Literal("after")]),
+  op: StringEnum(["before", "after"]),
   value: Type.String(),
 });
 
 const dateFilterRelative = Type.Object({
   field: Type.String(),
-  op: Type.Union([Type.Literal("beforeNow"), Type.Literal("afterNow")]),
+  op: StringEnum(["beforeNow", "afterNow"]),
   value: Type.Null(),
 });
 
 const arrayFilter = Type.Object({
   field: Type.String(),
-  op: Type.Union([
-    Type.Literal("contains"),
-    Type.Literal("notContains"),
-    Type.Literal("containsAll"),
-    Type.Literal("containsAny"),
-    Type.Literal("notContainsAny"),
-  ]),
+  op: StringEnum(["contains", "notContains", "containsAll", "containsAny", "notContainsAny"]),
   value: Type.Array(Type.String()),
 });
 
@@ -392,27 +379,27 @@ export const querySchema = Type.Object(
       Type.Array(
         Type.Object({
           field: Type.String({ title: "Field", description: "Field name to use as parameter" }),
-          op: Type.Union(
+          op: StringEnum(
             [
-              Type.Literal("eq"),
-              Type.Literal("ne"),
-              Type.Literal("contains"),
-              Type.Literal("notContains"),
-              Type.Literal("startsWith"),
-              Type.Literal("notStartsWith"),
-              Type.Literal("endsWith"),
-              Type.Literal("notEndsWith"),
-              Type.Literal("lt"),
-              Type.Literal("lte"),
-              Type.Literal("gt"),
-              Type.Literal("gte"),
-              Type.Literal("before"),
-              Type.Literal("after"),
-              Type.Literal("beforeNow"),
-              Type.Literal("afterNow"),
-              Type.Literal("containsAll"),
-              Type.Literal("containsAny"),
-              Type.Literal("notContainsAny"),
+              "eq",
+              "ne",
+              "contains",
+              "notContains",
+              "startsWith",
+              "notStartsWith",
+              "endsWith",
+              "notEndsWith",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "before",
+              "after",
+              "beforeNow",
+              "afterNow",
+              "containsAll",
+              "containsAny",
+              "notContainsAny",
             ],
             { title: "Operator", description: "Operator to use for the parameter" },
           ),

@@ -1,4 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
+import { StringEnum } from "~/shared/utils/string-enum";
 
 export const airtableFields = Type.Array(
   Type.Object({
@@ -48,16 +49,16 @@ export type AirtableBases = {
   name: string;
 }[];
 
-export const AirtableFieldTypes = Type.Union([
-  Type.Literal("number"),
-  Type.Literal("checkbox"),
-  Type.Literal("date"),
-  Type.Literal("dateTime"),
-  Type.Literal("email"),
-  Type.Literal("url"),
-  Type.Literal("singleLineText"),
-  Type.Literal("multilineText"),
-  Type.Literal("singleSelect"),
-  Type.Literal("multipleSelects"),
+export const AirtableFieldTypes = StringEnum([
+  "number",
+  "checkbox",
+  "date",
+  "dateTime",
+  "email",
+  "url",
+  "singleLineText",
+  "multilineText",
+  "singleSelect",
+  "multipleSelects",
 ]);
 export type AirtableFieldType = Static<typeof AirtableFieldTypes>;

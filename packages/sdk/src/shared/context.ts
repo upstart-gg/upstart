@@ -1,6 +1,19 @@
-import type { ImageSearchResultsType } from "./images";
-import type { VersionedPage } from "./page";
-import type { Site } from "./site";
+import { type Static, Type } from "@sinclair/typebox";
+import { imageResultsSchema, type ImageSearchResultsType } from "./images";
+import { pageSchema, versionedPageSchema, type VersionedPage } from "./page";
+import { siteSchema, type Site } from "./site";
+
+export const generationStateSchema = Type.Object(
+  {
+    isReady: Type.Boolean(),
+    isSetup: Type.Boolean(),
+    hasSitemap: Type.Boolean(),
+    hasThemesGenerated: Type.Boolean(),
+  },
+  {
+    additionalProperties: false,
+  },
+);
 
 export type GenerationState = {
   isReady: boolean;
@@ -9,25 +22,22 @@ export type GenerationState = {
   hasThemesGenerated: boolean;
 };
 
-export type CallContextProps = {
-  userId: string;
-  /**
-   * The site object
-   */
-  site: Site;
-  /**
-   * Current page. Undefined if flow is "setup" and no page has been created yet.
-   */
-  page: VersionedPage;
+export const callContextSchema = Type.Object(
+  {
+    site: siteSchema,
+    page: versionedPageSchema,
+    generationState: Type.Optional(generationStateSchema),
+    userLanguage: Type.Optional(
+      Type.String({
+        minLength: 2,
+        maxLength: 2,
+      }),
+    ),
+    assets: imageResultsSchema,
+  },
+  {
+    additionalProperties: true,
+  },
+);
 
-  /**
-   * The current generation state of the site. Only used when flow is "setup".
-   */
-  generationState?: GenerationState;
-  /**
-   * The user language guessed from the sitePrompt, if available.
-   */
-  userLanguage?: string;
-
-  assets: ImageSearchResultsType;
-};
+export type CallContextProps = Static<typeof callContextSchema>;

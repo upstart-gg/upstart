@@ -19,8 +19,6 @@ import type {
 import type { Datarecord, InternalDatarecord } from "../datarecords/types";
 import type { InternalDatasource } from "../datasources/types";
 import type { ImageSearchResultsType } from "../images";
-import type { NavbarProps } from "../bricks/manifests/navbar.manifest";
-import type { FooterProps } from "../bricks/manifests/footer.manifest";
 import type { Site } from "../site";
 // ... import your tool and data part types
 

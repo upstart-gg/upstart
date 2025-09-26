@@ -9,7 +9,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { type FormEvent, lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { useDebounceCallback } from "usehooks-ts";
-import { useDebugMode } from "../../hooks/use-editor";
+import { useChatSession, useDebugMode } from "../../hooks/use-editor";
 import {
   useAdditionalAssets,
   useDraftHelpers,
@@ -73,6 +73,7 @@ const userMsgClass = tx(
 );
 
 export default function Chat() {
+  const chatSession = useChatSession();
   const sitePrompt = useSitePrompt();
   const setupRef = useRef(false);
   const draftHelpers = useDraftHelpers();
@@ -146,39 +147,42 @@ export default function Chat() {
     assetsRef.current = additionalAssets;
   }, [site, page, generationState, userLanguage, additionalAssets]);
 
-  const initialMessages = useMemo(() => {
-    if (generationState.isSetup) {
-      return [
-        {
-          id: "init-setup",
-          role: "user",
-          parts: [
-            {
-              type: "text",
-              text: `Create a website based on this prompt:\n${sitePrompt}`,
-            },
-          ],
-        },
-      ] satisfies UpstartUIMessage[];
-    } else {
-      return [
-        {
-          id: "init-edit",
-          role: "assistant",
-          parts: [
-            {
-              type: "text",
-              text: `Hey! 👋\n\nReady to keep building? You can:
-- Chat with me to make changes
-- Use the visual editor for direct editing
+  //   const initialMessages = useMemo(() => {
+  //     if (chatSession?.messages && chatSession.messages.length > 0) {
+  //       return chatSession.messages;
+  //     }
+  //     if (generationState.isSetup) {
+  //       return [
+  //         {
+  //           id: "init-setup",
+  //           role: "user",
+  //           parts: [
+  //             {
+  //               type: "text",
+  //               text: `Create a website based on this prompt:\n${sitePrompt}`,
+  //             },
+  //           ],
+  //         },
+  //       ] satisfies UpstartUIMessage[];
+  //     } else {
+  //       return [
+  //         {
+  //           id: "init-edit",
+  //           role: "assistant",
+  //           parts: [
+  //             {
+  //               type: "text",
+  //               text: `Hey! 👋\n\nReady to keep building? You can:
+  // - Chat with me to make changes
+  // - Use the visual editor for direct editing
 
-What should we work on together? 🤖`,
-            },
-          ],
-        },
-      ] satisfies UpstartUIMessage[];
-    }
-  }, [generationState.isSetup, sitePrompt]);
+  // What should we work on together? 🤖`,
+  //             },
+  //           ],
+  //         },
+  //       ] satisfies UpstartUIMessage[];
+  //     }
+  //   }, [generationState.isSetup, sitePrompt, chatSession]);
 
   const onToolCall: ChatOnToolCallCallback<UpstartUIMessage> = ({ toolCall }) => {
     console.log("Tool call: %s: ", toolCall.toolName, toolCall);
@@ -186,21 +190,43 @@ What should we work on together? 🤖`,
 
   const { messages, sendMessage, error, status, regenerate, stop, addToolResult, setMessages } =
     useChat<UpstartUIMessage>({
+      id: chatSession.id,
       // resume: generationState.isReady === false,
       transport: new DefaultChatTransport({
         api: "/editor/chat",
         credentials: "include",
-        body: () => ({
-          callContext: {
+        // body: () => ({
+        //   callContext: {
+        //     site: siteRef.current,
+        //     page: pageRef.current,
+        //     generationState: generationStateRef.current,
+        //     userLanguage: userLanguageRef.current,
+        //     assets: assetsRef.current,
+        //   } satisfies Omit<CallContextProps, "userId">,
+        // }),
+        prepareSendMessagesRequest: ({ messages }) => {
+          // send only the last message and chat id
+          // we will then fetch message history (for our chatId) on server
+          // and append this message for the full context to send to the model
+          const lastMessage = messages[messages.length - 1];
+          const callContext = {
             site: siteRef.current,
             page: pageRef.current,
             generationState: generationStateRef.current,
             userLanguage: userLanguageRef.current,
             assets: assetsRef.current,
-          } satisfies Omit<CallContextProps, "userId">,
-        }),
+          } satisfies Omit<CallContextProps, "userId">;
+
+          return {
+            body: {
+              message: lastMessage,
+              chatSessionId: chatSession.id,
+              callContext,
+            },
+          };
+        },
       }),
-      messages: initialMessages,
+      messages: chatSession.messages,
       // generateId: createIdGenerator({
       //   prefix: "ups",
       //   separator: "_",

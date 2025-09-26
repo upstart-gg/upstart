@@ -9,6 +9,7 @@ import { BsListCheck } from "react-icons/bs";
 import { loopRef } from "../props/dynamic";
 import type { BrickProps } from "../props/types";
 import type { BrickExample } from "./_types";
+import { StringEnum } from "~/shared/utils/string-enum";
 
 const timelineItemSchema = Type.Object({
   id: Type.Optional(Type.String({ title: "ID" })),
@@ -41,7 +42,8 @@ const timelineItemSchema = Type.Object({
     }),
   ),
   status: Type.Optional(
-    Type.Union([Type.Literal("completed"), Type.Literal("current"), Type.Literal("upcoming")], {
+    StringEnum(["completed", "current", "upcoming"], {
+      enumNames: ["Completed", "Current", "Upcoming"],
       title: "Status",
       description: "Timeline item status for visual styling",
     }),
@@ -75,7 +77,8 @@ export const manifest = defineBrickManifest({
 
     // Layout options
     layout: Type.Optional(
-      Type.Union([Type.Literal("left"), Type.Literal("right"), Type.Literal("alternating")], {
+      StringEnum(["left", "right", "alternating"], {
+        enumNames: ["Left", "Right", "Alternating"],
         title: "Layout",
         description: "Timeline layout style",
         default: "left",
@@ -113,9 +116,9 @@ export const manifest = defineBrickManifest({
         default: true,
       }),
     ),
-
     iconSize: Type.Optional(
-      Type.Union([Type.Literal("sm"), Type.Literal("md"), Type.Literal("lg")], {
+      StringEnum(["sm", "md", "lg"], {
+        enumNames: ["Small", "Medium", "Large"],
         title: "Icon Size",
         description: "Size of timeline item icons",
         default: "md",
@@ -131,7 +134,8 @@ export const manifest = defineBrickManifest({
     ),
 
     datePosition: Type.Optional(
-      Type.Union([Type.Literal("top"), Type.Literal("bottom"), Type.Literal("inline")], {
+      StringEnum(["top", "bottom", "inline"], {
+        enumNames: ["Top", "Bottom", "Inline"],
         title: "Date Position",
         description: "Position of dates relative to content",
         default: "top",
