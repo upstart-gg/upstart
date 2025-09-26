@@ -17,8 +17,22 @@ export const manifest = defineBrickManifest({
   type: "card",
   name: "Card",
   description: "A card that can have a title, image, and content.",
-  aiInstructions:
-    "Use this brick to create visually distinct content blocks (product, feature, testimonial, event, article, CTA, etc.).\n\nGuidelines:\n- Button is REQUIRED. Always provide a short action label (1–3 words) and pick a color matching semantic weight (primary/accent for primary actions, neutral/secondary for low emphasis).\n- Image is OPTIONAL. If present you may set imagePosition to top | middle | bottom. Default is top. Pick middle for vertically centered feature highlights, bottom for caption-first layouts.\n- Set noTitle: true when the card is intentionally title-less (e.g. a quote card or pure media focus). Do NOT include an empty title string alongside noTitle.\n- Use dynamic tokens (e.g. {{products.price}}) instead of duplicating literal values.\n- Prefer gradient presets for more visual emphasis (e.g. primary-gradient-400 with gradientDirection).\n- border + rounding + shadow should be cohesive: stronger borders pair well with larger rounding + moderate shadow; minimal / flat cards may use border-0 + no shadow.\n- For internal navigation you can supply a page ID (e.g. 'about') OR a relative/absolute URL (e.g. '/pricing', 'https://example.com').\n- Keep HTML inside text minimal (<strong>, <em>, <br>) — for richer structure consider multiple bricks instead.\n- Avoid mixing noTitle with large heading text embedded inside the text field — in that case keep a proper title.\n\nReturn ONLY valid properties defined in the schema; do not invent new ones.",
+  aiInstructions: `Use this brick to create visually distinct content blocks (product, feature, testimonial, event, article, CTA, etc.).
+
+  Guidelines:
+- Button is REQUIRED.
+- Always provide a short action label (1-3 words) and pick a color matching semantic weight (primary/accent for primary actions, neutral/secondary for low emphasis).
+- Image is OPTIONAL. If present you may set imagePosition to top | middle | bottom. Default is top.
+- Pick middle for vertically centered feature highlights, bottom for caption-first layouts.
+- Set noTitle: true when the card is intentionally title-less (e.g. a quote card or pure media focus).
+- Do NOT include an empty title string alongside noTitle.
+- Use dynamic tokens (e.g. {{products.price}}) instead of duplicating literal values.
+- Prefer gradient presets for more visual emphasis (e.g. primary-gradient-400 with gradientDirection).
+- border + rounding + shadow should be cohesive: stronger borders pair well with larger rounding + moderate shadow; minimal / flat cards may use border-0 + no shadow.
+- For internal navigation you can supply a page ID (e.g. 'about') OR a relative/absolute URL (e.g. '/pricing', 'https://example.com').
+- Keep HTML inside text minimal (<strong>, <em>, <br>) — for richer structure consider multiple bricks instead.
+- Avoid mixing noTitle with large heading text embedded inside the text field — in that case keep a proper title.
+- Return ONLY valid properties defined in the schema; do not invent new ones.`,
   icon: BsCardText,
   defaultWidth: { desktop: "400px", mobile: "100%" },
   minWidth: { desktop: 300 },

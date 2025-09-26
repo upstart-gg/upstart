@@ -104,6 +104,32 @@ export const brickSchema = Type.Object(
 );
 
 export function makeFullBrickSchemaForLLM(type: string, otherTypes?: string[]) {
+  const originalProps = Type.Pick(brickSchema, ["props"]);
+  const props = otherTypes
+    ? Type.Composite([
+        Type.Omit(brickSchema, ["props"]),
+        Type.Object({
+          props: Type.Composite([
+            originalProps,
+            Type.Object({
+              $children: Type.Union(
+                otherTypes.map((t) =>
+                  Type.Object({
+                    id: Type.String({
+                      title: "ID",
+                      description: "A unique identifier for the brick.",
+                    }),
+                    type: Type.Literal(t),
+                    props: manifests[t].props,
+                    mobileProps: Type.Optional(Type.Partial(manifests[t].props)),
+                  }),
+                ),
+              ),
+            }),
+          ]),
+        }),
+      ])
+    : manifests[type].props;
   return toLLMSchema(
     Type.Object(
       {
@@ -112,7 +138,7 @@ export function makeFullBrickSchemaForLLM(type: string, otherTypes?: string[]) {
           description: "A unique identifier for the brick.",
         }),
         type: Type.Literal(type),
-        props: manifests[type].props,
+        props: props,
         mobileProps: Type.Optional(Type.Partial(manifests[type].props)),
       },
       // IMPORTANT: DO NOT set "additionalProperties" to `false` because it would break validation with Cabidela library
@@ -140,12 +166,15 @@ export const sectionProps = Type.Object(
           "The background image of the section. Prefer to set background images on sections rather than on individual bricks.",
       }),
     ),
-    direction: directionRef({
-      default: "flex-row",
-      title: "Direction",
-      description: "The direction of the section. Only apply to desktop. On mobile, it is always vertical.",
-      "ui:responsive": "desktop",
-    }),
+    direction: Type.Optional(
+      directionRef({
+        default: "flex-row",
+        title: "Direction",
+        description:
+          "The direction of the section. Only apply to desktop. On mobile, it is always vertical. By default, horizontal (row), which is the most common.",
+        "ui:responsive": "desktop",
+      }),
+    ),
     minHeight: Type.Optional(
       cssLengthRef({
         title: "Min height",

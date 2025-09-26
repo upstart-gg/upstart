@@ -15,12 +15,12 @@ export const sectionsExamples: { label: string; description: string; example: Se
           color: "primary-500",
           gradientDirection: "bg-gradient-to-br",
         },
-        direction: "flex-col",
         padding: "6rem",
         gap: "2rem",
         justifyContent: "justify-center",
         alignItems: "items-center",
         minHeight: "min-h-screen",
+        direction: "flex-col",
       },
       bricks: [
         {
@@ -74,8 +74,7 @@ export const sectionsExamples: { label: string; description: string; example: Se
           type: "text",
           label: "Social proof",
           props: {
-            content:
-              "<p>Trusted by teams at Google, Microsoft, and 500+ startups</p>",
+            content: "<p>Trusted by teams at Google, Microsoft, and 500+ startups</p>",
           },
         },
       ],
@@ -94,48 +93,33 @@ export const sectionsExamples: { label: string; description: string; example: Se
         backgroundImage: {
           image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3",
         },
-        direction: "flex-col",
         padding: "8rem",
         gap: "2rem",
         justifyContent: "justify-center",
         alignItems: "items-center",
         minHeight: "min-h-screen",
+        direction: "flex-col",
       },
       bricks: [
         {
-          id: "overlay-box",
-          type: "box",
-          label: "Content overlay",
+          id: "restaurant-title",
+          type: "hero",
           props: {
-            direction: "flex-col",
-            gap: "2rem",
-            alignItems: "items-center",
-            padding: "3rem",
-            colorPreset: { color: "black", opacity: 0.7 },
-            rounding: "rounded-2xl",
-            $children: [
-              {
-                id: "restaurant-title",
-                type: "hero",
-                props: {
-                  content: "<h1>Bella Vista</h1>",
-                  tagline:
-                    "Authentic Italian cuisine in the heart of the city. Experience flavors that tell a story.",
-                },
-              },
-              {
-                id: "restaurant-cta",
-                type: "button",
-                props: {
-                  label: "Reserve Your Table",
-                  link: "/reservations",
-                  colorPreset: { color: "accent-500" },
-                  fill: "solid",
-                  fontSize: "text-xl",
-                  rounding: "rounded-full",
-                },
-              },
-            ],
+            content: "<h1>Bella Vista</h1>",
+            tagline:
+              "Authentic Italian cuisine in the heart of the city. Experience flavors that tell a story.",
+          },
+        },
+        {
+          id: "restaurant-cta",
+          type: "button",
+          props: {
+            label: "Reserve Your Table",
+            link: "/reservations",
+            colorPreset: { color: "accent-500" },
+            fill: "solid",
+            fontSize: "text-xl",
+            rounding: "rounded-full",
           },
         },
       ],
@@ -151,14 +135,12 @@ export const sectionsExamples: { label: string; description: string; example: Se
       label: "Portfolio Hero",
       order: 2,
       props: {
-        direction: "flex-row",
         padding: "4rem",
         gap: "4rem",
         alignItems: "items-center",
         minHeight: "min-h-screen",
       },
       mobileProps: {
-        direction: "flex-col",
         padding: "2rem",
       },
       bricks: [
@@ -177,7 +159,6 @@ export const sectionsExamples: { label: string; description: string; example: Se
           type: "box",
           label: "Introduction",
           props: {
-            direction: "flex-col",
             gap: "2rem",
             $children: [
               {
@@ -236,11 +217,9 @@ export const sectionsExamples: { label: string; description: string; example: Se
       label: "Features Grid",
       order: 3,
       props: {
-        direction: "flex-col",
         padding: "6rem",
         gap: "4rem",
-        alignItems: "items-center",
-        maxWidth: "max-w-screen-xl",
+        justifyContent: "justify-between",
       },
       bricks: [
         {
@@ -269,7 +248,6 @@ export const sectionsExamples: { label: string; description: string; example: Se
                   gap: "1.5rem",
                   alignItems: "items-center",
                   padding: "2rem",
-                  maxWidth: "max-w-sm",
                   $children: [
                     {
                       id: "feature-1-icon",
@@ -299,7 +277,6 @@ export const sectionsExamples: { label: string; description: string; example: Se
                   gap: "1.5rem",
                   alignItems: "items-center",
                   padding: "2rem",
-                  maxWidth: "max-w-sm",
                   $children: [
                     {
                       id: "feature-2-icon",
@@ -329,7 +306,6 @@ export const sectionsExamples: { label: string; description: string; example: Se
                   gap: "1.5rem",
                   alignItems: "items-center",
                   padding: "2rem",
-                  maxWidth: "max-w-sm",
                   $children: [
                     {
                       id: "feature-3-icon",
@@ -352,9 +328,6 @@ export const sectionsExamples: { label: string; description: string; example: Se
                 },
               },
             ],
-            mobileProps: {
-              direction: "flex-col",
-            },
           },
         },
       ],
@@ -374,10 +347,6 @@ export const sectionsExamples: { label: string; description: string; example: Se
         padding: "6rem",
         gap: "4rem",
         alignItems: "items-center",
-        maxWidth: "max-w-screen-xl",
-      },
-      mobileProps: {
-        direction: "flex-col",
       },
       bricks: [
         {
@@ -431,180 +400,6 @@ export const sectionsExamples: { label: string; description: string; example: Se
     },
   },
 
-  // TESTIMONIALS & SOCIAL PROOF
-  {
-    label: "Customer Testimonials - Multi-card layout",
-    description: `Social proof section with customer testimonials in card format.
-    Features real quotes, company logos, and customer photos for credibility.`,
-    example: {
-      id: "testimonials-section",
-      label: "Customer Testimonials",
-      order: 5,
-      props: {
-        direction: "flex-col",
-        padding: "6rem",
-        gap: "4rem",
-        colorPreset: { color: "primary-50" },
-        alignItems: "items-center",
-      },
-      bricks: [
-        {
-          id: "testimonials-header",
-          type: "text",
-          label: "Section header",
-          props: {
-            content:
-              "<h2>Loved by 50,000+ Customers</h2><p>Don't just take our word for it - hear what our customers have to say</p>",
-          },
-        },
-        {
-          id: "testimonials-grid",
-          type: "box",
-          label: "Testimonials container",
-          props: {
-            direction: "flex-row",
-            gap: "2rem",
-            justifyContent: "justify-center",
-            $children: [
-              {
-                id: "testimonial-1",
-                type: "card",
-                props: {
-                  content:
-                    "<h4>Sarah Chen</h4><p><strong>VP of Marketing, TechFlow</strong></p><p>\"This platform completely transformed our workflow. We're saving 15+ hours per week and our team productivity has never been higher.\"</p><p>★★★★★</p>",
-                  colorPreset: { color: "white" },
-                  padding: "2rem",
-                  rounding: "rounded-xl",
-                  shadow: "shadow-lg",
-                },
-              },
-              {
-                id: "testimonial-2",
-                type: "card",
-                props: {
-                  content:
-                    "<h4>Marcus Rodriguez</h4><p><strong>CEO, StartupLab</strong></p><p>\"The ROI has been incredible. Within 3 months, we'd already saved more than what we invested. Highly recommend for any growing business.\"</p><p>★★★★★</p>",
-                  colorPreset: { color: "white" },
-                  padding: "2rem",
-                  rounding: "rounded-xl",
-                  shadow: "shadow-lg",
-                },
-              },
-              {
-                id: "testimonial-3",
-                type: "card",
-                props: {
-                  content:
-                    "<h4>Emma Thompson</h4><p><strong>Operations Director, Scale Co</strong></p><p>\"Outstanding support team and the feature set is exactly what we needed. It's like they built this specifically for companies like ours.\"</p><p>★★★★★</p>",
-                  colorPreset: { color: "white" },
-                  padding: "2rem",
-                  rounding: "rounded-xl",
-                  shadow: "shadow-lg",
-                },
-              },
-            ],
-            mobileProps: {
-              direction: "flex-col",
-            },
-          },
-        },
-      ],
-    },
-  },
-
-  // PRICING SECTIONS
-  {
-    label: "Pricing Plans - Three-tier comparison",
-    description: `Professional pricing table with three tiers, feature comparison, and highlighted popular plan.
-    Includes clear pricing, feature lists, and prominent CTAs.`,
-    example: {
-      id: "pricing-plans",
-      label: "Pricing Plans",
-      order: 6,
-      props: {
-        direction: "flex-col",
-        padding: "6rem",
-        gap: "4rem",
-        alignItems: "items-center",
-      },
-      bricks: [
-        {
-          id: "pricing-header",
-          type: "text",
-          label: "Pricing header",
-          props: {
-            content:
-              "<h2>Simple, Transparent Pricing</h2><p>Choose the plan that fits your needs. Upgrade or downgrade at any time.</p>",
-          },
-        },
-        {
-          id: "pricing-toggle",
-          type: "text",
-          label: "Billing toggle",
-          props: {
-            content:
-              "<p><strong>Monthly / Annual</strong> (Save 20% annually)</p>",
-          },
-        },
-        {
-          id: "pricing-cards",
-          type: "box",
-          label: "Pricing cards container",
-          props: {
-            direction: "flex-row",
-            gap: "2rem",
-            justifyContent: "justify-center",
-            $children: [
-              {
-                id: "starter-plan",
-                type: "card",
-                props: {
-                  title: "Starter",
-                  content:
-                    "<h3>$9/month</h3><ul><li>✓ Up to 5 team members</li><li>✓ 10GB storage</li><li>✓ Email support</li><li>✓ Basic integrations</li></ul>",
-                  colorPreset: { color: "white" },
-                  padding: "2.5rem",
-                  rounding: "rounded-xl",
-                  shadow: "shadow-lg",
-                },
-              },
-              {
-                id: "professional-plan",
-                type: "card",
-                props: {
-                  title: "Professional",
-                  subtitle: "Most Popular",
-                  content:
-                    "<h3>$29/month</h3><ul><li>✓ Up to 25 team members</li><li>✓ 100GB storage</li><li>✓ Priority support</li><li>✓ Advanced integrations</li><li>✓ Analytics & reports</li></ul>",
-                  colorPreset: { color: "primary-500" },
-                  padding: "2.5rem",
-                  rounding: "rounded-xl",
-                  shadow: "shadow-2xl",
-                },
-              },
-              {
-                id: "enterprise-plan",
-                type: "card",
-                props: {
-                  title: "Enterprise",
-                  content:
-                    "<h3>$99/month</h3><ul><li>✓ Unlimited team members</li><li>✓ Unlimited storage</li><li>✓ 24/7 phone support</li><li>✓ Custom integrations</li><li>✓ Dedicated account manager</li></ul>",
-                  colorPreset: { color: "white" },
-                  padding: "2.5rem",
-                  rounding: "rounded-xl",
-                  shadow: "shadow-lg",
-                },
-              },
-            ],
-            mobileProps: {
-              direction: "flex-col",
-            },
-          },
-        },
-      ],
-    },
-  },
-
   // TEAM SECTIONS
   {
     label: "Meet the Team - Photo grid with bios",
@@ -626,8 +421,7 @@ export const sectionsExamples: { label: string; description: string; example: Se
           type: "text",
           label: "Team section header",
           props: {
-            content:
-              "<h2>Meet Our Team</h2><p>The passionate people behind our success</p>",
+            content: "<h2>Meet Our Team</h2><p>The passionate people behind our success</p>",
           },
         },
         {
@@ -646,7 +440,6 @@ export const sectionsExamples: { label: string; description: string; example: Se
                   direction: "flex-col",
                   gap: "1.5rem",
                   alignItems: "items-center",
-                  maxWidth: "max-w-sm",
                   $children: [
                     {
                       id: "member-1-photo",
@@ -686,7 +479,6 @@ export const sectionsExamples: { label: string; description: string; example: Se
                   direction: "flex-col",
                   gap: "1.5rem",
                   alignItems: "items-center",
-                  maxWidth: "max-w-sm",
                   $children: [
                     {
                       id: "member-2-photo",
@@ -726,7 +518,6 @@ export const sectionsExamples: { label: string; description: string; example: Se
                   direction: "flex-col",
                   gap: "1.5rem",
                   alignItems: "items-center",
-                  maxWidth: "max-w-sm",
                   $children: [
                     {
                       id: "member-3-photo",
@@ -769,190 +560,6 @@ export const sectionsExamples: { label: string; description: string; example: Se
     },
   },
 
-  // FOOTER SECTIONS
-  {
-    label: "Company Footer - Complete with links and contact",
-    description: `Comprehensive footer with company info, navigation links, social media, and contact details.
-    Professional layout suitable for business websites.`,
-    example: {
-      id: "company-footer",
-      label: "Company Footer",
-      order: 8,
-      props: {
-        direction: "flex-col",
-        padding: "4rem",
-        gap: "3rem",
-        colorPreset: { color: "neutral-900" },
-      },
-      bricks: [
-        {
-          id: "footer-main",
-          type: "box",
-          label: "Main footer content",
-          props: {
-            direction: "flex-row",
-            gap: "4rem",
-            justifyContent: "justify-between",
-            $children: [
-              {
-                id: "footer-company",
-                type: "box",
-                props: {
-                  direction: "flex-col",
-                  gap: "1.5rem",
-                  maxWidth: "max-w-sm",
-                  $children: [
-                    {
-                      id: "company-logo",
-                      type: "text",
-                      props: {
-                        content: "<h3>YourCompany</h3>",
-                      },
-                    },
-                    {
-                      id: "company-desc",
-                      type: "text",
-                      props: {
-                        content:
-                          "<p>Empowering businesses worldwide with innovative solutions that drive growth and efficiency.</p>",
-                      },
-                    },
-                    {
-                      id: "footer-social",
-                      type: "social-links",
-                      props: {
-                        links: [
-                          { platform: "twitter", url: "https://twitter.com/yourcompany" },
-                          { platform: "linkedin", url: "https://linkedin.com/company/yourcompany" },
-                          { platform: "facebook", url: "https://facebook.com/yourcompany" },
-                          { platform: "instagram", url: "https://instagram.com/yourcompany" },
-                        ],
-                        size: "medium",
-                      },
-                    },
-                  ],
-                },
-              },
-              {
-                id: "footer-links-1",
-                type: "box",
-                props: {
-                  direction: "flex-col",
-                  gap: "1rem",
-                  $children: [
-                    {
-                      id: "product-title",
-                      type: "text",
-                      props: {
-                        content: "<h4>Product</h4>",
-                      },
-                    },
-                    {
-                      id: "product-links",
-                      type: "text",
-                      props: {
-                        content:
-                          "<ul><li><a href='/features'>Features</a></li><li><a href='/pricing'>Pricing</a></li><li><a href='/integrations'>Integrations</a></li><li><a href='/api'>API</a></li></ul>",
-                      },
-                    },
-                  ],
-                },
-              },
-              {
-                id: "footer-links-2",
-                type: "box",
-                props: {
-                  direction: "flex-col",
-                  gap: "1rem",
-                  $children: [
-                    {
-                      id: "company-title",
-                      type: "text",
-                      props: {
-                        content: "<h4>Company</h4>",
-                      },
-                    },
-                    {
-                      id: "company-links",
-                      type: "text",
-                      props: {
-                        content:
-                          "<ul><li><a href='/about'>About Us</a></li><li><a href='/careers'>Careers</a></li><li><a href='/blog'>Blog</a></li><li><a href='/press'>Press</a></li></ul>",
-                      },
-                    },
-                  ],
-                },
-              },
-              {
-                id: "footer-contact",
-                type: "box",
-                props: {
-                  direction: "flex-col",
-                  gap: "1rem",
-                  $children: [
-                    {
-                      id: "contact-title",
-                      type: "text",
-                      props: {
-                        content: "<h4>Contact</h4>",
-                      },
-                    },
-                    {
-                      id: "contact-info",
-                      type: "text",
-                      props: {
-                        content:
-                          "<p>123 Business Street<br>Suite 100<br>San Francisco, CA 94105</p><p>Phone: +1 (555) 123-4567<br>Email: hello@yourcompany.com</p>",
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-            mobileProps: {
-              direction: "flex-col",
-              gap: "2rem",
-            },
-          },
-        },
-        {
-          id: "footer-bottom",
-          type: "box",
-          label: "Footer bottom section",
-          props: {
-            direction: "flex-row",
-            gap: "2rem",
-            justifyContent: "justify-between",
-            alignItems: "items-center",
-            padding: "2rem 0",
-            $children: [
-              {
-                id: "copyright",
-                type: "text",
-                props: {
-                  content: "<p>© 2024 YourCompany. All rights reserved.</p>",
-                },
-              },
-              {
-                id: "footer-legal",
-                type: "text",
-                props: {
-                  content:
-                    "<p><a href='/privacy'>Privacy Policy</a> | <a href='/terms'>Terms of Service</a> | <a href='/cookies'>Cookie Policy</a></p>",
-                },
-              },
-            ],
-            mobileProps: {
-              direction: "flex-col",
-              alignItems: "items-center",
-              gap: "1rem",
-            },
-          },
-        },
-      ],
-    },
-  },
-
   // CONTENT SECTIONS
   {
     label: "FAQ Section - Expandable questions",
@@ -967,7 +574,6 @@ export const sectionsExamples: { label: string; description: string; example: Se
         padding: "6rem",
         gap: "3rem",
         alignItems: "items-center",
-        maxWidth: "max-w-screen-lg",
       },
       bricks: [
         {
@@ -975,8 +581,7 @@ export const sectionsExamples: { label: string; description: string; example: Se
           type: "text",
           label: "FAQ header",
           props: {
-            content:
-              "<h2>Frequently Asked Questions</h2><p>Got questions? We've got answers.</p>",
+            content: "<h2>Frequently Asked Questions</h2><p>Got questions? We've got answers.</p>",
           },
         },
         {
@@ -1014,79 +619,6 @@ export const sectionsExamples: { label: string; description: string; example: Se
             colorPreset: { color: "white" },
             rounding: "rounded-lg",
             shadow: "shadow-lg",
-          },
-        },
-      ],
-    },
-  },
-
-  // CALL-TO-ACTION SECTIONS
-  {
-    label: "Newsletter Signup - Email capture with incentive",
-    description: `Newsletter subscription section with compelling copy and lead magnet.
-    Includes email form with clear value proposition and privacy assurance.`,
-    example: {
-      id: "newsletter-cta",
-      label: "Newsletter CTA",
-      order: 10,
-      props: {
-        direction: "flex-col",
-        padding: "6rem",
-        gap: "3rem",
-        colorPreset: {
-          color: "primary-500",
-          gradientDirection: "bg-gradient-to-r",
-        },
-        alignItems: "items-center",
-      },
-      bricks: [
-        {
-          id: "newsletter-content",
-          type: "box",
-          label: "Newsletter content",
-          props: {
-            direction: "flex-col",
-            gap: "2rem",
-            alignItems: "items-center",
-            maxWidth: "max-w-2xl",
-            $children: [
-              {
-                id: "newsletter-header",
-                type: "text",
-                props: {
-                  content:
-                    "<h2>Stay Ahead of the Curve</h2><p>Get weekly insights, product updates, and exclusive content delivered to your inbox. Join 25,000+ subscribers.</p>",
-                },
-              },
-              {
-                id: "newsletter-form",
-                type: "form",
-                props: {
-                  fields: [
-                    {
-                      name: "email",
-                      label: "Email Address",
-                      type: "email",
-                      required: true,
-                      placeholder: "Enter your email address",
-                    },
-                  ],
-                  submitLabel: "Subscribe Now",
-                  colorPreset: { color: "white" },
-                  rounding: "rounded-lg",
-                  padding: "2rem",
-                  shadow: "shadow-lg",
-                },
-              },
-              {
-                id: "newsletter-privacy",
-                type: "text",
-                props: {
-                  content:
-                    "<p>We respect your privacy. Unsubscribe at any time. No spam, ever.</p>",
-                },
-              },
-            ],
           },
         },
       ],
