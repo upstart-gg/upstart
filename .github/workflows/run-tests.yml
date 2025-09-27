@@ -90,4 +90,4 @@ jobs:
 
       - name: publish snapshot
         if: ${{ github.event_name == 'pull_request' }}
-        run: pnpx pkg-pr-new publish './packages/components' './packages/sdk' './packages/style-system' --no-template --compact --pnpm
+        run: pnpx pkg-pr-new publish './packages/components' './packages/sdk' './packages/style-system' --no-template --pnpm
