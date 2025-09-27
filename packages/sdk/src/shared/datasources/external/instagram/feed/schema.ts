@@ -1,4 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
+import { StringEnum } from "../../../../utils/string-enum";
 
 export const instagramFeedSchema = Type.Object({
   data: Type.Array(
@@ -8,7 +9,7 @@ export const instagramFeedSchema = Type.Object({
       timestamp: Type.String(),
       media_url: Type.String(),
       permalink: Type.String(),
-      media_type: Type.Union([Type.Literal("IMAGE"), Type.Literal("VIDEO"), Type.Literal("CAROUSEL_ALBUM")]),
+      media_type: StringEnum(["IMAGE", "VIDEO", "CAROUSEL_ALBUM"]),
     }),
   ),
   paging: Type.Object({

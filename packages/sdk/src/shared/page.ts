@@ -18,7 +18,15 @@ export const pageSchema = Type.Object({
 });
 
 export type Page = Static<typeof pageSchema>;
-export type VersionedPage = Page & { version: string };
+
+export const versionedPageSchema = Type.Composite([
+  pageSchema,
+  Type.Object({
+    version: Type.String(),
+  }),
+]);
+
+export type VersionedPage = Static<typeof versionedPageSchema>;
 
 /**
  * Page context represents the page config PLUS:

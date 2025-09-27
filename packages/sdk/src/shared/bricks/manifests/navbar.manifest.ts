@@ -12,6 +12,7 @@ import { colorPresetRef } from "../props/color-preset";
 import { tagsRef } from "../props/tags";
 import { toLLMSchema } from "~/shared/utils/llm";
 import type { BrickExample } from "./_types";
+import { StringEnum } from "~/shared/utils/string-enum";
 
 export const manifest = defineBrickManifest({
   type: "navbar",
@@ -110,14 +111,12 @@ export const manifest = defineBrickManifest({
         ),
       ),
       linksPosition: Type.Optional(
-        Type.Union(
-          [
-            Type.Literal("left", { title: "Left" }),
-            Type.Literal("center", { title: "Center" }),
-            Type.Literal("right", { title: "Right" }),
-          ],
-          { title: "Links position", default: "right", "ui:responsive": "desktop" },
-        ),
+        StringEnum(["left", "center", "right"], {
+          enumNames: ["Left", "Center", "Right"],
+          title: "Links position",
+          default: "right",
+          "ui:responsive": "desktop",
+        }),
       ),
       shadow: Type.Optional(shadowRef()),
     },

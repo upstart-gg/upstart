@@ -1,4 +1,4 @@
-import { type Static, Type, type UnsafeOptions } from "@sinclair/typebox";
+import { Type, type UnsafeOptions } from "@sinclair/typebox";
 
 export type StringEnumOptions = Partial<UnsafeOptions> & {
   enumNames?: string[];

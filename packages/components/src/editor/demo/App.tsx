@@ -16,7 +16,13 @@ export default function App({ path, config }: { path: string; config: SiteAndPag
   const pageId = (config.pages.find((page) => page.id === p) ?? config.pages[0]).id;
   return (
     <ClientOnly>
-      <InnerEditor config={config} pageId={pageId} pageVersion="dummy-version">
+      <InnerEditor
+        site={config.site}
+        chatSession={{ id: "dummy", messages: [] }}
+        pages={config.pages}
+        pageId={pageId}
+        pageVersion="dummy-version"
+      >
         <Editor />
       </InnerEditor>
     </ClientOnly>

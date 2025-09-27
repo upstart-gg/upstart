@@ -19,8 +19,6 @@ import type {
 import type { Datarecord, InternalDatarecord } from "../datarecords/types";
 import type { InternalDatasource } from "../datasources/types";
 import type { ImageSearchResultsType } from "../images";
-import type { NavbarProps } from "../bricks/manifests/navbar.manifest";
-import type { FooterProps } from "../bricks/manifests/footer.manifest";
 import type { Site } from "../site";
 // ... import your tool and data part types
 
@@ -213,8 +211,9 @@ export type Tools = {
 };
 
 type Metadata = {
-  creditsUsed: number;
-  userLanguage: string; // ISO code of the user's language, e.g. "en", "fr", "es"
+  init?: boolean;
+  creditsUsed?: number;
+  userLanguage?: string; // ISO code of the user's language, e.g. "en", "fr", "es"
 };
 
 // For now, let's keep it simple

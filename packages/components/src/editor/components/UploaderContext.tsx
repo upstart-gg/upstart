@@ -12,7 +12,7 @@ const UploaderContext = createContext<UploaderContextType>({
 });
 
 // Props type for the provider
-type UploaderProviderProps = PropsWithChildren<UploaderContextType>;
+export type UploaderProviderProps = PropsWithChildren<UploaderContextType>;
 
 export const UploaderProvider = ({ children, onImageUpload }: UploaderProviderProps) => {
   return <UploaderContext.Provider value={{ onImageUpload }}>{children}</UploaderContext.Provider>;
