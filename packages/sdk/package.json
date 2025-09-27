@@ -23,7 +23,7 @@
   },
     "repository": {
     "type": "git",
-    "url": "git+https://github.com/upstart-gg/upstart.git",
+    "url": "https://github.com/upstart-gg/upstart.git",
     "directory": "packages/sdk"
   },
   "keywords": ["upstart", "website-builder", "builder", "ai", "react", "headless cms", "no-code", "low-code"],

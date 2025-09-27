@@ -16,9 +16,9 @@
       "import": "./dist/*.js"
     }
   },
-    "repository": {
+  "repository": {
     "type": "git",
-    "url": "git+https://github.com/upstart-gg/upstart.git",
+    "url": "https://github.com/upstart-gg/upstart.git",
     "directory": "packages/style-system"
   },
   "keywords": ["twind", "css", "react", "design-system", "upstart"],
