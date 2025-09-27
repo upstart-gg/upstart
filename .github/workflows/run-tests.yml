@@ -48,6 +48,8 @@ permissions:
 env:
   FLIPPABLE_ENV: test
   TURBO_SCM_BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM}}
 
 jobs:
   test:
@@ -79,9 +81,6 @@ jobs:
 
       - name: build
         run: pnpm build
-        env:
-          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-          TURBO_TEAM: ${{ vars.TURBO_TEAM}}
 
       - name: lint
         run: pnpm ci:lint
