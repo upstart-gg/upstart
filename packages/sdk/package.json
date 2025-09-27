@@ -21,7 +21,11 @@
       "import": "./dist/shared/*.js"
     }
   },
-  "repository": "github:upstart-gg/upstart",
+    "repository": {
+    "type": "git",
+    "url": "git+https://github.com/upstart-gg/upstart.git",
+    "directory": "packages/sdk"
+  },
   "keywords": ["upstart", "website-builder", "builder", "ai", "react", "headless cms", "no-code", "low-code"],
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "14.2.0",

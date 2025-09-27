@@ -43,7 +43,11 @@
   "sideEffects": [
     "**/*.css"
   ],
-  "repository": "github:upstart-gg/upstart",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/upstart-gg/upstart.git",
+    "directory": "packages/components"
+  },
   "dependencies": {
     "@ai-sdk/react": "2.0.39",
     "@cloudflare/cabidela": "0.2.4",
