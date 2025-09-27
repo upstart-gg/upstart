@@ -1,4 +1,4 @@
-name: Run tests
+name: Run tests & publish snapshot
 
 on:
   workflow_call:
@@ -89,6 +89,6 @@ jobs:
       - name: test
         run: pnpm test
 
-      - name: publish temp snapshot
+      - name: publish snapshot
         if: ${{ github.event_name == 'pull_request' }}
-        run: pnpx pkg-pr-new publish './packages/components' './packages/sdk' './packages/style-system' --pnpm
+        run: pnpx pkg-pr-new publish './packages/components' './packages/sdk' './packages/style-system' --no-template --compact --pnpm
