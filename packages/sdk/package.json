@@ -21,6 +21,8 @@
       "import": "./dist/shared/*.js"
     }
   },
+  "repository": "github:upstart-gg/upstart",
+  "keywords": ["upstart", "website-builder", "builder", "ai", "react", "headless cms", "no-code", "low-code"],
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "14.2.0",
     "@cloudflare/cabidela": "0.2.4",

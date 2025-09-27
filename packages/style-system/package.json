@@ -16,7 +16,8 @@
       "import": "./dist/*.js"
     }
   },
-  "keywords": [],
+  "repository": "github:upstart-gg/upstart",
+  "keywords": ["twind", "css", "react", "design-system", "upstart"],
   "author": "Matthias Etienne",
   "license": "AGPL-3.0-only",
   "dependencies": {

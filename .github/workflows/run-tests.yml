@@ -11,32 +11,32 @@ on:
       - "!.changeset/**"
       - "!.vscode/**"
       - "!docs/**"
-      - '**/*.html'
-      - '**/*.js'
-      - '**/*.ts'
-      - '**/*.jsx'
-      - '**/*.tsx'
-      - '**/*.mjs'
-      - '**/*.mts'
-      - '**/*.yml'
-      - '**/*.yaml'
-      - '**/*.json'
+      - "**/*.html"
+      - "**/*.js"
+      - "**/*.ts"
+      - "**/*.jsx"
+      - "**/*.tsx"
+      - "**/*.mjs"
+      - "**/*.mts"
+      - "**/*.yml"
+      - "**/*.yaml"
+      - "**/*.json"
   pull_request:
     branches: [main]
     paths:
       - "!.changeset/**"
       - "!.vscode/**"
       - "!docs/**"
-      - '**/*.html'
-      - '**/*.js'
-      - '**/*.ts'
-      - '**/*.jsx'
-      - '**/*.tsx'
-      - '**/*.mjs'
-      - '**/*.mts'
-      - '**/*.yml'
-      - '**/*.yaml'
-      - '**/*.json'
+      - "**/*.html"
+      - "**/*.js"
+      - "**/*.ts"
+      - "**/*.jsx"
+      - "**/*.tsx"
+      - "**/*.mjs"
+      - "**/*.mts"
+      - "**/*.yml"
+      - "**/*.yaml"
+      - "**/*.json"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -71,12 +71,11 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.tool-versions'
-          cache: 'pnpm'
+          node-version-file: ".tool-versions"
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install
-
 
       - name: build
         run: pnpm build
@@ -90,3 +89,6 @@ jobs:
       - name: test
         run: pnpm test
 
+      - name: publish temp snapshot
+        if: ${{ github.event_name == 'pull_request' }}
+        run: pnpx pkg-pr-new publish './packages/components' './packages/sdk' './packages/style-system' --pnpm
