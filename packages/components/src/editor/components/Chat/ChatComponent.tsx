@@ -4,7 +4,7 @@ import { defineDataRecord } from "@upstart.gg/sdk/shared/datarecords";
 import { defineDatasource } from "@upstart.gg/sdk/shared/datasources";
 import { Spinner, toast } from "@upstart.gg/style-system/system";
 import { css, tx } from "@upstart.gg/style-system/twind";
-import { type ChatOnToolCallCallback, DefaultChatTransport, type ToolUIPart } from "ai";
+import { type ChatOnToolCallCallback, createIdGenerator, DefaultChatTransport, type ToolUIPart } from "ai";
 import { AnimatePresence, motion } from "motion/react";
 import { type FormEvent, lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useDeepCompareEffect } from "use-deep-compare";
@@ -151,8 +151,8 @@ export default function Chat() {
     console.log("Tool call: %s: ", toolCall.toolName, toolCall);
   };
 
-  const { messages, sendMessage, error, status, regenerate, stop, addToolResult, setMessages } =
-    useChat<UpstartUIMessage>({
+  const { messages, sendMessage, error, status, regenerate, stop, addToolResult } = useChat<UpstartUIMessage>(
+    {
       id: chatSession.id,
       // resume: generationState.isReady === false,
       transport: new DefaultChatTransport({
@@ -190,21 +190,17 @@ export default function Chat() {
         },
       }),
       messages: chatSession.messages,
-      // generateId: createIdGenerator({
-      //   prefix: "ups",
-      //   separator: "_",
-      //   size: 16,
-      // }),
+      generateId: createIdGenerator({
+        prefix: "user",
+        separator: "_",
+        size: 28,
+      }),
       onError: (error) => {
         console.error("ERROR", error);
       },
-      // sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
-      // id: `chat-${site.id}`,
-      /**
-       * For tools that should be called client-side
-       */
       onToolCall,
-    });
+    },
+  );
   const messagesListRef = useRef<HTMLDivElement>(null);
 
   const onSubmit = (e: Event | FormEvent) => {
@@ -234,8 +230,6 @@ export default function Chat() {
       }
     }
   }, [messages, userLanguage]);
-
-  // console.log({ messages });
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -341,27 +335,10 @@ export default function Chat() {
           break;
         }
 
-        case "tool-setSiteAttributes": {
+        case "tool-editSiteAttributes": {
           const siteAttributes = toolInvocation.output;
           console.log("Generated site attributes", siteAttributes);
           draftHelpers.updateSiteAttributes(siteAttributes);
-          break;
-        }
-        // }
-
-        // case "tool-createSiteAttributes": {
-        //   const siteAttributes = toolInvocation.output;
-        //   console.log("Generated site attributes", siteAttributes);
-        //   draftHelpers.updateSiteAttributes(siteAttributes);
-        //   break;
-        // }
-
-        case "tool-createSiteQueries": {
-          const queries = toolInvocation.output;
-          console.log("Generated site queries", queries);
-          draftHelpers.updateSiteAttributes({
-            queries: [...(site.attributes.queries ?? []), ...queries],
-          });
           break;
         }
 
@@ -371,44 +348,6 @@ export default function Chat() {
           draftHelpers.setSiteLabel(label);
           break;
         }
-
-        // case "tool-createSiteQueries": {
-        //   const queries = toolInvocation.output;
-        //   console.log("Edited site queries", queries);
-        //   draftHelpers.updateSiteAttributes({
-        //     queries: [...(site.attributes.queries ?? []), ...queries],
-        //   });
-        //   break;
-        // }
-
-        // case "tool-editSiteQueries": {
-        //   const queries = toolInvocation.output;
-        //   console.log("Edited site queries", queries);
-        //   draftHelpers.updateSiteAttributes({
-        //     queries: [...(site.attributes.queries ?? []), ...queries],
-        //   });
-        //   break;
-        // }
-
-        case "tool-createPageQueries": {
-          const queries = toolInvocation.output;
-          console.log("Generated page queries", queries);
-          draftHelpers.updatePageAttributes({
-            ...page.attributes,
-            queries: [...(page.attributes.queries ?? []), ...queries],
-          });
-          break;
-        }
-
-        // case "tool-editPageQueries": {
-        //   const queries = toolInvocation.output;
-        //   console.log("Edited page queries", queries);
-        //   draftHelpers.updatePageAttributes({
-        //     ...page.attributes,
-        //     queries: [...(page.attributes.queries ?? []), ...queries],
-        //   });
-        //   break;
-        // }
 
         case "tool-createSection": {
           const section = toolInvocation.output;

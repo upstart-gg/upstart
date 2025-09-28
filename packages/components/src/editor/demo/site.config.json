@@ -32,14 +32,7 @@
         "id": "_default_",
         "label": "Home",
         "path": "/",
-        "attributes": {
-          "title": "Home",
-          "colorPreset": { "color": "base-100" },
-          "path": "/",
-          "description": "The main landing page",
-          "keywords": "home,landing,welcome",
-          "tags": ["navbar", "home"]
-        }
+        "tags": ["navbar", "home"]
       },
       {
         "id": "_page_2",
@@ -739,6 +732,7 @@
         "robotsIndexing": true,
         "path": "/blog/:slug",
         "title": "Untitled",
+        "tags": [],
         "description": "",
         "keywords": "",
         "queries": [
@@ -935,6 +929,7 @@
         "colorPreset": { "color": "base-100" },
         "robotsIndexing": true,
         "path": "/",
+        "tags": [],
         "title": "Untitled",
         "description": "",
         "keywords": ""

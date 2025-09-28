@@ -15,7 +15,7 @@ export default function Navbar({ brick, editable }: BrickProps<Manifest>) {
   const pages = useSitemap();
   const navItems: { urlOrPageId: string; label?: string }[] =
     pages
-      .filter((p) => intersection(p.attributes.tags, props.linksTagsFilter ?? []).length > 0)
+      .filter((p) => intersection(p.tags, props.linksTagsFilter ?? []).length > 0)
       .map((p) => ({
         urlOrPageId: p.id,
         label: p.label,
@@ -23,7 +23,7 @@ export default function Navbar({ brick, editable }: BrickProps<Manifest>) {
 
   const allItems = uniqBy(
     [...navItems, ...(props.staticNavItems ?? [])].map((item) => {
-      const href = pages.find((p) => p.id === item.urlOrPageId)?.attributes.path ?? item.urlOrPageId;
+      const href = pages.find((p) => p.id === item.urlOrPageId)?.path ?? item.urlOrPageId;
       return {
         href,
         label: item.label as string,

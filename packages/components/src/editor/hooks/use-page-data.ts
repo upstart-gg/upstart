@@ -227,7 +227,7 @@ export const createDraftStore = (
               // Add to sitemap if not already present
               const existing = state.site.sitemap.find((p) => p.id === page.id);
               if (!existing) {
-                state.site.sitemap.push(page);
+                state.site.sitemap.push({ ...page, path: page.attributes.path, tags: page.attributes.tags });
               }
 
               state.brickMap = buildBrickMap(state.page.sections);

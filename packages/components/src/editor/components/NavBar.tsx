@@ -147,7 +147,7 @@ export default function NavBar() {
               ? pages.map((p) => ({
                   label: p.label,
                   type: "checkbox" as const,
-                  checked: page.id === p.id || page.attributes.path === p.attributes.path,
+                  checked: page.id === p.id || page.attributes.path === p.path,
                   onClick: () => {
                     const currentURL = new URL(window.location.href);
                     currentURL.searchParams.set("p", p.id);

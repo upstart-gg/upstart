@@ -238,7 +238,7 @@ export const sectionProps = Type.Object(
       cssLengthRef({
         title: "Gap",
         description: "The gap between the bricks in the section.",
-        default: "20px",
+        default: "2rem",
         "ui:styleId": "styles:gap",
       }),
     ),
