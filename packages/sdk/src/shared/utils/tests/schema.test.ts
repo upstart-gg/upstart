@@ -5,8 +5,12 @@ import { inlineSchemaRefs, toLLMSchema } from "../llm";
 import { sitemapSchema } from "~/shared/sitemap";
 import type { Manifest } from "~/shared/bricks/manifests/text.manifest";
 import { registerSchema, unregisterSchema } from "~/shared/utils/schema-registry";
-import { makeFullBrickSchemaForLLM, type Section, sectionSchema, sectionSchemaLLM } from "~/shared/bricks";
+import { makeFullBrickSchemaForLLM, type Section, sectionSchema } from "~/shared/bricks";
 import type { BrickProps } from "~/shared/bricks/props/types";
+import { type Datarecord, genericDatarecord } from "~/shared/datarecords/types";
+import siteConfigDemo from "../../../../../components/src/editor/demo/site.config.json" with { type: "json" };
+import { versionedPageSchema } from "~/shared/page";
+import { Site, type SiteAndPagesConfig } from "~/shared/site";
 
 describe("resolveSchema tests suite", () => {
   beforeEach(() => {
@@ -720,18 +724,18 @@ describe("inlineSchemaRefs", () => {
 describe("toLLMSchema consistency", () => {
   test("toLLMSchema(sectionSchema) should equal sectionSchemaLLM", () => {
     const transformed = toLLMSchema(sectionSchema);
-    expect(transformed).toEqual(sectionSchemaLLM);
 
     expect(transformed.$defs.presets_color).toBeDefined();
     expect(transformed.$defs.presets_color.type).toBe("object");
 
-    expect(sectionSchemaLLM.$defs.presets_color).toBeDefined();
-    expect(sectionSchemaLLM.$defs.presets_color.type).toBe("object");
+    expect(transformed.$defs.presets_color).toBeDefined();
+    expect(transformed.$defs.presets_color.type).toBe("object");
   });
 });
 
 describe("validation with validate()", () => {
   test("should validate correct schema", () => {
+    const sectionSchemaLLM = toLLMSchema(sectionSchema);
     expect(sectionSchemaLLM.$defs.presets_color).toBeDefined();
     expect(sectionSchemaLLM.$defs.presets_color.type).toBe("object");
     const validSectionExample: Section = {
@@ -761,6 +765,46 @@ describe("validation with validate()", () => {
       },
     };
     expect(() => validate(schema, example)).not.toThrow();
+  });
+
+  test("should validate unions of literals", () => {
+    const schema = genericDatarecord;
+    const example: Datarecord = {
+      id: "newsletter_subscriptions",
+      provider: "internal",
+      label: "Newsletter Subscriptions",
+      description: "Stores newsletter subscription entries",
+      schema: {
+        type: "object",
+        properties: {
+          firstname: { type: "string", title: "Firstname" },
+        },
+        required: ["email"],
+        title: "Newsletter Subscription",
+      },
+    };
+    expect(() => validate(schema, example)).not.toThrow();
+    expect(() => validate(toLLMSchema(schema), example)).not.toThrow();
+
+    const arrayOfDatarecords: Datarecord[] = [
+      example,
+      {
+        id: "user_profiles",
+        provider: "airtable",
+        label: "User Profiles",
+        schema: {
+          type: "object",
+          properties: {
+            username: { type: "string", title: "Username" },
+            bio: { type: "string", title: "Bio" },
+          },
+          required: ["username"],
+          title: "User Profile",
+        },
+      },
+    ];
+    expect(() => validate(Type.Array(schema), arrayOfDatarecords)).not.toThrow();
+    expect(() => validate(toLLMSchema(Type.Array(schema)), arrayOfDatarecords)).not.toThrow();
   });
 
   test("should validate a brick with partial mobileProps", () => {

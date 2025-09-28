@@ -78,6 +78,7 @@ export interface DraftState extends DraftStateProps {
   validatePreviewTheme: (accept: boolean) => void;
   cancelPreviewTheme: () => void;
   updatePageAttributes: (attr: Partial<PageAttributes>) => void;
+  updatePage: (pageData: Partial<VersionedPage>) => void;
   deletePageAttribute: (key: string) => void;
   updateSiteAttributes: (attr: Partial<SiteAttributes>) => void;
   deleteSiteAttribute: (key: string) => void;
@@ -141,6 +142,18 @@ export const createDraftStore = (
           addAdditionalAssets: (assets) =>
             set((state) => {
               state.additionalAssets.push(...assets);
+            }),
+
+          updatePage: (pageData) =>
+            set((state) => {
+              const editedPage = merge({}, { ...state.page, ...pageData });
+              state.page = editedPage;
+              state.site.sitemap = state.site.sitemap.map((p) =>
+                p.id === editedPage.id
+                  ? { ...editedPage, path: editedPage.attributes.path, tags: editedPage.attributes.tags }
+                  : p,
+              );
+              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           setSitePrompt: (prompt) =>
@@ -229,7 +242,6 @@ export const createDraftStore = (
               if (!existing) {
                 state.site.sitemap.push({ ...page, path: page.attributes.path, tags: page.attributes.tags });
               }
-
               state.brickMap = buildBrickMap(state.page.sections);
             }),
 
@@ -1228,6 +1240,7 @@ export const useDraftHelpers = () => {
     detachBrickFromContainer: state.detachBrickFromContainer,
     updateSiteAttributes: state.updateSiteAttributes,
     updatePageAttributes: state.updatePageAttributes,
+    updatePage: state.updatePage,
     upsertQuery: state.upsertQuery,
     setSections: state.setSections,
     addThemes: state.addThemes,

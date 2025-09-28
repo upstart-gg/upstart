@@ -32,10 +32,6 @@ export type Tools = {
     input: ToolInputWaitingMessageType & { prompt: string; count: number; aspectRatio: string };
     output: ImageSearchResultsType;
   };
-  getCurrentSite: {
-    input: unknown;
-    output: Site;
-  };
   listThemes: {
     input: unknown;
     output: Theme[];
@@ -68,10 +64,10 @@ export type Tools = {
     input: unknown;
     output: Theme; // Theme or message if no theme applied yet
   };
-  createSitemap: {
-    input: ToolInputWaitingMessageType & ToolInputInstructionsType;
-    output: Sitemap;
-  };
+  // createSitemap: {
+  //   input: ToolInputWaitingMessageType & ToolInputInstructionsType;
+  //   output: Sitemap;
+  // };
   createPage: {
     input: Pick<Page, "id" | "label"> &
       Pick<PageAttributes, "path"> &
@@ -92,11 +88,6 @@ export type Tools = {
   setSiteLabel: {
     input: { label: string };
     output: string;
-  };
-
-  listPages: {
-    input: unknown;
-    output: Sitemap;
   };
   getCurrentPage: {
     input: unknown;

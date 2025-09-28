@@ -36,6 +36,7 @@ export const pageAttributesSchema = Type.Object(
       "ui:field": "tags",
       examples: [["navbar", "important"], ["navbar", "sidebar"], ["sidebar"], ["campaign-landing-20250610"]],
       maxItems: 8,
+      default: [],
     }),
     path: string("URL path", {
       default: "/",
@@ -52,6 +53,7 @@ export const pageAttributesSchema = Type.Object(
       "ai:instructions": "Reference Query IDs to use at the page level.",
       "ui:field": "page-queries",
       maxItems: 8,
+      default: [],
     }),
     title: Type.String({
       title: "Title",

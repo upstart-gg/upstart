@@ -286,7 +286,14 @@ export default function Chat() {
         case "tool-createPage": {
           const page = toolInvocation.output;
           console.log("Generated page", page);
-          draftHelpers.addPage({ ...page, version: crypto.randomUUID(), sections: [] });
+          draftHelpers.addPage({ ...page, sections: [] });
+          break;
+        }
+
+        case "tool-editPage": {
+          const page = toolInvocation.output;
+          console.log("Edited page", page);
+          draftHelpers.updatePage(page);
           break;
         }
 
@@ -328,12 +335,12 @@ export default function Chat() {
           break;
         }
 
-        case "tool-createSitemap": {
-          const sitemap = toolInvocation.output;
-          console.log("Generated sitemap", sitemap);
-          draftHelpers.setSitemap(sitemap);
-          break;
-        }
+        // case "tool-createSitemap": {
+        //   const sitemap = toolInvocation.output;
+        //   console.log("Generated sitemap", sitemap);
+        //   draftHelpers.setSitemap(sitemap);
+        //   break;
+        // }
 
         case "tool-editSiteAttributes": {
           const siteAttributes = toolInvocation.output;
@@ -394,11 +401,6 @@ export default function Chat() {
           draftHelpers.setSitePrompt(prompt);
           break;
         }
-
-        // case "tool-editBrick": {
-        //   draftHelpers.updateBrickProps(toolInvocation.input.id, toolInvocation.output.props);
-        //   break;
-        // }
 
         case "tool-deleteBrick": {
           const { id } = toolInvocation.input;

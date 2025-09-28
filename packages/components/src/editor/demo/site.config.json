@@ -98,7 +98,12 @@
           "label": "Get employee by ID",
           "datasourceId": "employees",
           "limit": 1,
-          "parameters": ["$id"]
+          "parameters": [
+            {
+              "field": "$id",
+              "op": "eq"
+            }
+          ]
         }
       ]
     },
