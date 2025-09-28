@@ -69,9 +69,6 @@ importers:
       '@ai-sdk/react':
         specifier: 2.0.39
         version: 2.0.39(react@19.1.1)(zod@4.1.5)
-      '@cloudflare/cabidela':
-        specifier: 0.2.4
-        version: 0.2.4
       '@date-fns/utc':
         specifier: 1.2.0
         version: 1.2.0
@@ -313,9 +310,6 @@ importers:
       '@apidevtools/json-schema-ref-parser':
         specifier: 14.2.0
         version: 14.2.0(@types/json-schema@7.0.15)
-      '@cloudflare/cabidela':
-        specifier: 0.2.4
-        version: 0.2.4
       '@date-fns/utc':
         specifier: 1.2.0
         version: 1.2.0
@@ -830,9 +824,6 @@ packages:
 
   '@changesets/write@0.4.0':
     resolution: {integrity: sha512-CdTLvIOPiCNuH71pyDu3rA+Q0n65cmAbXnwWH84rKGiFumFzkmHNT8KHTMEchcxN+Kl8I54xGUhJ7l3E7X396Q==}
-
-  '@cloudflare/cabidela@0.2.4':
-    resolution: {integrity: sha512-u/1OwwqfcMvjmUFOcb6QtFzVVGpncHJxwl254wjzp0JC5CUlBkV6r5BbRrHI5ZYJEAgu8NeeorirxngmMFPZjQ==}
 
   '@cloudflare/workers-types@4.20240806.0':
     resolution: {integrity: sha512-8lvgrwXGTZEBsUQJ8YUnMk72Anh9omwr6fqWLw/EwVgcw1nQxs/bfdadBEbdP48l9fWXjE4E5XERLUrrFuEpsg==}
@@ -6996,8 +6987,6 @@ snapshots:
       fs-extra: 7.0.1
       human-id: 4.1.1
       prettier: 2.8.8
-
-  '@cloudflare/cabidela@0.2.4': {}
 
   '@cloudflare/workers-types@4.20240806.0': {}
 
