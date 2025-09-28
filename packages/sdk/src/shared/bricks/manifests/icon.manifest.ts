@@ -1,12 +1,11 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
 import { PiConfetti } from "react-icons/pi";
-import { iconRef, urlOrPageIdRef } from "../props/string";
-import type { BrickProps } from "../props/types";
+import { icon, urlOrPageId } from "../props/string";
 import { Type } from "@sinclair/typebox";
-import { cssLengthRef } from "../props/css-length";
-import { colorRef } from "../props/color";
-import { loopRef } from "../props/dynamic";
+import { cssLength } from "../props/css-length";
+import { color } from "../props/color";
+import { loop } from "../props/dynamic";
 import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
@@ -63,11 +62,11 @@ AVOID:
   icon: PiConfetti,
   props: defineProps(
     {
-      icon: iconRef({
+      icon: icon({
         default: "mdi:heart",
       }),
       size: Type.Optional(
-        cssLengthRef({
+        cssLength({
           title: "Size",
           description: "The size of the icon. Can be a CSS length value (e.g. '2em', '24px')",
           default: "1em",
@@ -76,14 +75,14 @@ AVOID:
         }),
       ),
       color: Type.Optional(
-        colorRef({
+        color({
           title: "Color",
           default: "currentColor",
           "ui:hide-color-label": true,
         }),
       ),
-      link: Type.Optional(urlOrPageIdRef({ title: "Link" })),
-      loop: Type.Optional(loopRef()),
+      link: Type.Optional(urlOrPageId({ title: "Link" })),
+      loop: Type.Optional(loop()),
     },
     { noGrow: true },
   ),

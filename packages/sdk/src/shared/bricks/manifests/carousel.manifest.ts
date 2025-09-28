@@ -2,13 +2,11 @@ import { Type } from "@sinclair/typebox";
 import { TbCarouselHorizontal } from "react-icons/tb";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
-import { imageRef } from "../props/image";
-import { string } from "../props/string";
-import type { BrickProps } from "../props/types";
-import { roundingRef } from "../props/border";
-import { colorPresetRef } from "../props/color-preset";
-import { loopRef } from "../props/dynamic";
-import { cssLengthRef } from "../props/css-length";
+import { image } from "../props/image";
+import { rounding } from "../props/border";
+import { colorPreset } from "../props/color-preset";
+import { loop } from "../props/dynamic";
+import { cssLength } from "../props/css-length";
 import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
@@ -69,12 +67,12 @@ AVOID:
   icon: TbCarouselHorizontal,
   props: defineProps({
     colorPreset: Type.Optional(
-      colorPresetRef({
+      colorPreset({
         title: "Color",
       }),
     ),
     padding: Type.Optional(
-      cssLengthRef({
+      cssLength({
         default: "1rem",
         description: "Padding inside the carousel.",
         "ai:instructions": "Use only a single value like '1rem' or '10px'",
@@ -87,12 +85,12 @@ AVOID:
     images: Type.Optional(
       Type.Array(
         Type.Object({
-          src: imageRef({
+          src: image({
             "ui:responsive": "desktop",
             "ui:no-alt-text": true,
             "ui:no-object-options": true,
           }),
-          legend: string("Legend"),
+          legend: Type.String({ title: "Legend" }),
         }),
         {
           title: "Images",
@@ -105,11 +103,11 @@ AVOID:
       ),
     ),
     borderRadius: Type.Optional(
-      roundingRef({
+      rounding({
         default: "rounded-md",
       }),
     ),
-    loop: Type.Optional(loopRef()),
+    loop: Type.Optional(loop()),
   }),
 });
 

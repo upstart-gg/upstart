@@ -1,7 +1,6 @@
 import { type SchemaOptions, Type, type Static } from "@sinclair/typebox";
 import type { ElementColorType } from "~/shared/themes/color-system";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { typedRef } from "~/shared/utils/typed-ref";
 
 type BackgroundOptions = {
   title?: string;
@@ -53,10 +52,6 @@ export function background(opts: BackgroundOptions = {}) {
 
 export type BackgroundSettings = Static<ReturnType<typeof background>>;
 
-export function backgroundRef(options: SchemaOptions = {}) {
-  return typedRef("styles:background", options);
-}
-
 export function backgroundColor(options: SchemaOptions = {}) {
   return Type.String({
     title: "Background color",
@@ -73,7 +68,3 @@ export function backgroundColor(options: SchemaOptions = {}) {
 }
 
 export type BackgroundColorSettings = Static<ReturnType<typeof backgroundColor>>;
-
-export function backgroundColorRef(options: SchemaOptions = {}) {
-  return typedRef("styles:backgroundColor", options);
-}

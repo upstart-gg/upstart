@@ -1,16 +1,14 @@
 import { describe, expect, test, beforeEach } from "vitest";
 import { type Static, Type } from "@sinclair/typebox";
+import { Value } from "@sinclair/typebox/value";
 import { resolveSchema, validate } from "../schema";
-import { inlineSchemaRefs, toLLMSchema } from "../llm";
+import { toLLMSchema } from "../llm";
 import { sitemapSchema } from "~/shared/sitemap";
 import type { Manifest } from "~/shared/bricks/manifests/text.manifest";
 import { registerSchema, unregisterSchema } from "~/shared/utils/schema-registry";
 import { makeFullBrickSchemaForLLM, type Section, sectionSchema } from "~/shared/bricks";
 import type { BrickProps } from "~/shared/bricks/props/types";
 import { type Datarecord, genericDatarecord } from "~/shared/datarecords/types";
-import siteConfigDemo from "../../../../../components/src/editor/demo/site.config.json" with { type: "json" };
-import { versionedPageSchema } from "~/shared/page";
-import { Site, type SiteAndPagesConfig } from "~/shared/site";
 
 describe("resolveSchema tests suite", () => {
   beforeEach(() => {
@@ -644,62 +642,6 @@ describe("toLLMSchema tests suite", () => {
     expect(result.properties.profile.properties.internalId).toBeUndefined(); // Should be removed
   });
 
-  test("should handle ai:hidden in nested schemas", () => {
-    const schema = {
-      definitions: {
-        User: {
-          type: "object",
-          properties: {
-            name: {
-              type: "string",
-            },
-            password: {
-              type: "string",
-              "ai:hidden": true,
-            },
-          },
-        },
-      },
-      $defs: {
-        Settings: {
-          type: "object",
-          properties: {
-            theme: {
-              type: "string",
-            },
-            apiKey: {
-              type: "string",
-              "ai:hidden": true,
-            },
-          },
-        },
-      },
-      patternProperties: {
-        "^config_": {
-          type: "object",
-          properties: {
-            value: {
-              type: "string",
-            },
-            secret: {
-              type: "string",
-              "ai:hidden": true,
-            },
-          },
-        },
-      },
-    } as any;
-
-    const result = toLLMSchema(schema);
-
-    expect(result.definitions.User.properties.name).toBeDefined();
-    expect(result.definitions.User.properties.password).toBeUndefined();
-    expect(result.$defs.Settings.properties.theme).toBeDefined();
-    expect(result.$defs.Settings.properties.apiKey).toBeUndefined();
-    expect(result.patternProperties["^config_"].properties.value).toBeDefined();
-    expect(result.patternProperties["^config_"].properties.secret).toBeUndefined();
-  });
-
   test("test with existing Upstart schema", () => {
     const transformed = toLLMSchema(sitemapSchema);
     expect(transformed.items.properties.id.type).toEqual(sitemapSchema.items.properties.id.type);
@@ -712,32 +654,37 @@ describe("toLLMSchema tests suite", () => {
   });
 });
 
-describe("inlineSchemaRefs", () => {
-  test("should inline simple $ref schemas", () => {
-    const inlined = inlineSchemaRefs(sectionSchema);
-    expect(inlined.properties.props.properties.colorPreset.$ref).toEqual("#/$defs/presets_color");
-    expect(inlined.$defs.presets_color).toBeDefined();
-    expect(inlined.$defs.presets_color.type).toBe("object");
-  });
-});
-
 describe("toLLMSchema consistency", () => {
   test("toLLMSchema(sectionSchema) should equal sectionSchemaLLM", () => {
     const transformed = toLLMSchema(sectionSchema);
-
-    expect(transformed.$defs.presets_color).toBeDefined();
-    expect(transformed.$defs.presets_color.type).toBe("object");
-
-    expect(transformed.$defs.presets_color).toBeDefined();
-    expect(transformed.$defs.presets_color.type).toBe("object");
+    expect(transformed.properties.props.properties.colorPreset).toBeDefined();
+    expect(transformed.properties.props.properties.variant).not.toBeDefined();
   });
 });
 
 describe("validation with validate()", () => {
+  test("should validate correct schema with typebox", () => {
+    const sectionSchemaLLM = toLLMSchema(sectionSchema);
+    const validSectionExample: Section = {
+      id: "section1",
+      label: "Hero Section",
+      order: 1,
+      props: {
+        colorPreset: {
+          color: "primary-100",
+        },
+        maxWidth: "max-w-full",
+        verticalMargin: "28px",
+        direction: "flex-col",
+      },
+      bricks: [],
+    };
+    expect(() => validate(sectionSchema, validSectionExample), "Section schema").not.toThrow();
+    expect(() => validate(sectionSchemaLLM, validSectionExample), "Section schema LLM").not.toThrow();
+  });
+
   test("should validate correct schema", () => {
     const sectionSchemaLLM = toLLMSchema(sectionSchema);
-    expect(sectionSchemaLLM.$defs.presets_color).toBeDefined();
-    expect(sectionSchemaLLM.$defs.presets_color.type).toBe("object");
     const validSectionExample: Section = {
       id: "section1",
       label: "Hero Section",
@@ -764,7 +711,7 @@ describe("validation with validate()", () => {
         content: "Hello, world!",
       },
     };
-    expect(() => validate(schema, example)).not.toThrow();
+    expect(() => validate(schema, example), `Brick without mobileProps`).not.toThrow();
   });
 
   test("should validate unions of literals", () => {

@@ -1,5 +1,4 @@
 import { type SchemaOptions, Type, type Static } from "@sinclair/typebox";
-import { typedRef } from "~/shared/utils/typed-ref";
 import { StringEnum, type StringEnumOptions } from "~/shared/utils/string-enum";
 
 export function shadow(options: StringEnumOptions = {}) {
@@ -19,10 +18,6 @@ export function shadow(options: StringEnumOptions = {}) {
 
 export type ShadowSettings = Static<ReturnType<typeof shadow>>;
 
-export function shadowRef(options: StringEnumOptions = {}) {
-  return typedRef("styles:shadow", options);
-}
-
 /**
  * This function is used in ajv and type ref translations, but should not be used directly in bricks
  */
@@ -41,10 +36,6 @@ export function textShadow(options: StringEnumOptions = {}) {
       ...options,
     },
   );
-}
-
-export function textShadowRef(options: SchemaOptions = {}) {
-  return typedRef("styles:textShadow", options);
 }
 
 export type TextShadowSettings = Static<ReturnType<typeof textShadow>>;

@@ -3,15 +3,14 @@ import type { JSONSchemaType } from "ajv";
 import { getSchemaDefaults } from "../shared/utils/schema";
 import { manifest as navbarManifest } from "./bricks/manifests/navbar.manifest";
 import { manifest as footerManifest } from "./bricks/manifests/footer.manifest";
-import { string } from "./bricks/props/string";
 import { boolean } from "./bricks/props/boolean";
 import { datetime } from "./bricks/props/date";
-import { imageRef } from "./bricks/props/image";
-import { colorPresetRef } from "./bricks/props/color-preset";
-import { queryUseRef, type QueryUseSettings } from "./bricks/props/dynamic";
+import { image } from "./bricks/props/image";
+import { colorPreset } from "./bricks/props/color-preset";
+import { queryUse, type QueryUseSettings } from "./bricks/props/dynamic";
 import { querySchema } from "./datasources/types";
 import { StringEnum } from "./utils/string-enum";
-import { backgroundRef } from "./bricks/props/background";
+import { background } from "./bricks/props/background";
 import { toLLMSchema } from "./utils/llm";
 
 export type { JSONSchemaType };
@@ -19,9 +18,9 @@ export type { JSONSchemaType };
 // Default attributes
 export const pageAttributesSchema = Type.Object(
   {
-    backgroundImage: Type.Optional(backgroundRef()),
+    backgroundImage: Type.Optional(background()),
     colorPreset: Type.Optional(
-      colorPresetRef({
+      colorPreset({
         examples: [
           { color: "base-100" },
           { color: "primary-500" },
@@ -38,7 +37,8 @@ export const pageAttributesSchema = Type.Object(
       maxItems: 8,
       default: [],
     }),
-    path: string("URL path", {
+    path: Type.String({
+      title: "URL path",
       default: "/",
       description: "The URL path of the page. Use placeholders like :id or :slug for dynamic paths.",
       "ai:instructions": "Never put language codes in the path.",
@@ -46,7 +46,7 @@ export const pageAttributesSchema = Type.Object(
       pattern: "^/[a-z0-9-:/]*$",
       examples: ["/", "/about", "/products/:id"],
     }),
-    queries: Type.Array(queryUseRef(), {
+    queries: Type.Array(queryUse(), {
       title: "Page Queries",
       description:
         "List of queries to use in this page. All listed queries will be executed when the page loads.",
@@ -84,7 +84,7 @@ export const pageAttributesSchema = Type.Object(
       "ui:placeholder": "keyword1, keyword2, keyword3",
     }),
     ogImage: Type.Optional(
-      imageRef({
+      image({
         title: "Social share image",
         description: "Image shown when this page is shared on social media",
         "ui:group": "meta",
@@ -216,7 +216,7 @@ export const pageAttributesSchema = Type.Object(
   },
 );
 
-export const pageQueriesSchema = Type.Array(queryUseRef(), {
+export const pageQueriesSchema = Type.Array(queryUse(), {
   title: "Page Queries",
   description: `List of page queries in use in this page. All listed queries will be executed when the page loads. Aliases must be unique and camelCase'd.
 The queryId must reference an existing site query ID.`,
@@ -291,9 +291,9 @@ export const siteAttributesSchema = Type.Object(
           "Choose a value based on the site description. If the site is in multiple languages, use 'en'.",
       },
     ),
-    backgroundImage: Type.Optional(backgroundRef()),
+    backgroundImage: Type.Optional(background()),
     colorPreset: Type.Optional(
-      colorPresetRef({
+      colorPreset({
         examples: [
           { color: "base-100" },
           { color: "primary-500" },
@@ -327,7 +327,7 @@ export const siteAttributesSchema = Type.Object(
       }),
     ),
     ogImage: Type.Optional(
-      imageRef({
+      image({
         title: "Social share image",
         description: "Image shown when this site is shared on social media",
         "ai:hidden": true,

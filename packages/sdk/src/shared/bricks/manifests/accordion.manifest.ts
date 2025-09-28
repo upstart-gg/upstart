@@ -4,11 +4,11 @@ import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
 import { boolean } from "../props/boolean";
 import { defineProps } from "../props/helpers";
-import { colorPresetRef } from "../props/color-preset";
-import { fontSizeRef, textContentRef } from "../props/text";
+import { colorPreset } from "../props/color-preset";
+import { fontSize, textContent } from "../props/text";
 import type { BrickProps } from "../props/types";
-import { loopRef } from "../props/dynamic";
-import { cssLengthRef } from "../props/css-length";
+import { loop } from "../props/dynamic";
+import { cssLength } from "../props/css-length";
 import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
@@ -19,7 +19,7 @@ export const manifest = defineBrickManifest({
 
 WHEN TO USE:
 - FAQ sections with questions and detailed answers
-- Product feature lists with expandable descriptions  
+- Product feature lists with expandable descriptions
 - Documentation sections with organized topics
 - Step-by-step processes or tutorials
 - Menu categories (restaurant, services, pricing tiers)
@@ -57,13 +57,13 @@ AVOID:
   props: defineProps({
     items: Type.Array(
       Type.Object({
-        title: textContentRef({
+        title: textContent({
           title: "Title",
           default: "My title",
           disableSizing: true,
           showInSettings: true,
         }),
-        content: textContentRef({ title: "Content", default: "Expandable content goes here" }),
+        content: textContent({ title: "Content", default: "Expandable content goes here" }),
         defaultOpen: Type.Optional(boolean("Open by default", false)),
       }),
       {
@@ -73,13 +73,13 @@ AVOID:
         },
       },
     ),
-    fontSize: Type.Optional(fontSizeRef({ default: "inherit" })),
+    fontSize: Type.Optional(fontSize({ default: "inherit" })),
     restrictOneOpen: boolean("Restrict to one open item", false, {
       description:
         "Restrict to one open item at a time. If false, multiple items can be open simultaneously.",
     }),
     gap: Type.Optional(
-      cssLengthRef({
+      cssLength({
         title: "Gap",
         description: "The gap between the accordion items.",
         default: "1px",
@@ -110,12 +110,12 @@ AVOID:
       ),
     ),
     colorPreset: Type.Optional(
-      colorPresetRef({
+      colorPreset({
         title: "Color",
         default: { color: "bg-primary-500 text-primary-500-content" },
       }),
     ),
-    loop: Type.Optional(loopRef()),
+    loop: Type.Optional(loop()),
   }),
 });
 

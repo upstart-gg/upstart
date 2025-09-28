@@ -1,8 +1,24 @@
 import { type TArray, type TObject, type TSchema, Kind, type Static } from "@sinclair/typebox";
+import { SetErrorFunction, DefaultErrorFunction, ValueErrorType, Errors } from "@sinclair/typebox/errors";
+import { Value } from "@sinclair/typebox/value";
 import type { PageAttributes } from "../attributes";
 import { schemaRegistry } from "./schema-registry";
-import { Cabidela } from "@cloudflare/cabidela";
 import { defaultsDeep as applyDefaultsDeep } from "lodash-es";
+
+SetErrorFunction((error) => {
+  if (error.errorType === ValueErrorType.Kind) {
+    if (
+      error.schema.type === "string" &&
+      typeof error.value === "string" &&
+      error.schema.enum &&
+      !error.schema.enum.includes(error.value)
+    ) {
+      return `Must include valid value: [${error.schema.enum.join(", ")}]`;
+    }
+  }
+
+  return DefaultErrorFunction(error);
+});
 
 export function normalizeSchemaEnum(schema: TSchema): Array<{ const: string; title: string }> {
   if (!("enum" in schema)) {
@@ -360,15 +376,26 @@ function resolveSchemaRecursive(schema: TSchema, visited: Set<string>): TSchema 
   return resolvedSchema as TSchema;
 }
 
-export function validate<T extends TSchema>(schema: TSchema, data: unknown): data is Static<T> {
-  const validator = new Cabidela(schema, {
-    fullErrors: true,
-  });
-  validator.validate(data);
+export function validate<T extends TSchema>(schema: TSchema, data: unknown): Static<T> {
+  try {
+    const valid = Value.Check(schema, data);
+    if (!valid) {
+      let finalError = "";
+      for (const error of Value.Errors(schema, data)) {
+        finalError += `Error at ${error.path} with value ${error.value}: ${error.message}\n`;
+      }
+      console.error("Validation errors:\n", finalError);
+      throw new Error(finalError);
+    }
+  } catch (e) {
+    console.error("Validation exception:", e);
+    console.dir(e, { depth: null });
+    throw e;
+  }
 
   // Mutate data with defaults
   const defaults = getSchemaDefaults(schema as TObject | TArray);
-  applyDefaultsDeep(data, defaults);
+  const finalObject = applyDefaultsDeep({}, data, defaults);
 
-  return true;
+  return finalObject as Static<T>;
 }

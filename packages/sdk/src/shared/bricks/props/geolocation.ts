@@ -1,6 +1,5 @@
 import { type ObjectOptions, Type, type Static } from "@sinclair/typebox";
 import { number } from "./number";
-import { string } from "./string";
 
 export function geolocation(opts: ObjectOptions & { defaultZoom?: number } = {}) {
   const { title = "Location", defaultZoom } = opts;
@@ -8,10 +7,11 @@ export function geolocation(opts: ObjectOptions & { defaultZoom?: number } = {})
     {
       lat: number("Latitude", { "ui:field": "hidden" }),
       lng: number("Longitude", { "ui:field": "hidden" }),
-      address: string("Address", {
+      address: Type.String({
+        title: "Address",
         "ui:field": "geoaddress",
       }),
-      tooltip: Type.Optional(string("Tooltip", {})),
+      tooltip: Type.Optional(Type.String({ title: "Tooltip" })),
       zoom: Type.Optional(
         number("Zoom", {
           description: "Zoom level for the map",

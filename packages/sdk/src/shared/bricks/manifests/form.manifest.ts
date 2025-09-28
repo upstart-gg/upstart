@@ -2,15 +2,13 @@ import { type Static, Type } from "@sinclair/typebox";
 import { FaWpforms } from "react-icons/fa6";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { borderRef, roundingRef } from "../props/border";
+import { border, rounding } from "../props/border";
 import { datarecord } from "../props/datarecord";
 import { defineProps, group } from "../props/helpers";
-import { string } from "../props/string";
-import type { BrickProps } from "../props/types";
-import { fontSizeRef } from "../props/text";
-import { colorPresetRef } from "../props/color-preset";
-import { directionRef } from "../props/direction";
-import { cssLengthRef } from "../props/css-length";
+import { fontSize } from "../props/text";
+import { colorPreset } from "../props/color-preset";
+import { direction } from "../props/direction";
+import { cssLength } from "../props/css-length";
 import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
@@ -65,13 +63,13 @@ DO
       "ui:responsive": "desktop",
     }),
     colorPreset: Type.Optional(
-      colorPresetRef({
+      colorPreset({
         title: "Color",
         default: "base-200",
       }),
     ),
     direction: Type.Optional(
-      directionRef({
+      direction({
         title: "Direction",
         description: "The direction of the form fields",
         default: "flex-col",
@@ -80,7 +78,7 @@ DO
       }),
     ),
     padding: Type.Optional(
-      cssLengthRef({
+      cssLength({
         default: "2rem",
         description: "Padding inside the form.",
         title: "Padding",
@@ -90,12 +88,12 @@ DO
       }),
     ),
     rounding: Type.Optional(
-      roundingRef({
+      rounding({
         default: "rounded-md",
       }),
     ),
-    border: Type.Optional(borderRef({})),
-    fontSize: Type.Optional(fontSizeRef({ default: "inherit", "ui:no-extra-large-sizes": true })),
+    border: Type.Optional(border({})),
+    fontSize: Type.Optional(fontSize({ default: "inherit", "ui:no-extra-large-sizes": true })),
     button: group({
       title: "Button",
       children: {
@@ -129,7 +127,7 @@ DO
             },
           }),
         ),
-        rounding: Type.Optional(roundingRef({ default: "rounded-md" })),
+        rounding: rounding({ default: "rounded-md" }),
       },
     }),
 
@@ -153,7 +151,8 @@ DO
       }),
     ),
     buttonLabel: Type.Optional(
-      string("Button Label", {
+      Type.String({
+        title: "Button label",
         default: "Submit",
         metadata: { category: "content" },
       }),

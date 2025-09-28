@@ -1,17 +1,17 @@
 import { Type, type Static, type TObject } from "@sinclair/typebox";
 import { customAlphabet } from "nanoid";
 import { brickTypes, defaultProps, manifests } from "./bricks/manifests/all-manifests";
-import { cssLengthRef } from "./bricks/props/css-length";
-import { colorPresetRef } from "./bricks/props/color-preset";
+import { cssLength } from "./bricks/props/css-length";
+import { colorPreset } from "./bricks/props/color-preset";
 import { mergeIgnoringArrays } from "./utils/merge";
 import { getSchemaDefaults } from "./utils/schema";
 import { StringEnum } from "./utils/string-enum";
-import { alignItemsRef, justifyContentRef } from "./bricks/props/align";
+import { alignItems, justifyContent } from "./bricks/props/align";
 import type { CommonBrickProps } from "./bricks/props/common";
-import { directionRef } from "./bricks/props/direction";
+import { direction } from "./bricks/props/direction";
 import type { PageAttributes, SiteAttributes } from "./attributes";
 import { toLLMSchema } from "./utils/llm";
-import { backgroundRef } from "./bricks/props/background";
+import { background } from "./bricks/props/background";
 
 /**
  * Generates a unique identifier for bricks.
@@ -138,7 +138,7 @@ export function makeFullBrickSchemaForLLM(type: string, otherTypes?: string[]) {
           description: "A unique identifier for the brick.",
         }),
         type: Type.Literal(type),
-        props: props,
+        props,
         mobileProps: Type.Optional(Type.Partial(manifests[type].props)),
       },
       // IMPORTANT: DO NOT set "additionalProperties" to `false` because it would break validation with Cabidela library
@@ -155,19 +155,17 @@ export type Brick = Omit<Static<typeof brickSchema>, "props" | "mobileProps"> & 
 export const sectionProps = Type.Object(
   {
     colorPreset: Type.Optional(
-      colorPresetRef({
+      colorPreset({
         title: "Color",
       }),
     ),
     backgroundImage: Type.Optional(
-      backgroundRef({
+      background({
         title: "Background",
-        description:
-          "The background image of the section. Prefer to set background images on sections rather than on individual bricks.",
       }),
     ),
     direction: Type.Optional(
-      directionRef({
+      direction({
         default: "flex-row",
         title: "Direction",
         description:
@@ -176,7 +174,7 @@ export const sectionProps = Type.Object(
       }),
     ),
     minHeight: Type.Optional(
-      cssLengthRef({
+      cssLength({
         title: "Min height",
         default: "fit-content",
         description:
@@ -206,7 +204,7 @@ export const sectionProps = Type.Object(
       }),
     ),
     verticalMargin: Type.Optional(
-      cssLengthRef({
+      cssLength({
         title: "Vertical Margin",
         description:
           "The vertical margin of the section. By default, all sections touch each other with no space in between. If you want to add space between sections, set this value to e.g. '2rem' or '32px'. Adding a vertical margin will reveal the background color of the page.",
@@ -215,17 +213,17 @@ export const sectionProps = Type.Object(
       }),
     ),
     justifyContent: Type.Optional(
-      justifyContentRef({
+      justifyContent({
         default: "justify-center",
       }),
     ),
     alignItems: Type.Optional(
-      alignItemsRef({
+      alignItems({
         default: "items-center",
       }),
     ),
     padding: Type.Optional(
-      cssLengthRef({
+      cssLength({
         default: "2rem",
         description: "Padding inside the section.",
         title: "Padding",
@@ -235,7 +233,7 @@ export const sectionProps = Type.Object(
       }),
     ),
     gap: Type.Optional(
-      cssLengthRef({
+      cssLength({
         title: "Gap",
         description: "The gap between the bricks in the section.",
         default: "2rem",

@@ -1,7 +1,6 @@
 import { type Static, type TString, Type } from "@sinclair/typebox";
-import { typedRef } from "~/shared/utils/typed-ref";
-import { cssLengthRef } from "./css-length";
-import { alignSelfRef } from "./align";
+import { cssLength } from "./css-length";
+import { alignSelf } from "./align";
 
 export function hidden() {
   return Type.Object(
@@ -25,7 +24,7 @@ export const commonProps = {
       "ai:hidden": true,
     }),
   ),
-  hidden: Type.Optional(typedRef("styles:hidden")),
+  hidden: Type.Optional(hidden()),
   editable: Type.Optional(
     Type.Boolean({
       "ui:field": "hidden",
@@ -33,7 +32,7 @@ export const commonProps = {
     }),
   ),
   width: Type.Optional(
-    cssLengthRef({
+    cssLength({
       title: "Fixed Width",
       description:
         "Set a fixed width for the brick. If not set, the brick will be responsive and will follow the flex layout of its parent section.",
@@ -42,7 +41,7 @@ export const commonProps = {
     }) as TString,
   ),
   height: Type.Optional(
-    cssLengthRef({
+    cssLength({
       title: "Fixed height",
       description:
         "Set a fixed height for the brick. If not set, the brick will be responsive and will follow the flex layout of its parent section.",
@@ -57,7 +56,7 @@ export const commonProps = {
       "ui:responsive": true,
     }),
   ),
-  alignSelf: Type.Optional(alignSelfRef()),
+  alignSelf: Type.Optional(alignSelf()),
 };
 
 const commonPropsSchema = Type.Object(commonProps);

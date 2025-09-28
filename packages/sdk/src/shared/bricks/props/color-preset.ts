@@ -1,6 +1,5 @@
 import { type Static, type ObjectOptions, Type, type StringOptions, TObject } from "@sinclair/typebox";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { typedRef } from "~/shared/utils/typed-ref";
 
 type ColorPresetOptions = ObjectOptions & {
   "ui:presets"?: Record<string, { className: string; label: string }>;
@@ -359,10 +358,6 @@ You can use gradients using color gradient variations (e.g. primary-gradient-100
 }
 
 export type ColorPresetSettings = Static<ReturnType<typeof colorPreset>>;
-
-export function colorPresetRef(options: ColorPresetOptions = {}) {
-  return typedRef("presets:color", options);
-}
 
 function gradientDirection(options: StringOptions = {}) {
   return StringEnum(

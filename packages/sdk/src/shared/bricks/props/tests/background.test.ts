@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { background, backgroundRef, backgroundColor } from "../background";
+import { background, backgroundColor } from "../background";
 
 describe("Background prop test suite", () => {
   describe("background", () => {

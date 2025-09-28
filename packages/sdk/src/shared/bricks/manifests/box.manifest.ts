@@ -1,14 +1,14 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
 import { Type } from "@sinclair/typebox";
-import { borderRef, roundingRef } from "../props/border";
-import { shadowRef } from "../props/effects";
-import { cssLengthRef } from "../props/css-length";
-import { directionRef } from "../props/direction";
+import { border, rounding } from "../props/border";
+import { shadow } from "../props/effects";
+import { cssLength } from "../props/css-length";
+import { direction } from "../props/direction";
 import { RxBox } from "react-icons/rx";
-import { alignItemsRef, justifyContentRef } from "../props/align";
-import { colorPresetRef } from "../props/color-preset";
-import { loopRef } from "../props/dynamic";
+import { alignItems, justifyContent } from "../props/align";
+import { colorPreset } from "../props/color-preset";
+import { loop } from "../props/dynamic";
 import type { BrickExample } from "./_types";
 
 // Generic container can hold any type of array data source
@@ -67,27 +67,27 @@ AVOID:
   icon: RxBox,
   props: defineProps({
     colorPreset: Type.Optional(
-      colorPresetRef({
+      colorPreset({
         title: "Color",
       }),
     ),
-    direction: directionRef({
+    direction: direction({
       default: "flex-col",
       title: "Direction",
       description: "Direction of the box layout",
     }),
     justifyContent: Type.Optional(
-      justifyContentRef({
+      justifyContent({
         default: "justify-center",
       }),
     ),
     alignItems: Type.Optional(
-      alignItemsRef({
+      alignItems({
         default: "items-stretch",
       }),
     ),
     gap: Type.Optional(
-      cssLengthRef({
+      cssLength({
         title: "Gap",
         default: "1rem",
         description: "Gap between children bricks.",
@@ -98,7 +98,7 @@ AVOID:
       }),
     ),
     padding: Type.Optional(
-      cssLengthRef({
+      cssLength({
         default: "1rem",
         description: "Padding inside the box.",
         "ai:instructions": "Use only a single value like '1rem' or '10px'",
@@ -115,14 +115,12 @@ AVOID:
         "ui:styleId": "styles:wrap",
       }),
     ),
-    rounding: Type.Optional(
-      roundingRef({
-        default: "rounded-md",
-      }),
-    ),
-    border: Type.Optional(borderRef()),
-    shadow: Type.Optional(shadowRef()),
-    loop: Type.Optional(loopRef()),
+    rounding: rounding({
+      default: "rounded-md",
+    }),
+    border: Type.Optional(border()),
+    shadow: Type.Optional(shadow()),
+    loop: Type.Optional(loop()),
     $children: Type.Array(Type.Any(), {
       "ui:field": "hidden",
       description: "List of nested bricks",

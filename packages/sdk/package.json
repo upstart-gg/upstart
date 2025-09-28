@@ -29,7 +29,6 @@
   "keywords": ["upstart", "website-builder", "builder", "ai", "react", "headless cms", "no-code", "low-code"],
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "14.2.0",
-    "@cloudflare/cabidela": "0.2.4",
     "@date-fns/utc": "1.2.0",
     "@notionhq/client": "4.0.2",
     "@radix-ui/themes": "3.2.1",
