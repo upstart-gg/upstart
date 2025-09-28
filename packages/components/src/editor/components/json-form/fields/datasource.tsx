@@ -10,8 +10,6 @@ import type { FieldProps } from "./types";
 import type { Datasource } from "@upstart.gg/sdk/shared/datasources/types";
 import { TbPlus } from "react-icons/tb";
 import { FieldTitle } from "../field-factory";
-import { IoIosReturnRight } from "react-icons/io";
-import { BsArrowReturnRight } from "react-icons/bs";
 import debounce from "lodash-es/debounce";
 
 /**

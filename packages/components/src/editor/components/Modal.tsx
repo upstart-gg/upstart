@@ -9,7 +9,7 @@ import {
 } from "@upstart.gg/style-system/system";
 import { PiListNumbersLight } from "react-icons/pi";
 import { useEditorHelpers, useModal } from "~/editor/hooks/use-editor";
-import { BsDatabaseDown, BsDatabase, BsAt, BsCrosshair } from "react-icons/bs";
+import { BsDatabaseDown, BsDatabase, BsCrosshair } from "react-icons/bs";
 import { validate } from "@upstart.gg/sdk/shared/utils/schema";
 import type { TSchema } from "@sinclair/typebox";
 import { type Query, querySchema } from "@upstart.gg/sdk/shared/datasources/types";
@@ -338,8 +338,8 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
       e.stopPropagation();
       console.log("Submitting query:", query);
       try {
-        validate(querySchema, query);
-        upsertQuery(query as Query);
+        const validated = validate<typeof querySchema>(querySchema, query);
+        upsertQuery(validated);
         onClose?.();
       } catch (error) {
         console.error("Query validation failed:", error);
