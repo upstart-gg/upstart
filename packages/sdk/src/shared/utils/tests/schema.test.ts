@@ -535,7 +535,7 @@ describe("validation with validate()", () => {
         content: "Hello, world!",
       },
       mobileProps: {
-        color: "primary-100",
+        color: "text-primary-100",
       },
     };
     expect(() => validate(schema, example2)).not.toThrow();
