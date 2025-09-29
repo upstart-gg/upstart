@@ -976,7 +976,7 @@ export const createDraftStore = (
               });
 
               // If this is a container brick with children, recursively add those to the brick map
-              if (brick.props?.$children) {
+              if (Array.isArray(brick.props?.$children)) {
                 const addChildrenToBrickMap = (children: Brick[], parentId: string) => {
                   children.forEach((child) => {
                     state.brickMap.set(child.id, {
