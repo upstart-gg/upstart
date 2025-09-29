@@ -1,7 +1,7 @@
 import { type TArray, type TObject, type TSchema, Kind, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import type { PageAttributes } from "../attributes";
-import { defaultsDeep as applyDefaultsDeep } from "lodash-es";
+import { defaultsDeep as applyDefaultsDeep, merge } from "lodash-es";
 import { FormatRegistry } from "@sinclair/typebox";
 import { DefaultErrorFunction, SetErrorFunction, ValueErrorType } from "@sinclair/typebox/errors";
 // export const jsonStringsSupportedFormats = ["date-time", "date", "email", "url"] as const;
@@ -69,11 +69,11 @@ export function normalizeSchemaEnum(schema: TSchema): Array<{ const: string; tit
 export function getSchemaDefaults<T extends TObject | TArray>(
   schema: T,
   mode?: "mobile" | "desktop",
-): T extends TObject ? Record<string, unknown> : unknown[] {
+): Static<T> {
   // Handle object schemas
   if (schema.type === "object" && "properties" in schema) {
     const objectSchema = schema as TObject;
-    const defaults: Record<string, unknown> = {};
+    const defaults: Static<T> = {};
 
     for (const [key, propertySchema] of Object.entries(objectSchema.properties)) {
       const defaultValue = getNestedDefaults(propertySchema as TSchema, mode);
@@ -84,8 +84,7 @@ export function getSchemaDefaults<T extends TObject | TArray>(
       }
     }
 
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    return defaults as any;
+    return defaults as Static<T>;
   }
 
   // Handle array schemas
@@ -93,19 +92,16 @@ export function getSchemaDefaults<T extends TObject | TArray>(
     const arraySchema = schema as TArray;
 
     if (mode && typeof arraySchema[`default:${mode}`] !== "undefined") {
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-      return arraySchema[`default:${mode}`] as any;
+      return arraySchema[`default:${mode}`];
     }
 
     // If the array itself has an explicit default, return it
     if (arraySchema.default) {
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-      return arraySchema.default as any;
+      return arraySchema.default;
     }
 
     // Otherwise return empty array
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    return [] as any;
+    return [];
   }
 
   throw new Error("Schema must be either TObject or TArray");

@@ -13,7 +13,6 @@ type BackgroundOptions = {
 };
 
 export function background(opts: BackgroundOptions = {}) {
-  const { default: defValue, ...restOpts } = opts;
   return Type.Object(
     {
       image: Type.String({
@@ -25,14 +24,12 @@ export function background(opts: BackgroundOptions = {}) {
       size: Type.Optional(
         StringEnum(["auto", "cover", "contain"], {
           enumNames: ["Auto", "Cover", "Contain"],
-          default: defValue?.size ?? "auto",
           "ai:instructions": "Only use this when the image is set.",
         }),
       ),
       repeat: Type.Optional(
         StringEnum(["no-repeat", "repeat", "repeat-x", "repeat-y", "space", "round"], {
           enumNames: ["No repeat", "Repeat", "Repeat horizontally", "Repeat vertically", "Space", "Round"],
-          default: defValue?.repeat ?? "no-repeat",
           "ai:instructions": "Only use this when the image is set.",
         }),
       ),
@@ -44,8 +41,7 @@ export function background(opts: BackgroundOptions = {}) {
       title: "Background image",
       // disable for now
       // "ui:show-img-search": true,
-      default: defValue,
-      ...restOpts,
+      ...opts,
     },
   );
 }
