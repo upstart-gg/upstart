@@ -1,13 +1,13 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
 import { Type } from "@sinclair/typebox";
-import { borderRef, roundingRef } from "../props/border";
-import { shadowRef } from "../props/effects";
+import { border, rounding } from "../props/border";
+import { shadow } from "../props/effects";
 import type { BrickProps } from "../props/types";
-import { cssLengthRef } from "../props/css-length";
+import { cssLength } from "../props/css-length";
 import { HiOutlineViewColumns } from "react-icons/hi2";
-import { colorPresetRef } from "../props/color-preset";
-import { loopRef } from "../props/dynamic";
+import { colorPreset } from "../props/color-preset";
+import { loop } from "../props/dynamic";
 import { StringEnum } from "~/shared/utils/string-enum";
 import type { BrickExample } from "./_types";
 
@@ -44,7 +44,7 @@ export const manifest = defineBrickManifest({
   icon: HiOutlineViewColumns,
   props: defineProps({
     colorPreset: Type.Optional(
-      colorPresetRef({
+      colorPreset({
         title: "Color",
       }),
     ),
@@ -95,7 +95,7 @@ export const manifest = defineBrickManifest({
       }),
     ),
     padding: Type.Optional(
-      cssLengthRef({
+      cssLength({
         default: "1.5rem",
         description: "Padding inside each tab panel.",
         "ai:instructions": "Use values like '1rem', '1.5rem', or '2rem' for tab content padding",
@@ -105,7 +105,7 @@ export const manifest = defineBrickManifest({
       }),
     ),
     gap: Type.Optional(
-      cssLengthRef({
+      cssLength({
         title: "Tab Gap",
         default: "0.5rem",
         description: "Gap between tab buttons.",
@@ -114,14 +114,12 @@ export const manifest = defineBrickManifest({
         "ui:styleId": "styles:gap",
       }),
     ),
-    rounding: Type.Optional(
-      roundingRef({
-        default: "rounded-md",
-      }),
-    ),
-    border: Type.Optional(borderRef()),
-    shadow: Type.Optional(shadowRef()),
-    loop: Type.Optional(loopRef()),
+    rounding: rounding({
+      default: "rounded-md",
+    }),
+    border: Type.Optional(border()),
+    shadow: Type.Optional(shadow()),
+    loop: Type.Optional(loop()),
     $children: Type.Array(Type.Array(Type.Any()), {
       "ui:field": "hidden",
       description: "Array of child brick arrays - each sub-array represents the content for one tab",

@@ -1,14 +1,14 @@
 import { type Static, Type } from "@sinclair/typebox";
 import { VscLayoutPanelOff } from "react-icons/vsc";
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { array, defineProps } from "../props/helpers";
-import { imageRef } from "../props/image";
-import { colorPresetRef } from "../props/color-preset";
-import { string, urlOrPageIdRef } from "../props/string";
-import { fontSizeRef } from "../props/text";
+import { defineProps } from "../props/helpers";
+import { image } from "../props/image";
+import { colorPreset } from "../props/color-preset";
+import { urlOrPageId } from "../props/string";
+import { fontSize } from "../props/text";
 import type { BrickProps } from "../props/types";
 import { toLLMSchema } from "~/shared/utils/llm";
-import { cssLengthRef } from "../props/css-length";
+import { cssLength } from "../props/css-length";
 import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
@@ -30,13 +30,13 @@ export const manifest = defineBrickManifest({
   props: defineProps(
     {
       colorPreset: Type.Optional(
-        colorPresetRef({
+        colorPreset({
           title: "Color preset",
           default: { color: "neutral-600" },
         }),
       ),
       padding: Type.Optional(
-        cssLengthRef({
+        cssLength({
           default: "4rem",
           description: "Padding inside the footer.",
           title: "Padding",
@@ -45,17 +45,17 @@ export const manifest = defineBrickManifest({
           "ui:styleId": "styles:padding",
         }),
       ),
-      logo: Type.Optional(imageRef({ title: "Logo", "ui:no-object-options": true, "ui:no-alt-text": true })),
-      fontSize: Type.Optional(fontSizeRef({ default: "text-sm", "ui:no-extra-large-sizes": true })),
+      logo: Type.Optional(image({ title: "Logo", "ui:no-object-options": true, "ui:no-alt-text": true })),
+      fontSize: Type.Optional(fontSize({ default: "text-sm", "ui:no-extra-large-sizes": true })),
       // rows:Type.Optional(number("Rows", { default: 1, "ui:field": "slider", minimum: 1, maximum: 5 })),
-      linksSections: array(
+      linksSections: Type.Array(
         Type.Object(
           {
-            sectionTitle: string("Title"),
-            links: array(
+            sectionTitle: Type.String({ title: "Title" }),
+            links: Type.Array(
               Type.Object({
-                title: string("Title"),
-                url: urlOrPageIdRef(),
+                title: Type.String({ title: "Title" }),
+                url: urlOrPageId(),
               }),
               {
                 title: "Links",
@@ -91,6 +91,7 @@ export const manifest = defineBrickManifest({
             removable: true, // Enable delete button
             addable: true, // Enable add button
           },
+          default: [],
           description: "List of Links Sections. Each section contains a title and a list of links.",
           metadata: {
             category: "content",

@@ -2,13 +2,13 @@ import { Type } from "@sinclair/typebox";
 import { TiSocialFlickr } from "react-icons/ti";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
-import { iconRef, string } from "../props/string";
+import { icon } from "../props/string";
 import type { BrickProps } from "../props/types";
-import { fontSizeRef } from "../props/text";
-import { directionRef } from "../props/direction";
-import { colorPresetRef } from "../props/color-preset";
-import { borderRef, roundingRef } from "../props/border";
-import { cssLengthRef } from "../props/css-length";
+import { fontSize } from "../props/text";
+import { direction } from "../props/direction";
+import { colorPreset } from "../props/color-preset";
+import { border, rounding } from "../props/border";
+import { cssLength } from "../props/css-length";
 import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
@@ -21,19 +21,19 @@ export const manifest = defineBrickManifest({
   },
   props: defineProps({
     colorPreset: Type.Optional(
-      colorPresetRef({
+      colorPreset({
         title: "Color",
       }),
     ),
     links: Type.Array(
       Type.Object({
         icon: Type.Optional(
-          iconRef({
+          icon({
             "ui:default-icon-collection": "cib",
           }),
         ),
-        label: Type.Optional(string("Label")),
-        href: string("Link"),
+        label: Type.Optional(Type.String({ title: "Label" })),
+        href: Type.String({ title: "Link" }),
       }),
       {
         title: "Social Links",
@@ -68,13 +68,13 @@ export const manifest = defineBrickManifest({
       },
     ),
     direction: Type.Optional(
-      directionRef({
+      direction({
         default: "flex-row",
       }),
     ),
-    fontSize: Type.Optional(fontSizeRef()),
+    fontSize: Type.Optional(fontSize()),
     padding: Type.Optional(
-      cssLengthRef({
+      cssLength({
         default: "2rem",
         description: "Padding.",
         "ai:instructions": "Use only a single value like '1rem' or '10px'",
@@ -84,12 +84,10 @@ export const manifest = defineBrickManifest({
         "ui:styleId": "styles:padding",
       }),
     ),
-    rounding: Type.Optional(
-      roundingRef({
-        default: "rounded-md",
-      }),
-    ),
-    border: Type.Optional(borderRef()),
+    rounding: rounding({
+      default: "rounded-md",
+    }),
+    border: Type.Optional(border()),
     iconOnly: Type.Optional(
       Type.Boolean({
         title: "Only icons",

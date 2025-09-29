@@ -1,17 +1,18 @@
 import { type Static, type TObject, Type } from "@sinclair/typebox";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
-import { string, urlOrPageIdRef } from "../props/string";
-import { imageRef } from "../props/image";
-import { textContentRef } from "../props/text";
-import { shadowRef } from "../props/effects";
+import { urlOrPageId } from "../props/string";
+import { image } from "../props/image";
+import { textContent } from "../props/text";
+import { shadow } from "../props/effects";
 import { boolean } from "../props/boolean";
 import { VscLayoutPanelOff } from "react-icons/vsc";
 import type { BrickProps } from "../props/types";
-import { colorPresetRef } from "../props/color-preset";
-import { tagsRef } from "../props/tags";
+import { colorPreset } from "../props/color-preset";
+import { tags } from "../props/tags";
 import { toLLMSchema } from "~/shared/utils/llm";
 import type { BrickExample } from "./_types";
+import { StringEnum } from "~/shared/utils/string-enum";
 
 export const manifest = defineBrickManifest({
   type: "navbar",
@@ -32,14 +33,14 @@ export const manifest = defineBrickManifest({
   props: defineProps(
     {
       colorPreset: Type.Optional(
-        colorPresetRef({
+        colorPreset({
           title: "Color",
           default: { color: "primary-500" },
           examples: [{ color: "primary-500" }, { color: "neutral-900" }, { color: "secondary-200" }],
         }),
       ),
       brand: Type.Optional(
-        textContentRef({
+        textContent({
           title: "Brand name",
           default: "Acme Inc.",
           disableSizing: true,
@@ -52,7 +53,7 @@ export const manifest = defineBrickManifest({
         }),
       ),
       logo: Type.Optional(
-        imageRef({
+        image({
           title: "Logo",
           "ui:show-img-search": false,
           "ui:no-object-options": true,
@@ -75,7 +76,7 @@ export const manifest = defineBrickManifest({
         }),
       ),
       linksTagsFilter: Type.Optional(
-        tagsRef({
+        tags({
           title: "Pages tags",
           description: "Filter pages links in the navbar by tags. Only pages with these tags will be shown.",
           default: ["navbar"],
@@ -88,8 +89,8 @@ export const manifest = defineBrickManifest({
       staticNavItems: Type.Optional(
         Type.Array(
           Type.Object({
-            urlOrPageId: urlOrPageIdRef(),
-            label: Type.Optional(string("Label")),
+            urlOrPageId: urlOrPageId(),
+            label: Type.Optional(Type.String({ title: "Label" })),
           }),
           {
             title: "Static links",
@@ -110,16 +111,14 @@ export const manifest = defineBrickManifest({
         ),
       ),
       linksPosition: Type.Optional(
-        Type.Union(
-          [
-            Type.Literal("left", { title: "Left" }),
-            Type.Literal("center", { title: "Center" }),
-            Type.Literal("right", { title: "Right" }),
-          ],
-          { title: "Links position", default: "right", "ui:responsive": "desktop" },
-        ),
+        StringEnum(["left", "center", "right"], {
+          enumNames: ["Left", "Center", "Right"],
+          title: "Links position",
+          default: "right",
+          "ui:responsive": "desktop",
+        }),
       ),
-      shadow: Type.Optional(shadowRef()),
+      shadow: Type.Optional(shadow()),
     },
     { noAlignSelf: true, noGrow: true },
   ),

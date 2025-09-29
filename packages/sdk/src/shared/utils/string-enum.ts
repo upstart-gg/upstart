@@ -1,12 +1,33 @@
-import { type Static, Type, type UnsafeOptions } from "@sinclair/typebox";
+import { TypeRegistry, Kind, type TSchema, type SchemaOptions, Type } from "@sinclair/typebox";
 
-export type StringEnumOptions = Partial<UnsafeOptions> & {
+export type StringEnumOptions = Partial<SchemaOptions> & {
   enumNames?: string[];
 };
 
-export const StringEnum = <T extends string[]>(values: [...T], options: StringEnumOptions = {}) =>
-  Type.Unsafe<T[number]>({
+// -------------------------------------------------------------------------------------
+// TStringEnum
+// -------------------------------------------------------------------------------------
+export interface TStringEnum<T extends string[]> extends TSchema {
+  [Kind]: "StringEnum";
+  static: T[number];
+  enum: T;
+}
+
+function StringEnumCheck(schema: TStringEnum<string[]>, value: unknown) {
+  return typeof value === "string" && schema.enum.includes(value);
+}
+
+TypeRegistry.Set("StringEnum", StringEnumCheck);
+
+// -------------------------------------------------------------------------------------
+// UnionEnum
+// -------------------------------------------------------------------------------------
+/** `[Experimental]` Creates a Union type with a `enum` schema representation  */
+export function StringEnum<T extends string[]>(values: [...T], options: StringEnumOptions = {}) {
+  return Type.Unsafe<T[number]>({
+    [Kind]: "StringEnum",
     type: "string",
     enum: values,
     ...options,
   });
+}

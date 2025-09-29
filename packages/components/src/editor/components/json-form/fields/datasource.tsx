@@ -1,17 +1,14 @@
-import type { DatasourceSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
-import type { TObject, TSchema } from "@sinclair/typebox";
+import type { DeprecatedDatasourceSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
+import type { TProperties, TSchema } from "@sinclair/typebox";
 import { Button, IconButton, SegmentedControl, Select, TextField } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import { Fragment, type FC } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { useDatasource, useDatasources } from "~/editor/hooks/use-datasource";
-import { fieldLabel } from "../form-class";
 import type { FieldProps } from "./types";
 import type { Datasource } from "@upstart.gg/sdk/shared/datasources/types";
 import { TbPlus } from "react-icons/tb";
 import { FieldTitle } from "../field-factory";
-import { IoIosReturnRight } from "react-icons/io";
-import { BsArrowReturnRight } from "react-icons/bs";
 import debounce from "lodash-es/debounce";
 
 /**
@@ -23,9 +20,9 @@ function getDatasourceIndexedFieldsWithTitles(datasource: Datasource) {
     return [];
   }
 
-  const properties = datasource.schema?.items?.properties || {};
+  const properties: TProperties = datasource.schema?.items?.properties || {};
 
-  const uniqueFields = Array.from(new Set(datasource.indexes?.map((idx) => idx.fields[0]) ?? []));
+  const uniqueFields: string[] = Array.from(new Set(datasource.indexes.map((idx) => idx.fields[0]) ?? []));
 
   return uniqueFields.map((field) => ({
     value: field,
@@ -33,14 +30,13 @@ function getDatasourceIndexedFieldsWithTitles(datasource: Datasource) {
   }));
 }
 
-const DatasourceField: FC<FieldProps<DatasourceSettings | undefined>> = (props) => {
+const DatasourceField: FC<FieldProps<DeprecatedDatasourceSettings>> = (props) => {
   const { currentValue, onChange, formData, formSchema } = props;
   const datasources = useDatasources();
   const datasource = useDatasource(currentValue?.id);
 
   const handleChange = (field: string, value: unknown) => {
-    const newValue = { ...(currentValue ?? {}), [field]: value } as DatasourceSettings;
-    console.log("DatasourceField handleChange", newValue);
+    const newValue = { ...(currentValue ?? {}), [field]: value } as DeprecatedDatasourceSettings;
     onChange(newValue);
   };
 

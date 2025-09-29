@@ -1,14 +1,15 @@
 import { Type } from "@sinclair/typebox";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
-import { colorPresetRef } from "../props/color-preset";
-import { cssLengthRef } from "../props/css-length";
-import { borderRef, roundingRef } from "../props/border";
-import { shadowRef } from "../props/effects";
+import { colorPreset } from "../props/color-preset";
+import { cssLength } from "../props/css-length";
+import { border, rounding } from "../props/border";
+import { shadow } from "../props/effects";
 import { BsListCheck } from "react-icons/bs";
-import { loopRef } from "../props/dynamic";
+import { loop } from "../props/dynamic";
 import type { BrickProps } from "../props/types";
 import type { BrickExample } from "./_types";
+import { StringEnum } from "~/shared/utils/string-enum";
 
 const timelineItemSchema = Type.Object({
   id: Type.Optional(Type.String({ title: "ID" })),
@@ -41,7 +42,8 @@ const timelineItemSchema = Type.Object({
     }),
   ),
   status: Type.Optional(
-    Type.Union([Type.Literal("completed"), Type.Literal("current"), Type.Literal("upcoming")], {
+    StringEnum(["completed", "current", "upcoming"], {
+      enumNames: ["Completed", "Current", "Upcoming"],
       title: "Status",
       description: "Timeline item status for visual styling",
     }),
@@ -55,6 +57,7 @@ export const manifest = defineBrickManifest({
   description:
     "A vertical timeline component to display chronological events, milestones, or processes with optional content for each item",
   icon: BsListCheck,
+  consumesMultipleQueryRows: true,
   props: defineProps({
     items: Type.Array(timelineItemSchema, {
       title: "Timeline Items",
@@ -75,7 +78,8 @@ export const manifest = defineBrickManifest({
 
     // Layout options
     layout: Type.Optional(
-      Type.Union([Type.Literal("left"), Type.Literal("right"), Type.Literal("alternating")], {
+      StringEnum(["left", "right", "alternating"], {
+        enumNames: ["Left", "Right", "Alternating"],
         title: "Layout",
         description: "Timeline layout style",
         default: "left",
@@ -91,7 +95,7 @@ export const manifest = defineBrickManifest({
     ),
 
     connectorColor: Type.Optional(
-      colorPresetRef({
+      colorPreset({
         title: "Connector Color",
         description: "Color of the timeline connector line",
       }),
@@ -99,7 +103,7 @@ export const manifest = defineBrickManifest({
 
     // Timeline item styling
     itemSpacing: Type.Optional(
-      cssLengthRef({
+      cssLength({
         title: "Item Spacing",
         description: "Vertical spacing between timeline items",
         default: "2rem",
@@ -113,9 +117,9 @@ export const manifest = defineBrickManifest({
         default: true,
       }),
     ),
-
     iconSize: Type.Optional(
-      Type.Union([Type.Literal("sm"), Type.Literal("md"), Type.Literal("lg")], {
+      StringEnum(["sm", "md", "lg"], {
+        enumNames: ["Small", "Medium", "Large"],
         title: "Icon Size",
         description: "Size of timeline item icons",
         default: "md",
@@ -131,7 +135,8 @@ export const manifest = defineBrickManifest({
     ),
 
     datePosition: Type.Optional(
-      Type.Union([Type.Literal("top"), Type.Literal("bottom"), Type.Literal("inline")], {
+      StringEnum(["top", "bottom", "inline"], {
+        enumNames: ["Top", "Bottom", "Inline"],
         title: "Date Position",
         description: "Position of dates relative to content",
         default: "top",
@@ -140,42 +145,42 @@ export const manifest = defineBrickManifest({
 
     // Styling
     colorPreset: Type.Optional(
-      colorPresetRef({
+      colorPreset({
         title: "Color Preset",
         description: "Color theme for the timeline",
       }),
     ),
 
     padding: Type.Optional(
-      cssLengthRef({
+      cssLength({
         title: "Padding",
         description: "Internal padding for the timeline container",
       }),
     ),
 
     border: Type.Optional(
-      borderRef({
+      border({
         title: "Border",
         description: "Border styling for the timeline container",
       }),
     ),
 
     shadow: Type.Optional(
-      shadowRef({
+      shadow({
         title: "Shadow",
         description: "Shadow effect for the timeline container",
       }),
     ),
 
     rounding: Type.Optional(
-      roundingRef({
+      rounding({
         title: "Rounding",
         description: "Corner rounding for the timeline container",
       }),
     ),
 
     // Content loop support
-    loop: Type.Optional(loopRef()),
+    loop: Type.Optional(loop()),
   }),
 });
 

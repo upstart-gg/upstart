@@ -1,248 +1,12 @@
 import { describe, expect, test, beforeEach } from "vitest";
 import { type Static, Type } from "@sinclair/typebox";
 import { resolveSchema, validate } from "../schema";
-import { inlineSchemaRefs, toLLMSchema } from "../llm";
+import { toLLMSchema } from "../llm";
 import { sitemapSchema } from "~/shared/sitemap";
 import type { Manifest } from "~/shared/bricks/manifests/text.manifest";
-import { registerSchema, unregisterSchema } from "~/shared/utils/schema-registry";
-import { makeFullBrickSchemaForLLM, type Section, sectionSchema, sectionSchemaLLM } from "~/shared/bricks";
+import { makeFullBrickSchemaForLLM, type Section, sectionSchema } from "~/shared/bricks";
 import type { BrickProps } from "~/shared/bricks/props/types";
-
-describe("resolveSchema tests suite", () => {
-  beforeEach(() => {
-    // Clear any test schemas before each test
-    unregisterSchema("test:simple");
-    unregisterSchema("test:user");
-    unregisterSchema("test:address");
-    unregisterSchema("test:circular1");
-    unregisterSchema("test:circular2");
-    unregisterSchema("test:string");
-    unregisterSchema("test:number");
-    unregisterSchema("test:boolean");
-    unregisterSchema("test:base");
-    unregisterSchema("test:extended");
-  });
-
-  test("should return primitive types unchanged", () => {
-    expect(resolveSchema(null as any)).toBe(null);
-    expect(resolveSchema(undefined as any)).toBe(undefined);
-    expect(resolveSchema("string" as any)).toBe("string");
-    expect(resolveSchema(42 as any)).toBe(42);
-    expect(resolveSchema(true as any)).toBe(true);
-  });
-
-  test("should return schema without references unchanged", () => {
-    const schema = Type.Object({
-      name: Type.String(),
-      age: Type.Number(),
-    });
-
-    const result = resolveSchema(schema);
-    expect(JSON.stringify(result)).toEqual(JSON.stringify(schema));
-  });
-
-  test("should resolve simple $ref", () => {
-    const userSchema = Type.Object({
-      name: Type.String(),
-      email: Type.String({ format: "email" }),
-    });
-
-    registerSchema("test:user", userSchema);
-
-    const schemaWithRef = Type.Ref("test:user");
-
-    const result = resolveSchema(schemaWithRef);
-    expect(result.type).toEqual(userSchema.type);
-  });
-
-  // test("should throw error for non-existent $ref", () => {
-  //   const schemaWithRef = Type.Ref("test:nonexistent");
-
-  //   expect(() => resolveSchema(schemaWithRef)).toThrow("Schema not found for reference: test:nonexistent");
-  // });
-
-  test("should resolve nested object properties", () => {
-    const addressSchema = Type.Object({
-      street: Type.String(),
-      city: Type.String(),
-    });
-
-    registerSchema("test:address", addressSchema);
-
-    const schema = Type.Object({
-      name: Type.String(),
-      address: Type.Ref("test:address"),
-    });
-
-    const result = resolveSchema(schema);
-    expect(result.properties.name.type).toEqual("string");
-    expect(result.properties.address.type).toEqual(addressSchema.type);
-  });
-
-  test("should resolve array items", () => {
-    const itemSchema = Type.Object({
-      id: Type.Number(),
-    });
-
-    registerSchema("test:simple", itemSchema);
-
-    const schema = Type.Array(Type.Ref("test:simple"));
-
-    const result = resolveSchema(schema);
-    expect(result.items.type).toEqual(itemSchema.type);
-  });
-
-  test("should resolve array items as array", () => {
-    const stringSchema = Type.String();
-    const numberSchema = Type.Number();
-
-    registerSchema("test:string", stringSchema);
-    registerSchema("test:number", numberSchema);
-
-    const schema = Type.Tuple([Type.Ref("test:string"), Type.Ref("test:number")]);
-
-    const result = resolveSchema(schema);
-    expect(result.items).toHaveLength(2);
-  });
-
-  test("should resolve anyOf schemas", () => {
-    const stringSchema = Type.String();
-    const numberSchema = Type.Number();
-
-    registerSchema("test:string", stringSchema);
-    registerSchema("test:number", numberSchema);
-
-    const schema = Type.Union([Type.Ref("test:string"), Type.Ref("test:number")]);
-
-    const result = resolveSchema(schema);
-    expect(result.anyOf[0].type).toEqual(stringSchema.type);
-    expect(result.anyOf[1].type).toEqual(numberSchema.type);
-  });
-
-  test("should resolve oneOf schemas", () => {
-    const stringSchema = Type.String();
-    const numberSchema = Type.Number();
-
-    registerSchema("test:string", stringSchema);
-    registerSchema("test:number", numberSchema);
-
-    const schema = {
-      oneOf: [Type.Ref("test:string"), Type.Ref("test:number")],
-    } as any;
-
-    const result = resolveSchema(schema);
-    expect(result.oneOf[0].type).toEqual(stringSchema.type);
-    expect(result.oneOf[1].type).toEqual(numberSchema.type);
-  });
-
-  test("should resolve allOf schemas", () => {
-    const baseSchema = Type.Object({
-      id: Type.Number(),
-    });
-
-    const extendedSchema = Type.Object({
-      name: Type.String(),
-    });
-
-    registerSchema("test:base", baseSchema);
-    registerSchema("test:extended", extendedSchema);
-
-    const schema = Type.Intersect([Type.Ref("test:base"), Type.Ref("test:extended")]);
-
-    const result = resolveSchema(schema);
-
-    expect(result.allOf[0].type).toEqual(baseSchema.type);
-    expect(result.allOf[1].type).toEqual(extendedSchema.type);
-  });
-
-  test("should resolve not schemas", () => {
-    const stringSchema = Type.String();
-
-    registerSchema("test:string", stringSchema);
-
-    const schema = Type.Not(Type.Ref("test:string"));
-
-    const result = resolveSchema(schema);
-    expect(result.not.type).toEqual(stringSchema.type);
-  });
-
-  test("should resolve conditional schemas (if/then/else)", () => {
-    const stringSchema = Type.String();
-    const numberSchema = Type.Number();
-    const booleanSchema = Type.Boolean();
-
-    registerSchema("test:string", stringSchema);
-    registerSchema("test:number", numberSchema);
-    registerSchema("test:boolean", booleanSchema);
-
-    const schema = {
-      if: Type.Ref("test:string"),
-      // biome-ignore lint/suspicious/noThenProperty: Required for JSON schema conditional validation
-      then: Type.Ref("test:number"),
-      else: Type.Ref("test:boolean"),
-    } as any;
-
-    const result = resolveSchema(schema);
-    expect(result.if.type).toEqual(stringSchema.type);
-    expect(result.then.type).toEqual(numberSchema.type);
-    expect(result.else.type).toEqual(booleanSchema.type);
-  });
-
-  test("should handle deeply nested schema structures", () => {
-    const nestedSchema = Type.Object({
-      level1: Type.Object({
-        level2: Type.Array(Type.Union([Type.String(), Type.Number()])),
-      }),
-    });
-
-    const result = resolveSchema(nestedSchema);
-    expect(result).toEqual(nestedSchema);
-  });
-
-  test("should handle empty objects and arrays", () => {
-    const schema = Type.Object({});
-
-    const result = resolveSchema(schema);
-    expect(result).toEqual(schema);
-  });
-
-  test("should handle schema with no properties", () => {
-    const schema = Type.Object({});
-
-    const result = resolveSchema(schema);
-    expect(result).toEqual(schema);
-  });
-
-  test("should handle complex nested refs", () => {
-    const addressSchema = Type.Object({
-      street: Type.String(),
-      city: Type.String(),
-      country: Type.String(),
-    });
-
-    const personSchema = Type.Object({
-      name: Type.String(),
-      address: Type.Ref("test:address"),
-      friends: Type.Array(Type.Ref("test:user")),
-    });
-
-    registerSchema("test:user", personSchema);
-    registerSchema("test:address", addressSchema);
-
-    const schema = Type.Object({
-      users: Type.Array(Type.Ref("test:user")),
-    });
-
-    const result = resolveSchema(schema);
-
-    expect(result.type).toBe("object");
-    expect(result.properties.users.type).toBe("array");
-    expect(result.properties.users.items.type).toBe("object");
-    expect(result.properties.users.items.properties.name.type).toBe("string");
-    expect(result.properties.users.items.properties.address.type).toBe("object");
-    expect(result.properties.users.items.properties.address.properties.street.type).toBe("string");
-  });
-});
+import { type Datarecord, genericDatarecord } from "~/shared/datarecords/types";
 
 describe("toLLMSchema tests suite", () => {
   test("should remove metadata properties", () => {
@@ -640,62 +404,6 @@ describe("toLLMSchema tests suite", () => {
     expect(result.properties.profile.properties.internalId).toBeUndefined(); // Should be removed
   });
 
-  test("should handle ai:hidden in nested schemas", () => {
-    const schema = {
-      definitions: {
-        User: {
-          type: "object",
-          properties: {
-            name: {
-              type: "string",
-            },
-            password: {
-              type: "string",
-              "ai:hidden": true,
-            },
-          },
-        },
-      },
-      $defs: {
-        Settings: {
-          type: "object",
-          properties: {
-            theme: {
-              type: "string",
-            },
-            apiKey: {
-              type: "string",
-              "ai:hidden": true,
-            },
-          },
-        },
-      },
-      patternProperties: {
-        "^config_": {
-          type: "object",
-          properties: {
-            value: {
-              type: "string",
-            },
-            secret: {
-              type: "string",
-              "ai:hidden": true,
-            },
-          },
-        },
-      },
-    } as any;
-
-    const result = toLLMSchema(schema);
-
-    expect(result.definitions.User.properties.name).toBeDefined();
-    expect(result.definitions.User.properties.password).toBeUndefined();
-    expect(result.$defs.Settings.properties.theme).toBeDefined();
-    expect(result.$defs.Settings.properties.apiKey).toBeUndefined();
-    expect(result.patternProperties["^config_"].properties.value).toBeDefined();
-    expect(result.patternProperties["^config_"].properties.secret).toBeUndefined();
-  });
-
   test("test with existing Upstart schema", () => {
     const transformed = toLLMSchema(sitemapSchema);
     expect(transformed.items.properties.id.type).toEqual(sitemapSchema.items.properties.id.type);
@@ -708,32 +416,37 @@ describe("toLLMSchema tests suite", () => {
   });
 });
 
-describe("inlineSchemaRefs", () => {
-  test("should inline simple $ref schemas", () => {
-    const inlined = inlineSchemaRefs(sectionSchema);
-    expect(inlined.properties.props.properties.colorPreset.$ref).toEqual("#/$defs/presets_color");
-    expect(inlined.$defs.presets_color).toBeDefined();
-    expect(inlined.$defs.presets_color.type).toBe("object");
-  });
-});
-
 describe("toLLMSchema consistency", () => {
   test("toLLMSchema(sectionSchema) should equal sectionSchemaLLM", () => {
     const transformed = toLLMSchema(sectionSchema);
-    expect(transformed).toEqual(sectionSchemaLLM);
-
-    expect(transformed.$defs.presets_color).toBeDefined();
-    expect(transformed.$defs.presets_color.type).toBe("object");
-
-    expect(sectionSchemaLLM.$defs.presets_color).toBeDefined();
-    expect(sectionSchemaLLM.$defs.presets_color.type).toBe("object");
+    expect(transformed.properties.props.properties.colorPreset).toBeDefined();
+    expect(transformed.properties.props.properties.variant).not.toBeDefined();
   });
 });
 
 describe("validation with validate()", () => {
+  test("should validate correct schema with @sinclair/typebox", () => {
+    const sectionSchemaLLM = toLLMSchema(sectionSchema);
+    const validSectionExample: Section = {
+      id: "section1",
+      label: "Hero Section",
+      order: 1,
+      props: {
+        colorPreset: {
+          color: "primary-100",
+        },
+        maxWidth: "max-w-full",
+        verticalMargin: "28px",
+        direction: "flex-col",
+      },
+      bricks: [],
+    };
+    expect(() => validate(sectionSchema, validSectionExample), "Section schema").not.toThrow();
+    expect(() => validate(sectionSchemaLLM, validSectionExample), "Section schema LLM").not.toThrow();
+  });
+
   test("should validate correct schema", () => {
-    expect(sectionSchemaLLM.$defs.presets_color).toBeDefined();
-    expect(sectionSchemaLLM.$defs.presets_color.type).toBe("object");
+    const sectionSchemaLLM = toLLMSchema(sectionSchema);
     const validSectionExample: Section = {
       id: "section1",
       label: "Hero Section",
@@ -760,7 +473,47 @@ describe("validation with validate()", () => {
         content: "Hello, world!",
       },
     };
+    expect(() => validate(schema, example), `Brick without mobileProps`).not.toThrow();
+  });
+
+  test("should validate unions of literals", () => {
+    const schema = genericDatarecord;
+    const example: Datarecord = {
+      id: "newsletter_subscriptions",
+      provider: "internal",
+      label: "Newsletter Subscriptions",
+      description: "Stores newsletter subscription entries",
+      schema: {
+        type: "object",
+        properties: {
+          firstname: { type: "string", title: "Firstname" },
+        },
+        required: ["email"],
+        title: "Newsletter Subscription",
+      },
+    };
     expect(() => validate(schema, example)).not.toThrow();
+    expect(() => validate(toLLMSchema(schema), example)).not.toThrow();
+
+    const arrayOfDatarecords: Datarecord[] = [
+      example,
+      {
+        id: "user_profiles",
+        provider: "airtable",
+        label: "User Profiles",
+        schema: {
+          type: "object",
+          properties: {
+            username: { type: "string", title: "Username" },
+            bio: { type: "string", title: "Bio" },
+          },
+          required: ["username"],
+          title: "User Profile",
+        },
+      },
+    ];
+    expect(() => validate(Type.Array(schema), arrayOfDatarecords)).not.toThrow();
+    expect(() => validate(toLLMSchema(Type.Array(schema)), arrayOfDatarecords)).not.toThrow();
   });
 
   test("should validate a brick with partial mobileProps", () => {
@@ -788,5 +541,9 @@ describe("validation with validate()", () => {
       },
     };
     expect(() => validate(schema, example2)).not.toThrow();
+  });
+
+  test("show section schema", () => {
+    console.log("Section schema:", JSON.stringify(sectionSchema));
   });
 });

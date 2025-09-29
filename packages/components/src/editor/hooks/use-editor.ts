@@ -1,5 +1,4 @@
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
-import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
 import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
 import type { Site, SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
@@ -14,6 +13,7 @@ import { subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { type DraftState, usePageContext } from "./use-page-data";
 import type { Page } from "@upstart.gg/sdk/shared/page";
+import type { UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
 export type { Immer } from "immer";
 
 enableMapSet();
@@ -41,6 +41,10 @@ export type SiteSavePayload = {
 };
 
 export interface EditorStateProps {
+  chatSession: {
+    id: string;
+    messages: UpstartUIMessage[];
+  };
   /**
    * When debugMode is enabled, context menu are disabled so that inspecting using devtools is easier
    */
@@ -130,7 +134,9 @@ export interface EditorState extends EditorStateProps {
   setAttributesGroup: (group: string | undefined) => void;
 }
 
-export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
+export const createEditorStore = (
+  initProps: Partial<EditorStateProps> & { chatSession: EditorStateProps["chatSession"] },
+) => {
   const DEFAULT_PROPS = {
     previewMode: "desktop" satisfies EditorStateProps["previewMode"],
     themesLibrary: [] as Theme[],
@@ -140,40 +146,7 @@ export const createEditorStore = (initProps: Partial<EditorStateProps>) => {
     chatVisible: true,
     contextMenuVisible: false,
     planIndex: 0,
-    imagesSearchResults: import.meta.env.DEV
-      ? [
-          {
-            blurHash: "",
-            description: "Placeholder image",
-            provider: "unsplash",
-            url: "https://images.unsplash.com/photo-1624555130581-1d9cca783bc0?q=80&w=3542&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-            user: {
-              name: "Placeholder",
-              profile_url: "https://unsplash.com/@placeholder",
-            },
-          },
-          {
-            blurHash: "",
-            description: "Placeholder image",
-            provider: "unsplash",
-            url: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=3538&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-            user: {
-              name: "Placeholder",
-              profile_url: "https://unsplash.com/@placeholder",
-            },
-          },
-          {
-            blurHash: "",
-            description: "Placeholder image",
-            provider: "unsplash",
-            url: "https://plus.unsplash.com/premium_photo-1661596686441-611034b8077e?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-            user: {
-              name: "Placeholder",
-              profile_url: "https://unsplash.com/@placeholder",
-            },
-          },
-        ]
-      : undefined,
+    attributesTab: "page" as EditorStateProps["attributesTab"],
     onPublish: () => {
       console.warn("onPublish is not implemented");
     },
@@ -497,6 +470,11 @@ export const useZoom = () => {
     canZoomOut: state.zoom > 0.5,
     resetZoom: state.resetZoom,
   }));
+};
+
+export const useChatSession = () => {
+  const ctx = useEditorStoreContext();
+  return useStore(ctx, (state) => state.chatSession);
 };
 
 export const useChatVisible = () => {

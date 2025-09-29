@@ -1,6 +1,5 @@
 import { type Static, type ObjectOptions, Type, type StringOptions, TObject } from "@sinclair/typebox";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { typedRef } from "~/shared/utils/typed-ref";
 
 type ColorPresetOptions = ObjectOptions & {
   "ui:presets"?: Record<string, { className: string; label: string }>;
@@ -338,7 +337,7 @@ The possible semantic colors are primary, secondary, accent, neutral, and base, 
 You can use gradients using color gradient variations (e.g. primary-gradient-100, secondary-gradient-200, etc.). In this case, you will also need to set the gradient direction.`,
         "ui:styleId": "presets:color",
         "ui:responsive": true,
-        default: options.default?.color,
+        default: options.default?.color ?? "none",
       }),
       gradientDirection: Type.Optional(gradientDirection(options)),
     },
@@ -359,10 +358,6 @@ You can use gradients using color gradient variations (e.g. primary-gradient-100
 }
 
 export type ColorPresetSettings = Static<ReturnType<typeof colorPreset>>;
-
-export function colorPresetRef(options: ColorPresetOptions = {}) {
-  return typedRef("presets:color", options);
-}
 
 function gradientDirection(options: StringOptions = {}) {
   return StringEnum(

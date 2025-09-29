@@ -1,11 +1,10 @@
-import type { TObject, TProperties, TArray } from "@sinclair/typebox";
-import type { IconBase, IconType } from "react-icons/lib";
+import type { TObject, TProperties } from "@sinclair/typebox";
+import type { IconType } from "react-icons/lib";
 import { getSchemaDefaults } from "./utils/schema";
-import type { ReactNode } from "react";
 
 export type BrickCategory = "layout" | "basic" | "media" | "widgets" | "container";
 
-type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | TArray<TObject>> = {
+type BrickManifestProps<BProps extends TProperties> = {
   type: string;
   category?: BrickCategory;
   name: string;
@@ -64,7 +63,7 @@ type BrickManifestProps<BProps extends TProperties, DSSchema extends TObject | T
   aiInstructions?: string;
 };
 
-export function defineBrickManifest<BProps extends TProperties, DSSchema extends TObject | TArray<TObject>>({
+export function defineBrickManifest<BProps extends TProperties>({
   props,
   defaultHeight,
   defaultWidth,
@@ -79,7 +78,7 @@ export function defineBrickManifest<BProps extends TProperties, DSSchema extends
   defaultInspectorTab = "preset",
   icon,
   ...rest
-}: BrickManifestProps<BProps, DSSchema>) {
+}: BrickManifestProps<BProps>) {
   return {
     ...rest,
     icon,

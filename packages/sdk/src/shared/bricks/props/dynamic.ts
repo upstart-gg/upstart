@@ -1,4 +1,3 @@
-import { typedRef } from "~/shared/utils/typed-ref";
 import { type ObjectOptions, Type, type Static } from "@sinclair/typebox";
 import { queryFilter } from "~/shared/datasources/types";
 
@@ -53,13 +52,7 @@ export function queryUse() {
   );
 }
 
-export const queryUseSchema = queryUseRef();
-
 export type QueryUseSettings = Static<ReturnType<typeof queryUse>>;
-
-export function queryUseRef(options: ObjectOptions = {}) {
-  return typedRef("content:queryUse", options);
-}
 
 export function loop(options: ObjectOptions = {}) {
   return Type.Object(
@@ -105,7 +98,3 @@ export function loop(options: ObjectOptions = {}) {
 }
 
 export type LoopSettings = Static<ReturnType<typeof loop>>;
-
-export function loopRef(options: ObjectOptions = {}) {
-  return typedRef("content:loop", options);
-}

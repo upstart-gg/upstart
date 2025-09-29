@@ -2,13 +2,11 @@ import { Type } from "@sinclair/typebox";
 import { IoGridOutline } from "react-icons/io5";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
-import { imageRef } from "../props/image";
-import { string } from "../props/string";
-import type { BrickProps } from "../props/types";
-import { colorPresetRef } from "../props/color-preset";
-import { borderRef, roundingRef } from "../props/border";
-import { loopRef } from "../props/dynamic";
-import { cssLengthRef } from "../props/css-length";
+import { image } from "../props/image";
+import { colorPreset } from "../props/color-preset";
+import { border, rounding } from "../props/border";
+import { loop } from "../props/dynamic";
+import { cssLength } from "../props/css-length";
 import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
@@ -34,20 +32,20 @@ export const manifest = defineBrickManifest({
   icon: IoGridOutline,
   props: defineProps({
     colorPreset: Type.Optional(
-      colorPresetRef({
+      colorPreset({
         title: "Color",
       }),
     ),
-    loop: Type.Optional(loopRef()),
+    loop: Type.Optional(loop()),
     images: Type.Array(
       Type.Object({
-        image: imageRef({
+        image: image({
           "ui:responsive": "desktop",
           "ui:no-alt-text": true,
           "ui:no-object-options": true,
           "ui:placeholder": "https://example.com/image.jpg",
         }),
-        legend: Type.Optional(string("Legend")),
+        legend: Type.Optional(Type.String({ title: "Legend" })),
       }),
       {
         title: "Images",
@@ -86,7 +84,7 @@ export const manifest = defineBrickManifest({
       }),
     ),
     gap: Type.Optional(
-      cssLengthRef({
+      cssLength({
         title: "Gap",
         description: "The gap between the images.",
         default: "1rem",
@@ -94,7 +92,7 @@ export const manifest = defineBrickManifest({
       }),
     ),
     padding: Type.Optional(
-      cssLengthRef({
+      cssLength({
         default: "3rem",
         description: "Padding inside the gallery.",
         "ai:instructions": "Use only a single value like '1rem' or '10px'",
@@ -104,8 +102,8 @@ export const manifest = defineBrickManifest({
         "ui:styleId": "styles:padding",
       }),
     ),
-    rounding: Type.Optional(roundingRef()),
-    border: Type.Optional(borderRef()),
+    rounding: rounding(),
+    border: Type.Optional(border()),
   }),
 });
 

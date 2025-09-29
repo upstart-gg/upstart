@@ -337,9 +337,9 @@ function ImagesPreview({ images }: { images: SimpleImageMetadata[] }) {
                 )}
               >
                 By{" "}
-                {image.author.profile_url ? (
+                {image.author.profileUrl ? (
                   <a
-                    href={image.author.profile_url}
+                    href={image.author.profileUrl}
                     target="_blank"
                     rel="noreferrer"
                     className={tx("underline hover:text-upstart-300")}

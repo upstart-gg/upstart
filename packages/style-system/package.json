@@ -16,7 +16,12 @@
       "import": "./dist/*.js"
     }
   },
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/upstart-gg/upstart.git",
+    "directory": "packages/style-system"
+  },
+  "keywords": ["twind", "css", "react", "design-system", "upstart"],
   "author": "Matthias Etienne",
   "license": "AGPL-3.0-only",
   "dependencies": {

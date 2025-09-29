@@ -16,6 +16,8 @@ describe("Attributes test suite", () => {
         title: "Untitled",
         description: "",
         keywords: "",
+        queries: [],
+        tags: [],
       });
     });
   });

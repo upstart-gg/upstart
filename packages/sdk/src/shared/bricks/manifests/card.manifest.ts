@@ -1,16 +1,16 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
-import { textContentRef } from "../props/text";
+import { textContent } from "../props/text";
 import { BsCardText } from "react-icons/bs";
-import { imageRef } from "../props/image";
+import { image } from "../props/image";
 import { type Static, Type } from "@sinclair/typebox";
 import type { BrickProps } from "../props/types";
-import { shadowRef } from "../props/effects";
-import { borderRef, roundingRef } from "../props/border";
-import { colorPresetRef } from "../props/color-preset";
-import { loopRef } from "../props/dynamic";
+import { shadow } from "../props/effects";
+import { border, rounding } from "../props/border";
+import { colorPreset } from "../props/color-preset";
+import { loop } from "../props/dynamic";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { urlOrPageIdRef } from "../props/string";
+import { urlOrPageId } from "../props/string";
 import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
@@ -40,14 +40,14 @@ export const manifest = defineBrickManifest({
   maxWidth: { desktop: 650 },
   props: defineProps({
     colorPreset: Type.Optional(
-      colorPresetRef({
+      colorPreset({
         title: "Color preset",
         default: { color: "base-100" },
       }),
     ),
 
     cardImage: Type.Optional(
-      imageRef({
+      image({
         "ui:responsive": "desktop",
         metadata: {
           category: "content",
@@ -77,24 +77,24 @@ export const manifest = defineBrickManifest({
         "ui:responsive": "desktop",
       }),
     ),
-    title: Type.Optional(textContentRef({ title: "Title" })),
-    text: Type.Optional(textContentRef({ title: "Text" })),
+    title: Type.Optional(textContent({ title: "Title" })),
+    text: Type.Optional(textContent({ title: "Text" })),
     rounding: Type.Optional(
-      roundingRef({
+      rounding({
         default: "rounded-md",
       }),
     ),
     border: Type.Optional(
-      borderRef({
+      border({
         // default: { width: "border", color: "border-base-300" },
       }),
     ),
     shadow: Type.Optional(
-      shadowRef({
+      shadow({
         default: "shadow-sm",
       }),
     ),
-    loop: Type.Optional(loopRef()),
+    loop: Type.Optional(loop()),
     button: Type.Object(
       {
         label: Type.String({
@@ -105,7 +105,7 @@ export const manifest = defineBrickManifest({
             category: "content",
           },
         }),
-        url: urlOrPageIdRef({
+        url: urlOrPageId({
           title: "Button URL",
           description: "The URL the button should link to.",
           metadata: {

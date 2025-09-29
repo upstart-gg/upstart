@@ -9,7 +9,7 @@ import {
   type EditorState,
   type EditorStateProps,
 } from "../hooks/use-editor";
-import { UploaderProvider } from "./UploaderContext";
+import { UploaderProvider, type UploaderProviderProps } from "./UploaderContext";
 import "@radix-ui/themes/styles.css";
 import "@upstart.gg/style-system/editor.css";
 import "@upstart.gg/style-system/radix.css";
@@ -17,7 +17,8 @@ import "@upstart.gg/style-system/radix.css";
 import "@upstart.gg/style-system/default-theme.css";
 import "@upstart.gg/style-system/react-resizable.css";
 import "@upstart.gg/style-system/tiptap-text-editor.css";
-import { createDraftStore, DraftStoreContext } from "../hooks/use-page-data";
+import { createDraftStore, type DraftStateProps, DraftStoreContext } from "../hooks/use-page-data";
+import type { UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
 
 // Define the interface for accessing stores
 export interface EditorWrapperRef {
@@ -25,27 +26,12 @@ export interface EditorWrapperRef {
   draftStore: ReturnType<typeof createDraftStore>;
 }
 
-export type EditorWrapperProps = {
-  pageVersion: string;
-  pageId: string;
-  config: SiteAndPagesConfig;
-  logoLink?: string;
-  /**
-   * Callback when an image is uploaded through the editor.
-   * The callback should return the URL of the uploaded image.
-   */
-  onImageUpload: (file: File) => Promise<string>;
-  onReady?: () => void;
-
-  /**
-   * Callback when a tour is completed.
-   */
-  onTourComplete?: (tourId: string) => void;
-  onShowPopup: EditorStateProps["onShowPopup"];
-  onPublish: EditorStateProps["onPublish"];
-  onSavePage?: EditorStateProps["onSavePage"];
-  onSaveSite?: EditorStateProps["onSaveSite"];
-};
+export type EditorWrapperProps = Pick<
+  EditorStateProps,
+  "chatSession" | "onShowPopup" | "onPublish" | "onSavePage" | "onSaveSite"
+> &
+  UploaderProviderProps &
+  SiteAndPagesConfig & { pageVersion: string; pageId: string; onReady?: () => void };
 
 /**
  * Wrap the Editor component with the EditorStore and DraftStore contexts.
@@ -54,7 +40,9 @@ export type EditorWrapperProps = {
 export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<EditorWrapperProps>>(
   (
     {
-      config,
+      chatSession,
+      site,
+      pages,
       pageVersion,
       pageId,
       onImageUpload,
@@ -67,7 +55,6 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
     },
     ref,
   ) => {
-    const { site, pages } = config;
     const urlParams = new URL(self.location.href).searchParams;
     const setup = urlParams.has("setup");
     const debugMode = urlParams.has("debug") && urlParams.get("debug") !== "false";
@@ -80,6 +67,7 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
         onShowPopup,
         logoLink: import.meta.env.DEV ? "/" : `/dashboard/sites/${site.id}`,
         debugMode,
+        chatSession,
         panel: (urlParams.get("panel") as EditorState["panel"]) ?? undefined,
         selectedBrickId: (urlParams.get("selectedBrickId") as EditorState["selectedBrickId"]) ?? undefined,
         selectedSectionId: urlParams.get("selectedBrickId")

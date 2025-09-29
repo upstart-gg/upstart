@@ -1,6 +1,5 @@
-import { type SchemaOptions, Type, type Static, type ObjectOptions } from "@sinclair/typebox";
+import { Type, type Static, type ObjectOptions } from "@sinclair/typebox";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { typedRef } from "~/shared/utils/typed-ref";
 
 type PropImageOptions = {
   defaultImageUrl?: string;
@@ -8,13 +7,12 @@ type PropImageOptions = {
   noObjectOptions?: boolean;
 } & ObjectOptions;
 
-export function image(title = "Image", options: PropImageOptions = {}) {
+export function image(options: PropImageOptions = {}) {
   const { defaultImageUrl, showImgSearch = false, noObjectOptions = false } = options;
   const schema = Type.Object(
     {
       src: Type.String({
-        default: defaultImageUrl,
-        title,
+        title: options.title ?? "Image URL",
         description: "Image URL. Can be a link to an image or a data URI",
       }),
       alt: Type.Optional(
@@ -29,7 +27,6 @@ export function image(title = "Image", options: PropImageOptions = {}) {
           enumNames: ["None", "Contain", "Cover", "Fill", "Scale down"],
           title: "Fit",
           description: "How the image should be resized to fit its container",
-          default: "object-cover",
           "ui:field": "enum",
           "ui:styleId": "styles:objectFit",
         }),
@@ -69,16 +66,11 @@ export function image(title = "Image", options: PropImageOptions = {}) {
     },
     {
       // $id: "assets:image",
-      title,
+      title: "Image",
       "ui:field": "image",
       "ui:accept": "image/*",
       "ui:show-img-search": showImgSearch,
       "ui:no-object-options": noObjectOptions,
-      default: {
-        alt: "Image",
-        fit: "object-cover",
-        position: "object-center",
-      },
       // "ui:responsive": "desktop",
       metadata: {
         category: "content",
@@ -87,10 +79,6 @@ export function image(title = "Image", options: PropImageOptions = {}) {
     },
   );
   return schema;
-}
-
-export function imageRef(options: PropImageOptions & SchemaOptions = {}) {
-  return typedRef("assets:image", options);
 }
 
 export type ImageProps = Static<ReturnType<typeof image>>;

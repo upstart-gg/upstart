@@ -1,12 +1,10 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
 import { RxVideo } from "react-icons/rx";
-import { string } from "../props/string";
-import type { BrickProps } from "../props/types";
-import { borderRef, roundingRef } from "../props/border";
-import { shadowRef } from "../props/effects";
+import { border, rounding } from "../props/border";
+import { shadow } from "../props/effects";
 import { Type } from "@sinclair/typebox";
-import { cssLengthRef } from "../props/css-length";
+import { cssLength } from "../props/css-length";
 import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
@@ -32,7 +30,8 @@ export const manifest = defineBrickManifest({
     desktop: 360, // 16:9 aspect ratio
   },
   props: defineProps({
-    url: string("Video URL", {
+    url: Type.String({
+      title: "Video URL",
       description:
         "URL of the video to embed. It can be a YouTube link or an embed link. It also supports Vimeo and Wistia links.",
       default: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
@@ -42,7 +41,7 @@ export const manifest = defineBrickManifest({
       },
     }),
     padding: Type.Optional(
-      cssLengthRef({
+      cssLength({
         description: "Padding inside the video player.",
         "ai:instructions": "Use only a single value like '1rem' or '10px'",
         title: "Padding",
@@ -52,12 +51,12 @@ export const manifest = defineBrickManifest({
       }),
     ),
     rounding: Type.Optional(
-      roundingRef({
+      rounding({
         default: "rounded-md",
       }),
     ),
-    border: Type.Optional(borderRef()),
-    shadow: Type.Optional(shadowRef()),
+    border: Type.Optional(border()),
+    shadow: Type.Optional(shadow()),
   }),
 });
 

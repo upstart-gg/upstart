@@ -1,31 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { string, url, urlOrPageId } from "../string";
+import { url, urlOrPageId } from "../string";
 
 describe("String prop test suite", () => {
-  describe("string", () => {
-    it("should have the correct title", () => {
-      const stringProp = string("Test String");
-      expect(stringProp.title).toBe("Test String");
-    });
-
-    it("should have the correct default value when provided", () => {
-      const stringProp = string("Test String", { default: "Default value" });
-      expect(stringProp.default).toBe("Default value");
-    });
-
-    it("should apply additional options when provided", () => {
-      const stringProp = string("Test String", { minLength: 5, maxLength: 10 });
-      expect(stringProp.minLength).toBe(5);
-      expect(stringProp.maxLength).toBe(10);
-      expect(stringProp.default).toBeUndefined();
-    });
-
-    it("should apply UI field options when provided", () => {
-      const stringProp = string("Test String", { "ui:field": "textarea" });
-      expect(stringProp["ui:field"]).toBe("textarea");
-    });
-  });
-
   describe("url", () => {
     it("should have the correct title", () => {
       const urlProp = url();
@@ -55,7 +31,7 @@ describe("String prop test suite", () => {
     });
 
     it("should have custom title when provided", () => {
-      const prop = urlOrPageId("Custom Link");
+      const prop = urlOrPageId({ title: "Custom Link" });
       expect(prop.title).toBe("Custom Link");
     });
 

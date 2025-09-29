@@ -9,7 +9,7 @@ describe("Image prop test suite", () => {
     });
 
     it("should have a custom title when provided", () => {
-      const imageProp = image("Custom Image");
+      const imageProp = image({ title: "Custom Image" });
       expect(imageProp.title).toBe("Custom Image");
     });
 
@@ -29,20 +29,14 @@ describe("Image prop test suite", () => {
     });
 
     it("should show image search when specified", () => {
-      const imageProp = image("Image", { showImgSearch: true });
+      const imageProp = image({ showImgSearch: true });
       expect(imageProp["ui:show-img-search"]).toBe(true);
     });
 
     describe("src property", () => {
       it("should have correct src title", () => {
-        const imageProp = image("Custom Image");
+        const imageProp = image({ title: "Custom Image" });
         expect(imageProp.properties?.src.title).toBe("Custom Image");
-      });
-
-      it("should have default image URL when specified", () => {
-        const defaultUrl = "https://example.com/image.jpg";
-        const imageProp = image("Image", { defaultImageUrl: defaultUrl });
-        expect(imageProp.properties?.src.default).toBe(defaultUrl);
       });
     });
 

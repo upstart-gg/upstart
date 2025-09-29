@@ -1,28 +1,15 @@
 // Define your custom message type once
 import type { UIMessage } from "ai";
 import type { Theme } from "../theme";
-import type { Sitemap, SitemapWithPlans } from "../sitemap";
+import type { Sitemap } from "../sitemap";
 import type { Page, VersionedPage } from "../page";
-import type {
-  PageAttributes,
-  PageAttributesNoQueries,
-  SiteAttributes,
-  SiteAttributesNoQueries,
-} from "../attributes";
+import type { PageAttributes, SiteAttributes } from "../attributes";
 import type { Brick, Section, SectionSchemaNoBricks } from "../bricks";
-import type {
-  AskUserChoiceInput,
-  ToolInputWaitingMessageType,
-  ToolInputInstructionsType,
-  GetDocInput,
-} from "./schemas";
-import type { Datarecord, InternalDatarecord } from "../datarecords/types";
+import type { AskUserChoiceInput, ToolInputWaitingMessageType, ToolInputInstructionsType } from "./schemas";
+import type { Datarecord } from "../datarecords/types";
 import type { InternalDatasource } from "../datasources/types";
 import type { ImageSearchResultsType } from "../images";
-import type { NavbarProps } from "../bricks/manifests/navbar.manifest";
-import type { FooterProps } from "../bricks/manifests/footer.manifest";
 import type { Site } from "../site";
-// ... import your tool and data part types
 
 export type Tools = {
   setSitePrompt: {
@@ -37,21 +24,13 @@ export type Tools = {
     input: AskUserChoiceInput;
     output: string | string[] | null; // The user's choice(s
   };
-  setSiteAttributes: {
-    input: SiteAttributesNoQueries;
-    output: SiteAttributesNoQueries;
-  };
-  setPageAttributes: {
-    input: PageAttributesNoQueries;
-    output: PageAttributesNoQueries;
+  editSiteAttributes: {
+    input: ToolInputWaitingMessageType & ToolInputInstructionsType;
+    output: SiteAttributes;
   };
   generateImages: {
     input: ToolInputWaitingMessageType & { prompt: string; count: number; aspectRatio: string };
     output: ImageSearchResultsType;
-  };
-  getCurrentSite: {
-    input: unknown;
-    output: Site;
   };
   listThemes: {
     input: unknown;
@@ -73,10 +52,6 @@ export type Tools = {
     input: { id: string };
     output: Section; // Error string if not found
   };
-  listSections: {
-    input: unknown;
-    output: Section[];
-  };
   createThemes: {
     input: ToolInputWaitingMessageType & ToolInputInstructionsType & { count: number };
     output: Theme[];
@@ -85,12 +60,19 @@ export type Tools = {
     input: unknown;
     output: Theme; // Theme or message if no theme applied yet
   };
-  createSitemap: {
-    input: ToolInputWaitingMessageType & ToolInputInstructionsType;
-    output: SitemapWithPlans;
-  };
+  // createSitemap: {
+  //   input: ToolInputWaitingMessageType & ToolInputInstructionsType;
+  //   output: Sitemap;
+  // };
   createPage: {
-    input: Omit<Page, "sections">;
+    input: Pick<Page, "id" | "label"> &
+      Pick<PageAttributes, "path"> &
+      ToolInputWaitingMessageType &
+      ToolInputInstructionsType;
+    output: VersionedPage;
+  };
+  editPage: {
+    input: ToolInputWaitingMessageType & ToolInputInstructionsType & Pick<Page, "id">;
     output: VersionedPage;
   };
   undo: {
@@ -102,14 +84,6 @@ export type Tools = {
   setSiteLabel: {
     input: { label: string };
     output: string;
-  };
-  // editPage: {
-  //   input: ToolInputWaitingMessageType;
-  //   output: VersionedPage;
-  // };
-  listPages: {
-    input: unknown;
-    output: Sitemap;
   };
   getCurrentPage: {
     input: unknown;
@@ -141,43 +115,10 @@ export type Tools = {
     input: unknown;
     output: ImageSearchResultsType;
   };
-  listSiteQueries: {
-    input: unknown;
-    output: NonNullable<SiteAttributes["queries"]>;
-  };
-  listPageQueries: {
-    input: unknown;
-    output: NonNullable<PageAttributes["queries"]>;
-  };
-  createSiteQueries: {
-    input: ToolInputWaitingMessageType & { instructions: string };
-    output: NonNullable<SiteAttributes["queries"]>;
-  };
   setTheme: {
     input: { id: string };
     output: Theme;
   };
-  // editSiteQueries: {
-  //   input: ToolInputWaitingMessageType & { instructions: string };
-  //   output: NonNullable<SiteAttributes["queries"]>;
-  // };
-  createPageQueries: {
-    input: ToolInputWaitingMessageType & { instructions: string };
-    output: NonNullable<PageAttributes["queries"]>;
-  };
-  // editPageQueries: {
-  //   input: ToolInputWaitingMessageType & { instructions: string };
-  //   output: NonNullable<PageAttributes["queries"]>;
-  // };
-  // createSiteAttributes: {
-  //   input: ToolInputWaitingMessageType;
-  //   output: SiteAttributes;
-  // };
-  // getSiteAttributes: {
-  //   input: unknown;
-  //   output: SiteAttributes;
-  // };
-
   createDatasource: {
     input: ToolInputWaitingMessageType & ToolInputInstructionsType & { id: string };
     output: InternalDatasource;
@@ -202,19 +143,12 @@ export type Tools = {
     input: { id: string };
     output: Brick;
   };
-  deleteSiteQuery: {
-    input: { id: string };
-    output: NonNullable<SiteAttributes["queries"]>; // Updated queries or error message if failed
-  };
-  deletePageQuery: {
-    input: { alias: string };
-    output: NonNullable<PageAttributes["queries"]>; // Updated queries or error message if failed
-  };
 };
 
 type Metadata = {
-  creditsUsed: number;
-  userLanguage: string; // ISO code of the user's language, e.g. "en", "fr", "es"
+  init?: boolean;
+  creditsUsed?: number;
+  userLanguage?: string; // ISO code of the user's language, e.g. "en", "fr", "es"
 };
 
 // For now, let's keep it simple

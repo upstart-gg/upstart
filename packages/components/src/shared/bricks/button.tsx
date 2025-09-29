@@ -22,7 +22,7 @@ export default function Button({ brick, editable }: BrickProps<Manifest>) {
       } else {
         const page = sitemap.find((p) => p.id === props.link);
         if (page) {
-          window.location.href = page.attributes.path; // Navigate to the page URL if it exists
+          window.location.href = page.path; // Navigate to the page URL if it exists
         }
       }
     }

@@ -1,12 +1,10 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
 import { LiaMapMarkedAltSolid } from "react-icons/lia";
-import { roundingRef } from "../props/border";
-import { shadowRef } from "../props/effects";
-import type { BrickProps } from "../props/types";
+import { rounding } from "../props/border";
+import { shadow } from "../props/effects";
 import { Type } from "@sinclair/typebox";
 import { number } from "../props/number";
-import { string } from "../props/string";
 import type { BrickExample } from "./_types";
 
 export const DEFAULTS = {
@@ -40,16 +38,18 @@ export const manifest = defineBrickManifest({
   icon: LiaMapMarkedAltSolid,
   props: defineProps({
     // location: geolocation({ defaultZoom: DEFAULTS.zoom }),
-    lat: string("Latitude", { "ui:field": "hidden" }),
-    lng: string("Longitude", { "ui:field": "hidden" }),
-    address: string("Address", {
+    lat: Type.String({ title: "Latitude", "ui:field": "hidden" }),
+    lng: Type.String({ title: "Longitude", "ui:field": "hidden" }),
+    address: Type.String({
+      title: "Address",
       "ui:field": "geoaddress",
       metadata: {
         category: "content",
       },
     }),
     tooltip: Type.Optional(
-      string("Tooltip", {
+      Type.String({
+        title: "Tooltip",
         metadata: {
           category: "content",
         },
@@ -69,11 +69,11 @@ export const manifest = defineBrickManifest({
       }),
     ),
     rounding: Type.Optional(
-      roundingRef({
+      rounding({
         default: "rounded-xl",
       }),
     ),
-    shadow: Type.Optional(shadowRef()),
+    shadow: Type.Optional(shadow()),
   }),
 });
 

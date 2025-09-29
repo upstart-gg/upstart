@@ -1,4 +1,4 @@
-import { queryUseSchema, type QueryUseSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
+import { queryUse, type QueryUseSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
 import {
   Button,
   Dialog,
@@ -81,7 +81,7 @@ function getValueLabel(value: NonNullable<QueryUseSettings["params"]>[number]["v
   return "";
 }
 
-const QueryField: FC<FieldProps<QueryUseSettings[] | undefined>> = (props) => {
+const QueryField: FC<FieldProps<QueryUseSettings[]>> = (props) => {
   const { currentValue = [], onChange, schema, title, description, brickId } = props;
   const datasources = useDatasources();
   const availableQueries = useSiteQueries();
@@ -299,7 +299,7 @@ function QueryEditor({
 
   const validateQuery = () => {
     try {
-      validate(queryUseSchema, query);
+      validate(queryUse(), query);
       return validateParams();
     } catch (error) {
       console.error("Query validation failed:", error);

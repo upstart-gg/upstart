@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { background, backgroundRef, backgroundColor } from "../background";
+import { background, backgroundColor } from "../background";
 
 describe("Background prop test suite", () => {
   describe("background", () => {
@@ -45,20 +45,6 @@ describe("Background prop test suite", () => {
         const imageProp = background().properties.image;
         expect(imageProp.title).toBe("Image");
         expect(imageProp.type).toBe("string");
-      });
-    });
-
-    describe("size property", () => {
-      it("should have correct metadata", () => {
-        const sizeProp = background().properties.size;
-        expect(sizeProp.default).toBe("auto");
-      });
-    });
-
-    describe("repeat property", () => {
-      it("should have correct metadata", () => {
-        const repeatProp = background().properties.repeat;
-        expect(repeatProp.default).toBe("no-repeat");
       });
     });
   });

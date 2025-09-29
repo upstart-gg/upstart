@@ -1,5 +1,4 @@
 import { type Static, Type, type StringOptions } from "@sinclair/typebox";
-import { typedRef } from "~/shared/utils/typed-ref";
 
 export const cssUnits = ["px", "%", "em", "rem", "vh", "vw", "dvh", "dvw", "rlh", "lh", "cqh", "cqw"];
 
@@ -17,10 +16,6 @@ export function cssLength(options: StringOptions = {}) {
 }
 
 export type CssLength = Static<ReturnType<typeof cssLength>>;
-
-export function cssLengthRef(options: StringOptions = {}) {
-  return typedRef("styles:cssLength", options);
-}
 
 export function isCssLength(value: string | number | undefined): boolean {
   if (typeof value !== "string") {

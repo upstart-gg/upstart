@@ -4,12 +4,12 @@ import { defineDataRecord } from "@upstart.gg/sdk/shared/datarecords";
 import { defineDatasource } from "@upstart.gg/sdk/shared/datasources";
 import { Spinner, toast } from "@upstart.gg/style-system/system";
 import { css, tx } from "@upstart.gg/style-system/twind";
-import { type ChatOnToolCallCallback, DefaultChatTransport, type ToolUIPart } from "ai";
+import { type ChatOnToolCallCallback, createIdGenerator, DefaultChatTransport, type ToolUIPart } from "ai";
 import { AnimatePresence, motion } from "motion/react";
 import { type FormEvent, lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { useDebounceCallback } from "usehooks-ts";
-import { useDebugMode } from "../../hooks/use-editor";
+import { useChatSession, useDebugMode } from "../../hooks/use-editor";
 import {
   useAdditionalAssets,
   useDraftHelpers,
@@ -73,6 +73,7 @@ const userMsgClass = tx(
 );
 
 export default function Chat() {
+  const chatSession = useChatSession();
   const sitePrompt = useSitePrompt();
   const setupRef = useRef(false);
   const draftHelpers = useDraftHelpers();
@@ -113,12 +114,12 @@ export default function Chat() {
   }, []);
 
   useEffect(() => {
-    if (showToastWorking) {
+    if (showToastWorking && generationState.isReady) {
       toast.loading("Setting up your site...", { duration: Infinity, id: "chat-setup" });
     } else {
       toast.dismiss("chat-setup");
     }
-  }, [showToastWorking]);
+  }, [showToastWorking, generationState.isReady]);
 
   // console.log({ site, page });
 
@@ -146,76 +147,68 @@ export default function Chat() {
     assetsRef.current = additionalAssets;
   }, [site, page, generationState, userLanguage, additionalAssets]);
 
-  const initialMessages = useMemo(() => {
-    if (generationState.isSetup) {
-      return [
-        {
-          id: "init-setup",
-          role: "user",
-          parts: [
-            {
-              type: "text",
-              text: `Create a website based on this prompt:\n${sitePrompt}`,
-            },
-          ],
-        },
-      ] satisfies UpstartUIMessage[];
-    } else {
-      return [
-        {
-          id: "init-edit",
-          role: "assistant",
-          parts: [
-            {
-              type: "text",
-              text: `Hey! 👋\n\nReady to keep building? You can:
-- Chat with me to make changes
-- Use the visual editor for direct editing
-
-What should we work on together? 🤖`,
-            },
-          ],
-        },
-      ] satisfies UpstartUIMessage[];
-    }
-  }, [generationState.isSetup, sitePrompt]);
-
   const onToolCall: ChatOnToolCallCallback<UpstartUIMessage> = ({ toolCall }) => {
     console.log("Tool call: %s: ", toolCall.toolName, toolCall);
   };
 
-  const { messages, sendMessage, error, status, regenerate, stop, addToolResult, setMessages } =
-    useChat<UpstartUIMessage>({
+  const { messages, sendMessage, error, status, regenerate, stop, addToolResult } = useChat<UpstartUIMessage>(
+    {
+      id: chatSession.id,
       // resume: generationState.isReady === false,
       transport: new DefaultChatTransport({
         api: "/editor/chat",
         credentials: "include",
-        body: () => ({
-          callContext: {
+        // body: () => ({
+        //   callContext: {
+        //     site: siteRef.current,
+        //     page: pageRef.current,
+        //     generationState: generationStateRef.current,
+        //     userLanguage: userLanguageRef.current,
+        //     assets: assetsRef.current,
+        //   } satisfies Omit<CallContextProps, "userId">,
+        // }),
+        prepareSendMessagesRequest: ({ messages }) => {
+          // send only the last message and chat id
+          // we will then fetch message history (for our chatId) on server
+          // and append this message for the full context to send to the model
+          const message = messages[messages.length - 1];
+          const previousMessage = messages.length > 1 ? messages[messages.length - 2] : undefined;
+
+          const callContext = {
             site: siteRef.current,
             page: pageRef.current,
             generationState: generationStateRef.current,
             userLanguage: userLanguageRef.current,
             assets: assetsRef.current,
-          } satisfies Omit<CallContextProps, "userId">,
-        }),
+          } satisfies Omit<CallContextProps, "userId">;
+
+          const hasToolResults = previousMessage?.parts.some((part) => part.type === "tool-askUserChoice");
+
+          console.log("Send chat request with hasToolResults=%s", hasToolResults);
+          console.log({ message });
+          console.log({ previousMessage });
+
+          return {
+            body: {
+              messages: hasToolResults ? messages.slice(-2) : [message],
+              chatSessionId: chatSession.id,
+              callContext,
+            },
+          };
+        },
       }),
-      messages: initialMessages,
-      // generateId: createIdGenerator({
-      //   prefix: "ups",
-      //   separator: "_",
-      //   size: 16,
-      // }),
+      messages: chatSession.messages,
+      generateId: createIdGenerator({
+        prefix: "user",
+        separator: "_",
+        size: 28,
+      }),
       onError: (error) => {
         console.error("ERROR", error);
       },
-      // sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
-      // id: `chat-${site.id}`,
-      /**
-       * For tools that should be called client-side
-       */
       onToolCall,
-    });
+    },
+  );
   const messagesListRef = useRef<HTMLDivElement>(null);
 
   const onSubmit = (e: Event | FormEvent) => {
@@ -245,8 +238,6 @@ What should we work on together? 🤖`,
       }
     }
   }, [messages, userLanguage]);
-
-  // console.log({ messages });
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -303,7 +294,14 @@ What should we work on together? 🤖`,
         case "tool-createPage": {
           const page = toolInvocation.output;
           console.log("Generated page", page);
-          draftHelpers.addPage({ ...page, version: crypto.randomUUID(), sections: [] });
+          draftHelpers.addPage({ ...page, sections: [] });
+          break;
+        }
+
+        case "tool-editPage": {
+          const page = toolInvocation.output;
+          console.log("Edited page", page);
+          draftHelpers.updatePage(page);
           break;
         }
 
@@ -314,6 +312,7 @@ What should we work on together? 🤖`,
             tool: "undo",
             toolCallId: toolInvocation.toolCallId,
           });
+          regenerate();
           break;
         }
 
@@ -345,34 +344,17 @@ What should we work on together? 🤖`,
           break;
         }
 
-        case "tool-createSitemap": {
-          const sitemap = toolInvocation.output;
-          console.log("Generated sitemap", sitemap);
-          draftHelpers.setSitemap(sitemap);
-          break;
-        }
-
-        case "tool-setSiteAttributes": {
-          const siteAttributes = toolInvocation.output;
-          console.log("Generated site attributes", siteAttributes);
-          draftHelpers.updateSiteAttributes(siteAttributes);
-          break;
-        }
-        // }
-
-        // case "tool-createSiteAttributes": {
-        //   const siteAttributes = toolInvocation.output;
-        //   console.log("Generated site attributes", siteAttributes);
-        //   draftHelpers.updateSiteAttributes(siteAttributes);
+        // case "tool-createSitemap": {
+        //   const sitemap = toolInvocation.output;
+        //   console.log("Generated sitemap", sitemap);
+        //   draftHelpers.setSitemap(sitemap);
         //   break;
         // }
 
-        case "tool-createSiteQueries": {
-          const queries = toolInvocation.output;
-          console.log("Generated site queries", queries);
-          draftHelpers.updateSiteAttributes({
-            queries: [...(site.attributes.queries ?? []), ...queries],
-          });
+        case "tool-editSiteAttributes": {
+          const siteAttributes = toolInvocation.output;
+          console.log("Generated site attributes", siteAttributes);
+          draftHelpers.updateSiteAttributes(siteAttributes);
           break;
         }
 
@@ -382,44 +364,6 @@ What should we work on together? 🤖`,
           draftHelpers.setSiteLabel(label);
           break;
         }
-
-        // case "tool-createSiteQueries": {
-        //   const queries = toolInvocation.output;
-        //   console.log("Edited site queries", queries);
-        //   draftHelpers.updateSiteAttributes({
-        //     queries: [...(site.attributes.queries ?? []), ...queries],
-        //   });
-        //   break;
-        // }
-
-        // case "tool-editSiteQueries": {
-        //   const queries = toolInvocation.output;
-        //   console.log("Edited site queries", queries);
-        //   draftHelpers.updateSiteAttributes({
-        //     queries: [...(site.attributes.queries ?? []), ...queries],
-        //   });
-        //   break;
-        // }
-
-        case "tool-createPageQueries": {
-          const queries = toolInvocation.output;
-          console.log("Generated page queries", queries);
-          draftHelpers.updatePageAttributes({
-            ...page.attributes,
-            queries: [...(page.attributes.queries ?? []), ...queries],
-          });
-          break;
-        }
-
-        // case "tool-editPageQueries": {
-        //   const queries = toolInvocation.output;
-        //   console.log("Edited page queries", queries);
-        //   draftHelpers.updatePageAttributes({
-        //     ...page.attributes,
-        //     queries: [...(page.attributes.queries ?? []), ...queries],
-        //   });
-        //   break;
-        // }
 
         case "tool-createSection": {
           const section = toolInvocation.output;
@@ -467,11 +411,6 @@ What should we work on together? 🤖`,
           break;
         }
 
-        // case "tool-editBrick": {
-        //   draftHelpers.updateBrickProps(toolInvocation.input.id, toolInvocation.output.props);
-        //   break;
-        // }
-
         case "tool-deleteBrick": {
           const { id } = toolInvocation.input;
           draftHelpers.deleteBrick(id);
@@ -502,7 +441,7 @@ What should we work on together? 🤖`,
   // Only show messages that have text or tool parts
   const displayedMessages = messages.filter(
     (msg) =>
-      msg.id !== "init-setup" &&
+      msg.metadata?.init !== true &&
       msg.parts.some((part) => part.type === "text" || part.type.startsWith("tool-")),
   );
 

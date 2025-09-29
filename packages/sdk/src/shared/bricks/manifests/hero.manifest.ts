@@ -1,14 +1,14 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
-import { textContentRef } from "../props/text";
+import { textContent } from "../props/text";
 import { BsAlphabetUppercase } from "react-icons/bs";
 import type { BrickProps } from "../props/types";
 import { Type } from "@sinclair/typebox";
-import { shadowRef, textShadowRef } from "../props/effects";
-import { borderRef, roundingRef } from "../props/border";
-import { colorPresetRef } from "../props/color-preset";
-import { alignItemsRef, justifyContentRef } from "../props/align";
-import { cssLengthRef } from "../props/css-length";
+import { shadow, textShadow } from "../props/effects";
+import { border, rounding } from "../props/border";
+import { colorPreset } from "../props/color-preset";
+import { alignItems, justifyContent } from "../props/align";
+import { cssLength } from "../props/css-length";
 import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
@@ -64,29 +64,29 @@ DO
   staticClasses: "flex-col",
 
   props: defineProps({
-    content: textContentRef({
+    content: textContent({
       title: "Hero title",
       default: "<h1 style='text-align:center'>Lorem Ipsum<br />dolor sit amet</h1>",
     }),
     tagline: Type.Optional(
-      textContentRef({
+      textContent({
         title: "Hero tagline",
         // default: "<p style='text-align:center'>Use our platform to build your business with confidence.</p>",
       }),
     ),
     colorPreset: Type.Optional(
-      colorPresetRef({
+      colorPreset({
         title: "Color",
       }),
     ),
 
     textShadow: Type.Optional(
-      textShadowRef({
+      textShadow({
         default: "text-shadow-sm",
       }),
     ),
     padding: Type.Optional(
-      cssLengthRef({
+      cssLength({
         default: "6rem",
         description: "Padding inside the hero.",
         "ai:instructions": "Use only a single value like '1rem' or '10px'",
@@ -96,20 +96,18 @@ DO
         "ui:styleId": "styles:padding",
       }),
     ),
-    rounding: Type.Optional(
-      roundingRef({
-        default: "rounded-md",
-      }),
-    ),
-    border: Type.Optional(borderRef()),
-    shadow: Type.Optional(shadowRef()),
+    rounding: rounding({
+      default: "rounded-md",
+    }),
+    border: Type.Optional(border()),
+    shadow: Type.Optional(shadow()),
     justifyContent: Type.Optional(
-      justifyContentRef({
+      justifyContent({
         default: "justify-center",
       }),
     ),
     alignItems: Type.Optional(
-      alignItemsRef({
+      alignItems({
         default: "items-center",
       }),
     ),

@@ -8,7 +8,7 @@ import {
 } from "@hello-pangea/dnd";
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
-import { Button, IconButton, SegmentedControl, TextField } from "@upstart.gg/style-system/system";
+import { Button, IconButton, TextField } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useState, useRef, useEffect } from "react";
 import { MdDragIndicator } from "react-icons/md";

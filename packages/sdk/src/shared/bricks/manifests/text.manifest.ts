@@ -1,14 +1,14 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
-import { textContentRef } from "../props/text";
+import { textContent } from "../props/text";
 import { defineProps } from "../props/helpers";
-import { borderRef, roundingRef } from "../props/border";
+import { border, rounding } from "../props/border";
 import { RxTextAlignLeft } from "react-icons/rx";
 import { Type } from "@sinclair/typebox";
-import { alignItemsRef } from "../props/align";
-import { shadowRef } from "../props/effects";
-import { colorPresetRef } from "../props/color-preset";
-import { loopRef } from "../props/dynamic";
-import { cssLengthRef } from "../props/css-length";
+import { alignItems } from "../props/align";
+import { shadow } from "../props/effects";
+import { colorPreset } from "../props/color-preset";
+import { loop } from "../props/dynamic";
+import { cssLength } from "../props/css-length";
 import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
@@ -56,24 +56,24 @@ BEST PRACTICES:
   icon: RxTextAlignLeft,
   props: defineProps({
     colorPreset: Type.Optional(
-      colorPresetRef({
+      colorPreset({
         title: "Color",
       }),
     ),
-    content: textContentRef({
+    content: textContent({
       title: "Content",
       // metadata: {
       //   category: "content",
       // },
     }),
     verticalAlign: Type.Optional(
-      alignItemsRef({
+      alignItems({
         default: "items-center",
         title: "Align",
       }),
     ),
     padding: Type.Optional(
-      cssLengthRef({
+      cssLength({
         default: "2rem",
         description: "Padding inside the text.",
         "ai:instructions": "Use only a single value like '1rem' or '10px'",
@@ -83,14 +83,11 @@ BEST PRACTICES:
         "ui:styleId": "styles:padding",
       }),
     ),
-    rounding: Type.Optional(
-      roundingRef({
-        default: "rounded-md",
-      }),
-    ),
-    border: Type.Optional(borderRef()),
-    shadow: Type.Optional(shadowRef()),
-    loop: Type.Optional(loopRef()),
+    rounding: rounding({
+      default: "rounded-md",
+    }),
+    border: Type.Optional(border()),
+    shadow: Type.Optional(shadow()),
   }),
 });
 

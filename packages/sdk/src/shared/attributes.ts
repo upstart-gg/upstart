@@ -3,15 +3,14 @@ import type { JSONSchemaType } from "ajv";
 import { getSchemaDefaults } from "../shared/utils/schema";
 import { manifest as navbarManifest } from "./bricks/manifests/navbar.manifest";
 import { manifest as footerManifest } from "./bricks/manifests/footer.manifest";
-import { string } from "./bricks/props/string";
 import { boolean } from "./bricks/props/boolean";
 import { datetime } from "./bricks/props/date";
-import { imageRef } from "./bricks/props/image";
-import { colorPresetRef } from "./bricks/props/color-preset";
-import { queryUseRef, type QueryUseSettings } from "./bricks/props/dynamic";
+import { image } from "./bricks/props/image";
+import { colorPreset } from "./bricks/props/color-preset";
+import { queryUse, type QueryUseSettings } from "./bricks/props/dynamic";
 import { querySchema } from "./datasources/types";
 import { StringEnum } from "./utils/string-enum";
-import { backgroundRef } from "./bricks/props/background";
+import { background } from "./bricks/props/background";
 import { toLLMSchema } from "./utils/llm";
 
 export type { JSONSchemaType };
@@ -19,9 +18,9 @@ export type { JSONSchemaType };
 // Default attributes
 export const pageAttributesSchema = Type.Object(
   {
-    backgroundImage: Type.Optional(backgroundRef()),
+    backgroundImage: Type.Optional(background()),
     colorPreset: Type.Optional(
-      colorPresetRef({
+      colorPreset({
         examples: [
           { color: "base-100" },
           { color: "primary-500" },
@@ -29,22 +28,17 @@ export const pageAttributesSchema = Type.Object(
         ],
       }),
     ),
-    tags: Type.Optional(
-      Type.Array(Type.String({ description: "A tag for the page. Should be url-safe." }), {
-        title: "Tags",
-        description:
-          "Use tags to organize, group and filter pages in navigation elements and in the dashboard. By default, the navbar element display pages having the 'navbar' tag, while the sidebar displays the pages with the tag 'sidebar'.",
-        "ui:field": "tags",
-        examples: [
-          ["navbar", "important"],
-          ["navbar", "sidebar"],
-          ["sidebar"],
-          ["campaign-landing-20250610"],
-        ],
-        maxItems: 8,
-      }),
-    ),
-    path: string("URL path", {
+    tags: Type.Array(Type.String({ description: "A tag for the page. Should be url-safe." }), {
+      title: "Tags",
+      description:
+        "Use tags to organize, group and filter pages in navigation elements and in the dashboard. By default, the navbar element display pages having the 'navbar' tag, while the sidebar displays the pages with the tag 'sidebar'.",
+      "ui:field": "tags",
+      examples: [["navbar", "important"], ["navbar", "sidebar"], ["sidebar"], ["campaign-landing-20250610"]],
+      maxItems: 8,
+      default: [],
+    }),
+    path: Type.String({
+      title: "URL path",
       default: "/",
       description: "The URL path of the page. Use placeholders like :id or :slug for dynamic paths.",
       "ai:instructions": "Never put language codes in the path.",
@@ -52,24 +46,25 @@ export const pageAttributesSchema = Type.Object(
       pattern: "^/[a-z0-9-:/]*$",
       examples: ["/", "/about", "/products/:id"],
     }),
-    queries: Type.Optional(
-      Type.Array(queryUseRef(), {
-        title: "Page Queries",
-        description:
-          "List of queries to use in this page. All listed queries will be executed when the page loads.",
-        "ai:instructions": "Reference Query IDs to use at the page level.",
-        "ui:field": "page-queries",
-        maxItems: 5,
-      }),
-    ),
-    title: string("Title", {
+    queries: Type.Array(queryUse(), {
+      title: "Page Queries",
+      description:
+        "List of queries to use in this page. All listed queries will be executed when the page loads.",
+      "ai:instructions": "Reference Query IDs to use at the page level.",
+      "ui:field": "page-queries",
+      maxItems: 8,
+      default: [],
+    }),
+    title: Type.String({
+      title: "Title",
       default: "Untitled",
       "ui:group": "meta",
       "ui:group:title": "Meta tags",
       description: "The title of the page. Appears in the browser tab and search results",
       "ui:placeholder": "Page title",
     }),
-    description: string("Description", {
+    description: Type.String({
+      title: "Description",
       "ui:widget": "textarea",
       "ui:group": "meta",
       "ui:group:title": "Meta tags",
@@ -79,7 +74,8 @@ export const pageAttributesSchema = Type.Object(
       default: "",
       "ui:placeholder": "A brief description of the page",
     }),
-    keywords: string("Keywords", {
+    keywords: Type.String({
+      title: "Keywords",
       "ui:group": "meta",
       "ui:group:title": "Meta tags",
       description: "Keywords related to the page. Used by search engines",
@@ -87,9 +83,8 @@ export const pageAttributesSchema = Type.Object(
       default: "",
       "ui:placeholder": "keyword1, keyword2, keyword3",
     }),
-
     ogImage: Type.Optional(
-      imageRef({
+      image({
         title: "Social share image",
         description: "Image shown when this page is shared on social media",
         "ui:group": "meta",
@@ -102,7 +97,9 @@ export const pageAttributesSchema = Type.Object(
       }),
     ),
     robotsIndexing: Type.Optional(
-      boolean("Allow search engines to index this page", true, {
+      Type.Boolean({
+        title: "Allow search engines to index this page",
+        default: true,
         description: "Disabling this will prevent search engines from indexing this page",
         "ai:hidden": true,
         "ui:group": "meta",
@@ -193,16 +190,21 @@ export const pageAttributesSchema = Type.Object(
             }),
           ),
         },
-        { "ui:group": "meta" },
+        { "ui:group": "meta", "ai:hidden": true },
       ),
     ),
-
-    noNavbar: Type.Optional(boolean("Hide navbar", false, { "ui:group": "layout" })),
-    noFooter: Type.Optional(boolean("Hide footer", false, { "ui:group": "layout" })),
-    lastUpdated: Type.Optional(
-      datetime("Last updated", {
-        "ui:hidden": true,
-        "ai:hidden": true,
+    noNavbar: Type.Optional(
+      Type.Boolean({
+        title: "Hide navbar",
+        default: false,
+        "ui:group": "layout",
+      }),
+    ),
+    noFooter: Type.Optional(
+      Type.Boolean({
+        title: "Hide footer",
+        default: false,
+        "ui:group": "layout",
       }),
     ),
   },
@@ -214,7 +216,7 @@ export const pageAttributesSchema = Type.Object(
   },
 );
 
-export const pageQueriesSchema = Type.Array(queryUseRef(), {
+export const pageQueriesSchema = Type.Array(queryUse(), {
   title: "Page Queries",
   description: `List of page queries in use in this page. All listed queries will be executed when the page loads. Aliases must be unique and camelCase'd.
 The queryId must reference an existing site query ID.`,
@@ -289,9 +291,9 @@ export const siteAttributesSchema = Type.Object(
           "Choose a value based on the site description. If the site is in multiple languages, use 'en'.",
       },
     ),
-    backgroundImage: Type.Optional(backgroundRef()),
+    backgroundImage: Type.Optional(background()),
     colorPreset: Type.Optional(
-      colorPresetRef({
+      colorPreset({
         examples: [
           { color: "base-100" },
           { color: "primary-500" },
@@ -325,7 +327,7 @@ export const siteAttributesSchema = Type.Object(
       }),
     ),
     ogImage: Type.Optional(
-      imageRef({
+      image({
         title: "Social share image",
         description: "Image shown when this site is shared on social media",
         "ai:hidden": true,

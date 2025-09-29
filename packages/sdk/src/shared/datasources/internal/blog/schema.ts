@@ -1,4 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
+import { StringEnum } from "../../../utils/string-enum";
 
 export const blogSchema = Type.Array(
   Type.Object({
@@ -39,7 +40,7 @@ export const blogSchema = Type.Array(
       pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$",
       description: "URL-friendly version of the title",
     }),
-    status: Type.Union([Type.Literal("draft"), Type.Literal("published"), Type.Literal("archived")], {
+    status: StringEnum(["draft", "published", "archived"], {
       title: "Status",
       description: "Publication status of the blog post",
     }),

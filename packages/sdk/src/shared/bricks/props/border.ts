@@ -1,7 +1,6 @@
 import { type ObjectOptions, Type, type Static, type StringOptions } from "@sinclair/typebox";
-import { typedRef } from "~/shared/utils/typed-ref";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { borderColorRef } from "./color";
+import { borderColor } from "./color";
 
 export function border(opts: ObjectOptions = {}) {
   return Type.Object(
@@ -15,7 +14,7 @@ export function border(opts: ObjectOptions = {}) {
         "ui:placeholder": "None",
         default: "border-0",
       }),
-      color: borderColorRef({
+      color: borderColor({
         title: "Color",
         description: "The color of the border.",
         default: "border-current",
@@ -48,12 +47,6 @@ export function border(opts: ObjectOptions = {}) {
 
 export type BorderSettings = Static<ReturnType<typeof border>>;
 
-export function borderRef(
-  options: Omit<ObjectOptions, "default"> & { default?: Partial<BorderSettings> } = {},
-) {
-  return typedRef("styles:border", options);
-}
-
 export function rounding(opts: StringOptions = {}) {
   return Type.Optional(
     StringEnum(
@@ -80,7 +73,3 @@ export function rounding(opts: StringOptions = {}) {
 }
 
 export type RoundingSettings = Static<ReturnType<typeof rounding>>;
-
-export function roundingRef(options: StringOptions = {}) {
-  return typedRef("styles:rounding", options);
-}

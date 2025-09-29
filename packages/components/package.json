@@ -43,9 +43,13 @@
   "sideEffects": [
     "**/*.css"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/upstart-gg/upstart.git",
+    "directory": "packages/components"
+  },
   "dependencies": {
     "@ai-sdk/react": "2.0.39",
-    "@cloudflare/cabidela": "0.2.4",
     "@date-fns/utc": "1.2.0",
     "@dnd-kit/abstract": "0.1.21",
     "@dnd-kit/collision": "0.1.21",
@@ -55,7 +59,6 @@
     "@hello-pangea/dnd": "18.0.1",
     "@iconify/react": "6.0.0",
     "@radix-ui/themes": "3.2.1",
-    "@sinclair/typebox": "0.34.41",
     "@tanstack/react-virtual": "3.13.12",
     "@tiptap/extension-code": "2.14.0",
     "@tiptap/extension-document": "2.14.0",
@@ -124,6 +127,7 @@
     "@emotion/is-prop-valid": "^1.4.0",
     "@upstart.gg/sdk": "workspace:*",
     "@upstart.gg/style-system": "workspace:*",
+    "@sinclair/typebox": "^0.34.41",
     "chroma-js": "^3.1.2",
     "lodash-es": "^4.17.21",
     "posthog-js": "^1.242.1",

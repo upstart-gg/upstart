@@ -1,8 +1,8 @@
 import { createContext, useContext } from "react";
-import type { TArray, TObject, TSchema } from "@sinclair/typebox";
+import type { TObject, TSchema } from "@sinclair/typebox";
 import { Text } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
-import { VscSymbolBoolean, VscSymbolNumeric, VscSymbolString, VscSymbolArray } from "react-icons/vsc";
+import { VscSymbolBoolean, VscSymbolString, VscSymbolArray } from "react-icons/vsc";
 import { CiCalendarDate } from "react-icons/ci";
 import { HiMiniAtSymbol, HiMiniHashtag } from "react-icons/hi2";
 import { GoRelFilePath } from "react-icons/go";

@@ -1,6 +1,5 @@
 import { type StringOptions, Type, type Static } from "@sinclair/typebox";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { typedRef } from "~/shared/utils/typed-ref";
 
 type Options = StringOptions & {
   "ui:no-extra-large-sizes"?: boolean;
@@ -20,10 +19,6 @@ export function fontSize(options: Options = {}) {
 }
 
 export type FontSizeSettings = Static<ReturnType<typeof fontSize>>;
-
-export function fontSizeRef(options: Options = {}) {
-  return typedRef("styles:fontSize", options);
-}
 
 export function fontSizeXL(options: Options = {}) {
   return StringEnum(
@@ -66,9 +61,6 @@ export function fontSizeXL(options: Options = {}) {
     },
   );
 }
-export function fontSizeXLRef(options: Options = {}) {
-  return typedRef("styles:fontSizeXL", options);
-}
 
 type TextContentOptions = {
   showInSettings?: boolean;
@@ -101,7 +93,3 @@ export function textContent({
 }
 
 export type TextContentSettings = Static<ReturnType<typeof textContent>>;
-
-export function textContentRef(options: TextContentOptions & StringOptions = {}) {
-  return typedRef("content:text", options);
-}

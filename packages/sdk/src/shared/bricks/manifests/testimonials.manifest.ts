@@ -2,15 +2,15 @@ import { type Static, type TObject, Type } from "@sinclair/typebox";
 import { HiOutlineChatBubbleBottomCenter } from "react-icons/hi2";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
-import { imageRef } from "../props/image";
-import { iconRef, string } from "../props/string";
+import { image } from "../props/image";
+import { icon } from "../props/string";
 import type { BrickProps } from "../props/types";
-import { fontSizeRef } from "../props/text";
-import { colorPresetRef } from "../props/color-preset";
-import { cssLengthRef } from "../props/css-length";
-import { loopRef } from "../props/dynamic";
-import { borderRef } from "../props/border";
-import { shadowRef } from "../props/effects";
+import { fontSize } from "../props/text";
+import { colorPreset } from "../props/color-preset";
+import { cssLength } from "../props/css-length";
+import { loop } from "../props/dynamic";
+import { border } from "../props/border";
+import { shadow } from "../props/effects";
 import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
@@ -26,13 +26,13 @@ Optionally either use an avatar or a social icon but not both at the same time.`
   props: defineProps(
     {
       colorPreset: Type.Optional(
-        colorPresetRef({
+        colorPreset({
           title: "Color",
           default: "base-100",
         }),
       ),
       border: Type.Optional(
-        borderRef({
+        border({
           title: "Border",
           description: "Customize the border of the testimonial cards.",
           default: {
@@ -42,12 +42,12 @@ Optionally either use an avatar or a social icon but not both at the same time.`
         }),
       ),
       fontSize: Type.Optional(
-        fontSizeRef({
+        fontSize({
           "ui:no-extra-large-sizes": true,
         }),
       ),
       padding: Type.Optional(
-        cssLengthRef({
+        cssLength({
           default: "1rem",
           description: "Padding inside the main container.",
           "ai:instructions": "Use only a single value like '1rem' or '10px'",
@@ -58,7 +58,7 @@ Optionally either use an avatar or a social icon but not both at the same time.`
         }),
       ),
       gap: Type.Optional(
-        cssLengthRef({
+        cssLength({
           title: "Gap",
           default: "26px",
           description: "Space between bricks.",
@@ -68,9 +68,9 @@ Optionally either use an avatar or a social icon but not both at the same time.`
           "ui:styleId": "styles:gap",
         }),
       ),
-      shadow: Type.Optional(shadowRef()),
+      shadow: Type.Optional(shadow()),
       loop: Type.Optional(
-        loopRef({
+        loop({
           // title: "Use dynamic content",
           description:
             "If enabled, each row from the query result will be used to create a testimonial. Otherwise, the testimonials will be static.",
@@ -80,21 +80,22 @@ Optionally either use an avatar or a social icon but not both at the same time.`
       testimonials: Type.Optional(
         Type.Array(
           Type.Object({
-            text: string("Text", {
+            text: Type.String({
+              title: "Text",
               default: "Amazing product!",
               "ui:multiline": true,
               "ui:textarea-class": "h-20",
             }),
-            author: string("Author", { default: "John Doe" }),
-            company: Type.Optional(string("Company")),
+            author: Type.String({ title: "Author", default: "John Doe" }),
+            company: Type.Optional(Type.String({ title: "Company" })),
             avatar: Type.Optional(
-              imageRef({
+              image({
                 title: "Avatar",
                 "ui:placeholder": "https://via.placeholder.com/80x80.png?text=JD",
                 noObjectOptions: true,
               }),
             ),
-            socialIcon: Type.Optional(iconRef()),
+            socialIcon: Type.Optional(icon()),
           }),
           {
             title: "Testimonials",

@@ -1,16 +1,14 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
-import { imageRef } from "../props/image";
-import { shadowRef } from "../props/effects";
+import { image } from "../props/image";
+import { shadow } from "../props/effects";
 import { RxImage } from "react-icons/rx";
-import { string } from "../props/string";
 import { Type } from "@sinclair/typebox";
 import type { BrickProps } from "../props/types";
-import { backgroundColorRef } from "../props/background";
-import { borderRef, roundingRef } from "../props/border";
-import { loopRef } from "../props/dynamic";
-import { colorPresetRef } from "../props/color-preset";
-import { cssLengthRef } from "../props/css-length";
+import { border, rounding } from "../props/border";
+import { loop } from "../props/dynamic";
+import { cssLength } from "../props/css-length";
+import { colorPreset } from "../props/color-preset";
 
 export const manifest = defineBrickManifest({
   type: "image",
@@ -56,14 +54,14 @@ DO
   defaultWidth: { desktop: "auto", mobile: "100%" },
   icon: RxImage,
   props: defineProps({
-    image: imageRef({
+    image: image({
       metadata: {
         category: "content",
       },
     }),
-    colorPreset: Type.Optional(colorPresetRef()),
+    colorPreset: Type.Optional(colorPreset()),
     padding: Type.Optional(
-      cssLengthRef({
+      cssLength({
         description: "Padding inside the image.",
         title: "Padding",
         "ai:instructions": "Use only a single value like '1rem' or '10px'",
@@ -73,14 +71,15 @@ DO
       }),
     ),
     rounding: Type.Optional(
-      roundingRef({
+      rounding({
         default: "rounded-md",
       }),
     ),
-    border: Type.Optional(borderRef()),
-    shadow: Type.Optional(shadowRef()),
+    border: Type.Optional(border()),
+    shadow: Type.Optional(shadow()),
     blurHash: Type.Optional(
-      string("Blur Hash", {
+      Type.String({
+        title: "Blur hash",
         "ui:field": "hidden",
         description: "A placeholder for the image while it is loading. Use a blur hash string.",
       }),
@@ -88,10 +87,13 @@ DO
     author: Type.Optional(
       Type.Object(
         {
-          name: string("Image Author", {
+          name: Type.String({
+            title: "Image Author",
             description: "Image author. Use this to give credit to the author",
           }),
-          url: string("Image Author URL", {
+          url: Type.String({
+            title: "Image Author URL",
+            format: "uri",
             description: "Image author URL. Use this to give credit to the author",
           }),
         },
@@ -101,12 +103,13 @@ DO
       ),
     ),
     provider: Type.Optional(
-      string("Image Provider", {
+      Type.String({
+        title: "Image Provider",
         "ui:field": "hidden",
         "ai:instructions": "The provider of the image, e.g. 'unsplash', 'pexels', etc.",
       }),
     ),
-    loop: Type.Optional(loopRef()),
+    loop: Type.Optional(loop()),
   }),
 });
 

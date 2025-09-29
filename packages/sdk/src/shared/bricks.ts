@@ -1,17 +1,17 @@
-import { Type, type Static, type TObject } from "@sinclair/typebox";
+import { Type, type Static } from "@sinclair/typebox";
 import { customAlphabet } from "nanoid";
-import { brickTypes, defaultProps, manifests } from "./bricks/manifests/all-manifests";
-import { cssLengthRef } from "./bricks/props/css-length";
-import { colorPresetRef } from "./bricks/props/color-preset";
+import { defaultProps, manifests } from "./bricks/manifests/all-manifests";
+import { cssLength } from "./bricks/props/css-length";
+import { colorPreset } from "./bricks/props/color-preset";
 import { mergeIgnoringArrays } from "./utils/merge";
 import { getSchemaDefaults } from "./utils/schema";
 import { StringEnum } from "./utils/string-enum";
-import { alignItemsRef, justifyContentRef } from "./bricks/props/align";
+import { alignItems, justifyContent } from "./bricks/props/align";
 import type { CommonBrickProps } from "./bricks/props/common";
-import { directionRef } from "./bricks/props/direction";
+import { direction } from "./bricks/props/direction";
 import type { PageAttributes, SiteAttributes } from "./attributes";
 import { toLLMSchema } from "./utils/llm";
-import { backgroundRef } from "./bricks/props/background";
+import { background } from "./bricks/props/background";
 
 /**
  * Generates a unique identifier for bricks.
@@ -75,33 +75,30 @@ export const brickTypeSchema = StringEnum(Object.keys(defaultProps), {
   title: "Brick type",
 });
 
-export const brickSchema = Type.Object(
-  {
-    id: Type.String({
-      title: "ID",
-      description: "A unique identifier for the brick.",
+export const brickSchema = Type.Object({
+  id: Type.String({
+    title: "ID",
+    description: "A unique identifier for the brick.",
+  }),
+  type: brickTypeSchema,
+  label: Type.Optional(
+    Type.String({
+      title: "Label",
+      description: "A human-readable label for the brick. Used for organization and identification.",
     }),
-    type: brickTypeSchema,
-    label: Type.Optional(
-      Type.String({
-        title: "Label",
-        description: "A human-readable label for the brick. Used for organization and identification.",
-      }),
-    ),
-    props: Type.Any({
+  ),
+  props: Type.Any({
+    title: "Props",
+    description: "The static props of the brick. The available props depends on the brick type.",
+  }),
+  mobileProps: Type.Optional(
+    Type.Any({
       title: "Props",
-      description: "The static props of the brick. The available props depends on the brick type.",
+      description:
+        "The overriden props for mobile, merged with desktop props. Same type as props but partial.",
     }),
-    mobileProps: Type.Optional(
-      Type.Any({
-        title: "Props",
-        description:
-          "The overriden props for mobile, merged with desktop props. Same type as props but partial.",
-      }),
-    ),
-  },
-  { additionalProperties: true },
-);
+  ),
+});
 
 export function makeFullBrickSchemaForLLM(type: string, otherTypes?: string[]) {
   const originalProps = Type.Pick(brickSchema, ["props"]);
@@ -138,7 +135,7 @@ export function makeFullBrickSchemaForLLM(type: string, otherTypes?: string[]) {
           description: "A unique identifier for the brick.",
         }),
         type: Type.Literal(type),
-        props: props,
+        props,
         mobileProps: Type.Optional(Type.Partial(manifests[type].props)),
       },
       // IMPORTANT: DO NOT set "additionalProperties" to `false` because it would break validation with Cabidela library
@@ -149,119 +146,112 @@ export function makeFullBrickSchemaForLLM(type: string, otherTypes?: string[]) {
 
 export type Brick = Omit<Static<typeof brickSchema>, "props" | "mobileProps"> & {
   props: CommonBrickProps & Record<string, unknown>;
-  mobileProps?: CommonBrickProps & Record<string, unknown>;
+  mobileProps?: Partial<CommonBrickProps & Record<string, unknown>>;
 };
 
-export const sectionProps = Type.Object(
-  {
-    colorPreset: Type.Optional(
-      colorPresetRef({
-        title: "Color",
-      }),
-    ),
-    backgroundImage: Type.Optional(
-      backgroundRef({
-        title: "Background",
-        description:
-          "The background image of the section. Prefer to set background images on sections rather than on individual bricks.",
-      }),
-    ),
-    direction: Type.Optional(
-      directionRef({
-        default: "flex-row",
-        title: "Direction",
-        description:
-          "The direction of the section. Only apply to desktop. On mobile, it is always vertical. By default, horizontal (row), which is the most common.",
-        "ui:responsive": "desktop",
-      }),
-    ),
-    minHeight: Type.Optional(
-      cssLengthRef({
-        title: "Min height",
-        default: "fit-content",
-        description:
-          "The min height of the section. default is 'fit-content'. You can also use  the keyword 'full' to make it full viewport height. Lastly, you can use any valid CSS length unit.",
-        "ui:field": "hidden",
-      }),
-    ),
-    variant: Type.Optional(
-      StringEnum(["navbar", "footer", "sidebar"], {
-        title: "Custom section variant",
-        description: "Used for custom styling and layout.",
-        enumNames: ["Navbar", "Footer", "Sidebar"],
-        "ui:field": "hidden",
-        "ai:hidden": true,
-      }),
-    ),
-    maxWidth: Type.Optional(
-      StringEnum(["max-w-screen-lg", "max-w-screen-xl", "max-w-screen-2xl", "max-w-full"], {
-        title: "Max width",
-        default: "max-w-full",
-        enumNames: ["M", "L", "XL", "Full"],
-        description: "The maximum width of the section. Desktop only",
-        "ai:instructions":
-          "Choose the most appropriate max width for the section. The value 'max-w-full' is the most common and the default. Use the same value for all sections on the same page unless there is a good reason to do otherwise.",
-        displayAs: "button-group",
-        "ui:responsive": "desktop",
-      }),
-    ),
-    verticalMargin: Type.Optional(
-      cssLengthRef({
-        title: "Vertical Margin",
-        description:
-          "The vertical margin of the section. By default, all sections touch each other with no space in between. If you want to add space between sections, set this value to e.g. '2rem' or '32px'. Adding a vertical margin will reveal the background color of the page.",
-        default: "0",
-        "ui:styleId": "styles:verticalMargin",
-      }),
-    ),
-    justifyContent: Type.Optional(
-      justifyContentRef({
-        default: "justify-center",
-      }),
-    ),
-    alignItems: Type.Optional(
-      alignItemsRef({
-        default: "items-center",
-      }),
-    ),
-    padding: Type.Optional(
-      cssLengthRef({
-        default: "2rem",
-        description: "Padding inside the section.",
-        title: "Padding",
-        "ui:responsive": true,
-        "ui:placeholder": "Not specified",
-        "ui:styleId": "styles:padding",
-      }),
-    ),
-    gap: Type.Optional(
-      cssLengthRef({
-        title: "Gap",
-        description: "The gap between the bricks in the section.",
-        default: "20px",
-        "ui:styleId": "styles:gap",
-      }),
-    ),
-    wrap: Type.Optional(
-      Type.Boolean({
-        title: "Wrap",
-        description: "Wrap bricks if they overflow the section.",
-        default: true,
-        "ui:styleId": "styles:wrap",
-      }),
-    ),
-    lastTouched: Type.Optional(
-      Type.Number({
-        description: "Do not use this field. It is used internally by the editor.",
-        "ui:field": "hidden",
-        "ai:hidden": true,
-      }),
-    ),
-  },
-  {
-    additionalProperties: false,
-  },
-);
+export const sectionProps = Type.Object({
+  colorPreset: Type.Optional(
+    colorPreset({
+      title: "Color",
+    }),
+  ),
+  backgroundImage: Type.Optional(
+    background({
+      title: "Background",
+    }),
+  ),
+  direction: Type.Optional(
+    direction({
+      default: "flex-row",
+      title: "Direction",
+      description:
+        "The direction of the section. Only apply to desktop. On mobile, it is always vertical. By default, horizontal (row), which is the most common.",
+      "ui:responsive": "desktop",
+    }),
+  ),
+  minHeight: Type.Optional(
+    cssLength({
+      title: "Min height",
+      default: "fit-content",
+      description:
+        "The min height of the section. default is 'fit-content'. You can also use  the keyword 'full' to make it full viewport height. Lastly, you can use any valid CSS length unit.",
+      "ui:field": "hidden",
+    }),
+  ),
+  variant: Type.Optional(
+    StringEnum(["navbar", "footer", "sidebar"], {
+      title: "Custom section variant",
+      description: "Used for custom styling and layout.",
+      enumNames: ["Navbar", "Footer", "Sidebar"],
+      "ui:field": "hidden",
+      "ai:hidden": true,
+    }),
+  ),
+  maxWidth: Type.Optional(
+    StringEnum(["max-w-screen-lg", "max-w-screen-xl", "max-w-screen-2xl", "max-w-full"], {
+      title: "Max width",
+      default: "max-w-full",
+      enumNames: ["M", "L", "XL", "Full"],
+      description: "The maximum width of the section. Desktop only",
+      "ai:instructions":
+        "Choose the most appropriate max width for the section. The value 'max-w-full' is the most common and the default. Use the same value for all sections on the same page unless there is a good reason to do otherwise.",
+      displayAs: "button-group",
+      "ui:responsive": "desktop",
+    }),
+  ),
+  verticalMargin: Type.Optional(
+    cssLength({
+      title: "Vertical Margin",
+      description:
+        "The vertical margin of the section. By default, all sections touch each other with no space in between. If you want to add space between sections, set this value to e.g. '2rem' or '32px'. Adding a vertical margin will reveal the background color of the page.",
+      default: "0",
+      "ui:styleId": "styles:verticalMargin",
+    }),
+  ),
+  justifyContent: Type.Optional(
+    justifyContent({
+      default: "justify-center",
+    }),
+  ),
+  alignItems: Type.Optional(
+    alignItems({
+      default: "items-center",
+    }),
+  ),
+  padding: Type.Optional(
+    cssLength({
+      default: "2rem",
+      description: "Padding inside the section.",
+      title: "Padding",
+      "ui:responsive": true,
+      "ui:placeholder": "Not specified",
+      "ui:styleId": "styles:padding",
+    }),
+  ),
+  gap: Type.Optional(
+    cssLength({
+      title: "Gap",
+      description: "The gap between the bricks in the section.",
+      default: "2rem",
+      "ui:styleId": "styles:gap",
+    }),
+  ),
+  wrap: Type.Optional(
+    Type.Boolean({
+      title: "Wrap",
+      description: "Wrap bricks if they overflow the section.",
+      default: true,
+      "ui:styleId": "styles:wrap",
+    }),
+  ),
+  lastTouched: Type.Optional(
+    Type.Number({
+      description: "Do not use this field. It is used internally by the editor.",
+      "ui:field": "hidden",
+      "ai:hidden": true,
+    }),
+  ),
+});
 
 export const sectionSchema = Type.Object(
   {
@@ -277,7 +267,7 @@ export const sectionSchema = Type.Object(
       description: "Determines section order in the page (lower numbers appear first). 0-based",
     }),
     props: sectionProps,
-    mobileProps: Type.Optional(Type.Partial(sectionProps, { additionalProperties: false })),
+    mobileProps: Type.Optional(Type.Partial(sectionProps)),
     bricks: Type.Array(brickSchema),
   },
   {
@@ -285,11 +275,8 @@ export const sectionSchema = Type.Object(
   },
 );
 
-export const sectionSchemaLLM = toLLMSchema(sectionSchema);
 export const sectionSchemaNoBricks = Type.Omit(sectionSchema, ["bricks"]);
 export type SectionSchemaNoBricks = Static<typeof sectionSchemaNoBricks>;
-
-export const sectionSchemaNoBricksLLM = toLLMSchema(sectionSchemaNoBricks);
 
 const sectionDefaultprops = getSchemaDefaults(sectionSchema.properties.props, "desktop") as Section["props"];
 const sectionMobileDefaultprops = getSchemaDefaults(

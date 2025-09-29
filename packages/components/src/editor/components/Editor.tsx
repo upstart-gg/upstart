@@ -252,6 +252,45 @@ export default function Editor(props: EditorProps) {
             </div>
           )}
         </Suspense>
+        <Toaster
+          toastOptions={{
+            position: "bottom-center",
+            style: {
+              background: "rgba(0, 0, 0, 0.85)",
+              color: "white",
+              fontSize: "0.85rem",
+              fontWeight: "500",
+              // marginBottom: "1rem",
+            },
+            className: tx("last:mb-1 px-1 py-1 rounded-lg"),
+            error: {
+              style: {
+                background: "#880808",
+              },
+            },
+          }}
+        />
+        {islocalDev && (
+          <div
+            className="fixed flex max-w-[548px] items-center divide-x divide-gray-300 bottom-0 right-6 p-2 text-xs text-gray-500 bg-gray-100 dark:bg-dark-800 z-[19999] rounded-t-md"
+            style={{
+              // Shadow to the top left corner
+              boxShadow: "0 -2px 4px rgba(0, 0, 0, 0.1), -2px 0 4px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <div className="px-2">Selected brick: {selectedBrickId ?? "none"}</div>
+            <div className="px-2">Selected section: {selectedSectionId ?? "none"}</div>
+            <div className="flex items-center gap-1 px-2">
+              <Switch defaultChecked={debug} onCheckedChange={toggleDebugMode} size="1" id="debug-mode" />
+              <label htmlFor="debug-mode" className="cursor-pointer select-none">
+                Debug mode{" "}
+                <b className={tx("font-semibold", debug ? "text-upstart-600" : "text-gray-500")}>
+                  {debug ? "on" : "off"}
+                </b>
+              </label>
+            </div>
+          </div>
+        )}
         <main
           className={tx(
             "flex-1 flex place-content-center z-40 overflow-x-auto overscroll-none",
@@ -292,46 +331,6 @@ export default function Editor(props: EditorProps) {
                 </Suspense>
               </DeviceFrame>
             ))}
-
-          <Toaster
-            toastOptions={{
-              position: "bottom-center",
-              style: {
-                background: "rgba(0, 0, 0, 0.85)",
-                color: "white",
-                fontSize: "0.85rem",
-                fontWeight: "500",
-                // marginBottom: "1rem",
-              },
-              className: tx("last:mb-1 px-1 py-1 rounded-lg"),
-              error: {
-                style: {
-                  background: "#880808",
-                },
-              },
-            }}
-          />
-          {islocalDev && (
-            <div
-              className="fixed flex max-w-[548px] items-center divide-x divide-gray-300 bottom-0 right-6 p-2 text-xs text-gray-500 bg-gray-100 dark:bg-dark-800 z-[19999] rounded-t-md"
-              style={{
-                // Shadow to the top left corner
-                boxShadow: "0 -2px 4px rgba(0, 0, 0, 0.1), -2px 0 4px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              <div className="px-2">Selected brick: {selectedBrickId ?? "none"}</div>
-              <div className="px-2">Selected section: {selectedSectionId ?? "none"}</div>
-              <div className="flex items-center gap-1 px-2">
-                <Switch defaultChecked={debug} onCheckedChange={toggleDebugMode} size="1" id="debug-mode" />
-                <label htmlFor="debug-mode" className="cursor-pointer select-none">
-                  Debug mode{" "}
-                  <b className={tx("font-semibold", debug ? "text-upstart-600" : "text-gray-500")}>
-                    {debug ? "on" : "off"}
-                  </b>
-                </label>
-              </div>
-            </div>
-          )}
         </main>
       </div>
     </DragDropProvider>

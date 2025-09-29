@@ -2,13 +2,11 @@ import { Type } from "@sinclair/typebox";
 import { RiTable2 } from "react-icons/ri";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
-import { string } from "../props/string";
-import type { BrickProps } from "../props/types";
-import { colorPresetRef } from "../props/color-preset";
-import { borderRef, roundingRef } from "../props/border";
-import { loopRef } from "../props/dynamic";
-import { cssLengthRef } from "../props/css-length";
-import { fontSizeRef } from "../props/text";
+import { colorPreset } from "../props/color-preset";
+import { border, rounding } from "../props/border";
+import { loop } from "../props/dynamic";
+import { cssLength } from "../props/css-length";
+import { fontSize } from "../props/text";
 import { StringEnum } from "~/shared/utils/string-enum";
 import type { BrickExample } from "./_types";
 
@@ -35,18 +33,20 @@ export const manifest = defineBrickManifest({
   icon: RiTable2,
   props: defineProps({
     colorPreset: Type.Optional(
-      colorPresetRef({
+      colorPreset({
         title: "Color",
       }),
     ),
-    loop: Type.Optional(loopRef()),
+    loop: Type.Optional(loop()),
     columns: Type.Array(
       Type.Object({
-        header: string("Header", {
+        header: Type.String({
+          title: "Header",
           default: "Column Header",
           metadata: { category: "content" },
         }),
-        field: string("Field", {
+        field: Type.String({
+          title: "Field",
           default: "fieldName",
           description: "The field name from the data source or static content",
           metadata: { category: "content" },
@@ -125,14 +125,14 @@ export const manifest = defineBrickManifest({
       }),
     ),
     fontSize: Type.Optional(
-      fontSizeRef({
+      fontSize({
         title: "Font Size",
         description: "Text size for table content",
         default: "text-sm",
       }),
     ),
     padding: Type.Optional(
-      cssLengthRef({
+      cssLength({
         default: "1rem",
         description: "Padding inside table cells",
         title: "Cell Padding",
@@ -142,12 +142,12 @@ export const manifest = defineBrickManifest({
       }),
     ),
     rounding: Type.Optional(
-      roundingRef({
+      rounding({
         default: "rounded-lg",
       }),
     ),
     border: Type.Optional(
-      borderRef({
+      border({
         default: { width: "border", color: "border-gray-200" },
       }),
     ),

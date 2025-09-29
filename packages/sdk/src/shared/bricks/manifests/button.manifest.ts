@@ -2,11 +2,11 @@ import { Type } from "@sinclair/typebox";
 import { RxButton } from "react-icons/rx";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
-import { string, urlOrPageIdRef } from "../props/string";
-import { roundingRef } from "../props/border";
+import { urlOrPageId } from "../props/string";
+import { rounding } from "../props/border";
 import { StringEnum } from "~/shared/utils/string-enum";
-import { fontSizeRef } from "../props/text";
-import { colorPresetRef } from "../props/color-preset";
+import { fontSize } from "../props/text";
+import { colorPreset } from "../props/color-preset";
 import type { BrickExample } from "./_types";
 
 export const manifest = defineBrickManifest({
@@ -49,15 +49,15 @@ AVOID:
   props: defineProps(
     {
       colorPreset: Type.Optional(
-        colorPresetRef({
+        colorPreset({
           default: { color: "primary-500" },
           title: "Color",
           "ui:default-gradient-direction": "bg-gradient-to-b",
         }),
       ),
-      label: string("Label", { default: "My button", metadata: { category: "content" } }),
+      label: Type.String({ title: "Label", default: "My button", metadata: { category: "content" } }),
       fontSize: Type.Optional(
-        fontSizeRef({
+        fontSize({
           title: "Font size",
           description: "The font size of the button text.",
           default: "text-base",
@@ -66,7 +66,7 @@ AVOID:
         }),
       ),
       rounding: Type.Optional(
-        roundingRef({
+        rounding({
           default: "rounded-md",
         }),
       ),
@@ -80,7 +80,7 @@ AVOID:
           "ui:display": "select",
         }),
       ),
-      link: urlOrPageIdRef({
+      link: urlOrPageId({
         title: "Link",
         "ui:placeholder": "https://example.com",
         metadata: { category: "content" },

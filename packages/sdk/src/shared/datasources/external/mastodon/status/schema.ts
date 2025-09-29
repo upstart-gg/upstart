@@ -1,15 +1,10 @@
 import { Type, type Static } from "@sinclair/typebox";
+import { StringEnum } from "../../../../utils/string-enum";
 import { mastodonAccountSchema } from "../account/schema";
 
 const mastodonMediaAttachmentSchema = Type.Object({
   id: Type.String(),
-  type: Type.Union([
-    Type.Literal("audio"),
-    Type.Literal("image"),
-    Type.Literal("video"),
-    Type.Literal("gifv"),
-    Type.Literal("unknown"),
-  ]),
+  type: StringEnum(["audio", "image", "video", "gifv", "unknown"]),
   url: Type.String(),
   preview_url: Type.Optional(Type.String()),
   remote_url: Type.Optional(Type.String()),
@@ -30,12 +25,7 @@ const mastodonPreviewCardSchema = Type.Object({
   url: Type.String(),
   title: Type.String(),
   description: Type.String(),
-  type: Type.Union([
-    Type.Literal("link"),
-    Type.Literal("photo"),
-    Type.Literal("video"),
-    Type.Literal("rich"),
-  ]),
+  type: StringEnum(["link", "photo", "video", "rich"]),
   author_name: Type.String(),
   author_url: Type.String(),
   provider_name: Type.String(),
@@ -71,12 +61,7 @@ export const mastodonStatusSchema = Type.Object({
   created_at: Type.String(),
   account: mastodonAccountSchema,
   content: Type.String(),
-  visibility: Type.Union([
-    Type.Literal("public"),
-    Type.Literal("unlisted"),
-    Type.Literal("private"),
-    Type.Literal("direct"),
-  ]),
+  visibility: StringEnum(["public", "unlisted", "private", "direct"]),
   sensitive: Type.Boolean(),
   media_attachments: Type.Array(mastodonMediaAttachmentSchema),
   application: Type.Optional(
