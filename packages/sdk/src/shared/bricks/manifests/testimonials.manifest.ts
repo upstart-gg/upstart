@@ -12,6 +12,7 @@ import { loop } from "../props/dynamic";
 import { border } from "../props/border";
 import { shadow } from "../props/effects";
 import type { BrickExample } from "./_types";
+import { grow } from "../props/grow";
 
 export const manifest = defineBrickManifest({
   type: "testimonials",
@@ -75,6 +76,11 @@ Optionally either use an avatar or a social icon but not both at the same time.`
           description:
             "If enabled, each row from the query result will be used to create a testimonial. Otherwise, the testimonials will be static.",
           "ui:placeholder": "Not specified (static)",
+        }),
+      ),
+      grow: Type.Optional(
+        grow({
+          default: true,
         }),
       ),
       testimonials: Type.Optional(

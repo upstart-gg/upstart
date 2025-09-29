@@ -21,10 +21,6 @@ Display a single image with optional framing (padding, rounding, border, shadow,
 REQUIRED
 • 'image.src' and 'image.alt' (alt must be meaningful, not empty; may interpolate page queries fields).
 
-COLOR & BACKGROUND
-• colorPreset is optional – use when you need a frame or tone behind the image (neutral / accent / primary / secondary / base or gradient variants). Omit to keep a transparent/inherited background.
-• Only use gradientDirection when the preset is a gradient token (e.g. primary-gradient-400).
-
 STYLING
 • padding should be a single css length value (like '1rem' or '0.75rem').
 • rounding defaults to a modest radius; override for circular avatars (rounded-full) or strong accent (rounded-xl).

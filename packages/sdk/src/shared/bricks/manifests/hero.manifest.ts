@@ -10,6 +10,8 @@ import { colorPreset } from "../props/color-preset";
 import { alignItems, justifyContent } from "../props/align";
 import { cssLength } from "../props/css-length";
 import type { BrickExample } from "./_types";
+import { backgroundColor } from "../props/background";
+import { color } from "../props/color";
 
 export const manifest = defineBrickManifest({
   type: "hero",
@@ -72,9 +74,15 @@ DO
         // default: "<p style='text-align:center'>Use our platform to build your business with confidence.</p>",
       }),
     ),
-    colorPreset: Type.Optional(
-      colorPreset({
-        title: "Color",
+    backgroundColor: Type.Optional(
+      backgroundColor({
+        title: "Background color",
+      }),
+    ),
+    color: Type.Optional(
+      color({
+        title: "Text color",
+        default: "text-inherit",
       }),
     ),
     textShadow: Type.Optional(
@@ -153,9 +161,6 @@ export const examples: BrickExample<Manifest>[] = [
       content: "Transform Your Body",
       tagline: "<p style='text-align:center'>High-intensity training programs that deliver real results</p>",
       padding: "5rem",
-      colorPreset: {
-        color: "accent-600",
-      },
       textShadow: "text-shadow-md",
       rounding: "rounded-2xl",
       justifyContent: "justify-center",

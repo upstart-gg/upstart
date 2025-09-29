@@ -12,12 +12,13 @@ import { loop } from "../props/dynamic";
 import { StringEnum } from "~/shared/utils/string-enum";
 import { urlOrPageId } from "../props/string";
 import type { BrickExample } from "./_types";
+import { grow } from "../props/grow";
 
 export const manifest = defineBrickManifest({
   type: "card",
   name: "Card",
   description: "A card that can have a title, image, content, and button.",
-  aiInstructions: `Use this brick to create visually distinct content blocks (product, feature, event, article, etc.).
+  aiInstructions: `Use this brick to create visually distinct content blocks (product, feature, event, article, blog post, etc.).
 
 Guidelines:
 - Always provide a short button label (1-3 words) and pick a color matching semantic weight (primary/accent for primary actions, neutral/secondary for low emphasis).
@@ -39,7 +40,6 @@ Guidelines:
         default: { color: "base-100" },
       }),
     ),
-
     cardImage: Type.Optional(
       image({
         "ui:responsive": "desktop",
@@ -115,6 +115,11 @@ Guidelines:
         ),
       },
       { title: "Button", description: "Button displayed at the bottom of the card" },
+    ),
+    grow: Type.Optional(
+      grow({
+        default: true,
+      }),
     ),
   }),
 });

@@ -8,6 +8,7 @@ import { border, rounding } from "../props/border";
 import { loop } from "../props/dynamic";
 import { cssLength } from "../props/css-length";
 import type { BrickExample } from "./_types";
+import { grow } from "../props/grow";
 
 export const manifest = defineBrickManifest({
   type: "images-gallery",
@@ -104,6 +105,13 @@ export const manifest = defineBrickManifest({
     ),
     rounding: rounding(),
     border: Type.Optional(border()),
+
+    // Override grow to default to true
+    grow: Type.Optional(
+      grow({
+        default: true,
+      }),
+    ),
   }),
 });
 

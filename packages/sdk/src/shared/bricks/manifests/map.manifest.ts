@@ -6,6 +6,7 @@ import { shadow } from "../props/effects";
 import { Type } from "@sinclair/typebox";
 import { number } from "../props/number";
 import type { BrickExample } from "./_types";
+import { grow } from "../props/grow";
 
 export const DEFAULTS = {
   lat: 48.8566, // Default latitude (Paris)
@@ -74,6 +75,11 @@ export const manifest = defineBrickManifest({
       }),
     ),
     shadow: Type.Optional(shadow()),
+    grow: Type.Optional(
+      grow({
+        default: true,
+      }),
+    ),
   }),
 });
 
