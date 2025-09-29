@@ -26,7 +26,7 @@ import SwitchField from "./fields/switch";
 // Import types
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
 import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
-import type { DatasourceSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
+import type { DeprecatedDatasourceSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import type { GeolocationSettings } from "@upstart.gg/sdk/shared/bricks/props/geolocation";
 import type { TagsSettings } from "@upstart.gg/sdk/shared/bricks/props/tags";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
@@ -176,12 +176,12 @@ function createFieldComponent(options: FieldFactoryOptions): ReactNode {
     }
 
     case "datasource": {
-      const currentValue = (get(formData, id) ?? commonProps.schema.default) as DatasourceSettings;
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as DeprecatedDatasourceSettings;
       return (
         <DatasourceField
           key={`field-${id}`}
           currentValue={currentValue}
-          onChange={(value: DatasourceSettings | undefined | null) => onChange({ [id]: value }, id)}
+          onChange={(value: DeprecatedDatasourceSettings | undefined | null) => onChange({ [id]: value }, id)}
           {...commonProps}
         />
       );

@@ -1,7 +1,6 @@
 // Helper function to traverse a schema and filter to get style properties
 // (properties whose "ui:styleId" starts with "styles:") and return them as an object with the path to the property
 // as the key and the $id as the value. Paths should be dot-separated.
-
 import type { TSchema } from "@sinclair/typebox";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
 import get from "lodash-es/get";

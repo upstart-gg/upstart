@@ -1,4 +1,4 @@
-import { Kind, type TArray, type TObject, type TSchema } from "@sinclair/typebox";
+import type { TArray, TObject, TSchema } from "@sinclair/typebox";
 import type { NavItem, NavItemGroup, NavItemProperty } from "./types";
 import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
 

@@ -81,7 +81,7 @@ function getValueLabel(value: NonNullable<QueryUseSettings["params"]>[number]["v
   return "";
 }
 
-const QueryField: FC<FieldProps<QueryUseSettings[] | undefined>> = (props) => {
+const QueryField: FC<FieldProps<QueryUseSettings[]>> = (props) => {
   const { currentValue = [], onChange, schema, title, description, brickId } = props;
   const datasources = useDatasources();
   const availableQueries = useSiteQueries();

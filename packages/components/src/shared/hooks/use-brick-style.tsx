@@ -18,7 +18,6 @@ function useClassesFromStyleProps<T extends BrickManifest>(
   const { props, mobileProps } = brick;
   const pageAttributes = usePageAttributes();
   const mergedProps = merge({}, defaultProps[brick.type].props, props);
-
   const manifest = useBrickManifest(brick.type);
 
   const filtered = Object.entries(stylesProps).reduce((acc, [key, value]) => {
@@ -53,10 +52,7 @@ function useClassesFromStyleProps<T extends BrickManifest>(
       const resolvedMobileProps = get(mobileProps, path);
       const schema = get(manifest.props.properties, path);
 
-      acc[part].push(
-        // @ts-expect-error
-        tx(helper?.(resolvedProps, resolvedMobileProps, schema)),
-      );
+      acc[part].push(tx(helper?.(resolvedProps, resolvedMobileProps, schema)));
       return acc;
     },
     {} as Record<string, string[]>,

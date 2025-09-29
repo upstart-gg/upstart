@@ -1,6 +1,7 @@
 import type { PageAttributes, SiteAttributes } from "@upstart.gg/sdk/shared/attributes";
 import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
 import { generateId, processSections } from "@upstart.gg/sdk/shared/bricks";
+import type { LoopSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
 import type { GenerationState } from "@upstart.gg/sdk/shared/context";
 import type { Datarecord } from "@upstart.gg/sdk/shared/datarecords/types";
 import type { Datasource, Query } from "@upstart.gg/sdk/shared/datasources/types";
@@ -176,7 +177,12 @@ export const createDraftStore = (
             set((state) => {
               const data = state.brickMap.get(id);
               invariant(data, `Cannot detach brick ${id}, it does not exist in the brickMap`);
-              const { brick, sectionId, parentId } = data;
+              const { sectionId, parentId } = data;
+              const brick = getBrickFromDraft(id, state);
+              if (!brick) {
+                console.error("Cannot detach brick %s, it does not exist", id);
+                return;
+              }
               if (!parentId) {
                 console.warn("Cannot detach brick %s, it is not in a container", id);
                 return;
@@ -198,9 +204,7 @@ export const createDraftStore = (
               );
               // Add it directly to the section, just after the parent brick
               const index = parentSection.bricks.findIndex((b) => b.id === parentId);
-              parentSection.bricks.splice(index + 1, 0, {
-                ...brick,
-              });
+              parentSection.bricks.splice(index + 1, 0, { ...brick });
 
               // Rebuild the brickMap
               state.brickMap = buildBrickMap(state.page.sections);
@@ -1194,8 +1198,9 @@ export function useLoopAlias(brickId: string) {
   let currentBrickId: string | undefined = brickId;
   while (currentBrickId) {
     const brick = getBrickFromDraft(currentBrickId, ctx.getState());
-    if (brick?.props.loop?.over) {
-      return brick?.props.loop.over as string;
+    const loop = brick?.props.loop as LoopSettings | undefined;
+    if (loop?.over) {
+      return loop.over;
     }
     currentBrickId = getParentBrick(currentBrickId)?.id;
   }
@@ -1410,7 +1415,7 @@ function getBrickSection(brickId: string, state: DraftState) {
   }
 }
 
-function getBrickFromDraft(id: string, state: DraftState) {
+function getBrickFromDraft(id: string, state: DraftState): Brick | null {
   // Find the brick in the sections
   for (const section of state.page.sections) {
     const brick = section.bricks.find((b) => b.id === id);
@@ -1461,7 +1466,7 @@ function buildBrickMap(sections: Section[]): DraftState["brickMap"] {
 
   // Process all sections and their bricks
   sections.forEach((section) => {
-    section.bricks.forEach((brick) => collectBrick(brick, section.id, null));
+    (section.bricks as Brick[]).forEach((brick) => collectBrick(brick, section.id, null));
   });
 
   return brickMap;
