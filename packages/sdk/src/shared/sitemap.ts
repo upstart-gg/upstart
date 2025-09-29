@@ -22,7 +22,6 @@ export const sitemapEntry = Type.Composite(
   ],
   {
     description: "Pages map. The complete list of site pages & their metadata",
-    additionalProperties: false,
   },
 );
 

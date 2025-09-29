@@ -66,7 +66,7 @@ export function defineProps<P extends TProperties>(
     ...(options?.noAlignSelf ? {} : { alignSelf }),
     ...(options?.noGrow ? {} : { grow }),
   } as typeof allProps;
-  return Type.Object(finalProps, { ...options, additionalProperties: false });
+  return Type.Object(finalProps, options);
 }
 
 // export const optional = Type.Optional;

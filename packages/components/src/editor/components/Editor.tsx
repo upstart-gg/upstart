@@ -252,6 +252,24 @@ export default function Editor(props: EditorProps) {
             </div>
           )}
         </Suspense>
+        <Toaster
+          toastOptions={{
+            position: "bottom-center",
+            style: {
+              background: "rgba(0, 0, 0, 0.85)",
+              color: "white",
+              fontSize: "0.85rem",
+              fontWeight: "500",
+              // marginBottom: "1rem",
+            },
+            className: tx("last:mb-1 px-1 py-1 rounded-lg"),
+            error: {
+              style: {
+                background: "#880808",
+              },
+            },
+          }}
+        />
         {islocalDev && (
           <div
             className="fixed flex max-w-[548px] items-center divide-x divide-gray-300 bottom-0 right-6 p-2 text-xs text-gray-500 bg-gray-100 dark:bg-dark-800 z-[19999] rounded-t-md"
@@ -313,25 +331,6 @@ export default function Editor(props: EditorProps) {
                 </Suspense>
               </DeviceFrame>
             ))}
-
-          <Toaster
-            toastOptions={{
-              position: "bottom-center",
-              style: {
-                background: "rgba(0, 0, 0, 0.85)",
-                color: "white",
-                fontSize: "0.85rem",
-                fontWeight: "500",
-                // marginBottom: "1rem",
-              },
-              className: tx("last:mb-1 px-1 py-1 rounded-lg"),
-              error: {
-                style: {
-                  background: "#880808",
-                },
-              },
-            }}
-          />
         </main>
       </div>
     </DragDropProvider>

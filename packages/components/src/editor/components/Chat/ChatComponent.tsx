@@ -114,12 +114,12 @@ export default function Chat() {
   }, []);
 
   useEffect(() => {
-    if (showToastWorking) {
+    if (showToastWorking && generationState.isReady) {
       toast.loading("Setting up your site...", { duration: Infinity, id: "chat-setup" });
     } else {
       toast.dismiss("chat-setup");
     }
-  }, [showToastWorking]);
+  }, [showToastWorking, generationState.isReady]);
 
   // console.log({ site, page });
 
@@ -171,7 +171,9 @@ export default function Chat() {
           // send only the last message and chat id
           // we will then fetch message history (for our chatId) on server
           // and append this message for the full context to send to the model
-          const lastMessage = messages[messages.length - 1];
+          const message = messages[messages.length - 1];
+          const previousMessage = messages.length > 1 ? messages[messages.length - 2] : undefined;
+
           const callContext = {
             site: siteRef.current,
             page: pageRef.current,
@@ -180,9 +182,15 @@ export default function Chat() {
             assets: assetsRef.current,
           } satisfies Omit<CallContextProps, "userId">;
 
+          const hasToolResults = previousMessage?.parts.some((part) => part.type === "tool-askUserChoice");
+
+          console.log("Send chat request with hasToolResults=%s", hasToolResults);
+          console.log({ message });
+          console.log({ previousMessage });
+
           return {
             body: {
-              message: lastMessage,
+              messages: hasToolResults ? messages.slice(-2) : [message],
               chatSessionId: chatSession.id,
               callContext,
             },
@@ -304,6 +312,7 @@ export default function Chat() {
             tool: "undo",
             toolCallId: toolInvocation.toolCallId,
           });
+          regenerate();
           break;
         }
 

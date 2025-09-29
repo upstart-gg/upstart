@@ -12,7 +12,6 @@ export function image(options: PropImageOptions = {}) {
   const schema = Type.Object(
     {
       src: Type.String({
-        default: defaultImageUrl,
         title: options.title ?? "Image URL",
         description: "Image URL. Can be a link to an image or a data URI",
       }),
@@ -28,7 +27,6 @@ export function image(options: PropImageOptions = {}) {
           enumNames: ["None", "Contain", "Cover", "Fill", "Scale down"],
           title: "Fit",
           description: "How the image should be resized to fit its container",
-          default: "object-cover",
           "ui:field": "enum",
           "ui:styleId": "styles:objectFit",
         }),
@@ -73,11 +71,6 @@ export function image(options: PropImageOptions = {}) {
       "ui:accept": "image/*",
       "ui:show-img-search": showImgSearch,
       "ui:no-object-options": noObjectOptions,
-      default: {
-        alt: "Image",
-        fit: "object-cover",
-        position: "object-center",
-      },
       // "ui:responsive": "desktop",
       metadata: {
         category: "content",

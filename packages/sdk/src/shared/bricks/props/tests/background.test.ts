@@ -47,20 +47,6 @@ describe("Background prop test suite", () => {
         expect(imageProp.type).toBe("string");
       });
     });
-
-    describe("size property", () => {
-      it("should have correct metadata", () => {
-        const sizeProp = background().properties.size;
-        expect(sizeProp.default).toBe("auto");
-      });
-    });
-
-    describe("repeat property", () => {
-      it("should have correct metadata", () => {
-        const repeatProp = background().properties.repeat;
-        expect(repeatProp.default).toBe("no-repeat");
-      });
-    });
   });
 
   describe("backgroundColor", () => {

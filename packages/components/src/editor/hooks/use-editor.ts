@@ -147,40 +147,6 @@ export const createEditorStore = (
     contextMenuVisible: false,
     planIndex: 0,
     attributesTab: "page" as EditorStateProps["attributesTab"],
-    imagesSearchResults: import.meta.env.DEV
-      ? [
-          {
-            blurHash: "",
-            description: "Placeholder image",
-            provider: "unsplash",
-            url: "https://images.unsplash.com/photo-1624555130581-1d9cca783bc0?q=80&w=3542&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-            user: {
-              name: "Placeholder",
-              profile_url: "https://unsplash.com/@placeholder",
-            },
-          },
-          {
-            blurHash: "",
-            description: "Placeholder image",
-            provider: "unsplash",
-            url: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=3538&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-            user: {
-              name: "Placeholder",
-              profile_url: "https://unsplash.com/@placeholder",
-            },
-          },
-          {
-            blurHash: "",
-            description: "Placeholder image",
-            provider: "unsplash",
-            url: "https://plus.unsplash.com/premium_photo-1661596686441-611034b8077e?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-            user: {
-              name: "Placeholder",
-              profile_url: "https://unsplash.com/@placeholder",
-            },
-          },
-        ]
-      : undefined,
     onPublish: () => {
       console.warn("onPublish is not implemented");
     },

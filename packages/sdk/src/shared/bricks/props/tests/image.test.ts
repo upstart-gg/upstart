@@ -38,12 +38,6 @@ describe("Image prop test suite", () => {
         const imageProp = image({ title: "Custom Image" });
         expect(imageProp.properties?.src.title).toBe("Custom Image");
       });
-
-      it("should have default image URL when specified", () => {
-        const defaultUrl = "https://example.com/image.jpg";
-        const imageProp = image({ defaultImageUrl: defaultUrl });
-        expect(imageProp.properties?.src.default).toBe(defaultUrl);
-      });
     });
 
     describe("alt property", () => {

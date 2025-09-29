@@ -48,8 +48,8 @@ function useClassesFromStyleProps<T extends BrickManifest>(
       const part = extractStylePath(path);
       acc[part] = acc[part] ?? [];
 
-      const resolvedProps = get(mergedProps, path);
-      const resolvedMobileProps = get(mobileProps, path);
+      const resolvedProps = get(mergedProps, path) as string;
+      const resolvedMobileProps = get(mobileProps, path) as string;
       const schema = get(manifest.props.properties, path);
 
       acc[part].push(tx(helper?.(resolvedProps, resolvedMobileProps, schema)));

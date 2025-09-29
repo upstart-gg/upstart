@@ -542,4 +542,8 @@ describe("validation with validate()", () => {
     };
     expect(() => validate(schema, example2)).not.toThrow();
   });
+
+  test("show section schema", () => {
+    console.log("Section schema:", JSON.stringify(sectionSchema));
+  });
 });

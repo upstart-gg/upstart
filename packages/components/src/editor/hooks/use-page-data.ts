@@ -151,7 +151,12 @@ export const createDraftStore = (
               state.page = editedPage;
               state.site.sitemap = state.site.sitemap.map((p) =>
                 p.id === editedPage.id
-                  ? { ...editedPage, path: editedPage.attributes.path, tags: editedPage.attributes.tags }
+                  ? {
+                      id: editedPage.id,
+                      label: editedPage.label,
+                      path: editedPage.attributes.path,
+                      tags: editedPage.attributes.tags,
+                    }
                   : p,
               );
               state.brickMap = buildBrickMap(state.page.sections);

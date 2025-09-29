@@ -1,15 +1,15 @@
-import type { Static, TObject, TProperties, TSchema } from "@sinclair/typebox";
+import type { Static, TObject, TProperties, TSchema, StaticDecode } from "@sinclair/typebox";
 import type { BrickManifest } from "~/shared/brick-manifest";
 import type { Brick } from "~/shared/bricks";
 
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export type BrickProps<T extends BrickManifest> = {
-  brick: Brick;
-  // brick: Omit<Brick, "props" | "mobileProps"> & {
-  //   props: Static<T["props"]>;
-  //   mobileProps?: Static<T["props"]>;
-  // };
+  // brick: Brick;
+  brick: Omit<Brick, "props" | "mobileProps"> & {
+    props: Static<T["props"]> & {};
+    mobileProps?: Partial<Static<T["props"]>> & {};
+  };
   /**
    * True if we are in the context of the Editor
    */

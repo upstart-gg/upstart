@@ -52,10 +52,6 @@ export type Tools = {
     input: { id: string };
     output: Section; // Error string if not found
   };
-  listSections: {
-    input: unknown;
-    output: Section[];
-  };
   createThemes: {
     input: ToolInputWaitingMessageType & ToolInputInstructionsType & { count: number };
     output: Theme[];

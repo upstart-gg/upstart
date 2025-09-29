@@ -36,7 +36,6 @@ const headingFont = Type.Object(
   {
     title: "Headings font",
     description: "Used for titles and headings",
-    additionalProperties: false,
   },
 );
 
@@ -54,111 +53,97 @@ const bodyFont = Type.Object(
   {
     title: "Body font",
     description: "Used for paragraphs and body text",
-    additionalProperties: false,
   },
 );
 
-export const themeSchema = Type.Object(
-  {
-    id: Type.String({ title: "ID", description: "The unique identifier of the theme" }),
-    name: Type.String({ title: "Name", description: "The name of the theme" }),
-    description: Type.String({ title: "Description", description: "The description of the theme" }),
-    tags: Type.Array(Type.String({ title: "Tag" }), { title: "Tags", description: "The tags of the theme" }),
-    browserColorScheme: StringEnum(["light", "dark"], {
-      title: "Browser scheme",
-      description: "Color of browser-provided UI. Either 'light' or 'dark'",
+export const themeSchema = Type.Object({
+  id: Type.String({ title: "ID", description: "The unique identifier of the theme" }),
+  name: Type.String({ title: "Name", description: "The name of the theme" }),
+  description: Type.String({ title: "Description", description: "The description of the theme" }),
+  tags: Type.Array(Type.String({ title: "Tag" }), { title: "Tags", description: "The tags of the theme" }),
+  browserColorScheme: StringEnum(["light", "dark"], {
+    title: "Browser scheme",
+    description: "Color of browser-provided UI. Either 'light' or 'dark'",
+  }),
+  // Define the theme colors
+  colors: Type.Object(
+    {
+      primary: Type.String({
+        title: "Primary",
+        description: "The brand's primary color.",
+        "ai:instructions": "Use oklch() css notation.",
+        examples: ["oklch(0.62 0.241 354.308)"],
+      }),
+      secondary: Type.String({
+        title: "Secondary",
+        description: "The brand's second most used color",
+        "ai:instructions": "Use oklch() css notation.",
+        examples: ["oklch(0.65 0.22 185)"],
+      }),
+      accent: Type.String({
+        title: "Accent",
+        description: "The brand's least used color",
+        "ai:instructions": "Use oklch() css notation.",
+        examples: ["oklch(0.82 0.18 85)"],
+      }),
+      neutral: Type.String({
+        title: "Neutral",
+        description: "The base neutral color",
+        "ai:instructions": "Use oklch() css notation.",
+        examples: ["oklch(0.38 0.08 280)"],
+      }),
+      base100: Type.String({
+        title: "Base",
+        description:
+          "Base surface color of page, used for blank backgrounds. Should be white or near-white for light color-schemes, and black or near-black for dark color-schemes.",
+        "ai:instructions": "Use oklab() css notation.",
+        examples: ["oklch(0.99 0.008 92)"],
+      }),
+      base200: Type.String({
+        title: "Base 2",
+        description:
+          "Should be darker than base 100 but still light for light color-schemes, and lighter but still dark for dark color-schemes.",
+        "ai:instructions": "Use oklab() css notation.",
+        examples: ["oklch(0.97 0.01 85)"],
+      }),
+      base300: Type.String({
+        title: "Base 3",
+        description:
+          "3rd base color, should be darker than base 200 for light color-schemes, and lighter than base 200 for dark color-schemes.",
+        "ai:instructions": "Use oklab() css notation.",
+        examples: ["oklch(0.95 0.02 80)"],
+      }),
+    },
+    {
+      title: "Theme base colors",
+      description: "The base colors of the theme. Each theme must declare all these colors",
+    },
+  ),
+
+  // Define the theme typography
+  typography: Type.Object({
+    base: Type.Number({
+      title: "Base font size",
+      description: "The base font size in pixels. It is safe to keep it as is.",
+      "ai:instructions": "A safe value is 16.",
     }),
-    // Define the theme colors
-    colors: Type.Object(
-      {
-        primary: Type.String({
-          title: "Primary",
-          description: "The brand's primary color.",
-          "ai:instructions": "Use oklch() css notation.",
-          examples: ["oklch(0.62 0.241 354.308)"],
-        }),
-        secondary: Type.String({
-          title: "Secondary",
-          description: "The brand's second most used color",
-          "ai:instructions": "Use oklch() css notation.",
-          examples: ["oklch(0.65 0.22 185)"],
-        }),
-        accent: Type.String({
-          title: "Accent",
-          description: "The brand's least used color",
-          "ai:instructions": "Use oklch() css notation.",
-          examples: ["oklch(0.82 0.18 85)"],
-        }),
-        neutral: Type.String({
-          title: "Neutral",
-          description: "The base neutral color",
-          "ai:instructions": "Use oklch() css notation.",
-          examples: ["oklch(0.38 0.08 280)"],
-        }),
-        base100: Type.String({
-          title: "Base",
-          description:
-            "Base surface color of page, used for blank backgrounds. Should be white or near-white for light color-schemes, and black or near-black for dark color-schemes.",
-          "ai:instructions": "Use oklab() css notation.",
-          examples: ["oklch(0.99 0.008 92)"],
-        }),
-        base200: Type.String({
-          title: "Base 2",
-          description:
-            "Should be darker than base 100 but still light for light color-schemes, and lighter but still dark for dark color-schemes.",
-          "ai:instructions": "Use oklab() css notation.",
-          examples: ["oklch(0.97 0.01 85)"],
-        }),
-        base300: Type.String({
-          title: "Base 3",
-          description:
-            "3rd base color, should be darker than base 200 for light color-schemes, and lighter than base 200 for dark color-schemes.",
-          "ai:instructions": "Use oklab() css notation.",
-          examples: ["oklch(0.95 0.02 80)"],
-        }),
-      },
-      {
-        title: "Theme base colors",
-        description: "The base colors of the theme. Each theme must declare all these colors",
-        additionalProperties: false,
-      },
-    ),
-
-    // Define the theme typography
-    typography: Type.Object(
-      {
-        base: Type.Number({
-          title: "Base font size",
-          description: "The base font size in pixels. It is safe to keep it as is.",
-          "ai:instructions": "A safe value is 16.",
-        }),
-        heading: headingFont,
+    heading: headingFont,
+    body: bodyFont,
+    alternatives: Type.Array(
+      Type.Object({
         body: bodyFont,
-        alternatives: Type.Array(
-          Type.Object(
-            {
-              body: bodyFont,
-              heading: headingFont,
-            },
-            { additionalProperties: false },
-          ),
-          {
-            title: "Alternative fonts",
-            description: "Alternative fonts that can be suggested to the user. Takes the same shape",
-          },
-        ),
+        heading: headingFont,
+      }),
+      {
+        title: "Alternative fonts",
+        description: "Alternative fonts that can be suggested to the user. Takes the same shape",
       },
-      { additionalProperties: false },
     ),
-  },
-  {
-    additionalProperties: false,
-  },
-);
+  }),
+});
 
 export type Theme = Static<typeof themeSchema>;
 export const themesArray = Type.Array(themeSchema);
-export const themesArrayLLM = toLLMSchema(themesArray);
 
 export type ThemesArray = Static<typeof themesArray>;
 export type FontType = Theme["typography"]["body"];
