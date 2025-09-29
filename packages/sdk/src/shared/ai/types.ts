@@ -37,7 +37,7 @@ export type Tools = {
     output: Theme[];
   };
   createSection: {
-    input: SectionSchemaNoBricks;
+    input: ToolInputWaitingMessageType & ToolInputInstructionsType & Pick<Section, "id" | "label" | "order">;
     output: Section;
   };
   editSection: {
