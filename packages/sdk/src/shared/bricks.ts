@@ -1,6 +1,6 @@
-import { Type, type Static, type TObject } from "@sinclair/typebox";
+import { Type, type Static } from "@sinclair/typebox";
 import { customAlphabet } from "nanoid";
-import { brickTypes, defaultProps, manifests } from "./bricks/manifests/all-manifests";
+import { defaultProps, manifests } from "./bricks/manifests/all-manifests";
 import { cssLength } from "./bricks/props/css-length";
 import { colorPreset } from "./bricks/props/color-preset";
 import { mergeIgnoringArrays } from "./utils/merge";
@@ -149,7 +149,7 @@ export function makeFullBrickSchemaForLLM(type: string, otherTypes?: string[]) {
 
 export type Brick = Omit<Static<typeof brickSchema>, "props" | "mobileProps"> & {
   props: CommonBrickProps & Record<string, unknown>;
-  mobileProps?: CommonBrickProps & Record<string, unknown>;
+  mobileProps?: Partial<CommonBrickProps & Record<string, unknown>>;
 };
 
 export const sectionProps = Type.Object(

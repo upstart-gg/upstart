@@ -33,7 +33,6 @@
     "@notionhq/client": "4.0.2",
     "@radix-ui/themes": "3.2.1",
     "@rowanmanning/feed-parser": "2.1.0",
-    "@sinclair/typebox": "0.34.41",
     "@upstart.gg/style-system": "workspace:*",
     "chroma-js": "3.1.2",
     "date-fns": "3.6.0",
@@ -53,6 +52,7 @@
     "@headlessui/react": "^2.2.1",
     "ai": "^5.0.0",
     "lodash-es": "^4.17.21",
+    "@sinclair/typebox": "^0.34.41",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-icons": "^5.5.0"

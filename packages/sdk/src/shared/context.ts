@@ -1,7 +1,7 @@
 import { type Static, Type } from "@sinclair/typebox";
-import { imageResultsSchema, type ImageSearchResultsType } from "./images";
-import { pageSchema, versionedPageSchema, type VersionedPage } from "./page";
-import { siteSchema, type Site } from "./site";
+import { imageResultsSchema } from "./images";
+import { versionedPageSchema } from "./page";
+import { siteSchema } from "./site";
 
 export const generationStateSchema = Type.Object(
   {

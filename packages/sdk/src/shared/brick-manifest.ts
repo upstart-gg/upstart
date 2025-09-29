@@ -1,7 +1,6 @@
 import type { TObject, TProperties, TArray } from "@sinclair/typebox";
 import type { IconBase, IconType } from "react-icons/lib";
 import { getSchemaDefaults } from "./utils/schema";
-import type { ReactNode } from "react";
 
 export type BrickCategory = "layout" | "basic" | "media" | "widgets" | "container";
 

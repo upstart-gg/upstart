@@ -77,19 +77,17 @@ const datasourceInternalManifest = Type.Object(
       title: "Schema",
       description: "JSON Schema of datasource. MUST Always an array of objects.",
     }),
-    indexes: Type.Optional(
-      Type.Array(
-        Type.Object({
-          name: Type.String({ title: "Index name" }),
-          fields: Type.Array(Type.String(), { title: "Fields to index" }),
-          unique: Type.Optional(Type.Boolean({ title: "Unique index", default: false })),
-        }),
-        {
-          title: "Indexes",
-          description:
-            "IMPORTANT: Indexes to create on the datasource. use it to enforce uniqueness or improve query performance.",
-        },
-      ),
+    indexes: Type.Array(
+      Type.Object({
+        name: Type.String({ title: "Index name" }),
+        fields: Type.Array(Type.String(), { title: "Fields to index" }),
+        unique: Type.Optional(Type.Boolean({ title: "Unique index", default: false })),
+      }),
+      {
+        title: "Indexes",
+        description:
+          "IMPORTANT: Indexes to create on the datasource. use it to enforce uniqueness or improve query performance.",
+      },
     ),
   },
   {

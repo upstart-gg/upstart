@@ -11,6 +11,7 @@ const banner = {
 const external = [
   "vite",
   "@vitejs/plugin-react",
+  "@sinclair/typebox",
   "lodash-es",
   "react",
   "react-dom",

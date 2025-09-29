@@ -1,9 +1,36 @@
 import { type TArray, type TObject, type TSchema, Kind, type Static } from "@sinclair/typebox";
-import { SetErrorFunction, DefaultErrorFunction, ValueErrorType, Errors } from "@sinclair/typebox/errors";
 import { Value } from "@sinclair/typebox/value";
 import type { PageAttributes } from "../attributes";
 import { schemaRegistry } from "./schema-registry";
 import { defaultsDeep as applyDefaultsDeep } from "lodash-es";
+import { FormatRegistry } from "@sinclair/typebox";
+import { DefaultErrorFunction, SetErrorFunction, ValueErrorType } from "@sinclair/typebox/errors";
+// export const jsonStringsSupportedFormats = ["date-time", "date", "email", "url"] as const;
+
+const urlValidator = (value: string) => {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+};
+
+const noCheck = (value: string) => true;
+
+FormatRegistry.Set("uuid", (value) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-7][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value),
+);
+// Allow different lengths for nanoid
+FormatRegistry.Set("nanoid", (value) => /^[A-Za-z0-9_-]{7,32}$/.test(value));
+FormatRegistry.Set("slug", (value) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value));
+// Simple format checks for richtext, markdown, multiline, password, image, file
+FormatRegistry.Set("richtext", noCheck);
+FormatRegistry.Set("markdown", noCheck);
+FormatRegistry.Set("multiline", noCheck);
+FormatRegistry.Set("password", noCheck);
+FormatRegistry.Set("image", urlValidator);
+FormatRegistry.Set("file", urlValidator);
 
 SetErrorFunction((error) => {
   if (error.errorType === ValueErrorType.Kind) {

@@ -1,6 +1,5 @@
 import { describe, expect, test, beforeEach } from "vitest";
 import { type Static, Type } from "@sinclair/typebox";
-import { Value } from "@sinclair/typebox/value";
 import { resolveSchema, validate } from "../schema";
 import { toLLMSchema } from "../llm";
 import { sitemapSchema } from "~/shared/sitemap";
@@ -663,7 +662,7 @@ describe("toLLMSchema consistency", () => {
 });
 
 describe("validation with validate()", () => {
-  test("should validate correct schema with typebox", () => {
+  test("should validate correct schema with @sinclair/typebox", () => {
     const sectionSchemaLLM = toLLMSchema(sectionSchema);
     const validSectionExample: Section = {
       id: "section1",
