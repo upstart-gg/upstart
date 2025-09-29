@@ -27,7 +27,7 @@ CONTENT FORMATTING:
 
 STYLING OPTIONS:
 - "color": Leave empty to inherit parent text color, which is the recommended setting when the brick is a direct child of a section or box with background color.
-- "backgroundColor": Set a background color to create contrast behind the text
+- "backgroundColor": Only use when the text brick is a direct child of a section.Leave empty for transparent background, or set to a color like "bg-xxx-nnn" for emphasis.
 - "padding": Use CSS values like "1rem", "2rem", "24px" for internal spacing
 
 WHEN TO USE:

@@ -3,7 +3,6 @@ import { TiSocialFlickr } from "react-icons/ti";
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
 import { icon } from "../props/string";
-import type { BrickProps } from "../props/types";
 import { fontSize } from "../props/text";
 import { direction } from "../props/direction";
 import { colorPreset } from "../props/color-preset";
