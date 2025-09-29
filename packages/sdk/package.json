@@ -1,6 +1,6 @@
 {
   "name": "@upstart.gg/sdk",
-  "version": "0.0.136",
+  "version": "0.0.137",
   "type": "module",
   "files": [
     "dist",
@@ -21,12 +21,21 @@
       "import": "./dist/shared/*.js"
     }
   },
-    "repository": {
+  "repository": {
     "type": "git",
     "url": "https://github.com/upstart-gg/upstart.git",
     "directory": "packages/sdk"
   },
-  "keywords": ["upstart", "website-builder", "builder", "ai", "react", "headless cms", "no-code", "low-code"],
+  "keywords": [
+    "upstart",
+    "website-builder",
+    "builder",
+    "ai",
+    "react",
+    "headless cms",
+    "no-code",
+    "low-code"
+  ],
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "14.2.0",
     "@date-fns/utc": "1.2.0",

@@ -1,5 +1,21 @@
 # @upstart.gg/components
 
+## 0.0.137
+
+### Patch Changes
+
+- [#471](https://github.com/upstart-gg/upstart/pull/471) [`1e282d2`](https://github.com/upstart-gg/upstart/commit/1e282d24a533075d3c00a03a7497faaea47795b8) Thanks [@benjamindarnault](https://github.com/benjamindarnault)! - update vite config
+
+- [#475](https://github.com/upstart-gg/upstart/pull/475) [`95512c4`](https://github.com/upstart-gg/upstart/commit/95512c4c999a67d1268242c1072a42f09960012b) Thanks [@mattallty](https://github.com/mattallty)! - More improvements
+
+- [#473](https://github.com/upstart-gg/upstart/pull/473) [`2b436d1`](https://github.com/upstart-gg/upstart/commit/2b436d18bc76cdae2255d13ee416945a571d44d9) Thanks [@mattallty](https://github.com/mattallty)! - More improvements
+
+- [#474](https://github.com/upstart-gg/upstart/pull/474) [`ae362f9`](https://github.com/upstart-gg/upstart/commit/ae362f99e25b289a495b2876a8abc656b81f0290) Thanks [@mattallty](https://github.com/mattallty)! - Fix rendering in front
+
+- Updated dependencies [[`95512c4`](https://github.com/upstart-gg/upstart/commit/95512c4c999a67d1268242c1072a42f09960012b), [`2b436d1`](https://github.com/upstart-gg/upstart/commit/2b436d18bc76cdae2255d13ee416945a571d44d9), [`ae362f9`](https://github.com/upstart-gg/upstart/commit/ae362f99e25b289a495b2876a8abc656b81f0290)]:
+  - @upstart.gg/style-system@0.0.137
+  - @upstart.gg/sdk@0.0.137
+
 ## 0.0.136
 
 ### Patch Changes
