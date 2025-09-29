@@ -1,5 +1,18 @@
 # @upstart.gg/sdk
 
+## 0.0.137
+
+### Patch Changes
+
+- [#475](https://github.com/upstart-gg/upstart/pull/475) [`95512c4`](https://github.com/upstart-gg/upstart/commit/95512c4c999a67d1268242c1072a42f09960012b) Thanks [@mattallty](https://github.com/mattallty)! - More improvements
+
+- [#473](https://github.com/upstart-gg/upstart/pull/473) [`2b436d1`](https://github.com/upstart-gg/upstart/commit/2b436d18bc76cdae2255d13ee416945a571d44d9) Thanks [@mattallty](https://github.com/mattallty)! - More improvements
+
+- [#474](https://github.com/upstart-gg/upstart/pull/474) [`ae362f9`](https://github.com/upstart-gg/upstart/commit/ae362f99e25b289a495b2876a8abc656b81f0290) Thanks [@mattallty](https://github.com/mattallty)! - Fix rendering in front
+
+- Updated dependencies [[`95512c4`](https://github.com/upstart-gg/upstart/commit/95512c4c999a67d1268242c1072a42f09960012b)]:
+  - @upstart.gg/style-system@0.0.137
+
 ## 0.0.136
 
 ### Patch Changes
