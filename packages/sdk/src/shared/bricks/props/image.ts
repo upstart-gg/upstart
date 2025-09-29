@@ -57,7 +57,6 @@ export function image(options: PropImageOptions = {}) {
             ],
             title: "Aspect Ratio",
             description: "The aspect ratio of the image",
-            default: "auto",
             "ui:field": "enum",
             "ui:styleId": "styles:aspectRatio",
           },
