@@ -23,14 +23,14 @@ STRUCTURE
 1. Always supply 'content' (can be plain text or simple HTML like <h1>, <strong>, <br/>).
 2. 'tagline' is optional. Prefer concise value (1 short sentence). Omit if not needed.
 3. Do NOT add buttons, images, forms, lists, or unrelated HTML here (use dedicated bricks for that).
+4. Hero should be placed in vertical sections, except for very specific cases.
 
 COLOR & BACKGROUND
-• Prefer omitting colorPreset so the hero inherits its parent layout background.
-• When you need emphasis use semantic presets: primary-, secondary-, accent-, neutral-, base-*** or gradient variants like primary-gradient-400 (then add gradientDirection).
-• NEVER invent tokens like success-, warning-, danger-, blue-, orange- (they don't exist). Map them to semantic sets (e.g. success -> secondary, warning -> accent, danger -> accent or primary, blue -> primary, orange -> accent).
+- Prefer omitting "colorPreset" so the hero inherits its parent section background.
+- If you do set "colorPreset", ensure sufficient contrast between text and background.
 
 LAYOUT & SPACING
-• Use padding suited to visual weight: landing hero: 5–8rem desktop; simple page intro: 2–4rem.
+• Use padding suited to visual weight: landing hero: 5-8rem desktop; simple page intro: 2-4rem.
 • You may provide a mobile override via mobileProps (e.g. smaller padding such as 2rem).
 • Keep justifyContent + alignItems consistent (usually center/center or start/start). Avoid mixing center with start.
 
@@ -43,7 +43,7 @@ DYNAMIC DATA
 • Ensure dynamic tokens exist in the referenced query context. Don't fabricate field names.
 
 RESPONSIVE
-• Use mobileProps only for necessary reductions (padding, alignment). Do not duplicate unchanged properties.
+• Use "mobileProps" only for necessary reductions (padding, alignment). Do not duplicate unchanged properties.
 
 DON'TS
 ✗ Don't add properties that are not in the schema.
@@ -52,9 +52,7 @@ DON'TS
 
 DO
 ✓ Keep content focused.
-✓ Use semantic colors thoughtfully.
-✓ Use gradientDirection ONLY with gradient presets.
-✓ Provide accessible plain text when not using HTML tags.
+✓ Wrap tagline in <p> for alignment control.
 `,
   icon: BsAlphabetUppercase,
 
@@ -79,7 +77,6 @@ DO
         title: "Color",
       }),
     ),
-
     textShadow: Type.Optional(
       textShadow({
         default: "text-shadow-sm",
@@ -99,7 +96,11 @@ DO
     rounding: rounding({
       default: "rounded-md",
     }),
-    border: Type.Optional(border()),
+    border: Type.Optional(
+      border({
+        "ai:hidden": true,
+      }),
+    ),
     shadow: Type.Optional(shadow()),
     justifyContent: Type.Optional(
       justifyContent({
@@ -118,15 +119,12 @@ export type Manifest = typeof manifest;
 
 export const examples: BrickExample<Manifest>[] = [
   {
-    description: "Simple welcome hero with primary background",
+    description: "Simple welcome hero with primary background, centered",
     type: "hero",
     props: {
       content: "Welcome to Our Platform",
-      tagline: "The future of productivity starts here",
+      tagline: "<p style='text-align:center'>The future of productivity starts here</p>",
       padding: "3rem",
-      colorPreset: {
-        color: "primary-400",
-      },
     },
   },
   {
@@ -134,12 +132,8 @@ export const examples: BrickExample<Manifest>[] = [
     type: "hero",
     props: {
       content: "Build Something Amazing",
-      tagline: "Turn your ideas into reality with our cutting-edge tools",
+      tagline: "<p style='text-align:center'>Turn your ideas into reality with our cutting-edge tools</p>",
       padding: "3rem",
-      colorPreset: {
-        color: "primary-500",
-        gradientDirection: "bg-gradient-to-br",
-      },
     },
   },
   {
@@ -147,112 +141,17 @@ export const examples: BrickExample<Manifest>[] = [
     type: "hero",
     props: {
       content: "Building Tomorrow Today",
-      tagline: "Quality construction services for residential and commercial projects",
+      tagline:
+        "<p style='text-align:center'>Quality construction services for residential and commercial projects</p>",
       padding: "3rem",
     },
   },
   {
-    description: "Fashion brand hero with modern appeal",
-    type: "hero",
-    props: {
-      content: "Express Your Style",
-      tagline: "Contemporary fashion that speaks to your individuality",
-      padding: "6rem",
-    },
-  },
-  {
-    description: "Law firm hero with authoritative tone",
-    type: "hero",
-    props: {
-      content: "Justice You Can Trust",
-      tagline: "Experienced legal representation for individuals and businesses",
-      padding: "6rem",
-      colorPreset: {
-        color: "neutral-800",
-      },
-    },
-  },
-  {
-    description: "Photography studio hero with artistic flair",
-    type: "hero",
-    props: {
-      content: "Capturing Life's Moments",
-      tagline: "Professional photography services for weddings, portraits, and events",
-    },
-  },
-  {
-    description: "Restaurant hero with warm colors and rounded design (accent mapping for former 'orange')",
-    type: "hero",
-    props: {
-      content: "Authentic Italian Cuisine",
-      tagline: "Fresh ingredients, traditional recipes, unforgettable flavors",
-      padding: "4rem",
-      colorPreset: {
-        color: "accent-600",
-      },
-      rounding: "rounded-xl",
-      shadow: "shadow-lg",
-    },
-  },
-  {
-    description:
-      "Tech company hero with secondary gradient (mapped from former 'success') and modern styling",
-    type: "hero",
-    props: {
-      content: "Innovation Redefined",
-      tagline: "Pushing the boundaries of what's possible with AI technology",
-      padding: "5rem",
-      colorPreset: {
-        color: "secondary-gradient-400",
-        gradientDirection: "bg-gradient-to-r",
-      },
-      textShadow: "text-shadow-lg",
-      border: {
-        width: "border-2",
-        color: "border-success-300",
-      },
-    },
-  },
-  {
-    description: "Medical practice hero with trust-inspiring design (primary mapping for former 'blue')",
-    type: "hero",
-    props: {
-      content: "Your Health, Our Priority",
-      tagline: "Comprehensive healthcare services with compassionate care",
-      padding: "4rem",
-      colorPreset: {
-        color: "primary-500",
-      },
-      rounding: "rounded-lg",
-      justifyContent: "justify-start",
-      alignItems: "items-start",
-    },
-  },
-  {
-    description:
-      "Creative agency hero with accent gradient (mapped from former 'warning') and diagonal gradient",
-    type: "hero",
-    props: {
-      content: "Creative Solutions",
-      tagline: "Bold designs that make your brand unforgettable",
-      padding: "3rem",
-      colorPreset: {
-        color: "accent-gradient-300",
-        gradientDirection: "bg-gradient-to-tl",
-      },
-      shadow: "shadow-xl",
-      border: {
-        width: "border",
-        color: "border-warning-200",
-      },
-    },
-  },
-  {
-    description: "Fitness studio hero with accent strong presence (mapping former 'danger')",
+    description: "Fitness studio hero with accent strong presence",
     type: "hero",
     props: {
       content: "Transform Your Body",
-      tagline: "High-intensity training programs that deliver real results",
+      tagline: "<p style='text-align:center'>High-intensity training programs that deliver real results</p>",
       padding: "5rem",
       colorPreset: {
         color: "accent-600",
@@ -264,81 +163,33 @@ export const examples: BrickExample<Manifest>[] = [
     },
   },
   {
-    description: "Minimalist hero with neutral tones and subtle effects",
-    type: "hero",
-    props: {
-      content: "Simplicity Perfected",
-      tagline: "Clean design solutions for modern businesses",
-      padding: "8rem",
-      colorPreset: {
-        color: "neutral-100",
-      },
-      shadow: "shadow-sm",
-      border: {
-        width: "border",
-        color: "border-neutral-300",
-      },
-      rounding: "rounded-md",
-    },
-  },
-  {
-    description: "Inverted dark hero using neutral-800 background and left alignment",
-    type: "hero",
-    props: {
-      content: "Experience Powerful Automation",
-      tagline: "Scale operations with intelligent workflows",
-      padding: "5rem",
-      colorPreset: { color: "neutral-800" },
-      justifyContent: "justify-start",
-      alignItems: "items-start",
-      textShadow: "text-shadow-sm",
-    },
-  },
-  {
-    description: "Compact hero without tagline (no colorPreset to inherit parent)",
-    type: "hero",
-    props: {
-      content: "Documentation",
-      padding: "2rem",
-      justifyContent: "justify-start",
-      alignItems: "items-start",
-    },
-  },
-  {
     description: "Responsive hero with large desktop padding and reduced mobile padding",
     type: "hero",
     props: {
       content: "All-In-One Platform",
-      tagline: "Design • Launch • Grow",
+      tagline: "<p style='text-align:center'>Design • <i>Launch</i> • Grow</p>",
       padding: "8rem",
-      colorPreset: { color: "primary-gradient-500", gradientDirection: "bg-gradient-to-br" },
     },
     mobileProps: {
-      content: "All-In-One Platform",
       padding: "3rem",
     },
   },
   {
-    description: "Hero using dynamic product dataset with gradient emphasis",
+    description: "Hero using dynamic product dataset with light text shadow for contrast",
     type: "hero",
     props: {
       content: "Introducing {{product.name}}",
-      tagline: "{{product.shortTagline}}",
+      tagline: "<p style='text-align:center'>{{product.shortTagline}}</p>",
       padding: "5rem",
-      colorPreset: { color: "accent-gradient-400", gradientDirection: "bg-gradient-to-r" },
-      textShadow: "text-shadow-md",
+      textShadow: "text-shadow-sm",
     },
   },
   {
-    description: "Dynamic company hero using business query data",
+    description: "Dynamic company hero using business query data; no tagline",
     type: "hero",
     props: {
       content: "Welcome to {{company.name}}",
-      tagline: "{{company.tagline}} - Serving {{company.location}} since {{company.foundedYear}}",
       padding: "4rem",
-      colorPreset: {
-        color: "primary-500",
-      },
     },
   },
   {
@@ -347,12 +198,8 @@ export const examples: BrickExample<Manifest>[] = [
     props: {
       content: "Meet {{employee.fullName}}",
       tagline:
-        "{{employee.position}} at {{employee.department}} - {{employee.yearsExperience}} years of experience",
+        "<p style='text-align:center'>{{employee.position}} at {{employee.department}} - {{employee.yearsExperience}} years of experience</p>",
       padding: "3rem",
-      colorPreset: {
-        color: "secondary-400",
-        gradientDirection: "bg-gradient-to-r",
-      },
     },
   },
   {
@@ -360,88 +207,31 @@ export const examples: BrickExample<Manifest>[] = [
     type: "hero",
     props: {
       content: "Introducing {{product.name}}",
-      tagline: "{{product.description}} - Starting at ${{product.price}}",
+      tagline: "<p style='text-align:center'>{{product.description}} - Starting at ${{product.price}}</p>",
       padding: "5rem",
-      colorPreset: {
-        color: "accent-600",
-      },
-      shadow: "shadow-lg",
-      rounding: "rounded-xl",
     },
   },
   {
-    description: "Dynamic event announcement using event query",
+    description: "Dynamic event announcement using 'allEvents' query, text shadow for contrast",
     type: "hero",
     props: {
-      content: "{{event.title}}",
-      tagline: "Join us on {{event.date}} at {{event.venue}} - {{event.city}}",
+      content: "{{allEvents.title}}",
+      tagline:
+        "<p style='text-align:center'>Join us on {{allEvents.date}} at {{allEvents.venue}} - {{allEvents.city}}</p>",
       padding: "4rem",
-      colorPreset: {
-        color: "primary-400",
-        gradientDirection: "bg-gradient-to-br",
-      },
       textShadow: "text-shadow-md",
     },
   },
   {
-    description: "Dynamic blog post hero using article query",
+    description:
+      "Dynamic blog post hero using article query, alignment to left-center to be able to arrange a brick on its right",
     type: "hero",
     props: {
       content: "{{article.title}}",
-      tagline: "By {{article.author}} • Published {{article.publishDate}} • {{article.readTime}} min read",
+      tagline:
+        "<p style='text-align:center'>By {{article.author}} • Published {{article.publishDate}} • {{article.readTime}} min read</p>",
       padding: "3rem",
-      colorPreset: {
-        color: "neutral-700",
-      },
       justifyContent: "justify-start",
-      alignItems: "items-start",
-    },
-  },
-  {
-    description: "Dynamic service promotion using service query",
-    type: "hero",
-    props: {
-      content: "{{service.name}}",
-      tagline: "{{service.description}} - {{service.duration}} • Starting at ${{service.price}}",
-      padding: "6rem",
-      colorPreset: {
-        color: "secondary-500",
-        gradientDirection: "bg-gradient-to-tl",
-      },
-      border: {
-        width: "border-2",
-        color: "border-secondary-300",
-      },
-    },
-  },
-  {
-    description: "Dynamic property showcase using property query",
-    type: "hero",
-    props: {
-      content: "{{property.address}}",
-      tagline:
-        "${{property.price}} • {{property.bedrooms}} bed, {{property.bathrooms}} bath • {{property.squareFootage}} sq ft",
-      padding: "4rem",
-      colorPreset: {
-        color: "accent-500",
-      },
-      rounding: "rounded-lg",
-      shadow: "shadow-md",
-    },
-  },
-  {
-    description: "Dynamic course announcement using course query",
-    type: "hero",
-    props: {
-      content: "{{course.title}}",
-      tagline:
-        "Learn {{course.subject}} with {{course.instructor}} • {{course.duration}} • {{course.skillLevel}} level",
-      padding: "5rem",
-      colorPreset: {
-        color: "primary-600",
-      },
-      textShadow: "text-shadow-lg",
-      justifyContent: "justify-center",
       alignItems: "items-center",
     },
   },

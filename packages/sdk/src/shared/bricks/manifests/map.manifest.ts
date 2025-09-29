@@ -107,7 +107,8 @@ export const examples: BrickExample<Manifest>[] = [
     },
   },
   {
-    description: "Business location map with high zoom level and rounded corners",
+    description:
+      "Business location map with high zoom level and rounded corners, take the full width of its container",
     type: "map",
     props: {
       lat: "34.0522",
@@ -115,6 +116,7 @@ export const examples: BrickExample<Manifest>[] = [
       address: "Los Angeles, CA",
       tooltip: "Our Los Angeles Office",
       zoom: 18,
+      grow: true,
       rounding: "rounded-2xl",
       shadow: "shadow-xl",
     },
@@ -143,70 +145,6 @@ export const examples: BrickExample<Manifest>[] = [
       zoom: 15,
       rounding: "rounded-none",
       shadow: "shadow-md",
-    },
-  },
-  {
-    description: "Hotel location with low zoom for area overview",
-    type: "map",
-    props: {
-      lat: "36.1699",
-      lng: "-115.1398",
-      address: "Las Vegas, NV",
-      tooltip: "Downtown Las Vegas Hotel",
-      zoom: 13,
-      rounding: "rounded-xl",
-      shadow: "shadow-lg",
-    },
-  },
-  {
-    description: "Store location with maximum zoom for street view detail",
-    type: "map",
-    props: {
-      lat: "47.6062",
-      lng: "-122.3321",
-      address: "Seattle, WA",
-      tooltip: "Seattle Flagship Store",
-      zoom: 18,
-      rounding: "rounded-md",
-      shadow: "shadow-sm",
-    },
-  },
-  {
-    description: "Park location with moderate zoom and minimal styling",
-    type: "map",
-    props: {
-      lat: "39.7392",
-      lng: "-104.9903",
-      address: "Denver, CO",
-      tooltip: "City Park Recreation Area",
-      zoom: 14,
-      rounding: "rounded-sm",
-    },
-  },
-  {
-    description: "Dynamic business location using company query",
-    type: "map",
-    props: {
-      lat: "{{company.latitude}}",
-      lng: "{{company.longitude}}",
-      address: "{{company.address}}",
-      tooltip: "{{company.name}} - {{company.address}}",
-      zoom: 16,
-      rounding: "rounded-lg",
-      shadow: "shadow-md",
-    },
-  },
-  {
-    description: "Dynamic event venue using event query",
-    type: "map",
-    props: {
-      lat: "{{event.venueLatitude}}",
-      lng: "{{event.venueLongitude}}",
-      address: "{{event.venueAddress}}",
-      tooltip: "{{event.title}} - {{event.venueName}}",
-      zoom: 17,
-      rounding: "rounded-xl",
-      shadow: "shadow-lg",
     },
   },
 ];

@@ -16,23 +16,17 @@ import type { BrickExample } from "./_types";
 export const manifest = defineBrickManifest({
   type: "card",
   name: "Card",
-  description: "A card that can have a title, image, and content.",
-  aiInstructions: `Use this brick to create visually distinct content blocks (product, feature, testimonial, event, article, CTA, etc.).
+  description: "A card that can have a title, image, content, and button.",
+  aiInstructions: `Use this brick to create visually distinct content blocks (product, feature, event, article, etc.).
 
-  Guidelines:
-- Button is REQUIRED.
-- Always provide a short action label (1-3 words) and pick a color matching semantic weight (primary/accent for primary actions, neutral/secondary for low emphasis).
-- Image is OPTIONAL. If present you may set imagePosition to top | middle | bottom. Default is top.
-- Pick middle for vertically centered feature highlights, bottom for caption-first layouts.
+Guidelines:
+- Always provide a short button label (1-3 words) and pick a color matching semantic weight (primary/accent for primary actions, neutral/secondary for low emphasis).
 - Set noTitle: true when the card is intentionally title-less (e.g. a quote card or pure media focus).
-- Do NOT include an empty title string alongside noTitle.
 - Use dynamic tokens (e.g. {{products.price}}) instead of duplicating literal values.
-- Prefer gradient presets for more visual emphasis (e.g. primary-gradient-400 with gradientDirection).
 - border + rounding + shadow should be cohesive: stronger borders pair well with larger rounding + moderate shadow; minimal / flat cards may use border-0 + no shadow.
-- For internal navigation you can supply a page ID (e.g. 'about') OR a relative/absolute URL (e.g. '/pricing', 'https://example.com').
-- Keep HTML inside text minimal (<strong>, <em>, <br>) — for richer structure consider multiple bricks instead.
-- Avoid mixing noTitle with large heading text embedded inside the text field — in that case keep a proper title.
-- Return ONLY valid properties defined in the schema; do not invent new ones.`,
+- For internal navigation, always supply a page ID (e.g. 'about') instead of a full URL. Use placeholders like {{page.$slug}} for dynamic page links.
+- Keep HTML inside text minimal (<strong>, <em>, <br>, <p>) — for richer structure consider multiple bricks instead.
+- Avoid mixing noTitle with large heading text embedded inside the text field — in that case keep a proper title.`,
   icon: BsCardText,
   defaultWidth: { desktop: "400px", mobile: "100%" },
   minWidth: { desktop: 300 },
@@ -188,7 +182,7 @@ export const examples: BrickExample<Manifest>[] = [
   },
   // INTERNAL PAGE ID LINK VARIANT
   {
-    description: "Internal navigation card using a page ID instead of a URL",
+    description: "Internal navigation card using a page ID for the button URL (page id = 'about')",
     type: "card",
     props: {
       title: "About Our Mission",
@@ -200,7 +194,8 @@ export const examples: BrickExample<Manifest>[] = [
   },
   // GRADIENT & STRONG BORDER VARIANT
   {
-    description: "High-emphasis promotional card using gradient background and thick border",
+    description:
+      "High-emphasis promotional card using gradient background and thick border, linking to the page with id 'pricing-page'",
     type: "card",
     props: {
       title: "Limited Time Offer",
@@ -209,37 +204,24 @@ export const examples: BrickExample<Manifest>[] = [
       border: { width: "border-4", color: "border-primary-400" },
       rounding: "rounded-xl",
       shadow: "shadow-lg",
-      button: { label: "Upgrade", url: "/pricing", color: "btn-accent" },
+      button: { label: "Upgrade", url: "pricing-page", color: "btn-accent" },
     },
   },
   // MINIMAL / FLAT VARIANT (no border, no shadow, subtle preset)
   {
-    description: "Minimal flat information card (border-0, no shadow)",
+    description:
+      "Minimal flat information card (border-0, no shadow) linking to the page with id 'status-page'",
     type: "card",
     props: {
       title: "Maintenance Window",
       text: "Scheduled maintenance on Saturday 02:00–03:00 UTC. API responses may be delayed.",
       colorPreset: { color: "neutral-50" },
       border: { width: "border-0", color: "border-neutral-200" },
-      button: { label: "Status Page", url: "/status", color: "btn-neutral" },
-    },
-  },
-  // DARK / INVERTED VARIANT
-  {
-    description: "Dark themed spotlight card (primary-800 background)",
-    type: "card",
-    props: {
-      title: "Night Mode Preview",
-      text: "Experience the new adaptive dark theme optimized for low ambient light environments.",
-      colorPreset: { color: "primary-800" },
-      border: { width: "border", color: "border-primary-600" },
-      rounding: "rounded-lg",
-      shadow: "shadow-md",
-      button: { label: "Preview", url: "/themes/dark", color: "btn-primary" },
+      button: { label: "Status Page", url: "status-page", color: "btn-neutral" },
     },
   },
   {
-    description: "Feature card with large padding and background",
+    description: "Feature card with large padding and background, linking to a dynamic product page",
     type: "card",
     props: {
       title: "Key Feature",
@@ -250,13 +232,13 @@ export const examples: BrickExample<Manifest>[] = [
       shadow: "shadow-sm",
       button: {
         label: "Discover More",
-        url: "/features",
+        url: "/product/{{ product.$slug }}",
         color: "btn-primary",
       },
     },
   },
   {
-    description: "Blog post card with image at the bottom",
+    description: "Blog post card with image at the bottom, linking to a dynamic blog post",
     type: "card",
     props: {
       title: "Future of Tech",
@@ -270,65 +252,8 @@ export const examples: BrickExample<Manifest>[] = [
         url: "/blog/{{ blogPosts.$slug }}",
         color: "btn-primary",
       },
-    },
-  },
-  {
-    description: "Minimal centered card without image",
-    type: "card",
-    props: {
-      title: "Simple Announcement",
-      text: "Important updates will be posted here regularly.",
-      button: {
-        label: "View Updates",
-        url: "/updates",
-        color: "btn-neutral",
-      },
-    },
-  },
-  {
-    description: "Event card with multiple variants",
-    type: "card",
-    props: {
-      cardImage: {
-        src: "https://via.placeholder.com/400x250",
-        alt: "Event venue",
-      },
-      title: "Annual Conference 2025",
-      text: "Join us for three days of inspiring talks, networking opportunities, and hands-on workshops.",
-      button: {
-        label: "Register Now",
-        url: "/events/conference-2025",
-        color: "btn-primary",
-      },
-    },
-  },
-  {
-    description: "News article card with compact layout",
-    type: "card",
-    props: {
-      cardImage: {
-        src: "https://via.placeholder.com/120x120",
-        alt: "News thumbnail",
-      },
-      title: "Breaking News Update",
-      text: "Latest developments in the ongoing story with expert analysis and community reactions.",
-      button: {
-        label: "Read Full Article",
-        url: "/news/breaking-update",
-        color: "btn-secondary",
-      },
-    },
-  },
-  {
-    description: "Call-to-action card with prominent styling",
-    type: "card",
-    props: {
-      title: "Get Started Today",
-      text: "Transform your workflow with our powerful tools. Sign up now and get 30 days free!",
-      button: {
-        label: "Sign Up Now",
-        url: "/signup",
-        color: "btn-primary",
+      loop: {
+        over: "blogPosts",
       },
     },
   },
@@ -427,79 +352,6 @@ export const examples: BrickExample<Manifest>[] = [
       },
       loop: {
         over: "upcomingEvents",
-      },
-    },
-  },
-  {
-    description: "Testimonial card using customerReviews query with ratings",
-    type: "card",
-    props: {
-      cardImage: {
-        src: "{{customerReviews.customerPhoto}}",
-        alt: "{{customerReviews.customerName}}",
-      },
-      imagePosition: "top",
-      title: "{{customerReviews.customerName}}",
-      text: '"{{customerReviews.review}}"<br><br><strong>Rating: {{customerReviews.rating}}/5 stars</strong><br>{{customerReviews.company}} • {{customerReviews.position}}',
-      colorPreset: { color: "neutral-50" },
-      rounding: "rounded-xl",
-      shadow: "shadow-lg",
-      button: {
-        label: "See All Reviews",
-        url: "/reviews",
-        color: "btn-neutral",
-      },
-      loop: {
-        over: "customerReviews",
-      },
-    },
-  },
-  {
-    description: "Service offering card using companyServices query with pricing tiers",
-    type: "card",
-    props: {
-      cardImage: {
-        src: "{{companyServices.icon}}",
-        alt: "{{companyServices.serviceName}}",
-      },
-      imagePosition: "top",
-      title: "{{companyServices.serviceName}}",
-      text: "{{companyServices.description}}<br><br><strong>Starting at ${{companyServices.startingPrice}}</strong><br>Duration: {{companyServices.duration}}<br>Includes: {{companyServices.features}}",
-      colorPreset: { color: "primary-100" },
-      border: { width: "border", color: "border-primary-300" },
-      rounding: "rounded-lg",
-      shadow: "shadow-md",
-      button: {
-        label: "Learn More",
-        url: "{{companyServices.detailsUrl}}",
-        color: "btn-primary",
-      },
-      loop: {
-        over: "companyServices",
-      },
-    },
-  },
-  {
-    description: "Portfolio project card using portfolioWork query with project details",
-    type: "card",
-    props: {
-      cardImage: {
-        src: "{{portfolioWork.thumbnail}}",
-        alt: "{{portfolioWork.projectName}}",
-      },
-      imagePosition: "top",
-      title: "{{portfolioWork.projectName}}",
-      text: "<strong>Client:</strong> {{portfolioWork.clientName}}<br><strong>Year:</strong> {{portfolioWork.year}}<br><strong>Category:</strong> {{portfolioWork.category}}<br><br>{{portfolioWork.description}}",
-      colorPreset: { color: "secondary-100" },
-      rounding: "rounded-md",
-      shadow: "shadow-sm",
-      button: {
-        label: "View Project",
-        url: "{{portfolioWork.projectUrl}}",
-        color: "btn-secondary",
-      },
-      loop: {
-        over: "portfolioWork",
       },
     },
   },
