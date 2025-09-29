@@ -4,7 +4,8 @@ export function color(options: StringOptions = {}) {
   return Type.String({
     title: "Text color",
     "ai:instructions":
-      "hex/rgb/rgba color or classes like `text-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900",
+      "Format is `text-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900",
+    pattern: "^text-(primary|secondary|accent|neutral|base)-?(50|100|200|300|400|500|600|700|800|900)?$",
     "ui:styleId": "styles:color",
     "ui:field": "color",
     "ui:color-type": "text",
@@ -18,7 +19,8 @@ export function borderColor(options: StringOptions = {}) {
   return Type.String({
     title: "Border color",
     "ai:instructions":
-      "hex/rgb/rgba color or classes like `border-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900",
+      "Format is `border-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900",
+    pattern: "^border-(primary|secondary|accent|neutral|base)-?(50|100|200|300|400|500|600|700|800|900)?$",
     "ui:styleId": "styles:borderColor",
     "ui:field": "color",
     "ui:color-type": "border",
