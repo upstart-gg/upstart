@@ -1,4 +1,4 @@
-import { useDebounceCallback } from "usehooks-ts";
+import { useDebounceCallback } from "./use-debounce-callback";
 import { useEditorHelpers } from "./use-editor";
 import {
   useDatarecordsSubscribe,
@@ -24,15 +24,19 @@ export function usePageAutoSave() {
   const { onSavePage, onSaveSite } = useEditorHelpers();
 
   // When sections change, save the page
-  const saveSections = useDebounceCallback(async (sections: typeof pageConfig.sections) => {
-    await onSavePage?.({
-      pageId: pageConfig.id,
-      pageVersionId: "latest",
-      siteId: site.id,
-      data: { sections },
-    });
-    draft.setLastSaved(new Date());
-  }, AUTO_SAVE_MIN_INTERVAL);
+  const saveSections = useDebounceCallback(
+    async (sections: typeof pageConfig.sections) => {
+      await onSavePage?.({
+        pageId: pageConfig.id,
+        pageVersionId: "latest",
+        siteId: site.id,
+        data: { sections },
+      });
+      draft.setLastSaved(new Date());
+    },
+    AUTO_SAVE_MIN_INTERVAL,
+    [pageConfig.id],
+  );
 
   useSectionsSubscribe((sections) => {
     console.debug("Sections have changed, updating page version", sections);
@@ -40,15 +44,19 @@ export function usePageAutoSave() {
   });
 
   // When page label changes, save the page
-  const savePageLabel = useDebounceCallback(async (label: typeof pageConfig.label) => {
-    await onSavePage?.({
-      pageId: pageConfig.id,
-      pageVersionId: "latest",
-      siteId: site.id,
-      data: { label },
-    });
-    draft.setLastSaved(new Date());
-  }, AUTO_SAVE_MIN_INTERVAL);
+  const savePageLabel = useDebounceCallback(
+    async (label: typeof pageConfig.label) => {
+      await onSavePage?.({
+        pageId: pageConfig.id,
+        pageVersionId: "latest",
+        siteId: site.id,
+        data: { label },
+      });
+      draft.setLastSaved(new Date());
+    },
+    AUTO_SAVE_MIN_INTERVAL,
+    [pageConfig.id],
+  );
 
   usePageLabelSubscribe((label) => {
     console.debug("Page label has changed:", label);
@@ -56,13 +64,17 @@ export function usePageAutoSave() {
   });
 
   // When site label changes, save the site
-  const saveSiteLabel = useDebounceCallback(async (label: typeof site.label) => {
-    await onSaveSite?.({
-      siteId: site.id,
-      data: { label },
-    });
-    draft.setLastSaved(new Date());
-  }, AUTO_SAVE_MIN_INTERVAL);
+  const saveSiteLabel = useDebounceCallback(
+    async (label: typeof site.label) => {
+      await onSaveSite?.({
+        siteId: site.id,
+        data: { label },
+      });
+      draft.setLastSaved(new Date());
+    },
+    AUTO_SAVE_MIN_INTERVAL,
+    [pageConfig.id],
+  );
 
   useSiteLabelSubscribe((label) => {
     console.debug("Site label has changed:", label);
@@ -98,15 +110,19 @@ export function usePageAutoSave() {
   });
 
   // When page attributes change, save the page
-  const savePageAttributes = useDebounceCallback(async (attributes: typeof pageConfig.attributes) => {
-    await onSavePage?.({
-      pageId: pageConfig.id,
-      pageVersionId: "latest",
-      siteId: site.id,
-      data: { attributes },
-    });
-    draft.setLastSaved(new Date());
-  }, AUTO_SAVE_MIN_INTERVAL);
+  const savePageAttributes = useDebounceCallback(
+    async (attributes: typeof pageConfig.attributes) => {
+      await onSavePage?.({
+        pageId: pageConfig.id,
+        pageVersionId: "latest",
+        siteId: site.id,
+        data: { attributes },
+      });
+      draft.setLastSaved(new Date());
+    },
+    AUTO_SAVE_MIN_INTERVAL,
+    [pageConfig.id],
+  );
 
   usePageAttributesSubscribe((attributes) => {
     console.debug("Page attributes have changed, saving them", attributes);

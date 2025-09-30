@@ -244,14 +244,18 @@ export const createDraftStore = (
 
           addPage: (page) =>
             set((state) => {
-              //  Overwrite the default page if it exists
-              state.page = page;
               // Add to sitemap if not already present
               const existing = state.site.sitemap.find((p) => p.id === page.id);
               if (!existing) {
                 state.site.sitemap.push({ ...page, path: page.attributes.path, tags: page.attributes.tags });
               }
-              state.brickMap = buildBrickMap(state.page.sections);
+
+              // Delayed update to allow creating the page via the API
+              setTimeout(() => {
+                //  Overwrite the default page if it exists
+                state.page = page;
+                state.brickMap = buildBrickMap(state.page.sections);
+              }, 300);
             }),
 
           isFirstSection: (sectionId) => {
