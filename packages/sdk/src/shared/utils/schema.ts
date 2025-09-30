@@ -3,7 +3,7 @@ import { Value } from "@sinclair/typebox/value";
 import type { PageAttributes } from "../attributes";
 import { defaultsDeep as applyDefaultsDeep, merge } from "lodash-es";
 import { FormatRegistry } from "@sinclair/typebox";
-import { DefaultErrorFunction, SetErrorFunction, ValueErrorType } from "@sinclair/typebox/errors";
+import { Validator } from "@cfworker/json-schema";
 // export const jsonStringsSupportedFormats = ["date-time", "date", "email", "url"] as const;
 
 // import string enum for its side effects
@@ -33,21 +33,6 @@ FormatRegistry.Set("multiline", noCheck);
 FormatRegistry.Set("password", noCheck);
 FormatRegistry.Set("image", urlValidator);
 FormatRegistry.Set("file", urlValidator);
-
-SetErrorFunction((error) => {
-  if (error.errorType === ValueErrorType.Kind) {
-    if (
-      error.schema.type === "string" &&
-      typeof error.value === "string" &&
-      error.schema.enum &&
-      !error.schema.enum.includes(error.value)
-    ) {
-      return `Must include valid value: [${error.schema.enum.join(", ")}]`;
-    }
-  }
-
-  return DefaultErrorFunction(error);
-});
 
 export function normalizeSchemaEnum(schema: TSchema): Array<{ const: string; title: string }> {
   if (!("enum" in schema)) {
@@ -187,20 +172,17 @@ export function filterSchemaProperties(schema: TObject, filter: (prop: TSchema) 
 }
 
 export function validate<T extends TSchema>(schema: TSchema, data: unknown): Static<T> {
-  try {
-    const valid = Value.Check(schema, data);
-    if (!valid) {
-      let finalError = "";
-      for (const error of Value.Errors(schema, data)) {
-        finalError += `Error at ${error.path} with value ${error.value}: ${error.message}\n`;
-      }
-      console.error("Validation errors:\n", finalError);
-      throw new Error(finalError);
+  const validator = new Validator(schema, "7", false);
+  const result = validator.validate(data);
+  if (!result.valid) {
+    const errors = [];
+    for (const error of result.errors) {
+      console.log("Validation error detail:", error);
+      errors.push(error.error);
     }
-  } catch (e) {
-    console.error("Validation exception:", e);
-    console.dir(e, { depth: null });
-    throw e;
+    const formatedError = `- ${errors.join("\n- ")}`;
+    console.error("Validation errors:\n", formatedError);
+    throw new Error(formatedError);
   }
 
   // Mutate data with defaults
