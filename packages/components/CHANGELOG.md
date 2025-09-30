@@ -1,5 +1,17 @@
 # @upstart.gg/components
 
+## 0.0.138
+
+### Patch Changes
+
+- [#482](https://github.com/upstart-gg/upstart/pull/482) [`b40d00b`](https://github.com/upstart-gg/upstart/commit/b40d00bfbf94f0f719febc55afcd8d8f28c7d2e1) Thanks [@mattallty](https://github.com/mattallty)! - More fixes
+
+- [#480](https://github.com/upstart-gg/upstart/pull/480) [`e07f2af`](https://github.com/upstart-gg/upstart/commit/e07f2afdc5275cf41344bb427a8dd1887ac5b62f) Thanks [@mattallty](https://github.com/mattallty)! - Various improvements
+
+- Updated dependencies [[`b40d00b`](https://github.com/upstart-gg/upstart/commit/b40d00bfbf94f0f719febc55afcd8d8f28c7d2e1), [`e07f2af`](https://github.com/upstart-gg/upstart/commit/e07f2afdc5275cf41344bb427a8dd1887ac5b62f)]:
+  - @upstart.gg/style-system@0.0.138
+  - @upstart.gg/sdk@0.0.138
+
 ## 0.0.137
 
 ### Patch Changes
