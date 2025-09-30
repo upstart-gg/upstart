@@ -2,7 +2,6 @@
 // (properties whose "ui:styleId" starts with "styles:") and return them as an object with the path to the property
 // as the key and the $id as the value. Paths should be dot-separated.
 import type { TSchema } from "@sinclair/typebox";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
 import get from "lodash-es/get";
 
 export type PropertyPath = string;
@@ -12,7 +11,7 @@ export type StyleId = string;
 export function getStyleProperties(schema: TSchema, path = "", styles: Record<PropertyPath, StyleId> = {}) {
   if (schema.type === "object") {
     for (const key in schema.properties) {
-      const prop = resolveSchema(schema.properties[key]);
+      const prop = schema.properties[key];
       // const prop = schema.properties[key];
       if (prop["ui:styleId"]) {
         styles[`${path}${key}`] = prop["ui:styleId"];

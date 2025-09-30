@@ -186,15 +186,6 @@ export function filterSchemaProperties(schema: TObject, filter: (prop: TSchema) 
   return extractProperties(schema);
 }
 
-/**
- * Resolves a JSON schema by following $ref references recursively.
- * Handles nested objects, arrays, and complex schema structures.
- */
-export function resolveSchema<T extends TSchema = TSchema>(schema: T): T {
-  console.warn("resolveSchema is deprecated, use resolveSchemaRecursive instead");
-  return schema;
-}
-
 export function validate<T extends TSchema>(schema: TSchema, data: unknown): Static<T> {
   try {
     const valid = Value.Check(schema, data);

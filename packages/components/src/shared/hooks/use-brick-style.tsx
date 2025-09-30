@@ -5,7 +5,6 @@ import { get, merge } from "lodash-es";
 import { useBrickManifest } from "./use-brick-manifest";
 import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { tx, css } from "@upstart.gg/style-system/twind";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
 import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
 import { getStyleProperties } from "../styles/style-props";
 import { useGenerationState, usePageAttributes } from "~/editor/hooks/use-page-data";
@@ -24,10 +23,9 @@ function useClassesFromStyleProps<T extends BrickManifest>(
     const manifestField = get(manifest.props.properties, key);
     if (manifestField) {
       // resolve eventual ref
-      const resolvedField = resolveSchema(manifestField);
-      if (resolvedField.metadata?.filter) {
-        const filter = resolvedField.metadata.filter as FieldFilter;
-        if (!filter(resolvedField, mergedProps, pageAttributes)) {
+      if (manifestField.metadata?.filter) {
+        const filter = manifestField.metadata.filter as FieldFilter;
+        if (!filter(manifestField, mergedProps, pageAttributes)) {
           acc.push(key);
         }
       }

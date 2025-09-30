@@ -1,6 +1,5 @@
 import type { TArray, TObject, TSchema } from "@sinclair/typebox";
 import type { NavItem, NavItemGroup, NavItemProperty } from "./types";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
 
 export type SchemaFilter = (prop: TSchema, key: string) => boolean;
 
@@ -15,7 +14,6 @@ export function getNavItemsFromManifest(
   const groups = manifest["ui:groups"] ?? {};
   const groupsProcessed = new Map<string, NavItemProperty[]>(); // group-id -> index
   const items = Object.entries<TSchema>(manifest.properties)
-    .map(([key, prop]) => [key, resolveSchema(prop)] as [string, TSchema])
     .filter(([, prop]) => prop["ui:field"] !== "hidden")
     .filter(([key, prop]) => filter(prop, key))
     .map(([key, prop]) => {

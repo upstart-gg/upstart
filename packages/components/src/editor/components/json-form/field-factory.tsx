@@ -36,7 +36,6 @@ import type {
   JustifyContentSettings,
 } from "@upstart.gg/sdk/shared/bricks/props/align";
 import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
 import { Tooltip } from "@upstart.gg/style-system/system";
 import ColorPresetField from "./fields/color-preset";
 import { CssLengthField } from "./fields/css-length";
@@ -78,26 +77,25 @@ function getCommonFieldProps(options: FieldFactoryOptions, fieldSchema: TSchema)
 // Main function to create a field component based on type
 function createFieldComponent(options: FieldFactoryOptions): ReactNode {
   const { brickId, fieldName, fieldSchema, formSchema, formData, id, onChange, noDynamic } = options;
-  const schema = resolveSchema(fieldSchema);
   const commonProps = getCommonFieldProps(
     {
       brickId,
       fieldName,
-      fieldSchema: schema,
+      fieldSchema: fieldSchema,
       formSchema,
       formData,
       id,
       noDynamic,
       onChange,
     },
-    schema,
+    fieldSchema,
   );
 
   // Determine field type
-  const fieldType = (schema["ui:field"] ??
-    (schema.enum ? "enum" : null) ??
-    schema.type ??
-    (schema.anyOf ? "anyOf" : "")) as string;
+  const fieldType = (fieldSchema["ui:field"] ??
+    (fieldSchema.enum ? "enum" : null) ??
+    fieldSchema.type ??
+    (fieldSchema.anyOf ? "anyOf" : "")) as string;
 
   switch (fieldType) {
     case "hidden":
@@ -402,7 +400,7 @@ function createFieldComponent(options: FieldFactoryOptions): ReactNode {
           currentValue={currentValue}
           onChange={(value: string | null) => onChange({ [id]: value }, id)}
           {...commonProps}
-          options={schema.anyOf}
+          options={fieldSchema.anyOf}
         />
       );
     }
@@ -415,8 +413,8 @@ function createFieldComponent(options: FieldFactoryOptions): ReactNode {
 
       // For simple arrays (like variants), we can create a field for each item
       // or use a specialized component depending on the content
-      if (schema.items) {
-        const itemSchema = resolveSchema(schema.items);
+      if (fieldSchema.items) {
+        const itemSchema = fieldSchema.items;
 
         // For arrays of objects, use the generic ArrayField
         if (itemSchema.type === "object") {
@@ -502,7 +500,7 @@ function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       }
 
       // Fallback for arrays without items schema
-      console.warn("Array field without items schema:", fieldName, schema);
+      console.warn("Array field without items schema:", fieldName, fieldSchema);
       return null;
     }
 
@@ -543,7 +541,7 @@ function createFieldComponent(options: FieldFactoryOptions): ReactNode {
 
     default:
       console.log("!!! Unknown field type: %s", fieldType);
-      console.log("Field schema", schema);
+      console.log("Field schema", fieldSchema);
       return null;
   }
 }
@@ -575,7 +573,7 @@ export default function ObjectFields({
   const fields: ReactNode[] = [];
 
   Object.entries(schema.properties).forEach(([fieldName, fieldSchema]) => {
-    const field = resolveSchema(fieldSchema);
+    const field = fieldSchema;
 
     // Apply global filter if provided
     if (filter && field.type !== "object" && !filter(field)) {

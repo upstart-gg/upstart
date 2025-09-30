@@ -12,7 +12,6 @@ import { IconRender } from "./IconRender";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { filterSchemaProperties } from "@upstart.gg/sdk/shared/utils/schema";
 import { useSectionByBrickId, useDraftHelpers, usePageQueries } from "../hooks/use-page-data";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
 
 type TabType = "preset" | "settings" | "content" | "debug";
 
@@ -23,8 +22,7 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
   const debugMode = useDebugMode();
   const manifest = useBrickManifest(brick.type);
   const pageQueries = usePageQueries();
-  const contentProperties = filterSchemaProperties(manifest.props, (_prop) => {
-    const prop = resolveSchema(_prop);
+  const contentProperties = filterSchemaProperties(manifest.props, (prop) => {
     return (
       prop.metadata?.category === "content" &&
       prop["ui:field"] !== "hidden" &&
