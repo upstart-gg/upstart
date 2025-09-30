@@ -14,8 +14,8 @@ export type ToolInputInstructionsType = { instructions: string };
 export const askUserChoiceInput = Type.Object({
   choices: Type.Array(
     Type.String({
+      title: "Choice. Will appear as a button label to the user. Don't make it too long for a button label.",
       minLength: 2,
-      maxLength: 60,
     }),
     {
       description: "The list of choices to present to the user. Minimum 2 choices, max 6.",

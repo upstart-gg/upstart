@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach } from "vitest";
 import { type Static, Type } from "@sinclair/typebox";
-import { resolveSchema, validate, getSchemaDefaults } from "../schema";
+import { validate, getSchemaDefaults } from "../schema";
 import { toLLMSchema } from "../llm";
 import { sitemapSchema } from "~/shared/sitemap";
 import type { Manifest } from "~/shared/bricks/manifests/text.manifest";
