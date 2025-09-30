@@ -31,7 +31,10 @@ export default function App({ path, config }: { path: string; config: SiteAndPag
 
 function InnerEditor(
   props: PropsWithChildren<
-    Omit<EditorWrapperProps, "onImageUpload" | "onShowPopup" | "onPublish" | "onSavePage" | "onSaveSite">
+    Omit<
+      EditorWrapperProps,
+      "onImageUpload" | "onShowPopup" | "onPublish" | "onSavePage" | "onSaveSite" | "onPageCreated"
+    >
   >,
 ) {
   const onImageUpload = async (file: File) => {
@@ -57,6 +60,9 @@ function InnerEditor(
       `onShowPopup: out of the demo, the popup with ID ${popupId} should be displayed at this time.`,
     );
   };
+  const onPageCreated: EditorWrapperProps["onPageCreated"] = (page) => {
+    console.debug("onPageCreated: A new page has been created", page);
+  };
   const editorWrapperRef = useRef<EditorWrapperRef>(null);
 
   const demoDoSomethingInEditorState = () => {
@@ -75,6 +81,7 @@ function InnerEditor(
       onPublish={onPublish}
       onSavePage={onSavePage}
       onSaveSite={onSaveSite}
+      onPageCreated={onPageCreated}
       onShowPopup={onShowPopup}
     >
       <Editor />
