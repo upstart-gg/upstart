@@ -92,7 +92,9 @@ export interface EditorStateProps {
 
   onShowPopup: (id: string | false) => void;
   onPublish: (data: PagePublishPayload) => void;
-  onPageCreated: (page: Page) => void;
+  onPageCreated: (page: Page) => Promise<{
+    pageVersionId: string;
+  }>;
   /**
    * Returns the updated version id
    */
@@ -530,6 +532,7 @@ export const useEditorHelpers = () => {
     onPublish: state.onPublish,
     onSavePage: state.onSavePage,
     onSaveSite: state.onSaveSite,
+    onPageCreated: state.onPageCreated,
     toggleChat: state.toggleChat,
     onShowPopup: state.onShowPopup,
   }));

@@ -1380,11 +1380,23 @@ export const useSiteAttributesSubscribe = (callback: (attr: DraftState["site"]["
   }, []);
 };
 
+export const useSitemapSubscribe = (callback: (sitemap: DraftState["site"]["sitemap"]) => void) => {
+  const ctx = usePageContext();
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    return ctx.subscribe((state) => state.site.sitemap, callback, {
+      equalityFn: isEqual,
+    });
+  }, []);
+};
+
 export const useThemeSubscribe = (callback: (theme: DraftState["site"]["theme"]) => void) => {
   const ctx = usePageContext();
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    return ctx.subscribe((state) => state.site.theme, callback);
+    return ctx.subscribe((state) => state.site.theme, callback, {
+      equalityFn: isEqual,
+    });
   }, []);
 };
 
@@ -1392,7 +1404,9 @@ export const useThemesSubscribe = (callback: (themes: DraftState["site"]["themes
   const ctx = usePageContext();
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    return ctx.subscribe((state) => state.site.themes, callback);
+    return ctx.subscribe((state) => state.site.themes, callback, {
+      equalityFn: isEqual,
+    });
   }, []);
 };
 

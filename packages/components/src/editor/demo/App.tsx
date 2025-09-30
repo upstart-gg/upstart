@@ -60,8 +60,9 @@ function InnerEditor(
       `onShowPopup: out of the demo, the popup with ID ${popupId} should be displayed at this time.`,
     );
   };
-  const onPageCreated: EditorWrapperProps["onPageCreated"] = (page) => {
+  const onPageCreated: EditorWrapperProps["onPageCreated"] = async (page) => {
     console.debug("onPageCreated: A new page has been created", page);
+    return { pageVersionId: "latest" };
   };
   const editorWrapperRef = useRef<EditorWrapperRef>(null);
 
