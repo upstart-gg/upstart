@@ -30,6 +30,7 @@ export function urlOrPageId(options: StringOptions = {}) {
     {
       // $id: "content:urlOrPageId",
       title: "URL",
+      description: "A URL or a page ID",
       metadata: {
         category: "content",
       },
@@ -48,6 +49,7 @@ type IconOptions = StrFieldOptions & { "ui:default-icon-collection"?: string };
 export function icon(options: IconOptions = {}) {
   return Type.String({
     title: "Icon",
+    description: "An icon from the Iconify collection",
     "ai:instructions": "Use a iconify reference like 'mdi:heart' or 'fa-solid:coffee'.",
     "ui:field": "iconify",
     // $id: "assets:icon",

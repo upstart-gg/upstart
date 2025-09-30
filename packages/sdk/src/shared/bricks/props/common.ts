@@ -1,6 +1,7 @@
 import { type Static, type TString, Type } from "@sinclair/typebox";
 import { cssLength } from "./css-length";
 import { alignSelf } from "./align";
+import { grow } from "./grow";
 
 export function hidden() {
   return Type.Object(
@@ -48,14 +49,7 @@ export const commonProps = {
       "ui:field": "hidden",
     }),
   ),
-  grow: Type.Optional(
-    Type.Boolean({
-      title: "Auto expand",
-      description: "If set, the brick will grow to fill the available space of its parent section or box.",
-      "ui:styleId": "styles:grow",
-      "ui:responsive": true,
-    }),
-  ),
+  grow: Type.Optional(grow()),
   alignSelf: Type.Optional(alignSelf()),
 };
 

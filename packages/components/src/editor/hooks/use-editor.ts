@@ -90,16 +90,18 @@ export interface EditorStateProps {
   draggingBrickType?: Brick["type"];
   isMouseOverPanel?: boolean;
 
-  onShowPopup?: (id: string | false) => void;
+  onShowPopup: (id: string | false) => void;
   onPublish: (data: PagePublishPayload) => void;
+  onPageCreated: (page: Page) => Promise<{
+    pageVersionId: string;
+  }>;
   /**
    * Returns the updated version id
    */
-  onSavePage?: (page: PageSavePayload) => Promise<{
+  onSavePage: (page: PageSavePayload) => Promise<{
     pageVersionId: string;
   }>;
-  onSaveSite?: (site: SiteSavePayload) => Promise<void>;
-  onDraftChange?: (draft: DraftState, siteAndPages: SiteAndPagesConfig) => Promise<void>;
+  onSaveSite: (site: SiteSavePayload) => Promise<void>;
 }
 
 export interface EditorState extends EditorStateProps {
@@ -135,7 +137,11 @@ export interface EditorState extends EditorStateProps {
 }
 
 export const createEditorStore = (
-  initProps: Partial<EditorStateProps> & { chatSession: EditorStateProps["chatSession"] },
+  initProps: Partial<EditorStateProps> &
+    Pick<
+      EditorStateProps,
+      "chatSession" | "onPageCreated" | "onPublish" | "onSavePage" | "onSaveSite" | "onShowPopup"
+    >,
 ) => {
   const DEFAULT_PROPS = {
     previewMode: "desktop" satisfies EditorStateProps["previewMode"],
@@ -147,12 +153,6 @@ export const createEditorStore = (
     contextMenuVisible: false,
     planIndex: 0,
     attributesTab: "page" as EditorStateProps["attributesTab"],
-    onPublish: () => {
-      console.warn("onPublish is not implemented");
-    },
-    onDraftChange: async () => {
-      console.warn("onDraftChange is not implemented");
-    },
     debugMode: false,
   } as const;
 
@@ -532,7 +532,7 @@ export const useEditorHelpers = () => {
     onPublish: state.onPublish,
     onSavePage: state.onSavePage,
     onSaveSite: state.onSaveSite,
-    onDraftChange: state.onDraftChange,
+    onPageCreated: state.onPageCreated,
     toggleChat: state.toggleChat,
     onShowPopup: state.onShowPopup,
   }));

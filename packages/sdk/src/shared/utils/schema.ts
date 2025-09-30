@@ -73,18 +73,27 @@ export function getSchemaDefaults<T extends TObject | TArray>(
   // Handle object schemas
   if (schema.type === "object" && "properties" in schema) {
     const objectSchema = schema as TObject;
-    const defaults: Static<T> = {};
+    const required = objectSchema.required || [];
 
+    // First pass: collect all properties that have defaults
+    const propertiesWithDefaults: Record<string, unknown> = {};
     for (const [key, propertySchema] of Object.entries(objectSchema.properties)) {
       const defaultValue = getNestedDefaults(propertySchema as TSchema, mode);
-
-      // Only include properties that have explicit defaults
       if (defaultValue !== undefined) {
-        defaults[key] = defaultValue;
+        propertiesWithDefaults[key] = defaultValue;
       }
     }
 
-    return defaults as Static<T>;
+    // Second pass: validate that all required properties have defaults
+    // If any required property lacks a default, return empty object
+    for (const requiredProp of required) {
+      if (!(requiredProp in propertiesWithDefaults)) {
+        return {} as Static<T>;
+      }
+    }
+
+    // If we get here, all required properties have defaults, so we can include all properties
+    return propertiesWithDefaults as Static<T>;
   }
 
   // Handle array schemas
@@ -120,18 +129,28 @@ function getNestedDefaults(schema: TSchema, mode?: "mobile" | "desktop"): unknow
   // Handle nested object schemas
   if (schema.type === "object" && "properties" in schema) {
     const objectSchema = schema as TObject;
+    const required = objectSchema.required || [];
     const defaults: Record<string, unknown> = {};
 
+    // First pass: collect all properties that have defaults
+    const propertiesWithDefaults: Record<string, unknown> = {};
     for (const [key, propertySchema] of Object.entries(objectSchema.properties)) {
       const defaultValue = getNestedDefaults(propertySchema as TSchema, mode);
-
-      // Only include properties that have explicit defaults
       if (defaultValue !== undefined) {
-        defaults[key] = defaultValue;
+        propertiesWithDefaults[key] = defaultValue;
       }
     }
 
-    return Object.keys(defaults).length > 0 ? defaults : undefined;
+    // Second pass: validate that all required properties have defaults
+    // If any required property lacks a default, this nested object cannot be included
+    for (const requiredProp of required) {
+      if (!(requiredProp in propertiesWithDefaults)) {
+        return undefined;
+      }
+    }
+
+    // If we get here, all required properties have defaults
+    return Object.keys(propertiesWithDefaults).length > 0 ? propertiesWithDefaults : undefined;
   }
 
   // Handle nested array schemas

@@ -6,10 +6,10 @@ import { RxTextAlignLeft } from "react-icons/rx";
 import { Type } from "@sinclair/typebox";
 import { alignItems } from "../props/align";
 import { shadow } from "../props/effects";
-import { colorPreset } from "../props/color-preset";
-import { loop } from "../props/dynamic";
 import { cssLength } from "../props/css-length";
 import type { BrickExample } from "./_types";
+import { backgroundColor } from "../props/background";
+import { color } from "../props/color";
 
 export const manifest = defineBrickManifest({
   type: "text",
@@ -26,25 +26,23 @@ CONTENT FORMATTING:
 - Lists: <ul><li>Item 1</li><li>Item 2</li></ul>
 
 STYLING OPTIONS:
-- colorPreset: Leave empty to inherit parent colors, or use "primary-100", "secondary-200", "neutral-50", "accent-100" for backgrounds
-- padding: Use CSS values like "1rem", "2rem", "24px" for internal spacing
-- rounding: "rounded-none" (sharp), "rounded-md" (standard), "rounded-lg" (friendly), "rounded-xl" (soft)
-- border: Add borders with width ("border", "border-2") and color ("border-gray-300", "border-primary-500")
-- shadow: Add depth with "shadow-sm", "shadow-md", "shadow-lg"
+- "color": Leave empty to inherit parent text color, which is the recommended setting when the brick is a direct child of a section or box with background color.
+- "backgroundColor": Only use when the text brick is a direct child of a section.Leave empty for transparent background, or set to a color like "bg-xxx-nnn" for emphasis.
+- "padding": Use CSS values like "1rem", "2rem", "24px" for internal spacing
 
 WHEN TO USE:
+- All text content that requires formatting
 - Rich content sections (About Us, Service descriptions)
 - Announcements and notices
 - Product descriptions with formatting
 - Quotes and testimonials
 - FAQ content and detailed explanations
-- Footer information and legal text
 
 BEST PRACTICES:
 - Keep HTML minimal - complex layouts should use multiple components
 - Use semantic headings (h2, h3, h4) for proper hierarchy
-- Center-align for quotes/testimonials, left-align for body text
-- Choose background colors that provide good contrast, or no background for inline text`,
+- Center-align for quotes/testimonials, left-align for body text`,
+
   defaultWidth: {
     mobile: "100%",
   },
@@ -55,9 +53,14 @@ BEST PRACTICES:
   staticClasses: "prose lg:prose-lg",
   icon: RxTextAlignLeft,
   props: defineProps({
-    colorPreset: Type.Optional(
-      colorPreset({
-        title: "Color",
+    backgroundColor: Type.Optional(
+      backgroundColor({
+        title: "Background color",
+      }),
+    ),
+    color: Type.Optional(
+      color({
+        title: "Text color",
       }),
     ),
     content: textContent({
@@ -66,12 +69,6 @@ BEST PRACTICES:
       //   category: "content",
       // },
     }),
-    verticalAlign: Type.Optional(
-      alignItems({
-        default: "items-center",
-        title: "Align",
-      }),
-    ),
     padding: Type.Optional(
       cssLength({
         default: "2rem",
@@ -127,9 +124,6 @@ export const examples: BrickExample<Manifest>[] = [
     props: {
       content:
         "<h2>About Our Company</h2><p>We've been serving customers since 2010, building trust through quality products and exceptional service.</p>",
-      colorPreset: {
-        color: "primary-100",
-      },
     },
   },
   {
@@ -148,9 +142,6 @@ export const examples: BrickExample<Manifest>[] = [
       content:
         "<p>Scheduled maintenance will occur on <em>Sunday, March 15th</em> from 2:00 AM to 6:00 AM UTC.</p><p>During this time, some features may be temporarily unavailable. We apologize for any inconvenience.</p>",
       padding: "1rem",
-      colorPreset: {
-        color: "neutral-700",
-      },
       border: {
         width: "border",
         color: "border-neutral-400",
@@ -172,13 +163,9 @@ export const examples: BrickExample<Manifest>[] = [
     props: {
       content:
         "<h3 style='text-align: center'>Ready to Get Started?</h3><p style='text-align: center'>Join thousands of satisfied customers who trust our platform. <strong>Sign up today</strong> and experience the difference!</p><p style='text-align: center'><a href='/signup'>Create Your Free Account</a></p>",
-      colorPreset: {
-        color: "secondary-200",
-      },
       padding: "2.5rem",
       rounding: "rounded-xl",
       shadow: "shadow-md",
-      verticalAlign: "items-center",
     },
   },
   {
@@ -187,9 +174,6 @@ export const examples: BrickExample<Manifest>[] = [
     props: {
       content:
         "<h4>API Authentication</h4><p>To authenticate your requests, include your API key in the header:</p><p><strong>Authorization: Bearer YOUR_API_KEY</strong></p><p>All API endpoints require authentication. You can find your API key in the <a href='/dashboard'>dashboard settings</a>.</p>",
-      colorPreset: {
-        color: "accent-100",
-      },
       padding: "1.5rem",
       rounding: "rounded-md",
       border: {
@@ -204,13 +188,9 @@ export const examples: BrickExample<Manifest>[] = [
     props: {
       content:
         "<h3>✅ Payment Successful!</h3><p>Thank you for your purchase. Your order <strong>#12345</strong> has been confirmed.</p><p>You will receive an email confirmation shortly at your registered email address.</p>",
-      colorPreset: {
-        color: "primary-200",
-      },
       padding: "2rem",
       rounding: "rounded-lg",
       shadow: "shadow-sm",
-      verticalAlign: "items-start",
     },
   },
   {
@@ -219,11 +199,7 @@ export const examples: BrickExample<Manifest>[] = [
     props: {
       content:
         "<p style='text-align: center'>© 2024 Company Name. All rights reserved.</p><p style='text-align: center'><a href='/privacy'>Privacy Policy</a> | <a href='/terms'>Terms of Service</a> | <a href='/contact'>Contact Us</a></p><p style='text-align: center'><em>Follow us on social media for the latest updates</em></p>",
-      colorPreset: {
-        color: "neutral-800",
-      },
       padding: "1.5rem",
-      verticalAlign: "items-end",
     },
   },
   {
@@ -247,9 +223,6 @@ export const examples: BrickExample<Manifest>[] = [
     props: {
       content:
         "<h3 style='text-align: center'>⚠️ URGENT NOTICE</h3><p style='text-align: center'><strong>System maintenance is currently in progress.</strong></p><p style='text-align: center'>Some services may be <em>temporarily unavailable</em>. We expect full restoration by 4:00 PM EST.</p><p style='text-align: center'>For urgent support, please <a href='/emergency-contact'>contact our emergency line</a>.</p>",
-      colorPreset: {
-        color: "accent-400",
-      },
       padding: "2rem",
       rounding: "rounded-md",
       border: {
@@ -257,7 +230,6 @@ export const examples: BrickExample<Manifest>[] = [
         color: "border-accent-600",
       },
       shadow: "shadow-xl",
-      verticalAlign: "items-center",
     },
   },
 ];

@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach } from "vitest";
 import { type Static, Type } from "@sinclair/typebox";
-import { resolveSchema, validate } from "../schema";
+import { resolveSchema, validate, getSchemaDefaults } from "../schema";
 import { toLLMSchema } from "../llm";
 import { sitemapSchema } from "~/shared/sitemap";
 import type { Manifest } from "~/shared/bricks/manifests/text.manifest";
@@ -424,6 +424,215 @@ describe("toLLMSchema consistency", () => {
   });
 });
 
+describe("getSchemaDefaults", () => {
+  test("should not generate partial objects when required properties lack defaults", () => {
+    // Schema with mixed required/optional properties and defaults
+    const problematicSchema = Type.Object(
+      {
+        requiredWithoutDefault: Type.String(), // Required but no default
+        optionalWithDefault: Type.Optional(Type.String({ default: "has default" })), // Optional with default
+        requiredWithDefault: Type.String({ default: "required default" }), // Required with default
+        nested: Type.Object(
+          {
+            nestedRequired: Type.String(), // Required but no default
+            nestedOptionalWithDefault: Type.Optional(Type.String({ default: "nested default" })), // Optional with default
+          },
+          { required: ["nestedRequired"] },
+        ), // Make nestedRequired actually required
+      },
+      { required: ["requiredWithoutDefault", "requiredWithDefault", "nested"] },
+    );
+
+    const result = getSchemaDefaults(problematicSchema);
+
+    // Should not include nested object since nestedRequired lacks a default
+    // Should not include the root object at all since requiredWithoutDefault lacks a default
+    expect(result).toEqual({});
+  });
+
+  test("should generate complete objects when all required properties have defaults", () => {
+    const validSchema = Type.Object(
+      {
+        requiredWithDefault: Type.String({ default: "required default" }),
+        optionalWithDefault: Type.Optional(Type.String({ default: "optional default" })),
+        nested: Type.Object(
+          {
+            nestedRequiredWithDefault: Type.String({ default: "nested required default" }),
+            nestedOptionalWithDefault: Type.Optional(Type.String({ default: "nested optional default" })),
+          },
+          { required: ["nestedRequiredWithDefault"] },
+        ),
+      },
+      { required: ["requiredWithDefault", "nested"] },
+    );
+
+    const result = getSchemaDefaults(validSchema);
+
+    expect(result).toEqual({
+      requiredWithDefault: "required default",
+      optionalWithDefault: "optional default",
+      nested: {
+        nestedRequiredWithDefault: "nested required default",
+        nestedOptionalWithDefault: "nested optional default",
+      },
+    });
+  });
+
+  test("should handle schemas with no required properties", () => {
+    const allOptionalSchema = Type.Object({
+      optional1: Type.Optional(Type.String({ default: "default1" })),
+      optional2: Type.Optional(Type.String({ default: "default2" })),
+      optional3: Type.Optional(Type.String()), // No default
+    });
+
+    const result = getSchemaDefaults(allOptionalSchema);
+
+    expect(result).toEqual({
+      optional1: "default1",
+      optional2: "default2",
+    });
+  });
+
+  test("should handle deeply nested objects with mixed required properties", () => {
+    const deepSchema = Type.Object(
+      {
+        level1: Type.Object(
+          {
+            level2Required: Type.String({ default: "level2 default" }),
+            level2Optional: Type.Optional(Type.String({ default: "level2 optional" })),
+            level2: Type.Object(
+              {
+                level3Required: Type.String(), // Missing default - should break the chain
+                level3WithDefault: Type.String({ default: "level3 default" }),
+              },
+              { required: ["level3Required"] },
+            ),
+          },
+          { required: ["level2Required", "level2"] },
+        ),
+      },
+      { required: ["level1"] },
+    );
+
+    const result = getSchemaDefaults(deepSchema);
+
+    // Should return empty because level3Required lacks a default, making level2 invalid,
+    // which makes level1 invalid, which makes the root invalid
+    expect(result).toEqual({});
+  });
+
+  test("should handle schema with only required properties that all have defaults", () => {
+    const allRequiredSchema = Type.Object(
+      {
+        required1: Type.String({ default: "default1" }),
+        required2: Type.Number({ default: 42 }),
+        required3: Type.Boolean({ default: true }),
+      },
+      { required: ["required1", "required2", "required3"] },
+    );
+
+    const result = getSchemaDefaults(allRequiredSchema);
+
+    expect(result).toEqual({
+      required1: "default1",
+      required2: 42,
+      required3: true,
+    });
+  });
+
+  test("should handle empty required array", () => {
+    const schema = Type.Object(
+      {
+        prop1: Type.String({ default: "default1" }),
+        prop2: Type.Optional(Type.String({ default: "default2" })),
+      },
+      { required: [] },
+    );
+
+    const result = getSchemaDefaults(schema);
+
+    expect(result).toEqual({
+      prop1: "default1",
+      prop2: "default2",
+    });
+  });
+
+  test("should handle mobile/desktop mode defaults", () => {
+    const schemaWithModes = Type.Object(
+      {
+        requiredProp: Type.String({
+          default: "desktop default",
+          "default:mobile": "mobile default",
+        }),
+        optionalProp: Type.Optional(
+          Type.String({
+            default: "desktop optional",
+            "default:mobile": "mobile optional",
+          }),
+        ),
+      },
+      { required: ["requiredProp"] },
+    );
+
+    const desktopResult = getSchemaDefaults(schemaWithModes, "desktop");
+    const mobileResult = getSchemaDefaults(schemaWithModes, "mobile");
+
+    expect(desktopResult).toEqual({
+      requiredProp: "desktop default",
+      optionalProp: "desktop optional",
+    });
+
+    expect(mobileResult).toEqual({
+      requiredProp: "mobile default",
+      optionalProp: "mobile optional",
+    });
+  });
+
+  test("should handle mobile/desktop mode with missing mobile defaults", () => {
+    const schemaWithPartialModes = Type.Object(
+      {
+        requiredProp: Type.String({
+          default: "desktop default",
+          // No mobile default - should fallback to desktop
+        }),
+        optionalProp: Type.Optional(
+          Type.String({
+            default: "desktop optional",
+            "default:mobile": "mobile optional",
+          }),
+        ),
+      },
+      { required: ["requiredProp"] },
+    );
+
+    const mobileResult = getSchemaDefaults(schemaWithPartialModes, "mobile");
+
+    expect(mobileResult).toEqual({
+      requiredProp: "desktop default", // Falls back to desktop default
+      optionalProp: "mobile optional", // Uses mobile default
+    });
+  });
+
+  test("should handle arrays with defaults", () => {
+    const arraySchema = Type.Array(Type.String(), { default: ["item1", "item2"] });
+    const result = getSchemaDefaults(arraySchema);
+    expect(result).toEqual(["item1", "item2"]);
+  });
+
+  test("should handle arrays with mobile/desktop defaults", () => {
+    const arraySchemaWithModes = Type.Array(Type.String(), {
+      default: ["desktop1", "desktop2"],
+      "default:mobile": ["mobile1", "mobile2"],
+    });
+
+    const desktopResult = getSchemaDefaults(arraySchemaWithModes, "desktop");
+    const mobileResult = getSchemaDefaults(arraySchemaWithModes, "mobile");
+
+    expect(desktopResult).toEqual(["desktop1", "desktop2"]);
+    expect(mobileResult).toEqual(["mobile1", "mobile2"]);
+  });
+});
+
 describe("validation with validate()", () => {
   test("should validate correct schema with @sinclair/typebox", () => {
     const sectionSchemaLLM = toLLMSchema(sectionSchema);
@@ -535,9 +744,7 @@ describe("validation with validate()", () => {
         content: "Hello, world!",
       },
       mobileProps: {
-        colorPreset: {
-          color: "primary-100",
-        },
+        color: "text-primary-100",
       },
     };
     expect(() => validate(schema, example2)).not.toThrow();

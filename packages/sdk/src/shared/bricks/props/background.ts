@@ -53,7 +53,8 @@ export function backgroundColor(options: SchemaOptions = {}) {
     title: "Background color",
     // $id: "styles:backgroundColor",
     "ai:instructions":
-      "Can be set to transparent, hex/rgb/rgba color, or classes like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, and shades between 100 and 900. Use bg-<variant>-<shade> classes as much as possible.",
+      "Must be formated like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, or base and shades between 100 and 900, except the base with takes shades betwen 100 and 300 only.",
+    pattern: "^bg-(primary|secondary|accent|neutral|base)-?(50|100|200|300|400|500|600|700|800|900)?$",
     "ui:field": "color",
     "ui:color-type": "background",
     // "ui:advanced": true,

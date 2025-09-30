@@ -6,7 +6,6 @@ import { urlOrPageId } from "../props/string";
 import { backgroundColor } from "../props/background";
 import { border } from "../props/border";
 import { fixedPositioned } from "../props/position";
-import type { BrickProps } from "../props/types";
 import { shadow } from "../props/effects";
 import type { BrickExample } from "./_types";
 

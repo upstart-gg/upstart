@@ -47,6 +47,7 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
     // we need a fake page
     pages: [
       {
+        // Keep this fake id as is!
         id: "_default_",
         label: "First page",
         sections: [],
