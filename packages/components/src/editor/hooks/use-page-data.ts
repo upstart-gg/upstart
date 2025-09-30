@@ -86,6 +86,7 @@ export interface DraftState extends DraftStateProps {
   setLastSaved: (date: Date) => void;
   setVersion(version: string): void;
 
+  registerPageInSitemap: (page: VersionedPage) => void;
   addPage: (page: VersionedPage) => void;
   addDatasource: (datasource: Datasource) => void;
   addDatarecord: (datarecord: Datarecord) => void;
@@ -242,20 +243,19 @@ export const createDraftStore = (
               state.page.sections.push(newSection);
             }),
 
-          addPage: (page) =>
+          registerPageInSitemap: (page) =>
             set((state) => {
               // Add to sitemap if not already present
               const existing = state.site.sitemap.find((p) => p.id === page.id);
               if (!existing) {
                 state.site.sitemap.push({ ...page, path: page.attributes.path, tags: page.attributes.tags });
               }
-
-              // Delayed update to allow creating the page via the API
-              setTimeout(() => {
-                //  Overwrite the default page if it exists
-                state.page = page;
-                state.brickMap = buildBrickMap(state.page.sections);
-              }, 300);
+            }),
+          addPage: (page) =>
+            set((state) => {
+              //  Overwrite the default page if it exists
+              state.page = page;
+              state.brickMap = buildBrickMap(state.page.sections);
             }),
 
           isFirstSection: (sectionId) => {
@@ -1262,6 +1262,7 @@ export const useDraftHelpers = () => {
     pickTheme: state.pickTheme,
     setSitemap: state.setSitemap,
     addPage: state.addPage,
+    registerPageInSitemap: state.registerPageInSitemap,
     addDatasource: state.addDatasource,
     addDatarecord: state.addDatarecord,
     duplicateBrick: state.duplicateBrick,

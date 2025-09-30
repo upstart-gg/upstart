@@ -294,7 +294,11 @@ export default function Chat() {
         case "tool-createPage": {
           const page = toolInvocation.output;
           console.log("Generated page", page);
-          draftHelpers.addPage({ ...page, sections: [] });
+          draftHelpers.registerPageInSitemap(page);
+          // Add a slight delay to ensure the page has been saved in the backend due to the sitemap update
+          setTimeout(() => {
+            draftHelpers.addPage({ ...page, sections: [] });
+          }, 250);
           break;
         }
 
