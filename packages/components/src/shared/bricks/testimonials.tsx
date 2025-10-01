@@ -57,7 +57,7 @@ export default function Testimonials(props: BrickProps<Manifest>) {
 
             <div className="flex-1 flex-nowrap leading-tight">
               <cite className={tx("font-semibold text-[90%] text-nowrap")}>{testimonial.author}</cite>
-              {testimonial.company && <div className={tx("text-[85%]")}>{testimonial.company}</div>}
+              {testimonial.subtitle && <div className={tx("text-[85%]")}>{testimonial.subtitle}</div>}
             </div>
 
             {testimonial.socialIcon && <InlineIcon icon={testimonial.socialIcon} className="h-5 w-5" />}

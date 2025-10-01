@@ -101,15 +101,36 @@ export const brickSchema = Type.Object({
 });
 
 export function makeFullBrickSchemaForLLM(type: string, otherTypes?: string[]) {
-  const originalProps = Type.Pick(brickSchema, ["props"]);
-  const props = otherTypes
-    ? Type.Composite([
-        Type.Omit(brickSchema, ["props"]),
-        Type.Object({
-          props: Type.Composite([
-            originalProps,
-            Type.Object({
-              $children: Type.Union(
+  if (!otherTypes || !otherTypes.length) {
+    return toLLMSchema(
+      Type.Object(
+        {
+          id: Type.String({
+            title: "ID",
+            description: "A unique identifier for the brick.",
+          }),
+          type: Type.Literal(type),
+          props: manifests[type].props,
+          mobileProps: Type.Optional(Type.Partial(manifests[type].props)),
+        },
+        // IMPORTANT: DO NOT set "additionalProperties" to `false` because it would break validation with Cabidela library
+        // { additionalProperties: false },
+      ),
+    );
+  }
+  return toLLMSchema(
+    Type.Object(
+      {
+        id: Type.String({
+          title: "ID",
+          description: "A unique identifier for the brick.",
+        }),
+        type: Type.Literal(type),
+        props: Type.Composite([
+          brickSchema.properties.props,
+          Type.Object({
+            $children: Type.Array(
+              Type.Union(
                 otherTypes.map((t) =>
                   Type.Object({
                     id: Type.String({
@@ -122,20 +143,9 @@ export function makeFullBrickSchemaForLLM(type: string, otherTypes?: string[]) {
                   }),
                 ),
               ),
-            }),
-          ]),
-        }),
-      ])
-    : manifests[type].props;
-  return toLLMSchema(
-    Type.Object(
-      {
-        id: Type.String({
-          title: "ID",
-          description: "A unique identifier for the brick.",
-        }),
-        type: Type.Literal(type),
-        props,
+            ),
+          }),
+        ]),
         mobileProps: Type.Optional(Type.Partial(manifests[type].props)),
       },
       // IMPORTANT: DO NOT set "additionalProperties" to `false` because it would break validation with Cabidela library

@@ -37,7 +37,7 @@ export type Tools = {
     output: Theme[];
   };
   createSection: {
-    input: SectionSchemaNoBricks;
+    input: ToolInputWaitingMessageType & ToolInputInstructionsType & Pick<Section, "id" | "label" | "order">;
     output: Section;
   };
   editSection: {
@@ -65,7 +65,7 @@ export type Tools = {
   //   output: Sitemap;
   // };
   createPage: {
-    input: Pick<Page, "id" | "label"> &
+    input: Pick<Page, "label"> &
       Pick<PageAttributes, "path"> &
       ToolInputWaitingMessageType &
       ToolInputInstructionsType;

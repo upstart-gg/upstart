@@ -5,6 +5,7 @@ import { BsCodeSquare } from "react-icons/bs";
 
 import { Type } from "@sinclair/typebox";
 import type { BrickExample } from "./_types";
+import { grow } from "../props/grow";
 
 export const manifest = defineBrickManifest({
   type: "html",
@@ -31,6 +32,11 @@ export const manifest = defineBrickManifest({
         category: "content",
       },
     }),
+    grow: Type.Optional(
+      grow({
+        default: true,
+      }),
+    ),
   }),
 });
 

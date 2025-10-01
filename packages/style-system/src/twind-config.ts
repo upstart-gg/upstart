@@ -171,6 +171,7 @@ export default defineConfig({
     ["text-secondary", "@(text-secondary-content)"],
     ["text-accent", "@(text-accent-content)"],
     ["text-neutral", "@(text-neutral-content)"],
+    ["text-base", { color: "var(--color-base-content)" }],
     ["text-base-content", { color: "var(--color-base-content)" }],
     ["text-neutral-", ({ $$ }) => ({ color: `var(--color-neutral-${$$})` })],
     ["text-accent-", ({ $$ }) => ({ color: `var(--color-accent-${$$})` })],

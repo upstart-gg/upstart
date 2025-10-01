@@ -6,6 +6,7 @@ export const pageSchema = Type.Object({
   id: Type.String({
     description: "The unique ID of the page. Use a human readable url-safe slug",
     examples: ["home", "about-us", "products-list"],
+    pattern: "^[a-z0-9-_]+$",
   }),
   label: Type.String({
     description: "The label (name) of the page",

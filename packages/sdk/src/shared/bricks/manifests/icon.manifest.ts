@@ -17,10 +17,8 @@ export const manifest = defineBrickManifest({
 
 WHEN TO USE:
 - Navigation elements (menu, close, arrow buttons)
-- Social media links (Facebook, Twitter, Instagram, LinkedIn)
 - Contact information (email, phone, location markers)
 - User interface actions (search, shopping cart, download)
-- Status indicators (success, warning, error, info)
 - Content enhancement (stars, hearts, thumbs up)
 - Feature highlights (checkmarks, shields, awards)
 
@@ -30,14 +28,11 @@ ICON SELECTION:
 
 SIZING GUIDELINES:
 - size: "1em" for inline text icons, "1.5em" for buttons, "2em" for headers
-- Common sizes: "16px", "20px", "24px", "32px" for pixel precision
 - Use "em" units to scale with text, "px" for fixed sizes
 - Large decorative icons: "3em", "4em", or "48px", "64px"
 
 COLOR OPTIONS:
 - color: "currentColor" inherits text color (default)
-- Hex colors: "#1877f2" (Facebook blue), "#ff0000" (red), "#10b981" (green)
-- Use brand colors for social media icons
 - Match color scheme: warnings (orange/yellow), errors (red), success (green)
 
 INTERACTIVE ICONS:
@@ -45,7 +40,7 @@ INTERACTIVE ICONS:
 - External links: "https://facebook.com/yourpage"
 - Email links: "mailto:contact@example.com"
 - Phone links: "tel:+1234567890"
-- Internal pages: "/contact", "/about"
+- For internal pages, use page IDs: "page_12345"
 
 DYNAMIC CONTENT:
 - Use template variables: icon: "{{ service.iconName }}"
@@ -255,89 +250,6 @@ export const examples: BrickExample<Manifest>[] = [
       icon: "mdi:information",
       size: "1.4em",
       color: "#3b82f6",
-    },
-  },
-
-  // ACTION ICONS
-  {
-    description: "Download icon with link - File downloads",
-    type: "icon",
-    props: {
-      icon: "mdi:download",
-      size: "1.4em",
-      color: "#8b5cf6",
-      link: "/files/brochure.pdf",
-    },
-  },
-  {
-    description: "Share icon - Content sharing functionality",
-    type: "icon",
-    props: {
-      icon: "mdi:share-variant",
-      size: "1.2em",
-      color: "#6b7280",
-    },
-  },
-  {
-    description: "Print icon - Document printing",
-    type: "icon",
-    props: {
-      icon: "mdi:printer",
-      size: "1.3em",
-      color: "#374151",
-    },
-  },
-
-  // LARGE DECORATIVE ICONS
-  {
-    description: "Large security shield icon - Trust and safety messaging",
-    type: "icon",
-    props: {
-      icon: "mdi:shield-check",
-      size: "3em",
-      color: "#10b981",
-    },
-  },
-  {
-    description: "Large rocket icon - Innovation and growth themes",
-    type: "icon",
-    props: {
-      icon: "mdi:rocket",
-      size: "2.5em",
-      color: "#f59e0b",
-    },
-  },
-
-  // DYNAMIC CONTENT EXAMPLES
-  {
-    description: "Dynamic service icon using template variables - Data-driven icons",
-    type: "icon",
-    props: {
-      icon: "{{service.iconName}}",
-      size: "2em",
-      color: "{{service.brandColor}}",
-      link: "/services/{{service.slug}}",
-    },
-  },
-  {
-    description: "Dynamic social media icon with loop - Multiple social platforms",
-    type: "icon",
-    props: {
-      icon: "{{socialLinks.iconName}}",
-      size: "1.6em",
-      color: "{{socialLinks.brandColor}}",
-      link: "{{socialLinks.url}}",
-      loop: { over: "socialLinks" },
-    },
-  },
-  {
-    description: "Team member contact icon - Dynamic contact information",
-    type: "icon",
-    props: {
-      icon: "mdi:email",
-      size: "1.2em",
-      color: "#4f46e5",
-      link: "mailto:{{teamMember.email}}",
     },
   },
 ];

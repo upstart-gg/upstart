@@ -17,8 +17,8 @@ import "@upstart.gg/style-system/radix.css";
 import "@upstart.gg/style-system/default-theme.css";
 import "@upstart.gg/style-system/react-resizable.css";
 import "@upstart.gg/style-system/tiptap-text-editor.css";
-import { createDraftStore, type DraftStateProps, DraftStoreContext } from "../hooks/use-page-data";
-import type { UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
+import { createDraftStore, DraftStoreContext } from "../hooks/use-page-data";
+import type { PageAttributes } from "@upstart.gg/sdk/shared/attributes";
 
 // Define the interface for accessing stores
 export interface EditorWrapperRef {
@@ -28,7 +28,7 @@ export interface EditorWrapperRef {
 
 export type EditorWrapperProps = Pick<
   EditorStateProps,
-  "chatSession" | "onShowPopup" | "onPublish" | "onSavePage" | "onSaveSite"
+  "chatSession" | "onShowPopup" | "onPublish" | "onSavePage" | "onSaveSite" | "onPageCreated"
 > &
   UploaderProviderProps &
   SiteAndPagesConfig & { pageVersion: string; pageId: string; onReady?: () => void };
@@ -51,6 +51,7 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
       onSavePage,
       onPublish,
       onShowPopup,
+      onPageCreated,
       onReady = () => {},
     },
     ref,
@@ -65,6 +66,7 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
         onSaveSite,
         onSavePage,
         onShowPopup,
+        onPageCreated,
         logoLink: import.meta.env.DEV ? "/" : `/dashboard/sites/${site.id}`,
         debugMode,
         chatSession,
@@ -102,9 +104,14 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
             ? {
                 attributes: {
                   path: "/",
-                } as SiteAndPagesConfig["pages"][0]["attributes"],
+                  title: "Untitled",
+                  description: "",
+                  keywords: "",
+                  queries: [],
+                  tags: [],
+                } satisfies PageAttributes,
                 sections: [],
-                label: "Home",
+                label: "Untitled",
               }
             : {}),
         },

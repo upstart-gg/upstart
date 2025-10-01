@@ -1,7 +1,6 @@
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
 import { manifest, type Manifest } from "@upstart.gg/sdk/bricks/manifests/form.manifest";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
 import { toast } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import get from "lodash-es/get";
@@ -121,11 +120,8 @@ function processDatarecordSchemaToFields(
 
   // Sort fields by metadata.order, then by field name
   const sortedFields = Object.entries(schema.properties).sort(([aName, aSchema], [bName, bSchema]) => {
-    const aField = resolveSchema(aSchema);
-    const bField = resolveSchema(bSchema);
-
-    const aOrder = aField.metadata?.order as number | undefined;
-    const bOrder = bField.metadata?.order as number | undefined;
+    const aOrder = aSchema.metadata?.order as number | undefined;
+    const bOrder = bSchema.metadata?.order as number | undefined;
 
     // If both have order, sort by order
     if (aOrder !== undefined && bOrder !== undefined) {
@@ -141,17 +137,15 @@ function processDatarecordSchemaToFields(
   });
 
   sortedFields.forEach(([fieldName, fieldSchema]) => {
-    const field = resolveSchema(fieldSchema);
-
     // Skip hidden fields
-    if (field["ui:field"] === "hidden") {
+    if (fieldSchema["ui:field"] === "hidden") {
       return;
     }
 
     // Apply per field filter
-    if (field.metadata?.filter) {
+    if (fieldSchema.metadata?.filter) {
       // field filter should be called with the current formData and the schema
-      const filter = field.metadata.filter as (
+      const filter = fieldSchema.metadata.filter as (
         propsSchema: TObject,
         formData: Record<string, unknown>,
       ) => boolean;
@@ -165,12 +159,12 @@ function processDatarecordSchemaToFields(
     const id = fieldName;
 
     // Detect the field type
-    const datarecordFieldType = getDatarecordFieldType(field);
+    const datarecordFieldType = getDatarecordFieldType(fieldSchema);
     if (datarecordFieldType) {
       const fieldComponent = createDatarecordFieldComponent(
         datarecordFieldType,
         fieldName,
-        field,
+        fieldSchema,
         schema,
         formData,
         id,
@@ -183,7 +177,7 @@ function processDatarecordSchemaToFields(
         console.log("!!! No datarecord field component created for", fieldName);
       }
     } else {
-      console.log("!!! Unknown datarecord field type for", fieldName, field);
+      console.log("!!! Unknown datarecord field type for", fieldName, fieldSchema);
     }
   });
 

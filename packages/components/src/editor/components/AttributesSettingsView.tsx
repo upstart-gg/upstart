@@ -49,7 +49,6 @@ export default function AttributesSettingsView({
   const navItems = getNavItemsFromManifest(attributesSchema, filter);
 
   const formData = useMemo(() => {
-    // const resolvedSchema = resolveSchema(attributesSchema);
     const defProps = getSchemaDefaults(attributesSchema);
     return merge({}, defProps, attributes ?? {});
   }, [attributes, attributesSchema]);

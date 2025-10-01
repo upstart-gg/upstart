@@ -7,7 +7,6 @@ import {
   type DropResult,
 } from "@hello-pangea/dnd";
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
 import { Button, IconButton, TextField } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useState, useRef, useEffect } from "react";
@@ -67,8 +66,6 @@ export default function ArrayField({
   // Get the display field for collapsed items
   const displayField = schema["ui:displayField"] as string | undefined;
 
-  const resolvedItemSchema = resolveSchema(itemSchema);
-
   // Scroll expanded item into view
   useEffect(() => {
     if (expandedItem !== null && itemRefs.current[expandedItem]) {
@@ -105,15 +102,15 @@ export default function ArrayField({
 
     let defaultItem: unknown;
 
-    if (resolvedItemSchema.type === "object") {
+    if (itemSchema.type === "object") {
       // Create default object based on schema
       defaultItem = {};
-      if (resolvedItemSchema.properties) {
+      if (itemSchema.properties) {
         // Get required fields from the schema
-        const requiredFields = new Set(resolvedItemSchema.required || []);
+        const requiredFields = new Set(itemSchema.required || []);
 
-        Object.entries(resolvedItemSchema.properties).forEach(([key, prop]) => {
-          const propSchema = resolveSchema(prop as TSchema);
+        Object.entries(itemSchema.properties).forEach(([key, prop]) => {
+          const propSchema = prop as TSchema;
 
           // Only include required fields with their default values
           // Optional fields will be undefined/null initially
@@ -124,7 +121,7 @@ export default function ArrayField({
       }
     } else {
       // For primitive types, use schema default or appropriate default
-      defaultItem = resolvedItemSchema.default ?? getDefaultForType(resolvedItemSchema.type);
+      defaultItem = itemSchema.default ?? getDefaultForType(itemSchema.type);
     }
 
     const newArray = [...currentValue, defaultItem];
@@ -230,7 +227,7 @@ export default function ArrayField({
     const isExpanded = expandedItem === index;
     const displayText = getDisplayText(item, index);
 
-    if (resolvedItemSchema.type === "object") {
+    if (itemSchema.type === "object") {
       return (
         <div
           ref={(el) => {
@@ -287,7 +284,7 @@ export default function ArrayField({
               <div className="space-y-3">
                 {/* Edit fields */}
                 <ObjectFields
-                  schema={resolvedItemSchema as TObject<TProperties>}
+                  schema={itemSchema as TObject<TProperties>}
                   formData={typedItem || {}}
                   noDynamic={noDynamic}
                   formSchema={formSchema}
@@ -381,7 +378,7 @@ export default function ArrayField({
             <div className="space-y-4">
               {/* Edit fields */}
               <ObjectFields
-                schema={resolvedItemSchema as TObject<TProperties>}
+                schema={itemSchema as TObject<TProperties>}
                 formData={currentValue[0] as Record<string, unknown>}
                 formSchema={formSchema}
                 onChange={(itemData, itemFieldId) => {

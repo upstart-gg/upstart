@@ -1,6 +1,5 @@
 import { defineBrickManifest } from "~/shared/brick-manifest";
 import { defineProps } from "../props/helpers";
-import type { BrickProps } from "../props/types";
 import { CgSpaceBetween } from "react-icons/cg";
 import type { BrickExample } from "./_types";
 

@@ -5,7 +5,6 @@ import { tx, css } from "@upstart.gg/style-system/twind";
 import { getStyleProperties } from "../styles/style-props";
 import { get, merge } from "lodash-es";
 import { type FieldFilter, getSchemaDefaults } from "@upstart.gg/sdk/shared/utils/schema";
-import { resolveSchema } from "@upstart.gg/sdk/shared/utils/schema";
 import { usePageAttributes } from "~/editor/hooks/use-page-data";
 
 type UseSectionStyleProps = {
@@ -91,10 +90,9 @@ function useClassesFromStyleProps(stylesProps: Record<string, string>, section: 
     const manifestField = get(sectionProps.properties, key);
     if (manifestField) {
       // resolve eventual ref
-      const resolvedField = resolveSchema(manifestField);
-      if (resolvedField.metadata?.filter) {
-        const filter = resolvedField.metadata.filter as FieldFilter;
-        if (!filter(resolvedField, mergedProps, pageAttributes)) {
+      if (manifestField.metadata?.filter) {
+        const filter = manifestField.metadata.filter as FieldFilter;
+        if (!filter(manifestField, mergedProps, pageAttributes)) {
           acc.push(key);
         }
       }

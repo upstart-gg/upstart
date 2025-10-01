@@ -9,6 +9,7 @@ import { cssLength } from "../props/css-length";
 import { fontSize } from "../props/text";
 import { StringEnum } from "~/shared/utils/string-enum";
 import type { BrickExample } from "./_types";
+import { grow } from "../props/grow";
 
 export const manifest = defineBrickManifest({
   type: "table",
@@ -149,6 +150,11 @@ export const manifest = defineBrickManifest({
     border: Type.Optional(
       border({
         default: { width: "border", color: "border-gray-200" },
+      }),
+    ),
+    grow: Type.Optional(
+      grow({
+        default: true,
       }),
     ),
   }),

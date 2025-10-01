@@ -309,6 +309,9 @@ importers:
       '@apidevtools/json-schema-ref-parser':
         specifier: 14.2.0
         version: 14.2.0(@types/json-schema@7.0.15)
+      '@cfworker/json-schema':
+        specifier: 4.1.1
+        version: 4.1.1
       '@date-fns/utc':
         specifier: 1.2.0
         version: 1.2.0
@@ -762,6 +765,9 @@ packages:
 
   '@cfcs/core@0.0.6':
     resolution: {integrity: sha512-FxfJMwoLB8MEMConeXUCqtMGqxdtePQxRBOiGip9ULcYYam3WfCgoY6xdnMaSkYvRvmosp5iuG+TiPofm65+Pw==}
+
+  '@cfworker/json-schema@4.1.1':
+    resolution: {integrity: sha512-gAmrUZSGtKc3AiBL71iNWxDsyUC5uMaKKGdvzYsBoTW/xi42JQHl7eKV2OYzCUqvc+D2RCcf7EXY2iCyFIk6og==}
 
   '@changesets/apply-release-plan@7.0.12':
     resolution: {integrity: sha512-EaET7As5CeuhTzvXTQCRZeBUcisoYPDDcXvgTE/2jmmypKp0RC7LxKj/yzqeh/1qFTZI7oDGFcL1PHRuQuketQ==}
@@ -6827,6 +6833,8 @@ snapshots:
   '@cfcs/core@0.0.6':
     dependencies:
       '@egjs/component': 3.0.5
+
+  '@cfworker/json-schema@4.1.1': {}
 
   '@changesets/apply-release-plan@7.0.12':
     dependencies:
