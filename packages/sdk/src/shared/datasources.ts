@@ -31,7 +31,7 @@ export function mapDatasourceSchemaWithInternalProperties(schema: TArray): Datas
         $id: { type: "string", title: "Id" },
         $slug: { type: "string", format: "slug", title: "Slug" },
         $publicationDate: { type: "string", format: "date-time", title: "Publication Date" },
-        $lastModificationDate: { type: "string", format: "date-time", title: "Last Modification Date" },
+        $lastModificationDate: { type: "string", format: "date-time", title: "Last Modification" },
       },
       required: Array.from(new Set(["$id", "$slug", "$lastModificationDate", ...items.required])),
     },

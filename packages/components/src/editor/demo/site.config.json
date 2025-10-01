@@ -215,7 +215,7 @@
               "$lastModificationDate": {
                 "type": "string",
                 "format": "date-time",
-                "title": "Last Modification Date"
+                "title": "Last Modification"
               },
               "$slug": { "type": "string", "format": "slug", "title": "Slug" },
               "avatarUrl": {
@@ -340,7 +340,7 @@
               "$lastModificationDate": {
                 "type": "string",
                 "format": "date-time",
-                "title": "Last Modification Date"
+                "title": "Last Modification"
               },
               "$slug": { "type": "string", "title": "Slug" },
               "firstName": { "type": "string", "title": "First Name" },
@@ -373,7 +373,7 @@
               "$lastModificationDate": {
                 "type": "string",
                 "format": "date-time",
-                "title": "Last Modification Date"
+                "title": "Last Modification"
               },
               "$slug": { "type": "string", "title": "Slug" },
               "author": { "type": "string", "title": "Author" },
