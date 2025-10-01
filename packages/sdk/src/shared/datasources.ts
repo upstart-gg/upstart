@@ -1,4 +1,4 @@
-import type { TArray } from "@sinclair/typebox";
+import { type Static, Type, type TArray } from "@sinclair/typebox";
 import type { Datasource } from "./datasources/types";
 
 /**
@@ -16,6 +16,15 @@ export function defineDatasource<D extends Datasource>(datasource: D) {
   };
 }
 
+export const datasourceSystemProperties = Type.Object({
+  $id: Type.Optional(Type.String({ title: "Id", format: "text" })),
+  $publicationDate: Type.Optional(Type.String({ title: "Publication Date", format: "date-time" })),
+  $slug: Type.Optional(Type.String({ title: "Slug", format: "slug" })),
+  $lastModificationDate: Type.Optional(Type.String({ title: "Last Modification", format: "date-time" })),
+});
+
+export type DatasourceSystemProperties = Static<typeof datasourceSystemProperties>;
+
 /**
  * Map a datasource schema to include $id, $createdAt, and $updatedAt properties.
  */
@@ -28,11 +37,10 @@ export function mapDatasourceSchemaWithInternalProperties(schema: TArray): Datas
       type: "object",
       properties: {
         ...items.properties,
-        $id: { type: "string", title: "Id" },
-        $slug: { type: "string", format: "slug", title: "Slug" },
-        $publicationDate: { type: "string", format: "date-time", title: "Publication Date" },
-        $lastModificationDate: { type: "string", format: "date-time", title: "Last Modification" },
+        ...datasourceSystemProperties.properties,
       },
+      // We should likely reuse `datasourceSystemProperties.required` instead of hardcoding but I'm not sure
+      // how the dashboard is handling it right now when creating new items
       required: Array.from(new Set(["$id", "$slug", "$lastModificationDate", ...items.required])),
     },
   };
