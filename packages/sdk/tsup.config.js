@@ -2,12 +2,6 @@ import { readFileSync } from "node:fs";
 import { defineConfig } from "tsup";
 import { execSync } from "node:child_process";
 
-const bannerText = readFileSync("../../banner.txt", "utf-8");
-const banner = {
-  js: bannerText,
-  css: bannerText,
-};
-
 const external = [
   "vite",
   "@vitejs/plugin-react",
