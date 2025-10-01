@@ -1,5 +1,16 @@
 # @upstart.gg/sdk
 
+## 0.0.139
+
+### Patch Changes
+
+- [#483](https://github.com/upstart-gg/upstart/pull/483) [`4595103`](https://github.com/upstart-gg/upstart/commit/459510364ccf5e34be54567f4b030a889114f3cd) Thanks [@mattallty](https://github.com/mattallty)! - Use @cfworker/json-schema for validation
+
+- [#485](https://github.com/upstart-gg/upstart/pull/485) [`15d5125`](https://github.com/upstart-gg/upstart/commit/15d51251d3f70aa3662d8b5f4c44e8caf6663d3d) Thanks [@mattallty](https://github.com/mattallty)! - Clean deps
+
+- Updated dependencies []:
+  - @upstart.gg/style-system@0.0.139
+
 ## 0.0.138
 
 ### Patch Changes
