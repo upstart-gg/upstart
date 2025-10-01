@@ -76,13 +76,13 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "rimraf": "6.0.1",
-    "tsup": "^8.5.0"
+    "tsdown": "^0.15.6"
   },
   "scripts": {
-    "build": "tsup",
-    "build:analyze": "tsup --metafile",
+    "build": "tsdown",
+    "build:analyze": "tsdown --metafile",
     "build:types": "tsc --emitDeclarationOnly --declaration --declarationMap",
-    "dev": "tsup --watch",
+    "dev": "tsdown --watch",
     "sizetest": "pnpm build && du -sh dist",
     "lint": "biome check --write . && tsc --noEmit",
     "ci:lint": "tsc --noEmit",

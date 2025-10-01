@@ -1,4 +1,4 @@
-import { defineConfig } from "tsup";
+import { defineConfig } from "tsdown";
 import { execSync } from "node:child_process";
 
 const external = [
@@ -22,22 +22,21 @@ export default defineConfig((options) => {
     {
       entry: ["src/shared/**/*.ts", ...ignored],
       outDir: "dist/shared",
-      target: "es2022",
-      dts: false,
-      format: "esm",
-      removeNodeProtocol: false,
+      target: "esnext",
+      nodeProtocol: true,
       metafile: !!process.env.ANALYZE_BUNDLE,
-      clean: !options.watch,
-      minify: false,
       sourcemap: options.watch ? "inline" : true,
       external,
-      onSuccess: async () => {
-        execSync("pnpm build:types", {
-          stdio: ["ignore", "inherit"],
-          // @ts-ignore
-          cwd: import.meta.dirname,
-        });
+      dts: {
+        sourcemap: true,
       },
+      // onSuccess: async () => {
+      //   execSync("pnpm build:types", {
+      //     stdio: ["ignore", "inherit"],
+      //     // @ts-ignore
+      //     cwd: import.meta.dirname,
+      //   });
+      // },
     },
   ];
 });
