@@ -3,7 +3,6 @@ import {
   Draggable,
   Droppable,
   type DraggableProvided,
-  type DraggableStateSnapshot,
   type DropResult,
 } from "@hello-pangea/dnd";
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
@@ -17,7 +16,6 @@ import ObjectFields, { FieldTitle } from "../field-factory";
 import type { FieldProps } from "./types";
 import { usePageQueries } from "~/editor/hooks/use-page-data";
 import type { LoopSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
-import set from "lodash-es/set";
 import { merge } from "lodash-es";
 
 // If the HTML contains any tags, this function will strip them out and return plain text.

@@ -1,4 +1,4 @@
-import { Type, type Static } from "@sinclair/typebox";
+import { type TSchema, Type, type Static } from "@sinclair/typebox";
 import { airtableOptions } from "./external/airtable/types";
 import { googleSheetsOptions } from "./external/google/sheets/types";
 import { notionOptions } from "./external/notion/types";
@@ -12,23 +12,27 @@ const internalDatarecord = Type.Object(
   {
     provider: Type.Literal("internal"),
     // options: Type.Optional(Type.Any()),
-    schema: Type.Any({
-      title: "Schema",
-      description:
-        "JSON Schema of the datarecord. Always of type 'object' and representing a row that will be saved in the database.",
-      examples: [
-        {
-          type: "object",
-          properties: {
-            firstname: { type: "string", title: "Firstname" },
-            lastname: { type: "string", title: "Lastname" },
-            email: { type: "string", format: "email", title: "Email" },
+    schema: Type.Object(
+      {},
+      {
+        title: "Schema",
+        additionalProperties: true,
+        description:
+          "JSON Schema of the datarecord. Always of type 'object' and representing a row that will be saved in the database.",
+        examples: [
+          {
+            type: "object",
+            properties: {
+              firstname: { type: "string", title: "Firstname" },
+              lastname: { type: "string", title: "Lastname" },
+              email: { type: "string", format: "email", title: "Email" },
+            },
+            required: ["email"],
+            title: "Newsletter Subscription",
           },
-          required: ["email"],
-          title: "Newsletter Subscription",
-        },
-      ],
-    }),
+        ],
+      },
+    ),
     indexes: Type.Array(
       Type.Object(
         {
@@ -85,23 +89,27 @@ const internalDatarecord = Type.Object(
 
 // Schema commun à tous les datarecords
 const commonDatarecordSchema = Type.Object({
-  schema: Type.Any({
-    title: "Schema",
-    description:
-      "JSON Schema of the datarecord. Always of type 'object' and representing a row that will be saved.",
-    examples: [
-      {
-        type: "object",
-        properties: {
-          firstname: { type: "string", title: "Firstname" },
-          lastname: { type: "string", title: "Lastname" },
-          email: { type: "string", format: "email", title: "Email" },
+  schema: Type.Object(
+    {},
+    {
+      additionalProperties: true,
+      title: "Schema",
+      description:
+        "JSON Schema of the datarecord. Always of type 'object' and representing a row that will be saved.",
+      examples: [
+        {
+          type: "object",
+          properties: {
+            firstname: { type: "string", title: "Firstname" },
+            lastname: { type: "string", title: "Lastname" },
+            email: { type: "string", format: "email", title: "Email" },
+          },
+          required: ["email"],
+          title: "Newsletter Subscription",
         },
-        required: ["email"],
-        title: "Newsletter Subscription",
-      },
-    ],
-  }),
+      ],
+    },
+  ),
 });
 
 const commonDatarecordMetadata = Type.Object({

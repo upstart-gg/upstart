@@ -6,7 +6,7 @@ export function color(options: StringOptions = {}) {
     "ai:instructions":
       "Format is `text-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900",
     pattern:
-      "^text-(primary|secondary|accent|neutral|base|inherit)-?(50|100|200|300|400|500|600|700|800|900)?$",
+      "^text-(primary|secondary|accent|neutral|base|inherit|current)-?(50|100|200|300|400|500|600|700|800|900)?$",
     "ui:styleId": "styles:color",
     "ui:field": "color",
     "ui:color-type": "text",
@@ -21,7 +21,8 @@ export function borderColor(options: StringOptions = {}) {
     title: "Border color",
     "ai:instructions":
       "Format is `border-<variant>-<shade>`, variants being `primary`, `secondary`, `accent` and `neutral`, and shades between 50 and 900",
-    pattern: "^border-(primary|secondary|accent|neutral|base)-?(50|100|200|300|400|500|600|700|800|900)?$",
+    pattern:
+      "^border-(primary|secondary|accent|neutral|base|current)-?(50|100|200|300|400|500|600|700|800|900)?$",
     "ui:styleId": "styles:borderColor",
     "ui:field": "color",
     "ui:color-type": "border",

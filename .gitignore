@@ -143,6 +143,3 @@ packages/testing
 
 .turbo
 
-docs/.vitepress/dist
-docs/.vitepress/cache
-docs.pdf

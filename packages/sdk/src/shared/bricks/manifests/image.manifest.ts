@@ -66,11 +66,7 @@ DO
         "ui:styleId": "styles:padding",
       }),
     ),
-    rounding: Type.Optional(
-      rounding({
-        default: "rounded-md",
-      }),
-    ),
+    rounding: Type.Optional(rounding()),
     border: Type.Optional(border()),
     shadow: Type.Optional(shadow()),
     blurHash: Type.Optional(

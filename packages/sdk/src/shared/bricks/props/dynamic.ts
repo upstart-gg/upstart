@@ -22,7 +22,10 @@ export function queryUse() {
           description:
             "Additional query parameters/filters to apply to the query. One can use placeholders in values like ':slug' to reference URL parameters.",
           title: "Query Parameters",
-          default: [],
+          examples: [
+            { field: "$slug", op: "eq", value: ":slug" },
+            { field: "category", op: "eq", value: ":category" },
+          ],
         }),
       ),
     },

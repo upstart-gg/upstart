@@ -4,7 +4,6 @@ import { Button, Text, Select, IconButton } from "@upstart.gg/style-system/syste
 import { type FC, useMemo, useState } from "react";
 import ModalSearchImage from "~/editor/components/ModalSearchImage";
 import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
-import ColorField from "./color";
 import { useUploader } from "../../UploaderContext";
 import { IoCloseOutline } from "react-icons/io5";
 import { HelpIcon } from "../HelpIcon";

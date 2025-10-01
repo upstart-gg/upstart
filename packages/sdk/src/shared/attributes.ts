@@ -1,10 +1,8 @@
 import { Type, type Static } from "@sinclair/typebox";
-import type { JSONSchemaType } from "ajv";
 import { getSchemaDefaults } from "../shared/utils/schema";
 import { manifest as navbarManifest } from "./bricks/manifests/navbar.manifest";
 import { manifest as footerManifest } from "./bricks/manifests/footer.manifest";
 import { boolean } from "./bricks/props/boolean";
-import { datetime } from "./bricks/props/date";
 import { image } from "./bricks/props/image";
 import { colorPreset } from "./bricks/props/color-preset";
 import { queryUse, type QueryUseSettings } from "./bricks/props/dynamic";
@@ -12,8 +10,7 @@ import { querySchema } from "./datasources/types";
 import { StringEnum } from "./utils/string-enum";
 import { background } from "./bricks/props/background";
 import { toLLMSchema } from "./utils/llm";
-
-export type { JSONSchemaType };
+import defaultsDeep from "lodash-es/defaultsDeep";
 
 // Default attributes
 export const pageAttributesSchema = Type.Object(
@@ -207,12 +204,19 @@ export const pageAttributesSchema = Type.Object(
         "ui:group": "layout",
       }),
     ),
+    isInitialPage: Type.Optional(
+      Type.Boolean({
+        title: "Is this the initial page created by the system?",
+        "ai:hidden": true,
+      }),
+    ),
   },
   {
     "ui:groups": {
       meta: "SEO & Meta tags",
       layout: "Layout",
     },
+    additionalProperties: true,
   },
 );
 
@@ -399,10 +403,10 @@ export type PageAttributesNoQueries = Static<typeof pageAttributesNoQueriesSchem
 
 export function resolvePageAttributes(data: Partial<PageAttributes> = {}) {
   const defaultAttrValues = getSchemaDefaults(pageAttributesSchema);
-  return { ...defaultAttrValues, ...data } as PageAttributes;
+  return defaultsDeep({}, defaultAttrValues, data) as PageAttributes;
 }
 
 export function resolveSiteAttributes(data: Partial<SiteAttributes> = {}) {
   const defaultAttrValues = getSchemaDefaults(siteAttributesSchema);
-  return { ...defaultAttrValues, ...data } as SiteAttributes;
+  return defaultsDeep({}, defaultAttrValues, data) as SiteAttributes;
 }

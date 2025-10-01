@@ -65,6 +65,10 @@ const msgCommon = tx(
       marginBottom: "0.35em",
       paddingLeft: ".3em",
     },
+    "& table": {
+      width: "100%",
+      fontSize: "0.8em",
+    },
   }),
 );
 

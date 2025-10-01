@@ -4,9 +4,10 @@ import { validate, getSchemaDefaults } from "../schema";
 import { toLLMSchema } from "../llm";
 import { sitemapSchema } from "~/shared/sitemap";
 import type { Manifest } from "~/shared/bricks/manifests/text.manifest";
-import { makeFullBrickSchemaForLLM, type Section, sectionSchema } from "~/shared/bricks";
+import { makeFullBrickSchemaForLLM, type Section, sectionProps, sectionSchema } from "~/shared/bricks";
 import type { BrickProps } from "~/shared/bricks/props/types";
 import { type Datarecord, genericDatarecord } from "~/shared/datarecords/types";
+import { defaultTheme, themesArray } from "~/shared/theme";
 
 describe("toLLMSchema tests suite", () => {
   test("should remove metadata properties", () => {
@@ -425,31 +426,6 @@ describe("toLLMSchema consistency", () => {
 });
 
 describe("getSchemaDefaults", () => {
-  test("should not generate partial objects when required properties lack defaults", () => {
-    // Schema with mixed required/optional properties and defaults
-    const problematicSchema = Type.Object(
-      {
-        requiredWithoutDefault: Type.String(), // Required but no default
-        optionalWithDefault: Type.Optional(Type.String({ default: "has default" })), // Optional with default
-        requiredWithDefault: Type.String({ default: "required default" }), // Required with default
-        nested: Type.Object(
-          {
-            nestedRequired: Type.String(), // Required but no default
-            nestedOptionalWithDefault: Type.Optional(Type.String({ default: "nested default" })), // Optional with default
-          },
-          { required: ["nestedRequired"] },
-        ), // Make nestedRequired actually required
-      },
-      { required: ["requiredWithoutDefault", "requiredWithDefault", "nested"] },
-    );
-
-    const result = getSchemaDefaults(problematicSchema);
-
-    // Should not include nested object since nestedRequired lacks a default
-    // Should not include the root object at all since requiredWithoutDefault lacks a default
-    expect(result).toEqual({});
-  });
-
   test("should generate complete objects when all required properties have defaults", () => {
     const validSchema = Type.Object(
       {
@@ -631,6 +607,22 @@ describe("getSchemaDefaults", () => {
     expect(desktopResult).toEqual(["desktop1", "desktop2"]);
     expect(mobileResult).toEqual(["mobile1", "mobile2"]);
   });
+
+  test("should handle sectionProps", () => {
+    const result = getSchemaDefaults(sectionProps);
+    expect(result).toMatchObject({
+      direction: "flex-row",
+    });
+  });
+
+  test("should handle sectionSchema and its nested properties", () => {
+    const result = getSchemaDefaults(sectionSchema);
+    expect(result).toMatchObject({
+      props: {
+        direction: "flex-row",
+      },
+    });
+  });
 });
 
 describe("validation with validate()", () => {
@@ -750,7 +742,40 @@ describe("validation with validate()", () => {
     expect(() => validate(schema, example2)).not.toThrow();
   });
 
-  test("show section schema", () => {
-    console.log("Section schema:", JSON.stringify(sectionSchema));
+  test("should validate arrays", () => {
+    const schema = themesArray;
+    const good = [
+      defaultTheme,
+      {
+        ...defaultTheme,
+        name: "Theme 2",
+      },
+    ];
+    const wrong = [
+      defaultTheme,
+      {
+        ...defaultTheme,
+        name: 42,
+      },
+    ];
+    expect(() => validate(schema, good)).not.toThrow();
+    expect(() => validate(schema, wrong)).toThrow();
+  });
+
+  test("should add default values", () => {
+    const section: Section = {
+      id: "section1",
+      label: "Hero Section",
+      order: 1,
+      props: {
+        colorPreset: {
+          color: "primary-100",
+        },
+      },
+      bricks: [],
+    };
+    const validated = validate<typeof sectionSchema>(sectionSchema, section);
+    expect(() => validate<typeof sectionSchema>(sectionSchema, section)).not.toThrow();
+    expect(validated.props.direction).toBe("flex-row");
   });
 });

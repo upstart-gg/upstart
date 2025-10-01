@@ -4,7 +4,6 @@ import { textContent } from "../props/text";
 import { BsCardText } from "react-icons/bs";
 import { image } from "../props/image";
 import { type Static, Type } from "@sinclair/typebox";
-import type { BrickProps } from "../props/types";
 import { shadow } from "../props/effects";
 import { border, rounding } from "../props/border";
 import { colorPreset } from "../props/color-preset";
@@ -24,6 +23,7 @@ Guidelines:
 - Always provide a short button label (1-3 words) and pick a color matching semantic weight (primary/accent for primary actions, neutral/secondary for low emphasis).
 - Set noTitle: true when the card is intentionally title-less (e.g. a quote card or pure media focus).
 - Use dynamic tokens (e.g. {{products.price}}) instead of duplicating literal values.
+- A good value for the "colorPreset" is base-100 for light mode and neutral-800 for dark mode.
 - border + rounding + shadow should be cohesive: stronger borders pair well with larger rounding + moderate shadow; minimal / flat cards may use border-0 + no shadow.
 - For internal navigation, always supply a page ID (e.g. 'about') instead of a full URL. Use placeholders like {{page.$slug}} for dynamic page links.
 - Keep HTML inside text minimal (<strong>, <em>, <br>, <p>) — for richer structure consider multiple bricks instead.
@@ -37,7 +37,6 @@ Guidelines:
     colorPreset: Type.Optional(
       colorPreset({
         title: "Color preset",
-        default: { color: "base-100" },
       }),
     ),
     cardImage: Type.Optional(
@@ -53,7 +52,6 @@ Guidelines:
         enumNames: ["Top", "Middle", "Bottom"],
         title: "Image Position",
         description: "Where the image should be placed in the card",
-        default: "top",
         "ui:responsive": "desktop",
         metadata: {
           category: "content",
@@ -67,7 +65,6 @@ Guidelines:
       Type.Boolean({
         title: "No Title",
         description: "Whether to hide the card title",
-        default: false,
         "ui:responsive": "desktop",
       }),
     ),
@@ -101,7 +98,7 @@ Guidelines:
         }),
         url: urlOrPageId({
           title: "Button URL",
-          description: "The URL the button should link to.",
+          description: "The URL or page id the button should link to.",
           metadata: {
             category: "content",
           },

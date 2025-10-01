@@ -56,7 +56,6 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
     ref,
   ) => {
     const urlParams = new URL(self.location.href).searchParams;
-    const setup = urlParams.has("setup");
     const debugMode = urlParams.has("debug") && urlParams.get("debug") !== "false";
 
     const editorStore = useRef(
@@ -83,35 +82,10 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
 
     const draftStore = useRef(
       createDraftStore({
-        site: {
-          ...site,
-          ...(setup
-            ? {
-                attributes: {} as SiteAndPagesConfig["site"]["attributes"],
-                datarecords: [],
-                datasources: [],
-                sitemap: [],
-                themes: [],
-              }
-            : {}),
-        },
+        site,
         page: {
           ...page,
           version: pageVersion,
-          ...(setup
-            ? {
-                attributes: {
-                  path: "/",
-                  title: "Untitled",
-                  description: "",
-                  keywords: "",
-                  queries: [],
-                  tags: [],
-                } satisfies PageAttributes,
-                sections: [],
-                label: "Untitled",
-              }
-            : {}),
         },
       }),
     ).current;
