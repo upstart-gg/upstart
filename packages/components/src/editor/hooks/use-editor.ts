@@ -1,7 +1,9 @@
+import type { UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
 import type { Brick } from "@upstart.gg/sdk/shared/bricks";
 import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
+import type { Page } from "@upstart.gg/sdk/shared/page";
 import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
-import type { Site, SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
+import type { Site } from "@upstart.gg/sdk/shared/site";
 import type { Theme } from "@upstart.gg/sdk/shared/theme";
 import invariant from "@upstart.gg/sdk/shared/utils/invariant";
 import { enableMapSet } from "immer";
@@ -11,9 +13,7 @@ import { temporal } from "zundo";
 import { createStore, useStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import { type DraftState, usePageContext } from "./use-page-data";
-import type { Page } from "@upstart.gg/sdk/shared/page";
-import type { UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
+import { usePageContext } from "./use-page-data";
 export type { Immer } from "immer";
 
 enableMapSet();
@@ -27,6 +27,13 @@ export type PagePublishPayload =
       schedulePublishedAt?: string | null;
     }
   | { siteId: string; mode: "publish-site" };
+
+export type PagesPublishPayload = {
+  siteId: string;
+  mode: "publish-pages";
+  pageIds: string[];
+  schedulePublishedAt?: string | null;
+};
 
 export type PageSavePayload = {
   siteId: string;
@@ -91,7 +98,6 @@ export interface EditorStateProps {
   isMouseOverPanel?: boolean;
 
   onShowPopup: (id: string | false) => void;
-  onPublish: (data: PagePublishPayload) => void;
   onPageCreated: (page: Page) => Promise<{
     pageVersionId: string;
   }>;
@@ -138,10 +144,7 @@ export interface EditorState extends EditorStateProps {
 
 export const createEditorStore = (
   initProps: Partial<EditorStateProps> &
-    Pick<
-      EditorStateProps,
-      "chatSession" | "onPageCreated" | "onPublish" | "onSavePage" | "onSaveSite" | "onShowPopup"
-    >,
+    Pick<EditorStateProps, "chatSession" | "onPageCreated" | "onSavePage" | "onSaveSite" | "onShowPopup">,
 ) => {
   const DEFAULT_PROPS = {
     previewMode: "desktop" satisfies EditorStateProps["previewMode"],
@@ -529,7 +532,7 @@ export const useEditorHelpers = () => {
     showModal: state.showModal,
     hideModal: state.hideModal,
     toggleEditorEnabled: state.toggleEditorEnabled,
-    onPublish: state.onPublish,
+
     onSavePage: state.onSavePage,
     onSaveSite: state.onSaveSite,
     onPageCreated: state.onPageCreated,

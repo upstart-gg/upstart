@@ -1,24 +1,24 @@
+import "@radix-ui/themes/styles.css";
 import type { SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
+import "@upstart.gg/style-system/editor.css";
+import "@upstart.gg/style-system/radix.css";
 import { Theme } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
-import { useEffect, useRef, forwardRef, useImperativeHandle, type PropsWithChildren } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, type PropsWithChildren } from "react";
 import { useDarkMode } from "usehooks-ts";
 import {
-  EditorStoreContext,
   createEditorStore,
+  EditorStoreContext,
   type EditorState,
   type EditorStateProps,
 } from "../hooks/use-editor";
 import { UploaderProvider, type UploaderProviderProps } from "./UploaderContext";
-import "@radix-ui/themes/styles.css";
-import "@upstart.gg/style-system/editor.css";
-import "@upstart.gg/style-system/radix.css";
 // import "@upstart.gg/components/dist/assets/style.css";
+import type { PageAttributes } from "@upstart.gg/sdk/shared/attributes";
 import "@upstart.gg/style-system/default-theme.css";
 import "@upstart.gg/style-system/react-resizable.css";
 import "@upstart.gg/style-system/tiptap-text-editor.css";
 import { createDraftStore, DraftStoreContext } from "../hooks/use-page-data";
-import type { PageAttributes } from "@upstart.gg/sdk/shared/attributes";
 
 // Define the interface for accessing stores
 export interface EditorWrapperRef {
@@ -28,7 +28,7 @@ export interface EditorWrapperRef {
 
 export type EditorWrapperProps = Pick<
   EditorStateProps,
-  "chatSession" | "onShowPopup" | "onPublish" | "onSavePage" | "onSaveSite" | "onPageCreated"
+  "chatSession" | "onShowPopup" | "onSavePage" | "onSaveSite" | "onPageCreated"
 > &
   UploaderProviderProps &
   SiteAndPagesConfig & { pageVersion: string; pageId: string; onReady?: () => void };
@@ -49,7 +49,6 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
       children,
       onSaveSite,
       onSavePage,
-      onPublish,
       onShowPopup,
       onPageCreated,
       onReady = () => {},
@@ -62,7 +61,6 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
 
     const editorStore = useRef(
       createEditorStore({
-        onPublish,
         onSaveSite,
         onSavePage,
         onShowPopup,

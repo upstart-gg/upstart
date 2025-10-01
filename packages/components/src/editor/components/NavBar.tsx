@@ -1,16 +1,14 @@
+import { DropdownMenu, HoverCard, Tooltip } from "@upstart.gg/style-system/system";
 import { css, tx } from "@upstart.gg/style-system/twind";
 import { type MouseEvent, type PropsWithChildren, useCallback, useMemo } from "react";
 import { BsStars } from "react-icons/bs";
 import { IoIosHelpCircleOutline } from "react-icons/io";
-import { LuRedo, LuUndo } from "react-icons/lu";
-import { RxDesktop, RxMobile, RxZoomIn, RxZoomOut } from "react-icons/rx";
-import { VscCopy } from "react-icons/vsc";
-import { RxExternalLink } from "react-icons/rx";
-import { BsDatabaseDown } from "react-icons/bs";
-import { DropdownMenu, HoverCard, Tooltip } from "@upstart.gg/style-system/system";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
+import { LuPlus, LuRedo, LuUndo } from "react-icons/lu";
+import { PiPalette } from "react-icons/pi";
 import { RiArrowDownSLine } from "react-icons/ri";
-import { RxRocket } from "react-icons/rx";
+import { RxDesktop, RxExternalLink, RxMobile, RxRocket, RxZoomIn, RxZoomOut } from "react-icons/rx";
+import { VscCopy, VscSettings } from "react-icons/vsc";
 import {
   useChatVisible,
   useDebugMode,
@@ -23,19 +21,16 @@ import {
 } from "~/editor/hooks/use-editor";
 import dark from "../../../../../creatives/upstart-dark.svg";
 import logo from "../../../../../creatives/upstart.svg";
-import { LuPlus } from "react-icons/lu";
-import { PiPalette } from "react-icons/pi";
-import { VscSettings } from "react-icons/vsc";
-import { useUserConfig } from "../hooks/use-user-config";
 import {
   useDraft,
-  usePageVersion,
-  useSitemap,
   useDraftUndoManager,
   useGenerationState,
-  useSite,
   usePage,
+  usePageVersion,
+  useSite,
+  useSitemap,
 } from "../hooks/use-page-data";
+import { useUserConfig } from "../hooks/use-user-config";
 
 export default function NavBar() {
   const editorHelpers = useEditorHelpers();
@@ -57,22 +52,6 @@ export default function NavBar() {
   const canUndo = useMemo(() => pastStates.length > 0, [pastStates]);
   const currentPageLabel = page.label ?? "Untitled Page";
   const generationState = useGenerationState();
-
-  const publish = useCallback(
-    (wholeSite = false) => {
-      if (wholeSite) {
-        editorHelpers.onPublish({ mode: "publish-site", siteId: site.id });
-      } else {
-        editorHelpers.onPublish({
-          mode: "publish-page",
-          pageId: page.id,
-          siteId: site.id,
-          pageVersionId: pageVersion ?? "latest",
-        });
-      }
-    },
-    [site.id, page.id, pageVersion, editorHelpers.onPublish],
-  );
 
   const switchPreviewMode = useCallback(
     (e: MouseEvent) => {
@@ -400,34 +379,25 @@ export default function NavBar() {
           )}
         </div> */}
 
-        {/* <TopbarMenu
-          id="publish-menu-btn"
-          items={[
-            { label: "Publish this page", onClick: () => publish() },
-            { label: "Publish all pages", onClick: () => publish(true) },
-            { type: "separator" as const },
-            { label: "Schedule publication", onClick: () => editorHelpers.onShowPopup?.("schedule-publish") },
-          ]}
-        > */}
-          <button type="button" className={tx(btnClass, rocketBtn, btnWithArrow)} onClick={() => editorHelpers.onShowPopup?.("publish")}>
-            <div
-              style={{
-                textShadow: "1px 1px 0px rgba(255, 255, 255, 0.3)",
-              }}
-              className={tx(
-                "font-semibold inline-flex gap-1.5 bg-orange-100 py-2 px-3 rounded-full text-nowrap items-center cursor-pointer",
-                css({ fontSize: ".94rem" }),
-              )}
-            >
-              <RxRocket className={tx("h-4 w-auto stroke-orange-600")} />
-              Publish
-              <RiArrowDownSLine className={tx(arrowClass, "!text-orange-700")} />
-            </div>
-            {/* <div>
-                <RxRocket className={tx("h-5 w-auto")} />
-              </div>
-              <span className={tx("font-bold italic px-2", css({ fontSize: "1rem" }))}>Publish</span> */}
-          </button>
+        <button
+          type="button"
+          className={tx(btnClass, rocketBtn, btnWithArrow)}
+          onClick={() => editorHelpers.onShowPopup?.("publish")}
+        >
+          <div
+            style={{
+              textShadow: "1px 1px 0px rgba(255, 255, 255, 0.3)",
+            }}
+            className={tx(
+              "font-semibold inline-flex gap-1.5 bg-orange-100 py-2 px-3 rounded-full text-nowrap items-center cursor-pointer",
+              css({ fontSize: ".94rem" }),
+            )}
+          >
+            <RxRocket className={tx("h-4 w-auto stroke-orange-600")} />
+            Publish
+          </div>
+          
+        </button>
         {/* </TopbarMenu> */}
       </div>
     </nav>
