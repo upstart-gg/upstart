@@ -1,4 +1,3 @@
-import { readFileSync } from "node:fs";
 import { defineConfig } from "tsup";
 import { execSync } from "node:child_process";
 
@@ -38,9 +37,6 @@ export default defineConfig((options) => {
           // @ts-ignore
           cwd: import.meta.dirname,
         });
-      },
-      esbuildOptions(input) {
-        input.banner = banner;
       },
     },
   ];
