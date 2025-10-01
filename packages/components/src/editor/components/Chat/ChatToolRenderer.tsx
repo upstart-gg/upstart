@@ -30,6 +30,9 @@ export default function ToolRenderer({
   if (error) {
     return null;
   }
+  if (toolPart.state === "output-error" && !debug) {
+    return null;
+  }
   // Don't show user choices until all other tools have finished
   if (toolPart.type === "tool-askUserChoice" && hasToolsRunning) {
     return null;

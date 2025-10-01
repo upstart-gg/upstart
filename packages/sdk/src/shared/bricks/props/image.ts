@@ -2,13 +2,12 @@ import { Type, type Static, type ObjectOptions } from "@sinclair/typebox";
 import { StringEnum } from "~/shared/utils/string-enum";
 
 type PropImageOptions = {
-  defaultImageUrl?: string;
   showImgSearch?: boolean;
   noObjectOptions?: boolean;
 } & ObjectOptions;
 
 export function image(options: PropImageOptions = {}) {
-  const { defaultImageUrl, showImgSearch = false, noObjectOptions = false } = options;
+  const { showImgSearch = false, noObjectOptions = false } = options;
   const schema = Type.Object(
     {
       src: Type.String({
@@ -55,7 +54,7 @@ export function image(options: PropImageOptions = {}) {
               "9:21 (Tall vertical)",
               "Original",
             ],
-            title: "Aspect Ratio",
+            title: "Forces aspect ratio",
             description: "The aspect ratio of the image",
             "ui:field": "enum",
             "ui:styleId": "styles:aspectRatio",

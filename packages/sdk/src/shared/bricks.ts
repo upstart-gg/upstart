@@ -111,7 +111,8 @@ export function makeFullBrickSchemaForLLM(type: string, otherTypes?: string[]) {
           }),
           type: Type.Literal(type),
           props: manifests[type].props,
-          mobileProps: Type.Optional(Type.Partial(manifests[type].props)),
+          // Mobileprops are always partial and do not contain $children
+          mobileProps: Type.Optional(Type.Partial(Type.Omit(manifests[type].props, ["$children"]))),
         },
         // IMPORTANT: DO NOT set "additionalProperties" to `false` because it would break validation with Cabidela library
         // { additionalProperties: false },
@@ -139,7 +140,7 @@ export function makeFullBrickSchemaForLLM(type: string, otherTypes?: string[]) {
                     }),
                     type: Type.Literal(t),
                     props: manifests[t].props,
-                    mobileProps: Type.Optional(Type.Partial(manifests[t].props)),
+                    mobileProps: Type.Optional(Type.Partial(Type.Omit(manifests[t].props, ["$children"]))),
                   }),
                 ),
               ),

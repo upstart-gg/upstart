@@ -49,10 +49,11 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
       {
         // Keep this fake id as is!
         id: "_default_",
-        label: "First page",
+        label: "Untitled",
         sections: [],
         attributes: resolvePageAttributes({
           path: "/",
+          isInitialPage: true,
         }),
       },
     ],

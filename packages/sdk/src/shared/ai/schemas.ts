@@ -15,11 +15,13 @@ export const askUserChoiceInput = Type.Object({
   choices: Type.Array(
     Type.String({
       title: "Choice. Will appear as a button label to the user. Don't make it too long for a button label.",
-      minLength: 2,
+      minLength: 1,
     }),
     {
-      description: "The list of choices to present to the user. Minimum 2 choices, max 6.",
-      maxItems: 6,
+      description: `The list of choices to present to the user.
+For yes/no questions, use 'Yes' and 'No' as choices. (translated to user language).
+For other multiple choice questions, always include one LAST choice for 'Other' or 'None of these' as a last choice to let the user manually input their own answer if none of the predefined choices fit.`,
+      maxItems: 7,
       minItems: 2,
     },
   ),

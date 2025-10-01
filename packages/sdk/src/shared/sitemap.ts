@@ -18,10 +18,17 @@ export const sitemapEntry = Type.Composite(
             "The status of the page. Can be draft or published. [AI instructions: Dont generate this.]",
         }),
       ),
+      isInitialPage: Type.Optional(
+        Type.Boolean({
+          title: "Is initial page",
+          "ai:hidden": true,
+        }),
+      ),
     }),
   ],
   {
     description: "Pages map. The complete list of site pages & their metadata",
+    additionalProperties: true,
   },
 );
 

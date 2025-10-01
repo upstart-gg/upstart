@@ -1,7 +1,6 @@
-import { type TArray, type TObject, type TSchema, Kind, type Static } from "@sinclair/typebox";
-import { Value } from "@sinclair/typebox/value";
+import type { TArray, TObject, TSchema, Static } from "@sinclair/typebox";
 import type { PageAttributes } from "../attributes";
-import { defaultsDeep as applyDefaultsDeep, merge } from "lodash-es";
+import { defaultsDeep as applyDefaultsDeep } from "lodash-es";
 import { FormatRegistry } from "@sinclair/typebox";
 import { Validator } from "@cfworker/json-schema";
 // export const jsonStringsSupportedFormats = ["date-time", "date", "email", "url"] as const;
@@ -58,7 +57,6 @@ export function getSchemaDefaults<T extends TObject | TArray>(
   // Handle object schemas
   if (schema.type === "object" && "properties" in schema) {
     const objectSchema = schema as TObject;
-    const required = objectSchema.required || [];
 
     // First pass: collect all properties that have defaults
     const propertiesWithDefaults: Record<string, unknown> = {};
@@ -66,14 +64,6 @@ export function getSchemaDefaults<T extends TObject | TArray>(
       const defaultValue = getNestedDefaults(propertySchema as TSchema, mode);
       if (defaultValue !== undefined) {
         propertiesWithDefaults[key] = defaultValue;
-      }
-    }
-
-    // Second pass: validate that all required properties have defaults
-    // If any required property lacks a default, return empty object
-    for (const requiredProp of required) {
-      if (!(requiredProp in propertiesWithDefaults)) {
-        return {} as Static<T>;
       }
     }
 
@@ -115,7 +105,6 @@ function getNestedDefaults(schema: TSchema, mode?: "mobile" | "desktop"): unknow
   if (schema.type === "object" && "properties" in schema) {
     const objectSchema = schema as TObject;
     const required = objectSchema.required || [];
-    const defaults: Record<string, unknown> = {};
 
     // First pass: collect all properties that have defaults
     const propertiesWithDefaults: Record<string, unknown> = {};
@@ -177,17 +166,15 @@ export function validate<T extends TSchema>(schema: TSchema, data: unknown): Sta
   if (!result.valid) {
     const errors = [];
     for (const error of result.errors) {
-      console.log("Validation error detail:", error);
-      errors.push(error.error);
+      errors.push(`${error.error} (at ${error.keywordLocation})`);
     }
     const formatedError = `- ${errors.join("\n- ")}`;
-    console.error("Validation errors:\n", formatedError);
     throw new Error(formatedError);
   }
 
   // Mutate data with defaults
   const defaults = getSchemaDefaults(schema as TObject | TArray);
-  const finalObject = applyDefaultsDeep({}, data, defaults);
+  const finalObject = Array.isArray(data) ? data : applyDefaultsDeep({}, data, defaults);
 
   return finalObject as Static<T>;
 }

@@ -18,7 +18,6 @@ import "@upstart.gg/style-system/default-theme.css";
 import "@upstart.gg/style-system/react-resizable.css";
 import "@upstart.gg/style-system/tiptap-text-editor.css";
 import { createDraftStore, DraftStoreContext } from "../hooks/use-page-data";
-import type { PageAttributes } from "@upstart.gg/sdk/shared/attributes";
 
 // Define the interface for accessing stores
 export interface EditorWrapperRef {
@@ -57,7 +56,6 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
     ref,
   ) => {
     const urlParams = new URL(self.location.href).searchParams;
-    const setup = urlParams.has("setup");
     const debugMode = urlParams.has("debug") && urlParams.get("debug") !== "false";
 
     const editorStore = useRef(
@@ -85,35 +83,10 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
 
     const draftStore = useRef(
       createDraftStore({
-        site: {
-          ...site,
-          ...(setup
-            ? {
-                attributes: {} as SiteAndPagesConfig["site"]["attributes"],
-                datarecords: [],
-                datasources: [],
-                sitemap: [],
-                themes: [],
-              }
-            : {}),
-        },
+        site,
         page: {
           ...page,
           version: pageVersion,
-          ...(setup
-            ? {
-                attributes: {
-                  path: "/",
-                  title: "Untitled",
-                  description: "",
-                  keywords: "",
-                  queries: [],
-                  tags: [],
-                } satisfies PageAttributes,
-                sections: [],
-                label: "Untitled",
-              }
-            : {}),
         },
       }),
     ).current;
