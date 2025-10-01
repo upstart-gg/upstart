@@ -400,7 +400,7 @@ export default function NavBar() {
           )}
         </div> */}
 
-        <TopbarMenu
+        {/* <TopbarMenu
           id="publish-menu-btn"
           items={[
             { label: "Publish this page", onClick: () => publish() },
@@ -408,8 +408,8 @@ export default function NavBar() {
             { type: "separator" as const },
             { label: "Schedule publication", onClick: () => editorHelpers.onShowPopup?.("schedule-publish") },
           ]}
-        >
-          <button type="button" className={tx(btnClass, rocketBtn, btnWithArrow)}>
+        > */}
+          <button type="button" className={tx(btnClass, rocketBtn, btnWithArrow)} onClick={() => editorHelpers.onShowPopup?.("publish")}>
             <div
               style={{
                 textShadow: "1px 1px 0px rgba(255, 255, 255, 0.3)",
@@ -428,7 +428,7 @@ export default function NavBar() {
               </div>
               <span className={tx("font-bold italic px-2", css({ fontSize: "1rem" }))}>Publish</span> */}
           </button>
-        </TopbarMenu>
+        {/* </TopbarMenu> */}
       </div>
     </nav>
   );
