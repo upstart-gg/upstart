@@ -4,7 +4,6 @@ import { textContent } from "../props/text";
 import { BsCardText } from "react-icons/bs";
 import { image } from "../props/image";
 import { type Static, Type } from "@sinclair/typebox";
-import type { BrickProps } from "../props/types";
 import { shadow } from "../props/effects";
 import { border, rounding } from "../props/border";
 import { colorPreset } from "../props/color-preset";
