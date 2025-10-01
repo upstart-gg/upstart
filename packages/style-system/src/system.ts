@@ -14,5 +14,10 @@ export {
   autoUpdate,
   type Placement,
   FloatingPortal,
+  useClientPoint,
+  flip,
+  arrow,
+  shift,
+  FloatingArrow,
 } from "@floating-ui/react";
 export { toast, Toaster } from "react-hot-toast";
