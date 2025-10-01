@@ -1,10 +1,8 @@
 import { Type, type Static } from "@sinclair/typebox";
-import type { JSONSchemaType } from "ajv";
 import { getSchemaDefaults } from "../shared/utils/schema";
 import { manifest as navbarManifest } from "./bricks/manifests/navbar.manifest";
 import { manifest as footerManifest } from "./bricks/manifests/footer.manifest";
 import { boolean } from "./bricks/props/boolean";
-import { datetime } from "./bricks/props/date";
 import { image } from "./bricks/props/image";
 import { colorPreset } from "./bricks/props/color-preset";
 import { queryUse, type QueryUseSettings } from "./bricks/props/dynamic";
@@ -12,8 +10,6 @@ import { querySchema } from "./datasources/types";
 import { StringEnum } from "./utils/string-enum";
 import { background } from "./bricks/props/background";
 import { toLLMSchema } from "./utils/llm";
-
-export type { JSONSchemaType };
 
 // Default attributes
 export const pageAttributesSchema = Type.Object(
