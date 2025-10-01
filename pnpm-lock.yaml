@@ -123,8 +123,8 @@ importers:
         specifier: 2.14.0
         version: 2.14.0(@tiptap/core@2.14.0(@tiptap/pm@2.14.0))
       '@tiptap/extension-text-align':
-        specifier: 2.14.0
-        version: 2.14.0(@tiptap/core@2.14.0(@tiptap/pm@2.14.0))
+        specifier: 3.6.2
+        version: 3.6.2(@tiptap/core@2.14.0(@tiptap/pm@2.14.0))
       '@tiptap/extension-text-style':
         specifier: 2.14.0
         version: 2.14.0(@tiptap/core@2.14.0(@tiptap/pm@2.14.0))
@@ -2688,10 +2688,10 @@ packages:
     peerDependencies:
       '@tiptap/core': ^2.7.0
 
-  '@tiptap/extension-text-align@2.14.0':
-    resolution: {integrity: sha512-9Wth4sAq2lYVWvQA0Qy095fsnPEavBv1FKWzVEyurwEQB7ZQsf/MRGmCNFnUXXy12w1G9UOanS4KkJ4C64+Ccw==}
+  '@tiptap/extension-text-align@3.6.2':
+    resolution: {integrity: sha512-P3IYe6pyOe9hZoSQfHypFioLbGrr24d55/RkvNnwSd8qzd0RhjXIyiuOmYLcXdLio4PkJ+KjbZcptQ9zW8Mh4g==}
     peerDependencies:
-      '@tiptap/core': ^2.7.0
+      '@tiptap/core': ^3.6.2
 
   '@tiptap/extension-text-style@2.14.0':
     resolution: {integrity: sha512-dl0oi2i0rjLpBqTf4wGy6SLidvPpjxLcmX727pwJlCklkFJVDf8wSFeD4ddxJXiD2Rwef0D/lkcwXSY73CoDcA==}
@@ -3479,8 +3479,8 @@ packages:
     resolution: {integrity: sha512-reYkTUJAZb9gUuZ2RvVCNhVHdg62RHnJ7WJl8ftMi4diZ6NWlciOzQN88pUhSELEwflJht4oQDv0F0BMlwaYtA==}
     engines: {node: '>=8'}
 
-  detect-libc@2.0.4:
-    resolution: {integrity: sha512-3UDv+G9CsCKO1WKMGw9fwq/SWJYbI0c5Y7LU1AXYoDdbhE2AHQ6N6Nb34sG8Fj7T5APy8qXDCKuuIHd1BR0tVA==}
+  detect-libc@2.1.1:
+    resolution: {integrity: sha512-ecqj/sy1jcK1uWrwpR67UhYrIFQ+5WlGxth34WquCbamhFA6hkkwiu37o6J5xCHdo1oixJRfVRw+ywV+Hq/0Aw==}
     engines: {node: '>=8'}
 
   detect-node-es@1.1.0:
@@ -8307,7 +8307,7 @@ snapshots:
     dependencies:
       '@tiptap/core': 2.14.0(@tiptap/pm@2.14.0)
 
-  '@tiptap/extension-text-align@2.14.0(@tiptap/core@2.14.0(@tiptap/pm@2.14.0))':
+  '@tiptap/extension-text-align@3.6.2(@tiptap/core@2.14.0(@tiptap/pm@2.14.0))':
     dependencies:
       '@tiptap/core': 2.14.0(@tiptap/pm@2.14.0)
 
@@ -9142,7 +9142,7 @@ snapshots:
 
   detect-indent@6.1.0: {}
 
-  detect-libc@2.0.4:
+  detect-libc@2.1.1:
     optional: true
 
   detect-node-es@1.1.0: {}
@@ -9761,7 +9761,7 @@ snapshots:
 
   lightningcss@1.30.1:
     dependencies:
-      detect-libc: 2.0.4
+      detect-libc: 2.1.1
     optionalDependencies:
       lightningcss-darwin-arm64: 1.30.1
       lightningcss-darwin-x64: 1.30.1
