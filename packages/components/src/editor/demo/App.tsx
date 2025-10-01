@@ -2,8 +2,8 @@ import { useRef, type PropsWithChildren } from "react";
 import Editor from "~/editor/components/Editor";
 import {
   EditorWrapper,
-  type EditorWrapperRef,
   type EditorWrapperProps,
+  type EditorWrapperRef,
 } from "~/editor/components/EditorWrapper";
 import { ClientOnly } from "~/shared/utils/client-only";
 // import "@upstart.gg/style-system/default-theme.css";
@@ -31,18 +31,12 @@ export default function App({ path, config }: { path: string; config: SiteAndPag
 
 function InnerEditor(
   props: PropsWithChildren<
-    Omit<
-      EditorWrapperProps,
-      "onImageUpload" | "onShowPopup" | "onPublish" | "onSavePage" | "onSaveSite" | "onPageCreated"
-    >
+    Omit<EditorWrapperProps, "onImageUpload" | "onShowPopup" | "onSavePage" | "onSaveSite" | "onPageCreated">
   >,
 ) {
   const onImageUpload = async (file: File) => {
     console.log("Image upload callback called with", file);
     return "https://via.placeholder.com/150";
-  };
-  const onPublish = () => {
-    console.debug("onPublish: Out of the demo, the 'publish' modal should be displayed at this time.");
   };
   const onSavePage: EditorWrapperProps["onSavePage"] = async (data) => {
     console.debug("onSavePage: Out of the demo, the 'save' modal should be displayed at this time.", {
@@ -79,7 +73,6 @@ function InnerEditor(
       ref={editorWrapperRef}
       {...props}
       onImageUpload={onImageUpload}
-      onPublish={onPublish}
       onSavePage={onSavePage}
       onSaveSite={onSaveSite}
       onPageCreated={onPageCreated}
