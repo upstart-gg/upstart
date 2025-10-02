@@ -14,7 +14,7 @@ import { validate } from "@upstart.gg/sdk/shared/utils/schema";
 import type { TSchema } from "@sinclair/typebox";
 import { type Query, querySchema } from "@upstart.gg/sdk/shared/datasources/types";
 import { getDatasourceIndexedFieldsWithTitles } from "@upstart.gg/sdk/shared/datasources";
-import { Fragment, useCallback, useState } from "react";
+import { Fragment, useCallback, useState, useEffect } from "react";
 import { useDraftHelpers, usePage, usePagePathParams, useQueries } from "../hooks/use-page-data";
 import { useDatasource, useDatasources } from "../hooks/use-datasource";
 import { FieldTitle } from "./json-form/field-factory";
@@ -175,16 +175,40 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
   const datasource = useDatasource(query?.datasourceId);
   const pagePathParams = usePagePathParams();
 
-  // Get Indexed Fields for filter and sort
+  // Get Indexed Fields
   const indexedFields = datasource ? getDatasourceIndexedFieldsWithTitles(datasource) : [];
   // Don't consider $id and $slug for sorting
   const sortableFields = indexedFields.filter((field) => ["$id", "$slug"].includes(field.value) === false);
 
-  // Extract simple parameters from the filterExpression structure
+  // Extract simple parameters from the expression structure
   const parameters = query?.parameters?.fields?.filter((f) => "field" in f) ?? [];
 
   // Extract sort information from the array
   const sorts = query?.sort ?? [];
+
+  // Check if any parameter field has a fulltext index
+  const hasFulltextParameter = () => {
+    if (!datasource) return false;
+
+    return parameters.some((param) => {
+      // Check if this parameter's field has a fulltext index
+      return datasource.indexes.some(
+        (index) => index.fulltext === true && index.fields.includes(param.field),
+      );
+    });
+  };
+
+  const showMatchSort = hasFulltextParameter();
+
+  // Clean up invalid match() sorts when fulltext parameters are removed
+  useEffect(() => {
+    if (!showMatchSort && sorts.some((sort) => sort === "match()")) {
+      setQuery((prev) => ({
+        ...prev,
+        sort: sorts.filter((sort) => sort !== "match()"),
+      }));
+    }
+  }, [showMatchSort, sorts]);
 
   // Handle general query changes
   const handleChange = (key: keyof Query, value: string | number) => {
@@ -405,9 +429,9 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
         {initialQuery ? "Edit query" : "Create a new query"}:{" "}
         <span className="text-gray-500">{query?.label}</span>
       </h3>
-      <div className="flex flex-col text-sm gap-4 flex-1 -mx-2.5 divide-y divide-gray-200">
+      <div className="flex flex-col text-sm flex-1 -mx-2.5 divide-y divide-gray-200">
         {/* Database Selection */}
-        <div className="flex justify-between gap-4 flex-1 items-center py-0.5 px-2.5">
+        <div className="flex justify-between gap-4 flex-1 items-center p-3">
           <div className="flex flex-col gap-1 flex-1">
             <FieldTitle
               withIcon
@@ -451,11 +475,11 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
                     ({
                       ...(prev ?? {}),
                       datasourceId: value,
-                      filters: {
+                      parameters: {
                         op: "and" as const,
                         fields: [],
                       },
-                    }) as Query,
+                    }) satisfies Partial<Query>,
                 )
               }
             >
@@ -478,7 +502,7 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
 
         {/* Parameters Section */}
         {indexedFields.length > 0 && (
-          <div className="flex flex-col gap-2 flex-1 justify-between pt-3 px-2.5">
+          <div className="flex flex-col gap-1 flex-1 justify-between p-3">
             <div className="flex flex-1 w-full justify-between items-center">
               <FieldTitle
                 withIcon
@@ -486,20 +510,20 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
                 className="font-medium"
                 description="Add parameters to narrow down your query"
               />
-              <Button type="button" radius="full" variant="solid" size="1" onClick={addParameter}>
+              <Button type="button" radius="full" variant="soft" size="1" onClick={addParameter}>
                 <TbPlus className="w-3 h-3" />
                 Add parameter
               </Button>
             </div>
             {parameters.length > 0 && (
               <div className="flex flex-col gap-3 mt-1">
-                {parameters.map((filter, index) => (
+                {parameters.map((param, index) => (
                   <Fragment key={index}>
                     <div className="flex gap-x-3 gap-y-0.5 items-center">
                       {/* Field Selector */}
                       <div className="w-[200px] flex items-center gap-3 pr-1">
                         <Select.Root
-                          defaultValue={filter.field}
+                          defaultValue={param.field}
                           onValueChange={(value: string) => updateParameter(index, "field", value)}
                         >
                           <Select.Trigger
@@ -521,14 +545,14 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
                       </div>
 
                       {/* Operator Selector */}
-                      <div className={tx("flex gap-2 items-center w-[120px]", !filter.field && "hidden")}>
+                      <div className={tx("flex gap-2 items-center w-[120px]", !param.field && "hidden")}>
                         {/* <BsArrowReturnRight className="w-3 h-3 ml-1 mr-1.5 !shrink-0" /> */}
                         <Select.Root
-                          key={`operator-${index}-${filter.field}`} // Force re-render when field changes
-                          defaultValue={filter.op}
+                          key={`operator-${index}-${param.field}`} // Force re-render when field changes
+                          defaultValue={param.op}
                           size="2"
                           onValueChange={(value: string) => updateParameter(index, "op", value)}
-                          disabled={!filter.field}
+                          disabled={!param.field}
                         >
                           <Select.Trigger
                             radius="medium"
@@ -538,7 +562,7 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
                           />
                           <Select.Content position="popper">
                             <Select.Group>
-                              {getOperatorOptionsForField(filter.field).map((option) => (
+                              {getOperatorOptionsForField(param.field).map((option) => (
                                 <Select.Item key={option.value} value={option.value}>
                                   {option.label}
                                 </Select.Item>
@@ -549,46 +573,46 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
                       </div>
 
                       {/* Value Input - for relative dates, use two columns, otherwise span both */}
-                      {getFieldType(filter.field) === "date" || getFieldType(filter.field) === "datetime" ? (
-                        (filter.op === "before" || filter.op === "after" || filter.op === "eq") && (
+                      {getFieldType(param.field) === "date" || getFieldType(param.field) === "datetime" ? (
+                        (param.op === "before" || param.op === "after" || param.op === "eq") && (
                           // Absolute date: span both columns
-                          <div className={tx("grow flex justify-end", !filter.field && "hidden")}>
+                          <div className={tx("grow flex justify-end", !param.field && "hidden")}>
                             <TextField.Root
                               size="2"
-                              type={getFieldType(filter.field) === "datetime" ? "datetime-local" : "date"}
-                              defaultValue={String(filter.value || "")}
+                              type={getFieldType(param.field) === "datetime" ? "datetime-local" : "date"}
+                              defaultValue={String(param.value || "")}
                               onChange={(e) => updateParameter(index, "value", e.target.value)}
-                              disabled={!filter.field}
+                              disabled={!param.field}
                               className="!w-full"
                             />
                           </div>
                         )
                       ) : (
                         // Non-date fields: span both columns
-                        <div className={tx("grow flex justify-end", !filter.field && "hidden")}>
-                          {getFieldType(filter.field) === "number" ||
-                          getFieldType(filter.field) === "integer" ? (
+                        <div className={tx("grow flex justify-end", !param.field && "hidden")}>
+                          {getFieldType(param.field) === "number" ||
+                          getFieldType(param.field) === "integer" ? (
                             <TextField.Root
                               type="number"
                               size="2"
-                              defaultValue={String(filter.value || "")}
+                              defaultValue={String(param.value || "")}
                               onChange={(e) => updateParameter(index, "value", Number(e.target.value))}
                               placeholder="Value"
                               min="1"
-                              disabled={!filter.field}
+                              disabled={!param.field}
                               className="!w-full"
                             />
-                          ) : getFieldType(filter.field) === "boolean" ? (
+                          ) : getFieldType(param.field) === "boolean" ? (
                             <SegmentedControl.Root
                               size="1"
-                              defaultValue={String(filter.value || "true")}
+                              defaultValue={String(param.value || "true")}
                               onValueChange={(value) => updateParameter(index, "value", value === "true")}
                               className={tx("!mt-0.5 [&_.rt-SegmentedControlItemLabel]:(px-3)")}
                             >
                               <SegmentedControl.Item value="true">True</SegmentedControl.Item>
                               <SegmentedControl.Item value="false">False</SegmentedControl.Item>
                             </SegmentedControl.Root>
-                          ) : getFieldType(filter.field) === "array" ? (
+                          ) : getFieldType(param.field) === "array" ? (
                             // <TagsInput
                             //   initialValue={Array.isArray(filter.value) ? filter.value : []}
                             //   onChange={(value) => updateFilter(index, "value", value)}
@@ -600,7 +624,7 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
                                 value: field,
                                 label: field,
                               }))}
-                              initialValue={Array.isArray(filter.value) ? filter.value : []}
+                              initialValue={Array.isArray(param.value) ? param.value : []}
                               isMulti
                               onChange={(value) => updateParameter(index, "value", value ?? [])}
                               className="!w-full min-w-fit max-w-full"
@@ -608,8 +632,8 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
                             />
                           ) : (
                             <TextField.Root
-                              disabled={!filter.field}
-                              defaultValue={String(filter.value || "")}
+                              disabled={!param.field}
+                              defaultValue={String(param.value || "")}
                               onChange={debounce((e) => updateParameter(index, "value", e.target.value), 400)}
                               placeholder="Value"
                               size="2"
@@ -632,6 +656,7 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
                     {index < parameters.length - 1 && (
                       <div className="border-t border-dotted mx-auto w-2/3 border-gray-200 my-2 relative">
                         <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-gray-50 rounded-full px-2 py-1 inline-block text-xs text-gray-500">
+                          {/* The following "and" should be a switch that allow user to switch between "and" and "or" */}
                           And
                         </span>
                       </div>
@@ -645,7 +670,7 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
 
         {/* Sort Fields Section */}
         {query?.datasourceId && (
-          <div className="flex flex-col gap-2 flex-1 justify-between pt-3 px-2.5">
+          <div className="flex flex-col gap-2 flex-1 justify-between p-3">
             <div className="flex flex-1 w-full justify-between items-center">
               <FieldTitle
                 withIcon
@@ -653,7 +678,7 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
                 className="font-medium"
                 description="Add sort criteria to order your query results"
               />
-              <Button type="button" radius="full" variant="solid" size="1" onClick={addSort}>
+              <Button type="button" radius="full" variant="soft" size="1" onClick={addSort}>
                 <TbPlus className="w-3 h-3" />
                 Add sort
               </Button>
@@ -691,7 +716,9 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
                               <Select.Separator />
                               <Select.Group>
                                 <Select.Item value="random()">Random</Select.Item>
-                                <Select.Item value="match()">Match (Full-text search)</Select.Item>
+                                {showMatchSort && (
+                                  <Select.Item value="match()">Match (Full-text search)</Select.Item>
+                                )}
                               </Select.Group>
                             </Select.Content>
                           </Select.Root>
@@ -751,7 +778,7 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
         )}
 
         {query?.datasourceId && indexedFields.length > 0 && (
-          <div className="flex flex-1 gap-6 justify-between items-center pt-2.5 pb-1 px-2.5">
+          <div className="flex flex-1 gap-6 justify-between items-center p-3">
             <div className="flex flex-col flex-1 gap-2">
               <FieldTitle
                 className="font-medium"

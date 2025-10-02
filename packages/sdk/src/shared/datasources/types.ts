@@ -372,26 +372,28 @@ export const querySchema = Type.Object(
       maximum: 50,
       default: 10,
     }),
-    sort: Type.Array(
-      Type.Union([
-        Type.Literal("random()", { description: "Random order" }),
-        Type.Literal("match()", { description: "Full-text search" }),
-        Type.Object(
-          {
-            field: Type.String({ title: "Field", description: "Field to sort by" }),
-            direction: StringEnum(["asc", "desc"], {
-              title: "Direction",
-              enumNames: ["Ascending", "Descending"],
-              description: "Direction to sort the records by",
-              default: "desc",
-            }),
-          },
-          {
-            description: "Sort the results by a specific field",
-          },
-        ),
-      ]),
-      { default: [{ field: "$publicationDate", direction: "desc" }], minItems: 1 },
+    sort: Type.Optional(
+      Type.Array(
+        Type.Union([
+          Type.Literal("random()", { description: "Random order" }),
+          Type.Literal("match()", { description: "Full-text search" }),
+          Type.Object(
+            {
+              field: Type.String({ title: "Field", description: "Field to sort by" }),
+              direction: StringEnum(["asc", "desc"], {
+                title: "Direction",
+                enumNames: ["Ascending", "Descending"],
+                description: "Direction to sort the records by",
+                default: "desc",
+              }),
+            },
+            {
+              description: "Sort the results by a specific field",
+            },
+          ),
+        ]),
+        { default: [{ field: "$publicationDate", direction: "desc" }] },
+      ),
     ),
     parameters: Type.Optional(queryParametersExpression),
   },
