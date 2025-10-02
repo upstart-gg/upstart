@@ -84,28 +84,7 @@
             "links": [{ "title": "Email Us", "url": "mailto:" }, { "title": "Support", "url": "/support" }]
           }
         ]
-      },
-      "queries": [
-        { "id": "get-employees", "label": "Get all employees", "datasourceId": "employees", "limit": 50 },
-        {
-          "id": "get-testimonials",
-          "label": "Get all testimonials",
-          "datasourceId": "testimonials",
-          "limit": 10
-        },
-        {
-          "id": "get-employee",
-          "label": "Get employee by ID",
-          "datasourceId": "employees",
-          "limit": 1,
-          "parameters": [
-            {
-              "field": "$id",
-              "op": "eq"
-            }
-          ]
-        }
-      ]
+      }
     },
     "datarecords": [
       {
@@ -742,12 +721,27 @@
         "keywords": "",
         "queries": [
           {
-            "queryId": "get-employee",
             "alias": "employee",
-            "params": [{ "field": "$id", "op": "eq", "value": ":slug" }]
+            "label": "Get employee by slug",
+            "parameters": [{ "field": "$id", "op": "eq", "value": ":slug" }],
+            "datasourceId": "employees",
+            "sort": [{ "field": "$publicationDate", "direction": "desc" }],
+            "limit": 1
           },
-          { "queryId": "get-employees", "alias": "allEmployees" },
-          { "queryId": "get-testimonials", "alias": "allTestimonials" }
+          {
+            "alias": "allEmployees",
+            "datasourceId": "employees",
+            "limit": 50,
+            "sort": [{ "field": "$publicationDate", "direction": "desc" }],
+            "label": "List all employees"
+          },
+          {
+            "alias": "allTestimonials",
+            "datasourceId": "testimonials",
+            "limit": 10,
+            "sort": [{ "field": "$publicationDate", "direction": "desc" }],
+            "label": "List all testimonials"
+          }
         ]
       }
     },

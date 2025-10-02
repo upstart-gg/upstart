@@ -90,9 +90,17 @@ export default function ToolRenderer({
               </>
             )}
             {toolPart.type === "tool-createThemes" && (
-              <div className={tx("basis-full flex justify-evenly gap-3 mt-4 mb-2")}>
+              <div className={tx("basis-full flex flex-wrap justify-evenly gap-2 mt-4 mb-2")}>
                 {toolPart.output.map((theme) => (
-                  <ThemePreview noPreview key={theme.id} selected={false} theme={theme} onClick={() => {}} />
+                  <div key={theme.id} className="flex-shrink-0 basis-[calc(33%-2rem)] h-16">
+                    <ThemePreview
+                      noPreview
+                      className="!h-full"
+                      selected={false}
+                      theme={theme}
+                      onClick={() => {}}
+                    />
+                  </div>
                 ))}
               </div>
             )}

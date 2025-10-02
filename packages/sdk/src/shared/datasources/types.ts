@@ -81,7 +81,8 @@ const datasourceInternalManifest = Type.Object(
       Type.Object({
         name: Type.String({ title: "Index name" }),
         fields: Type.Array(Type.String(), { title: "Fields to index" }),
-        unique: Type.Optional(Type.Boolean({ title: "Unique index", default: false })),
+        unique: Type.Optional(Type.Boolean({ title: "Creates a unique index" })),
+        fulltext: Type.Optional(Type.Boolean({ title: "Creates a fulltext index for search" })),
       }),
       {
         title: "Indexes",
@@ -250,6 +251,7 @@ const stringFilter = Type.Object({
     "notStartsWith",
     "endsWith",
     "notEndsWith",
+    "match",
   ]),
   value: Type.String(),
 });
@@ -284,7 +286,7 @@ const booleanFilter = Type.Object({
   value: Type.Boolean(),
 });
 
-export const queryFilter = Type.Union([
+export const queryParameter = Type.Union([
   stringFilter,
   numberFilter,
   dateFilterAbsolute,
@@ -293,17 +295,23 @@ export const queryFilter = Type.Union([
   booleanFilter,
 ]);
 
-const filterExpression = Type.Recursive(
+const queryParametersExpression = Type.Recursive(
   (This) =>
     Type.Union(
       [
         Type.Object({
           op: Type.Literal("and"),
-          fields: Type.Array(Type.Union([queryFilter, This]), { title: "Indexed Fields" }),
+          fields: Type.Array(Type.Union([queryParameter, This]), {
+            title: "Fields",
+            description: "Fields to combine with AND. Can only be indexed fields.",
+          }),
         }),
         Type.Object({
           op: Type.Literal("or"),
-          fields: Type.Array(Type.Union([queryFilter, This])),
+          fields: Type.Array(Type.Union([queryParameter, This]), {
+            title: "Fields",
+            description: "Fields to combine with OR. Can only be indexed fields.",
+          }),
         }),
       ],
       {
@@ -330,17 +338,23 @@ const filterExpression = Type.Recursive(
       },
     ),
   {
-    title: "Filter Expression",
-    description: "Expression used to filter query results. Can be a combination of and/or conditions.",
+    title: "Parameter Expression",
+    description:
+      "Expression used to build the query. Can be a combination of and/or conditions. Values can use placeholders like ':slug' to reference URL parameters.",
   },
 );
 
 export const querySchema = Type.Object(
   {
-    id: Type.String({
-      title: "Query ID",
+    alias: Type.String({
+      title: "Alias",
+      minLength: 1,
+      maxLength: 100,
+      pattern: "^[a-zA-Z0-9_]+$",
       description:
-        "Unique identifier for the query. Used to reference the query in the system. URL-safe string like a slug.",
+        "Unique alias for the query results, used in dynamic content. Use a simple keyword without spaces or special characters. Aliases are unique across the page.",
+      "ai:instructions":
+        "Use a simple keyword without spaces or special characters. Aliases are unique across the page. You can use the same query several times with different aliases in order to, for example, apply different parameters to the same query.",
     }),
     label: Type.String({
       title: "Label",
@@ -355,114 +369,72 @@ export const querySchema = Type.Object(
       title: "Limit",
       description: "Limit the number of records to fetch from the datasource.",
       minimum: 1,
+      maximum: 50,
       default: 10,
     }),
-    sortDirection: Type.Optional(
-      StringEnum(["asc", "desc"], {
-        title: "Sort",
-        enumNames: ["Ascending", "Descending"],
-        description: "Direction to sort the records by",
-        default: "desc",
-      }),
+    sort: Type.Array(
+      Type.Union([
+        Type.Literal("random()", { description: "Random order" }),
+        Type.Literal("match()", { description: "Full-text search" }),
+        Type.Object(
+          {
+            field: Type.String({ title: "Field", description: "Field to sort by" }),
+            direction: StringEnum(["asc", "desc"], {
+              title: "Direction",
+              enumNames: ["Ascending", "Descending"],
+              description: "Direction to sort the records by",
+              default: "desc",
+            }),
+          },
+          {
+            description: "Sort the results by a specific field",
+          },
+        ),
+      ]),
+      { default: [{ field: "$publicationDate", direction: "desc" }], minItems: 1 },
     ),
-    sortField: Type.Optional(
-      Type.String({
-        title: "Sort Field",
-        description: "Field to sort by (must be an indexed field)",
-        default: "$publicationDate",
-      }),
-    ),
-    filters: Type.Optional(filterExpression),
-    parameters: Type.Optional(
-      Type.Array(
-        Type.Object({
-          field: Type.String({ title: "Field", description: "Field name to use as parameter" }),
-          op: StringEnum(
-            [
-              "eq",
-              "ne",
-              "contains",
-              "notContains",
-              "startsWith",
-              "notStartsWith",
-              "endsWith",
-              "notEndsWith",
-              "lt",
-              "lte",
-              "gt",
-              "gte",
-              "before",
-              "after",
-              "beforeNow",
-              "afterNow",
-              "containsAll",
-              "containsAny",
-              "notContainsAny",
-            ],
-            { title: "Operator", description: "Operator to use for the parameter" },
-          ),
-        }),
-        {
-          title: "Parameters",
-          description:
-            "Field name and operator that will be used as parameters when using the query in pages. Only indexed fields can be used as parameters.",
-          default: [],
-          examples: [
-            [{ field: "$slug", op: "eq" }],
-            [{ field: "category", op: "eq" }],
-            [{ field: "tags", op: "containsAny" }],
-            [{ field: "author", op: "eq" }],
-            [{ field: "title", op: "contains" }],
-          ],
-        },
-      ),
-    ),
+    parameters: Type.Optional(queryParametersExpression),
   },
   {
     examples: [
       {
-        id: "latest-posts",
+        alias: "latestPosts",
         label: "Latest posts",
         datasourceId: "blog_posts",
         limit: 5,
-        sortDirection: "desc",
-        sortField: "$publicationDate",
+        sort: [{ field: "$publicationDate", direction: "desc" }],
       },
       {
-        id: "posts-by-category",
+        alias: "postsByCategory",
         label: "Posts by category",
         datasourceId: "blog_posts",
         limit: 10,
-        sortDirection: "desc",
-        sortField: "$publicationDate",
-        parameters: [{ field: "category", op: "eq" }],
+        sort: [{ field: "$publicationDate", direction: "desc" }],
+        parameters: [{ field: "category", op: "eq", value: ":category" }],
       },
       {
-        id: "posts-by-tag",
+        alias: "postsByTag",
         label: "Posts by tag",
         datasourceId: "blog_posts",
         limit: 10,
-        sortDirection: "desc",
-        sortField: "$publicationDate",
-        parameters: [{ field: "tags", op: "containsAny" }],
+        sort: [{ field: "$publicationDate", direction: "desc" }],
+        parameters: [{ field: "tags", op: "containsAny", value: ":tags" }],
       },
       {
-        id: "author-posts",
+        alias: "authorPosts",
         label: "Author posts",
         datasourceId: "blog_posts",
         limit: 10,
-        sortDirection: "desc",
-        sortField: "$publicationDate",
-        parameters: [{ field: "author", op: "eq" }],
+        sort: [{ field: "$publicationDate", direction: "desc" }],
+        parameters: [{ field: "author", op: "eq", value: ":author" }],
       },
       {
-        id: "search-posts",
+        alias: "searchPosts",
         label: "Search posts",
         datasourceId: "blog_posts",
         limit: 10,
-        sortDirection: "desc",
-        sortField: "$publicationDate",
-        parameters: [{ field: "title", op: "contains" }],
+        sort: [{ field: "$publicationDate", direction: "desc" }],
+        parameters: [{ field: "title", op: "contains", value: ":q" }],
       },
     ],
   },

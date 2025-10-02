@@ -9,13 +9,13 @@ import {
 } from "@upstart.gg/style-system/system";
 import { PiListNumbersLight } from "react-icons/pi";
 import { useEditorHelpers, useModal } from "~/editor/hooks/use-editor";
-import { BsDatabaseDown, BsDatabase, BsCrosshair } from "react-icons/bs";
+import { BsDatabaseDown, BsDatabase, BsCrosshair, BsAt } from "react-icons/bs";
 import { validate } from "@upstart.gg/sdk/shared/utils/schema";
 import type { TSchema } from "@sinclair/typebox";
 import { type Query, querySchema } from "@upstart.gg/sdk/shared/datasources/types";
 import { getDatasourceIndexedFieldsWithTitles } from "@upstart.gg/sdk/shared/datasources";
 import { Fragment, useCallback, useState } from "react";
-import { useDraftHelpers, useSiteQueries } from "../hooks/use-page-data";
+import { useDraftHelpers, usePage, usePagePathParams, useQueries } from "../hooks/use-page-data";
 import { useDatasource, useDatasources } from "../hooks/use-datasource";
 import { FieldTitle } from "./json-form/field-factory";
 import { TbPlus } from "react-icons/tb";
@@ -24,8 +24,9 @@ import { tx } from "@upstart.gg/style-system/twind";
 import debounce from "lodash-es/debounce";
 import { nanoid } from "nanoid";
 import { LuPlus } from "react-icons/lu";
-import TagsInput from "./TagsInput";
+import TagsInput, { TagsSelect } from "./TagsInput";
 import { FiEdit } from "react-icons/fi";
+import { RiBracesLine } from "react-icons/ri";
 
 export default function Modal() {
   const modal = useModal();
@@ -35,33 +36,30 @@ export default function Modal() {
       open={!!modal}
       onOpenChange={(open) => {
         if (!open) {
-          // editor.hideModal();
           hideModal();
         }
       }}
     >
-      {modal === "queries" && <ModalQueries />}
+      {modal === "queries" && <ModalQueriesEdtor />}
     </Dialog.Root>
   );
 }
 
-function ModalQueries() {
-  const [showCreationForm, setShowCreationForm] = useState(false);
+function ModalQueriesEdtor() {
   const [editingQuery, setEditingQuery] = useState<Query | null>(null);
-  const editorHelpers = useEditorHelpers();
-  const queries = useSiteQueries();
+  const queries = useQueries();
+  const [showCreationForm, setShowCreationForm] = useState(queries.length === 0);
   const datasources = useDatasources();
-  const { hideModal } = useEditorHelpers();
   return (
     <Dialog.Content
-      aria-describedby="Queries managament"
-      maxWidth="760px"
+      aria-describedby="Queries management"
+      maxWidth="860px"
       minHeight="80dvh"
       className="overflow-y-clip flex flex-col gap-y-2"
     >
       <Dialog.Title className="flex items-center gap-3 pl-0 -ml-3">
         <BsDatabaseDown className="h-6 w-6 text-upstart-600" />
-        Manage site queries
+        Manage queries
         <Button
           size="2"
           disabled={!datasources.length || showCreationForm}
@@ -78,21 +76,17 @@ function ModalQueries() {
         </Button>
       </Dialog.Title>
       <Dialog.Description>
-        Queries are used to fetch data from your databases. Once defined you can use them in your{" "}
-        <button
-          type="button"
-          className={tx("text-upstart-600 hover:underline underline-offset-4")}
-          onClick={() => {
-            hideModal();
-            editorHelpers.setPanel("settings");
-          }}
-        >
-          page settings
-        </button>{" "}
-        and reference them to loop over or use their fields in bricks to display dynamic data.
+        Queries fetch data from your database. Once defined, a query can be referenced throughout your pages
+        to loop through results and display dynamic content using placeholders.
       </Dialog.Description>
-      {showCreationForm && <QueryCreator query={editingQuery} onClose={() => setShowCreationForm(false)} />}
-      {!showCreationForm && queries.length === 0 && (
+      {showCreationForm && (
+        <QueryCreator
+          key={editingQuery?.alias ?? "new-query"}
+          query={editingQuery}
+          onClose={() => setShowCreationForm(false)}
+        />
+      )}
+      {queries.length === 0 && (
         <div className="flex flex-col gap-2 justify-center items-center flex-1 text-center">
           <span className="text-base text-gray-500">
             You currently have no queries defined.
@@ -105,12 +99,18 @@ function ModalQueries() {
         <div className="flex flex-col border border-gray-200 rounded-lg overflow-hidden -mx-1 mt-3 shadow-sm">
           {queries.map((query) => (
             <div
-              key={query.id}
+              key={query.alias}
               className="flex items-center justify-between p-4 [&:not(:last-child)]:border-b border-gray-200 "
             >
               <div className="flex flex-col gap-2">
                 <div className="font-medium">{query.label}</div>
                 <div className="flex gap-6 items-center justify-start text-sm  text-gray-500">
+                  <Tooltip content={`Alias`}>
+                    <span className="inline-flex gap-1 items-center cursor-help">
+                      <RiBracesLine className="text-upstart-500" />
+                      {query.alias}
+                    </span>
+                  </Tooltip>
                   <Tooltip content={`Database`}>
                     <span className="inline-flex gap-1 items-center cursor-help">
                       <BsDatabase className="text-upstart-500" />
@@ -123,20 +123,15 @@ function ModalQueries() {
                       {query.limit}
                     </span>
                   </Tooltip>
-                  {/* <Tooltip content={`Alias`}>
-                    <span className="inline-flex gap-0.5 items-center cursor-help">
-                      <BsAt className="text-upstart-500" />
-                      {query.alias}
-                    </span>
-                  </Tooltip> */}
-                  {(query.parameters?.length ?? 0) > 0 && (
+
+                  {/* {(query.parameters?.length ?? 0) > 0 && (
                     <Tooltip content={`Parameters`}>
                       <span className="inline-flex gap-1 items-center cursor-help">
                         <BsCrosshair className="text-upstart-500" />
                         {query.parameters!.join(", ")}
                       </span>
                     </Tooltip>
-                  )}
+                  )} */}
                 </div>
               </div>
               <IconButton
@@ -160,13 +155,11 @@ function ModalQueries() {
 
 function getQueryTemplate() {
   return {
-    id: nanoid(7),
-    filters: {
+    parameters: {
       op: "and" as const,
       fields: [],
     },
-    sortField: "$publicationDate",
-    sortDirection: "desc",
+    sort: [{ field: "$publicationDate", direction: "desc" }],
     limit: 10,
   } satisfies Partial<Query>;
 }
@@ -180,13 +173,15 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
   const { upsertQuery } = useDraftHelpers();
   const datasources = useDatasources();
   const datasource = useDatasource(query?.datasourceId);
+  const pagePathParams = usePagePathParams();
 
   // Get Indexed Fields for filter and sort
   const indexedFields = datasource ? getDatasourceIndexedFieldsWithTitles(datasource) : [];
+  // Don't consider $id and $slug for sorting
   const sortableFields = indexedFields.filter((field) => ["$id", "$slug"].includes(field.value) === false);
 
-  // Extract simple filters from the filterExpression structure
-  const filters = query?.filters?.fields?.filter((f) => "field" in f) ?? [];
+  // Extract simple parameters from the filterExpression structure
+  const parameters = query?.parameters?.fields?.filter((f) => "field" in f) ?? [];
 
   // Handle general query changes
   const handleChange = (key: keyof Query, value: string | number) => {
@@ -194,7 +189,7 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
       (prev) =>
         ({
           ...prev,
-          sortDirection: key === "sortField" && value === "random()" ? null : prev?.sortDirection,
+          // sort: key === "sortField" && value === "random()" ? null : prev?.sortDirection,
           [key]: value,
         }) as Query,
     );
@@ -260,63 +255,62 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
     }
   };
 
-  const addFilter = () => {
-    const newFilter = {
+  const addParameter = () => {
+    const newParam = {
       field: "",
       op: "eq" as const,
       value: "",
     };
     setQuery((prev) => {
-      const currentFilters = prev?.filters?.fields?.filter((f) => "field" in f) ?? [];
+      const currentParams = prev?.parameters?.fields?.filter((f) => "field" in f) ?? [];
       return {
         ...prev,
-        filters: {
+        parameters: {
           op: "and" as const,
-          fields: [...currentFilters, newFilter],
+          fields: [...currentParams, newParam],
         },
       };
     });
   };
 
-  const removeFilter = (index: number) => {
+  const removeParameter = (index: number) => {
     setQuery((prev) => {
-      const currentFilters = prev?.filters?.fields?.filter((f) => "field" in f) ?? [];
-      const newFilters = currentFilters.filter((_, i) => i !== index);
+      const currentParams = prev?.parameters?.fields?.filter((f) => "field" in f) ?? [];
+      const newParams = currentParams.filter((_, i) => i !== index);
       return {
         ...prev,
-        filters: {
+        parameters: {
           op: "and" as const,
-          fields: newFilters,
+          fields: newParams,
         },
       };
     });
   };
 
-  const updateFilter = (index: number, key: string, value: string | number | boolean | string[]) => {
+  const updateParameter = (index: number, key: string, value: string | number | boolean | string[]) => {
     setQuery((prev) => {
-      const currentFilters = [...(prev?.filters?.fields?.filter((f) => "field" in f) ?? [])];
-      const currentFilter = { ...currentFilters[index] };
+      const currentParams = [...(prev?.parameters?.fields?.filter((f) => "field" in f) ?? [])];
+      const currentParam = { ...currentParams[index] };
 
       if (key === "field") {
         const op = (
           value ? (getOperatorOptionsForField(value as string)[0]?.value ?? "eq") : "eq"
-        ) as typeof currentFilter.op;
+        ) as typeof currentParam.op;
         // @ts-ignore partial update
-        currentFilters[index] = { field: value as string, op, value: "" };
+        currentParams[index] = { field: value as string, op, value: "" };
       } else if (key === "op") {
         // @ts-ignore partial update
-        currentFilters[index] = { ...currentFilter, op: value as typeof currentFilter.op, value: "" };
+        currentParams[index] = { ...currentParam, op: value as typeof currentParam.op, value: "" };
       } else {
         // value can be string, number, boolean or string[]
-        currentFilters[index] = { ...currentFilter, [key]: value };
+        currentParams[index] = { ...currentParam, [key]: value };
       }
 
-      console.log("Updated filters:", currentFilters);
       return {
         ...prev,
-        filters: {
+        parameters: {
           op: "and" as const,
-          fields: currentFilters,
+          fields: currentParams,
         },
       };
     });
@@ -362,7 +356,10 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
       onSubmit={handleSubmit}
       className="text-sm border border-gray-300 bg-gray-50 p-4 rounded-lg -mx-1 mt-3 shadow-sm"
     >
-      <h3 className="font-bold text-base mb-3">{initialQuery ? "Edit query" : "Create a new query"}</h3>
+      <h3 className="font-bold text-[110%] mb-5">
+        {initialQuery ? "Edit query" : "Create a new query"}:{" "}
+        <span className="text-gray-500">{query?.label}</span>
+      </h3>
       <div className="flex flex-col text-sm gap-4 flex-1 -mx-2.5 divide-y divide-gray-200">
         {/* Database Selection */}
         <div className="flex justify-between gap-4 flex-1 items-center py-0.5 px-2.5">
@@ -379,6 +376,22 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
               maxLength={querySchema.properties.label.maxLength}
               aria-required
               placeholder="Ex: Latest blog posts"
+            />
+          </div>
+          <div className="flex flex-col gap-1 flex-1">
+            <FieldTitle
+              withIcon
+              className="font-medium"
+              title="Alias"
+              description="Unique identifier to reference this query"
+            />
+            <TextField.Root
+              onInput={(e) => handleChange("alias", e.currentTarget.value)}
+              pattern="^[a-zA-Z_][a-zA-Z0-9_]*$"
+              defaultValue={query?.alias}
+              maxLength={querySchema.properties.alias.maxLength}
+              aria-required
+              placeholder="Ex: latestBlogPosts"
             />
           </div>
           <div className="flex flex-col gap-1 flex-1">
@@ -418,31 +431,31 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
           </div>
         </div>
 
-        {/* Filters Section */}
+        {/* Parameters Section */}
         {indexedFields.length > 0 && (
           <div className="flex flex-col gap-2 flex-1 justify-between pt-3 px-2.5">
             <div className="flex flex-1 w-full justify-between items-center">
               <FieldTitle
                 withIcon
-                title="Filters"
+                title="Parameters"
                 className="font-medium"
-                description="Add filters to narrow down your query"
+                description="Add parameters to narrow down your query"
               />
-              <Button type="button" radius="full" variant="solid" size="1" onClick={addFilter}>
+              <Button type="button" radius="full" variant="solid" size="1" onClick={addParameter}>
                 <TbPlus className="w-3 h-3" />
-                Add Filter
+                Add parameter
               </Button>
             </div>
-            {filters.length > 0 && (
+            {parameters.length > 0 && (
               <div className="flex flex-col gap-3 mt-1">
-                {filters.map((filter, index) => (
+                {parameters.map((filter, index) => (
                   <Fragment key={index}>
                     <div className="flex gap-x-3 gap-y-0.5 items-center">
                       {/* Field Selector */}
                       <div className="w-[200px] flex items-center gap-3 pr-1">
                         <Select.Root
                           defaultValue={filter.field}
-                          onValueChange={(value: string) => updateFilter(index, "field", value)}
+                          onValueChange={(value: string) => updateParameter(index, "field", value)}
                         >
                           <Select.Trigger
                             className="!w-full"
@@ -469,7 +482,7 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
                           key={`operator-${index}-${filter.field}`} // Force re-render when field changes
                           defaultValue={filter.op}
                           size="2"
-                          onValueChange={(value: string) => updateFilter(index, "op", value)}
+                          onValueChange={(value: string) => updateParameter(index, "op", value)}
                           disabled={!filter.field}
                         >
                           <Select.Trigger
@@ -499,7 +512,7 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
                               size="2"
                               type={getFieldType(filter.field) === "datetime" ? "datetime-local" : "date"}
                               defaultValue={String(filter.value || "")}
-                              onChange={(e) => updateFilter(index, "value", e.target.value)}
+                              onChange={(e) => updateParameter(index, "value", e.target.value)}
                               disabled={!filter.field}
                               className="!w-full"
                             />
@@ -514,7 +527,7 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
                               type="number"
                               size="2"
                               defaultValue={String(filter.value || "")}
-                              onChange={(e) => updateFilter(index, "value", Number(e.target.value))}
+                              onChange={(e) => updateParameter(index, "value", Number(e.target.value))}
                               placeholder="Value"
                               min="1"
                               disabled={!filter.field}
@@ -524,24 +537,35 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
                             <SegmentedControl.Root
                               size="1"
                               defaultValue={String(filter.value || "true")}
-                              onValueChange={(value) => updateFilter(index, "value", value === "true")}
+                              onValueChange={(value) => updateParameter(index, "value", value === "true")}
                               className={tx("!mt-0.5 [&_.rt-SegmentedControlItemLabel]:(px-3)")}
                             >
                               <SegmentedControl.Item value="true">True</SegmentedControl.Item>
                               <SegmentedControl.Item value="false">False</SegmentedControl.Item>
                             </SegmentedControl.Root>
                           ) : getFieldType(filter.field) === "array" ? (
-                            <TagsInput
+                            // <TagsInput
+                            //   initialValue={Array.isArray(filter.value) ? filter.value : []}
+                            //   onChange={(value) => updateFilter(index, "value", value)}
+                            //   className="!w-full"
+                            //   placeholder="Add tags"
+                            // />
+                            <TagsSelect
+                              options={pagePathParams.map((field) => ({
+                                value: field,
+                                label: field,
+                              }))}
                               initialValue={Array.isArray(filter.value) ? filter.value : []}
-                              onChange={(value) => updateFilter(index, "value", value)}
-                              className="!w-full"
-                              placeholder="Add tags"
+                              isMulti
+                              onChange={(value) => updateParameter(index, "value", value ?? [])}
+                              className="!w-full min-w-fit max-w-full"
+                              placeholder="Add parameters (e.g. Slug, Id)"
                             />
                           ) : (
                             <TextField.Root
                               disabled={!filter.field}
                               defaultValue={String(filter.value || "")}
-                              onChange={debounce((e) => updateFilter(index, "value", e.target.value), 400)}
+                              onChange={debounce((e) => updateParameter(index, "value", e.target.value), 400)}
                               placeholder="Value"
                               size="2"
                               className="!w-full max-w-full"
@@ -554,13 +578,13 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
                         type="button"
                         variant="ghost"
                         className="hover:(bg-red-100 text-red-800) !shrink-0 !ml-auto"
-                        onClick={() => removeFilter(index)}
+                        onClick={() => removeParameter(index)}
                       >
                         <RxCross2 size={14} />
                       </IconButton>
                     </div>
 
-                    {index < filters.length - 1 && (
+                    {index < parameters.length - 1 && (
                       <div className="border-t border-dotted mx-auto w-2/3 border-gray-200 my-2 relative">
                         <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-gray-50 rounded-full px-2 py-1 inline-block text-xs text-gray-500">
                           And
@@ -574,42 +598,19 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
           </div>
         )}
 
-        {/* Parameters Section */}
-        {indexedFields.length > 0 && (
-          <div className="flex flex-col gap-2 flex-1 justify-between pt-3 px-2.5">
-            <div className="flex flex-1 w-full justify-between items-center">
-              <FieldTitle
-                title="Parameters"
-                className="font-medium"
-                withIcon
-                description="Optional fields that will be used as parameters when using the query. Only indexed fields can be used as parameters. Usually only one parameter is needed, but you can add multiple parameters if necessary. When specifying parameters, you will need to set a value for each parameter every time you use it."
-              />
-              <div>TODO/ IMPLEMENT</div>
-              {/* <TagsSelect
-                options={indexedFields.map((field) => ({ value: field.value, label: field.title }))}
-                initialValue={query?.parameters ?? []}
-                isMulti
-                onChange={(value) => setQuery((prev) => ({ ...prev, parameters: value as string[] }))}
-                className="!w-full min-w-fit max-w-[340px]"
-                placeholder="Add parameters (e.g. Slug, Id)"
-              /> */}
-            </div>
-          </div>
-        )}
-
         {/* Sort Fields  */}
         {query?.datasourceId && (
           <div className="flex flex-1 gap-6 justify-between items-center pt-2.5 pb-1 px-2.5">
             <div className="flex flex-col gap-1 flex-1 ">
               <FieldTitle
                 className="font-medium"
-                title="Order by"
+                title="Sort by"
                 description="Select a field to sort the results"
               />
               <Select.Root
                 defaultValue={query?.sortField}
                 size="2"
-                onValueChange={(value: string) => handleChange("sortField", value)}
+                onValueChange={(value: string) => handleChange("sort", value)}
               >
                 <Select.Trigger
                   radius="medium"

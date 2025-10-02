@@ -43,14 +43,11 @@ export const pageAttributesSchema = Type.Object(
       pattern: "^/[a-z0-9-:/]*$",
       examples: ["/", "/about", "/products/:id"],
     }),
-    queries: Type.Array(queryUse(), {
-      title: "Page Queries",
-      description:
-        "List of queries to use in this page. All listed queries will be executed when the page loads.",
-      "ai:instructions": "Reference Query IDs to use at the page level.",
-      "ui:field": "page-queries",
-      maxItems: 8,
+    queries: Type.Array(querySchema, {
+      title: "Queries",
+      "ui:field": "queries",
       default: [],
+      description: "List of queries for this page. All listed queries will be executed when the page loads.",
     }),
     title: Type.String({
       title: "Title",
@@ -220,28 +217,28 @@ export const pageAttributesSchema = Type.Object(
   },
 );
 
-export const pageQueriesSchema = Type.Array(queryUse(), {
-  title: "Page Queries",
-  description: `List of page queries in use in this page. All listed queries will be executed when the page loads. Aliases must be unique and camelCase'd.
-The queryId must reference an existing site query ID.`,
-  examples: [
-    { queryId: "get-latest-posts", alias: "latestPosts" },
-    {
-      queryId: "get-user-profile",
-      alias: "userProfile",
-      params: [{ field: "userId", op: "eq", value: ":slug" }],
-    },
-    {
-      queryId: "list-featured-products",
-      alias: "featuredProducts",
-    },
-    {
-      queryId: "get-event-by-slug",
-      alias: "eventBySlug",
-      params: [{ field: "$slug", op: "eq", value: ":slug" }],
-    },
-  ] satisfies QueryUseSettings[],
-});
+// export const pageQueriesSchema = Type.Array(queryUse(), {
+//   title: "Page Queries",
+//   description: `List of page queries in use in this page. All listed queries will be executed when the page loads. Aliases must be unique and camelCase'd.
+// The queryId must reference an existing site query ID.`,
+//   examples: [
+//     { queryId: "get-latest-posts", alias: "latestPosts" },
+//     {
+//       queryId: "get-user-profile",
+//       alias: "userProfile",
+//       params: [{ field: "userId", op: "eq", value: ":slug" }],
+//     },
+//     {
+//       queryId: "list-featured-products",
+//       alias: "featuredProducts",
+//     },
+//     {
+//       queryId: "get-event-by-slug",
+//       alias: "eventBySlug",
+//       params: [{ field: "$slug", op: "eq", value: ":slug" }],
+//     },
+//   ] satisfies QueryUseSettings[],
+// });
 
 export const siteAttributesSchema = Type.Object(
   {
@@ -306,15 +303,6 @@ export const siteAttributesSchema = Type.Object(
           { color: "accent-200-gradient", gradientDirection: "bg-gradient-to-r" },
           { color: "neutral-800-gradient", gradientDirection: "bg-gradient-to-t" },
         ],
-      }),
-    ),
-    queries: Type.Optional(
-      Type.Array(querySchema, {
-        title: "Site Queries",
-        "ui:field": "site-queries",
-        description: "List of all queries available in this site. These can be used in any page.",
-        "ai:instructions":
-          "This is where queries are first defined. They are then referenced in pages attributes (in the 'queries' field) to use them.",
       }),
     ),
     navbar: Type.Optional(
@@ -391,15 +379,8 @@ export const siteAttributesSchema = Type.Object(
   },
 );
 
-export const siteAttributesNoQueriesSchema = Type.Omit(siteAttributesSchema, ["queries"]);
-export const pageAttributesNoQueriesSchema = Type.Omit(pageAttributesSchema, ["queries"]);
-export const siteQueriesSchema = Type.Array(querySchema);
-export const siteQueriesSchemaLLM = toLLMSchema(siteQueriesSchema);
-
 export type PageAttributes = Static<typeof pageAttributesSchema>;
 export type SiteAttributes = Static<typeof siteAttributesSchema>;
-export type SiteAttributesNoQueries = Static<typeof siteAttributesNoQueriesSchema>;
-export type PageAttributesNoQueries = Static<typeof pageAttributesNoQueriesSchema>;
 
 export function resolvePageAttributes(data: Partial<PageAttributes> = {}) {
   const defaultAttrValues = getSchemaDefaults(pageAttributesSchema);

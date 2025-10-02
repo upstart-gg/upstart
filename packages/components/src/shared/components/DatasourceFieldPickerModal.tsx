@@ -1,7 +1,7 @@
 import { Callout } from "@upstart.gg/style-system/system";
 import { JSONSchemaView } from "~/editor/components/json-form/SchemaView";
 import { tx } from "@upstart.gg/style-system/twind";
-import { usePageQueries } from "~/editor/hooks/use-page-data";
+import { useQueries } from "~/editor/hooks/use-page-data";
 
 type DatasourceFieldPickerModalProps = {
   onFieldSelect: (field: string) => void;
@@ -14,8 +14,8 @@ export default function DatasourceFieldPickerModal({
   onlyAlias,
   onFieldSelect,
 }: DatasourceFieldPickerModalProps) {
-  const pageQueries = usePageQueries();
-  if (!pageQueries.length) {
+  const queries = useQueries();
+  if (!queries.length) {
     return (
       <div className="bg-white min-w-52 min-h-80 flex flex-col gap-4">
         No database selected in the dynamic parent brick.
@@ -32,12 +32,12 @@ export default function DatasourceFieldPickerModal({
         </Callout.Text>
       </Callout.Root>
       <div className="flex flex-col gap-1 pb-2 max-h-[300px] overflow-y-auto scrollbar-thin">
-        {pageQueries
-          .filter((q) => q.alias === onlyAlias || (!onlyAlias && q.queryInfo.limit === 1))
+        {queries
+          .filter((q) => q.alias === onlyAlias || (!onlyAlias && q.limit === 1))
           .map((query) => (
             <div key={query.alias} className="flex flex-col gap-1">
               <h4 className="text-sm font-semibold">
-                {query.alias} - {query.queryInfo?.label}
+                {query.alias} - {query.label}
               </h4>
               <JSONSchemaView
                 key={query.alias}

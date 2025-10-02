@@ -33,37 +33,24 @@ const WEB_SEARCH_ENABLED = false;
 const msgCommon = tx(
   "rounded-lg p-4 text-pretty transition-all duration-300 flex flex-col gap-1.5",
   css({
-    // whiteSpace: "pre-line",
-    "& p": {
-      marginBottom: ".28em",
-      lineHeight: "1.625",
-    },
-    "& p:first-child": {
-      marginTop: "0",
-    },
-    "& p:last-child": {
-      marginBottom: "0",
-    },
     "& code": {
       fontSize: "88%",
     },
     "& ul": {
       listStyle: "outside",
       listStyleType: "square",
-      paddingLeft: "1.6em",
-      marginTop: "0.3em",
-      marginBottom: "0.2em",
     },
     "& ol": {
       listStyle: "outside",
       listStyleType: "decimal",
-      paddingLeft: "1.6em",
-      marginTop: "0.3em",
-      marginBottom: "0.2em",
     },
-    "& li": {
-      marginBottom: "0.35em",
-      paddingLeft: ".3em",
+
+    // whiteSpace: "pre-line",
+    "& >p:first-child": {
+      marginTop: "0",
+    },
+    "& > p:last-child": {
+      marginBottom: "0",
     },
     "& table": {
       width: "100%",
@@ -155,8 +142,8 @@ export default function Chat() {
     console.log("Tool call: %s: ", toolCall.toolName, toolCall);
   };
 
-  const { messages, sendMessage, error, status, regenerate, stop, addToolResult } = useChat<UpstartUIMessage>(
-    {
+  const { messages, sendMessage, setMessages, error, status, regenerate, stop, addToolResult } =
+    useChat<UpstartUIMessage>({
       id: chatSession.id,
       // resume: generationState.isReady === false,
       transport: new DefaultChatTransport({
@@ -202,6 +189,7 @@ export default function Chat() {
         },
       }),
       messages: chatSession.messages,
+
       generateId: createIdGenerator({
         prefix: "user",
         separator: "_",
@@ -211,14 +199,17 @@ export default function Chat() {
         console.error("ERROR", error);
       },
       onToolCall,
-    },
-  );
+    });
   const messagesListRef = useRef<HTMLDivElement>(null);
 
   const onSubmit = (e: Event | FormEvent) => {
     e.preventDefault();
     sendMessage({ text: input });
     setInput("");
+  };
+
+  const updateMessage = (id: string, update: Partial<UpstartUIMessage>) => {
+    setMessages((prevMessages) => prevMessages.map((msg) => (msg.id === id ? { ...msg, ...update } : msg)));
   };
 
   const debouncedScroll = useDebounceCallback(() => {
@@ -254,7 +245,9 @@ export default function Chat() {
   }, []);
 
   const toolInvocations = useMemo(() => {
-    const results = messages
+    const messagesToAnalyze = messages.slice(-1);
+    console.log({ messagesToAnalyze });
+    const results = messagesToAnalyze
       .filter((msg) => msg.role === "assistant")
       .flatMap((msg) => msg.parts as ToolUIPart<Tools>[])
       .filter((part) => part.type.startsWith("tool-"))
@@ -267,7 +260,7 @@ export default function Chat() {
   const hasRunningTools = useMemo(() => {
     // get the last 2 messages
     const results = messages
-      .slice(-2)
+      .slice(-1)
       .filter((msg) => msg.role === "assistant")
       .flatMap((msg) => msg.parts as ToolUIPart<Tools>[])
       .filter((part) => part.type.startsWith("tool-") && part.type !== "tool-askUserChoice")
@@ -278,7 +271,7 @@ export default function Chat() {
 
   const isWaitingForNChoices = useMemo(() => {
     const results = messages
-      .slice(-2)
+      .slice(-1)
       .filter((msg) => msg.role === "assistant")
       .flatMap((msg) => msg.parts as ToolUIPart<Tools>[])
       .filter((part) => part.type === "tool-askUserChoice")
@@ -452,6 +445,9 @@ export default function Chat() {
       msg.metadata?.init !== true &&
       msg.parts.some((part) => part.type === "text" || part.type.startsWith("tool-")),
   );
+
+  // console.log("messages", chatSession.messages);
+  // console.log("All messages length is %d, displaying %d", messages.length, displayedMessages.length);
 
   useEffect(() => {
     if (sendingEnabled) {

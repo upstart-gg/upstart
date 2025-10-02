@@ -1,5 +1,4 @@
 import { type Static, Type } from "@sinclair/typebox";
-import { StringEnum } from "../utils/string-enum";
 
 export const waitingMessageSchema = Type.Object({
   waitingMessage: Type.String({
@@ -33,30 +32,3 @@ For other multiple choice questions, always include one LAST choice for 'Other' 
 });
 
 export type AskUserChoiceInput = Static<typeof askUserChoiceInput>;
-
-export const getDocInput = Type.Object({
-  entityType: StringEnum(
-    [
-      "site-attributes",
-      "page-attributes",
-      "datasource",
-      "datarecord",
-      "site-query",
-      "page-query",
-      "section",
-      "brick-type",
-    ],
-    {
-      description: "The type of entity to get the schema documentation for.",
-    },
-  ),
-  // Only used when entityType is brick-type
-  brickType: Type.Optional(
-    Type.String({
-      description:
-        "The brick type to get the schema documentation for. Required if entityType is 'brick-type'.",
-    }),
-  ),
-});
-
-export type GetDocInput = Static<typeof getDocInput>;

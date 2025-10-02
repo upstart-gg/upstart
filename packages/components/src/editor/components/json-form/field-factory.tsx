@@ -14,7 +14,7 @@ import ColorField from "./fields/color";
 import DatasourceField from "./fields/datasource";
 import DynamicField from "./fields/loop";
 import PageQueriesField from "./fields/page-queries";
-import SiteQueriesField from "./fields/site-queries";
+import QueriesField from "./fields/queries";
 import EnumField from "./fields/enum";
 import IconifyField from "./fields/iconify";
 import ImageField from "./fields/image";
@@ -197,22 +197,22 @@ function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       );
     }
 
-    case "page-queries": {
-      const currentValue = (get(formData, id) ?? commonProps.schema.default) as QueryUseSettings[];
-      return (
-        <PageQueriesField
-          key={`field-${id}`}
-          currentValue={currentValue}
-          onChange={(value: QueryUseSettings[] | undefined | null) => onChange({ [id]: value }, id)}
-          {...commonProps}
-        />
-      );
-    }
+    // case "page-queries": {
+    //   const currentValue = (get(formData, id) ?? commonProps.schema.default) as QueryUseSettings[];
+    //   return (
+    //     <PageQueriesField
+    //       key={`field-${id}`}
+    //       currentValue={currentValue}
+    //       onChange={(value: QueryUseSettings[] | undefined | null) => onChange({ [id]: value }, id)}
+    //       {...commonProps}
+    //     />
+    //   );
+    // }
 
-    case "site-queries": {
+    case "queries": {
       const currentValue = (get(formData, id) ?? commonProps.schema.default) as QueryUseSettings[];
       return (
-        <SiteQueriesField
+        <QueriesField
           key={`field-${id}`}
           currentValue={currentValue}
           onChange={(value) => {}}

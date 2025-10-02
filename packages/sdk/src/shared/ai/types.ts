@@ -75,6 +75,7 @@ export type Tools = {
     input: ToolInputWaitingMessageType & ToolInputInstructionsType & Pick<Page, "id">;
     output: VersionedPage;
   };
+
   undo: {
     input: {
       steps?: number;

@@ -45,7 +45,7 @@ import { menuBarBtnActiveCls, menuBarBtnCls, menuBarBtnCommonCls } from "../styl
 import { useTextEditorUpdateHandler } from "~/editor/hooks/use-editable-text";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useDatasource, useDatasources } from "~/editor/hooks/use-datasource";
-import { useBrick, useLoopAlias, usePageQueries } from "~/editor/hooks/use-page-data";
+import { useBrick, useLoopAlias, useQueries } from "~/editor/hooks/use-page-data";
 import { DatasourceItemButton } from "./DatasourceItemButton";
 
 const HeroHeading = Heading.extend({
@@ -145,7 +145,7 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
     const defaultUpdateHandler = useTextEditorUpdateHandler(brickId, propPath, dynamic, inline === true);
     const mainEditor = useEditor();
     const selectedBrickId = useSelectedBrickId();
-    const pageQueries = usePageQueries();
+    const pageQueries = useQueries();
     const [menuBarContainer, setMenuBarContainer] = useState<HTMLDivElement | null>(null);
     const [currentContent, setContent] = useState(formatInitialContent(initialContent));
     const [rawContent, setRawContent] = useState(formatInitialContent(rawInitialContent));
@@ -155,7 +155,7 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
     const onUpdate = inline ? defaultUpdateHandler : onChange;
 
     const datasourceFields = pageQueries
-      .filter((q) => q.alias === queryAlias || (!queryAlias && q.queryInfo.limit === 1))
+      .filter((q) => q.alias === queryAlias || (!queryAlias && q.limit === 1))
       .flatMap((q) => getJSONSchemaFieldsList(q.datasource.schema, q.alias));
 
     const extensions = [
@@ -331,7 +331,7 @@ const TextEditorMenuBar = ({
   brickId: string;
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 } & Omit<TextEditorProps<any>, "content" | "brickId" | "propPath">) => {
-  const hasPageQueries = usePageQueries().length > 0;
+  const hasPageQueries = useQueries().length > 0;
   return (
     <>
       {textSizeMode === "classic" && <TextSizeClassicDropdown editor={editor} />}

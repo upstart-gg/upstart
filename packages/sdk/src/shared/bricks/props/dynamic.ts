@@ -1,24 +1,21 @@
 import { type ObjectOptions, Type, type Static } from "@sinclair/typebox";
-import { queryFilter } from "~/shared/datasources/types";
+import { queryParameter } from "~/shared/datasources/types";
 
 export function queryUse() {
   return Type.Object(
     {
-      queryId: Type.String({
-        description: "The Site Query ID to use.",
-      }),
       alias: Type.String({
         title: "Alias",
         minLength: 1,
         maxLength: 100,
         pattern: "^[a-zA-Z0-9_]+$",
         description:
-          "Alias for the query results, used in dynamic content. Use a simple keyword without spaces or special characters. Aliases are unique across the page.",
+          "Unique alias for the query results, used in dynamic content. Use a simple keyword without spaces or special characters. Aliases are unique across the page.",
         "ai:instructions":
           "Use a simple keyword without spaces or special characters. Aliases are unique across the page. You can use the same query several times with different aliases in order to, for example, apply different parameters to the same query.",
       }),
       params: Type.Optional(
-        Type.Array(queryFilter, {
+        Type.Array(queryParameter, {
           description:
             "Additional query parameters/filters to apply to the query. One can use placeholders in values like ':slug' to reference URL parameters.",
           title: "Query Parameters",

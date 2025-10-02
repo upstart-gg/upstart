@@ -14,7 +14,7 @@ import { RxCross2 } from "react-icons/rx";
 import { TbPlus } from "react-icons/tb";
 import ObjectFields, { FieldTitle } from "../field-factory";
 import type { FieldProps } from "./types";
-import { usePageQueries } from "~/editor/hooks/use-page-data";
+import { useQueries } from "~/editor/hooks/use-page-data";
 import type { LoopSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
 import { merge } from "lodash-es";
 
@@ -48,7 +48,7 @@ export default function ArrayField({
   parents = [],
   schema,
 }: ArrayFieldProps) {
-  const pageQueries = usePageQueries();
+  const pageQueries = useQueries();
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
