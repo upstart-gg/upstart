@@ -183,16 +183,61 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
   // Extract simple parameters from the filterExpression structure
   const parameters = query?.parameters?.fields?.filter((f) => "field" in f) ?? [];
 
+  // Extract sort information from the array
+  const sorts = query?.sort ?? [];
+
   // Handle general query changes
   const handleChange = (key: keyof Query, value: string | number) => {
     setQuery(
       (prev) =>
         ({
           ...prev,
-          // sort: key === "sortField" && value === "random()" ? null : prev?.sortDirection,
           [key]: value,
         }) as Query,
     );
+  };
+
+  // Handle sort changes
+  const addSort = () => {
+    const newSort = {
+      field: "",
+      direction: "desc" as const,
+    };
+    setQuery((prev) => ({
+      ...prev,
+      sort: [...sorts, newSort],
+    }));
+  };
+
+  const removeSort = (index: number) => {
+    setQuery((prev) => ({
+      ...prev,
+      sort: sorts.filter((_, i) => i !== index),
+    }));
+  };
+
+  const updateSort = (index: number, key: "field" | "direction", value: string) => {
+    setQuery((prev) => {
+      const newSorts = [...sorts] as Array<
+        "random()" | "match()" | { field: string; direction: "asc" | "desc" }
+      >;
+      if (key === "field") {
+        if (value === "random()" || value === "match()") {
+          newSorts[index] = value;
+        } else {
+          newSorts[index] = { field: value, direction: "desc" as const };
+        }
+      } else if (key === "direction" && typeof newSorts[index] === "object") {
+        newSorts[index] = {
+          ...(newSorts[index] as { field: string; direction: "asc" | "desc" }),
+          direction: value as "asc" | "desc",
+        };
+      }
+      return {
+        ...prev,
+        sort: newSorts,
+      };
+    });
   };
 
   // Function to get operators based on field type
@@ -598,69 +643,110 @@ function QueryCreator({ query: initialQuery, onClose }: { query?: Query | null; 
           </div>
         )}
 
-        {/* Sort Fields  */}
+        {/* Sort Fields Section */}
         {query?.datasourceId && (
-          <div className="flex flex-1 gap-6 justify-between items-center pt-2.5 pb-1 px-2.5">
-            <div className="flex flex-col gap-1 flex-1 ">
+          <div className="flex flex-col gap-2 flex-1 justify-between pt-3 px-2.5">
+            <div className="flex flex-1 w-full justify-between items-center">
               <FieldTitle
+                withIcon
+                title="Sort results by"
                 className="font-medium"
-                title="Sort by"
-                description="Select a field to sort the results"
+                description="Add sort criteria to order your query results"
               />
-              <Select.Root
-                defaultValue={query?.sortField}
-                size="2"
-                onValueChange={(value: string) => handleChange("sort", value)}
-              >
-                <Select.Trigger
-                  radius="medium"
-                  variant="surface"
-                  className="!mr-[1px] !mt-0.5"
-                  placeholder="Select a field"
-                />
-                <Select.Content position="popper">
-                  <Select.Group>
-                    {sortableFields.map((field) => (
-                      <Select.Item key={field.value} value={field.value}>
-                        {field.title}
-                      </Select.Item>
-                    ))}
-                  </Select.Group>
-                  <Select.Separator />
-                  <Select.Group>
-                    <Select.Item value="random()">Random</Select.Item>
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
+              <Button type="button" radius="full" variant="solid" size="1" onClick={addSort}>
+                <TbPlus className="w-3 h-3" />
+                Add sort
+              </Button>
             </div>
-            <div
-              className={tx("flex flex-col gap-1 flex-1", query?.sortField === "random()" && "opacity-40")}
-            >
-              <FieldTitle
-                className="font-medium"
-                title="Direction"
-                description="Select the direction to sort the results"
-              />
-              <Select.Root
-                disabled={query?.sortField === "random()"}
-                defaultValue={query?.sortDirection || "asc"}
-                size="2"
-                onValueChange={(value: string) => handleChange("sortDirection", value)}
-              >
-                <Select.Trigger
-                  radius="medium"
-                  variant="surface"
-                  placeholder="Select direction"
-                  className="!mr-[1px] !mt-0.5"
-                />
-                <Select.Content position="popper">
-                  <Select.Group>
-                    <Select.Item value="asc">Ascending</Select.Item>
-                    <Select.Item value="desc">Descending</Select.Item>
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
-            </div>
+            {sorts.length > 0 && (
+              <div className="flex flex-col gap-3 mt-1">
+                {sorts.map((sort, index) => {
+                  const isSpecialSort = sort === "random()" || sort === "match()";
+                  const sortField = typeof sort === "object" ? sort.field : sort;
+                  const sortDirection = typeof sort === "object" ? sort.direction : "desc";
+
+                  return (
+                    <Fragment key={index}>
+                      <div className="flex gap-x-3 gap-y-0.5 items-center">
+                        {/* Field Selector */}
+                        <div className="w-[200px] flex items-center gap-3 pr-1">
+                          <Select.Root
+                            defaultValue={sortField}
+                            onValueChange={(value: string) => updateSort(index, "field", value)}
+                          >
+                            <Select.Trigger
+                              className="!w-full"
+                              radius="medium"
+                              variant="surface"
+                              placeholder="Select a field"
+                            />
+                            <Select.Content position="popper">
+                              <Select.Group>
+                                {sortableFields.map((field) => (
+                                  <Select.Item key={field.value} value={field.value}>
+                                    {field.title}
+                                  </Select.Item>
+                                ))}
+                              </Select.Group>
+                              <Select.Separator />
+                              <Select.Group>
+                                <Select.Item value="random()">Random</Select.Item>
+                                <Select.Item value="match()">Match (Full-text search)</Select.Item>
+                              </Select.Group>
+                            </Select.Content>
+                          </Select.Root>
+                        </div>
+
+                        {/* Direction Selector */}
+                        <div className={tx("flex gap-2 items-center w-[120px]", isSpecialSort && "hidden")}>
+                          <Select.Root
+                            key={`direction-${index}-${sortField}`}
+                            defaultValue={sortDirection}
+                            size="2"
+                            onValueChange={(value: string) => updateSort(index, "direction", value)}
+                            disabled={isSpecialSort}
+                          >
+                            <Select.Trigger
+                              radius="medium"
+                              variant="ghost"
+                              placeholder="Select direction"
+                              className="!flex-1 !mr-1"
+                            />
+                            <Select.Content position="popper">
+                              <Select.Group>
+                                <Select.Item value="asc">Ascending</Select.Item>
+                                <Select.Item value="desc">Descending</Select.Item>
+                              </Select.Group>
+                            </Select.Content>
+                          </Select.Root>
+                        </div>
+
+                        {/* Empty space to align with parameters */}
+                        <div className="grow" />
+
+                        <IconButton
+                          size="1"
+                          type="button"
+                          variant="ghost"
+                          className="hover:(bg-red-100 text-red-800) !shrink-0 !ml-auto"
+                          onClick={() => removeSort(index)}
+                        >
+                          <RxCross2 size={14} />
+                        </IconButton>
+                      </div>
+
+                      {index < sorts.length - 1 && (
+                        <div className="border-t border-dotted mx-auto w-2/3 border-gray-200 my-2 relative">
+                          <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-gray-50 rounded-full px-2 py-1 inline-block text-xs text-gray-500">
+                            Then by
+                          </span>
+                        </div>
+                      )}
+                    </Fragment>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 
