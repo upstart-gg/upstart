@@ -305,19 +305,19 @@ export const siteAttributesSchema = Type.Object(
         ],
       }),
     ),
-    navbar: Type.Optional(
-      Type.Composite([navbarManifest.props], {
-        title: "Navbar",
-        "ui:group": "navbar",
-      }),
-    ),
-    footer: Type.Optional(
-      Type.Composite([footerManifest.props], {
-        title: "Footer",
-        "ui:group": "footer",
-        // "ui:hidden": true, // Hidden in attributes panel. Users will have to click the brick to configure it, even if the configuration applies globally, so they have the same editing experience
-      }),
-    ),
+    // navbar: Type.Optional(
+    //   Type.Composite([navbarManifest.props], {
+    //     title: "Navbar",
+    //     "ui:group": "navbar",
+    //   }),
+    // ),
+    // footer: Type.Optional(
+    //   Type.Composite([footerManifest.props], {
+    //     title: "Footer",
+    //     "ui:group": "footer",
+    //     // "ui:hidden": true, // Hidden in attributes panel. Users will have to click the brick to configure it, even if the configuration applies globally, so they have the same editing experience
+    //   }),
+    // ),
     ogImage: Type.Optional(
       image({
         title: "Social share image",

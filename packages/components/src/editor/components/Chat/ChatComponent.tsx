@@ -33,6 +33,9 @@ const WEB_SEARCH_ENABLED = false;
 const msgCommon = tx(
   "rounded-lg p-4 text-pretty transition-all duration-300 flex flex-col gap-1.5",
   css({
+    "& pre:has(> code) ": {
+      display: "hidden",
+    },
     "& code": {
       fontSize: "88%",
     },

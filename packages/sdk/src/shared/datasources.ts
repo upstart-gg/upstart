@@ -1,5 +1,5 @@
 import { type Static, Type, type TArray } from "@sinclair/typebox";
-import type { Datasource } from "./datasources/types";
+import { datasourceSystemProperties, type Datasource } from "./datasources/types";
 
 /**
  * For now, defineDatasources() force the usage of a custom (internal) datasource
@@ -15,15 +15,6 @@ export function defineDatasource<D extends Datasource>(datasource: D) {
     ),
   };
 }
-
-export const datasourceSystemProperties = Type.Object({
-  $id: Type.Optional(Type.String({ title: "Id", format: "text" })),
-  $publicationDate: Type.Optional(Type.String({ title: "Publication Date", format: "date-time" })),
-  $slug: Type.Optional(Type.String({ title: "Slug", format: "slug" })),
-  $lastModificationDate: Type.Optional(Type.String({ title: "Last Modification", format: "date-time" })),
-});
-
-export type DatasourceSystemProperties = Static<typeof datasourceSystemProperties>;
 
 /**
  * Map a datasource schema to include $id, $createdAt, and $updatedAt properties.

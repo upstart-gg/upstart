@@ -1,65 +1,19 @@
-import { Type, type Static } from "@sinclair/typebox";
+import { type TSchema, Type, type Static, type TArray } from "@sinclair/typebox";
 import { StringEnum } from "../utils/string-enum";
 import { toLLMSchema } from "../utils/llm";
 
-export const providersSchema = StringEnum([
-  // "facebook-posts",
-  // "instagram-feed",
-  // "mastodon-account",
-  // "mastodon-status",
-  // "mastodon-status-list",
-  "internal",
-  // "rss",
-  // // "threads-media",
-  // // "tiktok-video",
-  // "youtube-list",
-  // "http-json",
-  // "internal-blog",
-  // "internal-changelog",
-  // // "internal-contact-info",
-  // "internal-faq",
-  // "internal-links",
-  // "internal-recipes",
-  // "internal-restaurant",
-  // "internal-cv",
-]);
+export const datasourceSystemProperties = Type.Object({
+  $id: Type.Optional(Type.String({ title: "Id", format: "text" })),
+  $publicationDate: Type.Optional(Type.String({ title: "Publication Date", format: "date-time" })),
+  $slug: Type.Optional(Type.String({ title: "Slug", format: "slug" })),
+  $lastModificationDate: Type.Optional(Type.String({ title: "Last Modification", format: "date-time" })),
+});
+
+export type DatasourceSystemProperties = Static<typeof datasourceSystemProperties>;
+
+export const providersSchema = StringEnum(["internal"]);
 
 export type DatasourceProvider = Static<typeof providersSchema>;
-
-// const datasourceProviderManifest = Type.Composite([
-//   Type.Object({
-//     id: Type.String({
-//       title: "ID",
-//       description:
-//         "Unique identifier of the datasource. Used to reference the datasource in the system. Use a url-safe string like a slug.",
-//     }),
-//     label: Type.String({ title: "Label", description: "Label of the datasource displayed in the UI" }),
-//     schema: Type.Null({
-//       description: "Always null for provider datasources. The schema is defined by the provider.",
-//     }),
-//     ttlMinutes: Type.Optional(
-//       Type.Number({
-//         title: "Time to live",
-//         description:
-//           "Time to live in minutes. If set to -1, it never expires and has to be manually refreshed. If set to 0, the datasource is always fetched live. If > 0, then the datasource is feteched every N minutes.",
-//       }),
-//     ),
-//     refresh: Type.Optional(
-//       Type.Object(
-//         {
-//           method: Type.Union([Type.Literal("interval"), Type.Literal("manual"), Type.Literal("live")]),
-//           interval: Type.Optional(Type.Number()),
-//         },
-//         {
-//           title: "Refresh options",
-//           description: "Options to refresh the datasource",
-//         },
-//       ),
-//     ),
-//   }),
-// ]);
-
-// export type DatasourceProviderManifest = Static<typeof datasourceProviderManifest>;
 
 const datasourceInternalManifest = Type.Object(
   {
@@ -76,7 +30,12 @@ const datasourceInternalManifest = Type.Object(
     schema: Type.Any({
       title: "Schema",
       description: "JSON Schema of datasource. MUST Always an array of objects.",
+      type: "array",
     }),
+    // schema: Type.Any({
+    //   title: "Schema",
+    //   description: "JSON Schema of datasource. MUST Always an array of objects.",
+    // }) as TSchema,
     indexes: Type.Array(
       Type.Object({
         name: Type.String({ title: "Index name" }),
@@ -193,43 +152,6 @@ const datasourceInternalManifest = Type.Object(
 );
 
 export type InternalDatasource = Static<typeof datasourceInternalManifest>;
-
-// const datasourceJsonManifest = Type.Composite([
-//   datasourceBaseFields,
-//   Type.Object({
-//     provider: Type.Literal("http-json", {
-//       title: "JSON Array",
-//       description: "JSON array datasource.",
-//     }),
-//     options: httpJsonOptions,
-//     schema: Type.Any({
-//       title: "Schema",
-//       description: "JSON Schema of datasource. Always an array of objects.",
-//       examples: [
-//         {
-//           type: "array",
-//           items: {
-//             type: "object",
-//             properties: {
-//               id: { type: "string", title: "ID" },
-//               title: { type: "string", title: "Title" },
-//               firstname: { type: "string", title: "Firstname" },
-//               lastname: { type: "string", title: "Lastname" },
-//               createdAt: { type: "string", format: "date-time", title: "Created at" },
-//               email: { type: "string", format: "email", title: "Email" },
-//             },
-//             required: ["id", "title", "firstname", "lastname", "email", "createdAt"],
-//             title: "Employee",
-//           },
-//           title: "Employees",
-//           description: "Employees list",
-//         },
-//       ],
-//     }),
-//   }),
-// ]);
-
-// type DatasourceJsonArrayManifest = Static<typeof datasourceJsonManifest>;
 
 // Fow now, let support only custom (internal) datasource
 // export const datasourceManifest = datasourceCustomManifest;
