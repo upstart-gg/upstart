@@ -313,48 +313,48 @@ export function processSections(
 
   const finalSections = sections.map(processSection);
 
-  if (siteAttributes.navbar && !pageAttributes.noNavbar) {
-    finalSections.unshift(
-      processSection({
-        order: -1,
-        id: "navbar-section",
-        label: "Navbar",
-        props: {
-          variant: "navbar",
-          direction: "flex-row",
-        },
-        mobileProps: {},
-        bricks: [
-          {
-            id: "navbar",
-            type: "navbar",
-            props: siteAttributes.navbar,
-          },
-        ],
-      }),
-    );
-  }
-  if (siteAttributes.footer && !pageAttributes.noFooter) {
-    finalSections.push(
-      processSection({
-        order: 1000,
-        id: "footer-section",
-        label: "Footer",
-        props: {
-          variant: "footer",
-          direction: "flex-row",
-        },
-        mobileProps: {},
-        bricks: [
-          {
-            id: "footer",
-            type: "footer",
-            props: siteAttributes.footer,
-          },
-        ],
-      }),
-    );
-  }
+  // if (siteAttributes.navbar && !pageAttributes.noNavbar) {
+  //   finalSections.unshift(
+  //     processSection({
+  //       order: -1,
+  //       id: "navbar-section",
+  //       label: "Navbar",
+  //       props: {
+  //         variant: "navbar",
+  //         direction: "flex-row",
+  //       },
+  //       mobileProps: {},
+  //       bricks: [
+  //         {
+  //           id: "navbar",
+  //           type: "navbar",
+  //           props: siteAttributes.navbar,
+  //         },
+  //       ],
+  //     }),
+  //   );
+  // }
+  // if (siteAttributes.footer && !pageAttributes.noFooter) {
+  //   finalSections.push(
+  //     processSection({
+  //       order: 1000,
+  //       id: "footer-section",
+  //       label: "Footer",
+  //       props: {
+  //         variant: "footer",
+  //         direction: "flex-row",
+  //       },
+  //       mobileProps: {},
+  //       bricks: [
+  //         {
+  //           id: "footer",
+  //           type: "footer",
+  //           props: siteAttributes.footer,
+  //         },
+  //       ],
+  //     }),
+  //   );
+  // }
 
   return finalSections satisfies Section[];
 }

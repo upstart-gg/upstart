@@ -9,7 +9,6 @@ export default function ThemePreview({
   selected,
   onClick,
 }: { theme: Theme; noPreview?: boolean; selected?: boolean; className?: string; onClick?: () => void }) {
-  const draft = useDraft();
   return (
     <button
       type="button"

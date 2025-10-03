@@ -38,6 +38,7 @@ export function alignSelf(options: StringOptions = {}) {
   return StringEnum(["self-auto", "self-start", "self-center", "self-end", "self-stretch"], {
     enumNames: ["Auto", "Start", "Center", "End", "Stretch"],
     default: "self-auto",
+    description: "The alignment of the element on the cross axis.",
     // $id: "styles:alignSelf",
     title: "Align self",
     "ui:field": "align-self",

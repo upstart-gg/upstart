@@ -326,18 +326,20 @@ export type ColorPreset = keyof typeof colorPresets;
 export function colorPreset(options: ColorPresetOptions = {}) {
   return Type.Object(
     {
-      color: StringEnum(Object.keys(colorPresets) as Array<ColorPreset>, {
+      color: Type.String({
         title: "Color preset",
-        description: "Color preset to apply to background and text",
+        description:
+          "Color preset is a predefined style to apply background color and text color while keeping text readable.",
         enumNames: Object.keys(colorPresets).map(
           (key) => colorPresets[key as keyof typeof colorPresets].label,
         ),
-        "ai:instructions": `Presets are predefined color combinations of background and text colors that can be applied to elements.
-The possible semantic colors are primary, secondary, accent, neutral, and base, each declined in various shades from 50 to 900. (except base which has only 100, 200, and 300).
-You can use gradients using color gradient variations (e.g. primary-gradient-100, secondary-gradient-200, etc.). In this case, you will also need to set the gradient direction.`,
+        "ai:instructions":
+          "Must be formated like `<variant>-<shade>` or `<variant>-gradient-<shade>`, variants being primary, secondary, accent and neutral, or base and shades between 100 and 900, except the base with takes shades betwen 100 and 300 only.",
+        pattern:
+          "^(primary|secondary|accent|neutral|base)(-gradient-)?-?(50|100|200|300|400|500|600|700|800|900)?$",
         "ui:styleId": "presets:color",
         "ui:responsive": true,
-        default: options.default?.color ?? "none",
+        default: options.default?.color,
       }),
       gradientDirection: Type.Optional(gradientDirection(options)),
     },
@@ -345,6 +347,7 @@ You can use gradients using color gradient variations (e.g. primary-gradient-100
       "ui:field": "color-preset",
       // $id: "presets:color",
       title: "Color preset",
+      description: "A set of predefined color combinations for background and text.",
       "ui:presets": colorPresets,
       default: options.default,
       examples: [
@@ -360,32 +363,20 @@ You can use gradients using color gradient variations (e.g. primary-gradient-100
 export type ColorPresetSettings = Static<ReturnType<typeof colorPreset>>;
 
 function gradientDirection(options: StringOptions = {}) {
-  return StringEnum(
-    [
-      "bg-gradient-to-t",
-      "bg-gradient-to-r",
-      "bg-gradient-to-b",
-      "bg-gradient-to-l",
-      "bg-gradient-to-tl",
-      "bg-gradient-to-tr",
-      "bg-gradient-to-br",
-      "bg-gradient-to-bl",
-    ],
-    {
-      title: "Gradient direction",
-      description: "The direction of the gradient. Only applies when color preset is a gradient.",
-      enumNames: ["Top", "Right", "Bottom", "Left", "Top left", "Top right", "Bottom right", "Bottom left"],
-      default: "bg-gradient-to-br",
-      "ui:responsive": "desktop",
-      "ui:styleId": "styles:gradientDirection",
-      // metadata: {
-      //   filter: (manifestProps: TObject, formData: Static<BrickManifest["props"]>) => {
-      //     return (formData[colorPropKey] as string)?.includes("gradient") === true;
-      //   },
-      // },
-      ...options,
-    },
-  );
+  return Type.String({
+    title: "Gradient direction",
+    description: "The direction of the gradient. Only applies when color preset is a gradient.",
+    pattern: "^bg-gradient-to-(t|r|b|l|tl|tr|br|bl)$",
+    "ai:instructions":
+      "Format is `bg-gradient-to-<direction>`, directions being `t`, `r`, `b`, `l`, `tl`, `tr`, `br` and `bl`",
+    "ui:responsive": "desktop",
+    "ui:styleId": "styles:gradientDirection",
+    // metadata: {
+    //   filter: (manifestProps: TObject, formData: Static<BrickManifest["props"]>) => {
+    //     return (formData[colorPropKey] as string)?.includes("gradient") === true;
+    //   },
+    // },
+  });
 }
 
 export type GradientDirectionSettings = Static<ReturnType<typeof gradientDirection>>;

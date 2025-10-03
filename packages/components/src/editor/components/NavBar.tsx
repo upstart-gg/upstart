@@ -396,7 +396,6 @@ export default function NavBar() {
             <RxRocket className={tx("h-4 w-auto stroke-orange-600")} />
             Publish
           </div>
-          
         </button>
         {/* </TopbarMenu> */}
       </div>

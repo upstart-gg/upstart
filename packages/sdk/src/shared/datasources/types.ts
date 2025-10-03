@@ -1,65 +1,19 @@
-import { Type, type Static } from "@sinclair/typebox";
+import { type TSchema, Type, type Static, type TArray } from "@sinclair/typebox";
 import { StringEnum } from "../utils/string-enum";
 import { toLLMSchema } from "../utils/llm";
 
-export const providersSchema = StringEnum([
-  // "facebook-posts",
-  // "instagram-feed",
-  // "mastodon-account",
-  // "mastodon-status",
-  // "mastodon-status-list",
-  "internal",
-  // "rss",
-  // // "threads-media",
-  // // "tiktok-video",
-  // "youtube-list",
-  // "http-json",
-  // "internal-blog",
-  // "internal-changelog",
-  // // "internal-contact-info",
-  // "internal-faq",
-  // "internal-links",
-  // "internal-recipes",
-  // "internal-restaurant",
-  // "internal-cv",
-]);
+export const datasourceSystemProperties = Type.Object({
+  $id: Type.Optional(Type.String({ title: "Id", format: "text" })),
+  $publicationDate: Type.Optional(Type.String({ title: "Publication Date", format: "date-time" })),
+  $slug: Type.Optional(Type.String({ title: "Slug", format: "slug" })),
+  $lastModificationDate: Type.Optional(Type.String({ title: "Last Modification", format: "date-time" })),
+});
+
+export type DatasourceSystemProperties = Static<typeof datasourceSystemProperties>;
+
+export const providersSchema = StringEnum(["internal"]);
 
 export type DatasourceProvider = Static<typeof providersSchema>;
-
-// const datasourceProviderManifest = Type.Composite([
-//   Type.Object({
-//     id: Type.String({
-//       title: "ID",
-//       description:
-//         "Unique identifier of the datasource. Used to reference the datasource in the system. Use a url-safe string like a slug.",
-//     }),
-//     label: Type.String({ title: "Label", description: "Label of the datasource displayed in the UI" }),
-//     schema: Type.Null({
-//       description: "Always null for provider datasources. The schema is defined by the provider.",
-//     }),
-//     ttlMinutes: Type.Optional(
-//       Type.Number({
-//         title: "Time to live",
-//         description:
-//           "Time to live in minutes. If set to -1, it never expires and has to be manually refreshed. If set to 0, the datasource is always fetched live. If > 0, then the datasource is feteched every N minutes.",
-//       }),
-//     ),
-//     refresh: Type.Optional(
-//       Type.Object(
-//         {
-//           method: Type.Union([Type.Literal("interval"), Type.Literal("manual"), Type.Literal("live")]),
-//           interval: Type.Optional(Type.Number()),
-//         },
-//         {
-//           title: "Refresh options",
-//           description: "Options to refresh the datasource",
-//         },
-//       ),
-//     ),
-//   }),
-// ]);
-
-// export type DatasourceProviderManifest = Static<typeof datasourceProviderManifest>;
 
 const datasourceInternalManifest = Type.Object(
   {
@@ -76,12 +30,18 @@ const datasourceInternalManifest = Type.Object(
     schema: Type.Any({
       title: "Schema",
       description: "JSON Schema of datasource. MUST Always an array of objects.",
+      type: "array",
     }),
+    // schema: Type.Any({
+    //   title: "Schema",
+    //   description: "JSON Schema of datasource. MUST Always an array of objects.",
+    // }) as TSchema,
     indexes: Type.Array(
       Type.Object({
         name: Type.String({ title: "Index name" }),
         fields: Type.Array(Type.String(), { title: "Fields to index" }),
-        unique: Type.Optional(Type.Boolean({ title: "Unique index", default: false })),
+        unique: Type.Optional(Type.Boolean({ title: "Creates a unique index" })),
+        fulltext: Type.Optional(Type.Boolean({ title: "Creates a fulltext index for search" })),
       }),
       {
         title: "Indexes",
@@ -193,43 +153,6 @@ const datasourceInternalManifest = Type.Object(
 
 export type InternalDatasource = Static<typeof datasourceInternalManifest>;
 
-// const datasourceJsonManifest = Type.Composite([
-//   datasourceBaseFields,
-//   Type.Object({
-//     provider: Type.Literal("http-json", {
-//       title: "JSON Array",
-//       description: "JSON array datasource.",
-//     }),
-//     options: httpJsonOptions,
-//     schema: Type.Any({
-//       title: "Schema",
-//       description: "JSON Schema of datasource. Always an array of objects.",
-//       examples: [
-//         {
-//           type: "array",
-//           items: {
-//             type: "object",
-//             properties: {
-//               id: { type: "string", title: "ID" },
-//               title: { type: "string", title: "Title" },
-//               firstname: { type: "string", title: "Firstname" },
-//               lastname: { type: "string", title: "Lastname" },
-//               createdAt: { type: "string", format: "date-time", title: "Created at" },
-//               email: { type: "string", format: "email", title: "Email" },
-//             },
-//             required: ["id", "title", "firstname", "lastname", "email", "createdAt"],
-//             title: "Employee",
-//           },
-//           title: "Employees",
-//           description: "Employees list",
-//         },
-//       ],
-//     }),
-//   }),
-// ]);
-
-// type DatasourceJsonArrayManifest = Static<typeof datasourceJsonManifest>;
-
 // Fow now, let support only custom (internal) datasource
 // export const datasourceManifest = datasourceCustomManifest;
 export const datasourceManifest = datasourceInternalManifest;
@@ -250,6 +173,7 @@ const stringFilter = Type.Object({
     "notStartsWith",
     "endsWith",
     "notEndsWith",
+    "match",
   ]),
   value: Type.String(),
 });
@@ -284,7 +208,7 @@ const booleanFilter = Type.Object({
   value: Type.Boolean(),
 });
 
-export const queryFilter = Type.Union([
+export const queryParameter = Type.Union([
   stringFilter,
   numberFilter,
   dateFilterAbsolute,
@@ -293,17 +217,23 @@ export const queryFilter = Type.Union([
   booleanFilter,
 ]);
 
-const filterExpression = Type.Recursive(
+const queryParametersExpression = Type.Recursive(
   (This) =>
     Type.Union(
       [
         Type.Object({
           op: Type.Literal("and"),
-          fields: Type.Array(Type.Union([queryFilter, This]), { title: "Indexed Fields" }),
+          fields: Type.Array(Type.Union([queryParameter, This]), {
+            title: "Fields",
+            description: "Fields to combine with AND. Can only be indexed fields.",
+          }),
         }),
         Type.Object({
           op: Type.Literal("or"),
-          fields: Type.Array(Type.Union([queryFilter, This])),
+          fields: Type.Array(Type.Union([queryParameter, This]), {
+            title: "Fields",
+            description: "Fields to combine with OR. Can only be indexed fields.",
+          }),
         }),
       ],
       {
@@ -330,17 +260,23 @@ const filterExpression = Type.Recursive(
       },
     ),
   {
-    title: "Filter Expression",
-    description: "Expression used to filter query results. Can be a combination of and/or conditions.",
+    title: "Parameter Expression",
+    description:
+      "Expression used to build the query. Can be a combination of and/or conditions. Values can use placeholders like ':slug' to reference URL parameters.",
   },
 );
 
 export const querySchema = Type.Object(
   {
-    id: Type.String({
-      title: "Query ID",
+    alias: Type.String({
+      title: "Alias",
+      minLength: 1,
+      maxLength: 100,
+      pattern: "^[a-zA-Z0-9_]+$",
       description:
-        "Unique identifier for the query. Used to reference the query in the system. URL-safe string like a slug.",
+        "Unique alias for the query results, used in dynamic content. Use a simple keyword without spaces or special characters. Aliases are unique across the page.",
+      "ai:instructions":
+        "Use a simple keyword without spaces or special characters. Aliases are unique across the page. You can use the same query several times with different aliases in order to, for example, apply different parameters to the same query.",
     }),
     label: Type.String({
       title: "Label",
@@ -355,114 +291,74 @@ export const querySchema = Type.Object(
       title: "Limit",
       description: "Limit the number of records to fetch from the datasource.",
       minimum: 1,
+      maximum: 50,
       default: 10,
     }),
-    sortDirection: Type.Optional(
-      StringEnum(["asc", "desc"], {
-        title: "Sort",
-        enumNames: ["Ascending", "Descending"],
-        description: "Direction to sort the records by",
-        default: "desc",
-      }),
-    ),
-    sortField: Type.Optional(
-      Type.String({
-        title: "Sort Field",
-        description: "Field to sort by (must be an indexed field)",
-        default: "$publicationDate",
-      }),
-    ),
-    filters: Type.Optional(filterExpression),
-    parameters: Type.Optional(
+    sort: Type.Optional(
       Type.Array(
-        Type.Object({
-          field: Type.String({ title: "Field", description: "Field name to use as parameter" }),
-          op: StringEnum(
-            [
-              "eq",
-              "ne",
-              "contains",
-              "notContains",
-              "startsWith",
-              "notStartsWith",
-              "endsWith",
-              "notEndsWith",
-              "lt",
-              "lte",
-              "gt",
-              "gte",
-              "before",
-              "after",
-              "beforeNow",
-              "afterNow",
-              "containsAll",
-              "containsAny",
-              "notContainsAny",
-            ],
-            { title: "Operator", description: "Operator to use for the parameter" },
+        Type.Union([
+          Type.Literal("random()", { description: "Random order" }),
+          Type.Literal("match()", { description: "Full-text search" }),
+          Type.Object(
+            {
+              field: Type.String({ title: "Field", description: "Field to sort by" }),
+              direction: StringEnum(["asc", "desc"], {
+                title: "Direction",
+                enumNames: ["Ascending", "Descending"],
+                description: "Direction to sort the records by",
+                default: "desc",
+              }),
+            },
+            {
+              description: "Sort the results by a specific field",
+            },
           ),
-        }),
-        {
-          title: "Parameters",
-          description:
-            "Field name and operator that will be used as parameters when using the query in pages. Only indexed fields can be used as parameters.",
-          default: [],
-          examples: [
-            [{ field: "$slug", op: "eq" }],
-            [{ field: "category", op: "eq" }],
-            [{ field: "tags", op: "containsAny" }],
-            [{ field: "author", op: "eq" }],
-            [{ field: "title", op: "contains" }],
-          ],
-        },
+        ]),
+        { default: [{ field: "$publicationDate", direction: "desc" }] },
       ),
     ),
+    parameters: Type.Optional(queryParametersExpression),
   },
   {
     examples: [
       {
-        id: "latest-posts",
+        alias: "latestPosts",
         label: "Latest posts",
         datasourceId: "blog_posts",
         limit: 5,
-        sortDirection: "desc",
-        sortField: "$publicationDate",
+        sort: [{ field: "$publicationDate", direction: "desc" }],
       },
       {
-        id: "posts-by-category",
+        alias: "postsByCategory",
         label: "Posts by category",
         datasourceId: "blog_posts",
         limit: 10,
-        sortDirection: "desc",
-        sortField: "$publicationDate",
-        parameters: [{ field: "category", op: "eq" }],
+        sort: [{ field: "$publicationDate", direction: "desc" }],
+        parameters: [{ field: "category", op: "eq", value: ":category" }],
       },
       {
-        id: "posts-by-tag",
+        alias: "postsByTag",
         label: "Posts by tag",
         datasourceId: "blog_posts",
         limit: 10,
-        sortDirection: "desc",
-        sortField: "$publicationDate",
-        parameters: [{ field: "tags", op: "containsAny" }],
+        sort: [{ field: "$publicationDate", direction: "desc" }],
+        parameters: [{ field: "tags", op: "containsAny", value: ":tags" }],
       },
       {
-        id: "author-posts",
+        alias: "authorPosts",
         label: "Author posts",
         datasourceId: "blog_posts",
         limit: 10,
-        sortDirection: "desc",
-        sortField: "$publicationDate",
-        parameters: [{ field: "author", op: "eq" }],
+        sort: [{ field: "$publicationDate", direction: "desc" }],
+        parameters: [{ field: "author", op: "eq", value: ":author" }],
       },
       {
-        id: "search-posts",
+        alias: "searchPosts",
         label: "Search posts",
         datasourceId: "blog_posts",
         limit: 10,
-        sortDirection: "desc",
-        sortField: "$publicationDate",
-        parameters: [{ field: "title", op: "contains" }],
+        sort: [{ field: "$publicationDate", direction: "desc" }],
+        parameters: [{ field: "title", op: "contains", value: ":q" }],
       },
     ],
   },

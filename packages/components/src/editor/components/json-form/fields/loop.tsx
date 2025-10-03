@@ -3,7 +3,7 @@ import { IconButton, SegmentedControl, Select, Switch, TextField } from "@upstar
 import { useState, type FC } from "react";
 import type { FieldProps } from "./types";
 import { FieldTitle } from "../field-factory";
-import { usePageQueries } from "~/editor/hooks/use-page-data";
+import { useQueries } from "~/editor/hooks/use-page-data";
 
 const NOLOOP = "$NOLOOP$";
 
@@ -11,7 +11,7 @@ const DynamicField: FC<FieldProps<LoopSettings | undefined>> = (props) => {
   const { currentValue, onChange, schema, title, description } = props;
   const { over = NOLOOP } = currentValue ?? {};
   const [overrideLimit, setOverrideLimit] = useState<boolean>(!!currentValue?.overrideLimit);
-  const pageQueries = usePageQueries();
+  const pageQueries = useQueries();
   const query = pageQueries.find((q) => q.alias === over);
   const placeholder = schema["ui:placeholder"] ?? "Do not repeat";
 
@@ -30,7 +30,7 @@ const DynamicField: FC<FieldProps<LoopSettings | undefined>> = (props) => {
     return null;
   }
 
-  const loopableQueries = pageQueries.filter((q) => !q.queryInfo?.limit || q.queryInfo?.limit > 1);
+  const loopableQueries = pageQueries.filter((q) => !q.limit || q.limit > 1);
 
   return (
     <div className="layout-field w-full flex flex-col gap-3">
@@ -54,7 +54,7 @@ const DynamicField: FC<FieldProps<LoopSettings | undefined>> = (props) => {
             <Select.Item value={NOLOOP}>{placeholder}</Select.Item>
             {loopableQueries.map((query) => (
               <Select.Item key={query.alias} value={query.alias}>
-                {query.alias} - {query.queryInfo?.label}
+                {query.alias} - {query.label}
               </Select.Item>
             ))}
           </Select.Content>
@@ -86,8 +86,8 @@ const DynamicField: FC<FieldProps<LoopSettings | undefined>> = (props) => {
               size="2"
               type="number"
               min="1"
-              max={query?.queryInfo?.limit ?? 50}
-              defaultValue={currentValue?.overrideLimit ?? query?.queryInfo?.limit ?? 10}
+              max={query?.limit ?? 50}
+              defaultValue={currentValue?.overrideLimit ?? query?.limit ?? 10}
               onChange={(e) => {
                 const value = e.target.value ? parseInt(e.target.value, 10) : undefined;
                 onChange({

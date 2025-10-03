@@ -16,14 +16,13 @@ export function border(opts: ObjectOptions = {}) {
       }),
       color: borderColor({
         title: "Color",
-        description: "The color of the border.",
         default: "border-current",
       }),
     },
     {
       title: "Border",
       "ui:styleId": "styles:border",
-      description: "Set the border width and color.",
+      description: "Border width and color",
       "ui:field": "border",
       "ui:responsive": true,
       examples: [
@@ -62,6 +61,7 @@ export function rounding(opts: StringOptions = {}) {
       ],
       {
         title: "Corner rounding",
+        description: "The rounding of the element's corners.",
         enumNames: ["Auto", "None", "Small", "Medium", "Large", "Extra large", "2xl", "Full"],
         // $id: "styles:rounding",
         "ui:styleId": "styles:rounding",
