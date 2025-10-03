@@ -8,9 +8,9 @@ import { sitemapSchema } from "./sitemap";
 import { defaultTheme, themeSchema } from "./theme";
 
 export const siteSchema = Type.Object({
-  id: Type.String(),
-  label: Type.String(),
-  hostname: Type.String(),
+  id: Type.String({ description: "The unique identifier for the site.", readOnly: true }),
+  label: Type.String({ description: "The label (name) of the site, only displayed to the site owner" }),
+  hostname: Type.String({ description: "The hostname of the site, e.g. example.com", readOnly: true }),
   attributes: siteAttributesSchema,
   datasources: datasourcesList,
   datarecords: datarecordsList,

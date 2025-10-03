@@ -6,8 +6,8 @@ import { grow } from "./grow";
 export function hidden() {
   return Type.Object(
     {
-      desktop: Type.Optional(Type.Boolean()),
-      mobile: Type.Optional(Type.Boolean()),
+      desktop: Type.Optional(Type.Boolean({ description: "Hide on desktop" })),
+      mobile: Type.Optional(Type.Boolean({ description: "Hide on mobile" })),
     },
     {
       // $id: "styles:hidden",
@@ -36,7 +36,7 @@ export const commonProps = {
     cssLength({
       title: "Fixed Width",
       description:
-        "Set a fixed width for the brick. If not set, the brick will be responsive and will follow the flex layout of its parent section.",
+        "Set a fixed width for the brick. If not set, the brick will be responsive and will follow the flex layout of its parent.",
       "ai:instructions": "Use percentage values to make the width responsive, like '50%'",
       "ui:field": "hidden",
     }) as TString,
@@ -45,12 +45,19 @@ export const commonProps = {
     cssLength({
       title: "Fixed height",
       description:
-        "Set a fixed height for the brick. If not set, the brick will be responsive and will follow the flex layout of its parent section.",
+        "Set a fixed height for the brick. If not set, the brick will be responsive and will follow the flex layout of its parent.",
       "ui:field": "hidden",
     }),
   ),
   grow: Type.Optional(grow()),
   alignSelf: Type.Optional(alignSelf()),
+  className: Type.Optional(
+    Type.String({
+      title: "CSS classname",
+      description:
+        "Add tailwind CSS classes to the brick for advanced styling. Tailwind colors limited to `primary`, `secondary`, `accent`, `neutral` and `base` variants.",
+    }),
+  ),
 };
 
 const commonPropsSchema = Type.Object(commonProps);

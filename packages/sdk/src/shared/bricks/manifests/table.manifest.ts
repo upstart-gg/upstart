@@ -79,11 +79,7 @@ export const manifest = defineBrickManifest({
       }),
       {
         title: "Columns",
-        default: [
-          { header: "Name", field: "name", width: "2fr", align: "left", type: "text" },
-          { header: "Email", field: "email", width: "2fr", align: "left", type: "text" },
-          { header: "Role", field: "role", width: "1fr", align: "left", type: "text" },
-        ],
+        description: "Columns definition",
         metadata: {
           category: "content",
         },
@@ -93,11 +89,6 @@ export const manifest = defineBrickManifest({
       Type.Array(Type.Record(Type.String(), Type.Any()), {
         title: "Static Data",
         description: "Static table data when not using dynamic queries",
-        default: [
-          { name: "John Doe", email: "john@example.com", role: "Manager" },
-          { name: "Jane Smith", email: "jane@example.com", role: "Developer" },
-          { name: "Mike Johnson", email: "mike@example.com", role: "Designer" },
-        ],
         metadata: {
           category: "content",
           consumeQuery: true,
@@ -149,7 +140,7 @@ export const manifest = defineBrickManifest({
     ),
     border: Type.Optional(
       border({
-        default: { width: "border", color: "border-gray-200" },
+        default: { width: "border", color: "border-neutral-200" },
       }),
     ),
     grow: Type.Optional(

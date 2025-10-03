@@ -723,7 +723,7 @@
           {
             "alias": "employee",
             "label": "Get employee by slug",
-            "parameters": [{ "field": "$id", "op": "eq", "value": ":slug" }],
+            "parameters": { "op": "and", "fields": [{ "field": "$id", "op": "eq", "value": ":slug" }] },
             "datasourceId": "employees",
             "sort": [{ "field": "$publicationDate", "direction": "desc" }],
             "limit": 1

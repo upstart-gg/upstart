@@ -193,7 +193,7 @@ export default function Chat() {
       generateId: createIdGenerator({
         prefix: "user",
         separator: "_",
-        size: 28,
+        size: 8,
       }),
       onError: (error) => {
         console.error("ERROR", error);

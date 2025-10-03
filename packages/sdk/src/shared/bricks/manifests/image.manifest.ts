@@ -91,6 +91,7 @@ DO
         },
         {
           "ui:field": "hidden",
+          title: "Image Author",
         },
       ),
     ),

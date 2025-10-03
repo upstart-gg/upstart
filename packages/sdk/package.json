@@ -84,8 +84,8 @@
     "sizetest": "pnpm build && du -sh dist",
     "lint": "biome check --write . && tsc --noEmit",
     "ci:lint": "tsc --noEmit",
-    "test": "vitest",
-    "gen-ia-docs": "tsx scripts/generate-ia-docs.ts"
+    "generate-md-docs": "tsx scripts/generate-md-docs.ts",
+    "test": "vitest"
   },
   "author": "Matthias Etienne",
   "publishConfig": {

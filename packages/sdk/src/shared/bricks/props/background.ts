@@ -17,7 +17,7 @@ export function background(opts: BackgroundOptions = {}) {
     {
       image: Type.String({
         title: "Image",
-        description: "The background image. Can be a URL or a data URI",
+        description: "The background image URL",
         format: "image",
         examples: ["https://example.com/image.png"],
       }),
@@ -25,12 +25,14 @@ export function background(opts: BackgroundOptions = {}) {
         StringEnum(["auto", "cover", "contain"], {
           enumNames: ["Auto", "Cover", "Contain"],
           "ai:instructions": "Only use this when the image is set.",
+          title: "Background size",
         }),
       ),
       repeat: Type.Optional(
         StringEnum(["no-repeat", "repeat", "repeat-x", "repeat-y", "space", "round"], {
           enumNames: ["No repeat", "Repeat", "Repeat horizontally", "Repeat vertically", "Space", "Round"],
           "ai:instructions": "Only use this when the image is set.",
+          title: "Background repeat",
         }),
       ),
     },
@@ -53,7 +55,7 @@ export function backgroundColor(options: SchemaOptions = {}) {
     title: "Background color",
     // $id: "styles:backgroundColor",
     "ai:instructions":
-      "Must be formated like `bg-<variant>-<shade>`, variants being primary, secondary, accent and neutral, or base and shades between 100 and 900, except the base with takes shades betwen 100 and 300 only.",
+      "Must be formated like `bg-<variant>-<shade>` or `bg-<variant>-gradient-<shade>`, variants being primary, secondary, accent and neutral, or base and shades between 100 and 900, except the base with takes shades betwen 100 and 300 only.",
     pattern: "^bg-(primary|secondary|accent|neutral|base)-?(50|100|200|300|400|500|600|700|800|900)?$",
     "ui:field": "color",
     "ui:color-type": "background",
