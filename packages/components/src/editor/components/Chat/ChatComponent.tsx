@@ -1,5 +1,6 @@
 import { useChat } from "@ai-sdk/react";
 import type { Tools, UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
+import type { CallContextProps } from "@upstart.gg/sdk/shared/context";
 import { defineDataRecord } from "@upstart.gg/sdk/shared/datarecords";
 import { defineDatasource } from "@upstart.gg/sdk/shared/datasources";
 import { Spinner, toast } from "@upstart.gg/style-system/system";
@@ -20,7 +21,6 @@ import {
   useSitePrompt,
   useThemes,
 } from "../../hooks/use-page-data";
-import type { CallContextProps } from "@upstart.gg/sdk/shared/context";
 
 // Lazy load heavy components
 const Markdown = lazy(() => import("../Markdown"));
@@ -560,18 +560,73 @@ export default function Chat() {
         </AnimatePresence>
         {error && (
           <div className={tx(msgCommon, "bg-red-200 text-red-800 text-sm")}>
-            <p>An error occured. {error.message ?? "Please retry."}</p>
-            <button
-              type="button"
-              className={tx(
-                "rounded bg-red-700 text-white border border-red-600 hover:opacity-90 block w-full text-center font-semibold py-1 px-2",
-              )}
-              onClick={() => {
-                regenerate();
-              }}
-            >
-              Retry
-            </button>
+            {(() => {
+              // Parse error message to check for specific error codes
+              let parsedError: { code?: string; error?: string } | null;
+              try {
+                parsedError = JSON.parse(error.message || "{}");
+              } catch {
+                parsedError = null;
+              }
+
+              const isCreditsError =
+                parsedError?.code === "NO_CREDITS" || parsedError?.code === "DAILY_LIMIT_REACHED";
+
+              if (isCreditsError) {
+                return (
+                  <>
+                    <p>
+                      {parsedError?.code === "NO_CREDITS"
+                        ? "You have run out of AI credits."
+                        : "You have reached your daily AI usage limit."}
+                    </p>
+                    <div className={tx("flex gap-2 mt-2")}>
+                      <button
+                        type="button"
+                        className={tx(
+                          "rounded bg-orange-500 text-white border border-orange-400 hover:opacity-90 flex-1 text-center font-semibold py-1 px-2",
+                        )}
+                        onClick={() => {
+                          // Navigate to dashboard/credits page
+                          window.open("/dashboard/settings/plan", "_blank");
+                        }}
+                      >
+                        {parsedError?.code === "NO_CREDITS" ? "Buy Credits" : "Upgrade Plan"}
+                      </button>
+                      <button
+                        type="button"
+                        className={tx(
+                          "rounded bg-red-700 text-white border border-red-600 hover:opacity-90 flex-1 text-center font-semibold py-1 px-2",
+                        )}
+                        onClick={() => {
+                          regenerate();
+                        }}
+                      >
+                        Retry
+                      </button>
+                    </div>
+                  </>
+                );
+              }
+
+              // Default error display
+              return (
+                <>
+                  <p>An error occurred. {error.message ?? "Please retry."}</p>
+                  <button
+                    type="button"
+                    className={tx(
+                      "rounded bg-red-700 text-white border border-red-600 hover:opacity-90 block w-full text-center font-semibold py-1 px-2",
+                    )}
+                    onClick={() => {
+                      regenerate();
+                    }}
+                  >
+                    Retry
+                  </button>
+                </>
+              );
+            })()}
           </div>
         )}
         <div ref={listPlaceholderRef} className={tx("h-2")} aria-label="separator" aria-hidden />
