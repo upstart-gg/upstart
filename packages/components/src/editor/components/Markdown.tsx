@@ -1,22 +1,11 @@
 import { tx } from "@upstart.gg/style-system/twind";
-import { type ComponentProps, memo } from "react";
+import { memo } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkCodeMeta from "../utils/remark-code-meta";
-
-interface CodeProps extends ComponentProps<"code"> {
-  node?: {
-    properties: {
-      dataPath?: string;
-      dataTitle?: string;
-    };
-  };
-  className?: string | "language-diff" | "language-json" | "language-tsx" | "language-mdx";
-  children?: React.ReactNode;
-}
 
 const MemoizedMarkdownBlock = memo(
   ({ content }: { content: string }) => {
