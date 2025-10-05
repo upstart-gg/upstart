@@ -1,4 +1,4 @@
-import { type Static, Type, type TArray } from "@sinclair/typebox";
+import type { TArray, TSchema } from "@sinclair/typebox";
 import { datasourceSystemProperties, type Datasource } from "./datasources/types";
 
 /**
@@ -11,7 +11,7 @@ export function defineDatasource<D extends Datasource>(datasource: D) {
     provider: "internal", // make sure to use Upstart provider
     schema: mapDatasourceSchemaWithInternalProperties(
       // datasource.provider === "internal" ? datasource.schema : getSchemaByProvider(datasource.provider),
-      datasource.schema,
+      datasource.schema as TArray<TSchema>,
     ),
   };
 }
@@ -45,7 +45,7 @@ export function getDatasourceIndexedFieldsWithTitles(datasource: Datasource) {
     console.error("no datasource or indexes found", datasource);
     return [];
   }
-  const properties = datasource.schema?.items?.properties || {};
+  const properties = (datasource.schema as TArray<TSchema>)?.items?.properties || {};
   const uniqueFields = Array.from(new Set(datasource.indexes?.map((idx) => idx.fields[0]) ?? []));
   return uniqueFields.map((field) => ({
     value: field,
