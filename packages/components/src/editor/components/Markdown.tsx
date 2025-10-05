@@ -25,19 +25,6 @@ const MemoizedMarkdownBlock = memo(
         <ReactMarkdown
           rehypePlugins={[rehypeRaw]}
           remarkPlugins={[remarkGfm, remarkCodeMeta, remarkFrontmatter, remarkMdxFrontmatter]}
-          components={{
-            code({ node, className, children, ...props }: CodeProps) {
-              // wrap it into a <details> block if it's a code block with a language
-              return (
-                <code className={tx(className)} {...props}>
-                  <span className="block font-mono text-xs text-gray-500 mb-1">
-                    {className} - {node?.properties?.dataPath}
-                  </span>
-                  {children}
-                </code>
-              );
-            },
-          }}
         >
           {content}
         </ReactMarkdown>
