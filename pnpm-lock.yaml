@@ -102,8 +102,8 @@ importers:
         specifier: 2.14.0
         version: 2.14.0(@tiptap/core@2.14.0(@tiptap/pm@2.14.0))
       '@tiptap/extension-document':
-        specifier: 2.14.0
-        version: 2.14.0(@tiptap/core@2.14.0(@tiptap/pm@2.14.0))
+        specifier: 3.6.5
+        version: 3.6.5(@tiptap/core@2.14.0(@tiptap/pm@2.14.0))
       '@tiptap/extension-heading':
         specifier: 2.14.0
         version: 2.14.0(@tiptap/core@2.14.0(@tiptap/pm@2.14.0))
@@ -1309,8 +1309,8 @@ packages:
   '@microsoft/tsdoc@0.15.1':
     resolution: {integrity: sha512-4aErSrCR/On/e5G2hDP0wjooqDdauzEbIq8hIkIe5pXV0rtWJZvdCEKL0ykZxex+IxIwBp0eGeV48hQN07dXtw==}
 
-  '@napi-rs/wasm-runtime@1.0.5':
-    resolution: {integrity: sha512-TBr9Cf9onSAS2LQ2+QHx6XcC6h9+RIzJgbqG3++9TUZSH204AwEy5jg3BTQ0VATsyoGj4ee49tN/y6rvaOOtcg==}
+  '@napi-rs/wasm-runtime@1.0.6':
+    resolution: {integrity: sha512-DXj75ewm11LIWUk198QSKUTxjyRjsBwk09MuMk5DGK+GDUtyPhhEHOGP/Xwwj3DjQXXkivoBirmOnKrLfc0+9g==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -2605,6 +2605,11 @@ packages:
     peerDependencies:
       '@tiptap/core': ^2.7.0
 
+  '@tiptap/extension-document@3.6.5':
+    resolution: {integrity: sha512-0c7kxWBIEIcoHUG89vpHOF2h4CMa0q6VWXhZ+6iqcI5uyqaKwgcW/TbHZR0nAwEsZLdRCKaryn2kO7jXiCjfnA==}
+    peerDependencies:
+      '@tiptap/core': ^3.6.5
+
   '@tiptap/extension-dropcursor@2.14.0':
     resolution: {integrity: sha512-FIh5cdPuoPKvZ0GqSKhzMZGixm05ac3hSgqhMNCBZmXX459qBUI9CvDl/uzSnY9koBDeLVV3HYMthWQQLSXl9A==}
     peerDependencies:
@@ -3479,8 +3484,8 @@ packages:
     resolution: {integrity: sha512-reYkTUJAZb9gUuZ2RvVCNhVHdg62RHnJ7WJl8ftMi4diZ6NWlciOzQN88pUhSELEwflJht4oQDv0F0BMlwaYtA==}
     engines: {node: '>=8'}
 
-  detect-libc@2.0.4:
-    resolution: {integrity: sha512-3UDv+G9CsCKO1WKMGw9fwq/SWJYbI0c5Y7LU1AXYoDdbhE2AHQ6N6Nb34sG8Fj7T5APy8qXDCKuuIHd1BR0tVA==}
+  detect-libc@2.1.2:
+    resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
 
   detect-node-es@1.1.0:
@@ -7005,7 +7010,7 @@ snapshots:
 
   '@microsoft/tsdoc@0.15.1': {}
 
-  '@napi-rs/wasm-runtime@1.0.5':
+  '@napi-rs/wasm-runtime@1.0.6':
     dependencies:
       '@emnapi/core': 1.5.0
       '@emnapi/runtime': 1.5.0
@@ -8004,7 +8009,7 @@ snapshots:
 
   '@rolldown/binding-wasm32-wasi@1.0.0-beta.41':
     dependencies:
-      '@napi-rs/wasm-runtime': 1.0.5
+      '@napi-rs/wasm-runtime': 1.0.6
     optional: true
 
   '@rolldown/binding-win32-arm64-msvc@1.0.0-beta.41':
@@ -8235,6 +8240,10 @@ snapshots:
       '@tiptap/core': 2.14.0(@tiptap/pm@2.14.0)
 
   '@tiptap/extension-document@2.14.0(@tiptap/core@2.14.0(@tiptap/pm@2.14.0))':
+    dependencies:
+      '@tiptap/core': 2.14.0(@tiptap/pm@2.14.0)
+
+  '@tiptap/extension-document@3.6.5(@tiptap/core@2.14.0(@tiptap/pm@2.14.0))':
     dependencies:
       '@tiptap/core': 2.14.0(@tiptap/pm@2.14.0)
 
@@ -9142,7 +9151,7 @@ snapshots:
 
   detect-indent@6.1.0: {}
 
-  detect-libc@2.0.4:
+  detect-libc@2.1.2:
     optional: true
 
   detect-node-es@1.1.0: {}
@@ -9761,7 +9770,7 @@ snapshots:
 
   lightningcss@1.30.1:
     dependencies:
-      detect-libc: 2.0.4
+      detect-libc: 2.1.2
     optionalDependencies:
       lightningcss-darwin-arm64: 1.30.1
       lightningcss-darwin-x64: 1.30.1
