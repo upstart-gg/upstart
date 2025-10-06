@@ -24,7 +24,7 @@ export default defineConfig((options) => {
       outDir: "dist/shared",
       target: "esnext",
       nodeProtocol: true,
-      // unbundle: true,
+      unbundle: true,
       metafile: !!process.env.ANALYZE_BUNDLE,
       clean: !options.watch,
       sourcemap: options.watch ? "inline" : true,
