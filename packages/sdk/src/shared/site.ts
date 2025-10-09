@@ -25,7 +25,7 @@ export type PublicSite = Omit<Site, "sitePrompt">;
 
 const siteAndPagesSchema = Type.Object({
   site: siteSchema,
-  pages: Type.Array(pageSchema),
+  page: pageSchema,
 });
 
 export type SiteAndPagesConfig = Static<typeof siteAndPagesSchema>;
@@ -45,17 +45,15 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
       datasources: [],
     },
     // we need a fake page
-    pages: [
-      {
-        // Keep this fake id as is!
-        id: "_default_",
-        label: "Untitled",
-        sections: [],
-        attributes: resolvePageAttributes({
-          path: "/",
-          isInitialPage: true,
-        }),
-      },
-    ],
+    page: {
+      // Keep this fake id as is!
+      id: "_default_",
+      label: "Untitled",
+      sections: [],
+      attributes: resolvePageAttributes({
+        path: "/",
+        isInitialPage: true,
+      }),
+    },
   };
 }
