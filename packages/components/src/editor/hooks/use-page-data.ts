@@ -170,12 +170,13 @@ export const createDraftStore = (
 
           upsertQuery: (query: Query) =>
             set((state) => {
-              const existingIndex = state.site.attributes.queries?.findIndex((q) => q.id === query.id) ?? -1;
+              const existingIndex =
+                state.page.attributes.queries?.findIndex((q) => q.alias === query.alias) ?? -1;
               if (existingIndex !== -1) {
-                state.site.attributes.queries![existingIndex] = query;
+                state.page.attributes.queries![existingIndex] = query;
               } else {
-                state.site.attributes.queries ??= [];
-                state.site.attributes.queries.push(query);
+                state.page.attributes.queries ??= [];
+                state.page.attributes.queries.push(query);
               }
             }),
 
@@ -1098,16 +1099,6 @@ export const useDraft = () => {
   return useStore(ctx);
 };
 
-export function useSiteQueries() {
-  const ctx = usePageContext();
-  return useStore(ctx, (state) => state.site.attributes.queries ?? []);
-}
-
-export function useSiteQuery(queryId?: string) {
-  const ctx = usePageContext();
-  return useStore(ctx, (state) => state.site.attributes.queries?.find((q) => q.id === queryId) ?? null);
-}
-
 export function useParentBrick(brickId: string) {
   const ctx = usePageContext();
   const getParentBrick = useStore(ctx, (state) => state.getParentBrick);
@@ -1173,7 +1164,7 @@ export const useSiteAttributes = () => {
  */
 export const useData = (editable?: boolean) => {
   const ctx = usePageContext();
-  const pageQueries = usePageQueries();
+  const pageQueries = useQueries();
   return useStore(ctx, (state) => {
     if (!editable) {
       console.log("useData: returning production data");
@@ -1193,8 +1184,13 @@ export const useData = (editable?: boolean) => {
 };
 
 export const useLoopedQuery = (loopAlias?: string) => {
-  const pageQueries = usePageQueries();
+  const pageQueries = useQueries();
   return pageQueries.find((q) => q.alias === loopAlias) ?? null;
+};
+
+export const useQuery = (alias?: string) => {
+  const pageQueries = useQueries();
+  return pageQueries.find((q) => q.alias === alias) ?? null;
 };
 
 /**
@@ -1216,29 +1212,23 @@ export function useLoopAlias(brickId: string) {
   return null;
 }
 
-export const usePageQueries = () => {
+export const useQueries = () => {
   const ctx = usePageContext();
   return useStore(
     ctx,
     (state) =>
       state.page.attributes.queries
         ?.map((pageQuery) => {
-          const queryInfo = state.site.attributes.queries?.find((q) => q.id === pageQuery.queryId);
-          if (!queryInfo) {
-            console.log(`WARN: Query with id ${pageQuery.queryId} not found in the store`);
-            return null;
-          }
           // get datasource
-          const datasource = state.site.datasources.find((ds) => ds.id === queryInfo.datasourceId);
+          const datasource = state.site.datasources.find((ds) => ds.id === pageQuery.datasourceId);
           if (!datasource) {
             console.warn(
-              `Datasource with id ${queryInfo.datasourceId} not found for query ${pageQuery.queryId}`,
+              `Datasource with id ${pageQuery.datasourceId} not found for query with alias ${pageQuery.alias}`,
             );
             return null;
           }
           return {
             ...pageQuery,
-            queryInfo,
             datasource,
           };
         })

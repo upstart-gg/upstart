@@ -3,10 +3,9 @@ import { FieldTitle } from "../field-factory";
 import { Button } from "@upstart.gg/style-system/system";
 import { useEditorHelpers } from "~/editor/hooks/use-editor";
 
-export default function SiteQueriesField(props: FieldProps<unknown>) {
-  const { currentValue, onChange, schema, title, description } = props;
+export default function QueriesField(props: FieldProps<unknown>) {
+  const { title, description } = props;
   const editorHelpers = useEditorHelpers();
-
   return (
     <div className="flex site-queries-field justify-between flex-1 gap-1 flex-wrap">
       <FieldTitle title={title} description={description} />
@@ -19,7 +18,7 @@ export default function SiteQueriesField(props: FieldProps<unknown>) {
           editorHelpers.toggleModal("queries");
         }}
       >
-        Manage site queries
+        Manage queries
       </Button>
     </div>
   );

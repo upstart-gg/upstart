@@ -19,7 +19,7 @@ export const imageResultsSchema = Type.Array(
   Type.Object({
     provider: Type.String({ description: "The image provider (e.g. unsplash, pexels)" }),
     description: Type.String({ description: "A brief description of the image" }),
-    url: Type.String({ description: "The URL of the image" }),
+    url: Type.String({ description: "The URL of the image", format: "uri" }),
     blurHash: Type.Optional(Type.String({ description: "The blur hash of the image" })),
     author: Type.Optional(
       Type.Object({

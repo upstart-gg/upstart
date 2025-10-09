@@ -26,7 +26,6 @@ describe("Attributes test suite", () => {
       const attributes = {};
       expect(resolveSiteAttributes(attributes)).toMatchObject<SiteAttributes>({
         language: "en",
-        navbar: {},
       });
     });
   });

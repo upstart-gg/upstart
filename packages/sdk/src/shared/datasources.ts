@@ -1,5 +1,5 @@
-import { type Static, Type, type TArray } from "@sinclair/typebox";
-import type { Datasource } from "./datasources/types";
+import type { TArray, TSchema } from "@sinclair/typebox";
+import { datasourceSystemProperties, type Datasource } from "./datasources/types";
 
 /**
  * For now, defineDatasources() force the usage of a custom (internal) datasource
@@ -11,19 +11,10 @@ export function defineDatasource<D extends Datasource>(datasource: D) {
     provider: "internal", // make sure to use Upstart provider
     schema: mapDatasourceSchemaWithInternalProperties(
       // datasource.provider === "internal" ? datasource.schema : getSchemaByProvider(datasource.provider),
-      datasource.schema,
+      datasource.schema as TArray<TSchema>,
     ),
   };
 }
-
-export const datasourceSystemProperties = Type.Object({
-  $id: Type.Optional(Type.String({ title: "Id", format: "text" })),
-  $publicationDate: Type.Optional(Type.String({ title: "Publication Date", format: "date-time" })),
-  $slug: Type.Optional(Type.String({ title: "Slug", format: "slug" })),
-  $lastModificationDate: Type.Optional(Type.String({ title: "Last Modification", format: "date-time" })),
-});
-
-export type DatasourceSystemProperties = Static<typeof datasourceSystemProperties>;
 
 /**
  * Map a datasource schema to include $id, $createdAt, and $updatedAt properties.
@@ -54,7 +45,7 @@ export function getDatasourceIndexedFieldsWithTitles(datasource: Datasource) {
     console.error("no datasource or indexes found", datasource);
     return [];
   }
-  const properties = datasource.schema?.items?.properties || {};
+  const properties = (datasource.schema as TArray<TSchema>)?.items?.properties || {};
   const uniqueFields = Array.from(new Set(datasource.indexes?.map((idx) => idx.fields[0]) ?? []));
   return uniqueFields.map((field) => ({
     value: field,

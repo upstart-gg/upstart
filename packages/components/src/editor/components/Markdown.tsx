@@ -3,18 +3,17 @@ import { memo } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
+import remarkFrontmatter from "remark-frontmatter";
+import remarkMdxFrontmatter from "remark-mdx-frontmatter";
+import remarkCodeMeta from "../utils/remark-code-meta";
 
 const MemoizedMarkdownBlock = memo(
   ({ content }: { content: string }) => {
     return (
       <div className={tx("prose prose-sm dark:prose-invert max-w-full")}>
         <ReactMarkdown
-          rehypePlugins={[rehypeRaw, remarkGfm]}
-          // components={{
-          //   table: ({ node, ...props }) => (
-          //     <table className={tx("min-w-full table-auto text-xs")} {...props} />
-          //   ),
-          // }}
+          rehypePlugins={[rehypeRaw]}
+          remarkPlugins={[remarkGfm, remarkCodeMeta, remarkFrontmatter, remarkMdxFrontmatter]}
         >
           {content}
         </ReactMarkdown>
