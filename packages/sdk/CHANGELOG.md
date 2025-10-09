@@ -1,5 +1,14 @@
 # @upstart.gg/sdk
 
+## 0.0.140
+
+### Patch Changes
+
+- [#488](https://github.com/upstart-gg/upstart/pull/488) [`66d8645`](https://github.com/upstart-gg/upstart/commit/66d8645e9eb82a3953f581785a2022f2ef389ab9) Thanks [@benjamindarnault](https://github.com/benjamindarnault)! - new site config to use single page
+
+- Updated dependencies []:
+  - @upstart.gg/style-system@0.0.140
+
 ## 0.0.139
 
 ### Patch Changes
