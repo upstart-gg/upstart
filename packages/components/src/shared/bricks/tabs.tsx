@@ -6,7 +6,7 @@ import { tx } from "@upstart.gg/style-system/twind";
 import BrickRoot from "../components/BrickRoot";
 import { useBrickStyle } from "../hooks/use-brick-style";
 import { useState } from "react";
-import type { Brick } from "@upstart.gg/sdk/shared/bricks";
+import type { Brick } from "@upstart.gg/sdk/bricks";
 
 export default function Tabs({
   brick,

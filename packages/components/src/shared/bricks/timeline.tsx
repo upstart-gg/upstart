@@ -4,7 +4,7 @@ import EditableBrickWrapper from "../../editor/components/EditableBrick";
 import { tx } from "@upstart.gg/style-system/twind";
 import BrickRoot from "../components/BrickRoot";
 import { useBrickStyle } from "../hooks/use-brick-style";
-import type { Brick } from "@upstart.gg/sdk/shared/bricks";
+import type { Brick } from "@upstart.gg/sdk/bricks";
 import { manifest, type Manifest } from "@upstart.gg/sdk/shared/bricks/manifests/timeline.manifest";
 import type { Static } from "@sinclair/typebox";
 

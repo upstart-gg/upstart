@@ -1,5 +1,5 @@
 import { Type } from "@sinclair/typebox";
-import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest } from "~/shared/bricks/types";
 import { defineProps } from "../props/helpers";
 import { colorPreset } from "../props/color-preset";
 import { cssLength } from "../props/css-length";

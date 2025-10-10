@@ -1,6 +1,6 @@
 import { Type } from "@sinclair/typebox";
 import { RiTable2 } from "react-icons/ri";
-import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest } from "~/shared/bricks/types";
 import { defineProps } from "../props/helpers";
 import { colorPreset } from "../props/color-preset";
 import { border, rounding } from "../props/border";

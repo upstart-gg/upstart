@@ -1,4 +1,4 @@
-import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
+import type { BrickManifest } from "@upstart.gg/sdk/bricks";
 import { tx } from "@upstart.gg/style-system/twind";
 import { usePreviewMode } from "../hooks/use-editor";
 

@@ -1,6 +1,6 @@
-import { type PageAttributes, pageAttributesSchema } from "@upstart.gg/sdk/shared/attributes";
-import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
-import type { Theme } from "@upstart.gg/sdk/shared/theme";
+import { pageAttributesSchema } from "@upstart.gg/sdk/site";
+import type { Resolution } from "@upstart.gg/sdk/shared/site/responsive";
+import type { Theme } from "@upstart.gg/sdk/shared/themes/theme";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { getStyleProperties } from "../styles/style-props";
 import { usePageAttributes, useSiteAttributes } from "~/editor/hooks/use-page-data";

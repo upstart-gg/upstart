@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { fontStacks, type FontType } from "@upstart.gg/sdk/shared/theme";
+import { fontStacks, type FontType } from "@upstart.gg/sdk/shared/themes/theme";
 import googleFonts from "../utils/fonts.json";
 import { useTheme } from "./use-page-data";
 

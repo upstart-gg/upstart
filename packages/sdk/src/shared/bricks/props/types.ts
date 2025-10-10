@@ -1,6 +1,5 @@
 import type { Static, TObject, TProperties, TSchema, StaticDecode } from "@sinclair/typebox";
-import type { BrickManifest } from "~/shared/brick-manifest";
-import type { Brick } from "~/shared/bricks";
+import type { Brick, BrickManifest } from "../types";
 
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 

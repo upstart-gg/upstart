@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import fetchMastodonStatus from "../fetcher";
-import { UnauthorizedError } from "~/shared/errors";
+import { UnauthorizedError } from "~/shared/datasources/errors";
 import { sample } from "../sample.array";
 import fetchMastodonAccount from "../../account/fetcher";
 import { sample as accountSample } from "../../account/sample";

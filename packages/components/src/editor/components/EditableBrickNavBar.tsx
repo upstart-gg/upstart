@@ -1,4 +1,4 @@
-import type { Brick } from "@upstart.gg/sdk/shared/bricks";
+import type { Brick } from "@upstart.gg/sdk/bricks";
 import { forwardRef, type PropsWithChildren, type ComponentProps } from "react";
 import { useContextMenuVisible, useSelectedBrickId } from "../hooks/use-editor";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";

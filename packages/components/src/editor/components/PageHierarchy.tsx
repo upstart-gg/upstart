@@ -1,5 +1,5 @@
 import { useEditorHelpers, useSelectedBrickId, useSelectedSectionId } from "../hooks/use-editor";
-import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
+import type { Brick, Section } from "@upstart.gg/sdk/bricks";
 import { manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
 import { css, tx } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";

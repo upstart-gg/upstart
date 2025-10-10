@@ -1,4 +1,4 @@
-import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
+import type { BrickManifest } from "@upstart.gg/sdk/shared/bricks/types";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { useData, useLoopedQuery, useQueries } from "~/editor/hooks/use-page-data";
 import { useBrickManifest } from "./use-brick-manifest";
@@ -71,26 +71,27 @@ export function useBrickProps<T extends BrickManifest>({
   }
 
   // // load data
-  function mapDynamicProps(props: BrickProps<T>["brick"]["props"]): BrickProps<T>["brick"]["props"] {
-    const mapped: Record<string, unknown> = {};
-    for (const [key, value] of Object.entries(props)) {
-      const manifestSchema = manifest.props.properties[key];
-      if (manifestSchema?.metadata?.consumeQuery && loopQuery) {
-        const data: Record<string, unknown>[] = allData[loopQuery.alias] ?? [];
-        const template: string | Record<string, string> = (Array.isArray(value) ? value : [value])[0];
-        mapped[key] = data
-          .map((item) => {
-            return replacePlaceholdersForItem(template, { [loopQuery.alias]: item });
-          })
-          .slice(0, loop?.overrideLimit ?? undefined); // Limit to 1 for editable mode
-      } else {
-        mapped[key] = typeof value === "string" ? replacePlaceholdersGeneric(value) : value;
-      }
-    }
-    return mapped;
-  }
+  // function mapDynamicProps(props: BrickProps<T>["brick"]["props"]): BrickProps<T>["brick"]["props"] {
+  //   const mapped: Record<string, unknown> = {};
+  //   for (const [key, value] of Object.entries(props)) {
+  //     const manifestSchema = manifest.props.properties[key];
+  //     if (manifestSchema?.metadata?.consumeQuery && loopQuery) {
+  //       const data: Record<string, unknown>[] = allData[loopQuery.alias] ?? [];
+  //       const template: string | Record<string, string> = (Array.isArray(value) ? value : [value])[0];
+  //       mapped[key] = data
+  //         .map((item) => {
+  //           return replacePlaceholdersForItem(template, { [loopQuery.alias]: item });
+  //         })
+  //         .slice(0, loop?.overrideLimit ?? undefined); // Limit to 1 for editable mode
+  //     } else {
+  //       mapped[key] = typeof value === "string" ? replacePlaceholdersGeneric(value) : value;
+  //     }
+  //   }
+  //   return mapped;
+  // }
 
-  const dynamicProps: Record<string, unknown> = mapDynamicProps(props);
+  // const dynamicProps: Record<string, unknown> = mapDynamicProps(props);
 
-  return dynamicProps;
+  return props;
+  // return dynamicProps;
 }

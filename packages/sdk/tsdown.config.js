@@ -20,13 +20,13 @@ const ignored = ["!**/*.md", "!**/tests/**/*", "!**/*.test.ts", "!**/sample.ts"]
 export default defineConfig((options) => {
   return [
     {
-      entry: ["src/shared/**/*.ts", ...ignored],
+      entry: ["src/shared/**/index.ts", "src/shared/bricks/manifests/*", ...ignored],
       outDir: "dist/shared",
       target: "esnext",
       nodeProtocol: true,
       unbundle: true,
       metafile: !!process.env.ANALYZE_BUNDLE,
-      clean: !options.watch,
+      clean: !options.watch && process.env.FLIPPABLE_ENV !== "development",
       sourcemap: options.watch ? "inline" : true,
       external,
       dts: {

@@ -1,4 +1,4 @@
-import { generateId, type Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
+import { generateId, type Section as SectionType } from "@upstart.gg/sdk/bricks";
 import { useEditorHelpers, useSelectedSectionId } from "../hooks/use-editor";
 import { HiOutlineCog6Tooth } from "react-icons/hi2";
 import { DropdownMenu, Tooltip } from "@upstart.gg/style-system/system";

@@ -3,7 +3,7 @@ import { renderToString } from "react-dom/server";
 import App from "./App";
 import { inline, tw } from "@upstart.gg/style-system/twind";
 import config from "./site.config.json" with { type: "json" };
-import { createEmptyConfig, type SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
+import { createEmptyConfig, type SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site/site";
 
 export function render(url: URL) {
   const appConfig =

@@ -1,6 +1,6 @@
 import { facebookPostSchema, type FacebookPostSchema } from "./schema";
 import type { MetaFullOAuthConfig } from "../../meta/oauth/config";
-import { UnauthorizedError } from "~/shared/errors";
+import { UnauthorizedError } from "~/shared/datasources/errors";
 import type { MetaOptions } from "../../meta/options";
 import { stringifyObjectValues } from "../../../utils";
 import type { DatasourceFetcher } from "~/shared/datasources/fetcher";

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { generateColorsVars } from "../color-system";
-import { defaultTheme, type Theme } from "~/shared/theme";
+import { defaultTheme, type Theme } from "~/shared/themes/theme";
 
 const lightTheme: Theme = {
   id: "light",

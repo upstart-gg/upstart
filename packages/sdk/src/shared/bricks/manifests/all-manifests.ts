@@ -21,7 +21,7 @@ import { examples as htmlExamples, manifest as htmlManifest } from "./html.manif
 import { examples as tableExamples, manifest as tableManifest } from "./table.manifest";
 import { examples as tabsExamples, manifest as tabsManifest } from "./tabs.manifest";
 import { examples as timelineExamples, manifest as timelineManifest } from "./timeline.manifest";
-import { getBrickManifestDefaults, type BrickDefaults, type BrickManifest } from "../../brick-manifest";
+import { getBrickManifestDefaults, type BrickDefaults, type BrickManifest } from "../types";
 import { StringEnum } from "~/shared/utils/string-enum";
 import type { Static } from "@sinclair/typebox";
 

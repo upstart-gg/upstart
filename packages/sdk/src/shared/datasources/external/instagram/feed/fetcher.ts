@@ -1,6 +1,6 @@
 import type { InstagramFeedSchema } from "./schema";
 import type { MetaFullOAuthConfig } from "~/shared/datasources/external/meta/oauth/config";
-import { UnauthorizedError } from "~/shared/errors";
+import { UnauthorizedError } from "~/shared/datasources/errors";
 import type { MetaOptions } from "~/shared/datasources/external/meta/options";
 import { stringifyObjectValues } from "~/shared/datasources/utils";
 import type { DatasourceFetcher } from "~/shared/datasources/fetcher";

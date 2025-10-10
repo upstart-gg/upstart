@@ -1,4 +1,4 @@
-import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest } from "~/shared/bricks/types";
 import { defineProps } from "../props/helpers";
 import { PiConfetti } from "react-icons/pi";
 import { icon, urlOrPageId } from "../props/string";

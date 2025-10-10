@@ -4,7 +4,7 @@ import {
   resolvePageAttributes,
   resolveSiteAttributes,
   type SiteAttributes,
-} from "../attributes";
+} from "../site/attributes";
 
 describe("Attributes test suite", () => {
   describe("resolvePageAttributes", () => {

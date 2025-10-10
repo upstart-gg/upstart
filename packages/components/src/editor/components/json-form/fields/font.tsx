@@ -8,7 +8,7 @@
 
 import Select, { type GroupHeadingProps, type Props, createFilter } from "react-select";
 import { useState } from "react";
-import type { FontType } from "@upstart.gg/sdk/shared/theme";
+import type { FontType } from "@upstart.gg/sdk/shared/themes/theme";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { getFontLabel, useFonts } from "~/editor/hooks/use-fonts";
 

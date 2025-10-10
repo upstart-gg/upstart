@@ -1,5 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
-import { StringEnum } from "./utils/string-enum";
+import { StringEnum } from "../utils/string-enum";
 import { pageSchema } from "./page";
 import { pageAttributesSchema } from "./attributes";
 

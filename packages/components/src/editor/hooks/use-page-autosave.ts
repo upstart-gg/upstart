@@ -1,4 +1,4 @@
-import type { Page } from "@upstart.gg/sdk/shared/page";
+import type { Page } from "@upstart.gg/sdk/shared/site/page";
 import { useDebounceCallback } from "./use-debounce-callback";
 import { useEditorHelpers } from "./use-editor";
 import {
@@ -16,7 +16,7 @@ import {
   useThemeSubscribe,
   useThemesSubscribe,
 } from "./use-page-data";
-import { resolvePageAttributes } from "@upstart.gg/sdk/shared/attributes";
+import { resolvePageAttributes } from "@upstart.gg/sdk/shared/site/attributes";
 
 const AUTO_SAVE_MIN_INTERVAL = 1000; // Auto save every N seconds
 

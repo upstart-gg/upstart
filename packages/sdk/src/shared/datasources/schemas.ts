@@ -12,14 +12,11 @@ import { youtubeListSchema } from "./external/youtube/list/schema";
 import { jsonArraySchema, jsonObjectSchema } from "./external/http-json/schema";
 
 // internal
-import { blogSchema } from "./internal/blog/schema";
-import { changelogSchema } from "./internal/changelog/schema";
-import { contactInfoSchema } from "./internal/contact-info/schema";
-import { cvSchema } from "./internal/cv/schema";
-import { faqSchema } from "./internal/faq/schema";
-import { linksSchema } from "./internal/links/schema";
-import { recipesSchema } from "./internal/recipes/schema";
-import { restaurantSchema } from "./internal/restaurant/schema";
+import { cvSchema } from "./examples/cv/schema";
+import { faqSchema } from "./examples/faq/schema";
+import { linksSchema } from "./examples/links/schema";
+import { recipesSchema } from "./examples/recipes/schema";
+import { restaurantSchema } from "./examples/restaurant/schema";
 
 export const schemasMap = {
   // "facebook-posts": facebookPostSchema,

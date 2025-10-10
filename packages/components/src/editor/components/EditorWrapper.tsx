@@ -1,5 +1,5 @@
 import "@radix-ui/themes/styles.css";
-import type { SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
+import type { SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site/site";
 import "@upstart.gg/style-system/editor.css";
 import "@upstart.gg/style-system/radix.css";
 import { Theme } from "@upstart.gg/style-system/system";
@@ -14,7 +14,7 @@ import {
 } from "../hooks/use-editor";
 import { UploaderProvider, type UploaderProviderProps } from "./UploaderContext";
 // import "@upstart.gg/components/dist/assets/style.css";
-import type { PageAttributes } from "@upstart.gg/sdk/shared/attributes";
+import type { PageAttributes } from "@upstart.gg/sdk/shared/site/attributes";
 import "@upstart.gg/style-system/default-theme.css";
 import "@upstart.gg/style-system/react-resizable.css";
 import "@upstart.gg/style-system/tiptap-text-editor.css";

@@ -8,7 +8,7 @@ import {
 import { ClientOnly } from "~/shared/utils/client-only";
 // import "@upstart.gg/style-system/default-theme.css";
 // import "@upstart.gg/components/dist/assets/style.css";
-import type { SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
+import type { SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site/site";
 
 export default function App({ path, config }: { path: string; config: SiteAndPagesConfig }) {
   const searchParams = new URL(`http://localhost${path}`).searchParams;

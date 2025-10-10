@@ -1,4 +1,4 @@
-import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
+import type { Brick, Section } from "@upstart.gg/sdk/bricks";
 import {
   forwardRef,
   useRef,
@@ -37,7 +37,7 @@ import ResizeHandle from "./ResizeHandle";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { getBrickResizeOptions } from "~/shared/utils/layout-utils";
 import useIsHovered from "../hooks/use-is-hovered";
-import { useDraftHelpers, useQueries, useSectionByBrickId } from "../hooks/use-page-data";
+import { useDraftHelpers, useSectionByBrickId } from "../hooks/use-page-data";
 import { MdRepeat } from "react-icons/md";
 import { useSortable } from "@dnd-kit/react/sortable";
 import { pointerIntersection } from "@dnd-kit/collision";
@@ -412,7 +412,7 @@ export default function EditableBrickWrapper(props: BrickWrapperProps) {
   const {
     brick: { props: brickProps, type },
   } = props;
-  const pageQueries = useQueries();
+  // const pageQueries = useQueries();
   const manifest = useBrickManifest(type);
   const loop = brickProps.loop as LoopSettings | undefined;
 
@@ -420,13 +420,13 @@ export default function EditableBrickWrapper(props: BrickWrapperProps) {
     return <EditableBrickWrapperSimple {...props} />;
   }
 
-  const loopQuery = pageQueries.find((q) => q.alias === loop?.over);
-  const limit = Math.min(loop.overrideLimit ?? Infinity, loopQuery?.limit ?? 1, 3);
+  // const loopQuery = pageQueries.find((q) => q.alias === loop?.over);
+  // const limit = Math.min(loop.overrideLimit ?? Infinity, loopQuery?.limit ?? 1, 3);
   const { brick, ...rest } = props;
 
   return (
     <>
-      {range(0, limit).map((i, index) => (
+      {range(0, 1).map((i, index) => (
         <EditableBrickWrapperSimple
           key={i}
           {...rest}

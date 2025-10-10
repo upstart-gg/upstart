@@ -1,6 +1,6 @@
 import { Type } from "@sinclair/typebox";
 import { TiSocialFlickr } from "react-icons/ti";
-import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest } from "~/shared/bricks/types";
 import { defineProps } from "../props/helpers";
 import { icon } from "../props/string";
 import { fontSize } from "../props/text";

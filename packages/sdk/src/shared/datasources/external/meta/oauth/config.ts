@@ -1,6 +1,6 @@
 import { Type, type Static, type StaticDecode } from "@sinclair/typebox";
 import { StringEnum } from "../../../../utils/string-enum";
-import { buildOAuthConfigSchema } from "~/shared/oauth";
+import { buildOAuthConfigSchema } from "~/shared/datasources/oauth";
 
 const metaOAuthConfig = Type.Object({
   type: StringEnum(["short-lived", "long-lived"]),

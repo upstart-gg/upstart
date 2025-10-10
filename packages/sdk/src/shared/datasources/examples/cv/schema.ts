@@ -12,12 +12,11 @@ export const cvSchema = Type.Object(
     }),
     email: Type.String({
       title: "Email",
-      pattern: "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+      format: "email",
     }),
     phoneNumber: Type.Optional(
       Type.String({
         title: "Phone number",
-        pattern: "^\\+?[1-9]\\d{1,14}$", // International phone number format
       }),
     ),
     address: Type.Optional(
@@ -34,7 +33,7 @@ export const cvSchema = Type.Object(
           }),
           url: Type.String({
             title: "URL",
-            pattern: "^https?://.*",
+            format: "uri",
           }),
         }),
       ),

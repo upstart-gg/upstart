@@ -1,4 +1,4 @@
-import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
+import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/site/layout-constants";
 import { type RefObject, useEffect, useState } from "react";
 import { useEditorHelpers, usePreviewMode } from "~/editor/hooks/use-editor";
 import { debounce } from "lodash-es";

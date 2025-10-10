@@ -34,7 +34,7 @@ import {
 } from "react-icons/md";
 import { MdOutlineFormatItalic } from "react-icons/md";
 import { MdStrikethroughS } from "react-icons/md";
-import type { Brick } from "@upstart.gg/sdk/shared/bricks";
+import type { Brick } from "@upstart.gg/sdk/bricks";
 import { useEditor, useSelectedBrickId } from "~/editor/hooks/use-editor";
 import { JSONSchemaView } from "~/editor/components/json-form/SchemaView";
 import Mention from "@tiptap/extension-mention";
@@ -154,9 +154,9 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
 
     const onUpdate = inline ? defaultUpdateHandler : onChange;
 
-    const datasourceFields = pageQueries
-      .filter((q) => q.alias === queryAlias || (!queryAlias && q.limit === 1))
-      .flatMap((q) => getJSONSchemaFieldsList(q.datasource.schema, q.alias));
+    // const datasourceFields = pageQueries
+    //   .filter((q) => q.alias === queryAlias || (!queryAlias && q.limit === 1))
+    //   .flatMap((q) => getJSONSchemaFieldsList(q.datasource.schema, q.alias));
 
     const extensions = [
       StarterKit.configure({
@@ -195,7 +195,8 @@ const TextEditor = forwardRef<TextEditorRef, TextEditorProps<ElementType>>(
         suggestion: {
           ...datasourceFieldSuggestions,
           items: ({ query }) => {
-            return datasourceFields.filter((field) => field.toLowerCase().includes(query.toLowerCase()));
+            return [];
+            // return datasourceFields.filter((field) => field.toLowerCase().includes(query.toLowerCase()));
           },
         },
         renderHTML: ({ options, node }) => {

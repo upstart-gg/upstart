@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import fetchInstagramFeedDatasource from "../fetcher";
-import { UnauthorizedError } from "~/shared/errors";
+import { UnauthorizedError } from "~/shared/datasources/errors";
 
 // Mock the fetch function
 global.fetch = vi.fn();

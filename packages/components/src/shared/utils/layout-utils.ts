@@ -1,7 +1,7 @@
-import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/layout-constants";
-import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
-import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
-import invariant from "@upstart.gg/sdk/shared/utils/invariant";
+import { LAYOUT_COLS, LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/site/layout-constants";
+import type { Resolution } from "@upstart.gg/sdk/shared/site/responsive";
+import type { BrickManifest } from "@upstart.gg/sdk/bricks";
+import { invariant } from "@upstart.gg/sdk/utils";
 
 export function getClosestSection(element: Element) {
   return element.closest<HTMLElement>('[data-element-kind="section"]')!;

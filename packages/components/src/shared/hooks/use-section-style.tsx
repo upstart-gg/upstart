@@ -1,6 +1,6 @@
-import { sectionProps, type Section } from "@upstart.gg/sdk/shared/bricks";
+import { sectionProps, type Section } from "@upstart.gg/sdk/bricks";
 import { brickStylesHelpersMap, brickWrapperStylesHelpersMap, extractStylePath } from "../styles/helpers";
-import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
+import type { Resolution } from "@upstart.gg/sdk/shared/site/responsive";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import { getStyleProperties } from "../styles/style-props";
 import { get, merge } from "lodash-es";

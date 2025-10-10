@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import fetchFacebookPostDatasource from "../fetcher";
-import { UnauthorizedError } from "~/shared/errors";
+import { UnauthorizedError } from "~/shared/datasources/errors";
 import type { MetaOAuthConfig } from "~/shared/datasources/external/meta/oauth/config";
 import type { MetaOptions } from "~/shared/datasources/external/meta/options";
 import type { DatasourceFetcherParams } from "~/shared/datasources/fetcher";

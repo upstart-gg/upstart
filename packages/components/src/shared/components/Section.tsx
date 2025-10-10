@@ -1,4 +1,4 @@
-import type { Brick, Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
+import type { Brick, Section as SectionType } from "@upstart.gg/sdk/bricks";
 import BrickWrapper from "./BrickWrapper";
 import { useSectionStyle } from "~/shared/hooks/use-section-style";
 

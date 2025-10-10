@@ -1,7 +1,7 @@
 import { CollisionPriority } from "@dnd-kit/abstract";
 import { directionBiased, pointerDistance, pointerIntersection } from "@dnd-kit/collision";
 import { useDroppable } from "@dnd-kit/react";
-import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
+import type { BrickManifest } from "@upstart.gg/sdk/bricks";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { ComponentPropsWithoutRef, ElementType } from "react";

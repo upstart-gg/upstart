@@ -1,15 +1,14 @@
 // Define your custom message type once
 import type { UIMessage } from "ai";
-import type { Theme } from "../theme";
-import type { Sitemap } from "../sitemap";
-import type { Page, VersionedPage } from "../page";
-import type { PageAttributes, SiteAttributes } from "../attributes";
-import type { Brick, Section, SectionSchemaNoBricks } from "../bricks";
+import type { Theme } from "../themes/theme";
+import type { Sitemap } from "../site/sitemap";
+import type { Page, VersionedPage } from "../site/page";
+import type { PageAttributes, SiteAttributes } from "../site/attributes";
+import type { Brick, Section, SectionSchemaNoBricks } from "../bricks/types";
 import type { AskUserChoiceInput, ToolInputWaitingMessageType, ToolInputInstructionsType } from "./schemas";
 import type { Datarecord } from "../datarecords/types";
 import type { InternalDatasource } from "../datasources/types";
-import type { ImageSearchResultsType } from "../images";
-import type { Site } from "../site";
+import type { ImageSearchResultsType } from "./images";
 
 export type Tools = {
   setSitePrompt: {

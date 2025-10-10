@@ -7,11 +7,11 @@ import {
   baseColors,
 } from "@upstart.gg/sdk/themes/color-system";
 import { Text, Select, Tabs, Inset, Callout, Button } from "@upstart.gg/style-system/system";
-import invariant from "@upstart.gg/sdk/shared/utils/invariant";
+import { invariant } from "@upstart.gg/sdk/utils";
 import { tx } from "@upstart.gg/style-system/twind";
 import { colorPalette } from "@upstart.gg/style-system/colors";
 import { useTheme } from "../hooks/use-page-data";
-import type { Theme } from "@upstart.gg/sdk/shared/theme";
+import type { Theme } from "@upstart.gg/sdk/shared/themes/theme";
 import { generateRelatedNeutral } from "../utils/colors";
 
 const gradientMixs = [

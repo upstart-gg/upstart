@@ -1,5 +1,5 @@
 import { Tabs, Callout, useAutoAnimate, Text, Select } from "@upstart.gg/style-system/system";
-import { type Theme, themeSchema, type FontType } from "@upstart.gg/sdk/shared/theme";
+import { type Theme, themeSchema, type FontType } from "@upstart.gg/sdk/shared/themes/theme";
 import { useDraft, usePreviewTheme, useTheme, useThemes } from "~/editor/hooks/use-page-data";
 import { ColorFieldRow } from "./json-form/fields/color";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";

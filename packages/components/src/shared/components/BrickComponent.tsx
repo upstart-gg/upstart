@@ -1,7 +1,7 @@
-import type { Brick } from "@upstart.gg/sdk/shared/bricks";
+import type { Brick } from "@upstart.gg/sdk/bricks";
 import { lazy, Suspense, type ComponentProps, type ComponentType, type LazyExoticComponent } from "react";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
-import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
+import type { BrickManifest } from "@upstart.gg/sdk/bricks";
 import { useSelectedBrickId } from "~/editor/hooks/use-editor";
 
 // Load all bricks in the bricks directory

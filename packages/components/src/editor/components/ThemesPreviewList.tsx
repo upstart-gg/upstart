@@ -1,4 +1,4 @@
-import type { Theme } from "@upstart.gg/sdk/shared/theme";
+import type { Theme } from "@upstart.gg/sdk/shared/themes/theme";
 import { css, tx } from "@upstart.gg/style-system/twind";
 import { useEffect, useRef, useState } from "react";
 

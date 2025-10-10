@@ -10,7 +10,6 @@ import { IoMdClose } from "react-icons/io";
 import { FieldTitle } from "../field-factory";
 import { useUploader } from "../../UploaderContext";
 import { useDynamicTextEditor } from "~/editor/hooks/use-editable-text";
-import { useQueries } from "~/editor/hooks/use-page-data";
 import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
 
 const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
@@ -18,7 +17,7 @@ const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);
   const { onImageUpload } = useUploader();
-  const pageQueries = useQueries();
+  const pageQueries = [];
 
   const onDynamicSrcChange = (newSrc: string) => {
     onPropsChange({ src: newSrc });

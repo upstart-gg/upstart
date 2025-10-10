@@ -1,5 +1,5 @@
 import { pageAttributesSchema } from "./attributes";
-import { sectionSchema } from "./bricks";
+import { sectionSchema } from "../bricks/types";
 import { Type, type Static } from "@sinclair/typebox";
 
 export const pageSchema = Type.Object({

@@ -1,6 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 
-export const manifestSchema = Type.Object({
+export const templateManifestSchema = Type.Object({
   id: Type.Optional(
     Type.String({
       title: "Template ID",
@@ -46,5 +46,5 @@ export const manifestSchema = Type.Object({
   ),
 });
 
-export type TemplateManifest = Static<typeof manifestSchema>;
+export type TemplateManifest = Static<typeof templateManifestSchema>;
 export type PublishedTemplateManifest = TemplateManifest & Required<Pick<TemplateManifest, "id">>;

@@ -3,7 +3,7 @@ import { hydrateRoot } from "react-dom/client";
 import App from "./App";
 import config from "./site.config.json" with { type: "json" };
 import { setupTwindReact } from "@upstart.gg/style-system/twind";
-import { createEmptyConfig, type SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
+import { createEmptyConfig, type SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site/site";
 
 setupTwindReact(false);
 

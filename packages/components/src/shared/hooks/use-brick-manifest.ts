@@ -1,5 +1,5 @@
-import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
-import type { Brick } from "@upstart.gg/sdk/shared/bricks";
+import type { BrickManifest } from "@upstart.gg/sdk/bricks";
+import type { Brick } from "@upstart.gg/sdk/bricks";
 import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
 import { useMemo } from "react";
 

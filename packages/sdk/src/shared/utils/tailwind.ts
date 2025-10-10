@@ -273,10 +273,6 @@ function categorizeProperty(property: string): ClassCategory {
 }
 
 // Example usage:
-const example = parseTailwindClasses(
-  "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-200",
-);
-
-console.log("All classes:");
-
-console.dir(example, { depth: null });
+// const example = parseTailwindClasses(
+//   "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-200",
+// );

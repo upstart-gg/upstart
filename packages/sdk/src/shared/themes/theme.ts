@@ -1,8 +1,8 @@
 import { Type, type Static } from "@sinclair/typebox";
 import chroma from "chroma-js";
 import { colorPalette } from "@upstart.gg/style-system/colors";
-import { StringEnum } from "./utils/string-enum";
-import { toLLMSchema } from "./utils/llm";
+import { StringEnum } from "../utils/string-enum";
+import { toLLMSchema } from "../utils/llm";
 
 export const fontStacks = [
   { value: "system-ui", label: "System UI" },
@@ -22,39 +22,42 @@ export const fontStacks = [
   { value: "handwritten", label: "Handwritten" },
 ];
 
-const headingFont = Type.Object(
-  {
-    type: StringEnum(["stack", "theme", "google"], {
-      title: "Type of font",
-      description: "The type of font. Can be a font stack, a theme font or a Google font",
-    }),
+const genericFont = Type.Union([
+  Type.Object({
+    type: Type.Literal("stack"),
+    family: StringEnum(
+      fontStacks.map((f) => f.value),
+      {
+        title: "Font stack",
+        description: "A generic font stack",
+      },
+    ),
+  }),
+  Type.Object({
+    type: Type.Literal("theme"),
     family: Type.String({
-      title: "Family",
-      description: "The font family (eg. the name of the font)",
+      title: "Theme font",
+      description: "A font defined in the theme",
     }),
-  },
-  {
-    title: "Headings font",
-    description: "Used for titles and headings",
-  },
-);
+  }),
+  Type.Object({
+    type: Type.Literal("google"),
+    family: Type.String({
+      title: "Google font",
+      description: "A Google font family name, as listed on fonts.google.com",
+    }),
+  }),
+]);
 
-const bodyFont = Type.Object(
-  {
-    type: StringEnum(["stack", "theme", "google"], {
-      title: "Type of font",
-      description: "The type of font. Can be a font stack, a theme font or a Google font",
-    }),
-    family: Type.String({
-      title: "Family",
-      description: "The font family (eg. the name of the font)",
-    }),
-  },
-  {
-    title: "Body font",
-    description: "Used for paragraphs and body text",
-  },
-);
+const headingFont = Type.Composite([genericFont], {
+  title: "Headings font",
+  description: "Used for titles and headings",
+});
+
+const bodyFont = Type.Composite([genericFont], {
+  title: "Body font",
+  description: "Used for paragraphs and body text",
+});
 
 export const themeSchema = Type.Object({
   id: Type.String({ title: "ID", description: "The unique identifier of the theme" }),
@@ -92,6 +95,31 @@ export const themeSchema = Type.Object({
         "ai:instructions": "Use oklch() css notation.",
         examples: ["oklch(0.38 0.08 280)"],
       }),
+      info: Type.String({
+        title: "Info",
+        description: "Color used to convey information",
+        "ai:instructions": "Use oklch() css notation.",
+        examples: ["oklch(0.6 0.15 220)"],
+      }),
+      success: Type.String({
+        title: "Success",
+        description: "Color used to convey success",
+        "ai:instructions": "Use oklch() css notation.",
+        examples: ["oklch(0.7 0.2 130)"],
+      }),
+      warning: Type.String({
+        title: "Warning",
+        description: "Color used to convey warnings",
+        "ai:instructions": "Use oklch() css notation.",
+        examples: ["oklch(0.75 0.25 90)"],
+      }),
+      error: Type.String({
+        title: "Error",
+        description: "Color used to convey errors",
+        "ai:instructions": "Use oklch() css notation.",
+        examples: ["oklch(0.6 0.3 40)"],
+      }),
+      // Base colors
       base100: Type.String({
         title: "Base",
         description:
@@ -162,6 +190,10 @@ export const defaultTheme: Theme = {
     secondary: "#00BFFF", // A bright cyan in hex
     accent: "#A4D65E", // A lively lime green in hex
     neutral: "#B0B0B0", // A balanced gray in hex
+    info: "#2096FF", // A clear blue in hex
+    success: "#28A745", // A solid green in hex
+    warning: "#FFC107", // A warm amber in hex
+    error: "#DC3545", // A strong red in hex
   },
   typography: {
     base: 16,

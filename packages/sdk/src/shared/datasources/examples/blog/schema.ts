@@ -1,7 +1,7 @@
-import { Type, type Static } from "@sinclair/typebox";
-import { StringEnum } from "../../../utils/string-enum";
+import { Type } from "@sinclair/typebox";
+import type { InternalDatasource } from "../../types";
 
-export const blogSchema = Type.Array(
+const blogSchema = Type.Array(
   Type.Object({
     title: Type.String({
       title: "Title",
@@ -10,7 +10,7 @@ export const blogSchema = Type.Array(
     excerpt: Type.String({
       title: "Excerpt",
       description: "Short summary of the blog post",
-      format: "markdown",
+      format: "richtext",
     }),
     image: Type.Optional(
       Type.String({
@@ -22,27 +22,13 @@ export const blogSchema = Type.Array(
     content: Type.String({
       title: "Content",
       description: "Blog post content",
-      format: "markdown",
+      format: "richtext",
     }),
     author: Type.Object({
       name: Type.String({
         title: "Author Name",
         description: "Author's name",
       }),
-    }),
-    publishedAt: Type.String({
-      title: "Published Date",
-      format: "date",
-      description: "Publication date in ISO format",
-    }),
-    slug: Type.String({
-      title: "Slug",
-      pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$",
-      description: "URL-friendly version of the title",
-    }),
-    status: StringEnum(["draft", "published", "archived"], {
-      title: "Status",
-      description: "Publication status of the blog post",
     }),
     categories: Type.Optional(
       Type.Array(
@@ -67,4 +53,24 @@ export const blogSchema = Type.Array(
   },
 );
 
-export type BlogSchema = Static<typeof blogSchema>;
+export const blogSchemaExample: InternalDatasource = {
+  id: "blog-posts",
+  label: "Blog Posts",
+  provider: "internal",
+  schema: blogSchema,
+  indexes: [
+    {
+      name: "full_text_search_idx",
+      fields: ["title", "excerpt", "content"],
+      fulltext: true,
+    },
+    {
+      name: "tags_idx",
+      fields: ["tags"],
+    },
+    {
+      name: "categories_idx",
+      fields: ["categories"],
+    },
+  ],
+};

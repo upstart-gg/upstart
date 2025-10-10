@@ -1,5 +1,5 @@
 import { brickStylesHelpersMap, brickWrapperStylesHelpersMap, extractStylePath } from "../styles/helpers";
-import type { BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
+import type { BrickManifest } from "@upstart.gg/sdk/bricks";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { get, merge } from "lodash-es";
 import { useBrickManifest } from "./use-brick-manifest";

@@ -1,75 +1,139 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { customAlphabet } from "nanoid";
-import { defaultProps, manifests } from "./bricks/manifests/all-manifests";
-import { cssLength } from "./bricks/props/css-length";
-import { colorPreset } from "./bricks/props/color-preset";
-import { mergeIgnoringArrays } from "./utils/merge";
-import { getSchemaDefaults } from "./utils/schema";
-import { StringEnum } from "./utils/string-enum";
-import { alignItems, justifyContent } from "./bricks/props/align";
-import type { CommonBrickProps } from "./bricks/props/common";
-import { direction } from "./bricks/props/direction";
-import type { PageAttributes, SiteAttributes } from "./attributes";
-import { toLLMSchema } from "./utils/llm";
-import { background } from "./bricks/props/background";
+import { defaultProps, manifests } from "./manifests/all-manifests";
+import { cssLength } from "./props/css-length";
+import { colorPreset } from "./props/color-preset";
+import { mergeIgnoringArrays } from "../utils/merge";
+import { getSchemaDefaults } from "../utils/schema";
+import { StringEnum } from "../utils/string-enum";
+import { alignItems, justifyContent } from "./props/align";
+import type { CommonBrickProps } from "./props/common";
+import { direction } from "./props/direction";
+import type { PageAttributes, SiteAttributes } from "../site/attributes";
+import { toLLMSchema } from "../utils/llm";
+import { background } from "./props/background";
+import type { TObject, TProperties } from "@sinclair/typebox";
+import type { IconType } from "react-icons/lib";
+
+export type BrickCategory = "layout" | "basic" | "media" | "widgets" | "container";
+
+type BrickManifestProps<BProps extends TProperties> = {
+  type: string;
+  category?: BrickCategory;
+  name: string;
+  icon: IconType;
+  iconClassName?: string;
+  staticClasses?: string;
+  description?: string;
+  // Min width in pixels
+  minWidth?: {
+    mobile?: number;
+    desktop?: number;
+  };
+  // Max width in pixels
+  maxWidth?: {
+    mobile?: number;
+    desktop?: number;
+  };
+  // Min height in pixels
+  minHeight?: {
+    mobile?: number;
+    desktop?: number;
+  };
+  // Max height in pixels
+  maxHeight?: {
+    mobile?: number;
+    desktop?: number;
+  };
+  // default width can be in various css units, but should be a number
+  defaultWidth?: {
+    mobile?: string;
+    desktop?: string;
+  };
+  defaultHeight?: {
+    mobile?: string;
+    desktop?: string;
+  };
+  props: TObject<BProps>;
+  hideInLibrary?: boolean;
+
+  isGlobalBrick?: boolean;
+  /**
+   * If true, the brick can consume multiple rows of data from a data source.
+   * This is useful for bricks that display lists or collections of items.
+   */
+  consumesMultipleQueryRows?: boolean;
+  defaultInspectorTab?: "preset" | "style" | "content";
+  deletable?: boolean;
+  movable?: boolean;
+  resizable?: boolean | "horizontal" | "vertical";
+  duplicatable?: boolean;
+  /**
+   * Some specific bricks like sidebar or header may not be draggable inline, as we want to place them manually in the layout.
+   */
+  inlineDragDisabled?: boolean;
+  isContainer?: boolean;
+  aiInstructions?: string;
+};
+
+export function defineBrickManifest<BProps extends TProperties>({
+  props,
+  defaultHeight,
+  defaultWidth,
+  category = "widgets",
+  isContainer = false,
+  hideInLibrary = false,
+  isGlobalBrick = false,
+  deletable = true,
+  movable = true,
+  resizable = true,
+  duplicatable = true,
+  defaultInspectorTab = "preset",
+  icon,
+  ...rest
+}: BrickManifestProps<BProps>) {
+  return {
+    ...rest,
+    icon,
+    props,
+    category,
+    defaultInspectorTab,
+    hideInLibrary,
+    deletable,
+    movable,
+    resizable,
+    duplicatable,
+    isContainer,
+    isGlobalBrick,
+    defaultWidth: { mobile: defaultWidth?.mobile ?? "auto", desktop: defaultWidth?.desktop ?? "auto" },
+    defaultHeight: {
+      mobile: defaultHeight?.mobile ?? "auto",
+      desktop: defaultHeight?.desktop ?? "auto",
+    },
+  } as const;
+}
+
+export type BrickManifest = ReturnType<typeof defineBrickManifest>;
+
+export function getBrickManifestDefaults<M extends BrickManifest>(manifest: M) {
+  return {
+    manifest,
+    props: getSchemaDefaults(manifest.props),
+    mobileProps: {},
+  };
+}
+
+export type BrickDefaults = ReturnType<typeof getBrickManifestDefaults>;
+
+export type BrickConstraints = Pick<
+  BrickManifest,
+  "defaultWidth" | "defaultHeight" | "minWidth" | "minHeight" | "maxWidth" | "resizable" | "movable"
+>;
 
 /**
  * Generates a unique identifier for bricks.
  */
 export const generateId = customAlphabet("azertyuiopqsdfghjklmwxcvbnAZERTYUIOPQSDFGHJKLMWXCVBN", 7);
-
-const brickAbsolutePositionSchema = Type.Object({
-  left: Type.Optional(
-    Type.String({
-      title: "top",
-      description: "The left position in css unit.",
-    }),
-  ),
-  top: Type.Optional(
-    Type.String({
-      title: "top",
-      description: "The top position in css unit.",
-    }),
-  ),
-  right: Type.Optional(
-    Type.String({
-      title: "right",
-      description: "The right position in css unit.",
-    }),
-  ),
-  bottom: Type.Optional(
-    Type.String({
-      title: "bottom",
-      description: "The bottom position in css unit.",
-    }),
-  ),
-  inset: Type.Optional(
-    Type.String({
-      title: "inset",
-      description: "The inset position in css unit.",
-    }),
-  ),
-  translateX: Type.Optional(
-    Type.String({
-      title: "translateX",
-      description: "The translateX position in css unit.",
-    }),
-  ),
-  translateY: Type.Optional(
-    Type.String({
-      title: "translateY",
-      description: "The translateY position in css unit.",
-    }),
-  ),
-  rotate: Type.Optional(
-    Type.String({
-      title: "rotate",
-      description: "The rotate position in css unit.",
-    }),
-  ),
-});
-
-export type BrickAbsolutePosition = Static<typeof brickAbsolutePositionSchema>;
 
 export const brickTypeSchema = StringEnum(Object.keys(defaultProps), {
   title: "Brick type",

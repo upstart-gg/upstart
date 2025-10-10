@@ -1,6 +1,6 @@
 import { Type } from "@sinclair/typebox";
 import { RxButton } from "react-icons/rx";
-import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest } from "~/shared/bricks/types";
 import { defineProps } from "../props/helpers";
 import { urlOrPageId } from "../props/string";
 import { rounding } from "../props/border";

@@ -1,6 +1,6 @@
 import { Type } from "@sinclair/typebox";
 import { IoGridOutline } from "react-icons/io5";
-import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest } from "~/shared/bricks/types";
 import { defineProps } from "../props/helpers";
 import { image } from "../props/image";
 import { colorPreset } from "../props/color-preset";

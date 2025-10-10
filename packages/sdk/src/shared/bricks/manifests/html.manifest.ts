@@ -1,4 +1,4 @@
-import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest } from "~/shared/bricks/types";
 import { defineProps } from "../props/helpers";
 import type { BrickProps } from "../props/types";
 import { BsCodeSquare } from "react-icons/bs";

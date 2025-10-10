@@ -12,7 +12,7 @@ import {
   useInteractions,
 } from "@upstart.gg/style-system/system";
 
-import invariant from "@upstart.gg/sdk/shared/utils/invariant";
+import { invariant } from "@upstart.gg/sdk/utils";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useEditorHelpers } from "./use-editor";
 // Types

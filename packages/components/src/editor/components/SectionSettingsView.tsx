@@ -1,5 +1,5 @@
 import FormNavigator from "./json-form/FormNavigator";
-import { type Section, sectionSchema } from "@upstart.gg/sdk/shared/bricks";
+import { type Section, sectionSchema } from "@upstart.gg/sdk/bricks";
 import { useCallback, useMemo } from "react";
 import { merge, set } from "lodash-es";
 import { getSchemaDefaults } from "@upstart.gg/sdk/shared/utils/schema";

@@ -1,15 +1,10 @@
 import { Type, type Static } from "@sinclair/typebox";
-import { getSchemaDefaults } from "../shared/utils/schema";
-import { manifest as navbarManifest } from "./bricks/manifests/navbar.manifest";
-import { manifest as footerManifest } from "./bricks/manifests/footer.manifest";
-import { boolean } from "./bricks/props/boolean";
-import { image } from "./bricks/props/image";
-import { colorPreset } from "./bricks/props/color-preset";
-import { queryUse, type QueryUseSettings } from "./bricks/props/dynamic";
-import { querySchema } from "./datasources/types";
-import { StringEnum } from "./utils/string-enum";
-import { background } from "./bricks/props/background";
-import { toLLMSchema } from "./utils/llm";
+import { getSchemaDefaults } from "../utils/schema";
+import { boolean } from "../bricks/props/boolean";
+import { image } from "../bricks/props/image";
+import { colorPreset } from "../bricks/props/color-preset";
+import { StringEnum } from "../utils/string-enum";
+import { background } from "../bricks/props/background";
 import defaultsDeep from "lodash-es/defaultsDeep";
 
 // Default attributes
@@ -43,12 +38,12 @@ export const pageAttributesSchema = Type.Object(
       pattern: "^/[a-z0-9-:/]*$",
       examples: ["/", "/about", "/products/:id"],
     }),
-    queries: Type.Array(querySchema, {
-      title: "Queries",
-      "ui:field": "queries",
-      default: [],
-      description: "List of queries for this page. All listed queries will be executed when the page loads.",
-    }),
+    // queries: Type.Array(querySchema, {
+    //   title: "Queries",
+    //   "ui:field": "queries",
+    //   default: [],
+    //   description: "List of queries for this page. All listed queries will be executed when the page loads.",
+    // }),
     title: Type.String({
       title: "Title",
       default: "Untitled",
@@ -187,20 +182,6 @@ export const pageAttributesSchema = Type.Object(
         { "ui:group": "meta", "ai:hidden": true },
       ),
     ),
-    noNavbar: Type.Optional(
-      Type.Boolean({
-        title: "Hide navbar",
-        default: false,
-        "ui:group": "layout",
-      }),
-    ),
-    noFooter: Type.Optional(
-      Type.Boolean({
-        title: "Hide footer",
-        default: false,
-        "ui:group": "layout",
-      }),
-    ),
     isInitialPage: Type.Optional(
       Type.Boolean({
         title: "Is this the initial page created by the system?",
@@ -213,7 +194,7 @@ export const pageAttributesSchema = Type.Object(
       meta: "SEO & Meta tags",
       layout: "Layout",
     },
-    additionalProperties: true,
+    additionalProperties: false,
   },
 );
 

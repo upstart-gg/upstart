@@ -1,4 +1,4 @@
-import type { PageAttributes } from "../attributes";
+import type { PageAttributes } from "../site/attributes";
 
 export type DatasourceFetcherParams<
   OAuthProps = unknown,

@@ -1,16 +1,16 @@
-import type { PageAttributes, SiteAttributes } from "@upstart.gg/sdk/shared/attributes";
-import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
-import { generateId, processSections } from "@upstart.gg/sdk/shared/bricks";
+import type { PageAttributes, SiteAttributes } from "@upstart.gg/sdk/shared/site/attributes";
+import type { Brick, Section } from "@upstart.gg/sdk/bricks";
+import { generateId, processSections } from "@upstart.gg/sdk/bricks";
 import type { LoopSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
-import type { GenerationState } from "@upstart.gg/sdk/shared/context";
+import type { GenerationState } from "@upstart.gg/sdk/shared/ai/context";
 import type { Datarecord } from "@upstart.gg/sdk/shared/datarecords/types";
 import type { Datasource, Query } from "@upstart.gg/sdk/shared/datasources/types";
-import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/images";
-import type { VersionedPage } from "@upstart.gg/sdk/shared/page";
-import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
-import type { Site } from "@upstart.gg/sdk/shared/site";
-import type { Theme } from "@upstart.gg/sdk/shared/theme";
-import invariant from "@upstart.gg/sdk/shared/utils/invariant";
+import type { ImageSearchResultsType } from "@upstart.gg/sdk/shared/ai/images";
+import type { VersionedPage } from "@upstart.gg/sdk/shared/site/page";
+import type { Resolution } from "@upstart.gg/sdk/shared/site/responsive";
+import type { Site } from "@upstart.gg/sdk/shared/site/site";
+import type { Theme } from "@upstart.gg/sdk/shared/themes/theme";
+import { invariant } from "@upstart.gg/sdk/utils";
 import { mergeIgnoringArrays } from "@upstart.gg/sdk/shared/utils/merge";
 import { enableMapSet } from "immer";
 import debounce from "lodash-es/debounce";
@@ -170,14 +170,14 @@ export const createDraftStore = (
 
           upsertQuery: (query: Query) =>
             set((state) => {
-              const existingIndex =
-                state.page.attributes.queries?.findIndex((q) => q.alias === query.alias) ?? -1;
-              if (existingIndex !== -1) {
-                state.page.attributes.queries![existingIndex] = query;
-              } else {
-                state.page.attributes.queries ??= [];
-                state.page.attributes.queries.push(query);
-              }
+              // const existingIndex =
+              //   state.page.attributes.queries?.findIndex((q) => q.alias === query.alias) ?? -1;
+              // if (existingIndex !== -1) {
+              //   state.page.attributes.queries![existingIndex] = query;
+              // } else {
+              //   state.page.attributes.queries ??= [];
+              //   state.page.attributes.queries.push(query);
+              // }
             }),
 
           detachBrickFromContainer: (id) =>
@@ -1173,12 +1173,12 @@ export const useData = (editable?: boolean) => {
 
     // Reduce page queries to build an abject that is a Record<alias, examples>
     const data: Record<string, Record<string, unknown>[]> = {};
-    for (const query of pageQueries) {
-      const examples = query.datasource.schema.items.examples;
-      if (examples) {
-        data[query.alias] = examples;
-      }
-    }
+    // for (const query of pageQueries) {
+    //   const examples = query.datasource.schema.items.examples;
+    //   if (examples) {
+    //     data[query.alias] = examples;
+    //   }
+    // }
     return data;
   });
 };
@@ -1216,23 +1216,23 @@ export const useQueries = () => {
   const ctx = usePageContext();
   return useStore(
     ctx,
-    (state) =>
-      state.page.attributes.queries
-        ?.map((pageQuery) => {
-          // get datasource
-          const datasource = state.site.datasources.find((ds) => ds.id === pageQuery.datasourceId);
-          if (!datasource) {
-            console.warn(
-              `Datasource with id ${pageQuery.datasourceId} not found for query with alias ${pageQuery.alias}`,
-            );
-            return null;
-          }
-          return {
-            ...pageQuery,
-            datasource,
-          };
-        })
-        .filter((item): item is NonNullable<typeof item> => item !== null) ?? [],
+    (state) => [] as Query[],
+    // state.page.attributes.queries
+    //   ?.map((pageQuery) => {
+    //     // get datasource
+    //     const datasource = state.site.datasources.find((ds) => ds.id === pageQuery.datasourceId);
+    //     if (!datasource) {
+    //       console.warn(
+    //         `Datasource with id ${pageQuery.datasourceId} not found for query with alias ${pageQuery.alias}`,
+    //       );
+    //       return null;
+    //     }
+    //     return {
+    //       ...pageQuery,
+    //       datasource,
+    //     };
+    //   })
+    //   .filter((item): item is NonNullable<typeof item> => item !== null) ?? [],
   );
 };
 

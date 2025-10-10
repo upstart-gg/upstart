@@ -1,4 +1,4 @@
-import type { Brick } from "@upstart.gg/sdk/shared/bricks";
+import type { Brick } from "@upstart.gg/sdk/bricks";
 import { tx } from "@upstart.gg/style-system/twind";
 import { menuNavBarCls } from "~/shared/styles/menubar-styles";
 

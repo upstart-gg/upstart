@@ -1,4 +1,4 @@
-import type { Brick } from "@upstart.gg/sdk/shared/bricks";
+import type { Brick } from "@upstart.gg/sdk/bricks";
 import { forwardRef, type PropsWithChildren } from "react";
 import { useDebugMode, useEditorHelpers } from "../hooks/use-editor";
 import { ContextMenu, Portal, toast } from "@upstart.gg/style-system/system";

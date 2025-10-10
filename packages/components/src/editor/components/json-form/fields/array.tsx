@@ -14,8 +14,7 @@ import { RxCross2 } from "react-icons/rx";
 import { TbPlus } from "react-icons/tb";
 import ObjectFields, { FieldTitle } from "../field-factory";
 import type { FieldProps } from "./types";
-import { useQueries } from "~/editor/hooks/use-page-data";
-import type { LoopSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
+import type { LoopSettings } from "@upstart.gg/sdk/bricks";
 import { merge } from "lodash-es";
 
 // If the HTML contains any tags, this function will strip them out and return plain text.
@@ -48,7 +47,8 @@ export default function ArrayField({
   parents = [],
   schema,
 }: ArrayFieldProps) {
-  const pageQueries = useQueries();
+  // const pageQueries = useQueries();
+  const pageQueries = [];
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 

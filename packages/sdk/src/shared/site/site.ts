@@ -1,11 +1,11 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { resolvePageAttributes, resolveSiteAttributes, siteAttributesSchema } from "./attributes";
-import { datarecordsList } from "./datarecords/types";
-import { datasourcesList } from "./datasources/types";
+import { datarecordsList } from "../datarecords/types";
+import { datasourcesList } from "../datasources/types";
 import { pageSchema } from "./page";
-import { sitePrompt } from "./prompt";
+import { sitePrompt } from "../ai/prompt";
 import { sitemapSchema } from "./sitemap";
-import { defaultTheme, themeSchema } from "./theme";
+import { defaultTheme, themeSchema } from "../themes/theme";
 
 export const siteSchema = Type.Object({
   id: Type.String({ description: "The unique identifier for the site.", readOnly: true }),

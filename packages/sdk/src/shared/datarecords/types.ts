@@ -1,4 +1,4 @@
-import { type TSchema, Type, type Static } from "@sinclair/typebox";
+import { Type, type Static } from "@sinclair/typebox";
 import { airtableOptions } from "./external/airtable/types";
 import { googleSheetsOptions } from "./external/google/sheets/types";
 import { notionOptions } from "./external/notion/types";

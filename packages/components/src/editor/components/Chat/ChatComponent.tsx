@@ -1,7 +1,7 @@
 import { useChat } from "@ai-sdk/react";
-import type { Tools, UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
-import { defineDataRecord } from "@upstart.gg/sdk/shared/datarecords";
-import { defineDatasource } from "@upstart.gg/sdk/shared/datasources";
+import type { Tools, UpstartUIMessage } from "@upstart.gg/sdk/ai";
+import { defineDataRecord } from "@upstart.gg/sdk/datarecords";
+import { defineDatasource } from "@upstart.gg/sdk/datasources";
 import { Spinner, toast } from "@upstart.gg/style-system/system";
 import { css, tx } from "@upstart.gg/style-system/twind";
 import { type ChatOnToolCallCallback, createIdGenerator, DefaultChatTransport, type ToolUIPart } from "ai";
@@ -20,7 +20,7 @@ import {
   useSitePrompt,
   useThemes,
 } from "../../hooks/use-page-data";
-import type { CallContextProps } from "@upstart.gg/sdk/shared/context";
+import type { CallContextProps } from "@upstart.gg/sdk/shared/ai/context";
 
 // Lazy load heavy components
 const Markdown = lazy(() => import("../Markdown"));

@@ -1,7 +1,7 @@
 import { type Static, Type } from "@sinclair/typebox";
 import { imageResultsSchema } from "./images";
-import { versionedPageSchema } from "./page";
-import { siteSchema } from "./site";
+import { versionedPageSchema } from "../site/page";
+import { siteSchema } from "../site/site";
 
 export const generationStateSchema = Type.Object({
   isReady: Type.Boolean(),

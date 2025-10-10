@@ -4,11 +4,9 @@ import type { ToolUIPart } from "ai";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { MdDone } from "react-icons/md";
 import { Spinner } from "@upstart.gg/style-system/system";
-import type { SimpleImageMetadata } from "@upstart.gg/sdk/shared/images";
+import type { SimpleImageMetadata, Tools, UpstartUIMessage } from "@upstart.gg/sdk/ai";
 import { useDebugMode } from "../../hooks/use-editor";
-import type { Tools, UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
 import { useState } from "react";
-import Markdown from "../Markdown";
 import ThemePreview from "../ThemePreview";
 
 export default function ToolRenderer({
