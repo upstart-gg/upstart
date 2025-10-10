@@ -20,7 +20,12 @@ const ignored = ["!**/*.md", "!**/tests/**/*", "!**/*.test.ts", "!**/sample.ts"]
 export default defineConfig((options) => {
   return [
     {
-      entry: ["src/shared/**/index.ts", "src/shared/bricks/manifests/*", ...ignored],
+      entry: [
+        "src/shared/**/index.ts",
+        "src/shared/bricks/manifests/*",
+        "src/shared/datarecords/external/**/*",
+        ...ignored,
+      ],
       outDir: "dist/shared",
       target: "esnext",
       nodeProtocol: true,
