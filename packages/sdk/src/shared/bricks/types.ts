@@ -1,6 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { customAlphabet } from "nanoid";
-import { defaultProps, manifests } from "./manifests/all-manifests";
+import { defaultProps, manifests } from "./manifests";
 import { cssLength } from "./props/css-length";
 import { colorPreset } from "./props/color-preset";
 import { mergeIgnoringArrays } from "../utils/merge";
@@ -114,16 +114,6 @@ export function defineBrickManifest<BProps extends TProperties>({
 }
 
 export type BrickManifest = ReturnType<typeof defineBrickManifest>;
-
-export function getBrickManifestDefaults<M extends BrickManifest>(manifest: M) {
-  return {
-    manifest,
-    props: getSchemaDefaults(manifest.props),
-    mobileProps: {},
-  };
-}
-
-export type BrickDefaults = ReturnType<typeof getBrickManifestDefaults>;
 
 export type BrickConstraints = Pick<
   BrickManifest,

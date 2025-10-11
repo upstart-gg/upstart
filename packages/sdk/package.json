@@ -16,6 +16,14 @@
       "types": "./dist/shared/bricks/index.d.ts",
       "import": "./dist/shared/bricks/index.js"
     },
+     "./bricks/manifests": {
+      "types": "./dist/shared/bricks/manifests/index.d.ts",
+      "import": "./dist/shared/bricks/manifests/index.js"
+    },
+    "./bricks/props": {
+      "types": "./dist/shared/bricks/props/index.d.ts",
+      "import": "./dist/shared/bricks/props/index.js"
+    },
      "./bricks/*": {
       "types": "./dist/shared/bricks/*.d.ts",
       "import": "./dist/shared/bricks/*.js"

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import interact from "interactjs";
-import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
+import { manifests } from "@upstart.gg/sdk/bricks/manifests/index";
 import { usePreviewMode } from "./use-editor";
 
 export interface ResizeEvent {

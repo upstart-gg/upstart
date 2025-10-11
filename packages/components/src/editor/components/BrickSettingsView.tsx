@@ -1,4 +1,5 @@
-import { type Brick, defaultProps } from "@upstart.gg/sdk/bricks";
+import type { Brick } from "@upstart.gg/sdk/bricks";
+import { defaultProps } from "@upstart.gg/sdk/bricks/manifests";
 import { mergeIgnoringArrays } from "@upstart.gg/sdk/utils";
 import { tx } from "@upstart.gg/style-system/twind";
 import { get, set } from "lodash-es";

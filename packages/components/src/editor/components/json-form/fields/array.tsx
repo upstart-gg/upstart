@@ -14,7 +14,7 @@ import { RxCross2 } from "react-icons/rx";
 import { TbPlus } from "react-icons/tb";
 import ObjectFields, { FieldTitle } from "../field-factory";
 import type { FieldProps } from "./types";
-import type { LoopSettings } from "@upstart.gg/sdk/bricks";
+import type { LoopSettings } from "@upstart.gg/sdk/bricks/props";
 import { merge } from "lodash-es";
 
 // If the HTML contains any tags, this function will strip them out and return plain text.

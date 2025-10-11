@@ -10,7 +10,7 @@ import EditableBrickWrapper from "./EditableBrick";
 import { useSectionStyle } from "~/shared/hooks/use-section-style";
 import { useCallback, type MouseEvent } from "react";
 import { invariant } from "@upstart.gg/sdk/utils";
-import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
+import { manifests } from "@upstart.gg/sdk/bricks/manifests/index";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { useDeviceInfo } from "../hooks/use-device-info";

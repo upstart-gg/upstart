@@ -1,5 +1,5 @@
 import type { FieldProps } from "./types";
-import type { BorderSettings } from "@upstart.gg/sdk/bricks";
+import type { BorderSettings } from "@upstart.gg/sdk/bricks/props";
 import EnumField from "./enum";
 import { FieldTitle } from "../field-factory";
 import { ColorElementPreviewPill } from "./color";

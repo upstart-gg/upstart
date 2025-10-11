@@ -178,10 +178,6 @@ export default function Chat() {
 
           const hasToolResults = previousMessage?.parts.some((part) => part.type === "tool-askUserChoice");
 
-          console.log("Send chat request with hasToolResults=%s", hasToolResults);
-          console.log({ message });
-          console.log({ previousMessage });
-
           return {
             body: {
               messages: hasToolResults ? messages.slice(-2) : [message],
@@ -449,7 +445,9 @@ export default function Chat() {
       msg.parts.some((part) => part.type === "text" || part.type.startsWith("tool-")),
   );
 
-  // console.log("messages", chatSession.messages);
+  const dataMessages = messages.filter((msg) => msg.parts.some((part) => part.type.startsWith("data-")));
+
+  console.log("dataMessages", dataMessages);
   // console.log("All messages length is %d, displaying %d", messages.length, displayedMessages.length);
 
   useEffect(() => {

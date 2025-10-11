@@ -3,7 +3,7 @@ import type { BrickManifest } from "@upstart.gg/sdk/bricks";
 import type { BrickProps } from "@upstart.gg/sdk/shared/bricks/props/types";
 import { get, merge } from "lodash-es";
 import { useBrickManifest } from "./use-brick-manifest";
-import { defaultProps } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
+import { defaultProps } from "@upstart.gg/sdk/bricks/manifests";
 import { tx, css } from "@upstart.gg/style-system/twind";
 import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
 import { getStyleProperties } from "../styles/style-props";
