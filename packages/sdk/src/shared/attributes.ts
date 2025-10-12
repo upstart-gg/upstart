@@ -7,6 +7,7 @@ import { background } from "./bricks/props/background";
 import { boolean } from "./bricks/props/boolean";
 import { colorPreset } from "./bricks/props/color-preset";
 import { queryUse, type QueryUseSettings } from "./bricks/props/dynamic";
+import { favicon } from "./bricks/props/favicon";
 import { image } from "./bricks/props/image";
 import { querySchema } from "./datasources/types";
 import { toLLMSchema } from "./utils/llm";
@@ -377,6 +378,15 @@ export const siteAttributesSchema = Type.Object(
         "ui:placeholder": "<script src='https://example.com/script.js'></script>",
         "ui:group": "external",
         "ui:no-dynamic": true,
+      }),
+    ),
+
+    favicon: Type.Optional(
+      favicon({
+        title: "Favicon",
+        description:
+          "Image shown on the browser tab. Recommended size is 32x32 or 16x16 pixels, .ico, .png, or .svg format",
+        "ai:hidden": true,
       }),
     ),
   },
