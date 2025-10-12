@@ -129,7 +129,7 @@ export const FaviconField = ({
             <button
               type="button"
               className={tx(
-                "rounded bg-orange-500 text-white border border-orange-400 hover:opacity-90 text-center text-sm font-semibold py-1 px-4 cursor-pointer transition-opacity min-w-[800px]",
+                "rounded bg-orange-500 text-white border border-orange-400 hover:opacity-90 text-center text-sm font-semibold py-1 px-4 cursor-pointer transition-opacity min-w-[80px]",
               )}
               onClick={() => {
                 window.open("/dashboard/upgrade", "_blank");
