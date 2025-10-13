@@ -1,12 +1,15 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface UserConfig {
   credits: number;
+  config: {
+    [key: string]: unknown;
+  };
   [key: string]: unknown;
 }
 
 // Global state to share config across all hook instances
-let globalConfig: UserConfig = { credits: 0 };
+let globalConfig: UserConfig = { credits: 0, config: {} };
 const subscribers: Set<(config: UserConfig) => void> = new Set();
 let fetchPromise: Promise<void> | null = null;
 let intervalId: NodeJS.Timeout | null = null;

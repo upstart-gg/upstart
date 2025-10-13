@@ -1,50 +1,52 @@
 import type { TObject, TProperties, TSchema } from "@sinclair/typebox";
 import get from "lodash-es/get";
-import { Fragment, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { IoIosHelpCircleOutline } from "react-icons/io";
 // Import field components
+import AlignItemsField from "./fields/align-items";
+import AlignSelfField from "./fields/align-self";
 import ArrayField from "./fields/array";
-import TagsField from "./fields/tags";
 import BackgroundField from "./fields/background";
 import BorderField from "./fields/border";
-import AlignSelfField from "./fields/align-self";
-import AlignItemsField from "./fields/align-items";
-import JustifyContentField from "./fields/justify-content";
 import ColorField from "./fields/color";
 import DatasourceField from "./fields/datasource";
-import DynamicField from "./fields/loop";
-import PageQueriesField from "./fields/page-queries";
-import SiteQueriesField from "./fields/site-queries";
 import EnumField from "./fields/enum";
+import FaviconField from "./fields/favicon";
 import IconifyField from "./fields/iconify";
 import ImageField from "./fields/image";
+import JustifyContentField from "./fields/justify-content";
+import DynamicField from "./fields/loop";
 import { NumberField, SliderField } from "./fields/number";
 import { PagePaddingField, type TempPadding } from "./fields/padding";
+import PageQueriesField from "./fields/page-queries";
+import SiteQueriesField from "./fields/site-queries";
 import { GeoAddressField, PathField, StringField, UrlOrPageIdField } from "./fields/string";
 import SwitchField from "./fields/switch";
+import TagsField from "./fields/tags";
 
 // Import types
-import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
-import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
-import type { DeprecatedDatasourceSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
-import type { GeolocationSettings } from "@upstart.gg/sdk/shared/bricks/props/geolocation";
-import type { TagsSettings } from "@upstart.gg/sdk/shared/bricks/props/tags";
-import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import type {
-  AlignSelfSettings,
   AlignItemsSettings,
+  AlignSelfSettings,
   JustifyContentSettings,
 } from "@upstart.gg/sdk/shared/bricks/props/align";
+import type { BackgroundSettings } from "@upstart.gg/sdk/shared/bricks/props/background";
+import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border";
+import type { ColorPresetSettings } from "@upstart.gg/sdk/shared/bricks/props/color-preset";
+import type { DeprecatedDatasourceSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
+import type { LoopSettings, QueryUseSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
+import type { FaviconProps } from "@upstart.gg/sdk/shared/bricks/props/favicon";
+import type { GeolocationSettings } from "@upstart.gg/sdk/shared/bricks/props/geolocation";
+import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
+import type { TagsSettings } from "@upstart.gg/sdk/shared/bricks/props/tags";
 import type { FieldFilter } from "@upstart.gg/sdk/shared/utils/schema";
 import { Tooltip } from "@upstart.gg/style-system/system";
+import { tx } from "@upstart.gg/style-system/twind";
+import { usePageAttributes } from "~/editor/hooks/use-page-data";
 import ColorPresetField from "./fields/color-preset";
 import { CssLengthField } from "./fields/css-length";
 import { DatarecordField } from "./fields/datarecord";
 import { fieldLabel } from "./form-class";
-import { tx } from "@upstart.gg/style-system/twind";
-import type { LoopSettings, QueryUseSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
-import { usePageAttributes } from "~/editor/hooks/use-page-data";
-import type { ColorPresetSettings } from "@upstart.gg/sdk/shared/bricks/props/color-preset";
 
 export interface FieldFactoryOptions {
   brickId: string;
@@ -300,6 +302,18 @@ function createFieldComponent(options: FieldFactoryOptions): ReactNode {
           key={`field-${id}`}
           currentValue={currentValue}
           onChange={(value: ImageProps | null) => onChange({ [id]: value }, id)}
+          {...commonProps}
+        />
+      );
+    }
+
+    case "favicon": {
+      const currentValue = (get(formData, id) ?? commonProps.schema.default) as FaviconProps;
+      return (
+        <FaviconField
+          key={`field-${id}`}
+          currentValue={currentValue}
+          onChange={(value: FaviconProps | null) => onChange({ [id]: value }, id)}
           {...commonProps}
         />
       );
