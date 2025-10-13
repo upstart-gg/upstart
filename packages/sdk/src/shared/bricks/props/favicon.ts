@@ -5,11 +5,13 @@ type PropFaviconOptions = ObjectOptions;
 export function favicon(options: PropFaviconOptions = {}) {
   const schema = Type.Object(
     {
-      src: Type.String({
-        title: options.title ?? "Favicon URL",
-        description: "Favicon URL. Should be a .ico, .png, or .svg file with 32×32 or 16×16 pixels",
-        format: "uri",
-      }),
+      src: Type.Optional(
+        Type.String({
+          title: options.title ?? "Favicon URL",
+          description: "Favicon URL. Should be a .ico, .png, or .svg file with 32×32 or 16×16 pixels",
+          format: "uri",
+        }),
+      ),
       alt: Type.Optional(
         Type.String({
           title: "Alternate Text",

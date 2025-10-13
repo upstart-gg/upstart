@@ -387,6 +387,7 @@ export const siteAttributesSchema = Type.Object(
         description:
           "Image shown on the browser tab. Recommended size is 32x32 or 16x16 pixels, .ico, .png, or .svg format",
         "ai:hidden": true,
+        "ui:group": "meta",
       }),
     ),
   },

@@ -1,19 +1,14 @@
 import { Button } from "@radix-ui/themes";
+import type { FaviconProps } from "@upstart.gg/sdk/shared/bricks/props/favicon";
 import { Dialog } from "@upstart.gg/style-system/system";
 import { tx } from "@upstart.gg/style-system/twind";
 import { nanoid } from "nanoid";
 import { useMemo, useState } from "react";
 import { IoMdClose } from "react-icons/io";
-import { RiUploadLine } from "react-icons/ri";
 import { useUserConfig } from "~/editor/hooks/use-user-config";
 import { useUploader } from "../../UploaderContext";
 import { FieldTitle } from "../field-factory";
 import type { FieldProps } from "./types";
-
-type FaviconProps = {
-  src: string;
-  alt?: string;
-};
 
 export const FaviconField = ({
   title,
@@ -28,8 +23,7 @@ export const FaviconField = ({
   const userConfig = useUserConfig();
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
 
-  // Check if user is on free plan
-  const isFaviconAllowed = !!userConfig.config.hasFavicon;
+  const isFaviconEnabled = !!userConfig.config.hasFavicon;
 
   const onPropsChange = (newVal: Partial<FaviconProps>) => {
     onChange({ ...(currentValue ?? {}), ...newVal } as FaviconProps);
@@ -55,7 +49,7 @@ export const FaviconField = ({
       <div className="field field-favicon basis-full flex flex-col gap-1 max-w-full">
         <div className="flex justify-between">
           <FieldTitle title={title} description={description} />
-          {isFaviconAllowed && (
+          {isFaviconEnabled && (
             <div className="flex items-end gap-1">
               <input
                 id={id}
@@ -69,13 +63,12 @@ export const FaviconField = ({
                   className="!leading-[inherit] !mb-0 !font-medium !text-inherit cursor-[inherit] flex items-center gap-1"
                   htmlFor={id}
                 >
-                  <RiUploadLine className="w-4 h-4" />
-                  Upload
+                  Upload icon
                 </label>
               </Button>
             </div>
           )}
-          {!isFaviconAllowed && (
+          {!isFaviconEnabled && (
             <div className="flex items-end gap-1">
               <Button variant="soft" size="1" radius="full" type="button">
                 <label
@@ -87,8 +80,7 @@ export const FaviconField = ({
                     setShowUpgradeDialog(true);
                   }}
                 >
-                  <RiUploadLine className="w-4 h-4" />
-                  Upload
+                  Upload icon
                 </label>
               </Button>
             </div>
@@ -99,13 +91,15 @@ export const FaviconField = ({
       {currentValue?.src && (
         <>
           <div className="basis-full w-0" />
-          <div className="border border-upstart-200 p-1.5 bg-white mt-3 mx-auto w-[80px] h-[80px] relative">
-            <img
-              src={currentValue.src}
-              alt="Favicon preview"
-              className="w-full h-full object-contain bg-gray-50 rounded"
-            />
-            <div className="absolute flex items-center justify-center top-1 right-1 text-gray-500 p-0.5 bg-white cursor-pointer hover:(bg-red-800 text-white) rounded border border-gray-300 shadow-sm">
+          <div className="flex gap-4 items-center mt-3 px-2">
+            <div className="border border-upstart-200 p-1.5 bg-white mx-auto w-[64px] h-[64px] min-w-[64px] max-w-[64px] min-h-[64px] max-h-[64px] flex-shrink-0">
+              <img
+                src={currentValue.src}
+                alt="Favicon preview"
+                className="w-full h-full object-contain bg-gray-50 rounded"
+              />
+            </div>
+            <div className="flex items-center justify-center top-1 right-1 text-gray-500 p-0.5 bg-white cursor-pointer hover:(bg-red-800 text-white) rounded border border-gray-300 shadow-sm">
               <IoMdClose className="w-3 h-3" onClick={() => onPropsChange({ src: "" })} />
             </div>
           </div>
