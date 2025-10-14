@@ -18,7 +18,7 @@ const internalDatarecord = Type.Object(
         title: "Schema",
         additionalProperties: true,
         description:
-          "JSON Schema of the datarecord. Always of type 'object' and representing a row that will be saved in the database.",
+          "JSON Schema. Always of type 'object' and representing a row that will be saved in the database.",
         examples: [
           {
             type: "object",
@@ -56,8 +56,7 @@ const internalDatarecord = Type.Object(
       ),
       {
         title: "Indexes",
-        description:
-          "IMPORTANT: Indexes to create on the datarecord. use it to enforce uniqueness or improve query performance.",
+        description: "IMPORTANT: Indexes to create. Use it to enforce uniqueness.",
       },
     ),
   },
@@ -94,8 +93,7 @@ const commonDatarecordSchema = Type.Object({
     {
       additionalProperties: true,
       title: "Schema",
-      description:
-        "JSON Schema of the datarecord. Always of type 'object' and representing a row that will be saved.",
+      description: "JSON Schema. Always of type 'object' and representing a row that will be saved.",
       examples: [
         {
           type: "object",
@@ -114,14 +112,16 @@ const commonDatarecordSchema = Type.Object({
 
 const commonDatarecordMetadata = Type.Object({
   id: Type.String({
-    title: "Datarecord ID",
-    comment: "A unique identifier for the datarecord, e.g., 'newsletter_subscriptions'",
+    title: "ID",
+    description: "A unique identifier, e.g., 'newsletter_subscriptions'",
+    comment: "A unique identifier, e.g., 'newsletter_subscriptions'",
   }),
   label: Type.String({
-    title: "Name of the datarecord",
+    title: "Name",
+    description: "Human-friendly name",
     comment: "For example, 'Newsletter Subscriptions'",
   }),
-  description: Type.Optional(Type.String({ title: "Description of the datarecord" })),
+  description: Type.Optional(Type.String({ title: "Description" })),
 });
 
 export const genericDatarecord = Type.Composite([

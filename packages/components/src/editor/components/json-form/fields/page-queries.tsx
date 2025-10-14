@@ -20,7 +20,7 @@ import { tx } from "@upstart.gg/style-system/twind";
 import { LuPlus } from "react-icons/lu";
 import type { TSchema } from "@sinclair/typebox";
 import TagsInput, { TagsSelect } from "../../TagsInput";
-import { validate } from "@upstart.gg/sdk/shared/utils/schema";
+import { validate } from "@upstart.gg/sdk/utils";
 
 const baseOperators = [
   { value: "eq", label: "Equals" },

@@ -1,6 +1,6 @@
 import type { ReasoningUIPart } from "ai";
 import { Text } from "@upstart.gg/style-system/system";
-import Markdown from "../Markdown";
+import Markdown from "./ChatMarkdown";
 
 export default function ChatReasoningPart({ part }: { part: ReasoningUIPart }) {
   return (

@@ -11,16 +11,10 @@ import ThemePreview from "../ThemePreview";
 
 export default function ToolRenderer({
   toolPart,
-  addToolResultMessage,
-  addToolResult,
   error,
-  hasToolsRunning,
 }: {
   toolPart: ToolUIPart<Tools>;
   error?: Error;
-  addToolResult: UseChatHelpers<UpstartUIMessage>["addToolResult"];
-  addToolResultMessage: (text: string) => void;
-  hasToolsRunning: boolean;
 }) {
   const debug = useDebugMode();
   const [showPreview, setShowPreview] = useState(false);
@@ -32,31 +26,31 @@ export default function ToolRenderer({
     return null;
   }
   // Don't show user choices until all other tools have finished
-  if (toolPart.type === "tool-askUserChoice" && hasToolsRunning) {
-    return null;
-  }
-  if (toolPart.type === "tool-askUserChoice") {
-    return (
-      <AnimatePresence key={toolPart.toolCallId}>
-        {toolPart.state === "input-available" && (
-          <motion.div
-            className={tx("bg-black/5 p-4 rounded-md text-[90%] mt-3")}
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
-          >
-            <UserChoicesButtons
-              key={toolPart.toolCallId}
-              part={toolPart}
-              addToolResult={addToolResult}
-              addToolResultMessage={addToolResultMessage}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    );
-  }
+  // if (toolPart.type === "tool-askUserChoice" && hasToolsRunning) {
+  //   return null;
+  // }
+  // if (toolPart.type === "tool-askUserChoice") {
+  //   return (
+  //     <AnimatePresence key={toolPart.toolCallId}>
+  //       {toolPart.state === "input-available" && (
+  //         <motion.div
+  //           className={tx("bg-black/5 p-4 rounded-md text-[90%] mt-3")}
+  //           initial={{ opacity: 0, height: 0 }}
+  //           animate={{ opacity: 1, height: "auto" }}
+  //           exit={{ opacity: 0, height: 0 }}
+  //           transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
+  //         >
+  //           <UserChoicesButtons
+  //             key={toolPart.toolCallId}
+  //             part={toolPart}
+  //             addToolResult={addToolResult}
+  //             addToolResultMessage={addToolResultMessage}
+  //           />
+  //         </motion.div>
+  //       )}
+  //     </AnimatePresence>
+  //   );
+  // }
 
   if (typeof toolPart.input === "object" && toolPart.input !== null && "waitingMessage" in toolPart.input) {
     return (
@@ -204,112 +198,6 @@ function RunningToolDisplay({ part }: { part: Extract<ToolUIPart<Tools>, { state
             {JSON.stringify({ type: part.type, input: part.input }, null, 2)}
           </pre>
         </details>
-      )}
-    </motion.div>
-  );
-}
-
-function UserChoicesButtons({
-  part,
-  addToolResult,
-  addToolResultMessage,
-}: {
-  part: Extract<ToolUIPart<Tools>, { type: "tool-askUserChoice"; state: "input-available" }>;
-  addToolResult: UseChatHelpers<UpstartUIMessage>["addToolResult"];
-  addToolResultMessage: (text: string) => void;
-}) {
-  const [selectedChoices, setSelectedChoices] = useState<string[]>([]);
-
-  const handleChoiceClick = (choice: string) => {
-    if (part.input.allowMultiple) {
-      setSelectedChoices((prev) =>
-        prev.includes(choice) ? prev.filter((c) => c !== choice) : [...prev, choice],
-      );
-    } else {
-      setSelectedChoices([choice]);
-    }
-  };
-  return (
-    <motion.div
-      className={tx("flex flex-wrap gap-2 justify-between")}
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: "auto" }}
-      exit={{ opacity: 0, height: 0 }}
-      transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
-    >
-      {part.input.allowMultiple ? (
-        <>
-          <div className={tx("flex flex-col flex-wrap gap-1.5")}>
-            {part.input.choices.map((choice, i) => {
-              return (
-                <button
-                  key={`multi-${i}`}
-                  type="button"
-                  className={tx(
-                    "inline-flex justify-center flex-1 text-[.95em] gap-3 items-center font-medium px-3 py-1.5 rounded-md",
-                    {
-                      "border !border-upstart-300 !text-gray-700 hover:border-upstart-300":
-                        !selectedChoices.includes(choice),
-                      "border !border-transparent !bg-upstart-700 text-white":
-                        selectedChoices.includes(choice),
-                    },
-                  )}
-                  onClick={async () => {
-                    console.log("addtoolresult to part", part);
-                    handleChoiceClick(choice);
-                  }}
-                >
-                  <span className={tx("text-nowrap", selectedChoices.includes(choice) ? "font-bold" : "")}>
-                    {choice}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-          <div className={tx("basis-full w-full mt-6 flex justify-end")}>
-            <button
-              type="button"
-              disabled={selectedChoices.length === 0}
-              className={tx(
-                "inline-flex justify-center content-center flex-1 text-[.95em] gap-3 items-center font-medium px-3 py-1.5 rounded-md !bg-upstart-700 hover:opacity-90 text-white disabled:opacity-50 disabled:cursor-not-allowed max-w-[150px]",
-              )}
-              onClick={async () => {
-                console.log("addtoolresult to part", part);
-                await addToolResult({
-                  tool: "askUserChoice",
-                  toolCallId: part.toolCallId,
-                  output: selectedChoices,
-                });
-                addToolResultMessage(selectedChoices.join(", "));
-                setSelectedChoices([]);
-              }}
-            >
-              Continue
-            </button>
-          </div>
-        </>
-      ) : (
-        part.input.choices.map((choice, i) => {
-          return (
-            <button
-              key={`single-${i}`}
-              type="button"
-              className={tx(
-                "inline-flex text-nowrap text-center justify-center content-center flex-1 text-[.95em] gap-3 items-center font-medium px-3 py-1.5 rounded-md !bg-upstart-700 hover:opacity-90 text-white",
-              )}
-              onClick={async () => {
-                await addToolResult({
-                  tool: "askUserChoice",
-                  toolCallId: part.toolCallId,
-                  output: choice,
-                });
-                addToolResultMessage(choice);
-              }}
-            >
-              {choice}
-            </button>
-          );
-        })
       )}
     </motion.div>
   );

@@ -17,6 +17,7 @@ export type ImageSearchParams = Static<typeof imageSearchSchema>;
 
 export const imageResultsSchema = Type.Array(
   Type.Object({
+    id: Type.String({ description: "The unique ID of the image" }),
     provider: Type.String({ description: "The image provider (e.g. unsplash, pexels)" }),
     description: Type.String({ description: "A brief description of the image" }),
     url: Type.String({ description: "The URL of the image", format: "uri" }),

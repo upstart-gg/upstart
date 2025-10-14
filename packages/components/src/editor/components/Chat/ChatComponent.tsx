@@ -23,7 +23,7 @@ import {
 import type { CallContextProps } from "@upstart.gg/sdk/shared/ai/context";
 
 // Lazy load heavy components
-const Markdown = lazy(() => import("../Markdown"));
+const Markdown = lazy(() => import("./ChatMarkdown"));
 const ChatBox = lazy(() => import("./ChatBox"));
 const ChatReasoningPart = lazy(() => import("./ChatReasoningPart"));
 const ToolRenderer = lazy(() => import("./ChatToolRenderer"));
@@ -508,15 +508,7 @@ export default function Chat() {
               if (part.type.startsWith("tool-")) {
                 return (
                   <Suspense key={i} fallback={null}>
-                    <ToolRenderer
-                      key={i}
-                      // test showing tools
-                      hasToolsRunning={hasRunningTools}
-                      toolPart={part as ToolUIPart<Tools>}
-                      addToolResult={addToolResult}
-                      addToolResultMessage={(text: string) => sendMessage({ text })}
-                      error={error}
-                    />
+                    <ToolRenderer key={i} toolPart={part as ToolUIPart<Tools>} error={error} />
                   </Suspense>
                 );
               }

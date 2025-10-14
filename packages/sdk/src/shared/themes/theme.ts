@@ -2,7 +2,6 @@ import { Type, type Static } from "@sinclair/typebox";
 import chroma from "chroma-js";
 import { colorPalette } from "@upstart.gg/style-system/colors";
 import { StringEnum } from "../utils/string-enum";
-import { toLLMSchema } from "../utils/llm";
 
 export const fontStacks = [
   { value: "system-ui", label: "System UI" },
