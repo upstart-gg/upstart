@@ -123,21 +123,21 @@ export const themeSchema = Type.Object({
         title: "Base",
         description:
           "Base surface color of page, used for blank backgrounds. Should be white or near-white for light color-schemes, and black or near-black for dark color-schemes.",
-        "ai:instructions": "Use oklab() css notation.",
+        "ai:instructions": "Use oklch() css notation",
         examples: ["oklch(0.99 0.008 92)"],
       }),
       base200: Type.String({
         title: "Base 2",
         description:
           "Should be darker than base 100 but still light for light color-schemes, and lighter but still dark for dark color-schemes.",
-        "ai:instructions": "Use oklab() css notation.",
+        "ai:instructions": "Use oklch() css notation.",
         examples: ["oklch(0.97 0.01 85)"],
       }),
       base300: Type.String({
         title: "Base 3",
         description:
           "3rd base color, should be darker than base 200 for light color-schemes, and lighter than base 200 for dark color-schemes.",
-        "ai:instructions": "Use oklab() css notation.",
+        "ai:instructions": "Use oklch() css notation.",
         examples: ["oklch(0.95 0.02 80)"],
       }),
     },

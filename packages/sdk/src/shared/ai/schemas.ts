@@ -7,7 +7,9 @@ export const waitingMessageSchema = Type.Object({
   }),
 });
 
+// Same shape for input and output
 export type ToolInputWaitingMessageType = { waitingMessage: string };
+export type ToolOutputWaitingMessageType = { waitingMessage: string };
 export type ToolInputInstructionsType = { instructions: string };
 
 export const askUserChoiceInput = Type.Object({

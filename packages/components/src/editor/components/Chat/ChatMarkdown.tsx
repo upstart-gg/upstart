@@ -6,6 +6,8 @@ import remarkGfm from "remark-gfm";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkCodeMeta from "../../utils/remark-code-meta";
+import { useChatSession } from "~/editor/hooks/use-editor";
+import { useChat } from "@ai-sdk/react";
 
 const MemoizedMarkdownBlock = memo(
   ({ content }: { content: string }) => {
@@ -19,8 +21,15 @@ const MemoizedMarkdownBlock = memo(
             },
             // @ts-ignore
             choice: ({ node, children, ...props }: PropsWithChildren<{ other?: boolean }>) => {
+              const chatSession = useChatSession();
+              const { sendMessage } = useChat({
+                id: chatSession.id,
+              });
               return (
                 <button
+                  onClick={() => {
+                    sendMessage({ text: String(children) });
+                  }}
                   className={tx(
                     "inline-flex text-nowrap text-center justify-center content-center flex-1 text-[.9em] gap-3 items-center font-medium px-3 py-1.5 rounded-md !bg-upstart-700 hover:opacity-90 text-white",
                   )}

@@ -52,10 +52,18 @@ export default function ToolRenderer({
   //   );
   // }
 
-  if (typeof toolPart.input === "object" && toolPart.input !== null && "waitingMessage" in toolPart.input) {
+  const userFacingToolInfo =
+    typeof toolPart.output === "object" && toolPart.output !== null && "waitingMessage" in toolPart.output
+      ? toolPart.output
+      : typeof toolPart.input === "object" && toolPart.input !== null && "waitingMessage" in toolPart.input
+        ? toolPart.input
+        : null;
+
+  if (userFacingToolInfo) {
     return (
       <AnimatePresence key={toolPart.toolCallId}>
-        {toolPart.state === "input-available" ? (
+        {toolPart.state === "input-available" ||
+        (toolPart.state === "output-available" && toolPart.preliminary) ? (
           <RunningToolDisplay part={toolPart} />
         ) : toolPart.state === "output-available" ? (
           <motion.div
@@ -65,7 +73,7 @@ export default function ToolRenderer({
             exit={{ opacity: 0, height: 0 }}
           >
             <MdDone className={tx("w-4 h-4 text-green-600")} />
-            <span>{toolPart.input.waitingMessage as string}</span>
+            <span>{userFacingToolInfo.waitingMessage as string}</span>
 
             {(toolPart.type === "tool-searchImages" || toolPart.type === "tool-generateImages") && (
               <>
@@ -107,7 +115,7 @@ export default function ToolRenderer({
           >
             <MdDone className={tx("w-4 h-4 text-red-600")} />
             <span>
-              {toolPart.input.waitingMessage as string} (Error: {toolPart.errorText})
+              {userFacingToolInfo.waitingMessage as string} (Error: {toolPart.errorText})
             </span>
             {debug && <ToolCallDebugInfo part={toolPart} />}
           </motion.div>
@@ -160,9 +168,19 @@ function ToolCallDebugInfo({ part }: { part: ToolUIPart<Tools> }) {
   );
 }
 
-function RunningToolDisplay({ part }: { part: Extract<ToolUIPart<Tools>, { state: "input-available" }> }) {
+function RunningToolDisplay({
+  part,
+}: {
+  part: ToolUIPart<Tools>;
+}) {
   const debug = useDebugMode();
-  if (typeof part.input !== "object" || part.input === null || !("waitingMessage" in part.input)) {
+  if (typeof part.input !== "object" || part.input === null) {
+    return null;
+  }
+  if (
+    !("waitingMessage" in part.input) &&
+    !(typeof part.output === "object" && part.output !== null && "waitingMessage" in part.output)
+  ) {
     return null;
   }
   return (
@@ -174,7 +192,8 @@ function RunningToolDisplay({ part }: { part: Extract<ToolUIPart<Tools>, { state
       transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
     >
       <Spinner size="1" className={tx("w-4 mx-0.5")} />
-      <span>{part.input.waitingMessage as string}</span>
+      {/* @ts-ignore */}
+      <span>{(part.input.waitingMessage ?? part.output.waitingMessage) as string}</span>
       {debug && (
         <details className={tx("cursor-pointer basis-full")}>
           <summary className={tx("cursor-pointer list-none flex gap-1 items-center")}>
@@ -195,7 +214,7 @@ function RunningToolDisplay({ part }: { part: Extract<ToolUIPart<Tools>, { state
             <span className={tx("text-xs font-normal")}>[{part.type}] View tool call</span>
           </summary>
           <pre className={tx("whitespace-pre-wrap text-xs")}>
-            {JSON.stringify({ type: part.type, input: part.input }, null, 2)}
+            {JSON.stringify({ type: part.type, input: part.input, output: part.output }, null, 2)}
           </pre>
         </details>
       )}

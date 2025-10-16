@@ -5,7 +5,12 @@ import type { Sitemap } from "../site/sitemap";
 import type { Page, VersionedPage } from "../site/page";
 import type { PageAttributes, SiteAttributes } from "../site/attributes";
 import type { Brick, Section, SectionSchemaNoBricks } from "../bricks/types";
-import type { AskUserChoiceInput, ToolInputWaitingMessageType, ToolInputInstructionsType } from "./schemas";
+import type {
+  AskUserChoiceInput,
+  ToolInputWaitingMessageType,
+  ToolInputInstructionsType,
+  ToolOutputWaitingMessageType,
+} from "./schemas";
 import type { Datarecord } from "../datarecords/types";
 import type { InternalDatasource } from "../datasources/types";
 import type { ImageSearchResultsType } from "./images";
@@ -30,6 +35,12 @@ export type Tools = {
   generateImages: {
     input: ToolInputWaitingMessageType & { prompt: string; count: number; aspectRatio: string };
     output: ImageSearchResultsType;
+  };
+  delegateToOrchestrator: {
+    input: unknown;
+    output: ToolOutputWaitingMessageType & {
+      status: "completed" | "in-progress" | "failed";
+    };
   };
   listThemes: {
     input: unknown;
