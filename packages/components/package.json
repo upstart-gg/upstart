@@ -60,7 +60,7 @@
     "@iconify/react": "6.0.0",
     "@radix-ui/themes": "3.2.1",
     "@tanstack/react-virtual": "3.13.12",
-    "@tiptap/extension-code": "2.14.0",
+    "@tiptap/extension-code": "3.7.2",
     "@tiptap/extension-document": "2.14.0",
     "@tiptap/extension-heading": "2.14.0",
     "@tiptap/extension-highlight": "2.14.0",
