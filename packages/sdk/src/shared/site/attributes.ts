@@ -10,16 +10,16 @@ import defaultsDeep from "lodash-es/defaultsDeep";
 // Default attributes
 export const pageAttributesSchema = Type.Object(
   {
-    backgroundImage: Type.Optional(background()),
-    colorPreset: Type.Optional(
-      colorPreset({
-        examples: [
-          { color: "base-100" },
-          { color: "primary-500" },
-          { color: "accent-100", gradientDirection: "bg-gradient-to-r" },
-        ],
-      }),
-    ),
+    // backgroundImage: Type.Optional(background()),
+    // colorPreset: Type.Optional(
+    //   colorPreset({
+    //     examples: [
+    //       { color: "base-100" },
+    //       { color: "primary-500" },
+    //       { color: "accent-100", gradientDirection: "bg-gradient-to-r" },
+    //     ],
+    //   }),
+    // ),
     tags: Type.Array(Type.String({ description: "A tag for the page. Should be url-safe." }), {
       title: "Tags",
       description:
@@ -223,6 +223,10 @@ export const pageAttributesSchema = Type.Object(
 
 export const siteAttributesSchema = Type.Object(
   {
+    themeId: Type.String({
+      title: "Theme ID",
+      description: "The ID of the theme to use for the site",
+    }),
     language: StringEnum(
       [
         "ar",
@@ -273,19 +277,19 @@ export const siteAttributesSchema = Type.Object(
           "Choose a value based on the site description. If the site is in multiple languages, use 'en'.",
       },
     ),
-    backgroundImage: Type.Optional(background()),
-    colorPreset: Type.Optional(
-      colorPreset({
-        examples: [
-          { color: "base-100" },
-          { color: "primary-500" },
-          { color: "secondary-400" },
-          { color: "neutral-400" },
-          { color: "accent-200-gradient", gradientDirection: "bg-gradient-to-r" },
-          { color: "neutral-800-gradient", gradientDirection: "bg-gradient-to-t" },
-        ],
-      }),
-    ),
+    // backgroundImage: Type.Optional(background()),
+    // colorPreset: Type.Optional(
+    //   colorPreset({
+    //     examples: [
+    //       { color: "base-100" },
+    //       { color: "primary-500" },
+    //       { color: "secondary-400" },
+    //       { color: "neutral-400" },
+    //       { color: "accent-200-gradient", gradientDirection: "bg-gradient-to-r" },
+    //       { color: "neutral-800-gradient", gradientDirection: "bg-gradient-to-t" },
+    //     ],
+    //   }),
+    // ),
     // navbar: Type.Optional(
     //   Type.Composite([navbarManifest.props], {
     //     title: "Navbar",

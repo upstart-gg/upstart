@@ -15,137 +15,45 @@ export const providersSchema = StringEnum(["internal"]);
 
 export type DatasourceProvider = Static<typeof providersSchema>;
 
-const datasourceInternalManifest = Type.Object(
-  {
-    id: Type.String({
-      title: "ID",
+const datasourceInternalManifest = Type.Object({
+  id: Type.String({
+    title: "ID",
+    description:
+      "Unique identifier of the datasource. Used to reference the datasource in the system. Use a url-safe string like a slug.",
+  }),
+  label: Type.String({ title: "Label", description: "Label of the datasource displayed in the UI" }),
+  provider: Type.Literal("internal", {
+    title: "Internal",
+    description: "Internal datasource saved locally in Upstart.",
+  }),
+  schema: Type.Any({
+    title: "Schema",
+    description:
+      "JSON Schema of datasource. Always a schema of type 'array' of objects. An object representing a single record.",
+  }),
+  indexes: Type.Array(
+    Type.Object({
+      name: Type.String({ title: "Index name" }),
+      fields: Type.Array(Type.String(), { title: "Fields to index" }),
+      unique: Type.Optional(Type.Boolean({ title: "Creates a unique index" })),
+      fulltext: Type.Optional(Type.Boolean({ title: "Creates a fulltext index for search" })),
+    }),
+    {
+      title: "Indexes",
       description:
-        "Unique identifier of the datasource. Used to reference the datasource in the system. Use a url-safe string like a slug.",
-    }),
-    label: Type.String({ title: "Label", description: "Label of the datasource displayed in the UI" }),
-    provider: Type.Literal("internal", {
-      title: "Internal",
-      description: "Internal datasource saved locally in Upstart.",
-    }),
-    schema: Type.Any({
-      title: "Schema",
-      description:
-        "JSON Schema of datasource. Always a schema of type 'array' of objects. An object representing a single record.",
-    }),
-    indexes: Type.Array(
+        "IMPORTANT: Indexes to create on the datasource. use it to enforce uniqueness or improve query performance.",
+    },
+  ),
+  foreignKeys: Type.Optional(
+    Type.Array(
       Type.Object({
-        name: Type.String({ title: "Index name" }),
-        fields: Type.Array(Type.String(), { title: "Fields to index" }),
-        unique: Type.Optional(Type.Boolean({ title: "Creates a unique index" })),
-        fulltext: Type.Optional(Type.Boolean({ title: "Creates a fulltext index for search" })),
+        field: Type.String({ title: "Field in this datasource" }),
+        foreignDatasourceId: Type.String({ title: "Foreign Datasource ID" }),
+        foreignField: Type.String({ title: "Field in the foreign datasource" }),
       }),
-      {
-        title: "Indexes",
-        description:
-          "IMPORTANT: Indexes to create on the datasource. use it to enforce uniqueness or improve query performance.",
-      },
     ),
-  },
-  {
-    examples: [
-      {
-        id: "customers",
-        label: "Customers",
-        provider: "internal",
-        schema: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              name: { type: "string", title: "Name" },
-              email: { type: "string", title: "Email", format: "email" },
-            },
-            required: ["name", "email"],
-            title: "Customer",
-            examples: [
-              { name: "John Doe", email: "john.doe@example.com" },
-              {
-                name: "Jane Smith",
-                email: "jane.smith@example.com",
-              },
-              {
-                name: "Alice Johnson",
-                email: "alice.johnson@example.com",
-              },
-              {
-                name: "Bob Brown",
-                email: "bob.brown@example.com",
-              },
-              {
-                name: "Charlie Davis",
-                email: "charlie.davis@example.com",
-              },
-            ],
-          },
-        },
-        indexes: [
-          {
-            name: "idx_customers_email",
-            fields: ["email"],
-            unique: true,
-          },
-        ],
-      },
-      {
-        id: "blog_posts",
-        label: "Blog Posts",
-        provider: "internal",
-        schema: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              title: { type: "string", title: "Title" },
-              content: { type: "string", title: "Content" },
-              author: { type: "string", title: "Author" },
-            },
-            required: ["title", "content", "author"],
-            title: "Blog Post",
-            examples: [
-              {
-                title: "My First Blog Post",
-                content: "This is the content of my first blog post.",
-                author: "John Doe",
-              },
-              {
-                title: "Exploring the Cosmos",
-                content: "A journey through the stars and galaxies.",
-                author: "Jane Smith",
-              },
-              {
-                title: "The Art of Cooking",
-                content: "Delicious recipes and cooking tips.",
-                author: "Alice Johnson",
-              },
-              {
-                title: "Traveling the World",
-                content: "My adventures in different countries.",
-                author: "Bob Brown",
-              },
-              {
-                title: "Technology Trends",
-                content: "The latest trends in technology.",
-                author: "Charlie Davis",
-              },
-            ],
-          },
-        },
-        indexes: [
-          {
-            name: "idx_blog_posts_title",
-            fields: ["title"],
-            unique: true,
-          },
-        ],
-      },
-    ],
-  },
-);
+  ),
+});
 
 export type InternalDatasource = Static<typeof datasourceInternalManifest>;
 
