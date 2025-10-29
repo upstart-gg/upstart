@@ -16,8 +16,16 @@ const MemoizedMarkdownBlock = memo(
         <ReactMarkdown
           components={{
             // @ts-ignore
-            choices: ({ node, children, ...props }: PropsWithChildren<{ multiple?: boolean }>) => {
-              return <div className={tx("flex flex-wrap gap-2 justify-between my-3")}>{children}</div>;
+            choices: ({ node, children, multiple }: PropsWithChildren<{ multiple?: boolean }>) => {
+              console.log("Rendering choices with multiple =", multiple);
+              console.log("Children:", children);
+              return (
+                <div
+                  className={tx("flex flex-wrap gap-2 justify-between my-3", multiple && "multiple-choices")}
+                >
+                  {children}
+                </div>
+              );
             },
             // @ts-ignore
             choice: ({ node, children, ...props }: PropsWithChildren<{ other?: boolean }>) => {

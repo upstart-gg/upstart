@@ -176,8 +176,8 @@ export type ThemesArray = Static<typeof themesArray>;
 export type FontType = Theme["typography"]["body"];
 
 export const defaultTheme: Theme = {
-  id: "_default_",
-  name: "default",
+  id: "default-theme",
+  name: "Default",
   description: "Default Upstart theme",
   tags: ["gradient", "vibrant", "modern", "creative", "dynamic", "artistic", "bold"],
   browserColorScheme: "light",

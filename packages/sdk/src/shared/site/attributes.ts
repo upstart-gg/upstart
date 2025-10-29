@@ -2,24 +2,12 @@ import { Type, type Static } from "@sinclair/typebox";
 import { getSchemaDefaults } from "../utils/schema";
 import { boolean } from "../bricks/props/boolean";
 import { image } from "../bricks/props/image";
-import { colorPreset } from "../bricks/props/color-preset";
 import { StringEnum } from "../utils/string-enum";
-import { background } from "../bricks/props/background";
 import defaultsDeep from "lodash-es/defaultsDeep";
 
 // Default attributes
 export const pageAttributesSchema = Type.Object(
   {
-    // backgroundImage: Type.Optional(background()),
-    // colorPreset: Type.Optional(
-    //   colorPreset({
-    //     examples: [
-    //       { color: "base-100" },
-    //       { color: "primary-500" },
-    //       { color: "accent-100", gradientDirection: "bg-gradient-to-r" },
-    //     ],
-    //   }),
-    // ),
     tags: Type.Array(Type.String({ description: "A tag for the page. Should be url-safe." }), {
       title: "Tags",
       description:
@@ -38,12 +26,12 @@ export const pageAttributesSchema = Type.Object(
       pattern: "^/[a-z0-9-:/]*$",
       examples: ["/", "/about", "/products/:id"],
     }),
-    // queries: Type.Array(querySchema, {
-    //   title: "Queries",
-    //   "ui:field": "queries",
-    //   default: [],
-    //   description: "List of queries for this page. All listed queries will be executed when the page loads.",
-    // }),
+    layout: Type.String({
+      title: "Layout",
+      description: "The layout to use for this page. Ex: 'default', 'main', 'no-sidebar'",
+      default: "default",
+      "ui:field": "hidden",
+    }),
     title: Type.String({
       title: "Title",
       default: "Untitled",
@@ -198,34 +186,12 @@ export const pageAttributesSchema = Type.Object(
   },
 );
 
-// export const pageQueriesSchema = Type.Array(queryUse(), {
-//   title: "Page Queries",
-//   description: `List of page queries in use in this page. All listed queries will be executed when the page loads. Aliases must be unique and camelCase'd.
-// The queryId must reference an existing site query ID.`,
-//   examples: [
-//     { queryId: "get-latest-posts", alias: "latestPosts" },
-//     {
-//       queryId: "get-user-profile",
-//       alias: "userProfile",
-//       params: [{ field: "userId", op: "eq", value: ":slug" }],
-//     },
-//     {
-//       queryId: "list-featured-products",
-//       alias: "featuredProducts",
-//     },
-//     {
-//       queryId: "get-event-by-slug",
-//       alias: "eventBySlug",
-//       params: [{ field: "$slug", op: "eq", value: ":slug" }],
-//     },
-//   ] satisfies QueryUseSettings[],
-// });
-
 export const siteAttributesSchema = Type.Object(
   {
     themeId: Type.String({
       title: "Theme ID",
       description: "The ID of the theme to use for the site",
+      default: "default-theme",
     }),
     language: StringEnum(
       [

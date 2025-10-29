@@ -161,6 +161,7 @@ type Metadata = {
   creditsUsed?: number;
   userLanguage?: string; // ISO code of the user's language, e.g. "en", "fr", "es"
   wip?: boolean; // For current tests - TODO: remove later
+  compressingHistory?: boolean;
 };
 
 // For now, let's keep it simple
