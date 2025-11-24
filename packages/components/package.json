@@ -121,7 +121,7 @@
     "postcss-import": "^16.1.0",
     "postcss-preset-env": "^10.0.1",
     "typescript": "^5.9.2",
-    "vite": "^7.1.5",
+    "vite": "^7.2.4",
     "vite-plugin-devtools-json": "^1.0.0",
     "vite-plugin-dts": "^4.5.4"
   },
