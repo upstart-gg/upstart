@@ -23,6 +23,10 @@ const lightTheme: Theme = {
     base100: "oklch(0.95 0.1 0 / 1)",
     base200: "oklch(0.85 0.1 0 / 1)",
     base300: "oklch(0.75 0.1 0 / 1)",
+    info: "oklch(0.4 0.1 240 / 1)",
+    success: "oklch(0.4 0.1 120 / 1)",
+    warning: "oklch(0.5 0.1 90 / 1)",
+    error: "oklch(0.4 0.1 20 / 1)",
   },
 };
 
@@ -47,36 +51,11 @@ const darkTheme: Theme = {
     base100: "oklch(0.15 0.1 0 / 1)",
     base200: "oklch(0.25 0.1 0 / 1)",
     base300: "oklch(0.35 0.1 0 / 1)",
+    info: "oklch(0.4 0.1 240 / 1)",
+    success: "oklch(0.4 0.1 120 / 1)",
+    warning: "oklch(0.5 0.1 90 / 1)",
+    error: "oklch(0.4 0.1 20 / 1)",
   },
-};
-
-const redTheme: Theme = {
-  id: "sunset-coral-glow",
-  name: "Sunset Coral Glow",
-  tags: ["warm", "coral", "sunset"],
-  colors: {
-    accent: "oklch(60 0.5 30)",
-    base100: "oklch(99 0.05 0)",
-    base200: "oklch(97 0.1 0)",
-    base300: "oklch(95 0.15 0)",
-    neutral: "oklch(95 0.2 5)",
-    primary: "oklch(85 0.7 20)",
-    secondary: "oklch(75 0.6 25)",
-  },
-  typography: {
-    base: 16,
-    body: {
-      type: "google",
-      family: "Raleway",
-    },
-    heading: {
-      type: "google",
-      family: "Pacifico",
-    },
-    alternatives: [],
-  },
-  browserColorScheme: "light",
-  description: "",
 };
 
 describe("Color system test suite", () => {

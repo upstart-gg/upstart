@@ -1,6 +1,6 @@
 import { type ThreadsMediaSchema, threadsMediaSchema } from "./schema";
 import type { MetaFullOAuthConfig } from "~/shared/datasources/external/meta/oauth/config";
-import invariant from "~/shared/utils/invariant";
+// import invariant from "~/shared/utils/invariant";
 import { UnauthorizedError } from "~/shared/datasources/errors";
 import type { MetaOptions } from "~/shared/datasources/external/meta/options";
 import { stringifyObjectValues } from "~/shared/datasources/utils";
@@ -14,7 +14,7 @@ const fetchThreadsMediaDatasource: DatasourceFetcher<
   MetaFullOAuthConfig,
   MetaOptions
 > = async ({ options, oauth }) => {
-  invariant(oauth?.config, "fetchThreadsMediaDatasource Error: OAuth config is required");
+  // invariant(oauth?.config, "fetchThreadsMediaDatasource Error: OAuth config is required");
 
   const params = new URLSearchParams({
     ...stringifyObjectValues(options),

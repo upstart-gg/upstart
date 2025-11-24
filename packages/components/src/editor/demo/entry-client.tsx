@@ -13,7 +13,8 @@ const hydrate = () =>
     const resolvedConfig =
       url.searchParams.get("action") === "setup"
         ? createEmptyConfig("A blog about various kind of coffee and also coffee recipes")
-        : (config as SiteAndPagesConfig);
+        : // @ts-ignore
+          (config as SiteAndPagesConfig);
 
     hydrateRoot(
       document.getElementById("root") as HTMLElement,
