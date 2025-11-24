@@ -8,7 +8,7 @@ export const connectorSchema = StringEnum(["airtable", "google-sheets", "notion"
 
 export type DatarecordConnector = Static<typeof connectorSchema>;
 
-const internalDatarecord = Type.Object(
+export const internalDatarecord = Type.Object(
   {
     provider: Type.Literal("internal"),
     // options: Type.Optional(Type.Any()),
@@ -31,32 +31,6 @@ const internalDatarecord = Type.Object(
             title: "Newsletter Subscription",
           },
         ],
-      },
-    ),
-    indexes: Type.Array(
-      Type.Object(
-        {
-          name: Type.String({ title: "Index name" }),
-          fields: Type.Array(Type.String(), { title: "Fields to index" }),
-          unique: Type.Optional(Type.Boolean({ title: "Unique index", default: false })),
-        },
-        {
-          examples: [
-            {
-              name: "unique_email_index",
-              fields: ["email"],
-              unique: true,
-            },
-            {
-              name: "lastname_index",
-              fields: ["lastname"],
-            },
-          ],
-        },
-      ),
-      {
-        title: "Indexes",
-        description: "IMPORTANT: Indexes to create. Use it to enforce uniqueness.",
       },
     ),
   },
@@ -145,7 +119,10 @@ export const genericDatarecord = Type.Composite([
 ]);
 
 export type Datarecord = Static<typeof genericDatarecord>;
-export type InternalDatarecord = Extract<Datarecord, { provider: "internal" }>;
+
+export type InternalDatarecord = Omit<Static<typeof genericDatarecord>, "provider"> & {
+  provider: "internal";
+};
 
 export const datarecordsList = Type.Array(genericDatarecord);
 export type DatarecordsList = Static<typeof datarecordsList>;

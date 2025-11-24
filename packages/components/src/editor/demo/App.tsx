@@ -18,7 +18,7 @@ export default function App({ path, config }: { path: string; config: SiteAndPag
     <ClientOnly>
       <InnerEditor
         site={config.site}
-        chatSession={{ id: "dummy", messages: [] }}
+        chatSession={{ id: "dummy", messages: [], url: "" }}
         pages={config.pages}
         pageId={pageId}
         pageVersion="dummy-version"
@@ -59,14 +59,6 @@ function InnerEditor(
     return { pageVersionId: "latest" };
   };
   const editorWrapperRef = useRef<EditorWrapperRef>(null);
-
-  const demoDoSomethingInEditorState = () => {
-    if (editorWrapperRef.current) {
-      // EXAMPLE USAGE OF THE EDITOR REF
-      const { editorStore, draftStore } = editorWrapperRef.current;
-      editorStore.getState().setPreviewMode("mobile");
-    }
-  };
 
   return (
     <EditorWrapper

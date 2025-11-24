@@ -44,7 +44,6 @@ export function createEmptyConfig(sitePrompt: string): SiteAndPagesConfig {
       datarecords: [],
       datasources: [],
     },
-    // we need a fake page
     pages: [
       {
         // Keep this fake id as is!

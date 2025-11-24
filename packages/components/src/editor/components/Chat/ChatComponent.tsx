@@ -151,6 +151,7 @@ export default function Chat() {
       // resume: generationState.isReady === false,
       transport: new DefaultChatTransport({
         api: "/editor/chat",
+        // api: `${chatSession.url}/sandbox/${site.id}/${chatSession.userId}/chat`,
         credentials: "include",
         // body: () => ({
         //   callContext: {

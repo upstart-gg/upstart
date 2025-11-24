@@ -50,6 +50,7 @@ export type SiteSavePayload = {
 export interface EditorStateProps {
   chatSession: {
     id: string;
+    userId: string;
     messages: UpstartUIMessage[];
   };
   /**
@@ -422,7 +423,7 @@ export function useSelectedSection() {
   const ctx = useEditorStoreContext();
   const draft = usePageContext();
   return useStore(ctx, (state) => {
-    const section = draft.getState().page.sections.find((s) => s.id === state.selectedSectionId);
+    const section = draft.getState().page.sections?.find((s) => s.id === state.selectedSectionId);
     if (!section) {
       return null;
     }

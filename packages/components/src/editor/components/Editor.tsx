@@ -1,7 +1,6 @@
 import {
   useChatVisible,
   useDebugMode,
-  useEditorEnabled,
   useEditorHelpers,
   usePanel,
   useSelectedBrickId,

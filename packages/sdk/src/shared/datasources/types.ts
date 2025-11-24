@@ -29,7 +29,7 @@ const datasourceInternalManifest = Type.Object({
   schema: Type.Any({
     title: "Schema",
     description:
-      "JSON Schema of datasource. Always a schema of type 'array' of objects. An object representing a single record.",
+      "JSON Schema of datasource. Always a schema of type 'object', each property representing a field in database.",
   }),
   indexes: Type.Array(
     Type.Object({

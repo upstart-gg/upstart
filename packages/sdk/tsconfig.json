@@ -12,6 +12,8 @@
     "outDir": "dist" /* Redirect output structure to the directory. */,
     "isolatedModules": true,
     "moduleDetection": "force",
+    "declaration": true,
+    "declarationMap": true,
     "moduleResolution": "Bundler" /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */,
     "skipLibCheck": true /* Skip type checking of declaration files. */,
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */,
