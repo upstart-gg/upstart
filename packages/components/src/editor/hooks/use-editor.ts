@@ -1,11 +1,11 @@
 import type { UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
-import type { Brick } from "@upstart.gg/sdk/shared/bricks";
-import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/layout-constants";
-import type { Page } from "@upstart.gg/sdk/shared/page";
-import type { Resolution } from "@upstart.gg/sdk/shared/responsive";
-import type { Site } from "@upstart.gg/sdk/shared/site";
-import type { Theme } from "@upstart.gg/sdk/shared/theme";
-import invariant from "@upstart.gg/sdk/shared/utils/invariant";
+import type { Brick } from "@upstart.gg/sdk/bricks";
+import { LAYOUT_ROW_HEIGHT } from "@upstart.gg/sdk/shared/site/layout-constants";
+import type { Page } from "@upstart.gg/sdk/shared/site/page";
+import type { Resolution } from "@upstart.gg/sdk/shared/site/responsive";
+import type { Site } from "@upstart.gg/sdk/shared/site/site";
+import type { Theme } from "@upstart.gg/sdk/shared/themes/theme";
+import { invariant } from "@upstart.gg/sdk/utils";
 import { enableMapSet } from "immer";
 import { isEqual, isNil } from "lodash-es";
 import { createContext, useContext } from "react";
@@ -50,6 +50,7 @@ export type SiteSavePayload = {
 export interface EditorStateProps {
   chatSession: {
     id: string;
+    userId: string;
     messages: UpstartUIMessage[];
   };
   /**
@@ -422,7 +423,7 @@ export function useSelectedSection() {
   const ctx = useEditorStoreContext();
   const draft = usePageContext();
   return useStore(ctx, (state) => {
-    const section = draft.getState().page.sections.find((s) => s.id === state.selectedSectionId);
+    const section = draft.getState().page.sections?.find((s) => s.id === state.selectedSectionId);
     if (!section) {
       return null;
     }

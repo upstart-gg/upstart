@@ -5,7 +5,7 @@ import {
   type ColorType,
   type ElementColor,
   type ElementColorType,
-} from "@upstart.gg/sdk/shared/themes/color-system";
+} from "@upstart.gg/sdk/themes/color-system";
 import BaseColorPicker, { ElementColorPicker } from "~/editor/components/ColorPicker";
 import type { FieldProps } from "./types";
 import { IoCloseOutline } from "react-icons/io5";

@@ -4,7 +4,7 @@
     "target": "ES2023",
     "useDefineForClassFields": true,
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
-    "types": ["vite/client", "node"],
+    "types": ["vite/client", "node", "./react-markdown.d.ts"],
     "module": "ESNext",
     "skipLibCheck": true,
     "rootDir": "./src",
@@ -15,6 +15,8 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "noEmit": true,
+    "declaration": true,
+    "declarationMap": true,
     /* Linting */
     "strict": true,
     "noUnusedLocals": false,
@@ -25,5 +27,5 @@
       "@creatives/*": ["../../creatives/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "react-markdown.d.ts"]
 }

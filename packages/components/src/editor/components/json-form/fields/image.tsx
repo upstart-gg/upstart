@@ -7,18 +7,17 @@ import { type FC, useMemo, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import ModalSearchImage from "~/editor/components/ModalSearchImage";
 import { useDynamicTextEditor } from "~/editor/hooks/use-editable-text";
-import { usePageQueries } from "~/editor/hooks/use-page-data";
 import { useUploader } from "../../UploaderContext";
+import type { FieldProps } from "./types";
 import { FieldTitle } from "../field-factory";
 import { fieldLabel } from "../form-class";
-import type { FieldProps } from "./types";
 
 const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
   const { schema, formData, onChange, title, description, currentValue, brickId, noDynamic } = props;
   const [showSearch, setShowSearch] = useState(false);
   const id = useMemo(() => nanoid(), []);
   const { onImageUpload } = useUploader();
-  const pageQueries = usePageQueries();
+  const pageQueries = [];
 
   const onDynamicSrcChange = (newSrc: string) => {
     onPropsChange({ src: newSrc });

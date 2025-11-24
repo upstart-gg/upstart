@@ -1,5 +1,5 @@
 import type { TArray, TObject, TSchema, Static } from "@sinclair/typebox";
-import type { PageAttributes } from "../attributes";
+import type { PageAttributes } from "../site/attributes";
 import { defaultsDeep as applyDefaultsDeep } from "lodash-es";
 import { FormatRegistry } from "@sinclair/typebox";
 import { Validator } from "@cfworker/json-schema";

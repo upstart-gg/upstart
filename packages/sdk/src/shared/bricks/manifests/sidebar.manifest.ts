@@ -1,4 +1,4 @@
-import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest } from "~/shared/bricks/types";
 import { defineProps, group } from "../props/helpers";
 import { VscLayoutSidebarLeftOff } from "react-icons/vsc";
 import { Type } from "@sinclair/typebox";

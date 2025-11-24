@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { queryUse, type QueryUseSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
 import {
   Button,
@@ -12,14 +13,14 @@ import { Fragment, startTransition, useCallback, useState, type FC } from "react
 import { BsAt, BsCrosshair, BsDatabaseAdd, BsDatabaseDown } from "react-icons/bs";
 import type { FieldProps } from "./types";
 import { FieldTitle } from "../field-factory";
-import { usePagePathParams, useSiteQueries, useSiteQuery } from "~/editor/hooks/use-page-data";
+import { usePagePathParams, useQueries, useQuery } from "~/editor/hooks/use-page-data";
 import { useDatasource, useDatasources } from "~/editor/hooks/use-datasource";
 import { FiEdit } from "react-icons/fi";
 import { tx } from "@upstart.gg/style-system/twind";
 import { LuPlus } from "react-icons/lu";
 import type { TSchema } from "@sinclair/typebox";
 import TagsInput, { TagsSelect } from "../../TagsInput";
-import { validate } from "@upstart.gg/sdk/shared/utils/schema";
+import { validate } from "@upstart.gg/sdk/utils";
 
 const baseOperators = [
   { value: "eq", label: "Equals" },
@@ -84,7 +85,7 @@ function getValueLabel(value: NonNullable<QueryUseSettings["params"]>[number]["v
 const QueryField: FC<FieldProps<QueryUseSettings[]>> = (props) => {
   const { currentValue = [], onChange, schema, title, description, brickId } = props;
   const datasources = useDatasources();
-  const availableQueries = useSiteQueries();
+  const availableQueries = useQueries();
   const [showModal, setShowModal] = useState(false);
 
   // If there are no datasources, we cannot create queries
@@ -128,7 +129,7 @@ const QueryField: FC<FieldProps<QueryUseSettings[]>> = (props) => {
             {currentValue.map((query, index) => (
               <li key={index} className="flex items-center gap-1.5 mb-2">
                 <BsDatabaseAdd />
-                {availableQueries.find((q) => q.id === query.queryId)?.label}{" "}
+                {availableQueries.find((q) => q.alias === query.alias)?.label}{" "}
                 <span className="text-gray-500 text-xs">({query.alias})</span>
               </li>
             ))}
@@ -156,7 +157,7 @@ function QueryModal({
   onClose: () => void;
   onChange: (queries: QueryUseSettings[]) => void;
 }) {
-  const availableQueries = useSiteQueries();
+  const availableQueries = useQueries();
   const [showCreationForm, setShowCreationForm] = useState(initialQueries.length === 0);
   const [editingQuery, setEditingQuery] = useState<QueryUseSettings | null>(null);
   const [queries, setQueries] = useState<QueryUseSettings[]>(initialQueries);
@@ -218,12 +219,12 @@ function QueryModal({
           <div className="flex flex-col border border-gray-200 rounded-lg overflow-hidden -mx-1 mt-3 shadow-sm">
             {queries.map((query) => (
               <div
-                key={query.queryId}
+                key={query.alias}
                 className="flex items-center justify-between p-4 [&:not(:last-child)]:border-b border-gray-200 "
               >
                 <div className="flex flex-col gap-2">
                   <span className="font-medium">
-                    {availableQueries.find((q) => q.id === query.queryId)?.label}
+                    {availableQueries.find((q) => q.alias === query.alias)?.label}
                   </span>
                   <div className="flex gap-6 items-center justify-start text-sm  text-gray-500">
                     <Tooltip content={`Alias`}>
@@ -284,7 +285,7 @@ function QueryEditor({
       params: [],
     },
   );
-  const queryReference = useSiteQuery(query?.queryId);
+  const queryReference = useQuery(query?.alias);
   const params = queryReference?.parameters ?? [];
 
   const reset = () => {
@@ -294,7 +295,7 @@ function QueryEditor({
   };
 
   const datasource = useDatasource(queryReference?.datasourceId);
-  const availableQueries = useSiteQueries();
+  const availableQueries = useQueries();
   const pageParams = usePagePathParams();
 
   const validateQuery = () => {

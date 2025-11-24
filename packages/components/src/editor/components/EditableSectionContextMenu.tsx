@@ -1,4 +1,4 @@
-import { generateId, type Section } from "@upstart.gg/sdk/shared/bricks";
+import { generateId, type Section } from "@upstart.gg/sdk/bricks";
 import { useDebugMode, useEditorHelpers } from "../hooks/use-editor";
 import { ContextMenu, Portal } from "@upstart.gg/style-system/system";
 import { forwardRef, type PropsWithChildren } from "react";

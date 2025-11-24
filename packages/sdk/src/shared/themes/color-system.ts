@@ -1,5 +1,5 @@
 import chroma from "chroma-js";
-import type { Theme } from "../theme";
+import type { Theme } from "./theme";
 import { kebabCase } from "lodash-es";
 import { css } from "@upstart.gg/style-system/twind";
 
@@ -14,6 +14,10 @@ export const baseColors: Record<ColorType, string> = {
   base100: "Base color",
   base200: "Base (level 2)",
   base300: "Base (level 3)",
+  info: "Info color",
+  success: "Success color",
+  warning: "Warning color",
+  error: "Error color",
 };
 
 export const shadeNumbers = [900, 800, 700, 600, 500, 400, 300, 200, 100, 50] as const;

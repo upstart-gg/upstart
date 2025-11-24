@@ -5,7 +5,7 @@ import { IoIosAttach } from "react-icons/io";
 import { BiStopCircle } from "react-icons/bi";
 import { type FormEvent, useRef } from "react";
 import { useGenerationState } from "../../hooks/use-page-data";
-import type { UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
+import type { UpstartUIMessage } from "@upstart.gg/sdk/ai";
 
 interface ChatBoxProps {
   input: string;

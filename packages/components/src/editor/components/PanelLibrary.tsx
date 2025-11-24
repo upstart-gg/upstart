@@ -1,15 +1,13 @@
-import { defaultProps, manifests } from "@upstart.gg/sdk/bricks/manifests/all-manifests";
+import { defaultProps, manifests, type BrickDefaults } from "@upstart.gg/sdk/bricks/manifests";
 import { type ComponentProps, useEffect, useMemo, useState } from "react";
-import type { BrickCategory, BrickDefaults, BrickManifest } from "@upstart.gg/sdk/shared/brick-manifest";
+import type { BrickCategory, BrickManifest } from "@upstart.gg/sdk/bricks";
 import { useEditorHelpers } from "../hooks/use-editor";
 import { tx } from "@upstart.gg/style-system/twind";
 import { PanelBlockTitle } from "./PanelBlockTitle";
 import { IconRender } from "./IconRender";
-import { useDraggable } from "@dnd-kit/react";
 import { nanoid } from "nanoid";
-import { createEmptyBrick } from "@upstart.gg/sdk/shared/bricks";
+import { createEmptyBrick } from "@upstart.gg/sdk/bricks";
 import { useSortable } from "@dnd-kit/react/sortable";
-import { useSections } from "../hooks/use-page-data";
 
 const brickCategories: Partial<Record<BrickCategory, string>> = {
   basic: "Basic elements",

@@ -12,6 +12,50 @@
       "import": "./dist/shared/index.js",
       "types": "./dist/shared/index.d.ts"
     },
+     "./bricks": {
+      "types": "./dist/shared/bricks/index.d.ts",
+      "import": "./dist/shared/bricks/index.js"
+    },
+     "./bricks/manifests": {
+      "types": "./dist/shared/bricks/manifests/index.d.ts",
+      "import": "./dist/shared/bricks/manifests/index.js"
+    },
+    "./bricks/props": {
+      "types": "./dist/shared/bricks/props/index.d.ts",
+      "import": "./dist/shared/bricks/props/index.js"
+    },
+     "./bricks/*": {
+      "types": "./dist/shared/bricks/*.d.ts",
+      "import": "./dist/shared/bricks/*.js"
+    },
+     "./ai": {
+      "types": "./dist/shared/ai/index.d.ts",
+      "import": "./dist/shared/ai/index.js"
+    },
+    "./analytics": {
+      "types": "./dist/shared/analytics/index.d.ts",
+      "import": "./dist/shared/analytics/index.js"
+    },
+    "./datasources": {
+      "types": "./dist/shared/datasources/index.d.ts",
+      "import": "./dist/shared/datasources/index.js"
+    },
+    "./datarecords": {
+      "types": "./dist/shared/datarecords/index.d.ts",
+      "import": "./dist/shared/datarecords/index.js"
+    },
+    "./site": {
+      "types": "./dist/shared/site/index.d.ts",
+      "import": "./dist/shared/site/index.js"
+    },
+    "./themes": {
+      "types": "./dist/shared/themes/index.d.ts",
+      "import": "./dist/shared/themes/index.js"
+    },
+    "./utils": {
+      "types": "./dist/shared/utils/index.d.ts",
+      "import": "./dist/shared/utils/index.js"
+    },
     "./shared/*": {
       "types": "./dist/shared/*.d.ts",
       "import": "./dist/shared/*.js"
@@ -62,6 +106,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "4.20240806.0",
+    "@types/bun": "1.2.23",
     "@types/chroma-js": "3.1.1",
     "@types/debug": "4.1.12",
     "@types/express": "^4.17.21",
@@ -84,8 +129,8 @@
     "sizetest": "pnpm build && du -sh dist",
     "lint": "biome check --write . && tsc --noEmit",
     "ci:lint": "tsc --noEmit",
-    "test": "vitest",
-    "gen-ia-docs": "tsx scripts/generate-ia-docs.ts"
+    "generate-md-docs": "tsx scripts/generate-md-docs.ts",
+    "test": "vitest"
   },
   "author": "Matthias Etienne",
   "publishConfig": {

@@ -1,6 +1,6 @@
 import type { YoutubeListOptions } from "./options";
 import type { YoutubeListSchema } from "./schema";
-import { UnauthorizedError } from "~/shared/errors";
+import { UnauthorizedError } from "~/shared/datasources/errors";
 import { stringifyObjectValues } from "~/shared/datasources/utils";
 import type { YoutubeFullOAuthConfig } from "../oauth/config";
 import type { DatasourceFetcher } from "~/shared/datasources/fetcher";

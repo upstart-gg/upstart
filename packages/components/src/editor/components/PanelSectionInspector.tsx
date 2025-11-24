@@ -1,6 +1,6 @@
 import { usePreviewMode, useDebugMode } from "../hooks/use-editor";
 import { RxSection } from "react-icons/rx";
-import type { Section } from "@upstart.gg/sdk/shared/bricks";
+import type { Section } from "@upstart.gg/sdk/bricks";
 import { Callout, Tabs } from "@upstart.gg/style-system/system";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import { useLocalStorage } from "usehooks-ts";

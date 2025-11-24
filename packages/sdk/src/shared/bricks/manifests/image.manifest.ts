@@ -1,4 +1,4 @@
-import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest } from "~/shared/bricks/types";
 import { defineProps } from "../props/helpers";
 import { image } from "../props/image";
 import { shadow } from "../props/effects";
@@ -91,6 +91,7 @@ DO
         },
         {
           "ui:field": "hidden",
+          title: "Image Author",
         },
       ),
     ),

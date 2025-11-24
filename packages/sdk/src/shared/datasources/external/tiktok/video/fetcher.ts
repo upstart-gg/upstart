@@ -1,6 +1,6 @@
 import type { TiktokVideoOptions } from "./options";
 import type { TiktokVideoListSchema } from "./schema";
-import { UnauthorizedError } from "~/shared/errors";
+import { UnauthorizedError } from "~/shared/datasources/errors";
 import type { TiktokFullOAuthConfig } from "../oauth/config";
 import type { DatasourceFetcher } from "~/shared/datasources/fetcher";
 

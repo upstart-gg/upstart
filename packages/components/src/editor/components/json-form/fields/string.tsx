@@ -6,12 +6,13 @@ import { FieldTitle } from "../field-factory";
 import { tx } from "@upstart.gg/style-system/twind";
 import type { UrlOrPageIdSettings } from "@upstart.gg/sdk/shared/bricks/props/string";
 import { type ChangeEvent, type FC, useRef, useState } from "react";
-import { useDraftHelpers, usePagePathParams, usePageQueries, useSitemap } from "~/editor/hooks/use-page-data";
+import { useDraftHelpers, usePagePathParams, useSitemap } from "~/editor/hooks/use-page-data";
 import { useDynamicTextEditor } from "~/editor/hooks/use-editable-text";
 
 export const StringField: FC<FieldProps<string>> = (props) => {
   const { currentValue, onChange, title, description, placeholder, schema, brickId, noDynamic } = props;
-  const pageQueries = usePageQueries();
+  // const pageQueries = useQueries();
+  const pageQueries = [];
   const onChangeDebounced = useDebounceCallback(onChange, 300);
   const DynamicTextEditor = useDynamicTextEditor(props);
 
@@ -92,7 +93,8 @@ export const UrlOrPageIdField: FC<FieldProps<UrlOrPageIdSettings | null>> = (pro
   const [type, setType] = useState<"url" | "pageId">(
     currentValue?.startsWith("http") || sitemap.length === 1 ? "url" : "pageId",
   );
-  const pageQueries = usePageQueries();
+  // const pageQueries = useQueries();
+  const pageQueries = [];
   const externalLabel = pageQueries.length ? "External / Dynamic" : "External link";
   const DynamicTextEditor = useDynamicTextEditor(props);
 

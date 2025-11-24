@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDraft } from "./use-page-data";
-import type { Theme } from "@upstart.gg/sdk/shared/theme";
+import type { Theme } from "@upstart.gg/sdk/shared/themes/theme";
 
 /**
  * Watch for changes in the configured font families and update the page with needed styles.

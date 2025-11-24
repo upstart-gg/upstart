@@ -1,5 +1,5 @@
-import type { BrickManifest } from "~/shared/brick-manifest";
 import type { BrickProps } from "../props/types";
+import type { BrickManifest } from "../types";
 
 export type BrickExample<Manifest extends BrickManifest> = {
   description: string;

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { pageAttributesSchema, siteAttributesSchema } from "@upstart.gg/sdk/shared/attributes";
+import { pageAttributesSchema, siteAttributesSchema } from "@upstart.gg/sdk/shared/site/attributes";
 import { Tabs } from "@upstart.gg/style-system/system";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import { css, tx } from "@upstart.gg/style-system/twind";
@@ -123,18 +123,12 @@ function DebugTab() {
           <code className={codeClassName}>{JSON.stringify(datarecords, null, 2)}</code>
         </pre>
       </div>
-      <PanelBlockTitle>Site queries ({siteAttributes.queries?.length ?? 0})</PanelBlockTitle>
-      <div className="flex-1 ">
-        <pre className="p-1">
-          <code className={codeClassName}>{JSON.stringify(siteAttributes.queries, null, 2)}</code>
-        </pre>
-      </div>
-      <PanelBlockTitle>Page queries ({pageAttributes.queries?.length ?? 0})</PanelBlockTitle>
+      {/* <PanelBlockTitle>Page queries ({pageAttributes.queries?.length ?? 0})</PanelBlockTitle>
       <div className="flex-1 ">
         <pre className="p-1">
           <code className={codeClassName}>{JSON.stringify(pageAttributes.queries, null, 2)}</code>
         </pre>
-      </div>
+      </div> */}
     </div>
   );
 }

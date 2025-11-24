@@ -1,5 +1,5 @@
 import type { FieldProps } from "./types";
-import type { AlignItemsSettings } from "@upstart.gg/sdk/shared/bricks/props/align";
+import type { AlignItemsSettings } from "@upstart.gg/sdk/bricks/props";
 import EnumField from "./enum";
 import { useParentBrick } from "~/editor/hooks/use-page-data";
 

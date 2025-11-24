@@ -1,5 +1,5 @@
 import "@radix-ui/themes/styles.css";
-import type { SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
+import type { SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site/site";
 import "@upstart.gg/style-system/editor.css";
 import "@upstart.gg/style-system/radix.css";
 import { Theme } from "@upstart.gg/style-system/system";
@@ -41,7 +41,7 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
     {
       chatSession,
       site,
-      page,
+      pages,
       pageVersion,
       pageId,
       onImageUpload,
@@ -81,7 +81,7 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
       createDraftStore({
         site,
         page: {
-          ...page,
+          ...pages[0],
           version: pageVersion,
         },
       }),

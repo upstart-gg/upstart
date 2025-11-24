@@ -1,6 +1,6 @@
 import { type MastodonStatusArraySchema, mastodonStatusArraySchema } from "./schema";
 import fetchMastodonAccount from "../account/fetcher";
-import { UnauthorizedError } from "~/shared/errors";
+import { UnauthorizedError } from "~/shared/datasources/errors";
 import type { MastodonCommonOptions } from "../options";
 import type { DatasourceFetcher } from "~/shared/datasources/fetcher";
 

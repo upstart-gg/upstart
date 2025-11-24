@@ -1,6 +1,6 @@
 import { Type } from "@sinclair/typebox";
 import { TbCarouselHorizontal } from "react-icons/tb";
-import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest } from "~/shared/bricks/types";
 import { defineProps } from "../props/helpers";
 import { image } from "../props/image";
 import { rounding } from "../props/border";

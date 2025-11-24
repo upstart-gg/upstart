@@ -10,6 +10,7 @@ import BackgroundField from "./fields/background";
 import BorderField from "./fields/border";
 import ColorField from "./fields/color";
 import DatasourceField from "./fields/datasource";
+import QueriesField from "./fields/queries";
 import EnumField from "./fields/enum";
 import FaviconField from "./fields/favicon";
 import IconifyField from "./fields/iconify";
@@ -19,7 +20,6 @@ import DynamicField from "./fields/loop";
 import { NumberField, SliderField } from "./fields/number";
 import { PagePaddingField, type TempPadding } from "./fields/padding";
 import PageQueriesField from "./fields/page-queries";
-import SiteQueriesField from "./fields/site-queries";
 import { GeoAddressField, PathField, StringField, UrlOrPageIdField } from "./fields/string";
 import SwitchField from "./fields/switch";
 import TagsField from "./fields/tags";
@@ -35,7 +35,6 @@ import type { BorderSettings } from "@upstart.gg/sdk/shared/bricks/props/border"
 import type { ColorPresetSettings } from "@upstart.gg/sdk/shared/bricks/props/color-preset";
 import type { DeprecatedDatasourceSettings } from "@upstart.gg/sdk/shared/bricks/props/datasource";
 import type { LoopSettings, QueryUseSettings } from "@upstart.gg/sdk/shared/bricks/props/dynamic";
-import type { FaviconProps } from "@upstart.gg/sdk/shared/bricks/props/favicon";
 import type { GeolocationSettings } from "@upstart.gg/sdk/shared/bricks/props/geolocation";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
 import type { TagsSettings } from "@upstart.gg/sdk/shared/bricks/props/tags";
@@ -199,22 +198,22 @@ function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       );
     }
 
-    case "page-queries": {
-      const currentValue = (get(formData, id) ?? commonProps.schema.default) as QueryUseSettings[];
-      return (
-        <PageQueriesField
-          key={`field-${id}`}
-          currentValue={currentValue}
-          onChange={(value: QueryUseSettings[] | undefined | null) => onChange({ [id]: value }, id)}
-          {...commonProps}
-        />
-      );
-    }
+    // case "page-queries": {
+    //   const currentValue = (get(formData, id) ?? commonProps.schema.default) as QueryUseSettings[];
+    //   return (
+    //     <PageQueriesField
+    //       key={`field-${id}`}
+    //       currentValue={currentValue}
+    //       onChange={(value: QueryUseSettings[] | undefined | null) => onChange({ [id]: value }, id)}
+    //       {...commonProps}
+    //     />
+    //   );
+    // }
 
-    case "site-queries": {
+    case "queries": {
       const currentValue = (get(formData, id) ?? commonProps.schema.default) as QueryUseSettings[];
       return (
-        <SiteQueriesField
+        <QueriesField
           key={`field-${id}`}
           currentValue={currentValue}
           onChange={(value) => {}}
@@ -307,17 +306,17 @@ function createFieldComponent(options: FieldFactoryOptions): ReactNode {
       );
     }
 
-    case "favicon": {
-      const currentValue = (get(formData, id) ?? commonProps.schema.default) as FaviconProps;
-      return (
-        <FaviconField
-          key={`field-${id}`}
-          currentValue={currentValue}
-          onChange={(value: FaviconProps | null) => onChange({ [id]: value }, id)}
-          {...commonProps}
-        />
-      );
-    }
+    // case "favicon": {
+    //   const currentValue = (get(formData, id) ?? commonProps.schema.default) as FaviconProps;
+    //   return (
+    //     <FaviconField
+    //       key={`field-${id}`}
+    //       currentValue={currentValue}
+    //       onChange={(value: FaviconProps | null) => onChange({ [id]: value }, id)}
+    //       {...commonProps}
+    //     />
+    //   );
+    // }
 
     case "path": {
       const currentValue = (get(formData, id) ?? commonProps.schema.default) as string;

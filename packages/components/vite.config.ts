@@ -13,7 +13,7 @@ export default defineConfig(({ mode, ...rest }) => {
     // logLevel: "warn",
     plugins: [
       tsconfigPaths() as PluginOption,
-      devtoolsJson(),
+      mode === "serve" && devtoolsJson(),
       react({}) as PluginOption,
       dts({
         include: [

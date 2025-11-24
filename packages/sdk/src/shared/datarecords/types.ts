@@ -1,4 +1,4 @@
-import { type TSchema, Type, type Static } from "@sinclair/typebox";
+import { Type, type Static } from "@sinclair/typebox";
 import { airtableOptions } from "./external/airtable/types";
 import { googleSheetsOptions } from "./external/google/sheets/types";
 import { notionOptions } from "./external/notion/types";
@@ -8,7 +8,7 @@ export const connectorSchema = StringEnum(["airtable", "google-sheets", "notion"
 
 export type DatarecordConnector = Static<typeof connectorSchema>;
 
-const internalDatarecord = Type.Object(
+export const internalDatarecord = Type.Object(
   {
     provider: Type.Literal("internal"),
     // options: Type.Optional(Type.Any()),
@@ -18,7 +18,7 @@ const internalDatarecord = Type.Object(
         title: "Schema",
         additionalProperties: true,
         description:
-          "JSON Schema of the datarecord. Always of type 'object' and representing a row that will be saved in the database.",
+          "JSON Schema. Always of type 'object' and representing a row that will be saved in the database.",
         examples: [
           {
             type: "object",
@@ -31,33 +31,6 @@ const internalDatarecord = Type.Object(
             title: "Newsletter Subscription",
           },
         ],
-      },
-    ),
-    indexes: Type.Array(
-      Type.Object(
-        {
-          name: Type.String({ title: "Index name" }),
-          fields: Type.Array(Type.String(), { title: "Fields to index" }),
-          unique: Type.Optional(Type.Boolean({ title: "Unique index", default: false })),
-        },
-        {
-          examples: [
-            {
-              name: "unique_email_index",
-              fields: ["email"],
-              unique: true,
-            },
-            {
-              name: "lastname_index",
-              fields: ["lastname"],
-            },
-          ],
-        },
-      ),
-      {
-        title: "Indexes",
-        description:
-          "IMPORTANT: Indexes to create on the datarecord. use it to enforce uniqueness or improve query performance.",
       },
     ),
   },
@@ -94,8 +67,7 @@ const commonDatarecordSchema = Type.Object({
     {
       additionalProperties: true,
       title: "Schema",
-      description:
-        "JSON Schema of the datarecord. Always of type 'object' and representing a row that will be saved.",
+      description: "JSON Schema. Always of type 'object' and representing a row that will be saved.",
       examples: [
         {
           type: "object",
@@ -114,14 +86,16 @@ const commonDatarecordSchema = Type.Object({
 
 const commonDatarecordMetadata = Type.Object({
   id: Type.String({
-    title: "Datarecord ID",
-    comment: "A unique identifier for the datarecord, e.g., 'newsletter_subscriptions'",
+    title: "ID",
+    description: "A unique identifier, e.g., 'newsletter_subscriptions'",
+    comment: "A unique identifier, e.g., 'newsletter_subscriptions'",
   }),
   label: Type.String({
-    title: "Name of the datarecord",
+    title: "Name",
+    description: "Human-friendly name",
     comment: "For example, 'Newsletter Subscriptions'",
   }),
-  description: Type.Optional(Type.String({ title: "Description of the datarecord" })),
+  description: Type.Optional(Type.String({ title: "Description" })),
 });
 
 export const genericDatarecord = Type.Composite([
@@ -145,7 +119,10 @@ export const genericDatarecord = Type.Composite([
 ]);
 
 export type Datarecord = Static<typeof genericDatarecord>;
-export type InternalDatarecord = Extract<Datarecord, { provider: "internal" }>;
+
+export type InternalDatarecord = Omit<Static<typeof genericDatarecord>, "provider"> & {
+  provider: "internal";
+};
 
 export const datarecordsList = Type.Array(genericDatarecord);
 export type DatarecordsList = Static<typeof datarecordsList>;

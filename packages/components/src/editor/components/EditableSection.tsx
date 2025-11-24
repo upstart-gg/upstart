@@ -1,4 +1,4 @@
-import type { Section } from "@upstart.gg/sdk/shared/bricks";
+import type { Section } from "@upstart.gg/sdk/bricks";
 import {
   useDraggingBrickType,
   useEditingTextForBrickId,
@@ -9,8 +9,8 @@ import {
 import EditableBrickWrapper from "./EditableBrick";
 import { useSectionStyle } from "~/shared/hooks/use-section-style";
 import { useCallback, type MouseEvent } from "react";
-import invariant from "@upstart.gg/sdk/shared/utils/invariant";
-import { manifests } from "@upstart.gg/sdk/shared/bricks/manifests/all-manifests";
+import { invariant } from "@upstart.gg/sdk/utils";
+import { manifests } from "@upstart.gg/sdk/bricks/manifests/index";
 import { tx } from "@upstart.gg/style-system/twind";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { useDeviceInfo } from "../hooks/use-device-info";

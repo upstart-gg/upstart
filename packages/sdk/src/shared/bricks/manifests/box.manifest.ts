@@ -1,4 +1,4 @@
-import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest } from "~/shared/bricks/types";
 import { defineProps } from "../props/helpers";
 import { Type } from "@sinclair/typebox";
 import { border, rounding } from "../props/border";

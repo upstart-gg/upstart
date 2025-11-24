@@ -8,7 +8,7 @@ import type {
   pageAttributesSchema,
   SiteAttributes,
   siteAttributesSchema,
-} from "@upstart.gg/sdk/shared/attributes";
+} from "@upstart.gg/sdk/shared/site/attributes";
 import { useAttributesGroup, useEditorHelpers, usePreviewMode } from "../hooks/use-editor";
 import { useDraft } from "../hooks/use-page-data";
 import type { NavItem } from "./json-form/types";

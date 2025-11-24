@@ -4,7 +4,7 @@ import {
   resolvePageAttributes,
   resolveSiteAttributes,
   type SiteAttributes,
-} from "../attributes";
+} from "../site/attributes";
 
 describe("Attributes test suite", () => {
   describe("resolvePageAttributes", () => {
@@ -16,8 +16,8 @@ describe("Attributes test suite", () => {
         title: "Untitled",
         description: "",
         keywords: "",
-        queries: [],
         tags: [],
+        layout: "default",
       });
     });
   });
@@ -26,7 +26,7 @@ describe("Attributes test suite", () => {
       const attributes = {};
       expect(resolveSiteAttributes(attributes)).toMatchObject<SiteAttributes>({
         language: "en",
-        navbar: {},
+        themeId: "default-theme",
       });
     });
   });

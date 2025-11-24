@@ -1,7 +1,7 @@
 import interact from "interactjs";
-import type { Section as SectionType } from "@upstart.gg/sdk/shared/bricks";
+import type { Section as SectionType } from "@upstart.gg/sdk/bricks";
 import { useEffect, useRef } from "react";
-import invariant from "@upstart.gg/sdk/shared/utils/invariant";
+import { invariant } from "@upstart.gg/sdk/utils";
 import { useDraftHelpers } from "../hooks/use-page-data";
 
 export function useResizableSection(section: SectionType) {

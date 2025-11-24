@@ -1,5 +1,5 @@
 import type { EditorEvents } from "@tiptap/react";
-import type { Brick } from "@upstart.gg/sdk/shared/bricks";
+import type { Brick } from "@upstart.gg/sdk/bricks";
 import { useDraftHelpers } from "~/editor/hooks/use-page-data";
 import type { TextEditorRef } from "~/shared/components/TextEditor";
 import { DatasourceItemButton } from "~/shared/components/DatasourceItemButton";

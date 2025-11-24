@@ -1,5 +1,5 @@
 import { Type, type StaticDecode, type Static } from "@sinclair/typebox";
-import { buildOAuthConfigSchema } from "~/shared/oauth";
+import { buildOAuthConfigSchema } from "~/shared/datasources/oauth";
 
 const tiktokOAuthConfig = Type.Object({
   accessToken: Type.String(),

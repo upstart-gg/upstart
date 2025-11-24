@@ -1,6 +1,6 @@
 import { type Static, type TObject, Type } from "@sinclair/typebox";
 import { HiOutlineChatBubbleBottomCenter } from "react-icons/hi2";
-import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest } from "~/shared/bricks/types";
 import { defineProps } from "../props/helpers";
 import { image } from "../props/image";
 import { icon } from "../props/string";

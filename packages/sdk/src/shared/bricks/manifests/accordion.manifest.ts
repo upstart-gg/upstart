@@ -1,6 +1,6 @@
 import { Type } from "@sinclair/typebox";
 import { TfiLayoutAccordionSeparated } from "react-icons/tfi";
-import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest } from "~/shared/bricks/types";
 import { StringEnum } from "~/shared/utils/string-enum";
 import { boolean } from "../props/boolean";
 import { defineProps } from "../props/helpers";

@@ -2,12 +2,12 @@ import { describe, expect, test, beforeEach } from "vitest";
 import { type Static, Type } from "@sinclair/typebox";
 import { validate, getSchemaDefaults } from "../schema";
 import { toLLMSchema } from "../llm";
-import { sitemapSchema } from "~/shared/sitemap";
+import { sitemapSchema } from "~/shared/site/sitemap";
 import type { Manifest } from "~/shared/bricks/manifests/text.manifest";
-import { makeFullBrickSchemaForLLM, type Section, sectionProps, sectionSchema } from "~/shared/bricks";
+import { makeFullBrickSchemaForLLM, type Section, sectionProps, sectionSchema } from "~/shared/bricks/types";
 import type { BrickProps } from "~/shared/bricks/props/types";
 import { type Datarecord, genericDatarecord } from "~/shared/datarecords/types";
-import { defaultTheme, themesArray } from "~/shared/theme";
+import { defaultTheme, themesArray } from "~/shared/themes/theme";
 
 describe("toLLMSchema tests suite", () => {
   test("should remove metadata properties", () => {

@@ -1,6 +1,6 @@
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { useDraftHelpers } from "../hooks/use-page-data";
-import type { Brick } from "@upstart.gg/sdk/shared/bricks";
+import type { Brick } from "@upstart.gg/sdk/bricks";
 import { tx } from "@upstart.gg/style-system/twind";
 import { IoIosArrowBack, IoIosArrowUp, IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 

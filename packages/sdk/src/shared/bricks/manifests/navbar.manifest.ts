@@ -1,5 +1,5 @@
 import { type Static, type TObject, Type } from "@sinclair/typebox";
-import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest } from "~/shared/bricks/types";
 import { defineProps } from "../props/helpers";
 import { urlOrPageId } from "../props/string";
 import { image } from "../props/image";

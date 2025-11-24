@@ -1,6 +1,6 @@
 import { Type } from "@sinclair/typebox";
 import { TiSocialFlickr } from "react-icons/ti";
-import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest } from "~/shared/bricks/types";
 import { defineProps } from "../props/helpers";
 import { icon } from "../props/string";
 import { fontSize } from "../props/text";
@@ -31,29 +31,12 @@ export const manifest = defineBrickManifest({
             "ui:default-icon-collection": "cib",
           }),
         ),
-        label: Type.Optional(Type.String({ title: "Label" })),
-        href: Type.String({ title: "Link" }),
+        label: Type.Optional(Type.String({ title: "Label", description: "The text shown next to the icon" })),
+        href: Type.String({ title: "Link", description: "The URL the link points to", format: "uri" }),
       }),
       {
         title: "Social Links",
         description: "List of social media links",
-        default: [
-          {
-            href: "https://facebook.com/company",
-            label: "Facebook",
-            icon: "mdi:facebook",
-          },
-          {
-            href: "https://twitter.com/company",
-            label: "Twitter",
-            icon: "mdi:twitter",
-          },
-          {
-            href: "https://instagram.com/company",
-            label: "Instagram",
-            icon: "mdi:instagram",
-          },
-        ],
         "ui:widget": "array",
         "ui:displayField": "label",
         "ui:options": {

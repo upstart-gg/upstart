@@ -1,5 +1,5 @@
 import { useDebugMode, useEditorHelpers, usePreviewMode } from "../hooks/use-editor";
-import type { Brick, Section } from "@upstart.gg/sdk/shared/bricks";
+import type { Brick, Section } from "@upstart.gg/sdk/bricks";
 import { Button, Callout, Tabs } from "@upstart.gg/style-system/system";
 import { ScrollablePanelTab } from "./ScrollablePanelTab";
 import { useLocalStorage } from "usehooks-ts";
@@ -11,7 +11,7 @@ import PageHierarchy from "./PageHierarchy";
 import { IconRender } from "./IconRender";
 import { useBrickManifest } from "~/shared/hooks/use-brick-manifest";
 import { filterSchemaProperties } from "@upstart.gg/sdk/shared/utils/schema";
-import { useSectionByBrickId, useDraftHelpers, usePageQueries } from "../hooks/use-page-data";
+import { useSectionByBrickId, useDraftHelpers } from "../hooks/use-page-data";
 
 type TabType = "preset" | "settings" | "content" | "debug";
 
@@ -21,7 +21,8 @@ export default function PanelBrickInspector({ brick }: { brick: Brick }) {
   const section = useSectionByBrickId(brick.id);
   const debugMode = useDebugMode();
   const manifest = useBrickManifest(brick.type);
-  const pageQueries = usePageQueries();
+  const pageQueries = [];
+  // const pageQueries = useQueries();
   const contentProperties = filterSchemaProperties(manifest.props, (prop) => {
     return (
       prop.metadata?.category === "content" &&

@@ -8,18 +8,18 @@ import {
 import { ClientOnly } from "~/shared/utils/client-only";
 // import "@upstart.gg/style-system/default-theme.css";
 // import "@upstart.gg/components/dist/assets/style.css";
-import type { SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site";
+import type { SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site/site";
 
 export default function App({ path, config }: { path: string; config: SiteAndPagesConfig }) {
   const searchParams = new URL(`http://localhost${path}`).searchParams;
   const p = searchParams.get("p");
-  const pageId = config.page.id;
+  const pageId = config.pages[0].id;
   return (
     <ClientOnly>
       <InnerEditor
         site={config.site}
-        chatSession={{ id: "dummy", messages: [] }}
-        page={config.page}
+        chatSession={{ id: "dummy", messages: [], userId: "demo-user" }}
+        pages={config.pages}
         pageId={pageId}
         pageVersion="dummy-version"
       >
@@ -59,14 +59,6 @@ function InnerEditor(
     return { pageVersionId: "latest" };
   };
   const editorWrapperRef = useRef<EditorWrapperRef>(null);
-
-  const demoDoSomethingInEditorState = () => {
-    if (editorWrapperRef.current) {
-      // EXAMPLE USAGE OF THE EDITOR REF
-      const { editorStore, draftStore } = editorWrapperRef.current;
-      editorStore.getState().setPreviewMode("mobile");
-    }
-  };
 
   return (
     <EditorWrapper

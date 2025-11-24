@@ -1,6 +1,6 @@
 import { type Static, Type } from "@sinclair/typebox";
 import { FaWpforms } from "react-icons/fa6";
-import { defineBrickManifest } from "~/shared/brick-manifest";
+import { defineBrickManifest } from "~/shared/bricks/types";
 import { StringEnum } from "~/shared/utils/string-enum";
 import { border, rounding } from "../props/border";
 import { datarecord } from "../props/datarecord";

@@ -1,5 +1,5 @@
 import type { PropsWithChildren } from "react";
-import type { Section } from "@upstart.gg/sdk/shared/bricks";
+import type { Section } from "@upstart.gg/sdk/bricks";
 import { Popover, Inset } from "@upstart.gg/style-system/system";
 import SectionSettingsView from "./SectionSettingsView";
 

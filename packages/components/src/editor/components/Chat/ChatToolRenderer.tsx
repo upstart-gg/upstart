@@ -4,25 +4,17 @@ import type { ToolUIPart } from "ai";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { MdDone } from "react-icons/md";
 import { Spinner } from "@upstart.gg/style-system/system";
-import type { SimpleImageMetadata } from "@upstart.gg/sdk/shared/images";
+import type { SimpleImageMetadata, Tools, UpstartUIMessage } from "@upstart.gg/sdk/ai";
 import { useDebugMode } from "../../hooks/use-editor";
-import type { Tools, UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
 import { useState } from "react";
-import Markdown from "../Markdown";
 import ThemePreview from "../ThemePreview";
 
 export default function ToolRenderer({
   toolPart,
-  addToolResultMessage,
-  addToolResult,
   error,
-  hasToolsRunning,
 }: {
   toolPart: ToolUIPart<Tools>;
   error?: Error;
-  addToolResult: UseChatHelpers<UpstartUIMessage>["addToolResult"];
-  addToolResultMessage: (text: string) => void;
-  hasToolsRunning: boolean;
 }) {
   const debug = useDebugMode();
   const [showPreview, setShowPreview] = useState(false);
@@ -34,36 +26,44 @@ export default function ToolRenderer({
     return null;
   }
   // Don't show user choices until all other tools have finished
-  if (toolPart.type === "tool-askUserChoice" && hasToolsRunning) {
-    return null;
-  }
-  if (toolPart.type === "tool-askUserChoice") {
-    return (
-      <AnimatePresence key={toolPart.toolCallId}>
-        {toolPart.state === "input-available" && (
-          <motion.div
-            className={tx("bg-black/5 p-4 rounded-md text-[90%] mt-3")}
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
-          >
-            <UserChoicesButtons
-              key={toolPart.toolCallId}
-              part={toolPart}
-              addToolResult={addToolResult}
-              addToolResultMessage={addToolResultMessage}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    );
-  }
+  // if (toolPart.type === "tool-askUserChoice" && hasToolsRunning) {
+  //   return null;
+  // }
+  // if (toolPart.type === "tool-askUserChoice") {
+  //   return (
+  //     <AnimatePresence key={toolPart.toolCallId}>
+  //       {toolPart.state === "input-available" && (
+  //         <motion.div
+  //           className={tx("bg-black/5 p-4 rounded-md text-[90%] mt-3")}
+  //           initial={{ opacity: 0, height: 0 }}
+  //           animate={{ opacity: 1, height: "auto" }}
+  //           exit={{ opacity: 0, height: 0 }}
+  //           transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
+  //         >
+  //           <UserChoicesButtons
+  //             key={toolPart.toolCallId}
+  //             part={toolPart}
+  //             addToolResult={addToolResult}
+  //             addToolResultMessage={addToolResultMessage}
+  //           />
+  //         </motion.div>
+  //       )}
+  //     </AnimatePresence>
+  //   );
+  // }
 
-  if (typeof toolPart.input === "object" && toolPart.input !== null && "waitingMessage" in toolPart.input) {
+  const userFacingToolInfo =
+    typeof toolPart.output === "object" && toolPart.output !== null && "waitingMessage" in toolPart.output
+      ? toolPart.output
+      : typeof toolPart.input === "object" && toolPart.input !== null && "waitingMessage" in toolPart.input
+        ? toolPart.input
+        : null;
+
+  if (userFacingToolInfo) {
     return (
       <AnimatePresence key={toolPart.toolCallId}>
-        {toolPart.state === "input-available" ? (
+        {toolPart.state === "input-available" ||
+        (toolPart.state === "output-available" && toolPart.preliminary) ? (
           <RunningToolDisplay part={toolPart} />
         ) : toolPart.state === "output-available" ? (
           <motion.div
@@ -73,7 +73,7 @@ export default function ToolRenderer({
             exit={{ opacity: 0, height: 0 }}
           >
             <MdDone className={tx("w-4 h-4 text-green-600")} />
-            <span>{toolPart.input.waitingMessage as string}</span>
+            <span>{userFacingToolInfo.waitingMessage as string}</span>
 
             {(toolPart.type === "tool-searchImages" || toolPart.type === "tool-generateImages") && (
               <>
@@ -90,9 +90,17 @@ export default function ToolRenderer({
               </>
             )}
             {toolPart.type === "tool-createThemes" && (
-              <div className={tx("basis-full flex justify-evenly gap-3 mt-4 mb-2")}>
+              <div className={tx("basis-full flex flex-wrap justify-evenly gap-2 mt-4 mb-2")}>
                 {toolPart.output.map((theme) => (
-                  <ThemePreview noPreview key={theme.id} selected={false} theme={theme} onClick={() => {}} />
+                  <div key={theme.id} className="flex-shrink-0 basis-[calc(33%-2rem)] h-16">
+                    <ThemePreview
+                      noPreview
+                      className="!h-full"
+                      selected={false}
+                      theme={theme}
+                      onClick={() => {}}
+                    />
+                  </div>
                 ))}
               </div>
             )}
@@ -107,7 +115,7 @@ export default function ToolRenderer({
           >
             <MdDone className={tx("w-4 h-4 text-red-600")} />
             <span>
-              {toolPart.input.waitingMessage as string} (Error: {toolPart.errorText})
+              {userFacingToolInfo.waitingMessage as string} (Error: {toolPart.errorText})
             </span>
             {debug && <ToolCallDebugInfo part={toolPart} />}
           </motion.div>
@@ -160,9 +168,19 @@ function ToolCallDebugInfo({ part }: { part: ToolUIPart<Tools> }) {
   );
 }
 
-function RunningToolDisplay({ part }: { part: Extract<ToolUIPart<Tools>, { state: "input-available" }> }) {
+function RunningToolDisplay({
+  part,
+}: {
+  part: ToolUIPart<Tools>;
+}) {
   const debug = useDebugMode();
-  if (typeof part.input !== "object" || part.input === null || !("waitingMessage" in part.input)) {
+  if (typeof part.input !== "object" || part.input === null) {
+    return null;
+  }
+  if (
+    !("waitingMessage" in part.input) &&
+    !(typeof part.output === "object" && part.output !== null && "waitingMessage" in part.output)
+  ) {
     return null;
   }
   return (
@@ -174,7 +192,8 @@ function RunningToolDisplay({ part }: { part: Extract<ToolUIPart<Tools>, { state
       transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
     >
       <Spinner size="1" className={tx("w-4 mx-0.5")} />
-      <span>{part.input.waitingMessage as string}</span>
+      {/* @ts-ignore */}
+      <span>{(part.input.waitingMessage ?? part.output.waitingMessage) as string}</span>
       {debug && (
         <details className={tx("cursor-pointer basis-full")}>
           <summary className={tx("cursor-pointer list-none flex gap-1 items-center")}>
@@ -195,115 +214,9 @@ function RunningToolDisplay({ part }: { part: Extract<ToolUIPart<Tools>, { state
             <span className={tx("text-xs font-normal")}>[{part.type}] View tool call</span>
           </summary>
           <pre className={tx("whitespace-pre-wrap text-xs")}>
-            {JSON.stringify({ type: part.type, input: part.input }, null, 2)}
+            {JSON.stringify({ type: part.type, input: part.input, output: part.output }, null, 2)}
           </pre>
         </details>
-      )}
-    </motion.div>
-  );
-}
-
-function UserChoicesButtons({
-  part,
-  addToolResult,
-  addToolResultMessage,
-}: {
-  part: Extract<ToolUIPart<Tools>, { type: "tool-askUserChoice"; state: "input-available" }>;
-  addToolResult: UseChatHelpers<UpstartUIMessage>["addToolResult"];
-  addToolResultMessage: (text: string) => void;
-}) {
-  const [selectedChoices, setSelectedChoices] = useState<string[]>([]);
-
-  const handleChoiceClick = (choice: string) => {
-    if (part.input.allowMultiple) {
-      setSelectedChoices((prev) =>
-        prev.includes(choice) ? prev.filter((c) => c !== choice) : [...prev, choice],
-      );
-    } else {
-      setSelectedChoices([choice]);
-    }
-  };
-  return (
-    <motion.div
-      className={tx("flex flex-wrap gap-2 justify-between")}
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: "auto" }}
-      exit={{ opacity: 0, height: 0 }}
-      transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
-    >
-      {part.input.allowMultiple ? (
-        <>
-          <div className={tx("flex flex-col flex-wrap gap-1.5")}>
-            {part.input.choices.map((choice, i) => {
-              return (
-                <button
-                  key={`multi-${i}`}
-                  type="button"
-                  className={tx(
-                    "inline-flex justify-center flex-1 text-[.95em] gap-3 items-center font-medium px-3 py-1.5 rounded-md",
-                    {
-                      "border !border-upstart-300 !text-gray-700 hover:border-upstart-300":
-                        !selectedChoices.includes(choice),
-                      "border !border-transparent !bg-upstart-700 text-white":
-                        selectedChoices.includes(choice),
-                    },
-                  )}
-                  onClick={async () => {
-                    console.log("addtoolresult to part", part);
-                    handleChoiceClick(choice);
-                  }}
-                >
-                  <span className={tx("text-nowrap", selectedChoices.includes(choice) ? "font-bold" : "")}>
-                    {choice}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-          <div className={tx("basis-full w-full mt-6 flex justify-end")}>
-            <button
-              type="button"
-              disabled={selectedChoices.length === 0}
-              className={tx(
-                "inline-flex justify-center content-center flex-1 text-[.95em] gap-3 items-center font-medium px-3 py-1.5 rounded-md !bg-upstart-700 hover:opacity-90 text-white disabled:opacity-50 disabled:cursor-not-allowed max-w-[150px]",
-              )}
-              onClick={async () => {
-                console.log("addtoolresult to part", part);
-                await addToolResult({
-                  tool: "askUserChoice",
-                  toolCallId: part.toolCallId,
-                  output: selectedChoices,
-                });
-                addToolResultMessage(selectedChoices.join(", "));
-                setSelectedChoices([]);
-              }}
-            >
-              Continue
-            </button>
-          </div>
-        </>
-      ) : (
-        part.input.choices.map((choice, i) => {
-          return (
-            <button
-              key={`single-${i}`}
-              type="button"
-              className={tx(
-                "inline-flex text-nowrap text-center justify-center content-center flex-1 text-[.95em] gap-3 items-center font-medium px-3 py-1.5 rounded-md !bg-upstart-700 hover:opacity-90 text-white",
-              )}
-              onClick={async () => {
-                await addToolResult({
-                  tool: "askUserChoice",
-                  toolCallId: part.toolCallId,
-                  output: choice,
-                });
-                addToolResultMessage(choice);
-              }}
-            >
-              {choice}
-            </button>
-          );
-        })
       )}
     </motion.div>
   );

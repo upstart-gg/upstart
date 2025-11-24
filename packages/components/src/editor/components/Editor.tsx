@@ -1,7 +1,6 @@
 import {
   useChatVisible,
   useDebugMode,
-  useEditorEnabled,
   useEditorHelpers,
   usePanel,
   useSelectedBrickId,
@@ -13,8 +12,8 @@ import { Button, Switch } from "@upstart.gg/style-system/system";
 import { usePageAutoSave } from "~/editor/hooks/use-page-autosave";
 import { getThemeCss } from "~/shared/utils/get-theme-css";
 import { useEditorHotKeys } from "../hooks/use-editor-hot-keys";
-import type { GenerationState } from "@upstart.gg/sdk/shared/context";
-import { createEmptyBrick } from "@upstart.gg/sdk/shared/bricks";
+import type { GenerationState } from "@upstart.gg/sdk/shared/ai/context";
+import { createEmptyBrick } from "@upstart.gg/sdk/bricks";
 import { Toaster } from "@upstart.gg/style-system/system";
 import { useIsLocalDev } from "../hooks/use-is-local-dev";
 import {

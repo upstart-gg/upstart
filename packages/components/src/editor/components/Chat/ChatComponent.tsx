@@ -1,8 +1,7 @@
 import { useChat } from "@ai-sdk/react";
-import type { Tools, UpstartUIMessage } from "@upstart.gg/sdk/shared/ai/types";
-import type { CallContextProps } from "@upstart.gg/sdk/shared/context";
-import { defineDataRecord } from "@upstart.gg/sdk/shared/datarecords";
-import { defineDatasource } from "@upstart.gg/sdk/shared/datasources";
+import type { Tools, UpstartUIMessage } from "@upstart.gg/sdk/ai";
+import { defineDataRecord } from "@upstart.gg/sdk/datarecords";
+import { defineDatasource } from "@upstart.gg/sdk/datasources";
 import { Spinner, toast } from "@upstart.gg/style-system/system";
 import { css, tx } from "@upstart.gg/style-system/twind";
 import { type ChatOnToolCallCallback, createIdGenerator, DefaultChatTransport, type ToolUIPart } from "ai";
@@ -21,9 +20,10 @@ import {
   useSitePrompt,
   useThemes,
 } from "../../hooks/use-page-data";
+import type { CallContextProps } from "@upstart.gg/sdk/shared/ai/context";
 
 // Lazy load heavy components
-const Markdown = lazy(() => import("../Markdown"));
+const Markdown = lazy(() => import("./ChatMarkdown"));
 const ChatBox = lazy(() => import("./ChatBox"));
 const ChatReasoningPart = lazy(() => import("./ChatReasoningPart"));
 const ToolRenderer = lazy(() => import("./ChatToolRenderer"));
@@ -33,16 +33,8 @@ const WEB_SEARCH_ENABLED = false;
 const msgCommon = tx(
   "rounded-lg p-4 text-pretty transition-all duration-300 flex flex-col gap-1.5",
   css({
-    // whiteSpace: "pre-line",
-    "& p": {
-      marginBottom: ".28em",
-      lineHeight: "1.625",
-    },
-    "& p:first-child": {
-      marginTop: "0",
-    },
-    "& p:last-child": {
-      marginBottom: "0",
+    "& pre:has(> code) ": {
+      display: "hidden",
     },
     "& code": {
       fontSize: "88%",
@@ -50,20 +42,18 @@ const msgCommon = tx(
     "& ul": {
       listStyle: "outside",
       listStyleType: "square",
-      paddingLeft: "1.6em",
-      marginTop: "0.3em",
-      marginBottom: "0.2em",
     },
     "& ol": {
       listStyle: "outside",
       listStyleType: "decimal",
-      paddingLeft: "1.6em",
-      marginTop: "0.3em",
-      marginBottom: "0.2em",
     },
-    "& li": {
-      marginBottom: "0.35em",
-      paddingLeft: ".3em",
+
+    // whiteSpace: "pre-line",
+    "& >p:first-child": {
+      marginTop: "0",
+    },
+    "& > p:last-child": {
+      marginBottom: "0",
     },
     "& table": {
       width: "100%",
@@ -155,12 +145,13 @@ export default function Chat() {
     console.log("Tool call: %s: ", toolCall.toolName, toolCall);
   };
 
-  const { messages, sendMessage, error, status, regenerate, stop, addToolResult } = useChat<UpstartUIMessage>(
-    {
+  const { messages, sendMessage, setMessages, error, status, regenerate, stop, addToolResult } =
+    useChat<UpstartUIMessage>({
       id: chatSession.id,
       // resume: generationState.isReady === false,
       transport: new DefaultChatTransport({
         api: "/editor/chat",
+        // api: `${chatSession.url}/sandbox/${site.id}/${chatSession.userId}/chat`,
         credentials: "include",
         // body: () => ({
         //   callContext: {
@@ -188,10 +179,6 @@ export default function Chat() {
 
           const hasToolResults = previousMessage?.parts.some((part) => part.type === "tool-askUserChoice");
 
-          console.log("Send chat request with hasToolResults=%s", hasToolResults);
-          console.log({ message });
-          console.log({ previousMessage });
-
           return {
             body: {
               messages: hasToolResults ? messages.slice(-2) : [message],
@@ -202,23 +189,27 @@ export default function Chat() {
         },
       }),
       messages: chatSession.messages,
+
       generateId: createIdGenerator({
         prefix: "user",
         separator: "_",
-        size: 28,
+        size: 8,
       }),
       onError: (error) => {
         console.error("ERROR", error);
       },
       onToolCall,
-    },
-  );
+    });
   const messagesListRef = useRef<HTMLDivElement>(null);
 
   const onSubmit = (e: Event | FormEvent) => {
     e.preventDefault();
     sendMessage({ text: input });
     setInput("");
+  };
+
+  const updateMessage = (id: string, update: Partial<UpstartUIMessage>) => {
+    setMessages((prevMessages) => prevMessages.map((msg) => (msg.id === id ? { ...msg, ...update } : msg)));
   };
 
   const debouncedScroll = useDebounceCallback(() => {
@@ -254,7 +245,9 @@ export default function Chat() {
   }, []);
 
   const toolInvocations = useMemo(() => {
-    const results = messages
+    const messagesToAnalyze = messages.slice(-1);
+    console.log({ messagesToAnalyze });
+    const results = messagesToAnalyze
       .filter((msg) => msg.role === "assistant")
       .flatMap((msg) => msg.parts as ToolUIPart<Tools>[])
       .filter((part) => part.type.startsWith("tool-"))
@@ -267,7 +260,7 @@ export default function Chat() {
   const hasRunningTools = useMemo(() => {
     // get the last 2 messages
     const results = messages
-      .slice(-2)
+      .slice(-1)
       .filter((msg) => msg.role === "assistant")
       .flatMap((msg) => msg.parts as ToolUIPart<Tools>[])
       .filter((part) => part.type.startsWith("tool-") && part.type !== "tool-askUserChoice")
@@ -278,7 +271,7 @@ export default function Chat() {
 
   const isWaitingForNChoices = useMemo(() => {
     const results = messages
-      .slice(-2)
+      .slice(-1)
       .filter((msg) => msg.role === "assistant")
       .flatMap((msg) => msg.parts as ToolUIPart<Tools>[])
       .filter((part) => part.type === "tool-askUserChoice")
@@ -453,6 +446,11 @@ export default function Chat() {
       msg.parts.some((part) => part.type === "text" || part.type.startsWith("tool-")),
   );
 
+  const dataMessages = messages.filter((msg) => msg.parts.some((part) => part.type.startsWith("data-")));
+
+  console.log("dataMessages", dataMessages);
+  // console.log("All messages length is %d, displaying %d", messages.length, displayedMessages.length);
+
   useEffect(() => {
     if (sendingEnabled) {
       chatboxRef.current?.focus();
@@ -511,15 +509,7 @@ export default function Chat() {
               if (part.type.startsWith("tool-")) {
                 return (
                   <Suspense key={i} fallback={null}>
-                    <ToolRenderer
-                      key={i}
-                      // test showing tools
-                      hasToolsRunning={hasRunningTools}
-                      toolPart={part as ToolUIPart<Tools>}
-                      addToolResult={addToolResult}
-                      addToolResultMessage={(text: string) => sendMessage({ text })}
-                      error={error}
-                    />
+                    <ToolRenderer key={i} toolPart={part as ToolUIPart<Tools>} error={error} />
                   </Suspense>
                 );
               }

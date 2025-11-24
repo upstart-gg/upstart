@@ -1,3 +1,4 @@
 direnv 2.32.3
 nodejs 24.8.0
 pnpm 10.8.0
+bun 1.2.23
