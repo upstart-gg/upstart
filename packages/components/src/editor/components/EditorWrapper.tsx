@@ -41,7 +41,7 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
     {
       chatSession,
       site,
-      page,
+      pages,
       pageVersion,
       pageId,
       onImageUpload,
@@ -81,7 +81,7 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
       createDraftStore({
         site,
         page: {
-          ...page,
+          ...pages[0],
           version: pageVersion,
         },
       }),

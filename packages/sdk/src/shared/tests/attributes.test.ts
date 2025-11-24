@@ -16,8 +16,8 @@ describe("Attributes test suite", () => {
         title: "Untitled",
         description: "",
         keywords: "",
-        queries: [],
         tags: [],
+        layout: "default",
       });
     });
   });
@@ -26,6 +26,7 @@ describe("Attributes test suite", () => {
       const attributes = {};
       expect(resolveSiteAttributes(attributes)).toMatchObject<SiteAttributes>({
         language: "en",
+        themeId: "default-theme",
       });
     });
   });
