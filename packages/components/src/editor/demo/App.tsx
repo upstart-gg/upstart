@@ -13,12 +13,12 @@ import type { SiteAndPagesConfig } from "@upstart.gg/sdk/shared/site/site";
 export default function App({ path, config }: { path: string; config: SiteAndPagesConfig }) {
   const searchParams = new URL(`http://localhost${path}`).searchParams;
   const p = searchParams.get("p");
-  const pageId = (config.pages.find((page) => page.id === p) ?? config.pages[0]).id;
+  const pageId = config.pages[0].id;
   return (
     <ClientOnly>
       <InnerEditor
         site={config.site}
-        chatSession={{ id: "dummy", messages: [], url: "" }}
+        chatSession={{ id: "dummy", messages: [], userId: "demo-user" }}
         pages={config.pages}
         pageId={pageId}
         pageVersion="dummy-version"

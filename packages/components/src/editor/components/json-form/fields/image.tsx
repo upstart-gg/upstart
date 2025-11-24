@@ -1,16 +1,16 @@
-import type { FieldProps } from "./types";
-import { nanoid } from "nanoid";
-import { Button, TextField, Select, Tooltip, IconButton } from "@upstart.gg/style-system/system";
-import { type FC, useMemo, useState } from "react";
-import ModalSearchImage from "~/editor/components/ModalSearchImage";
 import type { ImageProps } from "@upstart.gg/sdk/shared/bricks/props/image";
-import { fieldLabel } from "../form-class";
-import { debounce } from "lodash-es";
-import { IoMdClose } from "react-icons/io";
-import { FieldTitle } from "../field-factory";
-import { useUploader } from "../../UploaderContext";
-import { useDynamicTextEditor } from "~/editor/hooks/use-editable-text";
 import { normalizeSchemaEnum } from "@upstart.gg/sdk/shared/utils/schema";
+import { Button, Select, TextField } from "@upstart.gg/style-system/system";
+import { debounce } from "lodash-es";
+import { nanoid } from "nanoid";
+import { type FC, useMemo, useState } from "react";
+import { IoMdClose } from "react-icons/io";
+import ModalSearchImage from "~/editor/components/ModalSearchImage";
+import { useDynamicTextEditor } from "~/editor/hooks/use-editable-text";
+import { useUploader } from "../../UploaderContext";
+import type { FieldProps } from "./types";
+import { FieldTitle } from "../field-factory";
+import { fieldLabel } from "../form-class";
 
 const ImageField: FC<FieldProps<ImageProps | null>> = (props) => {
   const { schema, formData, onChange, title, description, currentValue, brickId, noDynamic } = props;

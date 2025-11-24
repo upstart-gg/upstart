@@ -934,5 +934,298 @@
         "keywords": ""
       }
     }
-  ]
+  ],
+  "page": {
+    "id": "_default_",
+    "label": "First page with really really long name that should be truncated",
+    "sections": [
+      {
+        "id": "s_hero",
+        "label": "Hero",
+        "order": 2,
+        "props": { "minHeight": "400px", "colorPreset": { "color": "accent-400" } },
+        "bricks": [
+          {
+            "id": "b_zzZYqOu",
+            "type": "hero",
+            "props": {
+              "content": "<h1 class='hero-size-1' style='text-align:center'>Leading Businesses<br />Choose Upstart</h1>"
+            }
+          }
+        ]
+      },
+      {
+        "id": "dynamic_content_1",
+        "label": "Testimonial cards",
+        "order": 3,
+        "props": {},
+        "bricks": [
+          {
+            "id": "b_testimonials",
+            "type": "card",
+            "props": {
+              "loop": { "over": "allTestimonials" },
+              "title": "{{allTestimonials.author}}",
+              "text": "{{allTestimonials.text}} <a href=\"example.com\">my link</a> and <a href=\"https://example.com\" class=\"not-prose\">another link</a>"
+            }
+          }
+        ]
+      },
+      {
+        "id": "s_XGTvCQz",
+        "order": 3,
+        "label": "Containers",
+        "props": {},
+        "bricks": [
+          {
+            "id": "pTyCjLX",
+            "type": "box",
+            "props": {
+              "loop": { "over": "allEmployees" },
+              "direction": "flex-row",
+              "$children": [
+                {
+                  "id": "VmWrhzW",
+                  "type": "button",
+                  "props": { "label": "Button #1", "colorPreset": { "color": "accent-400" } }
+                },
+                {
+                  "id": "ziZhwtB",
+                  "type": "button",
+                  "props": { "label": "Button #2", "colorPreset": { "color": "primary-400" } }
+                },
+                {
+                  "id": "dnWFAOf",
+                  "type": "button",
+                  "props": { "label": "Button #3", "colorPreset": { "color": "neutral-400" } }
+                },
+                {
+                  "id": "YMdJSdv",
+                  "type": "button",
+                  "props": { "label": "Button #4", "colorPreset": { "color": "secondary-400" } }
+                }
+              ]
+            }
+          },
+          {
+            "id": "BKdjRfO",
+            "type": "box",
+            "props": {
+              "direction": "flex-col",
+              "datasource": { "id": "employees" },
+              "$children": [
+                {
+                  "id": "knLJyAM",
+                  "type": "text",
+                  "props": {
+                    "content": "<h2>I'm an h2 heading!</h2>Hello this is the first text in the dynamic box.<br />I'm on a new line explicitly.<br />I'm the third line and I'm the longest of them all! Yeah!"
+                  }
+                },
+                {
+                  "id": "sgawnyj",
+                  "type": "button",
+                  "props": { "label": "Button #1 in dynamic box with a {{$slug}}" }
+                },
+                { "id": "nxHuZim", "type": "button", "props": { "label": "Small label" } },
+                {
+                  "id": "IsfUXnQ",
+                  "type": "button",
+                  "props": { "label": "Button #3 with the largest label" }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "s_AlMTPcO",
+        "label": "Testimonial dynamic",
+        "order": 6,
+        "props": { "justifyContent": "justify-center", "alignItems": "items-start" },
+        "bricks": [
+          {
+            "id": "LtEttXh",
+            "type": "testimonials",
+            "props": {
+              "loop": { "over": "allTestimonials" },
+              "testimonials": [
+                {
+                  "author": "{{allTestimonials.author}}",
+                  "text": "{{allTestimonials.text}}"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "s_AlMTPcO2",
+        "label": "Testimonial static",
+        "order": 6,
+        "props": { "justifyContent": "justify-center", "alignItems": "items-start" },
+        "bricks": [
+          {
+            "type": "testimonials",
+            "props": {
+              "alignSelf": "self-auto",
+              "orientation": "horizontal",
+              "testimonials": [
+                {
+                  "author": "Billy Gates",
+                  "text": "Upstart rocks! I love the flexibility and ease of use. Can't wait to see more features!",
+                  "socialIcon": "mdi:twitter",
+                  "company": "Microsoft"
+                },
+                {
+                  "author": "Jeff Bezos",
+                  "text": "Amazing product! Upstart has transformed the way I build websites. Highly recommend it!",
+                  "socialIcon": "mdi:facebook",
+                  "company": "Amazon"
+                },
+                {
+                  "author": "Elon Musk",
+                  "text": "Upstart is a game changer! The possibilities are endless.",
+                  "socialIcon": "mdi:linkedin",
+                  "company": "SpaceX"
+                },
+                {
+                  "author": "Mark Zuckerberg",
+                  "text": "Upstart is a fantastic tool for building modern websites. I'm impressed!",
+                  "socialIcon": "mdi:facebook",
+                  "company": "Meta"
+                }
+              ]
+            },
+            "id": "s_uuqtYzo"
+          }
+        ]
+      },
+      {
+        "id": "s_fSRkkdV",
+        "label": "SocialLinks",
+        "order": 7,
+        "props": { "justifyContent": "justify-center" },
+        "bricks": [
+          {
+            "type": "social-links",
+            "props": {
+              "alignSelf": "self-auto",
+              "links": [
+                { "href": "https://facebook.com", "label": "Facebook", "icon": "mdi:facebook" },
+                { "href": "https://instagram.com", "label": "Instagram", "icon": "mdi:instagram" },
+                { "href": "https://x.com", "label": "X", "icon": "mdi:twitter" }
+              ]
+            },
+            "id": "sFOkdFh"
+          },
+          {
+            "type": "button",
+            "props": {
+              "alignSelf": "self-auto",
+              "label": "hey ho!",
+              "justifyContent": "justify-center",
+              "type": "button",
+              "height": "42px"
+            },
+            "id": "kIXyBCS"
+          }
+        ]
+      },
+      {
+        "id": "s_luzweuM",
+        "label": "Form",
+        "order": 8,
+        "props": { "justifyContent": "justify-center", "alignItems": "items-start" },
+        "bricks": [
+          {
+            "id": "ZiUChet",
+            "type": "images-gallery",
+            "props": {
+              "loop": {
+                "over": "allEmployees"
+              },
+              "images": [
+                {
+                  "image": {
+                    "src": "{{allEmployees.avatarUrl}}"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "mCupCAw",
+            "type": "form",
+            "props": {
+              "padding": "p-4",
+              "datarecordId": "a7f26d80-d68e-4b7a-a4a3-e41c454670ce",
+              "title": "Simple Form",
+              "intro": "This is a simple form to collect user information.",
+              "button": { "label": "Register", "size": "block", "borderRadius": "rounded-lg" }
+            }
+          },
+          {
+            "id": "ayhdLKx",
+            "type": "form",
+            "props": {
+              "padding": "p-4",
+              "datarecordId": "aacfe76d-4309-466c-83ad-fda8b02b043d",
+              "title": "Complex Form",
+              "intro": "This is a complex form with various field types.",
+              "button": {
+                "label": "Submit Form",
+                "borderRadius": "rounded-md"
+              }
+            }
+          }
+        ]
+      },
+
+      {
+        "id": "s_content-diWpJej",
+        "label": "Content",
+        "order": 10,
+        "props": {},
+        "bricks": [
+          {
+            "id": "b_rALeSwX",
+            "type": "text",
+            "props": { "text": "This is some sample content for the second page." }
+          },
+          { "id": "b_brvyYKy", "type": "spacer", "props": { "width": "20px" } },
+          {
+            "id": "b_mdiLKoA",
+            "type": "card",
+            "props": {
+              "title": "Welcome to My Site",
+              "text": "This is a sample card body. You can edit this content.",
+              "cardImage": {
+                "src": "https://placehold.co/300x200@2x/EEEEEE/333333/svg?text=Sample",
+                "alt": "Sample"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "tags": [],
+    "attributes": {
+      "colorPreset": { "color": "base-100" },
+      "robotsIndexing": true,
+      "path": "/blog/:slug",
+      "title": "Untitled",
+      "tags": [],
+      "description": "",
+      "keywords": "",
+      "queries": [
+        {
+          "queryId": "get-employee",
+          "alias": "employee",
+          "params": [{ "field": "$id", "op": "eq", "value": ":slug" }]
+        },
+        { "queryId": "get-employees", "alias": "allEmployees" },
+        { "queryId": "get-testimonials", "alias": "allTestimonials" }
+      ]
+    }
+  }
 }

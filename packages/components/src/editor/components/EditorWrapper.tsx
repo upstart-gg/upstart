@@ -41,7 +41,7 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
     {
       chatSession,
       site,
-      pages,
+      page,
       pageVersion,
       pageId,
       onImageUpload,
@@ -76,8 +76,6 @@ export const EditorWrapper = forwardRef<EditorWrapperRef, PropsWithChildren<Edit
         panelPosition: (urlParams.get("panelPosition") as EditorState["panelPosition"]) ?? undefined,
       }),
     ).current;
-
-    const page = pages.find((p) => p.id === pageId) ?? pages[0];
 
     const draftStore = useRef(
       createDraftStore({
