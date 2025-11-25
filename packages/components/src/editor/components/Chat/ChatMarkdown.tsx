@@ -34,7 +34,7 @@ const MemoizedMarkdownBlock = memo(
               const { chat, clearChat } = useSharedChatContext();
               const { sendMessage } = useChat({
                 id: chatSession.id,
-                chat,
+                // chat,
               });
               return (
                 <button
