@@ -1,5 +1,23 @@
 # @upstart.gg/components
 
+## 0.0.140
+
+### Patch Changes
+
+- [#510](https://github.com/upstart-gg/upstart/pull/510) [`57460d3`](https://github.com/upstart-gg/upstart/commit/57460d3320c43cbef4a939047db75f941ebb071e) Thanks [@mattallty](https://github.com/mattallty)! - Trying to fix useChat
+
+- [#494](https://github.com/upstart-gg/upstart/pull/494) [`1e766cb`](https://github.com/upstart-gg/upstart/commit/1e766cb6983c0641441c1e556cf7b3901faabdff) Thanks [@benjamindarnault](https://github.com/benjamindarnault)! - add favicon
+
+- [#511](https://github.com/upstart-gg/upstart/pull/511) [`ca4bbd4`](https://github.com/upstart-gg/upstart/commit/ca4bbd4aa996dc4854cb25fa5bc1b29746f087af) Thanks [@mattallty](https://github.com/mattallty)! - remove shared chat
+
+- [#509](https://github.com/upstart-gg/upstart/pull/509) [`aec9ee2`](https://github.com/upstart-gg/upstart/commit/aec9ee20fa705d5a81707bf3f483eabb1dcf89bf) Thanks [@mattallty](https://github.com/mattallty)! - Use shared chat instance
+
+- [#488](https://github.com/upstart-gg/upstart/pull/488) [`66d8645`](https://github.com/upstart-gg/upstart/commit/66d8645e9eb82a3953f581785a2022f2ef389ab9) Thanks [@benjamindarnault](https://github.com/benjamindarnault)! - new site config to use single page
+
+- Updated dependencies [[`1e766cb`](https://github.com/upstart-gg/upstart/commit/1e766cb6983c0641441c1e556cf7b3901faabdff), [`66d8645`](https://github.com/upstart-gg/upstart/commit/66d8645e9eb82a3953f581785a2022f2ef389ab9)]:
+  - @upstart.gg/sdk@0.0.140
+  - @upstart.gg/style-system@0.0.140
+
 ## 0.0.139
 
 ### Patch Changes
