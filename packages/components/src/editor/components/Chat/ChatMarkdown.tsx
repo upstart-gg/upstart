@@ -33,6 +33,7 @@ const MemoizedMarkdownBlock = memo(
               const chatSession = useChatSession();
               const { chat, clearChat } = useSharedChatContext();
               const { sendMessage } = useChat({
+                id: chatSession.id,
                 chat,
               });
               return (
