@@ -1,6 +1,6 @@
 {
   "name": "@upstart.gg/sdk",
-  "version": "0.0.139",
+  "version": "0.0.140",
   "type": "module",
   "files": [
     "dist",
@@ -12,11 +12,11 @@
       "import": "./dist/shared/index.js",
       "types": "./dist/shared/index.d.ts"
     },
-     "./bricks": {
+    "./bricks": {
       "types": "./dist/shared/bricks/index.d.ts",
       "import": "./dist/shared/bricks/index.js"
     },
-     "./bricks/manifests": {
+    "./bricks/manifests": {
       "types": "./dist/shared/bricks/manifests/index.d.ts",
       "import": "./dist/shared/bricks/manifests/index.js"
     },
@@ -24,11 +24,11 @@
       "types": "./dist/shared/bricks/props/index.d.ts",
       "import": "./dist/shared/bricks/props/index.js"
     },
-     "./bricks/*": {
+    "./bricks/*": {
       "types": "./dist/shared/bricks/*.d.ts",
       "import": "./dist/shared/bricks/*.js"
     },
-     "./ai": {
+    "./ai": {
       "types": "./dist/shared/ai/index.d.ts",
       "import": "./dist/shared/ai/index.js"
     },
