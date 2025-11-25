@@ -150,7 +150,7 @@ export default function Chat() {
   const { messages, sendMessage, setMessages, error, status, regenerate, stop, addToolResult } =
     useChat<UpstartUIMessage>({
       id: chatSession.id,
-      chat,
+      // chat,
       // resume: generationState.isReady === false,
       transport: new DefaultChatTransport({
         api: "/editor/chat",
