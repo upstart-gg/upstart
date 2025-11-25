@@ -10,6 +10,7 @@ import { type FormEvent, lazy, Suspense, useEffect, useMemo, useRef, useState } 
 import { useDeepCompareEffect } from "use-deep-compare";
 import { useDebounceCallback } from "usehooks-ts";
 import { useChatSession, useDebugMode } from "../../hooks/use-editor";
+import { useSharedChatContext } from "../../hooks/use-chat";
 import {
   useAdditionalAssets,
   useDraftHelpers,
@@ -70,6 +71,7 @@ export default function Chat() {
   const chatSession = useChatSession();
   const sitePrompt = useSitePrompt();
   const setupRef = useRef(false);
+  const { chat, clearChat } = useSharedChatContext();
   const draftHelpers = useDraftHelpers();
   const additionalAssets = useAdditionalAssets();
   const generationState = useGenerationState();
@@ -147,11 +149,11 @@ export default function Chat() {
 
   const { messages, sendMessage, setMessages, error, status, regenerate, stop, addToolResult } =
     useChat<UpstartUIMessage>({
-      id: chatSession.id,
+      // id: chatSession.id,
+      chat,
       // resume: generationState.isReady === false,
       transport: new DefaultChatTransport({
         api: "/editor/chat",
-        // api: `${chatSession.url}/sandbox/${site.id}/${chatSession.userId}/chat`,
         credentials: "include",
         // body: () => ({
         //   callContext: {
@@ -189,7 +191,6 @@ export default function Chat() {
         },
       }),
       messages: chatSession.messages,
-
       generateId: createIdGenerator({
         prefix: "user",
         separator: "_",

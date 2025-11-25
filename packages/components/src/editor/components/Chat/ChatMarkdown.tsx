@@ -8,6 +8,7 @@ import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkCodeMeta from "../../utils/remark-code-meta";
 import { useChatSession } from "~/editor/hooks/use-editor";
 import { useChat } from "@ai-sdk/react";
+import { useSharedChatContext } from "~/editor/hooks/use-chat";
 
 const MemoizedMarkdownBlock = memo(
   ({ content }: { content: string }) => {
@@ -30,8 +31,9 @@ const MemoizedMarkdownBlock = memo(
             // @ts-ignore
             choice: ({ node, children, ...props }: PropsWithChildren<{ other?: boolean }>) => {
               const chatSession = useChatSession();
+              const { chat, clearChat } = useSharedChatContext();
               const { sendMessage } = useChat({
-                id: chatSession.id,
+                chat,
               });
               return (
                 <button

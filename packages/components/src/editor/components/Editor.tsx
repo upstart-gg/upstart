@@ -12,6 +12,7 @@ import { Button, Switch } from "@upstart.gg/style-system/system";
 import { usePageAutoSave } from "~/editor/hooks/use-page-autosave";
 import { getThemeCss } from "~/shared/utils/get-theme-css";
 import { useEditorHotKeys } from "../hooks/use-editor-hot-keys";
+import { ChatProvider } from "../hooks/use-chat";
 import type { GenerationState } from "@upstart.gg/sdk/shared/ai/context";
 import { createEmptyBrick } from "@upstart.gg/sdk/bricks";
 import { Toaster } from "@upstart.gg/style-system/system";
@@ -70,138 +71,139 @@ export default function Editor(props: EditorProps) {
   }, [draft.previewTheme, draft.site.theme]);
 
   return (
-    <DragDropProvider
-      onDragStart={(event, manager) => {
-        const { operation } = event;
+    <ChatProvider>
+      <DragDropProvider
+        onDragStart={(event, manager) => {
+          const { operation } = event;
 
-        if (operation.source?.type === "library") {
-          const brickType = operation.source.data.manifest.type as string;
-          setDraggingBrickType(brickType);
-          return;
-        }
-
-        console.log(`Started dragging ${operation.source?.id}`);
-        if (operation.source?.id) {
-          const element = document.getElementById(operation.source.id as string);
-          if (!element) {
+          if (operation.source?.type === "library") {
+            const brickType = operation.source.data.manifest.type as string;
+            setDraggingBrickType(brickType);
             return;
           }
-          console.log(`adding class ${operation.source.id}`);
-          element?.classList.add("moving");
 
-          // add shadow using css properties
-          element.style.setProperty("box-shadow", "0 4px 8px rgba(0, 0, 0, 0.2)", "important");
-          // also add outline of 2px
-          element.style.setProperty("outline", "2px solid var(--violet-8)", "important");
-          element.style.setProperty("outline-offset", "0px", "important");
+          console.log(`Started dragging ${operation.source?.id}`);
+          if (operation.source?.id) {
+            const element = document.getElementById(operation.source.id as string);
+            if (!element) {
+              return;
+            }
+            console.log(`adding class ${operation.source.id}`);
+            element?.classList.add("moving");
 
-          const computedStyle = window.getComputedStyle(element);
-          // Change the background color only if it is transparent
-          if (computedStyle.getPropertyValue("background-color") === "rgba(0, 0, 0, 0)") {
-            console.log("Changing background color to upstart-200");
-            element.style.setProperty("background-color", "var(--violet-a5)", "important");
-          }
-        }
-      }}
-      onDragOver={(event, manager) => {
-        const { operation } = event;
-        const isLibraryDrag = operation.source?.type === "library";
+            // add shadow using css properties
+            element.style.setProperty("box-shadow", "0 4px 8px rgba(0, 0, 0, 0.2)", "important");
+            // also add outline of 2px
+            element.style.setProperty("outline", "2px solid var(--violet-8)", "important");
+            element.style.setProperty("outline-offset", "0px", "important");
 
-        if (operation.canceled || !operation.target) {
-          return;
-        }
-
-        if (
-          operation.target?.data?.manifest?.isContainer &&
-          (operation.activatorEvent as MouseEvent)?.metaKey
-        ) {
-          console.log("operation.activatorEvent", operation.activatorEvent);
-          console.error("Dropping over a container, disable reordering");
-          event.preventDefault();
-          return;
-        }
-
-        // Transform section to Record<sectionId, brickId[]>
-        const items = sections.reduce(
-          (acc, section) => {
-            acc[section.id] = section.bricks
-              .filter((brick) => !draftHelpers.getParentBrick(brick.id)) // only top-level bricks
-              .map((brick) => brick.id);
-            return acc;
-          },
-          {} as Record<string, string[]>,
-        );
-
-        // Drag and drop from library
-        if (isLibraryDrag) {
-          // Simulate adding the brick to the library
-          items.$library$ = tmpAddedBrick.current ? [] : [operation.source.id as string];
-        }
-
-        const newItems = move(items, event);
-
-        if (isEqual(items, newItems)) {
-          console.debug("Items are equal, no changes made");
-        } else {
-          // rebuild all sections
-          for (const section of sections) {
-            // if section has changed
-            if (!isEqual(items[section.id], newItems[section.id])) {
-              console.log("Rebuilding section", section.id);
-              const modifiedSection = {
-                ...section,
-                bricks: newItems[section.id].map((brickId, index) => {
-                  if (isLibraryDrag && brickId === operation.source.id && !draftHelpers.getBrick(brickId)) {
-                    const newBrick = createEmptyBrick(operation.source.data?.manifest.type as string, true);
-                    tmpAddedBrick.current = newBrick.id;
-                    draftHelpers.addBrick(newBrick, section.id as string, index, null);
-                    return newBrick;
-                  }
-                  return draftHelpers.getBrick(brickId)!;
-                }),
-              };
-              draftHelpers.updateSection(section.id, modifiedSection);
+            const computedStyle = window.getComputedStyle(element);
+            // Change the background color only if it is transparent
+            if (computedStyle.getPropertyValue("background-color") === "rgba(0, 0, 0, 0)") {
+              console.log("Changing background color to upstart-200");
+              element.style.setProperty("background-color", "var(--violet-a5)", "important");
             }
           }
-        }
-      }}
-      onDragEnd={(event) => {
-        console.log(`Ended dragging`, event);
-        const {
-          operation: { source },
-        } = event;
+        }}
+        onDragOver={(event, manager) => {
+          const { operation } = event;
+          const isLibraryDrag = operation.source?.type === "library";
 
-        if (tmpAddedBrick.current) {
-          draftHelpers.updateBrickProps(tmpAddedBrick.current, { ghost: false });
-        }
+          if (operation.canceled || !operation.target) {
+            return;
+          }
 
-        setDraggingBrickType(null);
-        tmpAddedBrick.current = null;
+          if (
+            operation.target?.data?.manifest?.isContainer &&
+            (operation.activatorEvent as MouseEvent)?.metaKey
+          ) {
+            console.log("operation.activatorEvent", operation.activatorEvent);
+            console.error("Dropping over a container, disable reordering");
+            event.preventDefault();
+            return;
+          }
 
-        if (source?.id) {
-          // remove all custom styles
-          setTimeout(() => {
-            const element = document.getElementById(source.id as string);
-            if (element) {
-              element.classList.remove("moving");
-              element.style.removeProperty("box-shadow");
-              element.style.removeProperty("outline");
-              element.style.removeProperty("outline-offset");
-              element.style.removeProperty("background-color");
+          // Transform section to Record<sectionId, brickId[]>
+          const items = sections.reduce(
+            (acc, section) => {
+              acc[section.id] = section.bricks
+                .filter((brick) => !draftHelpers.getParentBrick(brick.id)) // only top-level bricks
+                .map((brick) => brick.id);
+              return acc;
+            },
+            {} as Record<string, string[]>,
+          );
+
+          // Drag and drop from library
+          if (isLibraryDrag) {
+            // Simulate adding the brick to the library
+            items.$library$ = tmpAddedBrick.current ? [] : [operation.source.id as string];
+          }
+
+          const newItems = move(items, event);
+
+          if (isEqual(items, newItems)) {
+            console.debug("Items are equal, no changes made");
+          } else {
+            // rebuild all sections
+            for (const section of sections) {
+              // if section has changed
+              if (!isEqual(items[section.id], newItems[section.id])) {
+                console.log("Rebuilding section", section.id);
+                const modifiedSection = {
+                  ...section,
+                  bricks: newItems[section.id].map((brickId, index) => {
+                    if (isLibraryDrag && brickId === operation.source.id && !draftHelpers.getBrick(brickId)) {
+                      const newBrick = createEmptyBrick(operation.source.data?.manifest.type as string, true);
+                      tmpAddedBrick.current = newBrick.id;
+                      draftHelpers.addBrick(newBrick, section.id as string, index, null);
+                      return newBrick;
+                    }
+                    return draftHelpers.getBrick(brickId)!;
+                  }),
+                };
+                draftHelpers.updateSection(section.id, modifiedSection);
+              }
             }
-          }, 200);
-        }
-      }}
-    >
-      <div
-        id="editor"
-        className={tx(
-          "grid relative transition-all mx-auto w-full",
-          getEditorCss(generationState, chatVisible),
-          "h-[100dvh] min-h-[100dvh] max-h-[100dvh]",
-          generationState.isReady === false &&
-            css({
-              background: `linear-gradient(120deg,
+          }
+        }}
+        onDragEnd={(event) => {
+          console.log(`Ended dragging`, event);
+          const {
+            operation: { source },
+          } = event;
+
+          if (tmpAddedBrick.current) {
+            draftHelpers.updateBrickProps(tmpAddedBrick.current, { ghost: false });
+          }
+
+          setDraggingBrickType(null);
+          tmpAddedBrick.current = null;
+
+          if (source?.id) {
+            // remove all custom styles
+            setTimeout(() => {
+              const element = document.getElementById(source.id as string);
+              if (element) {
+                element.classList.remove("moving");
+                element.style.removeProperty("box-shadow");
+                element.style.removeProperty("outline");
+                element.style.removeProperty("outline-offset");
+                element.style.removeProperty("background-color");
+              }
+            }, 200);
+          }
+        }}
+      >
+        <div
+          id="editor"
+          className={tx(
+            "grid relative transition-all mx-auto w-full",
+            getEditorCss(generationState, chatVisible),
+            "h-[100dvh] min-h-[100dvh] max-h-[100dvh]",
+            generationState.isReady === false &&
+              css({
+                background: `linear-gradient(120deg,
               oklab(from #9291e7 l a b / 0.65),
               oklab(from #7270c6 l a b / 0.65),
               oklab(from #c050c2 l a b / 0.65),
@@ -211,128 +213,129 @@ export default function Editor(props: EditorProps) {
               oklab(from #ffa25a l a b / 0.65),
               oklab(from #ffc358 l a b / 0.65)
           )`,
-            }),
-          generationState.isReady === false && "transition-all duration-500 ease-in-out",
-        )}
-        {...props}
-        ref={rootRef}
-      >
-        {sections.length > 0 && generationState.isReady && (
-          <Suspense>
-            <Tour />
-          </Suspense>
-        )}
-        <Suspense>
-          <NavBar />
-        </Suspense>
-        {chatVisible && (
-          <Suspense>
-            <Chat />
-          </Suspense>
-        )}
-        <Suspense>
-          <Modal />
-          <Panel />
-          {!generationState.isReady && debug === true && (
-            <div className="fixed flex flex-col gap-3 w-[23dvw] top-[60px] right-0 bottom-0 bg-gray-100 dark:bg-dark-800 border-gray-300 dark:border-gray-700 p-5 overflow-y-auto">
-              <h2 className="text-xl font-bold">Debug Information</h2>
-              <h4 className="text-lg font-semibold">Site</h4>
-              <pre className="whitespace-pre-wrap break-words text-[75%]">
-                {JSON.stringify(draft.site, null, 2)}
-              </pre>
-              <h4 className="text-lg font-semibold">Page</h4>
-              <pre className="whitespace-pre-wrap break-words text-[75%]">
-                {JSON.stringify(draft.page, null, 2)}
-              </pre>
-              <h4 className="text-lg font-semibold">User config</h4>
-              <pre className="whitespace-pre-wrap break-words text-[75%]">
-                {JSON.stringify(userConfig, null, 2)}
-              </pre>
-            </div>
+              }),
+            generationState.isReady === false && "transition-all duration-500 ease-in-out",
           )}
-        </Suspense>
-        <Toaster
-          toastOptions={{
-            position: "bottom-center",
-            style: {
-              background: "rgba(0, 0, 0, 0.85)",
-              color: "white",
-              fontSize: "0.85rem",
-              fontWeight: "500",
-              // marginBottom: "1rem",
-            },
-            className: tx("last:mb-1 px-1 py-1 rounded-lg"),
-            error: {
-              style: {
-                background: "#880808",
-              },
-            },
-          }}
-        />
-        {islocalDev && (
-          <div
-            className="fixed flex max-w-[548px] items-center divide-x divide-gray-300 bottom-0 right-6 p-2 text-xs text-gray-500 bg-gray-100 dark:bg-dark-800 z-[19999] rounded-t-md"
-            style={{
-              // Shadow to the top left corner
-              boxShadow: "0 -2px 4px rgba(0, 0, 0, 0.1), -2px 0 4px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <div className="px-2">Selected brick: {selectedBrickId ?? "none"}</div>
-            <div className="px-2">Selected section: {selectedSectionId ?? "none"}</div>
-            <div className="flex items-center gap-1 px-2">
-              <Switch defaultChecked={debug} onCheckedChange={toggleDebugMode} size="1" id="debug-mode" />
-              <label htmlFor="debug-mode" className="cursor-pointer select-none">
-                Debug mode{" "}
-                <b className={tx("font-semibold", debug ? "text-upstart-600" : "text-gray-500")}>
-                  {debug ? "on" : "off"}
-                </b>
-              </label>
-            </div>
-          </div>
-        )}
-        <main
-          className={tx(
-            "flex-1 flex place-content-center z-40 overflow-x-auto overscroll-none",
-            generationState.isReady === false && "!hidden",
-            css({
-              gridArea: "main",
-              scrollbarColor: "var(--violet-4) var(--violet-2)",
-              scrollBehavior: "smooth",
-              scrollbarGutter: "stable",
-              scrollbarWidth: panelPosition === "left" ? "thin" : "none",
-              "&:hover": {
-                scrollbarColor: "var(--violet-7) var(--violet-3)",
-              },
-            }),
-          )}
+          {...props}
+          ref={rootRef}
         >
-          {generationState.isReady && (
+          {sections.length > 0 && generationState.isReady && (
             <Suspense>
-              <DeviceFrame>
-                {/* FOR NOW LETS KEEP THE PAGE EDITABLE FOR DEV CONVENIENCE */}
-                {/* {!editorEnabled || generationState.isSetup ? <Page /> : <EditablePage />} */}
-                <EditablePage />
-                {draft.previewTheme && <ThemePreviewConfirmButton />}
-              </DeviceFrame>
+              <Tour />
             </Suspense>
           )}
-          {!generationState.isReady &&
-            (themes.length > 0 ? (
-              <DeviceFrame>
-                <Suspense>
-                  <ThemesPreviewList themes={themes} />
-                </Suspense>
-              </DeviceFrame>
-            ) : (
-              <DeviceFrame>
-                <Suspense>
-                  <BlankWaitPage />
-                </Suspense>
-              </DeviceFrame>
-            ))}
-        </main>
-      </div>
-    </DragDropProvider>
+          <Suspense>
+            <NavBar />
+          </Suspense>
+          {chatVisible && (
+            <Suspense>
+              <Chat />
+            </Suspense>
+          )}
+          <Suspense>
+            <Modal />
+            <Panel />
+            {!generationState.isReady && debug === true && (
+              <div className="fixed flex flex-col gap-3 w-[23dvw] top-[60px] right-0 bottom-0 bg-gray-100 dark:bg-dark-800 border-gray-300 dark:border-gray-700 p-5 overflow-y-auto">
+                <h2 className="text-xl font-bold">Debug Information</h2>
+                <h4 className="text-lg font-semibold">Site</h4>
+                <pre className="whitespace-pre-wrap break-words text-[75%]">
+                  {JSON.stringify(draft.site, null, 2)}
+                </pre>
+                <h4 className="text-lg font-semibold">Page</h4>
+                <pre className="whitespace-pre-wrap break-words text-[75%]">
+                  {JSON.stringify(draft.page, null, 2)}
+                </pre>
+                <h4 className="text-lg font-semibold">User config</h4>
+                <pre className="whitespace-pre-wrap break-words text-[75%]">
+                  {JSON.stringify(userConfig, null, 2)}
+                </pre>
+              </div>
+            )}
+          </Suspense>
+          <Toaster
+            toastOptions={{
+              position: "bottom-center",
+              style: {
+                background: "rgba(0, 0, 0, 0.85)",
+                color: "white",
+                fontSize: "0.85rem",
+                fontWeight: "500",
+                // marginBottom: "1rem",
+              },
+              className: tx("last:mb-1 px-1 py-1 rounded-lg"),
+              error: {
+                style: {
+                  background: "#880808",
+                },
+              },
+            }}
+          />
+          {islocalDev && (
+            <div
+              className="fixed flex max-w-[548px] items-center divide-x divide-gray-300 bottom-0 right-6 p-2 text-xs text-gray-500 bg-gray-100 dark:bg-dark-800 z-[19999] rounded-t-md"
+              style={{
+                // Shadow to the top left corner
+                boxShadow: "0 -2px 4px rgba(0, 0, 0, 0.1), -2px 0 4px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <div className="px-2">Selected brick: {selectedBrickId ?? "none"}</div>
+              <div className="px-2">Selected section: {selectedSectionId ?? "none"}</div>
+              <div className="flex items-center gap-1 px-2">
+                <Switch defaultChecked={debug} onCheckedChange={toggleDebugMode} size="1" id="debug-mode" />
+                <label htmlFor="debug-mode" className="cursor-pointer select-none">
+                  Debug mode{" "}
+                  <b className={tx("font-semibold", debug ? "text-upstart-600" : "text-gray-500")}>
+                    {debug ? "on" : "off"}
+                  </b>
+                </label>
+              </div>
+            </div>
+          )}
+          <main
+            className={tx(
+              "flex-1 flex place-content-center z-40 overflow-x-auto overscroll-none",
+              generationState.isReady === false && "!hidden",
+              css({
+                gridArea: "main",
+                scrollbarColor: "var(--violet-4) var(--violet-2)",
+                scrollBehavior: "smooth",
+                scrollbarGutter: "stable",
+                scrollbarWidth: panelPosition === "left" ? "thin" : "none",
+                "&:hover": {
+                  scrollbarColor: "var(--violet-7) var(--violet-3)",
+                },
+              }),
+            )}
+          >
+            {generationState.isReady && (
+              <Suspense>
+                <DeviceFrame>
+                  {/* FOR NOW LETS KEEP THE PAGE EDITABLE FOR DEV CONVENIENCE */}
+                  {/* {!editorEnabled || generationState.isSetup ? <Page /> : <EditablePage />} */}
+                  <EditablePage />
+                  {draft.previewTheme && <ThemePreviewConfirmButton />}
+                </DeviceFrame>
+              </Suspense>
+            )}
+            {!generationState.isReady &&
+              (themes.length > 0 ? (
+                <DeviceFrame>
+                  <Suspense>
+                    <ThemesPreviewList themes={themes} />
+                  </Suspense>
+                </DeviceFrame>
+              ) : (
+                <DeviceFrame>
+                  <Suspense>
+                    <BlankWaitPage />
+                  </Suspense>
+                </DeviceFrame>
+              ))}
+          </main>
+        </div>
+      </DragDropProvider>
+    </ChatProvider>
   );
 }
 
